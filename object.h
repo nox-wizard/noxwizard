@@ -102,14 +102,14 @@ private:
 
 public:
 	Location		getPosition() const;
-	SI32			getPosition(const char *what) const;
-	void			setPosition(const char *what, SI32 value);
+	SI32			getPosition(const char what) const;
+	void			setPosition(const char what, SI32 value);
 	void			setPosition(UI32 x, UI32 y, SI08 z);
 	void			setPosition(Location where);
 
 	Location		getOldPosition() const;
-	SI32			getOldPosition(const char *what) const;
-	void			setOldPosition(const char *what, SI32 value);
+	SI32			getOldPosition(const char what) const;
+	void			setOldPosition(const char what, SI32 value);
 	void			setOldPosition(SI32 x, SI32 y, signed char z, signed char dispz);
 	void			setOldPosition(Location where);
 //@}

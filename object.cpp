@@ -344,10 +344,10 @@ Location cObject::getPosition() const
 								\li "dz"= return the dispz position (used in cChar)
 \return signed int
 */
-SI32 cObject::getPosition( const char *what ) const
+SI32 cObject::getPosition( const char what ) const
 {
 
-	switch( what[0] )
+	switch( what )
 	{
 	case 'x':
 	case 'X':
@@ -363,12 +363,11 @@ SI32 cObject::getPosition( const char *what ) const
 
 	case 'd':
 	case 'D':
-		if( (what[1] == 'z') || (what[1] == 'Z') )
-			return position.dispz;
+		return position.dispz;
 	}
 
 	WarnOut("getPosition called with wrong parameter: '%s' !!", what);
-	return -1;
+	return INVALID;
 
 
 }
@@ -407,16 +406,16 @@ void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 \author Anthalir
 \since 0.82a
 \param what what to set ?
-	\li "x" = set the x position
-	\li "y" = set the y position
-	\li "z" = set the z position
-	\li "dz"= set the dispz position (used in cChar)
+	\li 'x' = set the x position
+	\li 'y' = set the y position
+	\li 'z' = set the z position
+	\li 'd'"= set the dispz position (used in cChar)
 \param value the value to set
 \todo change from string to a simpler enum
 */
-void cObject::setPosition( const char *what, SI32 value)
+void cObject::setPosition( const char what, SI32 value)
 {
-	switch( what[0] )
+	switch( what )
 	{
 	case 'x':
 	case 'X':
@@ -435,8 +434,7 @@ void cObject::setPosition( const char *what, SI32 value)
 
 	case 'd':
 	case 'D':
-		if( (what[1] == 'z') || (what[1] == 'Z') )
-			position.dispz= value;
+		position.dispz= value;
 		break;
 	}
 }
@@ -446,9 +444,9 @@ Location cObject::getOldPosition() const
 	return old_position;
 }
 
-SI32 cObject::getOldPosition( const char *what) const
+SI32 cObject::getOldPosition( const char what) const
 {
-	switch( what[0] )
+	switch( what )
 	{
 	case 'x':
 	case 'X':
@@ -461,15 +459,18 @@ SI32 cObject::getOldPosition( const char *what) const
 	case 'z':
 	case 'Z':
 		return old_position.z;
+	case 'd':
+	case 'D':
+		return old_position.dispz;
 	}
 
 	WarnOut("getPosition called with wrong parameter: '%s' !!", what);
-	return -1;
+	return INVALID;
 }
 
-void cObject::setOldPosition( const char *what, SI32 value)
+void cObject::setOldPosition( const char what, SI32 value)
 {
-	switch( what[0] )
+	switch( what )
 	{
 	case 'x':
 	case 'X':
@@ -484,6 +485,11 @@ void cObject::setOldPosition( const char *what, SI32 value)
 	case 'z':
 	case 'Z':
 		old_position.z= value;
+		break;
+
+	case 'd':
+	case 'D':
+		old_position.dispz = value;
 		break;
 	}
 }
