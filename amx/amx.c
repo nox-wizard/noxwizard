@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.3 2003/07/13 18:38:23 dgp85 Exp $
+ *  Version: $Id: amx.c,v 1.4 2003/07/13 18:42:16 dgp85 Exp $
  */
 
 //XAN
@@ -281,13 +281,13 @@ uint64_t *amx_Align64(uint64_t *v)
 
 #if defined BIT16
   #define swapcell	swap16
-  #define align_Address	amx_Align16
+  #define Align_Address	amx_Align16
 #elif defined(__alpha__)
   #define swapcell  	swap64
-  #define align_Address	amx_Align64
+  #define Align_Address	amx_Align64
 #else
   #define swapcell  	swap32
-  #define align_Address	amx_Align32
+  #define Align_Address	amx_Align32
 #endif
 
 int AMXAPI amx_Flags(AMX *amx,uint16_t *flags)
