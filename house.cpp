@@ -416,10 +416,12 @@ void buildhouse(int s, int i)
 						}
 						if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
+							if(ISVALIDPI(pi_l)) {
+								P_ITEM back = pc->getBackpack();
+								if( ISVALIDPI( back ) ) {
+									back->AddItem( pi_l );
+								}
+							}
 						}
 						if (!(strcmp(script1,"MOVEABLE")))
 						{
