@@ -218,7 +218,7 @@ static inline bool checkTownLimits(SpellId spellnum, P_CHAR pa, P_CHAR pd, int s
 		if ((pd->npc)&&(pd->npcaitype==NPCAI_EVIL)) return false;
 		if (pa==pd) return false;
 		if (ISVALIDPC(pa)) {
-			if (Guilds->Compare(pa,pd)!=0) return false;
+			if (Guildz.compareGuilds(pa->getGuild(),pd->getGuild())!=0) return false;
 		}
 		if (pd->IsCriminal()) return false;
 		if (pd->IsGrey()) return false;

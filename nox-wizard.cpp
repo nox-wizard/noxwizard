@@ -1174,7 +1174,7 @@ void updateMenus();
 	Network->LoadHosts_deny();
 	ConOut("[DONE]\n");
 	item_char_test(); //LB
-	Guilds->CheckConsistancy(); // LB
+	Guildz.checkConsistancy(); // LB
 
 
 	ConOut("\n");
@@ -2444,7 +2444,6 @@ void StartClasses()
 	mapRegions=new cRegion;
 	Accounts = new cAccounts;
 	Boats=new cBoat;
-	Guilds=new cGuilds;
 
 	Network=new cNetwork;
 	//Respawn=new cRespawn;

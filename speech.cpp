@@ -1757,7 +1757,7 @@ static LOGICAL requestChaosShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 			}
 			if( chaosGuard )
 			{
-				if( Guilds->GetType( pc->GetGuildNumber() ) == 2 || pc->IsGM() )
+				if( ( pc->getGuild()->getGuildType() == GUILD_TYPE_CHAOS ) || pc->IsGM() )
 				{
 					if( !pc->getAmount(0x1BC3) )
 					{
@@ -1812,7 +1812,7 @@ static LOGICAL requestOrderShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 			}
 			if( orderGuard )
 			{
-				if( Guilds->GetType( pc->GetGuildNumber() ) == 2 || pc->IsGM() )
+				if( ( pc->getGuild()->getGuildType() == GUILD_TYPE_ORDER ) || pc->IsGM() )
 				{
 					if( !pc->getAmount(0x1BC4) )
 					{

@@ -206,6 +206,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
  				UI08 cmd[1]= {0x29};
  				client->resetDragging();
  				Xsend(s, cmd, 1);
+				UpdateStatusWindow(s,pi);
 //AoS/				Network->FlushBuffer(s);
  			}
  			return;
@@ -246,6 +247,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					client->resetDragging();
 					pi->setContSerial(pi->getContSerial(),true,false);
 					item_bounce3(pi);
+					UpdateStatusWindow(s,pi);
 				}
 				return;
 			}
@@ -290,7 +292,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					pi->layer = pi->oldlayer;
 					pi->Refresh();
 					return;
-                		}
+            	}
 			}
 			//</Luxor>
 
@@ -430,9 +432,12 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 	}
 
 	int amt = 0, wgt;
-	wgt = (int)weights::LockeddownWeight( pi, &amt);
-	pc_currchar->weight += wgt;
-	statwindow(pc_currchar, pc_currchar);
+	if ( container == NULL )
+	{
+		wgt = (int)weights::LockeddownWeight( pi, &amt);
+		pc_currchar->weight += wgt;
+		statwindow(pc_currchar, pc_currchar);
+	}
 }
 
 void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
@@ -1094,7 +1099,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 
 
-        if(pi!=NULL)
+    if(pi!=NULL)
 	{
 		weights::NewCalc(pc);
 		statwindow(pc,pc);

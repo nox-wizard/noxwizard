@@ -614,7 +614,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 						hi_color = 6; // ripper
 
 					int guild;
-					guild = Guilds->Compare(pc_s, pc_i);
+					guild = Guildz.compareGuilds(pc_s->getGuild(), pc_i->getGuild());
 					if (guild == 1)// Same guild (Green)
 						hi_color = 2;
 					else if (guild == 2) // Enemy guild.. set to orange
@@ -1128,22 +1128,34 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
+		int di= item_dist(pc, pi);
 		if(!ISVALIDPI(pi))
 			continue;
-			if( pi->getId()>=0x407C && pi->getId()<=0x407E )
+		if ( di == 0 )
+		{
+			if ( pi->amxevents[EVENT_IONWALKOVER] )
 			{
-				int di= item_dist(pc, pi);
-
-				if (di<=BUILDRANGE && di>=VISRANGE)
-				{
-					senditem(ps->toInt(), pi);
-				}
-
+				g_bByPass = false;
+				pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSerial32());
+				if ( g_bByPass==true )
+					return true;
 			}
-			else if ( pc->seeForFirstTime( *pi ) ) // Luxor
-				senditem( ps->toInt(), pi );
-			else
-				pc->seeForLastTime( *pi );
+		}
+		if(!ISVALIDPI(pi))
+			continue;
+
+		if( pi->IsHouse())
+		{
+			if (di<=BUILDRANGE && di>=VISRANGE)
+			{
+				senditem(ps->toInt(), pi);
+			}
+
+		}
+		else if ( pc->seeForFirstTime( *pi ) ) // Luxor
+			senditem( ps->toInt(), pi );
+		else
+			pc->seeForLastTime( *pi );
 	}
 	return true;
 }
@@ -1228,7 +1240,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 		if ( pc->poisoned )
 			flag |= 0x04; // AntiChrist -- thnx to SpaceDog
 
-		SI32 guild = Guilds->Compare( pc, pc_curr );
+		SI32 guild = Guildz.compareGuilds( pc->getGuild(), pc_curr->getGuild() );
 		if ( guild == 1 )		// Same guild (Green)
 			hi_color = 2;
 		else if ( guild == 2 )		// Enemy guild.. set to orange

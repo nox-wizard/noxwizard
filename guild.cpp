@@ -222,7 +222,7 @@ P_GUILD_MEMBER cGuild::addMember( P_CHAR pc )
 {
 
 	P_GUILD_MEMBER member = new cGuildMember( pc->getSerial32() );
-	members.insert( make_pair( member->serial, member ) );
+	members.insert( make_pair( member->getSerial(), member ) );
 	pc->setGuild( this, member );
 	return member;
 
@@ -279,7 +279,7 @@ SERIAL cGuild::getMemberByIndex(int index)
 		{
 			P_GUILD_MEMBER guildmember = iter->second;
 			
-			return guildmember->serial;
+			return guildmember->getSerial();
 		}
 	}
 	return INVALID;
@@ -330,8 +330,8 @@ void cGuild::calculateFealty()
 	for ( iter = members.begin();iter != members.end();iter++)
 	{
 		P_GUILD_MEMBER guildmember = iter->second;
-		P_GUILD_MEMBER votedGuildMember=getMember(guildmember->fealty);
-		voteIndex=votes.find(votedGuildMember->serial);
+		P_GUILD_MEMBER votedGuildMember=getMember(guildmember->getFealty());
+		voteIndex=votes.find(votedGuildMember->getSerial());
 		if ( voteIndex != votes.end() )
 		{
 			voteCount=voteIndex->second+1;
@@ -340,7 +340,7 @@ void cGuild::calculateFealty()
 		{
 			voteCount=1;
 		}
-		votes.insert(make_pair(votedGuildMember->serial, voteCount));
+		votes.insert(make_pair(votedGuildMember->getSerial(), voteCount));
 	}
 	int highest;
 	SERIAL master;
@@ -355,7 +355,7 @@ void cGuild::calculateFealty()
 	if ( master != getGuildMaster() )
 	{
 		P_GUILD_MEMBER oldMaster=getMember(getGuildMaster());
-		oldMaster->rank=RANK_GUILDMEMBER;
+		oldMaster->setRank(RANK_GUILDMEMBER);
 		setGuildMaster(master);
 	}
 }
@@ -385,6 +385,121 @@ void cGuild::refuseRecruit( P_CHAR pc )
 		recruits.erase( iter );
 	}
 }
+
+/*!
+\brief displays players title string, over the name of clicked character, name color gets calculated from the guild relationship of both players
+\author Unknown, adapted by Wintermute
+\parameters (viewing character socket, clicked character) 
+*/
+
+void cGuild::showTitle(P_CHAR pc, P_CHAR pc2)
+{
+	char title[150];
+	char abbreviation[5];
+	char guildtype[10];
+
+	if (pc->getGuild() == NULL )
+		return;
+
+	if (pc->HasGuildTitleToggle() )
+	{
+		strcpy(abbreviation,pc->getGuild()->getAbbreviation().c_str());
+		if (!(strcmp(abbreviation,"")))
+			strcpy(abbreviation,"none");
+
+		if (pc->getGuild()->getGuildType() > 0 )
+		{
+			if (pc->getGuild()->getGuildType()== GUILD_TYPE_ORDER) strcpy(guildtype,"Order");
+			else if (pc->getGuild()->getGuildType()==GUILD_TYPE_CHAOS) strcpy(guildtype,"Chaos");
+
+			if (strcmp(pc->GetGuildTitle(),"")) sprintf(title,"[%s, %s] [%s]",pc->GetGuildTitle(),abbreviation,guildtype);
+			else sprintf(title,"[%s] [%s]",abbreviation, guildtype);
+		}
+		else
+		{
+			if (strcmp(pc->GetGuildTitle(),"")) sprintf(title,"[%s, %s]",pc->GetGuildTitle(),abbreviation);
+			else sprintf(title,"[%s]",abbreviation);
+		}
+
+		UI08 sysname[30]={ 0x00, };
+		strcpy((char *)sysname, "System");
+
+		SendSpeechMessagePkt(pc2->getClient()->getRealSocket(), pc->getSerial32(), 0x0101, 0, pc->emotecolor, 0x0003, sysname, title);
+	}
+}
+
+bool cGuild::hasWarWith(SERIAL guild)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = guildWar.begin();iter != guildWar.end(); iter++ )
+	{
+	    if (*iter == guild )
+			return true;
+	}
+	return false;
+}
+
+bool cGuild::hasPeaceWith(SERIAL guild)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = guildPeace.begin();iter != guildPeace.end(); iter++ )
+	{
+	    if (*iter == guild )
+			return true;
+	}
+	return false;
+
+}
+
+bool cGuild::hasAllianceWith(SERIAL guild)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = guildAllies.begin();iter != guildAllies.end(); iter++ )
+	{
+	    if (*iter == guild )
+			return true;
+	}
+	return false;
+
+}
+
+
+std::vector<SERIAL>::iterator cGuild::getGuildsInWar()
+{
+	return guildWar.begin();
+}
+
+std::vector<SERIAL>::iterator cGuild::getGuildsInPeace()
+{
+	return guildPeace.begin();
+
+}
+
+std::vector<SERIAL>::iterator cGuild::getGuildsAllied()
+{
+	return guildAllies.begin();
+
+}
+
+void cGuild::addWar(SERIAL guild)
+{
+	if ( Guildz.getGuild(guild) != NULL && ! hasWarWith(guild))
+		guildWar.push_back(guild);
+}
+
+void cGuild::addPeace(SERIAL guild)
+{
+	if ( Guildz.getGuild(guild) != NULL && ! hasPeaceWith(guild))
+		guildPeace.push_back(guild);
+
+}
+
+void cGuild::addAlly(SERIAL guild)
+{
+	if ( Guildz.getGuild(guild) != NULL && ! hasAllianceWith(guild))
+		guildAllies.push_back(guild);
+}
+
 
 /*!
 \brief Get the given guild recruit
@@ -498,7 +613,7 @@ void cGuildRecruit::load( cStringFile& file )
 
 void cGuildRecruit::save( FILE* file )
 {
-	fprintf( file, "RECRUIT %d %d\n", serial,	recruiter->serial );
+	fprintf( file, "RECRUIT %d %d\n", serial,	recruiter->getSerial() );
 	fprintf( file, "{\n" );
 //	fprintf( file, "RECRUITER %d\n",	recruiter->serial );
 	fprintf( file, "}\n" );
@@ -691,3 +806,94 @@ void cGuildz::removeGuild( SERIAL guild )
 	guilds.erase(guild);
 }
 
+
+/*!
+\brief this is for highlighting/guards and other stuff
+\note Computes the relation player 1 and player 2 have. 
+results are:
+1= both in same guild (so fighting is okay, green hightlighting)
+2= both in opposite guilds/guildtypes (so fighting is okay, orange highlighting)
+0= no guildwarfare, or no guild relation (so no fighting, normal highlighting)
+Order/Order or Chaos/Chaos guilds (in different guilds) may not war eachother!
+\author Unknown, adapted by Wintermute
+\parameters (viewing character socket, clicked character) 
+*/
+
+int cGuildz::compareGuilds(P_GUILD guild1,P_GUILD guild2)
+{
+	// one of both not in a guild -> no guildwarfare
+
+	if (guild1 == NULL || guild2 == NULL ) return 0;
+
+	if ((guild1 == NULL)&&(guild2 == NULL))
+	{
+		if (guild1==guild2)
+			return 1;
+
+		if (((guild1->getGuildType()== GUILD_TYPE_ORDER) && (guild2->getGuildType()== GUILD_TYPE_CHAOS))
+			|| ((guild2->getGuildType()== GUILD_TYPE_ORDER)&&(guild1->getGuildType()== GUILD_TYPE_CHAOS)))
+			return 2;
+
+		if ( guild1->hasWarWith(guild2->getSerial()) )
+			return 2;
+	}
+	return 0;
+}
+
+void cGuildz::checkConsistancy(void )
+{
+	int ok=1,error=0;
+
+	P_ITEM stone;
+	P_CHAR pc;
+
+	ConOut("Checking guild data consistancy...");
+
+	//////////// check the guilds
+	for ( std::map< SERIAL, P_GUILD >::iterator iter = guilds.begin();iter != guilds.end();iter++)
+	{
+		P_GUILD guild = iter->second;
+		// is the guildmaster still alive ?
+			
+		ok=1;
+		
+		pc = pointers::findCharBySerial(guild->getGuildMaster());
+		if (!pc) // if not, erase the guild !
+		{
+			ok=0;
+			LogWarning("guild: %s ereased because guildmaster vanished",guild->getName());
+			Guildz.removeGuild(guild->getSerial());
+		}
+		// guildstone deleted ? yes -> erase guild !
+		if (ok) // don't erease twice ;)
+		{
+			stone = pointers::findItemBySerial(guild->getSerial());
+			if (!stone)
+			{
+				ok=0;
+				LogWarning("guild: %s ereased because guildstone vanished",guild->getName().c_str());
+				Guildz.removeGuild(guild->getSerial());
+			}
+		}
+		if (ok)
+		{
+		 // check for guildmembers that don't exist anymore and remove from guild structure if so
+			for ( std::map< SERIAL, P_GUILD_MEMBER>::iterator iter = guild->getMembers().begin(); iter!= guild->getMembers().end();iter ++ )
+			{
+				P_GUILD_MEMBER member = iter->second;
+				
+				pc = pointers::findCharBySerial(member->getSerial());
+				if (!ISVALIDPC( pc ) )
+				{
+					ok=0;
+					LogWarning("guild: %s had an member that didnt exist anymore, removed\n",guild->getName());
+					guild->removeMember(member->getSerial());
+				}
+			}
+		}
+		
+		if (!ok) error=1;
+	}
+
+	if (error) ConOut("[DONE] - errors found, check logs\n"); else ConOut("[ OK ]\n");
+}

@@ -1624,18 +1624,19 @@ void cGuilds::Title(int s,int player2)
 	P_CHAR pc2= pointers::findCharBySerial( player2 );
 	VALIDATEPC(pc2);
 
-	if (pc2->GetGuildNumber()<0 || pc2->GetGuildNumber()>=MAXGUILDS) return;
+	if (pc2->getGuild() == NULL )
+		return;
 
-	if ((pc2->GetGuildNumber()!=0)&&(pc2->HasGuildTitleToggle()))
+	if (pc2->HasGuildTitleToggle() )
 	{
-		strcpy(abbreviation,guilds[pc2->GetGuildNumber()].abbreviation);
+		strcpy(abbreviation,pc2->getGuild()->getAbbreviation().c_str());
 		if (!(strcmp(abbreviation,"")))
 			strcpy(abbreviation,"none");
 
-		if (guilds[pc2->GetGuildNumber()].type!=0)
+		if (pc2->getGuild()->getGuildType() > 0 )
 		{
-			if (guilds[pc2->GetGuildNumber()].type==1) strcpy(guildtype,"Order");
-			else if (guilds[pc2->GetGuildNumber()].type==2) strcpy(guildtype,"Chaos");
+			if (pc2->getGuild()->getGuildType()==1) strcpy(guildtype,"Order");
+			else if (pc2->getGuild()->getGuildType()==2) strcpy(guildtype,"Chaos");
 
 			if (strcmp(pc2->GetGuildTitle(),"")) sprintf(title,"[%s, %s] [%s]",pc2->GetGuildTitle(),abbreviation,guildtype);
 			else sprintf(title,"[%s] [%s]",abbreviation, guildtype);

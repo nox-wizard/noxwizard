@@ -222,7 +222,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 			thief->IncreaseKarma(ServerScp::g_nStealKarmaLoss);
 			thief->modifyFame(ServerScp::g_nStealFameLoss);
 
-			if ( victim->IsInnocent() && thief->attackerserial != victim->getSerial32() && Guilds->Compare(thief,victim)==0)
+			if ( victim->IsInnocent() && thief->attackerserial != victim->getSerial32() && Guildz.compareGuilds( thief->getGuild(),victim->getGuild())==0)
 				setCrimGrey(thief, ServerScp::g_nStealWillCriminal); //Blue and not attacker and not same guild
 
 
@@ -419,7 +419,7 @@ void Skills::target_randomSteal( NXWCLIENT ps, P_TARGET t )
 			thief->IncreaseKarma( ServerScp::g_nStealKarmaLoss);
 			thief->modifyFame( ServerScp::g_nStealFameLoss);
 
-			if (victim->IsInnocent() && thief->attackerserial!=victim->getSerial32() && Guilds->Compare(thief,victim)==0)//AntiChrist
+			if (victim->IsInnocent() && thief->attackerserial!=victim->getSerial32() && Guildz.compareGuilds(thief->getGuild(),victim->getGuild())==0)//AntiChrist
 				setCrimGrey(thief, ServerScp::g_nStealWillCriminal);//Blue and not attacker and not guild
 
 			std::string itmname = "";

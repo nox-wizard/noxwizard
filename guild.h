@@ -52,17 +52,30 @@ class cGuildMember
 
 	public:
 		
-		SERIAL serial;	//!< the member
-		std::string	title;	//!< title
-		GUILD_TITLE_TOGGLE toggle; //!< title toggle
-		UI32 rank; //!< the rank
-		SERIAL fealty;
+	SERIAL serial;	//!< the member
+	std::string	title;	//!< title
+	GUILD_TITLE_TOGGLE toggle; //!< title toggle
+	UI32 rank; //!< the rank
+	SERIAL fealty;
+
 		cGuildMember( SERIAL serial );
 		~cGuildMember();
 
 		void load( cStringFile& file );
 		void save( FILE* file );
-
+		inline const SERIAL getSerial() const
+		{ return serial; }
+		inline void setSerial(SERIAL newSerial) 
+		{ serial = newSerial; }
+		inline const UI32 getRank() const
+		{ return rank; }
+		inline void setRank(UI32 newRank )
+		{ rank= newRank; }
+		inline const SERIAL getFealty() const
+		{ return fealty; }
+		inline void setFealty(SERIAL newFealty )
+		{ fealty= newFealty; }
+		
 };
 
 
@@ -131,6 +144,10 @@ private:
 	private:
 		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
 		std::string	abbreviation;	//!< abbreviation ( es KCS )
+		std::vector <SERIAL> guildWar;
+		std::vector <SERIAL> guildPeace;
+		std::vector <SERIAL> guildAllies;
+
 		SERIAL guildMaster;
 	typedef enum  {
 		RANK_GUILDMASTER,
@@ -141,6 +158,7 @@ private:
 	} GUILD_RANK;	
 	public:
 
+		std::map< SERIAL, P_GUILD_MEMBER > members;	//!< all members of this guild
 		std::wstring	charter;	//!< charter
 		std::string webpage;	//!< web page
 
@@ -160,20 +178,31 @@ private:
 		// Helper functions for 
 		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };
 		inline void		cGuild::setGuildMaster(SERIAL newGuildMaster)  
-		{ guildMaster=newGuildMaster; getMember(guildMaster)->rank=RANK_GUILDMASTER; };
+		{ guildMaster=newGuildMaster; getMember(guildMaster)->setRank(RANK_GUILDMASTER); };
 		void cGuild::calculateFealty();
-
+		void cGuild::showTitle(P_CHAR pc, P_CHAR pc2);
 	public:
-
-		std::map< SERIAL, P_GUILD_MEMBER > members;	//!< all members of this guild
-
+		inline std::map< SERIAL, P_GUILD_MEMBER >getMembers()
+		{ return members; }
+		
 		P_GUILD_MEMBER addMember( P_CHAR pc );
 		void resignMember( P_CHAR pc );
+		inline void removeMember(SERIAL member)
+		{ members.erase(member); }
 		P_GUILD_MEMBER getMember( SERIAL member );
 		int getMemberPosition(SERIAL member);
 		SERIAL getMemberByIndex(int index);
 		int getRecruitIndex(SERIAL member);
 		SERIAL getRecruitByIndex(int index);
+		std::vector<SERIAL>::iterator getGuildsInWar();
+		std::vector<SERIAL>::iterator getGuildsInPeace();
+		std::vector<SERIAL>::iterator getGuildsAllied();
+		void addWar(SERIAL guild);
+		void addPeace(SERIAL guild);
+		void addAlly(SERIAL guild);
+		bool hasWarWith(SERIAL guild);
+		bool hasPeaceWith(SERIAL guild);
+		bool hasAllianceWith(SERIAL guild);
 
 	public:
 
@@ -183,9 +212,6 @@ private:
 		void refuseRecruit( P_CHAR pc );
 		P_GUILD_RECRUIT getRecruit( SERIAL recruit );
 		
-	public:
-
-		std::map< SERIAL, cGuildPolitics > political_to_guild;	//!< all guild politics related to other guild
 
 };
 
@@ -217,7 +243,8 @@ class cGuildz
 		P_GUILD getGuild( SERIAL guild );
 		P_GUILD addGuild( SERIAL stone );
 		void removeGuild( SERIAL guild );
-
+		int cGuildz::compareGuilds(P_GUILD guild1,P_GUILD guild2);
+		void cGuildz::checkConsistancy(void );
 };
 
 extern cGuildz Guildz;

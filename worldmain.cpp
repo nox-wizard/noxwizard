@@ -1227,11 +1227,6 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 				{
 					loaditem();
 				}
-				else if (!strcmp(script2, "GUILD"))
-				{
-					Guilds->Read(str2num(script3));
-				}
-
 				iitem++;
 			}
 
@@ -1382,7 +1377,7 @@ void CWorldMain::saveNewWorld()
 ////END
 
 ////GUILDS SAVE
-	Guilds->Write( iWsc ); //Endymion to remove
+//	Guilds->Write( iWsc ); //Endymion to remove
 //Endymion Save new Guild System
 	Guildz.save();
 //Endymion End Save Guild System
@@ -3072,8 +3067,8 @@ void CWorldMain::realworldsave ()
 	//Luxor: reload dynamic spawners here.
 	Spawns->clearDynamic();
 	cAllObjectsIter objs;
-	this->chr_curr=0;
-	this->itm_curr=0;
+	this->chr_curr=1;
+	this->itm_curr=1;
 	P_ITEM pi = NULL;
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{

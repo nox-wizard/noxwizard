@@ -213,7 +213,7 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 		if (victim->IsGrey())
 			attacker->SetGrey();
 
-		if (victim->npc==0 && victim->IsInnocent() && (!victim->IsGrey()) && Guilds->Compare( attacker, victim )==0) //REPSYS
+		if (victim->npc==0 && victim->IsInnocent() && (!victim->IsGrey()) && Guildz.compareGuilds( attacker->getGuild(), victim->getGuild() )==0) //REPSYS
 		{
 			criminal( attacker );
 			if (ServerScp::g_nInstantGuard==1)
@@ -252,7 +252,7 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 		{
 			if ( victim->IsGrey())
 				attacker->SetGrey();
-			if (!victim->npc && (!victim->IsGrey()) && Guilds->Compare(attacker, victim )==0)
+			if (!victim->npc && (!victim->IsGrey()) && Guildz.compareGuilds(attacker->getGuild(), victim->getGuild() )==0)
 			{
 				criminal( attacker );
 			}

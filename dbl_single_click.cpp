@@ -677,22 +677,6 @@ void doubleclick(NXWCLIENT ps)
 			pi->ReduceAmount(1);
 			pc->sysmsg( TRANSLATE("Gulp !"));
 			return;
-	case ITYPE_GUILDSTONE:
-			if ( pi->getId() == 0x14F0  ||  pi->getId() == 0x1869 )	// Check for Deed/Teleporter + Guild Type
-			{
-				pc->fx1 = DEREF_P_ITEM(pi);
-				Guilds->StonePlacement(s);
-				return;
-			}
-			else if (pi->getId() == 0x0ED5)	// Check for Guildstone + Guild Type
-			{
-				pc->fx1 = DEREF_P_ITEM(pi);
-				Guilds->Menu(s, 1);
-				return;
-			}
-			else
-				WarnOut("Unhandled guild item type named: %s with ID of: %X\n", pi->getCurrentNameC(), pi->getId());
-			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{
 			P_CHAR vendor = npcs::AddNPCxyz(-1, 2117, charpos.x, charpos.y, charpos.z);

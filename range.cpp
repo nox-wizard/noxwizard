@@ -39,6 +39,21 @@ LOGICAL item_inVisRange(P_CHAR a, P_ITEM b )
 	 return item_inRange( a, b, VISRANGE );
 }
 
+LOGICAL inBuildRange(Location a, Location b)
+{
+	return (dist(a,b)<=BUILDRANGE);
+}
+
+LOGICAL char_inBuildRange(P_CHAR a, P_CHAR b)
+{
+	 return char_inRange( a, b, BUILDRANGE );
+}
+
+LOGICAL item_inBuildRange(P_CHAR a, P_ITEM b )
+{
+	 return item_inRange( a, b, BUILDRANGE );
+}
+
 LOGICAL char_inRange(P_CHAR a, P_CHAR b, UI32 range)
 {
 	VALIDATEPCR(a, false);

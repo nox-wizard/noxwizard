@@ -647,7 +647,7 @@ void cChar::doCombat()
 		}
 		if (!npc && !pc_def->npc)
 		{	//Player vs Player
-			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 )
+			if(pc_def->IsInnocent() && Guildz.compareGuilds(getGuild(),pc_def->getGuild()) == 0 )
 			{
 				++kills;
 				sysmsg(TRANSLATE("You have killed %i innocent people."), kills);

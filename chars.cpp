@@ -2904,7 +2904,7 @@ void cChar::Kill()
 			//murder count \/
 			if (!npc)
 			{ // PvP
-				if ( !IsGrey() && IsInnocent() && Guilds->Compare(pKiller,this) == 0 )
+				if ( !IsGrey() && IsInnocent() && Guildz.compareGuilds(pKiller->getGuild(),getGuild()) == 0 )
 				{
 					murdererSer = pKiller->getSerial32();
 					++pKiller->kills;
@@ -2990,7 +2990,7 @@ void cChar::Kill()
 			//murder count \/
 			if (!npc)
 			{ // PvP
-				if ( (!IsGrey()) && IsInnocent() && Guilds->Compare(pk,this)==0)
+				if ( (!IsGrey()) && IsInnocent() && Guildz.compareGuilds(pk->getGuild(),getGuild())==0)
 				{
 					murdererSer = pk->getSerial32();
 					pk->kills++;
@@ -3809,10 +3809,10 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 		}
 	}
 
-	Guilds->Title( socket, DEREF_P_CHAR(this) );
+	getGuild()->showTitle( (P_CHAR) this, showToWho );
 
 	UI16 color;
-	SI32 guild = Guilds->Compare(showToWho,this);
+	SI32 guild = Guildz.compareGuilds(showToWho->getGuild(),this->getGuild());
 
 	UI08 sysname[30]={ 0x00, };
 	strcpy((char *)sysname, "System");

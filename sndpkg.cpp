@@ -694,7 +694,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		}
 	}
 	else
-	if(item_inVisRange(pc,pi) )
+	if(item_inVisRange(pc,pi) || ( pi->IsHouse() && item_inBuildRange(pc, pi)))
 	{
 		Location pos = pi->getPosition();
 
@@ -1926,7 +1926,8 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 
 	k=19;
 	int guild;
-	guild=Guilds->Compare(pc_currchar,pc);
+	guild=Guildz.compareGuilds( pc_currchar->getGuild(), pc->getGuild() );
+
 	if (guild==1)					//Same guild (Green)
 		oc[18]=2;
 	else if (guild==2) 				// Enemy guild.. set to orange
