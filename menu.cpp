@@ -186,7 +186,7 @@ void cMenu::addCommand( char const *formatStr, ... )
 }
 
 
-UI32 cMenu::addString( cUnicodeString& u )
+UI32 cMenu::addString( wstring& u )
 {
 	texts.push_back( u );
 	return texts.size()-1;
@@ -215,12 +215,12 @@ void cMenu::addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI
 	addCommand( "{gumppictiled %d %d %d %d %d %d}", x, y, width, height, gump, hue );
 }
 
-void cMenu::addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& html, UI32 hasBack, UI32 canScroll )
+void cMenu::addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& html, UI32 hasBack, UI32 canScroll )
 {
 	addCommand( "{htmlgump %d %d %d %d %d %d %d}", x, y, width, height, addString(html), hasBack, canScroll );
 }
 
-void cMenu::addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& clilocid, UI32 hasBack , UI32 canScroll )
+void cMenu::addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& clilocid, UI32 hasBack , UI32 canScroll )
 {
 	addCommand( "{xmfhtmlgump %d %d %d %d %s %d %d}", x, y, width, height, addString(clilocid), hasBack, canScroll );
 }
@@ -230,7 +230,7 @@ void cMenu::addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height )
 	addCommand( "{checkertrans %d %d %d %d}", x, y, width, height );
 }
 
-void cMenu::addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& text, UI32 hue )
+void cMenu::addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& text, UI32 hue )
 {
 	addCommand( "{croppedtext %d %d %d %d %d %d}", x, y, width, height, hue, addString(text) );
 }
@@ -248,7 +248,7 @@ void cMenu::addGroup( UI32 group )
 	addCommand( "{group %d}", group );
 }
 
-void cMenu::addText( UI32 x, UI32 y, cUnicodeString& data, UI32 hue )
+void cMenu::addText( UI32 x, UI32 y, wstring& data, UI32 hue )
 {
 	addCommand( "{text %d %d %d %d}", x, y, hue, addString(data) );
 }
@@ -268,7 +268,7 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 	addCommand( "{tilepic %d %d %d %d}", x, y, tile, hue );
 }
 
-void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, cUnicodeString& data, UI32 hue )
+void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue )
 {
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
 }
