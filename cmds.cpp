@@ -72,7 +72,6 @@ else
 
 
 
-
 /*
 
 
@@ -95,3 +94,60 @@ Something like :
 
 
 
+/* Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
+			{ "getCmdProperty", _getCmdProperty }
+*/
+
+NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
+
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+
+	if ( ISVALIDPC( pc ) )
+	{
+		VAR_TYPE tp = getPropertyType( params[2] );
+		switch( tp ) {
+			case T_INT: {
+				int p = getCharIntProperty( pc, params[2], params[3], params[4]);
+				cell i = p;
+				return i;
+			}
+			case T_BOOL: {
+				bool p = getCharBoolProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_SHORT: {
+				short p = getCharShortProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_CHAR: {
+				char p = getCharCharProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_STRING: {
+				//we're here so we should pass a string, params[4] is a str ptr
+	  			char str[100];	
+	  			strcpy(str, getCharStrProperty( pc, params[2], params[3] ) );
+
+	  			cell *cptr;
+  				amx_GetAddr(amx,params[4],&cptr);
+	  			amx_SetString(cptr,str, g_nStringMode);
+
+  				return strlen(str);
+			}
+			case T_UNICODE: {
+				wstring& w=getCharUniProperty( pc, params[2], params[3] );
+
+				cell *cptr;
+	  			amx_GetAddr(amx,params[4],&cptr);
+				amx_SetStringUnicode(cptr, w );
+
+				return w.length();
+			}
+		}
+
+  	}
+  	return INVALID;
+}
