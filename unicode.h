@@ -60,7 +60,7 @@ typedef bool PACK_NEEDED eBool;
 */
 class eUI16 : public endian {
 private:
-	UI08 a, b;
+	eUI08 a, b;
 public:
 	eUI16() { a=0; b=0; };
 	~eUI16() { };

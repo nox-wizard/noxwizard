@@ -96,13 +96,13 @@ void cUnicodeString::append( wchar_t c )
 
 void eUI16::operator =( UI32 v )
 {
-	this->a=v >>  8;
-	this->b=v & 0xFF;
+	this->a= (v >> 8) & 0xFF;
+	this->b= v & 0xFF ;
 }
 
 
 void eUI32::operator =( UI32 v )
 {
-	this->a= v >>  16;
+	this->a= (v >>  16) & 0xFFFF;
 	this->b= v & 0xFFFF;
 }
