@@ -38,6 +38,8 @@
 LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy);
 std::map< SERIAL, P_HOUSE > cHouses::houses;
 std::map< int, UI32VECTOR> cHouses::houseitems;
+
+static UI32VECTOR emptyVec;
 /*!
 \todo take a look to initialization, we could initialize the vector with the variables
 */
@@ -1959,7 +1961,7 @@ UI32VECTOR cHouses::getHouseItems(int housenumber)
 	std::map<int, UI32VECTOR>::iterator itemVec = houseitems.find(housenumber);
 	if (itemVec != houseitems.end() )
 		return itemVec->second;
-	return NULL;
+	return emptyVec;
 
 }
 
