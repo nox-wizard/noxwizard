@@ -581,21 +581,6 @@ void npcact(int s)
 	pc->playAction(addid1[s]);
 }
 
-
-
-/*!
-\brief return the character's serial
-\return int char's serial
-\param i char index
-\deprecated it does nothing
-*/
-int calcSerFromChar(int i)
-{
-	P_CHAR pc = MAKE_CHAR_REF( i );
-	VALIDATEPCR( pc, INVALID );
-	return pc->getSerial32();
-}
-
 int checkBoundingBox(int xPos, int yPos, int fx1, int fy1, int fz1, int fx2, int fy2)
 {
 	if (xPos>=((fx1<fx2)?fx1:fx2) && xPos<=((fx1<fx2)?fx2:fx1))

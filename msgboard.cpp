@@ -2200,7 +2200,8 @@ void MsgBoardQuestEscortRemovePost( int npcIndex )
 	P_CHAR npc=MAKE_CHAR_REF(npcIndex);
 	VALIDATEPC(npc);
 
-	int s = calcSerFromChar( npcIndex );
+	SERIAL npc_serial = npc->getSerial32();
+
 	int loopexit=0;
 
 	FILE *file = NULL;
@@ -2244,7 +2245,7 @@ void MsgBoardQuestEscortRemovePost( int npcIndex )
 				if ( feof(file) ) break;
 			}
 
-			if ( LongFromCharPtr(msg +13)  == s )
+			if ( LongFromCharPtr(msg +13)  == npc_serial )
 			{
 				// Jump back to the DEL segment in order to mark the post for deletion
 				fseek( file, -13, SEEK_CUR );
