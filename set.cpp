@@ -317,14 +317,14 @@ void addGuildRecruits( SERIAL iSet, SERIAL guild )
 	}
 }
 
-void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
+void addGuilds( SERIAL iSet, SERIAL guild )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter != g_oSet.end() )
 	{
 		NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
-		si->fillGuilds( guild, options );
+		si->fillGuilds( guild );
 		si->rewind();
 	}
 }
@@ -831,7 +831,7 @@ void NxwCharWrapper::fillGuildMembers( SERIAL guild )
 	P_GUILD pGuild = Guildz.getGuild( guild );
 	if( pGuild != 0 )
 	{
-		GUILDMEMBERMAP::iterator iter( pGuild->members.begin() ), end( pGuild->members.end() );
+		std::map< SERIAL, P_GUILD_MEMBER >::iterator iter( pGuild->members.begin() ), end( pGuild->members.end() );
 		for( ; iter!=end; iter++ ) {
 			insertSerial( iter->first );
 		}
@@ -849,7 +849,7 @@ void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
 	P_GUILD pGuild = Guildz.getGuild( guild );
 	if( pGuild != NULL )
 	{
-		GUILDRECRUITMAP::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
+		std::map< SERIAL, P_GUILD_RECRUIT >::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
 		for( ; iter!=end; iter++ ) {
 			insertSerial( iter->first );
 		}
@@ -1073,14 +1073,14 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 \param options 
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
+void NxwItemWrapper::fillGuilds( SERIAL guild )
 {
 	if( guild == INVALID ) { //all guilds
-		GUILDMAP::iterator iter( Guildz.guilds.begin() ), end( Guildz.guilds.end() );
+		std::map< SERIAL, P_GUILD >::iterator iter( Guildz.guilds.begin() ), end( Guildz.guilds.end() );
 		for( ; iter!=end; ++iter ) {
 			insertSerial( iter->first );
 		}
-	}
+	}/*
 	else {
 
 		P_GUILD pGuild = Guildz.getGuild( guild );
@@ -1097,7 +1097,7 @@ void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
 					insertSerial( *iter );
 				}
 			}
-	}
+	}*/
 
 }
 

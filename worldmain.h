@@ -15,6 +15,29 @@
 #ifndef __WORLDMAIN_H_
 #define __WORLDMAIN_H_
 
+
+void split( std::string& souce, std::string& first, std::string& second );
+
+class cStringFile {
+
+public:
+
+	FILE* f;
+
+public:
+
+	cStringFile( std::string& path, const char* mode );
+	~cStringFile();
+
+	void read( std::string& line );
+	void read( std::string& l, std::string& r );
+	void read( std::string& first, std::string& second, std::string& third );
+
+	bool eof();
+};
+
+
+
 class CWorldMain  
 {
 private:

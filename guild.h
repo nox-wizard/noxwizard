@@ -14,40 +14,43 @@
 #ifndef __GUILD_H__
 #define __GUILD_H__
 
-class cGuildMember ; //forward declaration
-
 #include "constants.h"
 #include "typedefs.h"
+#include "worldmain.h"
 
-typedef enum {
-	GUILD_WAR = 0,
-	GUILD_ALLIED
-} GUILD_POLITICAL;
+/*!
+\brief Guild rank privileges
+\author Endymion
+*/
+class cGuildRank
+{
+	public:
+		cGuildRank();
+		~cGuildRank();
 
-/*
-\note a candidate for membership of a guild
-\author Sparhawk
+		UI32 privileges; //!< the rank privileges
+		
+		void load( cStringFile* file );
+		void save( FILE* file );
+
+};
+
+/*!
+\brief A candidate for membership of a guild
+\author Endymion
 */
 class cGuildRecruit
 {
 	public:
-		cGuildRecruit();
-		cGuildRecruit( P_CHAR recruit, P_CHAR recruiter );
+
+		SERIAL	serial; //!< the recruit
+		P_GUILD_MEMBER	recruiter; //!< the recruiter
+		
+		cGuildRecruit( SERIAL recruit );
 		~cGuildRecruit();
-	private:
-		SERIAL		serial;
-	public:
-		SERIAL		getSerial();
-		void		setSerial( const SERIAL serial );
-	private:
-		SERIAL		recruiter;
-	public:
-		SERIAL		getRecuiter();
-		void		setRecruiter( const P_CHAR pChar );
-		void		setRecruiter( const SERIAL serial );
-	public:
-		//cGameDate	recruitementDate;
-		//cPoll		poll;
+
+		void load( cStringFile& file );
+		void save( FILE* file );
 };
 
 typedef enum {
@@ -56,7 +59,6 @@ typedef enum {
 	GUILD_TOGGLE_NONE
 } GUILD_TITLE_TOGGLE;
 
-
 /*
 \note the menber of a guild
 \author Endymion
@@ -64,148 +66,149 @@ typedef enum {
 class cGuildMember
 {
 	public:
-		cGuildMember();
-		~cGuildMember();
-	private:
+		
+		SERIAL serial;	//!< the member
 		std::string	title;	//!< title
-	public:
-		void setTitle( const std::string& newTitle );
-		std::string	getTitle();
-	private:
 		GUILD_TITLE_TOGGLE toggle; //!< title toggle
-	public:
-		void setToggle( GUILD_TITLE_TOGGLE newToggle );
-		GUILD_TITLE_TOGGLE getToggle();
-	public:
-		//cGameDate membershipDate; //!< membership date
+		P_GUILD_RANK rank; //!< the rank
+
+		cGuildMember( SERIAL serial );
+		~cGuildMember();
+
+		void load( cStringFile& file );
+		void save( FILE* file );
+
 };
 
-typedef std::map< SERIAL, cGuildMember > GUILDMEMBERMAP;
-typedef std::map< SERIAL, cGuildRecruit > GUILDRECRUITMAP;
 
-typedef enum {
-	GUILD_NORMAL,
-	GUILD_CHAOS,
-	GUILD_ORDER
-} GUILD_TYPE;
+#define GUILD_POLITICS_WAR 0
+#define	GUILD_POLITICS_ALLIED 1
 
-/*
-\class cGuild
-\note a guild
+/*!
+\brief this color are used into draw char packet
 \author Endymion
 */
-typedef class cGuild* P_GUILD;
+typedef enum {
+	GUILD_POLITICS_BLUE = 1,
+	GUILD_POLITICS_GREEN,
+	GUILD_POLITICS_ORANGE,
+	GUILD_POLITICS_RED,
+	GUILD_POLITICS_TRANSPARENT
+} GUILD_POLITICS_COLOR;
 
+
+
+/*!
+\brief Guild politics info
+\author Endymion
+*/
+class cGuildPolitics {
+
+	public:
+
+		SERIAL serial; //!< the guild
+		GUILD_POLITICS_COLOR color; //!< guild member see member of this in this color
+		UI08 type; //!< the type, war or allied
+		bool forever;	//!< used for chaos or order guild
+
+		cGuildPolitics();
+		~cGuildPolitics();
+};
+
+
+
+
+
+/*!
+\brief a guild
+\author Endymion
+*/
 class cGuild
 {
 
 	public:
-		static void	archive();
-		static void	safeoldsave();
+
+		void load( cStringFile& file );
+		void save( FILE* file );
 
 	public:
-		cGuild( const P_ITEM pGuildStone, const P_CHAR pc );
-		cGuild( const SERIAL );
+
+		SERIAL serial;	//!< guild serial, is equal to the guildstone serial
+
+	private:
+		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
+		std::string	abbreviation;	//!< abbreviation ( es KCS )
+	
+	public:
+
+		std::wstring	charter;	//!< charter
+		std::string webpage;	//!< web page
+
+		cGuild( SERIAL guildstone );
 		~cGuild();
+		void load();
 
-	private:
-		SERIAL serial;	//!< Guild Serial = equal to the guildstone serial
-	public:
-		void setSerial( SERIAL newSerial );
-		SERIAL getSerial();
-		void create( SERIAL newSerial );
+		void setName( std::string &newName );
+		std::string getName();
+		void setAbbreviation( std::string &newAbbr );
+		std::string getAbbreviation();
 
-	private:
-		std::string	name;	//!< Guild Name ( es Keeper of the Crimson Soul )
 	public:
-		void setName( const std::string& newName );
-		std::string	getName();
 
-	private:
-		std::string	abbreviation;	//!< Guild Abbreviation ( es KCS )
-	public:
-		void setAbbreviation( const std::string& newAbbr );
-		std::string	getAbbreviation();
+		std::map< SERIAL, P_GUILD_MEMBER > members;	//!< all members of this guild
 
-	private:
-		std::wstring	charter;	//!< Guild Charter
-	public:
-		void setCharter( const std::wstring& newCharter );
-		std::wstring	getCharter() const;
-
-	private:
-		GUILD_TYPE type;	//!< guild type
-	public:
-		void setType( GUILD_TYPE newType );
-		GUILD_TYPE getType();
-
-	private:
-		std::string webpage;	//!< Web Page
-	public:
-		void setWebPage( const std::string &newWebPage );
-		std::string getWebPage();
-
-	private:
-		SERIAL guildmaster;	//!< the guild master
-	public:
-		GUILDMEMBERMAP members;	//!< All member of this guild
-		void loadMembers();
-		LOGICAL isMember( P_CHAR pChar );
-		void addMember( P_CHAR pc );
+		P_GUILD_MEMBER addMember( P_CHAR pc );
 		void resignMember( P_CHAR pc );
-		void setGuildMaster( P_CHAR pc );
-		SERIAL getGuildMaster();
+		P_GUILD_MEMBER getMember( SERIAL member );
 
 	public:
-		GUILDRECRUITMAP recruits;	//!< All who want become member of this guild
-		void addNewRecruit( P_CHAR recruit, P_CHAR recruiter );
+
+		std::map< SERIAL, P_GUILD_RECRUIT > recruits;	//!< all who want become member of this guild
+		
+		P_GUILD_RECRUIT addNewRecruit( P_CHAR recruit, P_CHAR recruiter );
 		void refuseRecruit( P_CHAR pc );
+		P_GUILD_RECRUIT getRecruit( SERIAL recruit );
 
 	public:
-		std::vector<SERIAL> war;	//!< All war guild with this
-		void declareWar( SERIAL guild );
-		bool isInWar( SERIAL guild );
-		void declarePeace( SERIAL guild );
-	public:
-		std::vector<SERIAL> allied;	//!< All allied guild with this
-		void declareAllied( SERIAL guild );
-		bool isAllied( SERIAL guild );
-		void declareNeutral( SERIAL guild );
+
+		std::map< SERIAL, cGuildPolitics > political_to_guild;	//!< all guild politics related to other guild
+
+		std::vector< P_GUILD_RANK > ranks; //!< all members ranks
 
 };
 
-typedef std::map< SERIAL, cGuild > GUILDMAP;
 
-typedef enum
-{
-	GUILD_NO_ERROR,
-} GUILD_ERROR;
-
-
+/*!
+\brief Guild Manager
+\author Endymion
+*/
 class cGuildz
 {
+	private:
+
+		void safeoldsave();
+		std::string getFullAdress();
+
 	public:
+		
+		bool archive();
+		bool load();
+		bool save();
+
+	public:
+
+		std::map< SERIAL, P_GUILD > guilds;
+
 		cGuildz();
 		~cGuildz();
 
-	public:
-
-		void archive();
-		void safeoldsave();
-		void load();
-		void save( FILE *worldfile );
-
-	public:
-		GUILDMAP guilds;
-
 		P_GUILD getGuild( SERIAL guild );
-		P_GUILD addGuild( P_ITEM stone, P_CHAR master );
+		P_GUILD addGuild( P_ITEM stone );
 
 };
 
 extern cGuildz Guildz;
 
-#define ISVALIDGUILD(guild) ( (guild>INVALID) && ( Guildz.getGuild(guild) != NULL ) )
 
 #endif
 

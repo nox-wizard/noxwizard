@@ -101,6 +101,12 @@ typedef PITEM_VECTOR::iterator		PITEM_VECTOR_IT;//!< an iterator to a vector of 
 typedef class cPartyMember* P_PARTY_MEMBER;
 typedef class cParty*	P_PARTY;
 typedef class cBasicMenu* P_MENU;
+typedef class cGuild* P_GUILD;
+typedef class cGuildMember* P_GUILD_MEMBER;
+typedef class cGuildRecruit* P_GUILD_RECRUIT;
+typedef class cGuildRank*	P_GUILD_RANK;
+
+
 
 
 
