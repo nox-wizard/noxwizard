@@ -1277,8 +1277,9 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 	if( ISVALIDPC(contOwner) ) {
 		//if ((contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()!=pc->getSerial32()) )
-		if ( contOwner->getOwnerSerial32() != pc->getSerial32() ) { // Luxor
-		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
+		if ( contOwner->getSerial32() != pc->getSerial32() ) { // Luxor
+			ps->sysmsg(TRANSLATE("This aint your backpack!"));
+			return;
 		}
 	}
 
