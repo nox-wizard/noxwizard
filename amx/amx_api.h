@@ -78,8 +78,21 @@ int AMXAPI amx_SetUserData(AMX *amx, long tag, void *ptr);
 int AMXAPI amx_StrLen(cell *cstring, int *length);
 int printstring(AMX *amx,cell *cstr,cell *params,int num);
 
+extern int amx_LittleEndian;
+extern void swap16(uint16_t *v);
+extern void swap32(uint32_t *v);
+
 }
 
+#include <vector>
 
+int AMXAPI amx_SetStringUnicode(cell *dest, std::vector<unsigned char>* source );
+int AMXAPI amx_GetStringUnicode( std::vector<unsigned char>* dest, cell* source );
+
+#if defined BIT16
+  #define swapcell  swap16
+#else
+  #define swapcell  swap32
+#endif
 
 #endif //__AMX_API_H__
