@@ -95,6 +95,14 @@ void add( SERIAL iSet, SERIAL nVal )
 			iter->second->insert(nVal);
 }
 
+void copy( SERIAL iSet, const NxwWrapper& from )
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter!=g_oSet.end() )
+		if( iter->second!=NULL )
+			iter->second->copyQ( from );
+}
+
 UI32 size( SERIAL iSet)
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );

@@ -131,8 +131,9 @@ namespace amxSet {
 	void next( SERIAL iSet );
 	UI32 size( SERIAL iSet);
 
-	SERIAL get( SERIAL iSet);
+	SERIAL get( SERIAL iSet );
 	void add( SERIAL iSet, SERIAL nVal );
+	void copy( SERIAL iSet, const NxwWrapper& from );
 
 	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
  	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
