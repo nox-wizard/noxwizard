@@ -1105,8 +1105,6 @@ void cChar::showContainer(P_ITEM pCont)
 		ShortToCharPtr(pi->getPosition().y, bpitem +11);
 		LongToCharPtr(pCont->getSerial32(), bpitem +13);
 		ShortToCharPtr(pi->getColor(), bpitem +17);
-		//bpitem[19]=pi->decaytime=0;//HoneyJar // reseting the decaytimer in the backpack
-		bpitem[19]= 0;
 		Xsend(s, bpitem, 19);
 	}
 //AoS/ Network->FlushBuffer(s);

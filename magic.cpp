@@ -696,7 +696,7 @@ bool checkReagents(P_CHAR pc, reag_st reagents)
 	if ( pc->dontUseReagents() ) return true;
 	if (pc->npc) return true;
 
-	fail.ash=fail.drake=fail.garlic=fail.moss=fail.pearl=fail.shade=fail.silk = 0;
+	fail.ash=fail.drake=fail.garlic=fail.moss=fail.pearl=fail.shade=fail.silk=fail.ginseng = 0;
 
 	if (reagents.ash!=0 && pc->CountItems(0x0F8C)<reagents.ash) fail.ash=1;
 	if (reagents.drake!=0 && pc->CountItems(0x0F86)<reagents.drake) fail.drake=1;
@@ -719,7 +719,7 @@ bool checkReagents(P_CHAR pc, reag_st reagents)
 	if (fail.silk)	  str += "Ss ";
 	str += "]";
 
-	int failure = fail.ash+fail.drake+fail.garlic+fail.moss+fail.pearl+fail.shade+fail.silk;
+	int failure = fail.ash+fail.drake+fail.garlic+fail.moss+fail.pearl+fail.shade+fail.silk+fail.ginseng;
 
 	if (failure!=0) {
 		pc->sysmsg(const_cast<char*>(str.c_str()));
