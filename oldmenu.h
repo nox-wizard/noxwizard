@@ -22,7 +22,7 @@
 /*!
 \brief an Old type menu
 */
-class cOldMenu : public cBasicMenu
+class cOldMenu 
 {
 
 protected:
@@ -73,7 +73,7 @@ public:
 /*!
 \brief an Old type menu [ ICONLIST ]
 */
-class cOldMenuIconList : public cOldMenu
+class cOldMenuIconList : public cOldMenu, public cBasicMenu
 {
 
 private:

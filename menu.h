@@ -30,14 +30,16 @@ enum MENU_OPTIONS {
 */
 class cBasicMenu {
 	protected:
-		UI32	serial; //!< serial
-		UI32	id; //!< gump id
 
 		AmxFunction* callback; //function callback
+		UI32	id; //!< gump id
 
 	public:
+		cBasicMenu( );
 		cBasicMenu( SERIAL menu, UI32 id );
 		virtual ~cBasicMenu();
+
+		UI32	serial; //!< serial
 
 		void	setCallBack( const std::string& arg );
 		void	setCallBack( int fn );

@@ -42,8 +42,9 @@ cMenus::~cMenus()
 */
 SERIAL cMenus::createMenu( P_MENU menu )
 {
-	menuMap.insert( make_pair( current_serial++, menu ) );
-	return current_serial -1;
+	menu->serial=current_serial++; //++c o c++?
+	menuMap.insert( make_pair( menu->serial, menu ) );
+	return menu->serial;
 }
 
 

@@ -307,6 +307,15 @@ void cOldMenuClassic::buildOldMenu()
 	}
 }
 
+
+cOldMenuIconList::cOldMenuIconList()
+{
+}
+
+cOldMenuIconList::~cOldMenuIconList()
+{
+}
+
 /*!
 \brief Build an icon list menu
 \author Endymion
@@ -323,5 +332,9 @@ void cOldMenuIconList::buildOldMenu()
 \since 0.82
 */
 void cOldMenuIconList::show( P_CHAR pc )
+{
+}
+
+void cOldMenuIconList::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
 {
 }
