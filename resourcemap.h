@@ -13,14 +13,14 @@ class cResourceMap
 	std::string filename;
 	LOGICAL keepInMemory;
 	ResourceMapType type;
-	
+
 public:
 	cResourceMap(LOGICAL keepInMemory=true);
 	cResourceMap(std::string filename, LOGICAL keepInMemory=true);
 	~cResourceMap();
 	virtual void deserialize(ifstream *myStream);
 	virtual void serialize(ofstream *myStream);
-	
+
 	inline void setFile(std::string filename)
 	{ this->filename = filename; };
 	inline std::string getFile()
@@ -57,7 +57,7 @@ class cResourceStringMap : public cResourceMap
 	void serialize(ofstream *myStream);
 	void setValue(std::string key, SI32 value);
 	SI32 getValue(std::string key);
-	
+
 };
 
 
