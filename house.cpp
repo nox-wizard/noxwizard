@@ -60,7 +60,6 @@ void buildhouse(int s, int i)
 	int loopexit=0;//where they click, and the house/key items
 	UI32 x, y, k, sx = 0, sy = 0, icount=0;
 	signed char z;
-	int tmp;                                            //Temps
 	int hitem[100];//extra "house items" (up to 100)
 	char sect[512];                         //file reading
 	char itemsdecay = 0;            // set to 1 to make stuff decay in houses
