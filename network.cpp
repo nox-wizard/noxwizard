@@ -1170,7 +1170,10 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 	P_ITEM p_multi=NULL;
 	if (pc->getMultiSerial32() == INVALID )
-		p_multi=(P_ITEM)cHouses::findHouse( pc->getPosition() );
+	{
+		P_HOUSE house=cHouses::findHouse(pc->getPosition());
+		P_ITEM p_multi = pointers::findItemBySerial (house->getSerial());
+	}
 	else
 		p_multi = pointers::findItemBySerial( pc->getMultiSerial32() );
 

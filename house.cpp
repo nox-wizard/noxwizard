@@ -1187,35 +1187,55 @@ bool cHouse::isPublicHouse()
 
 SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 {
-	SI32 tempZ=0;
+	SI32 tempZ=pc->getPosition().z;
 	P_ITEM iHouse = pointers::findItemBySerial(serial);
 
-	Location pos=pc->getPosition();
+	Location pos;
+	pos.x=(SI32)(iHouse->getPosition().x - pc->getPosition().x);
+	pos.y=(SI32)(iHouse->getPosition().y - pc->getPosition().y);
+	pos.z=(SI32)(iHouse->getPosition().z - pc->getPosition().z);
 	multiVector m;
 	int itemCount =data::seekMulti( (short) (iHouse->getId()-0x4000), m );
 	if ( itemCount < 0 )
 		return 0;
-	for (int i =0;i < itemCount;++i)
+	for (int i =0;i < m.size() ;++i)
 	{
-		if (( m[i].flags != 0 ) && ( m[i].x == pos.x ) && ( m[i].y == pos.y ))
+		if (( m[i].flags != 0 ) && ( m[i].x == (SI32)(pc->getPosition().x - iHouse->getPosition().x ) ) && ( m[i].y == (SI32)(pc->getPosition().y - iHouse->getPosition().y ) ))
 		{
-			const int tmpTop = tempZ + m[i].height;
-			if ( tmpTop <= tempZ + MaxZstep && tmpTop >= tempZ-1 )
-			{
-				tempZ=m[i].height;
-				break;
+			// found a candidate for the height
+			tile_st tile;
+			data::seekTile( m[i].block, tile );
+
+			UI08 height = tile.height;
+			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
+				height = tile.height / 2;
+	// We are walking upstairs
+			if ( pc->getPosition().z < (height + m[i].height) ) 
+			{ // We cannot walk under it
+				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
+					return tempZ;
+				// Multi Item is higher than player, but still climbable
+				if ( (height + m[i].height) - pc->getPosition().z <= MaxZstep ) 
+				{ // We can walk on it
+					tempZ = height + m[i].height;
+					break;
+				} 
+				else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
+					return tempZ;
 			}
-			else if ( tmpTop >= tempZ - MaxZstep && tmpTop < tempZ - 1 )
+			// player is higher than multi item
+			else if ( (pc->getPosition().z - (height + m[i].height)) <= MaxZstep ) // it's going down
 			{
-				tempZ=m[i].height;
-				break;
+				tempZ=(height + m[i].height);
 			}
 		}                                                                                                                 
 	}
-	tempZ+=dynamicElevation(pos);
+	SI08 elevation=dynamicElevation(pos);
+	if ( elevation != illegal_z)
+		tempZ+=elevation;
 	if ( pos.z != tempZ )
 		return tempZ;
-	return 0;
+	return tempZ;
 }
 
 SI32 cMulti::getDeed()

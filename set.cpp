@@ -970,9 +970,17 @@ void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems )
 {
 	if( mapRegions->isValidCoord( x, y ) )
-		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
+	{
+		SI32 width=REGION_GRIDSIZE;
+		if ( nDistance > REGION_GRIDSIZE)
+			width=nDistance;
+		for( SI32 ix=x-width; ix<=x+width; ix+=REGION_GRIDSIZE ) 
+		{
+			SI32 height=REGION_GRIDSIZE;
+			if ( nDistance > REGION_GRIDSIZE)
+				height=nDistance;
 			if( ix>=0 ) {
-				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
+				for( SI32 iy=y-height; iy<=y+height; iy+=REGION_COLSIZE ) {
 					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
 						UI16	nowx = ix/REGION_GRIDSIZE,
 							nowy= iy/REGION_COLSIZE;
@@ -999,6 +1007,7 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 				}
 			}
 		}
+	}
 }
 
 /*!

@@ -2233,7 +2233,7 @@ void cChar::Delete()
 \author Luxor
 \brief Tells if a char sees an object for the first time
 */
-LOGICAL cChar::seeForFirstTime( cObject &obj )
+LOGICAL cChar::seeForFirstTime( cObject &obj , LOGICAL testCanSee)
 {
 	SERIAL objser = obj.getSerial32();
 
@@ -2246,7 +2246,7 @@ LOGICAL cChar::seeForFirstTime( cObject &obj )
 	//
 	// Check if we can see it
 	//
-	if ( !canSee( obj ) )
+	if ( testCanSee && !canSee( obj ) )
 		return false;
 
 	//
@@ -2270,7 +2270,7 @@ LOGICAL cChar::seeForFirstTime( cObject &obj )
 \author Luxor
 \brief Tells if a char sees an object for the last time
 */
-LOGICAL cChar::seeForLastTime( cObject &obj )
+LOGICAL cChar::seeForLastTime( cObject &obj, LOGICAL testCanSee )
 {
 	SERIAL objser = obj.getSerial32();
 
@@ -2283,7 +2283,7 @@ LOGICAL cChar::seeForLastTime( cObject &obj )
 	//
 	// Check if we can see it
 	//
-	if ( canSee( obj ) )
+	if (testCanSee && canSee( obj ) )
 		return false;
 
 	//

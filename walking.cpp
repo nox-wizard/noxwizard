@@ -315,18 +315,21 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
-		P_ITEM pi_multi=(P_ITEM)cHouses::findHouse( pc->getPosition() );
+		P_HOUSE house=cHouses::findHouse( pc->getPosition() );
+		P_ITEM pi_multi=NULL;
+		if ( house != NULL )
+			pi_multi=pointers::findItemBySerial (house->getSerial());
 
 		if((!ISVALIDPI(pi_multi))&&(pc->getMultiSerial32() != INVALID))
 		{
 			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			//xan : probably the plr has exited the boat walking!
 			//pc->multi1 = pc->multi2 = pc->multi3 = pc->multi4 = 0xFF;
-			pc->setMultiSerial32Only(-1);
 		}
 
 		if(ISVALIDPI(pi_multi))
 		{
+			z=house->getCurrentZPosition(pc);
 			if (pc->getMultiSerial32() < 0)
 			{
 				//xan : probably the plr has entered the boat walking!
@@ -1122,7 +1125,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	Location pcpos=pc->getPosition();
 
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pcpos, VISRANGE + 1, false );
+	si.fillItemsNearXYZ( pcpos, 2*VISRANGE, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
@@ -1144,15 +1147,17 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 
 		if( pi->IsHouse())
 		{
-			if (di<=BUILDRANGE && di>=VISRANGE)
+			if (di<2*VISRANGE  ) // && pc->seeForFirstTime( *pi , false))
 			{
 				senditem(ps->toInt(), pi);
 			}
+			else if ( di >= 2*VISRANGE )
+				pc->seeForLastTime(*pi, false);
 
 		}
-		else if ( pc->seeForFirstTime( *pi ) ) // Luxor
+		else if ( di<=VISRANGE  && pc->seeForFirstTime( *pi ) ) // Luxor
 			senditem( ps->toInt(), pi );
-		else
+		else 
 			pc->seeForLastTime( *pi );
 	}
 	return true;

@@ -116,16 +116,19 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
 				height = tile.height / 2;
 
-                	if ( pi->getPosition().z < (pos.z + MaxZstep) ) { // We cannot walk under it
+			if ( pi->getPosition().z < (pos.z + MaxZstep) ) 
+			{ // We cannot walk under it
 				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
-				if ( (pi->getPosition().z + height) <= (pos.z + 3) ) { // We can walk on it
-	                                if ( (pi->getPosition().z + height) > zRes )
+				if ( (pi->getPosition().z + height) <= (pos.z + 3) ) 
+				{ // We can walk on it
+					if ( (pi->getPosition().z + height) > zRes )
 						zRes = pi->getPosition().z + height;
-				} else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
+				} 
+				else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
 					return illegal_z;
-                	}
+			}
 		}
 	} // WALKFLAG_DYNAMIC
 

@@ -427,7 +427,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 			mapRegions->remove( pi );
 #endif
 			pi->setPosition( 0, 0, 0 );
-			pi->setContSerial( INVALID );
+			pi->setContSerial( INVALID, false );
 		}
 	}
 
@@ -1293,8 +1293,6 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 			P_ITEM multi = pointers::findItemBySerial( pc->getMultiSerial32() );
 			if (ISVALIDPI(multi))
 			{
-				multi=(P_ITEM)cHouses::findHouse( pi->getPosition() );
-				if (ISVALIDPI(multi))
 					//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(multi),7);
 					pi->SetMultiSerial(multi->getSerial32());
 			}

@@ -604,8 +604,8 @@ class cChar : public cObject
 		SERIAL_SLIST		sentObjects;
 	public:
 		LOGICAL			canSee( cObject &obj );	//!< can it see the object?
-		LOGICAL			seeForFirstTime( cObject &obj );	//!< does it see the object for the first time?
-		LOGICAL			seeForLastTime( cObject &obj ); //!< does it see the object for the first time?
+		LOGICAL			seeForFirstTime( cObject &obj, LOGICAL testCanSee=true );	//!< does it see the object for the first time?
+		LOGICAL			seeForLastTime( cObject &obj, LOGICAL testCanSee=true ); //!< does it see the object for the first time?
 		void			walk();			//!< execute walk code <Luxor>
 		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set?
 		void			follow( P_CHAR pc ); //!< follow pc

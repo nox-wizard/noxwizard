@@ -2398,8 +2398,9 @@ void InitMultis()
 		P_CHAR pc_i = (P_CHAR)(objs.getObject());
 		if(!ISVALIDPC(pc_i))
 			continue;
-
-		P_ITEM multi=(P_ITEM)cHouses::findHouse( pc_i->getPosition() );
+		
+		P_HOUSE house=cHouses::findHouse(pc_i->getPosition());
+		P_ITEM multi = pointers::findItemBySerial (house->getSerial());
 		if (ISVALIDPI(multi))
 		{
 			if (multi->type==117)
@@ -2423,7 +2424,8 @@ void InitMultis()
 		//Endymion modified from !pi->isInWorld() to pi->isInWorld()
 		if (pi->isInWorld() && (pi->getSerial32()!=INVALID))
 		{
-			P_ITEM multi=(P_ITEM)cHouses::findHouse( pi->getPosition() );
+			P_HOUSE house=cHouses::findHouse(pi->getPosition());
+			P_ITEM multi = pointers::findItemBySerial (house->getSerial());
 			if (ISVALIDPI(multi))
 				if (multi->getSerial32()!=pi->getSerial32())
 					//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(multi),7);
