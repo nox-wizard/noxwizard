@@ -29,6 +29,7 @@
 
 #include "basics.h"
 #include "items.h"
+#include "cmds.h"
 
 #ifndef TIMEOUT
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
