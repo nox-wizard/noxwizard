@@ -155,12 +155,12 @@ private:
 
 public:
 	LOGICAL			addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback );
-	void			delTempfx( SI32 num, LOGICAL executeExpireCode = true );
+	void			delTempfx( SI32 num, LOGICAL executeExpireCode = true, SERIAL funcidx = INVALID );
 	void			checkTempfx();
 	void			tempfxOn();
 	void			tempfxOff();
 	LOGICAL			hasTempfx();
-	tempfx::cTempfx*	getTempfx( SI32 num );
+	tempfx::cTempfx*	getTempfx( SI32 num, SERIAL funcidx = INVALID );
 	UI32			getScriptID();
 	void			setScriptID(UI32 sid);
 

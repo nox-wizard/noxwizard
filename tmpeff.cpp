@@ -1040,7 +1040,7 @@ bool cTempfx::isValid()
 	if ( m_nNum < 0 || m_nNum >= MAX_TEMPFX_INDEX )
 		return false;
 
-	if ( m_nNum == AMXCUSTOM && m_nAmxcback <= -2 )
+	if ( m_nNum == AMXCUSTOM && m_nAmxcback <= INVALID )
 		return false;
 
 	P_OBJECT src = objects.findObject(m_nSrc);
@@ -1063,7 +1063,7 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_nNum = INVALID;
 	m_nMode = INVALID;
 	m_nExpireTime = 0;
-	m_nAmxcback = -2;
+	m_nAmxcback = INVALID;
 	m_nMore1 = INVALID;
 	m_nMore2 = INVALID;
 	m_nMore3 = INVALID;

@@ -795,7 +795,7 @@ bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 mo
 \author Luxor
 \brief Deletes every tempfx of the specified number
 */
-void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
+void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode, SERIAL funcidx )
 {
 	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
 		return;
@@ -805,13 +805,13 @@ void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
 
 	TempfxVector::iterator it( tempfx->begin() );
 	for ( ; it != tempfx->end();  ) {
-		if ( (*it).getNum() != num ) {
+		if( ( it->getNum() != num ) || ( it->getAmxCallback() != funcidx ) ) {
 			it++;
 			continue;
 		}
 
 		if ( executeExpireCode )
-			(*it).executeExpireCode();
+			it->executeExpireCode();
 
 		it = tempfx->erase( it );
 	}
@@ -889,9 +889,10 @@ LOGICAL cObject::hasTempfx()
 }
 
 /*!
+\brief Get the tempfx from given num and funcidx
 \author Luxor
 */
-tempfx::cTempfx* cObject::getTempfx( SI32 num )
+tempfx::cTempfx* cObject::getTempfx( SI32 num, SERIAL funcidx )
 {
 	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
 		return NULL;
@@ -900,8 +901,8 @@ tempfx::cTempfx* cObject::getTempfx( SI32 num )
 		return NULL;
 
 	TempfxVector::iterator it( tempfx->begin() );
-	for ( ; it != tempfx->end(); it++ ) {
-		if ( (*it).getNum() == num )
+	for( ; it != tempfx->end(); it++ ) {
+		if( ( it->getNum() == num ) && ( it->getAmxCallback() == funcidx ) )
 			return &(*it);
 	}
 
