@@ -261,9 +261,9 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 
 	//first we get our x-y-coordinates
 	if( sgn_x == 0 && sgn_y == 0 && !sgn_z == 0 ) // should fix shooting through floor issues
-		{
-			collisions.push_back( cCoord( x, y, 0, map ) );
-		}
+	{
+		collisions.push_back( cCoord( x, y, 0, map ) );
+	}
 	else if( sgn_x == 0 ) // if we are on the same x-level, just push every x/y coordinate in y-direction from src to trg into the array
 		for( i = 0; i <= (sgn_y * m); ++i )
 		{
@@ -625,7 +625,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				data::collectStatics((*pit).x, (*pit).y, msi);
 				if( (map1.id != 2) && (map2.id != 2) ) 
 				{
-					if( ( map1.z >= zmin ) && ( map1.z <= zmax ) )
+					if( ( map1.z >= zmin ) && ( map1.z <= zmax ) && (abs(zmax-zmin) > 5))
 					{
 						//its just in our way
 						//Console::instance()->send( QString( "Map gescheitert\n" ) );
@@ -637,7 +637,8 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					//vice verse
 					//in this case, both dont cut our line, but the mapconnection between them
 					//should do
-					if( ( ( map1.z < map2.z ) && ( map1.z < zmin ) && ( map2.z > zmax+dz ) ) ||						// 1) lineofsight collides with a map "wall"
+					if( (abs(zmax-zmin) > 5) && (
+						( ( map1.z < map2.z ) && ( map1.z < zmin ) && ( map2.z > zmax+dz ) ) ||						// 1) lineofsight collides with a map "wall"
 						( ( map1.z > map2.z ) && ( map1.z > zmin ) && ( map2.z < zmax-dz ) ) ||
 						( ( ( map1.id >= 431  && map1.id <= 432  ) ||	// 3) lineofsight cuts a mountain
 						( map1.id >= 467  && map1.id <= 475  ) ||
@@ -647,7 +648,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 						( map1.id >= 1821 && map1.id <= 1824 ) ||
 						( map1.id >= 1851 && map1.id <= 1854 ) ||
 						( map1.id >= 1881 && map1.id <= 1884 ) ) &&
-						( posHigherThanMap ) && ( msi.size()==0 ) ) ) // mountains cut only if we are not beneath them
+						( posHigherThanMap ) && ( msi.size()==0 ) ) ) )// mountains cut only if we are not beneath them
 					{
 						//Console::instance()->send( QString( "map1:%1,map2:%2\n" ).arg( map1.z ).arg( map2.z ) );
 						blocked = true;
