@@ -34,6 +34,7 @@
 //<Luxor>
 //typedef long int cell;
 #include "amx.h"
+#include "../typedefs.h"
 //</Luxor>
 
 
