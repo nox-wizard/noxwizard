@@ -558,6 +558,11 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				break;
 			case 'A':
 				if	( !strcmp( "ALCHEMY", script1 ) ) 		pc->baseskill[ALCHEMY] = getRangedValue(script2);
+				else if ( !strcmp( "AMOUNT",  script1 ) )
+				{
+					if( ISVALIDPI( pi_n ) )
+						pi_n->amount = str2num( script2 );
+				}
 				//
 				// Old style user variables
 				//
