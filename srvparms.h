@@ -179,6 +179,7 @@ struct server_st
  double staminaonhorse; //!< Endymion, is the % of stamina loss when riding
  int disable_z_checking; //!< Endymion, if 1 the z cheching is disabled ( cool for worldbuilder, not for gameplay )
 
+ int feature;
 };
 
 namespace ServerScp {

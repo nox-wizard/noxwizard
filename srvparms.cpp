@@ -345,6 +345,7 @@ void loadserverdefaults(void)
 
 	server_data.persecute=1;//AntiChrist
 
+	server_data.feature=0; //Transparent mode: don't send packet 0xB9 
 	server_data.html=-1;//HTML
 
 	server_data.tamed_disappear=1; // Ripper
@@ -584,6 +585,7 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"PLAYERCANDELETEROLES"))	ServerScp::g_nPlayersCanDeleteRoles=str2num(script2);
 		else if(!strcmp(script1,"SHOVESTAMINALOSS"))		ServerScp::g_nShoveStmDamage=str2num(script2);
 		else if(!strcmp(script1,"STATCAP"))			server_data.statcap=str2num(script2);
+		else if(!strcmp(script1,"ENABLEFEATURE"))		server_data.feature=str2num(script2);
 		else if(!strcmp(script1,"POPUPHELP"))			ServerScp::g_nPopUpHelp=str2num(script2);
 		else if(!strcmp(script1,"SKILLADVANCEMODIFIER"))
 		{
@@ -1255,6 +1257,10 @@ void saveserverscript(void)
 	fprintf(file, "ARCHIVEPATH %s\n", server_data.archivePath.c_str() );
 	fprintf(file, "// 0= disable html, else put in the number of seconds between HTML generation \n");
 	fprintf(file, "HTML %i\n",server_data.html);
+	fprintf(file, "// Enables / Disable features for UO:T2A/UO:R/UO:3D Clients (VERY! experimental)\n");
+	fprintf(file, "// 0: Dont send packet, (default)\n");
+	fprintf(file, "// 1: T2A (chat button, popup help, ...) 2: LBR (plus T2A) animations \n");
+ 	fprintf(file, "ENABLEFEATURE %d\n", server_data.feature);
 	fprintf(file, "// Enables / Disable PopUp Help for UO:T2A/UO:R/UO:3D Clients \n");
  	fprintf(file, "POPUPHELP %i\n",ServerScp::g_nPopUpHelp);
 	fprintf(file, "// 1= ghosts can attack living players and drain mana,\n");

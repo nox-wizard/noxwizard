@@ -597,8 +597,8 @@ void cNetwork::GoodAuth(int s)
 {
 	UI32 j, tlen;
 
-	tlen=4+(5*60)+1+(startcount*63);
-	unsigned char login04a[6]="\xA9\x09\x24\x02";
+	tlen=4+(5*60)+1+(startcount*63) +4;
+	unsigned char login04a[5]={0xA9, 0x09, 0x24, 0x02};
 	login04a[1]=tlen>>8;
 	login04a[2]=tlen%256;
 
