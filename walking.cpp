@@ -1314,6 +1314,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		if( s!=INVALID )
 			WalkingHandleRainSnow(pc); // while rain and snow are disabled its a waste of CPU cycles
 
+		magic::checkGateCollision( pc ); // Luxor: gates :)
 		checkregion(pc);
 	}
 

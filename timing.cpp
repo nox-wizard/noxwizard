@@ -381,10 +381,10 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				{
 					case  51	:
 					case  52	:
-						if( TIMEOUT( pi->gatetime ) )
+						//if( TIMEOUT( pi->gatetime ) )
 							//for (int k=0;k<2;++k)	Sparhawk what's this???? Let's comment it out for now
 							//	pi->deleteItem(); // bugfix for items disappearing
-							pi->deleteItem();
+							//pi->deleteItem();
 						break;
 					case  61    :       
 					case  62	:

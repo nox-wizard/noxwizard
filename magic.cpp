@@ -92,67 +92,58 @@ void loadSpellsFromScript()
 }
 
 
-/*
-///////////////////////////////////////////////////////////////////
-// Function name	 : checkGateCollision
-// Description		 : checks gate collisions
-// Return type		 : bool
-// Author			 : Antichrist, edited by Xanathar
-// Argument 		 : P_CHAR pc -> the charachter colliding
-// Changes			 : none yet
-bool checkGateCollision(P_CHAR pc)
+/*!
+\author Luxor
+\brief Checks for gate collisions
+*/
+bool checkGateCollision( P_CHAR pc )
 {
-	VALIDATEPCR(pc, false);
+	VALIDATEPCR( pc, false );
 
-	extern cRegion *mapRegions;
-
-	if (pc->npc) return false;
-
-	Location charpos= pc->getPosition();
-
-	// Now check whether the PC (player character) has moved or simply turned
-	if((charpos.x == pc->prevX)&&(charpos.y == pc->prevY)&&(charpos.z == pc->prevZ)) return false;
-
-	P_ITEM pgate = NULL;
-	bool type51 = true;
-	pgate = getFirstItemOfTypeAtXY(charpos.x, charpos.y, 51);
-
-	if (!(ISVALIDPI(pgate))) {
-		pgate = getFirstItemOfTypeAtXY(charpos.x, charpos.y, 52);
-		type51 = false;
-	}
-
-	VALIDATEPIR(pgate, false); // no gate ?
-
-	// gate is at different z ?
-	if ( charpos != pgate->getPosition() )
+        if ( pc->npc )
 		return false;
 
-	SetWrapper set;
-	nxwset::fillOwnedNpcs(set, DEREF_P_CHAR(pc), false, true);
-	P_CHAR pnpc = NULL;
-	do {
-		pnpc = set.popChar();
-		if (ISVALIDPC(pnpc)) {
-			pnpc->MoveTo( pgate->morex, pgate->morey, pgate->morez );
-		}
-	} while (ISVALIDPC(pnpc));
+	P_ITEM pgate = NULL;
+
+        Location charpos = pc->getPosition();
+	
+	NxwItemWrapper si;
+	si.fillItemsNearXYZ( charpos, 1, false );
+        for ( si.rewind(); !si.isEmpty(); si++ ) {
+		pgate = si.getItem();
+		if ( !ISVALIDPI( pgate ) )
+			return false;
+		
+		if ( pgate->type != 51 )
+			pgate = NULL;
+	}
+
+        if ( !ISVALIDPI( pgate ) )
+		return false;
+
+	Location gatepos = pgate->getPosition();
+		
+	if ( charpos.x != gatepos.x || charpos.y != gatepos.y || UI32(charpos.z - gatepos.z) > 2 )
+		return false;
+
+        P_CHAR pnpc = NULL;
+        NxwCharWrapper sc;
+        sc.fillOwnedNpcs( pc, false, true );
+        for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
+		if ( !ISVALIDPC( (pnpc=sc.getChar()) ) )
+			continue;
+			
+		pnpc->MoveTo( pgate->morex, pgate->morey, pgate->morez );
+	}
 
 	pc->MoveTo( pgate->morex, pgate->morey, pgate->morez );
-
-	pc->prevX = charpos.x;
-	pc->prevY = charpos.y;
-	pc->prevZ = charpos.z;
-
-	NXWCLIENT cli = pc->getClient();
-	if (cli!=NULL) {
-		cli->sendSFX( 0x01, 0xFE );
-		pc->staticFX( 0x372A, 0x09, 0x06 );
-	}
+	pc->teleport();
+	pc->playSFX( 0x01FE );
+	pc->staticFX( 0x372A, 0x09, 0x06 );
 
 	return true;
 }
-*/
+
 
 ///////////////////////////////////////////////////////////////////
 // Function name	 : inline bool checkTownLimits
@@ -420,7 +411,6 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 
 		case SPELL_REACTIVEARMOUR:
 			pcfrom->staticFX(0x373A, 0, 10, &spfx);
-			//pcfrom->playSFX(0x);
 			break;
 		case SPELL_PROTECTION:
 		case SPELL_ARCHPROTECTION:
@@ -457,6 +447,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		//----------------------------------
 
 		case SPELL_GATE:
+			pcfrom->playSFX(0x20E);
 			break;
 		case SPELL_MARK:
 			pcfrom->playSFX(0x1FA);
@@ -1365,11 +1356,45 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			break;
 		case SPELL_MASSDISPEL:
 		case SPELL_TELEKINESYS:
-		case SPELL_GATE:
 		case SPELL_POLYMORPH:
 			src->sysmsg("Sorry, spell not yet implemented in this version :(");
 			break;
 
+		case SPELL_GATE: //Luxor
+			if ( ISVALIDPC( src ) && ISVALIDPI( pi ) ) {
+				if ( pi->type == ITYPE_RUNE ) {
+					if ((pi->morex < 10)&&(pi->morey < 10)) {
+						src->sysmsg("The rune is not marked yet.");
+					} else {
+						P_ITEM pgate = item::CreateFromScript( INVALID, "$item_a_blue_moongate" );
+						VALIDATEPI( pgate );
+						pgate->MoveTo( srcpos );
+						pgate->morex = pi->morex;
+						pgate->morey = pi->morey;
+						pgate->morez = pi->morez;
+						pgate->type = 51;
+						pgate->setDecay( true );
+						pgate->setDecayTime( uiCurrentTime + 30*MY_CLOCKS_PER_SEC );
+						pgate->Refresh();
+
+						P_ITEM pgate2 = item::CreateFromScript( INVALID, "$item_a_blue_moongate" );
+						VALIDATEPI( pgate2 );
+						pgate2->MoveTo( pi->morex, pi->morey, pi->morez );
+						pgate2->morex = srcpos.x;
+						pgate2->morey = srcpos.y;
+						pgate2->morez = srcpos.z;
+						pgate2->type = 51;
+						pgate2->setDecay( true );
+						pgate2->setDecayTime( uiCurrentTime + 30*MY_CLOCKS_PER_SEC );
+						pgate2->Refresh();
+
+						spellFX( spellnumber, src );
+					}
+				} else
+					src->sysmsg("That is not a rune!!");
+			}
+			break;
+			
 		case SPELL_MASSCURSE: {
 			
 			NxwCharWrapper sc;
