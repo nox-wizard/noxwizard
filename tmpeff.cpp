@@ -551,15 +551,12 @@ void cTempfx::start()
 			break;
 
 		case HALLUCINATE:
-			/*
+		{
 			if (dest->getClient() == NULL) return;
-			index = dest->getClient()->toInt();
-			dest->sysmsg(TRANSLATE("Did you see the size of that chicken ?"));
-			dest->
+			int index = dest->getClient()->toInt();
 			clientInfo[index]->lsd = true;
-			dest->hp = dest->st;
-			dest->mn = dest->in;
-			impowncreate(index, dest, 0);*/
+			impowncreate(index, dest, 0);
+		}
 			break;
 
 		case SPELL_PROTECTION:
@@ -745,8 +742,6 @@ void cTempfx::executeExpireCode()
 				dest->playSFX(0x242);
 			}
 			break;
-
-
 		case ALCHEMY_END:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);

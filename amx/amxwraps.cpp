@@ -2025,8 +2025,8 @@ NATIVE(_rcve_skillsRequest )
 \author Xanathar
 \since 0.53
 \param 1 type
-\param 2 source character
-\param 3 destination character
+\param 2 source object
+\param 3 destination object
 \param 4 more
 \param 5 duration
 \param 6 callback
@@ -2040,7 +2040,25 @@ NATIVE(_tempfx_activate)
 /*	tempeffect(params[2], params[3], params[1], (params[4])&0xFF, (params[4]>>8)&0xFF,
 		(params[4]>>16)&0xFF, params[5], params[6]);*/
 	//<Luxor>
-	tempfx::add(pointers::findCharBySerial(params[2]), pointers::findCharBySerial(params[3]), params[1], (params[4])&0xFF, (params[4]>>8)&0xFF,
+	P_OBJECT src = NULL, dest = NULL;
+	if ( isCharSerial(params[2]) )
+	{
+		src = (P_OBJECT)pointers::findCharBySerial(params[2]);
+	}
+	else if ( isItemSerial(params[2]) )
+	{
+		src = (P_OBJECT)pointers::findItemBySerial(params[2]);
+	}
+	if ( isCharSerial(params[3]) )
+	{
+		src = (P_OBJECT)pointers::findCharBySerial(params[3]);
+	}
+	else if ( isItemSerial(params[3]) )
+	{
+		src = (P_OBJECT)pointers::findItemBySerial(params[3]);
+	}
+
+	tempfx::add(src, dest, params[1], (params[4])&0xFF, (params[4]>>8)&0xFF,
 		(params[4]>>16)&0xFF, params[5], params[6]);
 	//</Luxor>
 	return 0;
@@ -2058,11 +2076,21 @@ NATIVE(_tempfx_activate)
 */
 NATIVE(_tempfx_delete)
 {
+	P_OBJECT src = NULL;
+	if ( isCharSerial(params[2]) )
+	{
+		src = (P_OBJECT)pointers::findCharBySerial(params[2]);
+		if ( ! ISVALIDPC(src) )
+			return 1;
+	}
+	else if ( isItemSerial(params[2]) )
+	{
+		src = (P_OBJECT)pointers::findItemBySerial(params[2]);
+		if ( ! ISVALIDPI(src) )
+			return 1;
+	}
 
-	P_CHAR pc = pointers::findCharBySerial( params[1] );
-	VALIDATEPCR( pc, INVALID )
-
-	pc->delTempfx( params[2], params[3], params[4] );
+	src->delTempfx( params[2], params[3], params[4] );
 	return 0;
 }
 
@@ -2077,11 +2105,22 @@ NATIVE(_tempfx_delete)
 */
 NATIVE(_tempfx_isActive)
 {
+	P_OBJECT src = NULL;
 
-	P_CHAR pc = pointers::findCharBySerial( params[1] );
-	VALIDATEPCR( pc, INVALID )
+	if ( isCharSerial(params[1]) )
+	{
+		src = (P_OBJECT)pointers::findCharBySerial(params[1]);
+		if ( ! ISVALIDPC(src) )
+			return 0;
+	}
+	else if ( isItemSerial(params[1]) )
+	{
+		src = (P_OBJECT)pointers::findItemBySerial(params[1]);
+		if ( ! ISVALIDPI(src) )
+			return 0;
+	}
 
-	return ( pc->getTempfx( params[2], params[3] ) != NULL )? 1 : 0;
+	return ( src->getTempfx( params[2], params[3] ) != NULL )? 1 : 0;
 
 }
 
