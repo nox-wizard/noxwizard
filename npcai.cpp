@@ -374,8 +374,16 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					// Stop talking npcs to each other
 					if( pj->IsInnocent() && !pj->npc )
 					{
-						sprintf( temp,TRANSLATE("Hello %s, Welcome to my shop, How may i help thee?."), pj->getCurrentNameC());
-						pc->talkAll( temp, 1);
+						std::map<SERIAL, TIMERVAL>::iterator iter = pc->speakCharMemory.find(pj->getSerial32());
+						if ( iter == pc->speakCharMemory.end() )
+						{
+							pc->speakCharMemory.insert(make_pair(pj->getSerial32(), uiCurrentTime));
+						}
+						else if ( iter->second < uiCurrentTime - 1800 * MY_CLOCKS_PER_SEC )
+						{
+							sprintf( temp,TRANSLATE("Hello %s, Welcome to my shop, How may i help thee?."), pj->getCurrentNameC());
+							pc->talkAll( temp, 1);
+						}
 					}
 				}
 			}
@@ -398,11 +406,19 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 			  	if ( !pj->IsInnocent() || pj->IsCriminal() || pj->IsMurderer())
 			  	{
-			  		if (pj->IsMurderer())
-			  			pc->talkAll(TRANSLATE("I will nay give life to a scoundrel like thee!"), 1);
-			  		else if (pj->IsCriminal())
-						pc->talkAll(TRANSLATE("I will nay give life to thee for thou art a criminal!"), 1);
+					std::map<SERIAL, TIMERVAL>::iterator iter = pc->speakCharMemory.find(pj->getSerial32());
+					if ( iter == pc->speakCharMemory.end() )
+					{
+						pc->speakCharMemory.insert(make_pair(pj->getSerial32(), uiCurrentTime));
+					}
+					else if ( iter->second < uiCurrentTime - 1800 * MY_CLOCKS_PER_SEC )
+					{
 
+			  			if (pj->IsMurderer())
+			  				pc->talkAll(TRANSLATE("I will nay give life to a scoundrel like thee!"), 1);
+			  			else if (pj->IsCriminal())
+							pc->talkAll(TRANSLATE("I will nay give life to thee for thou art a criminal!"), 1);
+					}
 			  		continue;
 			  	}
 
@@ -464,7 +480,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					{
 						if ( pc_target != 0 )
 						{
-                                        		curr_value = pc->distFrom( pj ) + pj->hp/3;
+							curr_value = pc->distFrom( pj ) + pj->hp/3;
 							if ( curr_value < att_value )
 								pc_target = pj;
 						}
@@ -530,8 +546,17 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if ( !ISVALIDPC( pj ) || !pj->dead )
 					continue;
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
-				if ( pj->IsInnocent() ) {
-					pc->talkAll(TRANSLATE("I despise all things good. I shall not give thee another chance!"), 1);
+				if ( pj->IsInnocent() ) 
+				{
+					std::map<SERIAL, TIMERVAL>::iterator iter = pc->speakCharMemory.find(pj->getSerial32());
+					if ( iter == pc->speakCharMemory.end() )
+					{
+						pc->speakCharMemory.insert(make_pair(pj->getSerial32(), uiCurrentTime));
+					}
+					else if ( iter->second < uiCurrentTime - 1800 * MY_CLOCKS_PER_SEC )
+					{
+						pc->talkAll(TRANSLATE("I despise all things good. I shall not give thee another chance!"), 1);
+					}
 					continue;
 				}
 				pc->playAction(0x10);
@@ -565,13 +590,20 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 				if ( pj->dead || !pj->IsInnocent() || pj->hidden > 0)
 					continue;
-
-				switch (RandomNum(0,2))
+				std::map<SERIAL, TIMERVAL>::iterator iter = pc->speakCharMemory.find(pj->getSerial32());
+				if ( iter == pc->speakCharMemory.end() )
 				{
-					case 0: pc->talkAll(TRANSLATE("Could thou spare a few coins?"), 1); break;
-					case 1: pc->talkAll(TRANSLATE("Hey buddy can you spare some gold?"), 1); break;
-					case 2: pc->talkAll(TRANSLATE("I have a family to feed, think of the children."), 1); break;
-					default: break;
+					pc->speakCharMemory.insert(make_pair(pj->getSerial32(), uiCurrentTime));
+				}
+				else if ( iter->second < uiCurrentTime - 60 * MY_CLOCKS_PER_SEC )
+				{
+					switch (RandomNum(0,2))
+					{
+						case 0: pc->talkAll(TRANSLATE("Could thou spare a few coins?"), 1); break;
+						case 1: pc->talkAll(TRANSLATE("Hey buddy can you spare some gold?"), 1); break;
+						case 2: pc->talkAll(TRANSLATE("I have a family to feed, think of the children."), 1); break;
+						default: break;
+					}
 				}
 			}
 		}
@@ -750,38 +782,46 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 						pj->npcaitype == NPCAI_HEALER ||
 						pj->npcaitype == NPCAI_DRAGON1 ||
 						pj->npcaitype == NPCAI_DRAGON2 || pj == pc) continue;
-
-				if (pj->hidden == UNHIDDEN) {
-					switch(RandomNum(0, 6))
+				std::map<SERIAL, TIMERVAL>::iterator iter = pc->speakCharMemory.find(pj->getSerial32());
+				if ( iter == pc->speakCharMemory.end() )
+				{
+					pc->speakCharMemory.insert(make_pair(pj->getSerial32(), uiCurrentTime));
+				}
+				else if ( iter->second < uiCurrentTime - 1800 * MY_CLOCKS_PER_SEC )
+				{
+					if (pj->hidden == UNHIDDEN) 
 					{
-						case 0:
-							NPC_CASTSPELL(magic::SPELL_CURSE, pj);
-							pc->talkAll(TRANSLATE("You are ridiculous"), 1);
-							break;
-						case 1:
-							NPC_CASTSPELL(magic::SPELL_FLAMESTRIKE, pj);
-							pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
-							break;
-						case 2:
-							NPC_CASTSPELL(magic::SPELL_PARALYZE, pj);
-							pc->talkAll(TRANSLATE("What are you doing? Come here and Die!"), 1);
-							break;
-						case 3:
-							NPC_CASTSPELL(magic::SPELL_LIGHTNING, pj);
-							pc->talkAll(TRANSLATE("Stupid Mortal I'll crush you as a fly"), 1);
-							break;
-						case 4:
-							NPC_CASTSPELL(magic::SPELL_LIGHTNING, pj);
-							pc->talkAll(TRANSLATE("Stupid Mortal I'll crush you as a fly"), 1);
-							break;
-						case 5:
-							NPC_CASTSPELL(magic::SPELL_EXPLOSION, pj);
-							pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
-							break;
-						case 6:
-							NPC_CASTSPELL(magic::SPELL_EXPLOSION, pj);
-							pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
-							break;
+						switch(RandomNum(0, 6))
+						{
+							case 0:
+								NPC_CASTSPELL(magic::SPELL_CURSE, pj);
+								pc->talkAll(TRANSLATE("You are ridiculous"), 1);
+								break;
+							case 1:
+								NPC_CASTSPELL(magic::SPELL_FLAMESTRIKE, pj);
+								pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
+								break;
+							case 2:
+								NPC_CASTSPELL(magic::SPELL_PARALYZE, pj);
+								pc->talkAll(TRANSLATE("What are you doing? Come here and Die!"), 1);
+								break;
+							case 3:
+								NPC_CASTSPELL(magic::SPELL_LIGHTNING, pj);
+								pc->talkAll(TRANSLATE("Stupid Mortal I'll crush you as a fly"), 1);
+								break;
+							case 4:
+								NPC_CASTSPELL(magic::SPELL_LIGHTNING, pj);
+								pc->talkAll(TRANSLATE("Stupid Mortal I'll crush you as a fly"), 1);
+								break;
+							case 5:
+								NPC_CASTSPELL(magic::SPELL_EXPLOSION, pj);
+								pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
+								break;
+							case 6:
+								NPC_CASTSPELL(magic::SPELL_EXPLOSION, pj);
+								pc->talkAll(TRANSLATE("Die unusefull mortal!"), 1);
+								break;
+						}
 					}
 				}
 				if (pc->hp < pc->getStrength()/2) {

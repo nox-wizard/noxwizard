@@ -368,7 +368,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 	oldmenu=INVALID;
 	
-	commandLevel=0;
 	// initializing amx
 	resetAmxEvents();
 }
@@ -4615,7 +4614,13 @@ void cChar::npc_heartbeat()
 
 	if( mounted )
 		return;
-
+// clean up memories when a char has been spoken to
+	std::map<SERIAL, TIMERVAL>::iterator iter = speakCharMemory.begin();
+	for ( ; iter !=  speakCharMemory.end();iter++)
+	{
+		if (iter->second < uiCurrentTime - 3600 * MY_CLOCKS_PER_SEC )
+			speakCharMemory.erase(iter);
+	}
 	if ( amxevents[EVENT_CHR_ONHEARTBEAT] )
 	{
 		g_bByPass = false;

@@ -1005,7 +1005,7 @@ public:
 		SI32			fy1; //NPC Wander Point 1 y
 		SI32			fy2; //NPC Wander Point 2 y
 		signed char		fz1; //NPC Wander Point 1 z
-
+		std::map <SERIAL, TIMERVAL> speakCharMemory;
 		UI08			hidden; // 0 = not hidden, 1 = hidden, 2 = invisible spell
 		TIMERVAL		invistimeout;
 		SI32			hunger;  // Level of hungerness, 6 = full, 0 = "empty"
@@ -1121,7 +1121,7 @@ public:
 		signed char 		prevZ;
 		LOGICAL			morphed;
 
-		UI08			commandLevel; 			// 0 = player, 1 = counselor, 2 = GM
+		//UI08			commandLevel; 			// 0 = player, 1 = counselor, 2 = GM
 
 		char			npc_type;		// currently only used for stabling, (type==1 -> stablemaster)
 							// can be used for other npc types too of course
