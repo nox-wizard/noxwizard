@@ -369,7 +369,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		break;
 	}
 
-	pc->setSkillDelay();
+	pc->setObjectDelay();
 
 	std::string script;
 	std::string amount;

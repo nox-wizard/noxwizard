@@ -5308,3 +5308,14 @@ bool cChar::canDoSkillAction()
 	return TIMEOUT( skilldelay );
 }
 
+void cChar::setObjectDelay( UI32 seconds )
+{
+	objectdelay = uiCurrentTime + seconds * MY_CLOCKS_PER_SEC; 
+}
+
+bool cChar::canDoObjectAction()
+{
+	return TIMEOUT( objectdelay );
+}
+
+

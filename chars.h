@@ -589,6 +589,11 @@ public:
 	void setSkillDelay( UI32 seconds = server_data.skilldelay );
 	bool canDoSkillAction();
 
+public:
+	TIMERVAL objectdelay;
+public: 
+	void setObjectDelay( UI32 seconds = server_data.objectdelay );
+	bool canDoObjectAction();
 		
 	/********************************/
 	/*     TO REMOVE/REPLACE        */
@@ -692,7 +697,6 @@ public:
 		UI08			region;
 		
 
-		TIMERVAL		objectdelay;
 		SI32			combathitmessage;
 		SI32			making; // skill number of skill using to make item, 0 if not making anything.
 		char			blocked;
