@@ -15,6 +15,9 @@
 #include "nxwcommn.h"
 #include "packets.h"
 
+#ifndef _MENU_H_
+#define _MENU_H_
+
 enum MENU_OPTIONS {
 	MOVEABLE = 0x01,
 	CLOSEABLE = 0x02,
@@ -131,3 +134,4 @@ class cMenus
 
 extern cMenus menus;
 
+#endif

@@ -16,11 +16,13 @@
 #include "packets.h"
 #include "menu.h"
 
+#ifndef _OLDMENU_H_
+#define _OLDMENU_H_
 
 /*!
 \brief an Old type menu
 */
-class cOldMenu 
+class cOldMenu : public cBasicMenu
 {
 
 protected:
@@ -88,3 +90,4 @@ public:
 };
 
 
+#endif
