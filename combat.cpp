@@ -264,7 +264,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	if(ISVALIDPI(pShield)) {
 		if ( chance(pc_def->skill[PARRYING]/20) ) { // chance to block with shield
 			pc_def->checkSkill(PARRYING, 0, 1000);
-			pc_def->emoteall( "*Parries the attack*", 1 );
+			//pc_def->emoteall( "*Parries the attack*", 1 );
 			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2; // damage absorbed by shield
 			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def; // damage absorbed by shield
 			if (chance(5)) pShield->hp--;
@@ -279,7 +279,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	x = pc_def->combatHitMessage(damage);
 	def = pc_def->calcDef(x);
 	if (!pc_def->npc)
-		damage -= RandomNum(def, def*3); //PC armor system
+		damage -= RandomNum(def, UI32(def*2.5)); //PC armor system
 	else
 		damage -= RandomNum(def/2, def); //NPC armor system
 	if (damage<0) damage=0;
@@ -742,7 +742,7 @@ int cChar::calcDef(SI32 x)
 			if (pi->def>0)
 			{
 				int hpPerc = int(float(pi->hp)/float(pi->maxhp)*100.0);
-				armordef = qmax( 1, int(pi->def/50.0*hpPerc) );
+				armordef = qmax( 1, int(pi->def/100.0*hpPerc) );
 
 				switch (pi->layer)
 				{
