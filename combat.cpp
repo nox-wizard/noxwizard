@@ -358,22 +358,6 @@ bool cChar::combatTimerOk()
 void cChar::doCombat()
 {
 	
-	if ( amxevents[EVENT_CHR_ONDOCOMBAT] ) {
-		g_bByPass = false;
-		amxevents[EVENT_CHR_ONDOCOMBAT]->Call( getSerial32() );
-		if( g_bByPass == true )
-			return;
-		if( dead )	// Killed as result of script action
-			return;
-	}
-	/*
-	runAmxEvent( EVENT_CHR_ONDOCOMBAT, getSerial32() );
-	if( g_bByPass == true )
-		return;
-	
-	if( dead )	// Killed as result of script action
-		return;
-	*/
 	bool los;
 	int dist, fightskill, x = 0, j = 0, arrowsquant = 0;
 
@@ -412,6 +396,23 @@ void cChar::doCombat()
 	if (pc_def->npc && pc_def->npcaitype==NPCAI_PLAYERVENDOR) return;
 
 	dist = distFrom(pc_def);
+
+	if ( amxevents[EVENT_CHR_ONDOCOMBAT] ) {
+		g_bByPass = false;
+		amxevents[EVENT_CHR_ONDOCOMBAT]->Call( getSerial32(), pc_def->getSerial32(), dist, ISVALIDPI(pWeapon)? pWeapon->getSerial32() : INVALID );
+		if( g_bByPass == true )
+			return;
+		if( dead )	// Killed as result of script action
+			return;
+	}
+	/*
+	runAmxEvent( EVENT_CHR_ONDOCOMBAT, getSerial32(), pc_def->getSerial32(), dist, ISVALIDPI(pWeapon)? pWeapon->getSerial32() : INVALID );
+	if( g_bByPass == true )
+		return;
+	
+	if( dead )	// Killed as result of script action
+		return;
+	*/
 
 
 	if (dist>15)
