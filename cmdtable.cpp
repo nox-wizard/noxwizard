@@ -1510,22 +1510,21 @@ void command_add( NXWCLIENT ps )
 		UI32 b;
 		if ( server_data.always_add_hex ) { 
 			a=hexnumber(1);
-			a=hexnumber(2);
+			b=hexnumber(2);
 		}
 		else {
-			b=strtonum(1);
+			a=strtonum(1);
 			b=strtonum(2);
 		}
 		clientInfo[s]->resetTarget();
-		if( a<0x40 )
-		{
-			P_TARGET trg = clientInfo[s]->newTarget( new cLocationTarget() );
-			ps->sysmsg( "Select location for item..." );
-			trg->buffer[0]=a;
-			trg->buffer[1]=b;
-			trg->code_callback = target_addTarget;
-			trg->send( ps );
-		}
+
+		P_TARGET trg = clientInfo[s]->newTarget( new cLocationTarget() );
+		ps->sysmsg( "Select location for item..." );
+		trg->buffer[0]=a;
+		trg->buffer[1]=b;
+		trg->code_callback = target_addTarget;
+		trg->send( ps );
+
 	}
 	else
 		ps->sysmsg( "Syntax error. Usage: /add <id1> <id2>" );
