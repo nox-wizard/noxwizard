@@ -25,6 +25,8 @@
 #define AMXLUMBERJACKING "__nxw_sk_lumber"
 #undef AMXTAILORING
 #define AMXTAILORING "__nxw_sk_tailoring"
+#undef AMXTANNERING
+#define AMXTANNERING "__nxw_sk_tannering"
 
 #include "debug.h"
 #include "srvparms.h"
@@ -86,6 +88,10 @@ void Skills::RemoveTraps(NXWSOCKET s)
 }
 
 
+AmxFunction* tailoring = NULL;
+AmxFunction* tannering = NULL;
+
+
 void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
 {
 
@@ -97,41 +103,40 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
 
     AMXEXECSV(s,AMXT_SKITARGS,TAILORING,AMX_BEFORE);
 
-//    short int amt=0; // unused variable
-//    short int amt1=0; // unused variable
-//    short int col1=pi->color1; //-Frazurbluu- added color retention for tailoring from cloth
-//    short int col2=pi->color2;
-
-    if( pi->magic!=4) // Ripper
+    if( pi->magic==4)
+		return;
+    
+	if( pi->IsCutLeather() || pi->IsCutCloth() )
     {
-        if (pi->IsBoltOfCloth())
+		if (CheckInPack(s,pi))
         {
-            pc->sysmsg(TRANSLATE("You cannot use that material for tailoring."));
-            return;
+			int amt=itemmake[s].has=pc->getAmount(pi->id());
+			if(amt<1)
+			{
+				pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
+				return;
+			}
+                
+			itemmake[s].Mat1id = pi->id();
+			itemmake[s].Mat1color = pi->color();
+            itemmake[s].newcolor1 = pi->color() >>8;
+            itemmake[s].newcolor2 = pi->color() %256;
+
+            if(	pi->IsCutLeather()  ) {
+				if( tannering == NULL )
+					tannering = new AmxFunction( AMXTANNERING );
+				tannering->Call( s, pi->getSerial32() );
+			}
+            else {
+				if( tailoring == NULL )
+					tailoring = new AmxFunction( AMXTAILORING );
+				tailoring->Call( s, pi->getSerial32() );
+			}
+
         }
-        else if ( pi->IsCloth() || pi->IsCutLeather() || pi->IsCutCloth() || pi->IsHide())
-        {
-            if (CheckInPack(s,pi))
-            {
-                int amt=itemmake[s].has=pc->getAmount(pi->id());
-                if(amt<1)
-                {
-                    pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
-                    return;
-                }
-                itemmake[s].Mat1id = pi->id();
-		itemmake[s].Mat1color = pi->color();
-                itemmake[s].newcolor1 = pi->color() >>8;
-                itemmake[s].newcolor2 = pi->color() %256;
-                if ( pi->IsCutLeather() || pi->IsHide() )
-					AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXTAILORING), s, pi->getSerial32()); //Luxor
-                else
-					Skills::MakeMenu(s,30,TAILORING);
-            }
-            return;
-        }
-        pc->sysmsg(TRANSLATE("You cannot use that material for tailoring."));
+        
     }
+	else pc->sysmsg(TRANSLATE("You cannot use that material for tailoring."));
 
     AMXEXECSV(s,AMXT_SKITARGS,TAILORING,AMX_AFTER);
 }
