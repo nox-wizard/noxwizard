@@ -117,7 +117,7 @@ void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowi
 	sc->rewind();
 }
 
-void addCharsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer )
+void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -125,7 +125,7 @@ void addCharsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffl
 		return;
 
 	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillCharsNearXYZ( x, y, distance, excludeOffline, onlyPlayer );
+	sc->fillNpcsNearXY( x, y, distance );
 	sc->rewind();
 }
 
@@ -584,6 +584,46 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool bExcludeOfflinePlayers , bool bOnlyPlayer )
 {
 	fillCharsNearXYZ( location.x, location.y, nDistance, bExcludeOfflinePlayers );
+}
+
+
+/*!
+\brief Fills a set with a list of npcs near location
+\author Endymion
+\param x the x location
+\param y the y location
+\param nDistance the distance requested
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
+{
+	if(!mapRegions->isValidCoord( x, y ))
+		return;
+
+	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
+		if( ix>=0 ) {
+			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
+				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
+
+					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+						continue;
+					
+					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
+					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
+						P_CHAR pc=pointers::findCharBySerial( *iter );
+						if( !ISVALIDPC( pc ) || !pc->npc )
+							continue;
+						if(  !pc->isStabled() && !pc->mounted ) {
+							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
+							if (iDist <= nDistance)
+								this->insertSerial(pc->getSerial32());
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 /*!

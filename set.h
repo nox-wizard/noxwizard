@@ -76,6 +76,7 @@ public:
 	void fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillCharsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillPartyFriend( P_CHAR pc, UI32 nDistance = VISRANGE, bool bExcludeThis = false );
+	void fillNpcsNearXY( UI16 x, UI16 y, int nDistance = VISRANGE );
 
 };
 
@@ -132,7 +133,7 @@ namespace amxSet {
 	void add( SERIAL iSet, SERIAL nVal );
 
 	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
- 	void addCharsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer );
+ 	void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
  	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
  	void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont );
  	void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer );
