@@ -74,6 +74,11 @@ cMulti::cMulti()
 	spacey1=0;
 	spacey2=0;
 	deed=INVALID;
+	lockedItems=0;
+	maxLockedItems=0;
+	securedItems=0;
+	maxSecuredItems=0;
+
 }
 
 SERIAL cMulti::getSerial()
@@ -353,6 +358,10 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 				{
 					deed=str2num(script2);
 				}
+				else if (!(strcmp(script1, "MAXLOCKED" )))
+					maxLockedItems=(short)str2num(script2);
+				else if (!(strcmp(script1, "MAXSECURED" )))
+					maxSecuredItems=(short)str2num(script2);
 				else if (!(strcmp(script1, "BOAT"))) 
 				{
 					boat=true;
@@ -907,6 +916,10 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy)
 cHouse::cHouse() : cMulti()
 {
 	publicHouse=false;
+	lockedItems=0;
+	maxLockedItems=0;
+	securedItems=0;
+	maxSecuredItems=0;
 }
 
 void cMulti::getCorners( SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 )
@@ -1267,7 +1280,7 @@ void cMulti::setDeed(SI32 newID)
 	this->deed=newID;
 }
 
-bool cHouse::increaseLockedItems(unsigned int amount)
+bool cMulti::increaseLockedItems(unsigned int amount)
 {
 	if ( this->lockedItems+amount <= this->maxLockedItems )
 		this->lockedItems+=amount;
@@ -1276,7 +1289,7 @@ bool cHouse::increaseLockedItems(unsigned int amount)
 	return true;
 }
 
-bool cHouse::decreaseLockedItems(unsigned int amount)
+bool cMulti::decreaseLockedItems(unsigned int amount)
 {
 	if ( this->lockedItems > 0 )
 		this->lockedItems-=amount;
@@ -1285,27 +1298,27 @@ bool cHouse::decreaseLockedItems(unsigned int amount)
 	return true;
 }
 
-void cHouse::setLockedItems(unsigned int amount)
+void cMulti::setLockedItems(unsigned int amount)
 {
 	lockedItems=(short)amount;
 }
 
-unsigned int cHouse::getLockedItems()
+unsigned int cMulti::getLockedItems()
 {
 	return lockedItems;
 }
 
-unsigned int cHouse::getMaxLockedItems()
+unsigned int cMulti::getMaxLockedItems()
 {
 	return maxLockedItems;
 }
 
-void cHouse::setMaxLockedItems(unsigned int amount)
+void cMulti::setMaxLockedItems(unsigned int amount)
 {
 	this->maxLockedItems=(short)amount;
 }
 
-bool cHouse::increaseSecuredItems(unsigned int amount)
+bool cMulti::increaseSecuredItems(unsigned int amount)
 {
 	if ( this->securedItems+amount <= this->maxSecuredItems )
 		this->securedItems+=amount;
@@ -1314,7 +1327,7 @@ bool cHouse::increaseSecuredItems(unsigned int amount)
 	return true;
 }
 
-bool cHouse::decreaseSecuredItems(unsigned int amount)
+bool cMulti::decreaseSecuredItems(unsigned int amount)
 {
 	if ( this->securedItems-amount > 0 )
 		this->securedItems-=amount;
@@ -1323,22 +1336,22 @@ bool cHouse::decreaseSecuredItems(unsigned int amount)
 	return true;
 }
 
-void cHouse::setSecuredItems(unsigned int amount)
+void cMulti::setSecuredItems(unsigned int amount)
 {
 	this->securedItems=(short)amount;
 }
 
-unsigned int cHouse::getSecuredItems()
+unsigned int cMulti::getSecuredItems()
 {
 	return this->securedItems;
 }
 
-unsigned int cHouse::getMaxSecuredItems()
+unsigned int cMulti::getMaxSecuredItems()
 {
 	return this->maxSecuredItems;
 }
 
-void cHouse::setMaxSecuredItems(unsigned int amount)
+void cMulti::setMaxSecuredItems(unsigned int amount)
 {
 	this->maxSecuredItems=(short)amount;
 }
@@ -1928,9 +1941,6 @@ void cHouse::load(cStringFile& input)
 			case 'm':
 				if ( l=="MAXLOCKED" )
 					this->maxLockedItems=(short)str2num(r);
-				else if ( l=="MAXSECURED" )
-					this->maxSecuredItems=(short)str2num(r);
-
 				break;
 			case 'N':
 			case 'n':
@@ -1959,6 +1969,8 @@ void cHouse::load(cStringFile& input)
 					spacey2 = (signed char)str2num(r);
 				else if ( l == "SECURED" )
 					securedItems = (short)str2num(r);
+				else if ( l=="MAXSECURED" )
+					this->maxSecuredItems=(short)str2num(r);
 				break;
 		}
 

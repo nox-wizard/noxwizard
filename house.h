@@ -34,6 +34,8 @@ protected:
 	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
 	SI32 char_x, char_y, char_z;
 	SI32 deed;
+	SI16 lockedItems, securedItems;
+	SI16 maxLockedItems, maxSecuredItems;
 
 public:
 	cMulti();
@@ -59,7 +61,18 @@ public:
 	static void makeKeys(cMulti* pMulti, P_CHAR pc);
 	static void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t );
 	static void cMulti::buildmulti( P_CHAR builder, P_ITEM deed);
-
+	bool increaseLockedItems(unsigned int amount=1);
+	bool decreaseLockedItems(unsigned int amount=1);
+	void setLockedItems(unsigned int amount);
+	unsigned int getLockedItems();
+	unsigned int getMaxLockedItems();
+	void setMaxLockedItems(unsigned int amount);
+	bool increaseSecuredItems(unsigned int amount=1);
+	bool decreaseSecuredItems(unsigned int amount=1);
+	void setSecuredItems(unsigned int amount);
+	unsigned int getSecuredItems();
+	unsigned int getMaxSecuredItems();
+	void setMaxSecuredItems(unsigned int amount);
 };
 
 extern std::map< SERIAL, P_HOUSE > houses;
@@ -71,8 +84,6 @@ private:
 	std::vector<SERIAL> friends;
 	std::vector<SERIAL> coowners;
 	std::vector<SERIAL> banned;
-	SI16 lockedItems, securedItems;
-	SI16 maxLockedItems, maxSecuredItems;
 protected:
 
 public:
@@ -112,18 +123,7 @@ public:
 	void transfer(SERIAL newOwner);
 	void save(ofstream  *output);
 	void load(cStringFile& input);
-	bool increaseLockedItems(unsigned int amount=1);
-	bool decreaseLockedItems(unsigned int amount=1);
-	void setLockedItems(unsigned int amount);
-	unsigned int getLockedItems();
-	unsigned int getMaxLockedItems();
-	void setMaxLockedItems(unsigned int amount);
-	bool increaseSecuredItems(unsigned int amount=1);
-	bool decreaseSecuredItems(unsigned int amount=1);
-	void setSecuredItems(unsigned int amount);
-	unsigned int getSecuredItems();
-	unsigned int getMaxSecuredItems();
-	void setMaxSecuredItems(unsigned int amount);
+
 };
 
 
