@@ -5916,7 +5916,7 @@ NATIVE ( _addGmPage )
 
 	amx_GetAddr(amx,params[2],&cstr);
 
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
 
     g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,100)] = '\0';
 
