@@ -1273,11 +1273,14 @@ NXWCLIENT cChar::getClient() const
 */
 NXWSOCKET cChar::getSocket() const
 {
-        if (npc) return INVALID;
+        if ( npc )
+		return INVALID;
 
 	NXWCLIENT cli = getClient();
-	if (cli != NULL)
-		return cli->toInt();
+	if (cli != NULL) {
+		if ( cli->toInt() >= 0 && cli->toInt() < now )
+			return cli->toInt();
+	}
 	
 	return INVALID;
 }
@@ -1291,7 +1294,7 @@ void cChar::attackStuff(P_CHAR pc)
 {
 	VALIDATEPC(pc);
 	NXWSOCKET s = getSocket();
-	if (s<0) return;
+	if (s==INVALID) return;
 	AttackStuff (s, pc);
 }
 
@@ -2659,38 +2662,43 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 */
 void cChar::possess(P_CHAR pc)
 {
-	if (npc || !IsOnline()) return;	
+	if ( !IsOnline() )
+		return;
 
 	VALIDATEPC(pc);
 	bool bSwitchBack = false;
 	
-	NXWSOCKET socket = getClient()->toInt();
-	if (socket < 0) return;
+	NXWSOCKET socket = getSocket();
+	if ( socket == INVALID )
+		return;
 	
-	if (possessorSerial != INVALID) { //We're in a possessed Char! Switch back to possessor
-		P_CHAR pcPossessor = pointers::findCharBySerial(possessorSerial);
-		if (ISVALIDPC(pcPossessor)) {
+	if ( possessorSerial != INVALID ) { //We're in a possessed Char! Switch back to possessor
+		P_CHAR pcPossessor = pointers::findCharBySerial( possessorSerial );
+		if ( ISVALIDPC( pcPossessor ) ) {
 			bSwitchBack = true;
 			pc = pcPossessor;
 			possessorSerial = INVALID;
-		} else return;
+		} else
+			return;
 	} else { //Normal checks to prevent possessing a not permitted char
-		if (pc->shopkeeper) {
-			sysmsg("You cannot use shopkeepers.");
+		if ( pc->shopkeeper ) {
+			sysmsg( "You cannot use shopkeepers." );
 			return;
 		}
-		if (!pc->npc) {
-			sysmsg("You can only possess NPCs.");
+		if ( !pc->npc ) {
+			sysmsg( "You can only possess NPCs." );
 			return;
 		}
-		if (pc->possessorSerial != INVALID && !pc->IsOnline()) {
-				sysmsg("This NPC is already possessed by someone!");
+		if ( pc->possessorSerial != INVALID ) {
+				sysmsg( "This NPC is already possessed by someone!" );
 				return;
 		}
 	}
 		
 	UI08 usTemp;
-	UI32 i, uiTemp;
+	SI08 sTemp;
+	SI32 iTemp;
+	UI08 i;
 	
 	//PRIV
 	usTemp = GetPriv();
@@ -2698,9 +2706,9 @@ void cChar::possess(P_CHAR pc)
 	pc->SetPriv(usTemp);
 	
 	//PRIV2
-	usTemp = GetPriv2();
+	sTemp = GetPriv2();
 	SetPriv2( pc->GetPriv2() );
-	pc->SetPriv(usTemp);
+	pc->SetPriv2(sTemp);
 	
 	//commandLevel
 	usTemp = commandLevel;
@@ -2708,39 +2716,39 @@ void cChar::possess(P_CHAR pc)
 	pc->commandLevel = usTemp;
 	
 	//PRIV3
-	for(i = 0; i < 7; i++) {
-		uiTemp = priv3[i];
-		priv3[i] = pc->priv3[i];
-		pc->priv3[i] = uiTemp;
+	for( i = 0; i < 7; i++ ) {
+		iTemp = priv3[ i ];
+		priv3[ i ] = pc->priv3[ i ];
+		pc->priv3[ i ] = iTemp;
 	}
-	
+
 	//Serials
-	if (bSwitchBack) {
+	if ( bSwitchBack ) {
 		possessorSerial = INVALID;
 		pc->possessedSerial = INVALID;
 	} else {
 		pc->possessorSerial = getSerial32();
-		possessedSerial = pc->getSerial32();		
+		possessedSerial = pc->getSerial32();
 	}
 	
 	//Network related stuff
-	(bSwitchBack) ? npc = 1 : pc->npc = 0;
-	currchar[socket] = pc->getSerial32();
-	pc->setClient(new cNxwClientObj(socket));
-	setClient(NULL);
+	( bSwitchBack ) ? npc = 1 : pc->npc = 0;
+	currchar[ socket ] = pc->getSerial32();
+	pc->setClient( new cNxwClientObj( socket ) );
+	setClient( NULL );
 	
 	//Set offline the old body, and online the new one
-	if (bSwitchBack) {
-		Accounts->SetOffline(pc->account);
-		Accounts->SetOnline(pc->account, pc);
+	if ( bSwitchBack ) {
+		Accounts->SetOffline( pc->account );
+		Accounts->SetOnline( pc->account, pc );
 
 	} else {
-		Accounts->SetOffline(account);
-		Accounts->SetOnline(account, pc);
+		Accounts->SetOffline( account );
+		Accounts->SetOnline( account, pc );
 	}
 	
 	//Let's go! :)
-	Network->enterchar(socket);
+	Network->enterchar( socket );
 }
 
 /*!
@@ -3442,12 +3450,12 @@ void cChar::MakeVulnerable()
 	priv &= ~CHRPRIV_INVUL;
 }
 
-char cChar::GetPriv2() const
+SI08 cChar::GetPriv2() const
 {
 	return priv2;
 }
 
-void cChar::SetPriv2(UI08 p)
+void cChar::SetPriv2(SI08 p)
 {
 	priv2 = p;
 }

@@ -366,7 +366,7 @@ class cChar : public cObject
 		void		resetPriv3();
 
 	public: // this will become private and i don't think 3 variables are needed to store privs...
-		char			priv2;	            /*!< 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
+		SI08			priv2;	            /*!< 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
 										10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
 						*/
 		SI32 			priv3[7];           //!< needed for Lord binarys meta-gm stuff
@@ -387,8 +387,8 @@ class cChar : public cObject
 		void 			MakeInvulnerable();
 		void 			MakeVulnerable();
 
-		char			GetPriv2() const;	//!< Temporary workaround until priv vars are settled
-		void 			SetPriv2(UI08 p);
+		SI08			GetPriv2() const;	//!< Temporary workaround until priv vars are settled
+		void 			SetPriv2(SI08 p);
 //@}
 
 //@{

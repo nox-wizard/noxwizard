@@ -393,8 +393,8 @@ bool cChar::combatTimerOk()
 */
 void cChar::undoCombat()
 {
-	if ( war ) //Luxor
-		toggleCombat();
+	/*if ( war ) //Luxor
+		toggleCombat();*/
 	timeout = 0;
 	attackerserial = INVALID;
 	targserial = INVALID;
@@ -435,6 +435,7 @@ void cChar::doCombat()
 	}
 	if ( !npc && !losFrom(pc_def) ) {
 		undoCombat();
+		return;
 	}
 
 	dist = distFrom(pc_def);
@@ -461,20 +462,19 @@ void cChar::doCombat()
 		return;
 	*/
 
-	if ( npc ) {
+	if ( npc )
 		npcs::npcMagicAttack( this, pc_def );
-	}
 
 	if ( dist > VISRANGE )
 	{
-		undoCombat();
-
 		P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
 		if ( ISVALIDPC(pc_att) )
 		{
 			pc_att->ResetAttackFirst();
 			pc_att->attackerserial=INVALID;
 		}
+		undoCombat();
+		return;
 	}
 	else if ( combatTimerOk() )
 	{

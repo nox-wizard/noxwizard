@@ -40,6 +40,12 @@ void npcMagicAttack(P_CHAR pc_att, P_CHAR pc_def)
 
 	pc_att->spatimer=currenttime+(pc_att->spadelay*MY_CLOCKS_PER_SEC); //LB bugkilling
 
+
+	if ( pc_def->summontimer && pc_att->baseskill[MAGERY] > 400 ) {
+		pc_att->facexy( pc_def->getPosition().x, pc_def->getPosition().y );
+		NPC_CASTSPELL( magic::SPELL_DISPEL, pc_def );
+		return;
+	}
 	// We're here.. let's spellcast ;)
 	if (pc_att->magicsphere!=0) npcCastSpell(pc_att, pc_def);
 	else
@@ -426,12 +432,6 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if ( !pc->losFrom( pj ) )
 					continue;	
 					
-                                if ( pc->baseskill[MAGERY] > 400 && pj->summontimer ) {
-                                        pc->facexy( pj->getPosition().x, pj->getPosition().y );
-					NPC_CASTSPELL( magic::SPELL_DISPEL, pj );
-					return;
-				}
-				
 				if ( pc_target != NULL ) {
                                         curr_value = pc->distFrom( pj ) + pj->hp/3;
 					if ( curr_value < att_value )
