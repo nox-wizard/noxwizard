@@ -559,14 +559,14 @@ namespace accounts
 	*/
 	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket )
 	{
-		if(sck<=INVALID) 
+		if(socket<=INVALID) 
 			return;
 
-		ACCOUNT_LIST::iterator iter_account( acctlist.find(acct) );
+		ACCOUNT_LIST::iterator iter_account( acctlist.find(acctnum) );
 
 		if(iter_account!=acctlist.end())
 		{
-			iter_account->second.onLogin( sck );
+			iter_account->second.onLogin( socket );
 		}
 	}
 
