@@ -14,6 +14,7 @@
 */
 
 #include "nxwcommn.h"
+#include "constants.h"
 #include "network.h"
 #include "sndpkg.h"
 #include "debug.h"
@@ -68,6 +69,17 @@ void cHouse::setSerial(SERIAL itemLink)
 SI32 cHouse::getKeycode()
 {
 	return keycode;
+}
+void cHouse::setKeycode(SI32 keycode)
+{
+	this->keycode=keycode;
+}
+void cHouse::setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 )
+{
+	this->spacex1=x1;
+	this->spacex2=x2;
+	this->spacey1=y1;
+	this->spacey2=y2;
 }
 
 /*!
@@ -176,12 +188,35 @@ void cHouse::createHouse(UI32 houseNumber)
 
 void cHouse::transfer(SERIAL newOwner)
 {
-	P_ITEM house = pointers::findItemBySerial(this->getSerial());
+	P_CHAR pc = pointers::findCharBySerial(newOwner);
+	P_CHAR oldOwner= pointers::findCharBySerial(owner);
 	this->friends.clear();
 	this->coowners.clear();
 	this->banned.clear();
-	cHouses::killkeys(house->getSerial32());
+	cHouses::killkeys(getSerial());
+	P_ITEM pKey=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
+	VALIDATEPI(pKey);
+	pKey->setCurrentName( "a house key" );
+	if(pc->getClient()!=NULL)
+	{
+		pKey->setCont( pc->getBackpack() );
+	}
+	else
+	{
+		pKey->MoveTo( pc->getPosition() );
+	}
+	pKey->Refresh();
+	pKey->more1= (getSerial()>>24)&0xFF;
+	pKey->more2= (getSerial()>>16)&0xFF;
+	pKey->more3= (getSerial()>>8)&0xFF;
+	pKey->more4= (getSerial())&0xFF;
+	pKey->moreb1=(getKeycode()>>24)&0xFF;
+	pKey->moreb2=(getKeycode()>>16)&0xFF;
+	pKey->moreb3=(getKeycode()>>8)&0xFF;
+	pKey->moreb4=(getKeycode())&0xFF;
+	pKey->type=7;
 
+	sysmessage(oldOwner->getSocket(), "You have transferred your house to %s.", pc->getCurrentNameC());
 }
 
 bool cHouse::isRealMulti()
@@ -566,6 +601,13 @@ void cHouse::getCharPos(int &x, int &y, int &z)
 	x=char_x;
 	y=char_y;
 	z=char_z;
+}
+
+void cHouse::setCharPos(int x, int y, int z)
+{
+	char_x=x;
+	char_y=y;
+	char_z=z;
 }
 
 void cHouse::setPublicState(bool state)
@@ -1083,6 +1125,98 @@ SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 	return 0;
 }
 
+SI32 cHouse::getHouseDeed()
+{
+	return this->housedeed;
+}
+
+void cHouse::setHouseDeed(SI32 newID)
+{
+	this->housedeed=newID;
+}
+
+bool cHouse::increaseLockedItems(unsigned int amount)
+{
+	if ( this->lockedItems+amount <= this->maxLockedItems )
+		this->lockedItems+=amount;
+	else
+		return false;
+	return true;
+}
+
+bool cHouse::decreaseLockedItems(unsigned int amount)
+{
+	if ( this->lockedItems > 0 )
+		this->lockedItems-=amount;
+	else
+		return false;
+	return true;
+}
+
+void cHouse::setLockedItems(unsigned int amount)
+{
+	lockedItems=amount;
+}
+
+unsigned int cHouse::getLockedItems()
+{
+	return lockedItems;
+}
+
+unsigned int cHouse::getMaxLockedItems()
+{
+	return maxLockedItems;
+}
+
+void cHouse::setMaxLockedItems(unsigned int amount)
+{
+	this->maxLockedItems=amount;
+}
+
+bool cHouse::increaseSecuredItems(unsigned int amount)
+{
+	if ( this->securedItems+amount <= this->maxSecuredItems )
+		this->securedItems+=amount;
+	else
+		return false;
+	return true;
+}
+
+bool cHouse::decreaseSecuredItems(unsigned int amount)
+{
+	if ( this->securedItems-amount > 0 )
+		this->securedItems-=amount;
+	else
+		return false;
+	return true;
+}
+
+void cHouse::setSecuredItems(unsigned int amount)
+{
+	this->securedItems=amount;
+}
+
+unsigned int cHouse::getSecuredItems()
+{
+	return this->securedItems;
+}
+
+unsigned int cHouse::getMaxSecuredItems()
+{
+	return this->maxSecuredItems;
+}
+
+void cHouse::setMaxSecuredItems(unsigned int amount)
+{
+	this->maxSecuredItems=amount;
+}
+
+void cHouse::changeLocks()
+{
+	this->keycode=RandomNum(1,1<<31);
+}
+
+
 cHouse *cHouses::findHouse(Location loc)
 {
 	return findHouse(loc.x, loc.y);
@@ -1141,10 +1275,10 @@ void cHouses::target_houseOwner( NXWCLIENT ps, P_TARGET t )
 	P_ITEM pSign=pointers::findItemBySerial( t->buffer[0] );
 	VALIDATEPI(pSign);
 
-	P_ITEM pHouse=pointers::findItemBySerial(calcserial(pSign->more1, pSign->more2, pSign->more3, pSign->more4));
-	VALIDATEPI(pHouse);
-
-
+	P_ITEM pIHouse=pointers::findItemBySerial(calcserial(pSign->more1, pSign->more2, pSign->more3, pSign->more4));
+	VALIDATEPI(pIHouse);
+	P_HOUSE pHouse=cHouses::findHouse(pIHouse->getSerial32());
+	
 	NXWSOCKET s = ps->toInt();
 	if(pc->getSerial32() == curr->getSerial32())
 	{
@@ -1154,44 +1288,9 @@ void cHouses::target_houseOwner( NXWCLIENT ps, P_TARGET t )
 
 	pSign->setOwnerSerial32(pc->getSerial32());
 
-	pHouse->setOwnerSerial32(pc->getSerial32());
+	pIHouse->setOwnerSerial32(pc->getSerial32());
 
-	cHouses::killkeys( pHouse->getSerial32() );
-
-
-	NXWCLIENT osc=pc->getClient();
-	NXWSOCKET os= (osc!=NULL)? osc->toInt() : INVALID;
-
-	P_ITEM pi3=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
-	VALIDATEPI(pi3);
-	pi3->setCurrentName( "a house key" );
-	if(os!=INVALID)
-	{
-		pi3->setCont( pc->getBackpack() );
-	}
-	else
-	{
-		pi3->MoveTo( pc->getPosition() );
-	}
-	pi3->Refresh();
-	pi3->more1= pHouse->getSerial().ser1;
-	pi3->more2= pHouse->getSerial().ser2;
-	pi3->more3= pHouse->getSerial().ser3;
-	pi3->more4= pHouse->getSerial().ser4;
-	pi3->type=7;
-
-	sysmessage(s, "You have transferred your house to %s.", pc->getCurrentNameC());
-	char temp[520];
-	sprintf(temp, "%s has transferred a house to %s.", curr->getCurrentNameC(), pc->getCurrentNameC());
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc, false );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET k=sw.getSocket();
-		if(k!=INVALID)
-			sysmessage(k, temp);
-	}
+	pHouse->transfer( pc->getSerial32() );
 }
 
 // buffer[0] house
@@ -1201,7 +1300,6 @@ void cHouses::target_houseEject( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPC(pc);
 	P_ITEM pi_h=MAKE_ITEM_REF(t->buffer[0]);
 	VALIDATEPI(pi_h);
-
 	NXWSOCKET s=ps->toInt();
 
 	Location pcpos= pc->getPosition();
@@ -1240,6 +1338,7 @@ void cHouses::target_houseBan( NXWCLIENT ps, P_TARGET t )
 			return;
 		if(!house->isBanned(pc))
 		{
+			house->addBan(pc);
 			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
 		}
 		else 
@@ -1273,6 +1372,7 @@ void cHouses::target_houseFriend( NXWCLIENT ps, P_TARGET t )
 		if(! house->isFriend(Friend))
 		{
 			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
+			house->addFriend(Friend);
 		}
 		else 
 		{
@@ -1316,7 +1416,7 @@ void cHouses::target_houseLockdown( NXWCLIENT ps, P_TARGET t )
     P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
     if(ISVALIDPI(pi))
     {
-
+		P_HOUSE house = cHouses::findHouse(pi->getSerial32());
         // time to lock it down!
 
         if( pi->isFieldSpellItem() )
@@ -1326,32 +1426,39 @@ void cHouses::target_houseLockdown( NXWCLIENT ps, P_TARGET t )
         }
         if (pi->type==12 || pi->type==13 || pi->type==203)
         {
-            sysmessage(s, TRANSLATE("You cant lockdown doors or signs!"));
+            sysmessage(s, TRANSLATE("You can't lockdown doors or signs!"));
             return;
         }
         if ( pi->IsAnvil() )
         {
-            sysmessage(s, TRANSLATE("You cant lockdown anvils!"));
+            sysmessage(s, TRANSLATE("You can't lockdown anvils!"));
             return;
         }
         if ( pi->IsForge() )
         {
-            sysmessage(s, TRANSLATE("You cant lockdown forges!"));
+            sysmessage(s, TRANSLATE("You can't lockdown forges!"));
             return;
         }
 
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi))
+        if( house != NULL && house->inHouse(pi) && ( (house->getOwner() == pc->getSerial32()) || house->isCoOwner(pc) ))
         {
-            if(pi->magic==4)
-            {
-                sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
-                return;
-            }
-            pi->magic = 4;  // LOCKED DOWN!
-            clientInfo[s]->dragging=false;
-            pi->setOwnerSerial32Only(pc->getSerial32());
-            pi->Refresh();
+			if ( house->getLockedItems() < house->getMaxLockedItems() )
+			{
+				if(pi->magic==4)
+				{
+					sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
+					return;
+				}
+				pi->magic = 4;  // LOCKED DOWN!
+				clientInfo[s]->dragging=false;
+				pi->setOwnerSerial32Only(pc->getSerial32());
+				pi->SetMultiSerial(house->getSerial());
+				pi->Refresh();
+			}			
+			else
+			{
+				sysmessage( s, TRANSLATE("You already have locked down too many items!" ));
+			}
             return;
         }
         else
@@ -1379,6 +1486,7 @@ void cHouses::target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
     if(ISVALIDPI(pi))
     {
         // time to lock it down!
+		P_HOUSE house = cHouses::findHouse(pi->getSerial32());
 
         if( pi->isFieldSpellItem() )
         {
@@ -1396,16 +1504,23 @@ void cHouses::target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
             return;
         }
 
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi) && pi->type==1)
+        if( house != NULL && house->inHouse(pi) && ( (house->getOwner() == pc->getSerial32()) || house->isCoOwner(pc) ) && pi->type==1)
         {
-            pi->magic = 4;  // LOCKED DOWN!
-            pi->secureIt = 1;
-            clientInfo[s]->dragging=false;
-            pi->setOwnerSerial32Only(pc->getSerial32());
-            pi->Refresh();
-            return;
-        }
+			if ( house->getSecuredItems() < house->getMaxSecuredItems() )
+			{
+				pi->magic = 4;  // LOCKED DOWN!
+				pi->secureIt = 1;
+				clientInfo[s]->dragging=false;
+				pi->setOwnerSerial32Only(pc->getSerial32());
+				pi->SetMultiSerial(house->getSerial());
+				pi->Refresh();
+				return;
+			}
+			else
+			{
+				sysmessage( s, TRANSLATE("You already have secured too many items!" ));
+			}
+		}
         if(pi->type!=1)
         {
             sysmessage(s,TRANSLATE("You can only secure chests!"));
@@ -1439,6 +1554,7 @@ void cHouses::target_houseRelease( NXWCLIENT ps, P_TARGET t )
     P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
     if(ISVALIDPI(pi))
     {
+		P_HOUSE house = cHouses::findHouse(pi->getSerial32());
         if(pi->getOwnerSerial32() != pc->getSerial32())
         {
             sysmessage(s,TRANSLATE("This is not your item!"));
@@ -1454,16 +1570,21 @@ void cHouses::target_houseRelease( NXWCLIENT ps, P_TARGET t )
             sysmessage(s, TRANSLATE("You cant release doors or signs!"));
             return;
         }
-        // time to lock it down!
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi) && pi->magic==4 || pi->type==1)
+        if( house != NULL 
+			&& pi->getMultiSerial32() == house->getSerial() 
+			&& (house->getOwner() == pc->getSerial32()) || house->isCoOwner(pc)
+		)
         {
+			if ( pi->magic == 4 )
+				house->decreaseLockedItems();
+			if ( pi->secureIt == 1 )
+				house->decreaseSecuredItems();
             pi->magic = 1;  // Default as stored by the client, perhaps we should keep a backup?
             pi->secureIt = 0;
             pi->Refresh();
             return;
         }
-        else if( !ISVALIDPI(multi) )
+        else if( house != NULL )
         {
             // not in a multi!
             sysmessage( s, TRANSLATE("That item is not in your house!" ));
@@ -1714,3 +1835,8 @@ void cHouses::addHouse(P_HOUSE newHouse )
 {
 	houses.insert(make_pair(newHouse->getSerial(), newHouse));
 }
+
+
+
+
+

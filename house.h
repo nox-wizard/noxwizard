@@ -39,6 +39,8 @@ private:
 	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
 	SI32 char_x, char_y, char_z;
 	SI32 housedeed;
+	SI16 lockedItems, securedItems;
+	SI16 maxLockedItems, maxSecuredItems;
 protected:
 
 public:
@@ -47,8 +49,11 @@ public:
 	SERIAL getSerial();
 	void setSerial(SERIAL itemLink);
 	SI32 cHouse::getKeycode();
+	void setKeycode(SI32 keycode);
 	void getCorners(SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 );
+	void setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 );
 	void getCharPos( int &x,  int &y,  int &z);
+	void setCharPos( int x,  int y,  int z);
 
 	int getUpperYRange();
 	int getLowerYRange();
@@ -87,6 +92,22 @@ public:
 	void transfer(SERIAL newOwner);
 	void save(ofstream  *output);
 	void load(cStringFile& input);
+	SI32 getHouseDeed();
+	void setHouseDeed(SI32 newID);
+	bool increaseLockedItems(unsigned int amount=1);
+	bool decreaseLockedItems(unsigned int amount=1);
+	void setLockedItems(unsigned int amount);
+	unsigned int getLockedItems();
+	unsigned int getMaxLockedItems();
+	void setMaxLockedItems(unsigned int amount);
+
+	bool increaseSecuredItems(unsigned int amount=1);
+	bool decreaseSecuredItems(unsigned int amount=1);
+	void setSecuredItems(unsigned int amount);
+	unsigned int getSecuredItems();
+	unsigned int getMaxSecuredItems();
+	void setMaxSecuredItems(unsigned int amount);
+	void changeLocks();
 };
 
 
@@ -121,7 +142,6 @@ public:
 	static void cHouses::addHouseItem(int housenumber, int itemnumber);
 	static UI32VECTOR  getHouseItems(int housenumber);
 	static void cHouses::addHouse(P_HOUSE newHouse );
-
 
 };
 
