@@ -914,9 +914,10 @@ void NxwCharWrapper::fillCoOwners( SERIAL house )
 	P_HOUSE pHouse = cHouses::findHouse(house);
 	if( pHouse != NULL )
 	{
-		std::vector<SERIAL>::iterator iter=pHouse->getHouseCoOwnerList().begin();
-		for( ; iter!=pHouse->getHouseCoOwnerList().end(); iter++ ) {
-			insertSerial( *iter );
+		std::vector<SERIAL> iter=pHouse->getHouseCoOwnerList();
+		for( int i=0; i < iter.size(); ++i ) 
+		{
+			insertSerial( iter[i] );
 		}
 	}
 }
@@ -932,9 +933,10 @@ void NxwCharWrapper::fillFriends( SERIAL house )
 	P_HOUSE pHouse = cHouses::findHouse(house);
 	if( pHouse != NULL )
 	{
-		std::vector<SERIAL>::iterator iter=pHouse->getHouseFriendsList().begin();
-		for( ; iter!=pHouse->getHouseFriendsList().end(); iter++ ) {
-			insertSerial( *iter );
+		std::vector<SERIAL> iter=pHouse->getHouseFriendsList();
+		for( int i=0; i < iter.size(); ++i ) 
+		{
+			insertSerial( iter[i] );
 		}
 	}
 }
@@ -950,9 +952,10 @@ void NxwCharWrapper::fillBanned( SERIAL house )
 	P_HOUSE pHouse = cHouses::findHouse(house);
 	if( pHouse != NULL )
 	{
-		std::vector<SERIAL>::iterator iter=pHouse->getHouseBannedList().begin();
-		for( ; iter!=pHouse->getHouseBannedList().end(); iter++ ) {
-			insertSerial( *iter );
+		std::vector<SERIAL> iter=pHouse->getHouseBannedList();
+		for( int i=0; i < iter.size(); ++i ) 
+		{
+			insertSerial( iter[i] );
 		}
 	}
 }

@@ -7434,9 +7434,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addAllRaces", _set_addAllRaces },
  { "set_getRaceStuff", _set_getRaceStuff },
  // House sets
- { "set_getCoOwners", _set_addHouseCoowners },
- { "set_getFriends", _set_addHouseFriends },
- { "set_getBanned", _set_addHouseBans },
+ { "set_addCoOwners", _set_addHouseCoowners },
+ { "set_addFriends", _set_addHouseFriends },
+ { "set_addBanned", _set_addHouseBans },
  { "set_getOwnedHouses", _set_getOwnedHouses },
  // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
