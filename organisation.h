@@ -16,6 +16,7 @@
 namespace Organisation
 {
 
+	public:
 	class 	Guild;
 	typedef SERIAL 	GUILDID;
 	typedef class Guild*	P_GUILD;
@@ -38,6 +39,7 @@ namespace Organisation
 			{
 				friend class Guild;
 
+				public:
 				typedef map< MEMBERID, P_MEMBER >	MEMBER_TBL		;
 				typedef MEMBER_TBL::iterator		MEMBER_TBL_IT		;
 				//
