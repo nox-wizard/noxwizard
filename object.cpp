@@ -587,13 +587,12 @@ void cObject::setCurrentName( string s )
 void cObject::setCurrentName( char *format, ... )
 {
 	char tmp[150];
-        va_list vargs;
-        va_start(vargs, format);
-        vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
-        va_end(vargs);
+    va_list vargs;
+    va_start(vargs, format);
+    vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
+    va_end(vargs);
 
-        tmp[sizeof(tmp)-1] = '\0';
-	current_name = string(tmp);
+	current_name=string( tmp );
 }
 
 /*!
