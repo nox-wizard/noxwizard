@@ -70,7 +70,9 @@ warnings/errors/issues.
 	#pragma warning(disable: 4786)	//Gets rid of BAD stl warnings
 	#pragma warning(disable: 4800)	//needed couse now we can see the real warning
 #endif
-
+#ifdef __BORLANDC__
+	#pragma warn -pck	//Gets rid of BAD stl warnings
+#endif
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
@@ -364,4 +366,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param = NULL );
 #endif // USE THREADS
 
 #endif //__COMMON_LIBS_H__
+
+
+
 

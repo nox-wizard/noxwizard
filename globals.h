@@ -212,8 +212,8 @@ extern unsigned char worlddarklevel;
 
 extern int goldamount;
 
-extern int defaultpriv1;
-extern int defaultpriv2;
+extern UI08 defaultpriv1;
+extern UI08 defaultpriv2;
 
 extern unsigned int teffectcount; // No temp effects to start with
 extern unsigned int nextfieldeffecttime;

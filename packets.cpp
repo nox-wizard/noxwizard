@@ -205,6 +205,7 @@ cPacket##NAME::cPacket##NAME() { \
 };
 
 #define SEND( NAME ) void cPacket##NAME::send( NXWCLIENT ps )
+#define SENDC( NAME ) void cPacket##NAME::send( P_CHAR pc )
 
 #define RECEIVE( NAME ) void cPacket##NAME::receive( NXWCLIENT ps )
 //@}
@@ -247,6 +248,11 @@ SEND( StatWindow ) {
 	this->sendBasic( ps );
 };
 
+SENDC( StatWindow ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
+
 void cPacketStatWindow::sendBasic( NXWCLIENT ps, UI08 flag  ) {
 	if( ps == NULL ) return; //after error here
 	this->flag = flag;
@@ -277,6 +283,10 @@ SEND( Speech ) {
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
 	Xsend( ps->toInt(), this->msg->c_str(), this->msg->length()+1 );
+};
+SENDC( Speech ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
 };
 
 CREATE( Delete, PKG_DELETE, 0x05 )
@@ -325,6 +335,10 @@ SEND( Buy ) {
 	for( vector<buyitem_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char *)&(*iter), sizeof( buyitem_st ) );
 }
+SENDC( Buy ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( Container, PKG_CONTAINER, 0x05 )
 SEND( Container ) {
@@ -335,6 +349,10 @@ SEND( Container ) {
 	for( vector<itemincont_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char *)&(*iter), sizeof( itemincont_st ) );
 }
+SENDC( Container ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( PersonalLight, PKG_PERSONAL_LIGHT, 0x06 )
 
@@ -388,6 +406,10 @@ SEND( Rename ) {
 	this->newname.resize(30);
 	Xsend( ps->toInt(), this->newname.c_str(), 30 );
 }
+SENDC( Rename) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( NewSubserver, PKG_NEW_SUBSERVER, 0x10 )
 
@@ -419,6 +441,10 @@ SEND( UnicodeSpeech ) {
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
 	Xsend( ps->toInt(), *msg, true );
+};
+SENDC( UnicodeSpeech) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
 };
 
 CREATE( Map, PKG_MAP, 0x0B )
@@ -453,6 +479,10 @@ SEND( CharProfile ) {
 	Xsend( ps->toInt(), *staticProfile, true );
 	Xsend( ps->toInt(), *profile, true );
 }
+SENDC( CharProfile ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( Features, PKG_FEATURES, 0x03 )
 
@@ -463,6 +493,10 @@ SEND( WebBrowser ) {
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->link.c_str(), link.size()+1 );
 }
+SENDC( WebBrowser ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( Menu, PKG_MENU, 0x15 )
 SEND( Menu ) {
@@ -517,6 +551,11 @@ SEND( Menu ) {
 	}
 
 }
+
+SENDC( Menu ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
 
 CREATE( MenuSelection, PKG_MENU_SELECTION, 0x13 )
 RECEIVE( MenuSelection ) {
@@ -592,6 +631,11 @@ SEND( IconListMenu ) {
 
 }
 
+SENDC( IconListMenu ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+};
+
 CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )
 
 cPacketTargetingCursor<cServerPacket>::cPacketTargetingCursor() {
@@ -656,6 +700,11 @@ void csPacketAddPartyMembers::send( NXWCLIENT ps )
 	}
 }
 
+void csPacketAddPartyMembers::send( P_CHAR pc ) {
+	VALIDATEPC( pc );
+	send( pc->getClient() );
+}
+
 clPacketRemovePartyMember::clPacketRemovePartyMember()
 {
 	subsubcommand = 2;
@@ -693,6 +742,11 @@ void csPacketRemovePartyMembers::send( NXWCLIENT ps )
 	}
 }
 
+void csPacketRemovePartyMembers::send( P_CHAR pc ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+}
+
 clPacketPartyTellMessage::clPacketPartyTellMessage()
 {
 	subsubcommand = 3;
@@ -727,6 +781,11 @@ void csPacketPartyTellMessage::send( NXWCLIENT ps )
 	Xsend( s, *message, true );
 }
 
+void csPacketPartyTellMessage::send( P_CHAR pc ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
+}
+
 csPacketPartyTellAllMessage::csPacketPartyTellAllMessage()
 {
 	subsubcommand = 4;
@@ -742,6 +801,11 @@ void csPacketPartyTellAllMessage::send( NXWCLIENT ps )
 	Xsend( s, getBeginValid(), headerSize );
 
 	Xsend( s, *message, true );
+}
+
+void csPacketPartyTellAllMessage::send( P_CHAR pc ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
 }
 
 
@@ -786,6 +850,11 @@ void csPacketPartyInvite::send( NXWCLIENT ps )
 
 	size=headerSize;
 	Xsend( ps->toInt(), getBeginValid(), headerSize );
+}
+
+void csPacketPartyInvite::send( P_CHAR pc ) {
+	VALIDATEPC( pc )
+	send( pc->getClient() );
 }
 
 clPacketPartyAccept::clPacketPartyAccept()

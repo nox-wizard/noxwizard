@@ -383,7 +383,7 @@ struct title_st
 */
 struct Location{
 	UI32			x, y;
-	signed char		z, dispz;		// dispz is used for the char location
+	SI32		z, dispz;		// dispz is used for the char location
 };
 
 

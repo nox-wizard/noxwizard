@@ -342,6 +342,7 @@ public:
 
 	cPacketStatWindow();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 	void sendBasic( NXWCLIENT ps, UI08 flag = 0x00 );
 	void sendStat( NXWCLIENT ps );
 	void sendExtended( NXWCLIENT ps );
@@ -421,6 +422,7 @@ public:
 
 	cPacketSpeech();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 } PACK_NEEDED;
 
@@ -806,6 +808,7 @@ public:
 	vector<buyitem_st> list;
 
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 	cPacketBuy();
 
 } PACK_NEEDED;
@@ -838,9 +841,10 @@ private:
 	UI16	n;			//!< number of itemincont_st
 public:
 	vector<itemincont_st> list;
-	
+
 	void send( NXWCLIENT ps );
-	cPacketContainer();	
+	void send (cChar *pc);
+	cPacketContainer();
 
 } PACK_NEEDED;
 
@@ -1270,6 +1274,7 @@ public:
 
 	cPacketRename();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 } PACK_NEEDED;
 
@@ -1455,6 +1460,7 @@ public:
 
 	cPacketUnicodeSpeech();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 } PACK_NEEDED;
 
@@ -1656,11 +1662,12 @@ public:
 
 	std::string title;	//!< title
 
-	wstring* staticProfile;	//!< static profile, cant be edited 
+	wstring* staticProfile;	//!< static profile, cant be edited
 	wstring* profile;	//!< profile, can be edited
 
 	cPacketCharProfile();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 };
 
@@ -1736,6 +1743,8 @@ public:
 
 	cPacketWebBrowser();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
+
 };
 
 //@}
@@ -1776,12 +1785,14 @@ public:
 
 
 //	for everty vector item
-	eUI16 len; //!< text lenth for every unicode string	
+	eUI16 len; //!< text lenth for every unicode string
 	std::vector< wstring >* texts; //!< text ( every string is NOT null terminated )
 //end
 
 	cPacketMenu();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
+
 };
 
 
@@ -1863,6 +1874,8 @@ public:
 
 	cPacketIconListMenu();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
+
 };
 
 //@}
@@ -1995,6 +2008,7 @@ private:
 public:
 	std::vector<P_PARTY_MEMBER>* members;
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 	csPacketAddPartyMembers();
 
@@ -2031,6 +2045,7 @@ public:
 
 	csPacketRemovePartyMembers();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 };
 
@@ -2067,6 +2082,7 @@ public:
 
 	csPacketPartyTellMessage();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
 
 };
 
@@ -2086,6 +2102,8 @@ public:
 
 	csPacketPartyTellAllMessage();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
+
 
 };
 
@@ -2135,6 +2153,8 @@ public:
 
 	csPacketPartyInvite();
 	void send( NXWCLIENT ps );
+	void send (cChar *pc);
+	
 };
 
 #define PARTY_SUBCMD_ACCEPT 8

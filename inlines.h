@@ -22,9 +22,15 @@
 
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
 // Macros & Templates by Xan :
-
+#if __BORLANDC__ > 0x550
+#define qmin(x,y) ((x)<(y)?(x):(y))
+#define qmax(x,y) ((x)>(y)?(x):(y))
+#define min(x,y) ((x)<(y)?(x):(y))
+#define max(x,y) ((x)>(y)?(x):(y))
+#else
 #define qmax(A,B) (((A)>(B)) ? (A) : (B))
 #define qmin(A,B) (((A)<(B)) ? (A) : (B))
+#endif
 
 // this delete is safe from multiple deletes of same ptr
 template<typename T> inline void safedelete(T*& p) { delete p; p = NULL; }

@@ -102,8 +102,8 @@ unsigned char worldcurlevel=0;
 unsigned char worldbrightlevel=0x00; //used to be 0x05
 unsigned char worlddarklevel=0x017; //used to be 0x1a - too dark
 int goldamount;
-int defaultpriv1;
-int defaultpriv2;
+UI08 defaultpriv1;
+UI08 defaultpriv2;
 unsigned int teffectcount=0; // No temp effects to start with
 unsigned int nextfieldeffecttime=0;
 unsigned int nextnpcaitime=0;
