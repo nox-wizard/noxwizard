@@ -34,7 +34,7 @@
 #include "basics.h"
 #include "range.h"
 #include "utils.h"
-
+#include "house.h"
 
 
 /*!
@@ -315,7 +315,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
-		P_ITEM pi_multi=findmulti( pc->getPosition() );
+		P_ITEM pi_multi=(P_ITEM)cHouses::findHouse( pc->getPosition() );
 
 		if((!ISVALIDPI(pi_multi))&&(pc->getMultiSerial32() != INVALID))
 		{

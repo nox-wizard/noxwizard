@@ -51,7 +51,7 @@
 #include "skills.h"
 #include "nox-wizard.h"
 #include "party.h"
-
+#include "house.h"
 
 
 typedef struct _PKGx08
@@ -1293,7 +1293,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 			P_ITEM multi = pointers::findItemBySerial( pc->getMultiSerial32() );
 			if (ISVALIDPI(multi))
 			{
-				multi=findmulti( pi->getPosition() );
+				multi=(P_ITEM)cHouses::findHouse( pi->getPosition() );
 				if (ISVALIDPI(multi))
 					//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(multi),7);
 					pi->SetMultiSerial(multi->getSerial32());

@@ -56,25 +56,32 @@ void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 //AoS/	Network->FlushBuffer(s);
 }
 
-SERIAL cHouse::getSerial()
+cMulti::cMulti()
 {
-	return houseserial;
+	owner=INVALID;
+	norealmulti=0;
+	keycode=0;
 }
 
-void cHouse::setSerial(SERIAL itemLink)
+SERIAL cMulti::getSerial()
 {
-	houseserial=itemLink;
+	return serial;
 }
 
-SI32 cHouse::getKeycode()
+void cMulti::setSerial(SERIAL itemLink)
+{
+	serial=itemLink;
+}
+
+SI32 cMulti::getKeycode()
 {
 	return keycode;
 }
-void cHouse::setKeycode(SI32 keycode)
+void cMulti::setKeycode(SI32 keycode)
 {
 	this->keycode=keycode;
 }
-void cHouse::setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 )
+void cMulti::setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 )
 {
 	this->spacex1=x1;
 	this->spacex2=x2;
@@ -92,21 +99,20 @@ using HOUSE ITEM, (this includes all doors!) and locked "LOCK"
 Space around the house with SPACEX/Y and CHAR offset CHARX/Y/Z
 */
 
-void cHouse::createHouse(UI32 houseNumber)
+void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 {
 	int hitem[100];//extra "house items" (up to 100)
 	char sect[512];                         //file reading
 	char name[512];
-	P_ITEM house = pointers::findItemBySerial(this->getSerial());
 	UI32 sx = 0, sy = 0, icount=0;
 	int loopexit=0;//the house/key items
 	hitem[0]=0;//avoid problems if there are no HOUSE_ITEMs by initializing the first one as 0
-	if (houseNumber)
+	if (multiNumber)
 	{
 		cScpIterator* iter = NULL;
 		char script1[1024];
 		char script2[1024];
-		sprintf(sect, "SECTION HOUSE %d", houseNumber);//and BTW, .find() adds SECTION on there for you....
+		sprintf(sect, "SECTION HOUSE %d", multiNumber);//and BTW, .find() adds SECTION on there for you....
 
 		iter = Scripts::House->getNewIterator(sect);
 		if (iter==NULL) return;
@@ -118,11 +124,11 @@ void cHouse::createHouse(UI32 houseNumber)
 			{
 				if (!(strcmp(script1,"ID")))
 				{
-					house->setId(hex2num(script2));
+					multiItem->setId(hex2num(script2));
 				}
 				else if (!(strcmp(script1,"HOUSE_ITEM")))
 				{
-					cHouses::addHouseItem(houseNumber, str2num(script2));
+					cHouses::addHouseItem(multiNumber, str2num(script2));
 				}
 				else if (!(strcmp(script1,"SPACEX1")))
 				{
@@ -154,32 +160,32 @@ void cHouse::createHouse(UI32 houseNumber)
 				}
 				else if( !(strcmp(script1, "ITEMSDECAY" )))
 				{
-					house->more4=str2num( script2 );
+					multiItem->more4=str2num( script2 );
 				}
 				else if (!(strcmp(script1, "HOUSE_DEED")))
 				{
-					housedeed=str2num(script2);
+					deed=str2num(script2);
 				}
 				else if (!(strcmp(script1, "BOAT"))) 
 				{
-					ErrOut("Bad house script # %i!\n",houseNumber);
+					ErrOut("Bad house script # %i!\n",multiNumber);
 					return;
 				}
 				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
-				else if (!(strcmp(script1, "NOKEY"))) this->publicHouse=1;
+				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
 				else if (!(strcmp(script1, "NAME")))
 				{
 					strcpy(name,script2);
-					house->setCurrentName(name);
+					multiItem->setCurrentName(name);
 				}
 			}
 		}
 		while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 		safedelete(iter);
 
-		if (!house->getId())
+		if (!multiItem->getId())
 		{
-			ErrOut("Bad house script # %i!\n",houseNumber);
+			ErrOut("Bad house script # %i!\n",multiNumber);
 			return;
 		}
 		
@@ -219,7 +225,7 @@ void cHouse::transfer(SERIAL newOwner)
 	sysmessage(oldOwner->getSocket(), "You have transferred your house to %s.", pc->getCurrentNameC());
 }
 
-bool cHouse::isRealMulti()
+bool cMulti::isRealMulti()
 {
 	return norealmulti==0;
 }
@@ -327,7 +333,7 @@ void cHouses::buildhouse( P_CHAR builder, P_ITEM housedeed)
 	VALIDATEPI(pHouse);
 	builder->fx1=housedeed->getSerial32();
 	newHouse->setSerial(pHouse->getSerial32());
-	newHouse->createHouse(housedeed->morex);
+	newHouse->createMulti(housedeed->morex, pHouse);
 	id = pHouse->getId();
 	if (ps->isDragging()) 
 	{
@@ -348,7 +354,6 @@ void cHouses::buildhouse( P_CHAR builder, P_ITEM housedeed)
 	targ->code_callback=cHouses::target_buildhouse;
 	targ->buffer[0]=newHouse->getSerial();
 	targ->send( ps );
-	ps->sysmsg( TRANSLATE("Where do you want to dig?"));
 }
 
 /*!
@@ -371,7 +376,6 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	SI32 k, icount=0;
 	signed char z;
 	int boat=0;//Boats
-	char sect[512];                         //file reading
 
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
@@ -474,102 +478,7 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	// bugfix LB ... was too early reseted
 
 	cHouses::makeKeys(pHouse, pc);
-	UI32VECTOR items=cHouses::getHouseItems(housenumber);
-	UI32VECTOR::iterator item=items.begin();
-	for (;item != items.end();item++)//Loop through the HOUSE_ITEMs
-	{
-		cScpIterator* iter = NULL;
-		char script1[1024];
-		char script2[1024];
-		sprintf(sect,"SECTION HOUSE ITEM %i",*item);
-		iter = Scripts::House->getNewIterator(sect);
-
-		if (iter!=NULL)
-		{
-			P_ITEM pi_l=NULL;
-			int loopexit=0;
-			do
-			{
-				iter->parseLine(script1, script2);
-				if (script1[0]!='}')
-				{
-					if (!(strcmp(script1,"ITEM")))
-					{
-						pi_l=item::CreateScriptItem(s,str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.
-
-						if(ISVALIDPI(pi_l))
-						{
-
-				
-						pi_l->magic=2;//Non-Movebale by default
-						pi_l->setDecay( false ); //since even things in houses decay, no-decay by default
-						pi_l->setNewbie( false );
-						pi_l->setDispellable( false );
-						pi_l->setPosition(x, y, z);
-						pi_l->setOwnerSerial32(pc->getSerial32());
-						// SPARHAWK 2001-01-28 Added House sign naming
-						if (pi_l->IsSign())
-							if ((id%256 >=0x70) && (id%256<=0x73))
-								pi_l->setCurrentName("%s's tent",pc->getCurrentNameC());
-							else if (id%256<=0x18)
-								pi_l->setCurrentName("%s's ship",pc->getCurrentNameC());
-							else
-								pi_l->setCurrentName("%s's house",pc->getCurrentNameC());
-
-						}
-					}
-					if (!(strcmp(script1,"DECAY")))
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setDecay();
-					}
-					if (!(strcmp(script1,"NODECAY")))
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setDecay( false );
-					}
-					if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
-					}
-					if (!(strcmp(script1,"MOVEABLE")))
-					{
-						if (ISVALIDPI(pi_l)) pi_l->magic=1;
-					}
-					if (!(strcmp(script1,"LOCK")))//lock it with the house key
-					{
-						if (ISVALIDPI(pi_l)) {
-							pi_l->more1=iHouse->getSerial().ser1;
-							pi_l->more2=iHouse->getSerial().ser2;
-							pi_l->more3=iHouse->getSerial().ser3;
-							pi_l->more4=iHouse->getSerial().ser4;
-						}
-					}
-					if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
-					}
-					if (!(strcmp(script1,"Y")))
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
-					}
-					if (!(strcmp(script1,"Z")))
-					{
-						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
-					}
-				}
-			}
-			while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
-
-			if (ISVALIDPI(pi_l)) 
-				if (pi_l->isInWorld()) 
-				{
-					mapRegions->add(pi_l);
-				}
-			safedelete(iter);
-		}
-	}
+	cHouses::makeHouseItems(housenumber, pc, iHouse);
 		
     NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -596,14 +505,14 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	}
 }
 
-void cHouse::getCharPos(int &x, int &y, int &z)
+void cMulti::getCharPos(int &x, int &y, int &z)
 {
 	x=char_x;
 	y=char_y;
 	z=char_z;
 }
 
-void cHouse::setCharPos(int x, int y, int z)
+void cMulti::setCharPos(int x, int y, int z)
 {
 	char_x=x;
 	char_y=y;
@@ -810,45 +719,42 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy)
 }
 
 
-cHouse::cHouse() 
+cHouse::cHouse() : cMulti()
 {
-	owner=INVALID;
-	norealmulti=0;
-	keycode=0;
 	publicHouse=false;
 }
 
-void cHouse::getCorners( SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 )
+void cMulti::getCorners( SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 )
 {
-	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
 	getMultiCorners( iHouse, x1, y1, x2, y2 );
 	return;
 }
 
-int cHouse::getUpperYRange()
+int cMulti::getUpperYRange()
 {
 	return spacey1;
 }
 
-int cHouse::getLowerYRange()
+int cMulti::getLowerYRange()
 {
 	return spacey2;
 }
-int cHouse::getLeftXRange()
+int cMulti::getLeftXRange()
 {
 	return spacex1;
 }
-int cHouse::getRightXRange()
+int cMulti::getRightXRange()
 {
 	return spacex2;
 }
 
-SERIAL cHouse::getOwner()
+SERIAL cMulti::getOwner()
 {
 	return owner;
 }
 
-void cHouse::setOwner(SERIAL newOwner)
+void cMulti::setOwner(SERIAL newOwner)
 {
 	owner=newOwner;
 	// TBD: delete all previous keys to the house
@@ -864,7 +770,7 @@ void cHouse::deedhouse(P_CHAR deedMaker)
 {
 	VALIDATEPC(deedMaker);
 	Location charpos= deedMaker->getPosition();
-	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
 
 
 	if(this->getOwner() == deedMaker->getSerial32() || deedMaker->IsGM()) // bugfix LB, was =
@@ -915,7 +821,7 @@ void cHouse::deedhouse(P_CHAR deedMaker)
 void cHouse::remove()
 {
 	NxwItemWrapper si;
-	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
 	si.fillItemsNearXYZ( iHouse->getPosition(), BUILDRANGE, false );
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
@@ -978,7 +884,7 @@ bool cHouse::inHouse(Location where)
 
 bool cHouse::inHouse(int x, int y)
 {
-	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
 	Location houseLoc=iHouse->getPosition();
 	if (( x >= houseLoc.x-this->spacex1 ) && ( x <= houseLoc.x+this->spacex2))
 		if (( y >= houseLoc.y-this->spacey1 ) && ( y <= houseLoc.y+this->spacey2))
@@ -1097,7 +1003,7 @@ bool cHouse::isPublicHouse()
 SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 {
 	SI32 tempZ=0;
-	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
 
 	Location pos=pc->getPosition();
 	multiVector m;
@@ -1127,14 +1033,14 @@ SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 	return 0;
 }
 
-SI32 cHouse::getHouseDeed()
+SI32 cMulti::getDeed()
 {
-	return this->housedeed;
+	return this->deed;
 }
 
-void cHouse::setHouseDeed(SI32 newID)
+void cMulti::setDeed(SI32 newID)
 {
-	this->housedeed=newID;
+	this->deed=newID;
 }
 
 bool cHouse::increaseLockedItems(unsigned int amount)
@@ -1213,7 +1119,7 @@ void cHouse::setMaxSecuredItems(unsigned int amount)
 	this->maxSecuredItems=amount;
 }
 
-void cHouse::changeLocks()
+void cMulti::changeLocks()
 {
 	this->keycode=RandomNum(1,1<<31);
 }
@@ -1673,7 +1579,7 @@ bool cHouses::load()
 
 void cHouse::save(ofstream *output)
 {
-	*output << "SECTION HOUSE " << houseserial << endl;
+	*output << "SECTION HOUSE " << serial << endl;
 	*output << "{" << endl;
 	*output << "	OWNER " << owner<< endl;
 	*output << "	KEYCODE " << keycode<< endl;
@@ -1685,7 +1591,11 @@ void cHouse::save(ofstream *output)
 	*output << "	SPACEX2 " << (int) spacex2 << endl;
 	*output << "	SPACEY1 " << (int) spacey1 << endl;
 	*output << "	SPACEY2 " << (int) spacey2 << endl;
-	*output << "	HOUSEDEED " << housedeed << endl;
+	*output << "	HOUSEDEED " << deed << endl;
+	*output << "	LOCKED " << this->lockedItems << endl;
+	*output << "	MAXLOCKED " << this->maxLockedItems << endl;
+	*output << "	SECURED " << this->securedItems << endl;
+	*output << "	MAXSECURED " << this->maxSecuredItems << endl;
 	if ( publicHouse) *output << "	PUBLIC" << endl;
 	if ( norealmulti) *output << "	NOREALMULTI" << endl;
 	std::vector<SERIAL>::iterator liststart (friends.begin()), listend(friends.end());
@@ -1763,13 +1673,26 @@ void cHouse::load(cStringFile& input)
 			case 'h':
 				if ( l=="HOUSEDEED" )
 				{
-					housedeed=str2num(r);
+					deed=str2num(r);
 				}
 				break;
 			case 'K':
 			case 'k':
 				if ( l=="KEYCODE" )
 					keycode=str2num(r);
+				break;
+			case 'L':
+			case 'l':
+				if ( l=="LOCKED" )
+					lockedItems=str2num(r);
+				break;
+			case 'M':
+			case 'm':
+				if ( l=="MAXLOCKED" )
+					this->maxLockedItems=str2num(r);
+				else if ( l=="MAXSECURED" )
+					this->maxSecuredItems=str2num(r);
+
 				break;
 			case 'N':
 			case 'n':
@@ -1796,6 +1719,8 @@ void cHouse::load(cStringFile& input)
 					spacey1 = str2num(r);
 				else if ( l == "SPACEY2" )
 					spacey2 = str2num(r);
+				else if ( l == "SECURED" )
+					securedItems = str2num(r);
 				break;
 		}
 
@@ -1839,6 +1764,111 @@ void cHouses::addHouse(P_HOUSE newHouse )
 }
 
 
+void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
+{
+	char sect[512];                         //file reading
 
+	UI32VECTOR items=cHouses::getHouseItems(housenumber);
+	UI32VECTOR::iterator item=items.begin();
+	UI32 x, y;
+	SI32 icount=0;
+	signed char z;
+	x=multi->getPosition("x");
+	y=multi->getPosition("y");
+	z=multi->getPosition("z");
+	for (;item != items.end();item++)//Loop through the HOUSE_ITEMs
+	{
+		cScpIterator* iter = NULL;
+		char script1[1024];
+		char script2[1024];
+		sprintf(sect,"SECTION HOUSE ITEM %i",*item);
+		iter = Scripts::House->getNewIterator(sect);
+
+		if (iter!=NULL)
+		{
+			P_ITEM pi_l=NULL;
+			int loopexit=0;
+			do
+			{
+				iter->parseLine(script1, script2);
+				if (script1[0]!='}')
+				{
+					if (!(strcmp(script1,"ITEM")))
+					{
+						pi_l=item::CreateScriptItem(owner->getSocket(),str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.
+
+						if(ISVALIDPI(pi_l))
+						{
+							pi_l->magic=2;//Non-Movebale by default
+							pi_l->setDecay( false ); //since even things in houses decay, no-decay by default
+							pi_l->setNewbie( false );
+							pi_l->setDispellable( false );
+							pi_l->setPosition(x, y, z);
+							pi_l->setOwnerSerial32(owner->getSerial32());
+							// SPARHAWK 2001-01-28 Added House sign naming
+							if (pi_l->IsSign())
+							{
+								if ((pi_l->getId()%256 >=0x70) && (pi_l->getId()%256<=0x73))
+									pi_l->setCurrentName("%s's tent",owner->getCurrentNameC());
+								else if (pi_l->getId()%256<=0x18)
+									pi_l->setCurrentName("%s's ship",owner->getCurrentNameC());
+								else
+									pi_l->setCurrentName("%s's house",owner->getCurrentNameC());
+							}
+						}
+					}
+					if (!(strcmp(script1,"DECAY")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setDecay();
+					}
+					if (!(strcmp(script1,"NODECAY")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setDecay( false );
+					}
+					if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setContSerial((owner->getBackpack())->getSerial32());
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
+					}
+					if (!(strcmp(script1,"MOVEABLE")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->magic=1;
+					}
+					if (!(strcmp(script1,"LOCK")))//lock it with the house key
+					{
+						if (ISVALIDPI(pi_l)) {
+							pi_l->more1=multi->getSerial().ser1;
+							pi_l->more2=multi->getSerial().ser2;
+							pi_l->more3=multi->getSerial().ser3;
+							pi_l->more4=multi->getSerial().ser4;
+						}
+					}
+					if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
+					}
+					if (!(strcmp(script1,"Y")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
+					}
+					if (!(strcmp(script1,"Z")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
+					}
+				}
+			}
+			while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
+
+			if (ISVALIDPI(pi_l)) 
+				if (pi_l->isInWorld()) 
+				{
+					mapRegions->add(pi_l);
+				}
+			safedelete(iter);
+		}
+	}
+}
 
 

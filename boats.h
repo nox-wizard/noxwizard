@@ -15,7 +15,8 @@
 
 #include "nxwcommn.h"
 #include "data.h"
-
+#include "target.h"
+#include "house.h"
 /*!
 \file
 \author Elcabesa
@@ -46,9 +47,9 @@ extern char cShipItems[4][6];
 
 //bool check_boat_position(NXWSOCKET  s,P_ITEM pBoat);
 
-struct boat_db
+
+class cBoat : public cMulti
 {
-	SERIAL serial;
 	SERIAL tiller_serial;
 	SERIAL l_plank_serial;
 	SERIAL r_plank_serial;
@@ -58,18 +59,6 @@ struct boat_db
 	P_ITEM p_l_plank;
 	P_ITEM p_r_plank;
 	P_ITEM p_container;
-
-};
-
-
-P_ITEM findmulti(Location where);
-bool inmulti(Location where,P_ITEM pi);
-void insert_boat(P_ITEM pi);
-boat_db* search_boat(SI32 ser);
-P_ITEM search_boat_by_plank(P_ITEM pl);
-
-class cBoat
-{
 	protected:
 		LOGICAL boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2);
 		LOGICAL collision(P_ITEM pi, Location where,int dir);
@@ -93,9 +82,19 @@ class cBoat
 		LOGICAL Build(NXWSOCKET s, P_ITEM pBoat, char);
 		void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
 		void Turn(P_ITEM, int);
+		void remove();
+		static void buildShip( P_CHAR builder, P_ITEM shipdeed);
+		static void target_buildShip( NXWCLIENT ps, P_TARGET t);
+		static P_ITEM findmulti(Location where);
+		static bool inmulti(Location where,P_ITEM pi);
+		static void cBoat::insert_boat(P_ITEM pi, cBoat* boat);
+		static cBoat* search_boat(SI32 ser);
+		static P_ITEM search_boat_by_plank(P_ITEM pl);
+
 };
 
-typedef std::map<int,boat_db> BOATS;
+typedef cBoat* P_BOAT;
+typedef std::map<int,P_BOAT> BOATS;
 extern BOATS	s_boat;
 
 extern cBoat* Boats;

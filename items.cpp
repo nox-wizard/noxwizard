@@ -25,6 +25,7 @@
 #include "inlines.h"
 #include "basics.h"
 #include "utils.h"
+#include "house.h"
 
 /*!
 \author Duke
@@ -277,6 +278,8 @@ cItem::~cItem()
 */
 void cItem::setContSerial(SI32 serial, LOGICAL old, LOGICAL update )
 {
+	if ( serial == INVALID )
+		return;
 	if( old ) {
 		oldcontserial.serial32= serial;
 	} else { //Luxor bug fix
@@ -390,7 +393,7 @@ LOGICAL cItem::doDecay()
 		{
 			if ( getMultiSerial32() == INVALID )
 			{
-				P_ITEM pi_multi = findmulti(getPosition());
+				P_ITEM pi_multi = (P_ITEM)cHouses::findHouse(getPosition());
 				if ( ISVALIDPI(pi_multi) )
 				{
 					if ( pi_multi->more4 == 0 )

@@ -18,6 +18,8 @@
 #include "classes.h"
 #include "range.h"
 #include "inlines.h"
+#include "scripts.h"
+#include "house.h"
 
 BOATS	s_boat;
 
@@ -682,7 +684,7 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 	{
 		return false;
 	}
-	boat_db* boat=search_boat(pBoat->getSerial32());
+	P_BOAT boat=search_boat(pBoat->getSerial32());
 	if(boat==NULL)
 		return  false;
 
@@ -1088,7 +1090,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pc_cs->MoveTo(boatpos);
 	//setserial(DEREF_P_CHAR(pc_cs),DEREF_P_ITEM(pBoat),8);
 	pc_cs->setMultiSerial( pBoat->getSerial32() );
-	insert_boat(pBoat); // insert the boat in the boat_database
+	insert_boat(pBoat, this); // insert the boat in the boat_database
 	return true;
 }
 
@@ -1100,18 +1102,18 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 {
 	int x= where.x, y= where.y;
-	std::map<int,boat_db>::iterator iter_boat;
+	std::map<int,P_BOAT>::iterator iter_boat;
 	for(iter_boat=s_boat.begin();iter_boat!=s_boat.end();iter_boat++)
 	{
-		boat_db coll=iter_boat->second;
-		if(coll.serial != pi->getSerial32())
+		P_BOAT coll=iter_boat->second;
+		if(coll->serial != pi->getSerial32())
 		{
-			int xx=abs(x - (int)coll.p_serial->getPosition("x"));
-			int yy=abs(y - (int)coll.p_serial->getPosition("y"));
+			int xx=abs(x - (int)coll->p_serial->getPosition("x"));
+			int yy=abs(y - (int)coll->p_serial->getPosition("y"));
 			double dist=hypot(xx, yy);
 			if(dist<10)
 			{
-				if(boat_collision(pi,x,y,dir,coll.p_serial)==true)
+				if(boat_collision(pi,x,y,dir,coll->p_serial)==true)
 
 				return true;
 
@@ -1219,8 +1221,8 @@ P_ITEM cBoat::GetBoat(Location pos)
 	BOATS::iterator iter( s_boat.begin() ), end( s_boat.end() );
 	for( ; iter!=end; iter++) {
 
-		boat_db boat=iter->second;
-		P_ITEM pBoat=boat.p_serial;
+		cBoat* boat=iter->second;
+		P_ITEM pBoat=pointers::findItemBySerial (boat->serial);
 		if(!ISVALIDPI(pBoat))
 			continue;
 		if( dist( pos, pBoat->getPosition() ) < 10.0 )
@@ -1266,7 +1268,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	int serial;
 
 	if (pBoat==NULL) return;
-	boat_db* boat=search_boat(pBoat->getSerial32());
+	cBoat* boat=search_boat(pBoat->getSerial32());
 
 	if(boat==NULL)
 		return;
@@ -1424,7 +1426,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 }
 
 
-cBoat::cBoat()//Consturctor
+cBoat::cBoat() : cMulti () //Consturctor
 {
 	return;
 }
@@ -1434,6 +1436,47 @@ cBoat::~cBoat()//Destructor
 }
 
 
+void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
+{
+	NXWCLIENT ps = builder->getClient();
+	SI16 id = INVALID;
+	P_BOAT newBoat = new cBoat();
+	P_TARGET targ = NULL;
+	P_ITEM piShip = item::CreateFromScript( "$item_hardcoded" );
+	VALIDATEPI(piShip);
+	builder->fx1=shipdeed->getSerial32();
+	newBoat->createMulti(shipdeed->morex, piShip);
+	id = piShip->getId();
+	newBoat->Build(builder->getSocket(), piShip, id%256);
+	if (ps->isDragging()) 
+	{
+		ps->resetDragging();
+		// UpdateStatusWindow(builder->getSocket(),pi);
+	}
+
+	piShip->setDecay( false );
+	piShip->setNewbie( false );
+	piShip->setDispellable( false );
+	piShip->setOwnerSerial32(builder->getSerial32());
+	piShip->setPosition (0,0,0);
+
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for placing."));
+	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
+	targ->code_callback=cBoat::target_buildShip;
+	targ->buffer[0]=piShip->getSerial32();
+	targ->send( ps );
+}
+
+void cBoat::remove()
+{
+	cHouses::killkeys( this->serial );
+	std::map<int,P_BOAT>::iterator iter_boat;
+	iter_boat= s_boat.find(serial);
+	if (iter_boat == s_boat.end()) 
+		return ;
+	else
+		s_boat.erase(iter_boat);
+}
 
 /*!
 \brief insert a boat inside boat_db struct and add it to the s_boat map
@@ -1441,35 +1484,24 @@ cBoat::~cBoat()//Destructor
 \param pi pointer to the boat to be inserted
 \since 0.8
 */
-void insert_boat(P_ITEM pi)
+void cBoat::insert_boat(P_ITEM pi, P_BOAT boat)
 {
-	boat_db boat;
-	boat.serial= pi->getSerial32();
-	boat.tiller_serial= calcserial(pi->moreb1,pi->moreb2,pi->moreb3,pi->moreb4);
-	boat.l_plank_serial= pi->morex;
-	boat.r_plank_serial= pi->morey;
-	boat.container= pi->morez;
-	boat.p_serial= pi;
-	boat.p_l_plank= pointers::findItemBySerial(boat.l_plank_serial);
-	boat.p_r_plank= pointers::findItemBySerial(boat.r_plank_serial);
-	boat.p_tiller= pointers::findItemBySerial(boat.tiller_serial);
-	boat.p_container= pointers::findItemBySerial(boat.container);
 	s_boat.insert(std::make_pair(pi->getSerial32(), boat)); // insert a boat in the boat search tree
 }
 
 
 
-boat_db* search_boat(SI32 ser)
+P_BOAT cBoat::search_boat(SI32 ser)
 {
-	std::map<int,boat_db>::iterator iter_boat;
+	std::map<int,P_BOAT>::iterator iter_boat;
 	iter_boat= s_boat.find(ser);
 	if (iter_boat == s_boat.end()) return 0;
 	else
-		return &iter_boat->second;
+		return iter_boat->second;
 }
 
 
-P_ITEM search_boat_by_plank(P_ITEM pl)
+P_ITEM cBoat::search_boat_by_plank(P_ITEM pl)
 {
 	VALIDATEPIR(pl,NULL);
 	Serial ser;
@@ -1477,7 +1509,123 @@ P_ITEM search_boat_by_plank(P_ITEM pl)
 	ser.ser2=pl->more2;
 	ser.ser3=pl->more3;
 	ser.ser4=pl->more4;
-	boat_db*  boat=search_boat(ser.serial32);
+	P_BOAT boat=search_boat(ser.serial32);
 	return boat->p_serial;
 }
- 
+
+void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
+{
+	NXWSOCKET s = ps->toInt();
+	SERIAL shipserial=t->buffer[0];
+	P_ITEM iShip=pointers::findItemBySerial(shipserial);
+	P_BOAT pShip =cBoat::search_boat(shipserial);
+	int shipnumber;
+	UI32 x, y;
+	SI32 k, icount=0;
+	signed char z;
+	int boat=0;//Boats
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+	x = t->getLocation().x; //where they targeted
+	y = t->getLocation().y;
+	z = t->getLocation().z;
+
+	Location charpos= pc->getPosition();
+
+	SI16 id = iShip->getId(); //house ID
+#ifndef XBORDER
+	#define XBORDER 200
+	#define YBORDER 200
+#endif
+	//XAN : House placing fix :)
+	if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
+	{
+		sysmessage(s, TRANSLATE("You cannot build your structure there!"));
+		return;
+	}
+
+
+	/*
+	if (ishouse(id1, id2)) // strict checking only for houses ! LB
+	{
+		if(!(CheckBuildSite(x,y,z,sx,sy)))
+		{
+			sysmessage(s,TRANSLATE("Can not build a house at that location (CBS)!"));
+			return;
+		}
+	}*/
+
+
+	for (k=-pShip->getLeftXRange();k<pShip->getRightXRange();k++)//check the SPACEX and SPACEY to make sure they are valid locations....
+	{
+		for (SI32 l=-pShip->getUpperYRange();l<pShip->getLowerYRange();l++)
+		{
+			Location loc;
+			loc.x=x+k;
+			loc.y=y+l;
+			loc.z=z;
+
+			Location newpos = Loc( x+k, y+l, z );
+			if ( (isWalkable( newpos ) == illegal_z ) &&
+				((charpos.x != x+k)&&(charpos.y != y+l)) )
+				/*This will take the char making the house out of the space check, be careful
+				you don't build a house on top of your self..... this had to be done So you
+				could extra space around houses, (12+) and they would still be buildable.*/
+			{
+				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
+				pShip->remove();
+				iShip->Delete();
+				delete pShip;
+				return;
+				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
+			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
+
+			P_HOUSE house2=cHouses::findHouse(loc);
+			if ( house2 == NULL )
+				continue;
+			P_ITEM pi_ii=pointers::findItemBySerial(house2->getSerial());
+			if (ISVALIDPI(pi_ii) )
+			{
+				sysmessage(s,TRANSLATE("You cant build structures inside structures"));
+				pShip->remove();
+				iShip->Delete();
+				delete pShip;
+				return;
+			}
+		}
+	}
+
+
+	if (id == INVALID)
+		return;
+	iShip->setPosition (t->getLocation());
+	if (iShip->isInWorld()) 
+	{
+		mapRegions->add(iShip);
+	}
+
+	P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
+	shipnumber=pFx1->morex;
+	if ( pFx1 != 0 )
+		pFx1->Delete(); // this will del the deed no matter where it is
+
+	pc->fx1=-1; //reset fx1 so it does not interfere
+	// bugfix LB ... was too early reseted
+
+//	cBoat::makeKeys(pShip, pc);
+	cHouses::makeHouseItems(shipnumber, pc, iShip);
+		
+    NxwSocketWrapper sw;
+	sw.fillOnline( pc, false );
+    for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+		NXWCLIENT ps_i = sw.getClient();
+		if(ps_i==NULL) 
+			continue;
+		P_CHAR pc_i=ps_i->currChar();
+		if(ISVALIDPC(pc_i))
+			pc_i->teleport();
+	}
+            //</Luxor>
+}

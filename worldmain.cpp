@@ -1166,7 +1166,7 @@ void loaditem()
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{
-			insert_boat(pi);
+			// cBoat::insert_boat(pi);
 		}
 
 		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
@@ -2763,9 +2763,14 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		{
 			// No house information has been made yet
 			P_ITEM temp = item::CreateFromScript( pi->morex, NULL);
+			if ( !ISVALIDPI(temp) )
+			{
+				objects.eraseObject (pi);
+				return;
+			}
 			P_HOUSE newHouse = new cHouse();
 			newHouse->setSerial(pi->getSerial32());
-			newHouse->createHouse(temp->morex);
+			newHouse->createMulti(temp->morex, pi);
 			newHouse->setOwner(pi->getOwnerSerial32());
 			cHouses::addHouse(newHouse );
 			temp->Delete();

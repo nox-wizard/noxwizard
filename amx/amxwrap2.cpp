@@ -4112,7 +4112,7 @@ int	house_getIntProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 			retVal = house->getKeycode();
 			break;
 		case NXW_HP_HOUSEDEED :		   //dec value :  203;
-			retVal = house->getHouseDeed();
+			retVal = house->getDeed();
 			break;
 		case NXW_HP_CHARPOSITION :		   //dec value :  204;
 		{
@@ -4246,7 +4246,7 @@ void house_setIntProperty( P_HOUSE house, UI32 property, UI32 subProperty, int v
 			house->setKeycode(value);
 			break;
 		case NXW_HP_HOUSEDEED :		   //dec value :  203;
-			house->setHouseDeed(value);
+			house->setDeed(value);
 			break;
 		case NXW_HP_CHARPOSITION :		   //dec value :  204;
 		{

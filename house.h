@@ -24,21 +24,50 @@ int		on_hlist(P_ITEM pi, unsigned char s1, unsigned char s2, unsigned char s3, u
 void 	mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt);
 
 
-extern std::map< SERIAL, P_HOUSE > houses;
-
-class cHouse 
+class cMulti
 {
-private:
-	SERIAL houseserial;
+protected:
+	SERIAL serial;
 	SERIAL owner;
 	SI32	keycode;
+	LOGICAL norealmulti, nokey;
+	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
+	SI32 char_x, char_y, char_z;
+	SI32 deed;
+
+public:
+	cMulti();
+	SERIAL getSerial();
+	void setSerial(SERIAL itemLink);
+	SERIAL getOwner();
+	void setOwner(SERIAL newOwner);
+	SI32 getKeycode();
+	void setKeycode(SI32 keycode);
+	void getCorners(SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 );
+	void setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 );
+	void getCharPos( int &x,  int &y,  int &z);
+	void setCharPos( int x,  int y,  int z);
+	int getUpperYRange();
+	int getLowerYRange();
+	int getLeftXRange();
+	int getRightXRange();
+	void changeLocks();
+	SI32 getDeed();
+	void setDeed(SI32 newID);
+	void createMulti(UI32 multinumber, P_ITEM multiItem);
+	bool isRealMulti();
+
+};
+
+extern std::map< SERIAL, P_HOUSE > houses;
+
+class cHouse :public cMulti
+{
+private:
+	LOGICAL publicHouse;
 	std::vector<SERIAL> friends;
 	std::vector<SERIAL> coowners;
 	std::vector<SERIAL> banned;
-	LOGICAL publicHouse, norealmulti;
-	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
-	SI32 char_x, char_y, char_z;
-	SI32 housedeed;
 	SI16 lockedItems, securedItems;
 	SI16 maxLockedItems, maxSecuredItems;
 protected:
@@ -46,21 +75,6 @@ protected:
 public:
 
 	cHouse();
-	SERIAL getSerial();
-	void setSerial(SERIAL itemLink);
-	SI32 cHouse::getKeycode();
-	void setKeycode(SI32 keycode);
-	void getCorners(SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 );
-	void setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 );
-	void getCharPos( int &x,  int &y,  int &z);
-	void setCharPos( int x,  int y,  int z);
-
-	int getUpperYRange();
-	int getLowerYRange();
-	int getLeftXRange();
-	int getRightXRange();
-	SERIAL getOwner();
-	void setOwner(SERIAL newOwner);
 	void deedhouse(NXWSOCKET  s, P_ITEM pi);
 	void deedhouse(P_CHAR owner);
 	bool isInsideHouse(P_ITEM pi);
@@ -70,8 +84,10 @@ public:
 	bool inHouse(P_ITEM pi);
 	bool inHouse(Location where);
 	bool inHouse(int x, int y);
-	bool isRealMulti();
 	void remove();
+	bool isPublicHouse();
+	void setPublicState(bool state);
+	void togglePublicState();
 	std::vector<SERIAL>::iterator getHouseFriends();
 	std::vector<SERIAL>::iterator getHouseCoOwners();
 	std::vector<SERIAL>::iterator getHouseBans();
@@ -84,30 +100,23 @@ public:
 	void addBan(P_CHAR newBanned);
 	void removeBan(P_CHAR newBanned);
 	bool isBanned(P_CHAR pc);
-	bool isPublicHouse();
-	void setPublicState(bool state);
-	void togglePublicState();
 	SI32 getCurrentZPosition(P_CHAR pc);
 	void createHouse(UI32 houseNumber);
 	void transfer(SERIAL newOwner);
 	void save(ofstream  *output);
 	void load(cStringFile& input);
-	SI32 getHouseDeed();
-	void setHouseDeed(SI32 newID);
 	bool increaseLockedItems(unsigned int amount=1);
 	bool decreaseLockedItems(unsigned int amount=1);
 	void setLockedItems(unsigned int amount);
 	unsigned int getLockedItems();
 	unsigned int getMaxLockedItems();
 	void setMaxLockedItems(unsigned int amount);
-
 	bool increaseSecuredItems(unsigned int amount=1);
 	bool decreaseSecuredItems(unsigned int amount=1);
 	void setSecuredItems(unsigned int amount);
 	unsigned int getSecuredItems();
 	unsigned int getMaxSecuredItems();
 	void setMaxSecuredItems(unsigned int amount);
-	void changeLocks();
 };
 
 
@@ -142,6 +151,7 @@ public:
 	static void cHouses::addHouseItem(int housenumber, int itemnumber);
 	static UI32VECTOR  getHouseItems(int housenumber);
 	static void cHouses::addHouse(P_HOUSE newHouse );
+	static void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi);
 
 };
 

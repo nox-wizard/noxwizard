@@ -36,7 +36,7 @@
 #include "skills.h"
 #include "nox-wizard.h"
 #include "scripts.h"
-
+#include "house.h"
 
 #ifdef ENCRYPTION
 #include "encryption/clientcrypt.h"
@@ -388,7 +388,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		if ( pc->account==acctno[ socket ] && SrvParms->partmsg && clientInfo[ socket ]->ingame && !pc->npc )
 			sysbroadcast( (char*)msgPart, pc->getCurrentNameC() );
 
-	if ( acctno[ socket ] != -1 )
+	if ( acctno[ socket ] != -1 && ! Accounts->GetAccount(acctno[socket])->isEntering() )
 		Accounts->SetOffline( acctno[ socket ] ); //Bug clearing logged in accounts!
 	acctno[ socket ] = INVALID;
 
@@ -1170,7 +1170,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 	P_ITEM p_multi=NULL;
 	if (pc->getMultiSerial32() == INVALID )
-		p_multi=findmulti( pc->getPosition() );
+		p_multi=(P_ITEM)cHouses::findHouse( pc->getPosition() );
 	else
 		p_multi = pointers::findItemBySerial( pc->getMultiSerial32() );
 

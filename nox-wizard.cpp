@@ -107,7 +107,7 @@
 #include "map.h"
 #include "scripts.h"
 #include "cmds.h"
-
+#include "house.h"
 
 
 #ifdef _WINDOWS
@@ -2399,7 +2399,7 @@ void InitMultis()
 		if(!ISVALIDPC(pc_i))
 			continue;
 
-		P_ITEM multi=findmulti( pc_i->getPosition() );
+		P_ITEM multi=(P_ITEM)cHouses::findHouse( pc_i->getPosition() );
 		if (ISVALIDPI(multi))
 		{
 			if (multi->type==117)
@@ -2423,7 +2423,7 @@ void InitMultis()
 		//Endymion modified from !pi->isInWorld() to pi->isInWorld()
 		if (pi->isInWorld() && (pi->getSerial32()!=INVALID))
 		{
-			P_ITEM multi=findmulti( pi->getPosition() );
+			P_ITEM multi=(P_ITEM)cHouses::findHouse( pi->getPosition() );
 			if (ISVALIDPI(multi))
 				if (multi->getSerial32()!=pi->getSerial32())
 					//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(multi),7);
@@ -2513,19 +2513,32 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 			{
 				if( first ) {
 					P_CHAR pc=(P_CHAR)(objs.getObject());
-					if( pc->getOwnerSerial32()!=INVALID ) {
-						P_CHAR own=pointers::findCharBySerial( pc->getOwnerSerial32() );
-						if(!ISVALIDPC(own)) {
-							pc->setOwnerSerial32( INVALID );
-							++corrected;
+					if ( ISVALIDPC(pc) )
+					{
+						if( pc->getOwnerSerial32()!=INVALID ) {
+							P_CHAR own=pointers::findCharBySerial( pc->getOwnerSerial32() );
+							if(!ISVALIDPC(own)) {
+								pc->setOwnerSerial32( INVALID );
+								++corrected;
+							}
 						}
+					}
+					else // remove invalid objects from the list
+					{
+						objects.eraseObject (objs.getObject());
+						++corrected;
 					}
 				}
 			}
 			else {
 
 				P_ITEM pi=(P_ITEM)(objs.getObject());
-
+				if ( ! ISVALIDPI(pi) )
+				{
+					objects.eraseObject (objs.getObject());
+					++corrected;
+					continue;
+				}
 				if( pi->isInWorld() )
 					continue;
 
