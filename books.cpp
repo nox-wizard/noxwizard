@@ -387,7 +387,7 @@ namespace Books
 		if ( readonly )	// a readonly book shouldn't be dumped, but if we don't want to test it first...
 			return; // note that a class should be totally independent for OOP...
 
-		s	<< "SECTION RWBOOK " << index << std::endl
+		/*s	<< "SECTION RWBOOK " << index << std::endl
 			<< "{" << std::endl
 			<< "AUTHOR " << author << std::endl
 			<< "TITLE " << title << std::endl
@@ -405,7 +405,7 @@ namespace Books
 			s	<< "}" << std::endl;
 		}
 
-		s << "}" << std::endl << std::endl;
+		s << "}" << std::endl << std::endl;*/
 
 	}
 
