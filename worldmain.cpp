@@ -1630,7 +1630,6 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			fprintf(cWsc, "{\n");
 			fprintf(cWsc, "SERIAL %i\n", pc->getSerial32());
 			//Luxor: if the char is morphed, we have to save the original values.
-			printf("Test: %i %i\n", pc->morphed,dummy.morphed);
 			if(pc->morphed!=dummy.morphed)
 			{//save original name
 #ifndef DESTROY_REFERENCES

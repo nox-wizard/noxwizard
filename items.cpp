@@ -1087,12 +1087,14 @@ void cItem::Delete()
 	if ( this->getSpawnSerial() > 0 )
 	{
 		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSpawnSerial());
-		spawn->remove(this->getSerial32());
+		if ( spawn != NULL )
+			spawn->remove(this->getSerial32());
 	}
 	if ( this->type == ITYPE_NPC_SPAWNER || this->type==ITYPE_ITEM_SPAWNER)
 	{
 		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSerial32());
-		spawn->clear();
+		if ( spawn != NULL )
+			spawn->clear();
 	}
 	if( type == ITYPE_CONTAINER || ( !SrvParms->lootdecayswithcorpse && corpse ) )
 	{
