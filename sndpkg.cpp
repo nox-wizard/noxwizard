@@ -753,10 +753,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 		if (pc->canViewHouseIcon())
 		{
-			if (pi->getId()>=0x4000 && pi->getId()<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
-			{
-				ShortToCharPtr(0x14F0, itmput +7);
-			}
+			ShortToCharPtr(0x14F0, itmput +7);
 		}
 
 		len = 19;
