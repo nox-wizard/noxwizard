@@ -347,7 +347,7 @@ void cTriggerContext::checkPtrsValidity()
 	if (!ISVALIDPI(m_pi)) m_pi = 0;
 	if (!ISVALIDPI(m_piEnvoked)) m_piEnvoked = 0;
 	if (!ISVALIDPI(m_piAdded)) m_piAdded = 0;
-	if (!ISVALIDPI(m_piNeededItem)) m_piNeededItem = 0;
+	if (!ISVALIDPI(m_piNeededItem) || m_piNeededItem == m_pi ) m_piNeededItem = 0;
 	if (!ISVALIDPC(m_pcNpc)) m_pcNpc = 0;
 	if (!ISVALIDPC(m_pcAdded)) m_pcAdded = 0;
 	if ((m_pcCurrChar!=0)) if(!ISVALIDPC(m_pcCurrChar)){ m_bStop = true; } //panic!
@@ -618,7 +618,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				strncpy(m_szDisableMsg, par, 48);
 			}
 			else if (!(strcmp("DUR", cmd))) { // Disable NPC Message
-				parseDurCommand(m_pi, par);
+                                if ( ISVALIDPI(m_pi) )
+					parseDurCommand(m_pi, par);
 				return;
 			}
 			break;
@@ -629,7 +630,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if(ISVALIDPC(pc_emt))
 					pc_emt->emote(m_socket,par,1);
 			} else if (!(strcmp("EVDUR", cmd))) {
-				parseDurCommand(m_piEnvoked, par);
+                                if ( ISVALIDPI(m_piEnvoked) )
+					parseDurCommand(m_piEnvoked, par);
 				return;
 			} else if (!(strcmp("EVMAXDUR", cmd))) {
 				parseMaxDurCommand(m_piEnvoked, par);
@@ -1165,14 +1167,14 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		}
 		if (!(strcmp("REMOVE", cmd)))  // The item here is required and will be removed
 		{
-					if (m_pi == 0) {
+					if ( !ISVALIDPI(m_pi) ) {
 						STOPTRIGGER;
 					}
 
 					if (m_pi->amount>1)
-			m_pi->amount--;
+						m_pi->amount--;
 					else {
-			m_pi->deleteItem();
+						m_pi->deleteItem();
 						m_pi = 0;
 					}
 		}
@@ -1367,19 +1369,19 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			//////////////////////////////////////////////////////////////////////////
 		if (!(strcmp("USEUP", cmd)))  // The item here is required and will be removed
 		{
-					if (m_piNeededItem == 0) {
+					if ( !ISVALIDPI(m_piNeededItem) ) {
 						parseLine("NEED", par); //recurse on NEED command :]
 						if (m_bStop) return;
 					}
 
-					if (m_piNeededItem == 0) {
+					if ( !ISVALIDPI(m_piNeededItem) || m_piNeededItem == m_pi ) {
 						STOPTRIGGER;
 					}
 
 					if (m_piNeededItem->amount>1)
-			m_piNeededItem->amount--;
+						m_piNeededItem->amount--;
 					else {
-			m_piNeededItem->deleteItem();
+						m_piNeededItem->deleteItem();
 						m_piNeededItem = 0;
 					}
 		}
