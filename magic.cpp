@@ -325,198 +325,248 @@ static bool checkResist(P_CHAR pa, P_CHAR pd, SpellId spellnumber)
 
 
 
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : spellFX
-// Description		 : plays all kind of spell effects
-// NOTE 			 : DOES *NOT* play some sfxs for some area spells
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : int spellnum -> -- as default --
-// Argument 		 : P_CHAR pcaster -> caster, NULL if none
-// Argument 		 : P_CHAR pctarget = NULL -> char targetted, NULL otherwise
-// Argument 		 : P_ITEM pitarget = NULL -> item targetted, NULL otherwise
-// Changes			 : Luxor -- Added the effects :D
+/*!
+\author Luxor
+\brief Plays the spell effect
+\note Completely rewritten in 12 sep 2003
+*/
 static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = NULL, P_ITEM pitarget = NULL )
 {
 	P_CHAR pcfrom = pcaster;
 	P_CHAR pcto = pctarget;
-	if ((!(ISVALIDPC(pcfrom))) && (!(ISVALIDPC(pcto)))) return;
-	if ((!(ISVALIDPC(pcfrom)))&&(ISVALIDPC(pcto))) pcfrom = pcto;
-	if ((ISVALIDPC(pcfrom))&&(!(ISVALIDPC(pcto)))) pcto = pcfrom;
+	if ( !ISVALIDPC( pcfrom ) && !ISVALIDPC( pcto ) )
+		return;
+	if ( !ISVALIDPC( pcfrom ) && ISVALIDPC( pcto ) )
+		pcfrom = pcto;
+	if ( ISVALIDPC( pcfrom ) && !ISVALIDPC( pcto ) )
+		pcto = pcfrom;
 
-	ParticleFx spfx, mpfx/*, postfx*/;
+	ParticleFx spfx, mpfx;
 
 	mpfx.initWithSpellMoveEffect(spellnum);
 	spfx.initWithSpellStatEffect(spellnum);
 
-	switch(spellnum) {
-		case SPELL_FIREBALL:
-			pcfrom->movingFX(pcto, 0x36D5, 5, 0, true, &mpfx);
-			pcfrom->playSFX(0x15E);
-			break;
+	switch( spellnum )
+	{
 		case SPELL_CLUMSY:
+			pcto->playSFX( 0x1DF );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_CREATEFOOD:
+			pcfrom->playSFX( 0x1E2 );
+			break;
 		case SPELL_FEEBLEMIND:
-		case SPELL_WEAKEN:
-		case SPELL_DISPEL:
-		case SPELL_CURSE:
-		case SPELL_POISON:
-			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x374A, 0, 10, &spfx);
-			break;
-		case SPELL_PARALYZE:
-			pcto->playSFX(0x204);
-			pcto->staticFX(0x374A, 0, 10, &spfx);
-			break;
-		case SPELL_CUNNING:
-		case SPELL_AGILITY:
-		case SPELL_STRENGHT:
-		case SPELL_BLESS:
-		case SPELL_REFLECTION:
-			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x373A, 0, 10, &spfx);
-			break;
-		case SPELL_GREATHEAL:
-			pcto->staticFX(0x376A, 0, 10, &spfx);
-			pcto->playSFX(0x202);
+			pcto->playSFX( 0x1E4 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
 			break;
 		case SPELL_HEAL:
-			pcto->staticFX(0x376A, 0, 10, &spfx);
-			pcto->playSFX(0x1F2);
-			break;
-		case SPELL_CURE:
-		case SPELL_ARCHCURE:
-			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x376A, 0, 10, &spfx);
-			break;
-		case SPELL_RESURRECTION:
-			pcto->playSFX(0x214);
+			pcto->staticFX( 0x376A, 0, 10, &spfx );
+			pcto->playSFX( 0x1F2 );
 			break;
 		case SPELL_MAGICARROW:
-			pcfrom->movingFX(pcto, 0x36E4, 5, 0, true, &mpfx);
-			pcfrom->playSFX(0x1E5);
-			break;
-		case SPELL_FLAMESTRIKE:
-			pcto->staticFX(0x3709, 0, 10, &spfx);
-			pcto->playSFX(0x208);
-			break;
-		case SPELL_EXPLOSION:
-			pcto->staticFX(0x36B0, 0, 10, &spfx);
-			pcto->playSFX(0x207);
-			break;
-		case SPELL_LIGHTNING:
-			pcto->boltFX(false);
-			pcto->playSFX(0x29);
-			break;
-		case SPELL_ENERGYBOLT:
-			pcfrom->movingFX(pcto, 0x379F, 5, 0, true, &mpfx);
-			pcfrom->playSFX(0x20A);
-			break;
-		case SPELL_HARM:
-		case SPELL_MINDBLAST:
-		case SPELL_MANADRAIN:
-		case SPELL_MANAVAMPIRE:
-			pcto->staticFX(0x374A, 0, 10, &spfx);
-			pcto->playSFX(0x1F1);
-			break;
-
-		case SPELL_REACTIVEARMOUR:
-			pcfrom->staticFX(0x373A, 0, 10, &spfx);
-			break;
-		case SPELL_PROTECTION:
-		case SPELL_ARCHPROTECTION:
-			pcfrom->staticFX(0x376A, 0, 10, &spfx);
-			pcfrom->playSFX(0x1ED);
+			pcfrom->movingFX( pcto, 0x36E4, 5, 0, true, &mpfx );
+			pcfrom->playSFX( 0x1E5 );
 			break;
 		case SPELL_NIGHTSIGHT:
-			pcfrom->playSFX(0x1E3);
+			pcfrom->playSFX( 0x1E3 );
+			break;
+		case SPELL_REACTIVEARMOUR:
+			pcfrom->playSFX( 0x211 );
+			pcfrom->staticFX( 0x373A, 0, 10, &spfx );
+			break;
+		case SPELL_WEAKEN:
+			pcto->playSFX( 0x1E6 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_AGILITY:
+			pcto->playSFX( 0x1E7 );
+			pcto->staticFX( 0x375A, 0, 10, &spfx );
+			break;
+		case SPELL_CUNNING:
+			pcto->playSFX( 0x1EB );
+			pcto->staticFX( 0x375A, 0, 10, &spfx );
+			break;
+		case SPELL_CURE:
+			pcto->playSFX( 0x1E0 );
+			pcto->staticFX( 0x376A, 0, 10, &spfx );
+			break;
+		case SPELL_HARM:
+			pcto->playSFX( 0x1F1 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_PROTECTION:
+			pcto->playSFX( 0x1ED );
+			pcto->staticFX( 0x373A, 0, 10, &spfx );
+			break;
+		case SPELL_STRENGHT:
+			pcto->playSFX( 0x1EE );
+			pcto->staticFX( 0x375A, 0, 10, &spfx );
+			break;
+		case SPELL_BLESS:
+			pcto->playSFX( 0x1EA );
+			pcto->staticFX( 0x375A, 0, 10, &spfx );
+			break;
+		case SPELL_FIREBALL:
+			if ( pcfrom->skill[MAGERY] < 500 )	// First level fireball
+				pcfrom->playSFX( 0x15E );
+			else if ( pcfrom->skill[MAGERY] < 800 )	// Second level fireball
+				pcfrom->playSFX( 0x15F );
+			else					// Third level fireball
+				pcfrom->playSFX( 0x1F3 );
+			pcfrom->movingFX( pcto, 0x36D5, 5, 0, true, &mpfx );
+			break;
+		case SPELL_POISON:
+			pcto->playSFX( 0xF5 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_TELEKINESYS:
+			pcfrom->playSFX( 0x1F5 );
+			break;
+		case SPELL_TELEPORT:
+			pcfrom->playSFX( 0x1FE );
+			pcfrom->staticFX( 0x3727, 0, 10, &spfx );
+			break;
+		case SPELL_WALLSTONE:
+			pcfrom->playSFX( 0x1F6 );
+			break;
+		case SPELL_ARCHCURE:
+			pcto->playSFX( 0x1E8 );
+			pcto->staticFX( 0x376A, 0, 10, &spfx );
+			break;
+		case SPELL_ARCHPROTECTION:
+			pcto->playSFX( 0x1F7 );
+			pcto->staticFX( 0x373A, 0, 10, &spfx );
+			break;
+		case SPELL_CURSE:
+			pcto->playSFX( 0x1E1 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_FIREFIELD:
+		case SPELL_POISONFIELD:
+			pcfrom->playSFX( 0x20C );
+			break;
+		case SPELL_GREATHEAL:
+			pcto->playSFX( 0x202 );
+			pcto->staticFX( 0x376A, 0, 10, &spfx );
+			break;
+		case SPELL_LIGHTNING:
+			if ( pcfrom->skill[MAGERY] < 500 )	// First level lightning
+				pcto->playSFX( 0x28 );
+			else if ( pcfrom->skill[MAGERY] < 800 )	// Second level lightning
+				pcto->playSFX( 0x29 );
+			else					// Third level lightning
+				pcto->playSFX( 0x206 );
+			pcto->boltFX( false );
+			break;
+		case SPELL_MANADRAIN:
+			pcto->playSFX( 0x1F8 );
+			break;
+		case SPELL_RECALL:
+			pcfrom->playSFX( 0x1FC );
+			break;
+		case SPELL_BLADESPIRITS:
+			pcfrom->playSFX( 0x212 );
+			break;
+		case SPELL_DISPELFIELD:
+			pcfrom->playSFX( 0x201 );
 			break;
 		case SPELL_INCOGNITO:
-		case SPELL_INVISIBILITY:
-			pcfrom->playSFX(0x203);
+		case SPELL_POLYMORPH:
+			pcfrom->playSFX( 0x20F );
+			break;
+		case SPELL_REFLECTION:
+			pcfrom->playSFX( 0x1E9 );
+			pcfrom->staticFX( 0x375A, 0, 10, &spfx );
+			break;
+		case SPELL_MINDBLAST:
+			pcto->playSFX( 0x213 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_PARALYZE:
+			pcto->playSFX( 0x204 );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
 			break;
 		case SPELL_SUMMON:
-			pcfrom->staticFX(0x3735, 0, 10, &spfx);
+			pcfrom->playSFX( 0x215 );
 			break;
-		case SPELL_EARTHQUAKE: // Luxor
-			pcto->playSFX( 0x20E );
+		case SPELL_DISPEL:
+			pcto->playSFX( 0x1E1 );
+			break;
+		case SPELL_ENERGYBOLT:
+			pcfrom->playSFX( 0x20A );
+			pcfrom->movingFX( pcto, 0x379F, 5, 0, true, &mpfx );
+			break;
+		case SPELL_EXPLOSION:
+			if ( pcfrom->skill[MAGERY] < 800 )	// First level explosion
+				pcto->playSFX( 0x11D );
+			else					// Second level explosion
+				pcto->playSFX( 0x207 );
+			pcto->staticFX( 0x36B0, 0, 10, &spfx );
+			break;
+		case SPELL_INVISIBILITY:
+			pcfrom->playSFX( 0x203 );
+			break;
+		case SPELL_MARK:
+			pcfrom->playSFX( 0x1FA );
+			break;
+		case SPELL_MASSCURSE:
+			pcto->playSFX( 0x1FB );
+			pcto->staticFX( 0x374A, 0, 10, &spfx );
+			break;
+		case SPELL_PARALYZEFIELD:
+			pcfrom->playSFX( 0x20B );
+			break;
+		case SPELL_REVEAL:
+			pcfrom->playSFX( 0x1FE );
+			break;
+		case SPELL_CHAINLIGHTNING:
+			pcto->playSFX( 0x206 );
+			pcto->boltFX( false );
+			break;
+		case SPELL_ENERGYFIELD:
+			pcfrom->playSFX( 0x210 );
+			break;
+		case SPELL_FLAMESTRIKE:
+			pcto->staticFX( 0x3709, 0, 10, &spfx );
+			pcto->playSFX( 0x208 );
+			break;
+		case SPELL_GATE:
+			pcfrom->playSFX( 0x20D );
+			break;
+		case SPELL_MANAVAMPIRE:
+			pcto->playSFX( 0x1F9 );
+			pcto->movingFX( pcfrom, 0x36F4, 5, 0, true, &mpfx );
+			break;
+		case SPELL_MASSDISPEL:
+			pcto->playSFX( 0x209 );
+			break;
+		case SPELL_METEORSWARM:
+			pcto->playSFX( 0x11B );
+			pcto->staticFX( 0x36B0, 0, 10, &spfx );
+			break;
+		case SPELL_EARTHQUAKE:
+			pcto->playSFX( 0x20D );
 			if ( pcto->HasHumanBody() && !pcto->isMounting() )
 				pcto->playAction( (rand()%2 == 1) ? 0x15 : 0x16 );
 			break;
-		case SPELL_CREATEFOOD:
-			pcfrom->playSFX(0x1E2);
+		case SPELL_ENERGYVORTEX:
+			pcfrom->playSFX( 0x212 );
 			break;
-		case SPELL_POLYMORPH:
+		case SPELL_RESURRECTION:
+			pcfrom->playSFX( 0x214 );
 			break;
-
-		case SPELL_TELEKINESYS:
-			break;
-
-		//Luxor: Lock/Unlock & Trap/Untrap effects are done by applyspell function
-		case SPELL_TRAP:
-		case SPELL_UNTRAP:
-		case SPELL_LOCK:
-		case SPELL_UNLOCK:
-			return ;
-		//----------------------------------
-
-		case SPELL_GATE:
-			pcfrom->playSFX(0x20E);
-			break;
-		case SPELL_MARK:
-			pcfrom->playSFX(0x1FA);
-			break;
-		case SPELL_RECALL:
-			pcfrom->staticFX(0x374A, 0, 10, &spfx);
-			pcfrom->playSFX(0x1FC);
-			break;
-
-		case SPELL_BLADESPIRITS:
 		case SPELL_SUMMON_AIR:
-		case SPELL_SUMMON_DEAMON:
 		case SPELL_SUMMON_EARTH:
 		case SPELL_SUMMON_FIRE:
 		case SPELL_SUMMON_WATER:
-		case SPELL_ENERGYVORTEX:
-			pcfrom->staticFX(0x372A, 0, 10, &spfx);
-			pcfrom->playSFX(0x212);
+			pcfrom->playSFX( 0x217 );
 			break;
-		case SPELL_WALLSTONE:
-			pcfrom->playSFX(0x1F6);
+		case SPELL_SUMMON_DEAMON:
+			pcfrom->playSFX( 0x216 );
 			break;
-		case SPELL_TELEPORT:
-			pcfrom->staticFX(0x372A, 0, 10, &spfx);
-			pcfrom->playSFX(0x1FE);
-			break;
-		case SPELL_MASSDISPEL:
-			pcfrom->playSFX(0x209);
-			break;
-		case SPELL_MASSCURSE:
-			pcfrom->playSFX(0x1FB);
-			break;
-		case SPELL_REVEAL:
-			pcfrom->playSFX(0x1FD);
-			break;
-		case SPELL_FIREFIELD:
-		case SPELL_DISPELFIELD:
-		case SPELL_POISONFIELD:
-		case SPELL_PARALYZEFIELD:
-		case SPELL_ENERGYFIELD:
-			pcfrom->playSFX(0x20C);
-			break;
-		case SPELL_CHAINLIGHTNING:
-			pcto->boltFX(false);
-			pcto->playSFX(0x29);
-			break;
-		case SPELL_METEORSWARM:
-			pcto->staticFX(0x372A, 0, 10, &spfx);
-			pcto->playSFX(0x160);
-			return ;
-
 		default:
 			break;
 	}
-
 }
 
 
@@ -1231,7 +1281,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_CHAINLIGHTNING:
 		case SPELL_EARTHQUAKE:
 			if (pd!=NULL) {
-				if (g_Spells[spellnumber].areasize<=0)
+				if (g_Spells[spellnumber].areasize<=0 && (spellnumber!=SPELL_EXPLOSION || src->skill[MAGERY] < 800)) //Luxor
 				{
 					CHECKDISTANCE(src, pd);
 					spellFX(spellnumber, src, pd);
@@ -1239,7 +1289,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				} 
 				else
 				{
-					if (spellnumber == SPELL_EARTHQUAKE)
+					if (spellnumber == SPELL_EARTHQUAKE || spellnumber == SPELL_EXPLOSION) //Luxor
 					{
 						x = srcpos.x;
 						y = srcpos.y;
@@ -1253,7 +1303,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if ( pd != 0 ) {
 				CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
-				if ((src->in2+10)>(pd->in2)) damage(src, pd, spellnumber, flags, param);
+				if ((src->in+10)>(pd->in)) damage(src, pd, spellnumber, flags, param);
 				else {
 					damage(pd, src, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
 					src->attackStuff(pd);
@@ -1292,7 +1342,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				case ITYPE_UNLOCKED_CONTAINER: pi->type=ITYPE_LOCKED_CONTAINER; break;
 				}
 				if (src!=NULL) {
-				src->playSFX(0x0200);
+				src->playSFX( 0x1F4 ); //Luxor
 				src->sysmsg(TRANSLATE("It's locked!"));
 				}
 			}
@@ -1308,7 +1358,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					case ITYPE_LOCKED_CONTAINER: pi->type=ITYPE_UNLOCKED_CONTAINER; break;
 					}
 					if (src!=NULL) {
-					src->playSFX(0x01FF);
+					src->playSFX( 0x1FF ); //Luxor
 					src->sysmsg(TRANSLATE("You unlocked it!"));
 					}
 				}
@@ -1331,7 +1381,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
                 } else if (src!=NULL) {
                     pi->moreb2=src->skill[nSkill]/20;
                     pi->moreb3=src->skill[nSkill]/10;
-                    src->playSFX(0x1F0);
+                    src->playSFX( 0x1E9 ); //Luxor
                     src->sysmsg(TRANSLATE("It's trapped!"));
                 } else {
                     pi->moreb2=13;
@@ -1352,7 +1402,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
                    pi->moreb1=0;
                    pi->moreb2=0;
                    pi->moreb3=0;
-                   src->playSFX(0x1F1);
+                   src->playSFX( 0x1F0 ); //Luxor
                    src->sysmsg(TRANSLATE("You successfully untrap this item!"));
                } else if (src!=NULL) src->sysmsg(TRANSLATE("This item doesn't seem to be trapped!"));
            } else if (src!=NULL) src->sysmsg(TRANSLATE("This item cannot be untrapped!"));
@@ -1364,7 +1414,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 
 		case SPELL_REACTIVEARMOUR:
-			if (nTime==INVALID) nTime = src->skill[nSkill]/50;
+			if (nTime==INVALID) nTime = src->skill[nSkill]/15;
 			spellFX(spellnumber, src, src);
 			tempfx::add(src,src, tempfx::SPELL_REACTARMOR, 0, 0, 0, nTime);
 			break;
@@ -1387,7 +1437,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			}
 			NxwCharWrapper sc;
 			P_CHAR pc_curr;
-			sc.fillCharsNearXYZ( x, y, 10, true, false );
+			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true, false );
 			for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				pc_curr = sc.getChar();
 				if ( !ISVALIDPC( pc_curr ) )
@@ -1448,7 +1498,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_MASSCURSE: {
 			
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( x, y, 2, true);
+			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
@@ -1460,14 +1510,18 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			}
 			break;
 
-		case SPELL_REVEAL: {
+		case SPELL_REVEAL: { //Luxor
 			spellFX(spellnumber, src, pd);
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( x, y, 2, true);
+			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
-				if (ISVALIDPC(pd) && pd->IsHiddenBySpell() && !checkResist(src, pd, SPELL_REVEAL))
-					pd->unHide();
+				if (ISVALIDPC(pd) && pd->IsHidden() && !checkResist(src, pd, SPELL_REVEAL)) {
+					if ( pd->IsHiddenBySpell() )
+						pd->delTempfx( tempfx::SPELL_INVISIBILITY );
+					else
+						pd->unHide();
+				}
 			}
 			}
 			break;
@@ -1476,7 +1530,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 		case SPELL_PROTECTION:
 			spellFX(spellnumber, src, pd);
-			if (nTime==INVALID) nTime = src->skill[nSkill]/50;
+			if (nTime==INVALID) nTime = src->skill[nSkill]/15;
 			if (nValue==INVALID) nValue = src->skill[nSkill]/10;
 			tempfx::add(src,src, tempfx::SPELL_PROTECTION, nValue, 0, 0, nTime);
 			break;
@@ -1487,11 +1541,11 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			  if (nTime==INVALID) nTime = 12;
 			  if (nValue==INVALID) nValue = 80;
 			} else {
-			  if (nTime==INVALID) nTime = src->skill[nSkill]/50;
+			  if (nTime==INVALID) nTime = src->skill[nSkill]/15;
 			  if (nValue==INVALID) nValue = src->skill[nSkill]/10;
 			}
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( x, y, 2, true);
+			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
@@ -1561,7 +1615,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			CHECKDISTANCE(src, pd);
             		spellFX(spellnumber, src, pd);
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( x, y, 2, true);
+			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
@@ -1818,9 +1872,9 @@ void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags,
 	if ( src->spelltype !=CASTINGTYPE_ITEM && src->spelltype !=CASTINGTYPE_NOMANAITEM )
 	{
 		if ( src->skill[MAGERY] < 900 ) //Luxor
-			src->talkAll((char*)g_Spells[src->spell].mantra.c_str());
+			src->talkAll((char*)g_Spells[src->spell].mantra.c_str(), false);
 		else
-			src->talkAllRunic((char*)g_Spells[src->spell].mantra.c_str());
+			src->talkAllRunic((char*)g_Spells[src->spell].mantra.c_str(), false);
 		if (src->isMounting()) { //Luxor
 			src->playAction(0x1B); // General Lee
 		} else {

@@ -814,8 +814,6 @@ int cChar::calcDef(SI32 x)
 	int total = 0;
 	int armordef = 0;
 
-	if (skill[PARRYING]==1000) total+=5; // gm parry bonus.
-	
 	NxwItemWrapper si;
 	si.fillItemWeared( this, false, true, true );
 	for( si.rewind(); !si.isEmpty(); si++ )
@@ -1162,10 +1160,10 @@ void cChar::combatOnHorse()
 */
 void cChar::playCombatAction()
 {
-	if (npc) {
+	if ( !HasHumanBody() ) {
 		playAction(4+rand()%3);
 		playMonsterSound(SND_ATTACK);
-	} else if (onhorse) {
+	} else if ( onhorse ) {
 		combatOnHorse();
 	} else {
 		combatOnFoot();

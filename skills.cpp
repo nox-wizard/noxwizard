@@ -1868,13 +1868,13 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case MEDITATION:  //Morrolan - Meditation
-				if(SrvParms->armoraffectmana)
+				//if(SrvParms->armoraffectmana)
 					Skills::Meditation(s);
-				else
+				/*else
 				{
 					sysmessage(s, TRANSLATE("Meditation is turned off.  Tell your GM to enable ARMOR_AFFECT_MANA_REGEN in server.cfg to enable it."));
 					setSkillDelay = false;
-				}
+				}*/
 				break;
 			
 			case REMOVETRAPS:
@@ -2748,7 +2748,7 @@ void Skills::Meditation (NXWSOCKET  s)
 		return;
 	}
 
-	if ( Skills::GetAntiMagicalArmorDefence(pc->getSerial32()) > 15 ) {
+	if ( SrvParms->armoraffectmana && Skills::GetAntiMagicalArmorDefence(pc->getSerial32()) > 15 ) {
 		pc->sysmsg( TRANSLATE("Regenerative forces cannot penetrate your armor.") );
 		return;
 	}
