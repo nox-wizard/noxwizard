@@ -67,12 +67,12 @@ wstring* HexVector2UnicodeString( char* s )
 
 	int i=0;
 	int size= strlen( s );
-	char temp[4] = { '0','x', };
+	char temp[6] = { '0','x', };
 	while( i<size ) {
-		memcpy( &temp[2], &s[i], 2 );
+		memcpy( &temp[2], &s[i], 4 );
 		char* dummy; 
 		(*w) += strtol( temp, &dummy, 0 );
-		i+=2;
+		i+=4;
 	}
 	return w;
 }
