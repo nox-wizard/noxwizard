@@ -368,8 +368,6 @@ public:
 /*!
 \name Spawn
 */
-	SERIAL		spawnserial;
-	SERIAL		spawnregion;
 	void		SetMultiSerial(SI32 mulser);
 //@}
 

@@ -76,8 +76,8 @@ void cMakeMenu::loadFromScript( P_CHAR pc )
 	std::vector<std::string> names; //name
 	std::vector<std::string> models; //models
     
-	this->mat[0].number = ( mat[0].id!=0 )? (short)pc->CountItems( mat[0].id, mat[0].color ) : 0;
-	this->mat[1].number = ( mat[1].id!=0 )? (short)pc->CountItems( mat[1].id, mat[1].color ) : 0;
+	this->mat[0].number = ( mat[0].id!=0 )? (short)pc->CountItems( (short)mat[0].id, mat[0].color ) : 0;
+	this->mat[1].number = ( mat[1].id!=0 )? (short)pc->CountItems( (short)mat[1].id, mat[1].color ) : 0;
 
 	//da passare a checkReq PDPD
 	
@@ -312,7 +312,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		return;
 
 	if( mi->command->command=="MAKEMENU" ) {
-		Skills::MakeMenu( pc, (unsigned short)str2num( mi->command->param ), skill, mat[0].id, mat[0].color, mat[1].id, mat[1].color );
+		Skills::MakeMenu( pc, (unsigned short)str2num( mi->command->param ), skill, (unsigned short)mat[0].id, (unsigned short)mat[0].color, (unsigned short)mat[1].id, (unsigned short)mat[1].color );
 		return;
 	}
 
@@ -338,7 +338,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 			if( failed )
 				matToDel = ( matToDel/2>0 )? (unsigned short)(matToDel/2) : 1;
 
-	        pc->delItems( raw.id, matToDel, (short)raw.color );
+	        pc->delItems( (short)raw.id, matToDel, (short)raw.color );
 		}
 	}
 
@@ -436,8 +436,8 @@ void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second 
 {
 
 	Skills::MakeMenu( 
-		pc, m, skill, ISVALIDPI(first)? first->getId() : 0, ISVALIDPI(first)? first->getColor() : 0,
-		ISVALIDPI(second)? second->getId() : 0, ISVALIDPI(second)? second->getColor() : 0 
+		pc, m, skill, ISVALIDPI(first)? (unsigned short)first->getId() : 0, ISVALIDPI(first)? (unsigned short)first->getColor() : 0,
+		ISVALIDPI(second)? (unsigned short)second->getId() : 0, ISVALIDPI(second)? (unsigned short)second->getColor() : 0 
 	);
 	
 }

@@ -66,9 +66,9 @@ private:
 		LOGICAL good_position(P_ITEM pBoat, Location where, int dir);
 		LOGICAL tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);
 		void LeaveBoat(P_CHAR pc, P_ITEM pi);
-		void TurnStuff_i(P_ITEM, P_ITEM, int, int);
+		void TurnStuff_i(P_ITEM, P_ITEM, int);
 
-		void TurnStuff_c(P_ITEM, P_CHAR, int, int);
+		void TurnStuff_c(P_ITEM, P_CHAR, int);
 		void iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced = true);
 
 		void TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold );

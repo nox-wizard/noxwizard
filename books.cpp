@@ -524,7 +524,7 @@ namespace Books
 			booktitle[i] = '\0';
 
 		LongToCharPtr(book->getSerial32(), bookopen+1);
-		ShortToCharPtr(pages.size(), bookopen+7);
+		ShortToCharPtr((const unsigned short) pages.size(), bookopen+7);
 
 		Xsend(s, bookopen, 9);
 
@@ -552,12 +552,12 @@ namespace Books
 			bytes += 4; // 4 bytes for each page
 			UI16 j = 0;
 			for( std::vector<std::string>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++, j++ )
-				bytes += (*it2).size() + 1;
+				bytes += (unsigned short)((*it2).size() + 1);
 			while ( j++ < 8 )
 				bytes += 2;
 		}
 
-		ShortToCharPtr(pages.size(), bookpage_pre+7);
+		ShortToCharPtr((const unsigned short)pages.size(), bookpage_pre+7);
 		ShortToCharPtr(bytes, bookpage_pre+1);
 		Xsend(s, bookpage_pre, 9);
 
@@ -596,7 +596,7 @@ namespace Books
 			booktitle[i] = '\0';
 
 		LongToCharPtr(book->getSerial32(), bookopen+1);
-		ShortToCharPtr(pages.size(), bookopen+7);
+		ShortToCharPtr((const unsigned short)pages.size(), bookopen+7);
 
 		Xsend(s, bookopen, 9);
 		Xsend(s, booktitle, 60);
@@ -625,12 +625,12 @@ namespace Books
 		std::vector<std::string> selpage = pages[p];
 
 		for(std::vector<std::string>::iterator it = selpage.begin(); it != selpage.end(); it++)
-			bytes += (*it).size() + 1;
+			bytes += (unsigned short)((*it).size() + 1);
 
 		ShortToCharPtr(bytes, bookpage+1);
 		LongToCharPtr(book->getSerial32(), bookpage+3);
 		ShortToCharPtr(p, bookpage+9);
-		ShortToCharPtr(selpage.size(), bookpage+11);
+		ShortToCharPtr((const unsigned short)selpage.size(), bookpage+11);
 
 		Xsend(s, bookpage, 13);
 

@@ -374,10 +374,10 @@ void setItemIntProperty(P_ITEM pi, int property, int prop2, int value )
 			pi->smelt = value;
 			break;
 		case NXW_IP_I_SPAWNREGION :				   //dec value :  235;
-			pi->spawnregion = value;
+			pi->setSpawnRegion(value);
 			break;
 		case NXW_IP_I_SPAWNSERIAL :				   //dec value :  236;
-			pi->spawnserial = value;
+			pi->setSpawnSerial(value);
 			break;
 		case NXW_IP_I_SPEED :					   //dec value :  237;
 			pi->spd = value;
@@ -675,8 +675,8 @@ int getItemIntProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_I_SECUREIT, pi->secureIt )					//dec value :  232;
 		CHECK(NXW_IP_I_SERIAL, pi->getSerial32() )				//dec value :  233;
 		CHECK(NXW_IP_I_SMELT, pi->smelt )						//dec value :  234;
-		CHECK(NXW_IP_I_SPAWNREGION, pi->spawnregion )			//dec value :  235;
-		CHECK(NXW_IP_I_SPAWNSERIAL, pi->spawnserial )			//dec value :  236;
+		CHECK(NXW_IP_I_SPAWNREGION, pi->getSpawnRegion() )		//dec value :  235;
+		CHECK(NXW_IP_I_SPAWNSERIAL, pi->getSpawnSerial() )		//dec value :  236;
 		CHECK(NXW_IP_I_SPEED, pi->spd )							//dec value :  237;
 		CHECK(NXW_IP_I_STRBONUS, pi->st2 )						//dec value :  238;
 		CHECK(NXW_IP_I_STRREQUIRED, pi->st )					//dec value :  239;
@@ -1865,21 +1865,21 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_BASESKILL , pc->baseskill[prop2] )  		//dec value: 400;
 		CHECK(  NXW_CP_S_SKILL , pc->skill[prop2] )  			//dec value: 401;
 		CHECK(  NXW_CP_S_GUILDTYPE , pc->GetGuildType() )  		//dec value: 402;
-		CHECK(  NXW_CP_S_TOTALSKILL , pc->getSkillSum() )  			//dec value: 401;
+		CHECK(  NXW_CP_S_TOTALSKILL , (short) pc->getSkillSum() )  			//dec value: 401;
 		CHECK(  NXW_CP_S_ID, pc->getId() )
 		CHECK(  NXW_CP_S_SKIN, pc->getColor() )
 		CHECK(  NXW_CP_S_XID, pc->getOldId() )
 		CHECK(  NXW_CP_S_XSKIN, pc->getOldColor() )
 		case NXW_CP_S_ICON : {
 			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
-			return ( creature!=NULL )? creature->icon : INVALID;
+			return ( creature!=NULL )? (short)creature->icon : (short)INVALID;
 
 		}
 		case NXW_CP_S_SOUND : {
 			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
-			return ( creature!=NULL )? creature->getSound( static_cast<MonsterSound>(prop2) ) : INVALID;
+			return ( creature!=NULL )? (short)creature->getSound( static_cast<MonsterSound>(prop2) ) : (short)INVALID;
 		}
-		CHECK(  NXW_CP_S_RACE, pc->race )
+		CHECK(  NXW_CP_S_RACE, (short)pc->race )
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return INVALID;
@@ -1911,10 +1911,10 @@ char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_C_SPEECH , pc->speech )  			//dec value: 127;
 		CHECK(  NXW_CP_C_WAR , pc->war )  				//dec value: 128;
 		CHECK(  NXW_CP_C_NXWFLAGS, pc->nxwflags[prop2])			//dec value: 131;
-		CHECK(  NXW_CP_I_RESISTS, pc->resists[prop2])			//dec value: 132;
+		CHECK(  NXW_CP_I_RESISTS, (char)pc->resists[prop2])			//dec value: 132;
 		CHECK(  NXW_CP_C_TRAININGPLAYERIN , pc->getSkillTaught() )  	//dec value: 133;
 		CHECK(  NXW_CP_C_PRIV , pc->GetPriv() )  			//dec value: 134;
-		CHECK(  NXW_CP_C_DAMAGETYPE, pc->damagetype)			//dec value: 135;
+		CHECK(  NXW_CP_C_DAMAGETYPE, (char)pc->damagetype)			//dec value: 135;
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return '\0';
@@ -2596,10 +2596,10 @@ NATIVE2(_guildMember_getProperty)
 		char p;
 		switch(params[2]) {
 			case NXW_GMP_C_RANK :				  		//dec value: 100;
-				p = member->rank;
+				p = (char)member->rank;
 				break;
 			case NXW_GMP_C_TITLETOGGLE:
-				p = member->toggle;
+				p = (char) member->toggle;
 				break;
 			default:
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
@@ -3288,7 +3288,7 @@ NATIVE2(_getRaceProperty)
 		short p;
 		switch(params[2]) {
 			case RP_S_SKIN:
-				p = ( !race->skinColor.empty() )? race->skinColor[ rand()%race->skinColor.size() ] : 0;
+				p = ( !race->skinColor.empty() )? (short)race->skinColor[ rand()%race->skinColor.size() ] : (short)0;
 				break;
 			default:
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
@@ -3303,13 +3303,13 @@ NATIVE2(_getRaceProperty)
 		char p;
 		switch(params[2]) {
 			case RP_C_TYPE:
-				p = race->raceType.getValue();
+				p = (char)race->raceType.getValue();
 				break;
 			case RP_C_LAYER_PERMITTED:
 				if( params[2]==LAYER_BEARD )
-					p = race->beardPerm;
+					p = (char)race->beardPerm;
 				else if( params[2]==LAYER_HAIR )
-					p = race->hairPerm;
+					p = (char)race->hairPerm;
 				else
 			default:
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
@@ -3696,10 +3696,10 @@ NATIVE2( _party_getProperty )
 		char p;
 		switch(params[2]) {
 			case PP_C_MEMBERS:
-				p=party->members.size();
+				p=(char)party->members.size();
 				break;
 			case PP_C_CANDIDATES:
-				p=party->candidates.size();
+				p=(char)party->candidates.size();
 				break;
 			default:
 				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
@@ -4175,19 +4175,19 @@ char house_getCharProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 {
 // Byte properties
 
-	char retVal=INVALID;
+	char retVal=(signed char) INVALID;
 	switch( property )
 	{
 
 		case NXW_HP_DIMENSION :		   //dec value :  204;
 			if ( subProperty == 0 ) // Left X
-				retVal = house->getLeftXRange();
+				retVal = (char)house->getLeftXRange();
 			else if ( subProperty == 1 ) // Right X
-				retVal = house->getUpperYRange();
+				retVal = (char)house->getUpperYRange();
 			else if ( subProperty == 2 )
-				retVal = house->getRightXRange();
+				retVal = (char)house->getRightXRange();
 			else if ( subProperty == 3 )
-				retVal = house->getLowerYRange();
+				retVal = (char)house->getLowerYRange();
 			else
 				ErrOut("house_getProperty called with invalid property %d and subproperty %d!\n", property, subProperty );
 			break;
@@ -4196,7 +4196,7 @@ char house_getCharProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 			ErrOut("house_getProperty called with invalid property %d!\n", property );
 			break;
 	}
-	return INVALID;
+	return (char)INVALID;
 }
 
 const char* house_getStrProperty( P_HOUSE house, UI32 property, UI32 subProperty)

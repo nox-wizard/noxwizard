@@ -903,7 +903,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 				}
 			}
 
-			Accounts->SetOnline(acctno[s], pc_k);
+			Accounts->SetOnline(pc_k);
 			pc_k->logout=INVALID;
 
 			currchar[s] = pc_k->getSerial32();
@@ -1026,7 +1026,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 #endif
 			pc->setClient(NULL);
 			Accounts->SetOffline(pc->account);
-			Accounts->SetOnline(pc->account, pcPos);
+			Accounts->SetOnline(pcPos);
 		} else pc->possessedSerial = INVALID;
 	}
 	//</Luxor>

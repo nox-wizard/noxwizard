@@ -147,7 +147,7 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 	//long int pos, pos2, length;
 	UI32 x,x2= pi->getPosition("x");
 	UI32 y,y2= pi->getPosition("y");
-	SI08 z= pi->getPosition("z");
+	SI08 z= (signed char)pi->getPosition("z");
 	SI08 mz,sz,typ;
 	P_ITEM pBoat=GetBoat(pc->getPosition());
 
@@ -207,7 +207,7 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 }
 
 
-void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir)//Turn an item that was on the boat when the boat was turned.
 {
 	VALIDATEPI(p_b);
 	VALIDATEPI(pi);
@@ -242,7 +242,7 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 }
 
 
-void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir)//Turn an item that was on the boat when the boat was turned.
 {
 	VALIDATEPI(p_b);
 	VALIDATEPC(pc);
@@ -354,7 +354,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	if(id2>pi->more2)
 		id2-=4;//Now you know what the min/max id is for :-)
 
-	pi->setId( DBYTE2WORD( id1, id2 ) );//set the id
+	pi->setId( (unsigned short)DBYTE2WORD( id1, id2 ) );//set the id
 
 	if(id2==pi->more1)
 		pi->dir=0;//extra DIR error checking
@@ -370,18 +370,18 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	Location bpos= pi->getPosition();
 
 	p1->MoveTo( bpos.x, bpos.y, p1->getPosition().z );
-	SI16 tempID=(p1->getId()/256)*256+pShipItems[PORT_P_C];
+	SI16 tempID=(short)((p1->getId()/256)*256+pShipItems[PORT_P_C]);
 	p1->setId( tempID  );//change the ID
 
-	tempID=(p2->getId()/256)*256+pShipItems[STAR_P_C];
+	tempID=(short)((p2->getId()/256)*256+pShipItems[STAR_P_C]);
 	p2->MoveTo( bpos.x, bpos.y, p2->getPosition().z );
 	p2->setId( tempID );
 
-	tempID=(tiller->getId()/256)*256+pShipItems[TILLERID];
+	tempID=(short)((tiller->getId()/256)*256+pShipItems[TILLERID]);
 	tiller->MoveTo( bpos.x, bpos.y, tiller->getPosition().z );
 	tiller->setId( tempID );
 
-	tempID=(hold->getId()/256)*256+pShipItems[HOLDID];
+	tempID=(short)((hold->getId()/256)*256+pShipItems[HOLDID]);
 	hold->MoveTo(bpos.x, bpos.y, hold->getPosition().z );
 	hold->setId( tempID );
 
@@ -390,18 +390,18 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	NxwItemWrapper itemsNear;
 	// maximum radius of a boat is 6 ?
 	itemsNear.fillItemsNearXYZ(bpos, 6, true);
-	UI08 xdist, ydist;
+	UI08 xdist=0, ydist=0;
 	// north south elongation uses standard spacex1 and spacey1
 	if ( dir == 0 || dir == 4 )
 	{
-		xdist = pBoat->getLeftXRange();
-		ydist = pBoat->getUpperYRange();
+		xdist = (unsigned char)pBoat->getLeftXRange();
+		ydist = (unsigned char)pBoat->getUpperYRange();
 	}
 	// east west elongation uses spacey1 and spacex1 
 	if ( dir == 2 || dir == 6 )
 	{
-		xdist = pBoat->getUpperYRange();
-		ydist = pBoat->getLeftXRange();
+		xdist = (unsigned char)pBoat->getUpperYRange();
+		ydist = (unsigned char)pBoat->getLeftXRange();
 	}    
 	for( itemsNear.rewind(); !itemsNear.isEmpty(); itemsNear++ ) 
 	{
@@ -411,7 +411,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 		Location itemPos=pi->getPosition ();
 		if (( abs((int)(bpos.x-itemPos.x)) <= xdist) && ( abs((int)(bpos.y-itemPos.y)) <= ydist) )
 		{
-			TurnStuff_i(pi, pi_2, dir,0);
+			TurnStuff_i(pi, pi_2, dir);
 		}
 
 	}
@@ -424,7 +424,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 		Location charPos=pc->getPosition ();
 		if (( abs((int)(bpos.x-charPos.x)) <= xdist) && ( abs((int)(bpos.y-charPos.y)) <= ydist)  )
 		{
-			TurnStuff_c(pi, pc, dir,0);
+			TurnStuff_c(pi, pc, dir);
 		}
 
 	}
@@ -844,7 +844,7 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 
 LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
 {
-	int dx,dy;
+	int dx=x,dy=y;
 	switch(dir)
 		{
 		case -1:
@@ -904,7 +904,7 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 	LOGICAL good_pos=false;
 
 	multiVector m;
-	data::seekMulti( pBoat->getId()-0x4000, m );
+	data::seekMulti((unsigned short) (pBoat->getId()-0x4000), m );
 
 	for( i = 0; i < m.size(); i++ ) {
 
@@ -925,6 +925,8 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 			case 2:
 				data::seekMap(x-m[i].x,y-m[i].y, map);
 				break;
+			default:
+				return false;
 			}
 
 			switch(map.id)
@@ -1001,7 +1003,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 
 	pBoat->setOwnerSerial32(pc_cs->getSerial32());
 	pBoat->more1=id2;//Set min ID
-	pBoat->more2=nid2+3;//set MAX id
+	pBoat->more2=(unsigned char)(nid2+3);//set MAX id
 	pBoat->type=ITYPE_BOATS;//Boat type
 	pBoat->setPosition("z", -5);//Z in water
 //	strcpy(pBoat->name,"a mast");//Name is something other than "%s's house"
@@ -1182,8 +1184,8 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 	int x,y;
 
 	multiVector m1, m2;
-	data::seekMulti( pBoat1->getId()-0x4000, m1 );
-	data::seekMulti( pBoat2->getId()-0x4000, m2 );
+	data::seekMulti( (unsigned short)(pBoat1->getId()-0x4000), m1 );
+	data::seekMulti( (unsigned short)(pBoat2->getId()-0x4000), m2 );
 
 	for( i1 = 0; i1 < m1.size(); i1++ )
 	{
@@ -1216,6 +1218,7 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 			default:
 				LogError("boat_collision() - bad boat turning direction\n");
+				return false;
 			}
 
 			if ( (x==m2[i2].x+pBoat2->getPosition("x")) && (y==m2[i2].y+pBoat2->getPosition("y")) )
@@ -1272,7 +1275,7 @@ P_ITEM cBoat::GetBoat(Location pos)
 		if( dist( pos, pBoat->getPosition() ) < 10.0 )
 		{
 			multiVector m;
-			data::seekMulti( pBoat->getId()-0x4000, m );
+			data::seekMulti( (unsigned short)(pBoat->getId()-0x4000), m );
 
 			for( i = 0; i < m.size(); i++ ) {
 				if( ((m[i].x + pBoat->getPosition().x) == pos.x) && ((m[i].y + pBoat->getPosition().y) == pos.y) )
@@ -1424,19 +1427,18 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	NxwItemWrapper itemsNear;
 	// maximum radius of a boat is 6 ?
 	itemsNear.fillItemsNearXYZ(boatpos, 6, true);
-	UI08 size=pBoat->more1;
-	UI08 xdist, ydist;
+	UI08 xdist=0, ydist=0;
 	// north south elongation uses standard spacex1 and spacey1
 	if ( dir == 0 || dir == 4 )
 	{
-		xdist = boat->getLeftXRange();
-		ydist = boat->getUpperYRange();
+		xdist = (unsigned char)boat->getLeftXRange();
+		ydist = (unsigned char)boat->getUpperYRange();
 	}
 	// east west elongation uses spacey1 and spacex1 
 	if ( dir == 2 || dir == 6 )
 	{
-		xdist = boat->getUpperYRange();
-		ydist = boat->getLeftXRange();
+		xdist = (unsigned char)boat->getUpperYRange();
+		ydist = (unsigned char)boat->getLeftXRange();
 	}
 
     for( itemsNear.rewind(); !itemsNear.isEmpty(); itemsNear++ ) 
@@ -1529,7 +1531,7 @@ void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
 	builder->fx1=shipdeed->getSerial32();
 	newBoat->createMulti(shipdeed->morex, piShip);
 	id = piShip->getId();
-	newBoat->Build(builder->getSocket(), piShip, id%256);
+	newBoat->Build(builder->getSocket(), piShip,(char) (id%256));
 	newBoat->p_serial=piShip;
 	newBoat->setSerial(piShip->getSerial32());
 	if (ps->isDragging()) 
@@ -1544,7 +1546,7 @@ void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
 	piShip->setOwnerSerial32(builder->getSerial32());
 	piShip->setPosition (0,0,0);
 
-	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for placing."));
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (char)((id>>8) -0x40), (char)(id%256), TRANSLATE("Select location for placing."));
 	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
 	targ->code_callback=cBoat::target_buildShip;
 	targ->buffer[0]=piShip->getSerial32();
@@ -1622,16 +1624,14 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	
 	int shipnumber;
 	UI32 x, y;
-	SI32 icount=0;
 	signed char z;
-	int boat=0;//Boats
 
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
 	x = t->getLocation().x; //where they targeted
 	y = t->getLocation().y;
-	z = t->getLocation().z;
+	z = (signed char)t->getLocation().z;
 
 
 	SI16 id = iShip->getId(); //house ID

@@ -98,7 +98,7 @@ int weights::CheckWeight(P_CHAR pc)
 		ret=1,
 		result; //for float rounding purposes
 
-	UI08 index,x;
+	UI08 index=0,x;
 	float amount;
 
 	if(pc->weight>limit) index=5; //overweight

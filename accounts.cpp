@@ -91,6 +91,14 @@ void cAccount::setOnline( P_CHAR pc )
 */
 bool cAccount::isOnline( )
 {
+	if ( pc_online > 0 )
+	{
+		P_CHAR pc = pointers::findCharBySerial(pc_online);
+		if ( ! ISVALIDPC(pc) )
+			setOffline();
+	}
+	if ( state == LOG_ENTERING )
+		return false;
 	return (state!=LOG_OUT);
 }
 
@@ -598,7 +606,7 @@ SERIAL cAccounts::GetInWorld( ACCOUNT acctnum )
 \param acctnum Account number
 \param pc The Character
 */
-void cAccounts::SetOnline( ACCOUNT acctnum, P_CHAR pc )
+void cAccounts::SetOnline( P_CHAR pc )
 {
 	VALIDATEPC(pc);
 	ACCOUNT_LIST::iterator iter( this->acctlist.find(pc->account) );

@@ -141,7 +141,7 @@
 #define NAME "Official Dev Team"
 
 //NOTE: In order to modify this, please ask to the nox-wizard staff. Remember to do not remove any developer from PROGRAMMERS without nox-wizard staff permission
-#define PROGRAMMERS "Xanathar, Luxor, Sparhawk, Elcabesa, Araknesh, Anthalir, Endymion, Akron and Riekr"
+#define PROGRAMMERS "Xanathar, Luxor, Sparhawk, Elcabesa, Araknesh, Anthalir, Endymion, Akron, Riekr, Fax, Frodo, Horian, Stonedz and Wintermute"
 
 #define EMAIL "staff@noxwizard.com"
 

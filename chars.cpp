@@ -43,6 +43,7 @@
 #include "nox-wizard.h"
 #include "targeting.h"
 #include "cmds.h"
+#include "spawn.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -960,7 +961,7 @@ void cChar::unHide()
 					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					SendDrawGamePlayerPkt(i, my_serial, getId(), 0x00, getColor(), (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
+					SendDrawGamePlayerPkt(i, my_serial, getId(), (unsigned char)0x00, getColor(), (poisoned ? (unsigned char)0x04 : (unsigned char)0x00), my_pos, (unsigned char)0x0000, dir|0x80);
 				}
 			}
 		}
@@ -1081,9 +1082,9 @@ void cChar::showContainer(P_ITEM pCont)
 
 	UI08 bpopen2[5]= { 0x3C, 0x00, 0x05, 0x00, 0x00 };
 
-	ShortToCharPtr(count, bpopen2+3);
+	ShortToCharPtr((unsigned short)count, bpopen2+3);
 	count=(count*19)+5;
-	ShortToCharPtr(count, bpopen2+1);
+	ShortToCharPtr((unsigned short)count, bpopen2+1);
 	Xsend(s, bpopen2, 5);
 
 	UI08 bpitem[19]= { 0x40,0x0D,0x98,0xF7,0x0F,0x4F,0x00,0x00,0x09,0x00,0x30,0x00,0x52,0x40,0x0B,0x00,0x1A,0x00,0x00 };
@@ -1102,8 +1103,8 @@ void cChar::showContainer(P_ITEM pCont)
 		LongToCharPtr(pi->getSerial32(), bpitem);
 		ShortToCharPtr(pi->animid(), bpitem +4);
 		ShortToCharPtr(pi->amount, bpitem +7);
-		ShortToCharPtr(pi->getPosition().x, bpitem +9);
-		ShortToCharPtr(pi->getPosition().y, bpitem +11);
+		ShortToCharPtr((const unsigned short)pi->getPosition().x, bpitem +9);
+		ShortToCharPtr((const unsigned short)pi->getPosition().y, bpitem +11);
 		LongToCharPtr(pCont->getSerial32(), bpitem +13);
 		ShortToCharPtr(pi->getColor(), bpitem +17);
 		Xsend(s, bpitem, 19);
@@ -1471,7 +1472,7 @@ void cChar::playAction(SI32 action)
 
 	UI08 doact[14]={ 0x6E, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x00, 0x05, 0x00, 0x01, 0x0, 0x00, 0x01 };
 	LongToCharPtr(getSerial32(), doact +1);
-	ShortToCharPtr(action, doact +5);
+	ShortToCharPtr((unsigned short)action, doact +5);
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
@@ -2571,6 +2572,17 @@ void cChar::setOwner(P_CHAR owner)
 	npcWander=WANDER_NOMOVE;
 	tamed = true;
 	npcaitype=NPCAI_GOOD;
+	// If the npc came from a spawner then remove char from spawner list 
+	if ( this->getSpawnSerial() != INVALID )
+	{
+		P_ITEM spawn = pointers::findItemBySerial(this->getSpawnSerial());
+		if ( ISVALIDPI(spawn) )
+		{
+			if ( spawn->amount2 > 0 )
+				spawn->amount2--;
+		}
+		Spawns->removeObject(spawn->getSerial32(), this);
+	}
 }
 
 /*!
@@ -2780,11 +2792,11 @@ void cChar::possess(P_CHAR pc)
 	//Set offline the old body, and online the new one
 	if ( bSwitchBack ) {
 		Accounts->SetOffline( pc->account );
-		Accounts->SetOnline( pc->account, pc );
+		Accounts->SetOnline( pc );
 
 	} else {
 		Accounts->SetOffline( account );
-		Accounts->SetOnline( account, pc );
+		Accounts->SetOnline(  pc );
 	}
 
 	//Let's go! :)

@@ -518,38 +518,41 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 
 		int ds;
 		P_HOUSE house=cHouses::findHouse(pi->getPosition());
-		P_ITEM pi_house = pointers::findItemBySerial(house->getSerial());
-
-		if(ISVALIDPI(pi_house))
+		if ( house != NULL )
 		{
-			const P_ITEM pi2=pi_house;
-			if ( house != NULL )
+			P_ITEM pi_house = pointers::findItemBySerial(house->getSerial());
+
+			if(ISVALIDPI(pi_house))
 			{
-
-				if( !house->isCoOwner(pc) && !house->isFriend(pc) && house->getOwner() != pc->getSerial32() )// house_refresh stuff, LB, friends of the house can do.
+				const P_ITEM pi2=pi_house;
+				if ( house != NULL )
 				{
-					if (s!=INVALID)
+
+					if( !house->isCoOwner(pc) && !house->isFriend(pc) && house->getOwner() != pc->getSerial32() )// house_refresh stuff, LB, friends of the house can do.
 					{
-						if (SrvParms->housedecay_secs!=0)
-							ds=((pi2->time_unused)*100)/(SrvParms->housedecay_secs);
-						else ds=INVALID;
-
-						if (ds>=50) // sysmessage iff decay status >=50%
+						if (s!=INVALID)
 						{
+							if (SrvParms->housedecay_secs!=0)
+								ds=((pi2->time_unused)*100)/(SrvParms->housedecay_secs);
+							else ds=INVALID;
 
-							if (house->getOwner()!= pc->getSerial32() && !house->isCoOwner(pc))
-								sysmessage(s,TRANSLATE("You refreshed your friend's house"));
-							else
-								sysmessage(s,TRANSLATE("You refreshed the house"));
+							if (ds>=50) // sysmessage iff decay status >=50%
+							{
+
+								if (house->getOwner()!= pc->getSerial32() && !house->isCoOwner(pc))
+									sysmessage(s,TRANSLATE("You refreshed your friend's house"));
+								else
+									sysmessage(s,TRANSLATE("You refreshed the house"));
+							}
 						}
-					}
 
-					pi2->time_unused=0;
-					pi2->timeused_last=getclock();
-				}
-				//ConOut("house name: %s\n",pi2->name);
-			} // end of is_house
-		} // end of is_multi
+						pi2->time_unused=0;
+						pi2->timeused_last=getclock();
+					}
+					//ConOut("house name: %s\n",pi2->name);
+				} // end of is_house
+			} // end of is_multi
+		}
 	}
 
 	if (changed==0 && s>INVALID) 

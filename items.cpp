@@ -123,8 +123,6 @@ cItem& cItem::operator=(cItem& b)
         decaytime = b.decaytime;
         //setOwnerSerial32(b.getOwnerSerial32());
         visible = b.visible;
-        spawnserial = INVALID;
-        spawnregion = INVALID;
         dir = b.dir;
         priv = b.priv;
         value = b.value;
@@ -508,7 +506,7 @@ SI32 cItem::ReduceAmount(const SI16 amt)
 	long rest=0;
 	if( amount > amt )
 	{
-		amount-=amt;
+		amount-=(unsigned short)amt;
 		Refresh();
 	}
 	else
@@ -687,7 +685,7 @@ bool cItem::PileItem( P_ITEM pItem )
 
 		pItem->setContSerial( getContSerial() );
 
-		pItem->amount=(amount+pItem->amount)-MAX_ITEM_AMOUNT;
+		pItem->amount=(unsigned short)((amount+pItem->amount)-MAX_ITEM_AMOUNT);
 		amount=MAX_ITEM_AMOUNT;
 		pItem->Refresh();
 	}
@@ -695,7 +693,7 @@ bool cItem::PileItem( P_ITEM pItem )
 	{
 		pItem->setPosition( getPosition() );
 		pItem->setContSerial( getContSerial() );
-		pItem->amount+=amount;
+		pItem->amount+=(unsigned short)amount;
 		pItem->Refresh();
 		Delete();
 	}
@@ -742,7 +740,7 @@ int cItem::DeleteAmount(int amount, short id, short color)
 		if(ISVALIDPI(pi) && (rest > 0) )
 		{
 			if (pi->getId()==id && (color==INVALID || (pi->getColor()==color)))
-				rest=pi->ReduceAmount(rest);
+				rest=(short)pi->ReduceAmount(rest);
 		}
 	}
 	return rest;
@@ -767,7 +765,7 @@ int cItem::DeleteAmountByID(int amount, unsigned int scriptID)
 			rest= pi->DeleteAmountByID(amount, scriptID);
 
 		if (pi->getScriptID() == scriptID)
-			rest= pi->ReduceAmount(rest);
+			rest= (short)pi->ReduceAmount(rest);
 
 		if (rest<= 0)
 			break;
@@ -783,8 +781,8 @@ int cItem::DeleteAmountByID(int amount, unsigned int scriptID)
 */
 void cItem::animSetId(SI16 id)
 {
-	animid1=id>>8;
-	animid2=id&0x00FF;
+	animid1=(unsigned char)((id>>8)&0xFF);
+	animid2=(unsigned char)(id&0x00FF);
 }
 
 /*!
@@ -917,8 +915,6 @@ cItem::cItem( SERIAL ser )
 	gatenumber=INVALID;
 
 	visible=0; // 0=Normally Visible, 1=Owner & GM Visible, 2=GM Visible
-	spawnserial=INVALID;
-	spawnregion=INVALID;
 	dir=0; // Direction, or light source type.
 	priv=0; // Bit 0, decay off/on.  Bit 1, newbie item off/on.  Bit 2 Dispellable
 	decaytime = 0;

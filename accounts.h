@@ -112,7 +112,7 @@ public:
 	bool IsOnline( ACCOUNT acctnum );
 	SERIAL GetInWorld( ACCOUNT acctnum );
 
-	void SetOnline( ACCOUNT acctnum, P_CHAR pc );
+	void SetOnline( P_CHAR pc );
 	void SetEntering( ACCOUNT acctnum );
 	void SetOffline( ACCOUNT acctnum );
 	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket );

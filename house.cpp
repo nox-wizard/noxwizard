@@ -47,12 +47,12 @@ void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 {
 	UI08 multitarcrs[26]= { 0x99, 0x01, 0x40, 0x01, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-	multitarcrs[2]=a1;
-	multitarcrs[3]=a2;
-	multitarcrs[4]=a3;
-	multitarcrs[5]=a4;
-	multitarcrs[18]=b1;
-	multitarcrs[19]=b2;
+	multitarcrs[2]=(unsigned char)a1;
+	multitarcrs[3]=(unsigned char)a2;
+	multitarcrs[4]=(unsigned char)a3;
+	multitarcrs[5]=(unsigned char)a4;
+	multitarcrs[18]=(unsigned char)b1;
+	multitarcrs[19]=(unsigned char)b2;
 	sysmessage(s, txt);
 	Xsend(s, multitarcrs, 26);
 //AoS/	Network->FlushBuffer(s);
@@ -96,10 +96,10 @@ void cMulti::setKeycode(SI32 keycode)
 }
 void cMulti::setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 )
 {
-	this->spacex1=x1;
-	this->spacex2=x2;
-	this->spacey1=y1;
-	this->spacey2=y2;
+	this->spacex1=(signed char)x1;
+	this->spacex2=(signed char)x2;
+	this->spacey1=(signed char)y1;
+	this->spacey2=(signed char)y2;
 }
 
  
@@ -160,7 +160,7 @@ void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
 
 	int multinumber;
 	UI32 x, y;
-	SI32 k, icount=0;
+	SI32 k;
 	signed char z;
 	cMulti *newMulti = new cMulti();
 	newMulti->setSerial(pMulti->getSerial32());
@@ -169,7 +169,7 @@ void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
 
 	x = t->getLocation().x; //where they targeted
 	y = t->getLocation().y;
-	z = t->getLocation().z;
+	z = (signed char)t->getLocation().z;
 
 	Location charpos= pc->getPosition();
 
@@ -292,7 +292,6 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 	int hitem[100];//extra "house items" (up to 100)
 	char sect[512];                         //file reading
 	char name[512];
-	UI32 sx = 0, sy = 0, icount=0;
 	int loopexit=0;//the house/key items
 	hitem[0]=0;//avoid problems if there are no HOUSE_ITEMs by initializing the first one as 0
 	if (multiNumber)
@@ -312,7 +311,7 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 			{
 				if (!(strcmp(script1,"ID")))
 				{
-					multiItem->setId(hex2num(script2));
+					multiItem->setId((unsigned short)hex2num(script2));
 				}
 				else if (!(strcmp(script1,"HOUSE_ITEM")))
 				{
@@ -320,19 +319,19 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 				}
 				else if (!(strcmp(script1,"SPACEX1")))
 				{
-					spacex1=str2num(script2)+1;
+					spacex1=(signed char)(str2num(script2)+1);
 				}
 				else if (!(strcmp(script1,"SPACEY1")))
 				{
-					spacey1=str2num(script2)+1;
+					spacey1=(signed char)(str2num(script2)+1);
 				}
 				else if (!(strcmp(script1,"SPACEX2")))
 				{
-					spacex2=str2num(script2)+1;
+					spacex2=(signed char)(str2num(script2)+1);
 				}
 				else if (!(strcmp(script1,"SPACEY2")))
 				{
-					spacey2=str2num(script2)+1;
+					spacey2=(signed char)(str2num(script2)+1);
 				}
 				else if (!(strcmp(script1,"CHARX")))
 				{
@@ -348,7 +347,7 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 				}
 				else if( !(strcmp(script1, "ITEMSDECAY" )))
 				{
-					multiItem->more4=str2num( script2 );
+					multiItem->more4=(unsigned char)str2num( script2 );
 				}
 				else if (!(strcmp(script1, "HOUSE_DEED")))
 				{
@@ -399,14 +398,14 @@ void cHouse::transfer(SERIAL newOwner)
 		pKey->MoveTo( pc->getPosition() );
 	}
 	pKey->Refresh();
-	pKey->more1= (getSerial()>>24)&0xFF;
-	pKey->more2= (getSerial()>>16)&0xFF;
-	pKey->more3= (getSerial()>>8)&0xFF;
-	pKey->more4= (getSerial())&0xFF;
-	pKey->moreb1=(getKeycode()>>24)&0xFF;
-	pKey->moreb2=(getKeycode()>>16)&0xFF;
-	pKey->moreb3=(getKeycode()>>8)&0xFF;
-	pKey->moreb4=(getKeycode())&0xFF;
+	pKey->more1= (unsigned char)((getSerial()>>24)&0xFF);
+	pKey->more2= (unsigned char)((getSerial()>>16)&0xFF);
+	pKey->more3= (unsigned char)((getSerial()>>8)&0xFF);
+	pKey->more4= (unsigned char)((getSerial())&0xFF);
+	pKey->moreb1=(signed char)((getKeycode()>>24)&0xFF);
+	pKey->moreb2=(signed char)((getKeycode()>>16)&0xFF);
+	pKey->moreb3=(signed char)((getKeycode()>>8)&0xFF);
+	pKey->moreb4=(signed char)((getKeycode())&0xFF);
 	pKey->type=7;
 
 	sysmessage(oldOwner->getSocket(), "You have transferred your house to %s.", pc->getCurrentNameC());
@@ -459,24 +458,24 @@ void cMulti::makeKeys(cMulti * pMulti, P_CHAR pc)
 													// all world items (Sparhawk)
 
 
-	pKey->more1=(pMulti->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
-	pKey->more2=(pMulti->getSerial()>>16)&0xFF;
-	pKey->more3=(pMulti->getSerial()>>8)&0xFF;
-	pKey->more4=(pMulti->getSerial())&0xFF;
-	pKey->moreb1=(pMulti->getKeycode()>>24)&0xFF;
-	pKey->moreb2=(pMulti->getKeycode()>>16)&0xFF;
-	pKey->moreb3=(pMulti->getKeycode()>>8)&0xFF;
-	pKey->moreb4=(pMulti->getKeycode())&0xFF;
+	pKey->more1=(unsigned char)((pMulti->getSerial()>>24)&0xFF);//use the house's serial for the more on the key to keep it unique
+	pKey->more2=(unsigned char)((pMulti->getSerial()>>16)&0xFF);
+	pKey->more3=(unsigned char)((pMulti->getSerial()>>8)&0xFF);
+	pKey->more4=(unsigned char)((pMulti->getSerial())&0xFF);
+	pKey->moreb1=(signed char)((pMulti->getKeycode()>>24)&0xFF);
+	pKey->moreb2=(signed char)((pMulti->getKeycode()>>16)&0xFF);
+	pKey->moreb3=(signed char)((pMulti->getKeycode()>>8)&0xFF);
+	pKey->moreb4=(signed char)((pMulti->getKeycode())&0xFF);
 	pKey->type=ITYPE_KEY;
 	pKey->setNewbie();
-	pKey2->more1=(pMulti->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
-	pKey2->more2=(pMulti->getSerial()>>16)&0xFF;
-	pKey2->more3=(pMulti->getSerial()>>8)&0xFF;
-	pKey2->more4=(pMulti->getSerial())&0xFF;
-	pKey2->moreb1=(pMulti->getKeycode()>>24)&0xFF;
-	pKey2->moreb2=(pMulti->getKeycode()>>16)&0xFF;
-	pKey2->moreb3=(pMulti->getKeycode()>>8)&0xFF;
-	pKey2->moreb4=(pMulti->getKeycode())&0xFF;
+	pKey2->more1=(unsigned char)((pMulti->getSerial()>>24)&0xFF);//use the house's serial for the more on the key to keep it unique
+	pKey2->more2=(unsigned char)((pMulti->getSerial()>>16)&0xFF);
+	pKey2->more3=(unsigned char)((pMulti->getSerial()>>8)&0xFF);
+	pKey2->more4=(unsigned char)((pMulti->getSerial())&0xFF);
+	pKey2->moreb1=(signed char)((pMulti->getKeycode()>>24)&0xFF);
+	pKey2->moreb2=(signed char)((pMulti->getKeycode()>>16)&0xFF);
+	pKey2->moreb3=(signed char)((pMulti->getKeycode()>>8)&0xFF);
+	pKey2->moreb4=(signed char)((pMulti->getKeycode())&0xFF);
 	pKey2->type=ITYPE_KEY;
 	pKey2->setNewbie();
 
@@ -487,14 +486,14 @@ void cMulti::makeKeys(cMulti * pMulti, P_CHAR pc)
 		P_ITEM p_key3=item::CreateFromScript( "$item_gold_key" );
 		VALIDATEPI(p_key3);
 		p_key3->setCurrentName( "a house key" );
-		p_key3->more1=(pMulti->getSerial()>>24)&0xFF;
-		p_key3->more2=(pMulti->getSerial()>>16)&0xFF;
-		p_key3->more3=(pMulti->getSerial()>>8)&0xFF;
-		p_key3->more4=(pMulti->getSerial())&0xFF;
-		p_key3->moreb1=(pMulti->getKeycode()>>24)&0xFF;
-		p_key3->moreb2=(pMulti->getKeycode()>>16)&0xFF;
-		p_key3->moreb3=(pMulti->getKeycode()>>8)&0xFF;
-		p_key3->moreb4=(pMulti->getKeycode())&0xFF;
+		p_key3->more1=(unsigned char)((pMulti->getSerial()>>24)&0xFF);
+		p_key3->more2=(unsigned char)((pMulti->getSerial()>>16)&0xFF);
+		p_key3->more3=(unsigned char)((pMulti->getSerial()>>8)&0xFF);
+		p_key3->more4=(unsigned char)((pMulti->getSerial())&0xFF);
+		p_key3->moreb1=(signed char)((pMulti->getKeycode()>>24)&0xFF);
+		p_key3->moreb2=(signed char)((pMulti->getKeycode()>>16)&0xFF);
+		p_key3->moreb3=(signed char)((pMulti->getKeycode()>>8)&0xFF);
+		p_key3->moreb4=(signed char)((pMulti->getKeycode())&0xFF);
 		p_key3->type=ITYPE_KEY;
 		p_key3->setNewbie();
 		bankbox->AddItem(p_key3);
@@ -560,16 +559,15 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	P_HOUSE pHouse=cHouses::findHouse(houseserial);
 	int housenumber;
 	UI32 x, y;
-	SI32 k, icount=0;
+	SI32 k;
 	signed char z;
-	int boat=0;//Boats
 
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
 	x = t->getLocation().x; //where they targeted
 	y = t->getLocation().y;
-	z = t->getLocation().z;
+	z = (signed char)t->getLocation().z;
 
 	Location charpos= pc->getPosition();
 
@@ -1072,6 +1070,8 @@ bool cHouse::inHouse(Location where)
 bool cHouse::inHouse(int x, int y)
 {
 	P_ITEM iHouse = pointers::findItemBySerial(serial);
+	if ( !ISVALIDPI(iHouse) )
+		return false;
 	Location houseLoc=iHouse->getPosition();
 	if (( x >= houseLoc.x-this->spacex1 ) && ( x <= houseLoc.x+this->spacex2))
 		if (( y >= houseLoc.y-this->spacey1 ) && ( y <= houseLoc.y+this->spacey2))
@@ -1210,7 +1210,7 @@ SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 
 			UI08 height = tile.height;
 			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
-				height = tile.height / 2;
+				height = (unsigned char) (tile.height / 2);
 	// We are walking upstairs
 			if ( pc->getPosition().z < (height + m[i].height) ) 
 			{ // We cannot walk under it
@@ -1270,7 +1270,7 @@ bool cHouse::decreaseLockedItems(unsigned int amount)
 
 void cHouse::setLockedItems(unsigned int amount)
 {
-	lockedItems=amount;
+	lockedItems=(short)amount;
 }
 
 unsigned int cHouse::getLockedItems()
@@ -1285,7 +1285,7 @@ unsigned int cHouse::getMaxLockedItems()
 
 void cHouse::setMaxLockedItems(unsigned int amount)
 {
-	this->maxLockedItems=amount;
+	this->maxLockedItems=(short)amount;
 }
 
 bool cHouse::increaseSecuredItems(unsigned int amount)
@@ -1308,7 +1308,7 @@ bool cHouse::decreaseSecuredItems(unsigned int amount)
 
 void cHouse::setSecuredItems(unsigned int amount)
 {
-	this->securedItems=amount;
+	this->securedItems=(short)amount;
 }
 
 unsigned int cHouse::getSecuredItems()
@@ -1323,7 +1323,7 @@ unsigned int cHouse::getMaxSecuredItems()
 
 void cHouse::setMaxSecuredItems(unsigned int amount)
 {
-	this->maxSecuredItems=amount;
+	this->maxSecuredItems=(short)amount;
 }
 
 void cMulti::changeLocks()
@@ -1343,7 +1343,7 @@ cHouse *cHouses::findHouse(int x, int y)
 	for ( ;allHouses!=houses.end();allHouses++)
 	{
 		P_HOUSE house=allHouses->second;
-		if ( house->inHouse(x,y) )
+		if ( house != NULL && house->inHouse(x,y) )
 			return house;
 	}
 	return NULL;
@@ -1891,14 +1891,14 @@ void cHouse::load(cStringFile& input)
 			case 'L':
 			case 'l':
 				if ( l=="LOCKED" )
-					lockedItems=str2num(r);
+					lockedItems=(short)str2num(r);
 				break;
 			case 'M':
 			case 'm':
 				if ( l=="MAXLOCKED" )
-					this->maxLockedItems=str2num(r);
+					this->maxLockedItems=(short)str2num(r);
 				else if ( l=="MAXSECURED" )
-					this->maxSecuredItems=str2num(r);
+					this->maxSecuredItems=(short)str2num(r);
 
 				break;
 			case 'N':
@@ -1919,15 +1919,15 @@ void cHouse::load(cStringFile& input)
 			case 'S':
 			case 's':
 				if ( l == "SPACEX1" )
-					spacex1 = str2num(r);
+					spacex1 = (signed char)str2num(r);
 				else if ( l == "SPACEX2" )
-					spacex2 = str2num(r);
+					spacex2 = (signed char)str2num(r);
 				else if ( l == "SPACEY1" )
-					spacey1 = str2num(r);
+					spacey1 = (signed char)str2num(r);
 				else if ( l == "SPACEY2" )
-					spacey2 = str2num(r);
+					spacey2 = (signed char)str2num(r);
 				else if ( l == "SECURED" )
-					securedItems = str2num(r);
+					securedItems = (short)str2num(r);
 				break;
 		}
 
@@ -1978,11 +1978,10 @@ void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
 	UI32VECTOR items=cHouses::getHouseItems(housenumber);
 	UI32VECTOR::iterator item=items.begin();
 	UI32 x, y;
-	SI32 icount=0;
 	signed char z;
 	x=multi->getPosition("x");
 	y=multi->getPosition("y");
-	z=multi->getPosition("z");
+	z=(signed char)multi->getPosition("z");
 	for (;item != items.end();item++)//Loop through the HOUSE_ITEMs
 	{
 		cScpIterator* iter = NULL;

@@ -28,6 +28,8 @@ int g_nTraceMode=0; //by xan -> trace mode
   typedef unsigned char  u_char;
 #endif
 
+  extern WarnOut(char *txt, ...);
+
 typedef enum {
   OP_NONE,              /* invalid opcode */
   OP_LOAD_PRI,
@@ -2274,7 +2276,7 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
     cell  parms[9];     /* MP: registers for assembler AMX */
   #else
     OPCODE op;
-    cell offs;
+    cell offs=0;
     int num;
   #endif
 

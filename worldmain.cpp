@@ -838,6 +838,8 @@ void loaditem()
 			}
 			else if (!(strcmp(script1, "AMOUNT")))
 				pi->amount=(unsigned short)str2num(script2);
+			else if (!(strcmp(script1, "AMOUNT2")))
+				pi->amount2=(unsigned short)str2num(script2);
 			else if (!(strcmp(script1, "ATT")))
 				pi->att=str2num(script2);
 			else if (!strcmp("ANIMID", script1))
@@ -1200,6 +1202,8 @@ void loaditem()
 		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
 			pi->Delete();
 	}
+	if ( pi->isSpawner() )
+		Spawns->loadFromItem(pi);
 
 	amxVS.moveVariable( INVALID, pi->getSerial32() );
 
@@ -1292,14 +1296,42 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 	P_CHAR pc = NULL;
 	P_ITEM pi = NULL;
 	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
-		if ( isCharSerial( objs.getSerial() ) && ISVALIDPC( (pc=static_cast<P_CHAR>(objs.getObject())) ) ) {
+		if ( isCharSerial( objs.getSerial() ) && ISVALIDPC( (pc=static_cast<P_CHAR>(objs.getObject())) ) ) 
+		{
 			if( pc->dead && pc->HasHumanBody() )
-				pc->morph( ((pc->getId() == BODY_FEMALE) ? BODY_DEADFEMALE : BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
+				pc->morph( ((pc->getId() == BODY_FEMALE) ? (short)BODY_DEADFEMALE : (short)BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
+
+			if ( pc->spawnserial != INVALID )
+			{
+				cSpawnDinamic *dynSpawner=Spawns->getDynamicSpawn(pc->spawnserial);
+				if ( dynSpawner != NULL )
+					dynSpawner->addSpawned(pc);
+			}
+			else if ( pc->spawnregion != INVALID )
+			{
+				// add the item to the static spawn region
+				cSpawnScripted *staticSpawner=Spawns->getScriptedSpawn(pc->spawnregion);
+				staticSpawner->addSpawned(pc);
+			}
 		}
-		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
+		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) 
+		{
 			if ( pi->isSpawner() )
 				Spawns->loadFromItem(pi);
+			if ( pi->getSpawnSerial() != INVALID )
+			{
+				cSpawnDinamic *dynSpawner=Spawns->getDynamicSpawn(pi->getSpawnSerial());
+				if ( dynSpawner != NULL )
+					dynSpawner->addSpawned(pi);
+			}
+			else if ( pi->getSpawnRegion() != INVALID )
+			{
+				// add the item to the static spawn region
+				cSpawnScripted *staticSpawner=Spawns->getScriptedSpawn(pi->getSpawnRegion());
+				staticSpawner->addSpawned(pi);
+			}
 		}
+
 	}
 	return;
 }
@@ -2349,7 +2381,9 @@ void CWorldMain::SaveChar( P_CHAR pc )
 	valid=1;
 	if (pc->getSerial32() < 0) valid = 0;
 	if (pc->summontimer ) valid = 0; //xan : we don't save summoned stuff
+	/*
 	if (pc->spawnregion!=INVALID || pc->spawnserial!=INVALID ) valid=0;
+	*/
 	if (valid)
 	{
 			fprintf(cWsc, "SECTION CHARACTER %i\n", this->chr_curr++);
@@ -2765,9 +2799,11 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	if (pi->getSerial32()<0) return;
 
-	if (pi->spawnregion!=INVALID || pi->spawnserial!=INVALID )
+/*
+// Now spawned objects are saved like everything else
+	if (pi->getSpawnRegion()!=INVALID || pi->getSpawnSerial()!=INVALID )
 		return;
-
+*/
 	if( pi->isInWorld() ) {
 
 		if ( ( pi->getPosition().x < 100) && ( pi->getPosition().y < 100 ) ) { //garbage positions
@@ -2885,6 +2921,8 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "MOREZ %i\n", pi->morez);
 		if (pi->amount!=dummy.amount)
 			fprintf(iWsc, "AMOUNT %i\n", pi->amount);
+		if (pi->amount2!=dummy.amount)
+			fprintf(iWsc, "AMOUNT2 %i\n", pi->amount2);
 		if (pi->pileable!=dummy.pileable)
 			fprintf(iWsc, "PILEABLE %i\n", pi->pileable);
 		if (pi->doordir!=dummy.doordir)
@@ -3132,7 +3170,8 @@ void CWorldMain::loadPrison()
 void CWorldMain::realworldsave ()
 {
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	// Wintermute, but not in every worldsave :)
+	// Spawns->clearDynamic();
 	cAllObjectsIter objs;
 	this->chr_curr=1;
 	this->itm_curr=1;
@@ -3143,9 +3182,10 @@ void CWorldMain::realworldsave ()
 			SaveChar( (P_CHAR)(objs.getObject()) );
 		else {
 			pi = static_cast<P_ITEM>(objs.getObject());
-			if ( pi->isSpawner() )
-				Spawns->loadFromItem(pi);
-			SaveItem( pi );
+			if ( ISVALIDPI(pi))
+				SaveItem( pi );
+			else
+				objects.eraseObject(pi);
 		}
 	}
 

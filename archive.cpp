@@ -105,12 +105,12 @@ void deleteItem( P_ITEM pi )
 
 	amxVS.deleteVariable( serial );
 
-	if (pi->spawnregion!=INVALID )
+	if (pi->getSpawnRegion()!=INVALID )
 	{
-		Spawns->removeObject( pi->spawnregion, pi );
+		Spawns->removeObject( pi->getSpawnRegion(), pi );
 	}
 
-	if( pi->isSpawner() || pi->spawnserial!=INVALID )
+	if( pi->isSpawner() || pi->getSpawnSerial()!=INVALID )
 	{
 		Spawns->removeSpawnDinamic( pi );
 	}

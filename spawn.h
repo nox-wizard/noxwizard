@@ -69,6 +69,7 @@ public:
 
 	void removeObject( P_ITEM pi );
 	void removeObject( P_CHAR pc );
+	void addSpawned(P_OBJECT obj);
 
 };
 
@@ -79,8 +80,8 @@ public:
 	~cSpawnDinamic();
 
 	SERIAL item; //!< the spawner
-	SERIAL_SET item_spawned; //!< spawned items
-	SERIAL_SET npc_spawned; //!< spawned npcs
+	SERIAL_SET items_spawned; //!< spawned items
+	SERIAL_SET npcs_spawned; //!< spawned npcs
 
 	UI32 current;
 	TIMERVAL nextspawn; //!< next spawn
@@ -88,6 +89,8 @@ public:
 	void doSpawn();
 	bool needSpawn();
 	void remove( SERIAL serial );
+	void addSpawned(P_OBJECT obj);
+
 };
 
 typedef std::map< SERIAL, cSpawnScripted > SPAWN_SCRIPTED_DB;
@@ -118,6 +121,8 @@ public:
 	void removeObject( SERIAL spawn, P_CHAR pc );
 	void removeSpawnDinamic( P_ITEM pi );
 	void removeSpawnDinamic( P_CHAR pc );
+	cSpawnDinamic *getDynamicSpawn(SERIAL spawnerSerial);
+	cSpawnScripted *getScriptedSpawn(SERIAL spawnerSerial);
 
 };
 

@@ -76,7 +76,7 @@ cPath::cPath( Location startPos, Location finalPos, P_CHAR pc )
 void cPath::exec()
 {
 	P_CHAR pc = pointers::findCharBySerial( pc_serial );
-	UI32 min_cost, curr_cost, heuristic, loops = 0;
+	UI32 min_cost=(unsigned int) -1, curr_cost, heuristic, loops = 0;
 	NODE_LIST::iterator it;
 
 	while( loops < MAX_PATH_INTERNAL_LOOPS ) {

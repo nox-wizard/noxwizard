@@ -91,6 +91,8 @@ private:
 	Serial			serial;			//!< serial of the object
 	Serial			multi_serial;		//!< multi serial of the object (don't know what it is used for)
 	Serial			OwnerSerial;		//!< If Char is an NPC, this sets its owner
+	Serial		spawnserial;
+	Serial		spawnregion;
 
 public:
 	//! return the object's serial
@@ -117,6 +119,19 @@ public:
 	{ multi_serial.serial32= newserial; }
 
 	const void		setMultiSerialByte(UI32 nByte, BYTE value);
+
+	//! return the spawn serial of the object
+	inline const SI32	getSpawnSerial() const
+	{ return spawnserial.serial32; }
+	//! Set the spawn serial of the object
+	inline void		setSpawnSerial(SI32 newserial)
+	{ spawnserial.serial32= newserial; }
+	//! return the spawn region of the object
+	inline const SI32	getSpawnRegion() const
+	{ return spawnregion.serial32; }
+	//! Set the spawn getSpawnSerial of the object
+	inline void		setSpawnRegion(SI32 newserial)
+	{ spawnregion.serial32= newserial; }
 
 	//! return the object's owner serial
 	inline const Serial	getOwnerSerial() const

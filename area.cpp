@@ -73,22 +73,22 @@ void cAreas::loadareas()
 				{
 					if	( lha == "X1")
 					{
-						area.x1 = str2num( rha );
+						area.x1 = (unsigned short)str2num( rha );
 						check|=0x000F;
 					}
 					else if ( lha == "Y1" )
 					{
-						area.y1 = str2num( rha );
+						area.y1 = (unsigned short)str2num( rha );
 						check|=0x00F0;
 					}
 					else if ( lha == "X2" )
 					{
-						area.x2 = str2num( rha );
+						area.x2 = (unsigned short)str2num( rha );
 						check|=0x0F00;
 					}
 					else if ( lha == "Y2" )
 					{
-						area.y2 = str2num( rha );
+						area.y2 = (unsigned short)str2num( rha );
 						check|=0xF000;
 					}
 					else
