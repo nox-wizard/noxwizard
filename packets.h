@@ -1802,8 +1802,8 @@ public:
 
 //@{
 /*!
-\name utilitys packets
-\brief utilitys related packets
+\name menu packets
+\brief menu related packets
 */
 
 
@@ -1886,7 +1886,41 @@ public:
 };
 
 
+typedef struct {
+	eUI16	model; //!< model id number of shown icon ( if grey menu then always 0x00 as msb )
+	eCOLOR	color; //!< icon color
+//	eUI08 resp_length, //needed but managed into send, so not need var
+	std::string response;	
+} pkg_icon_list_menu_st;
 
+#define PKG_ICON_LIST_MENU 0x7C;
+
+/*!
+\brief Show an icon list menu
+\author Endymion
+\since 0.83
+\note 0x7C
+*/
+class cPacketIconListMenu : public cServerPacket {
+private:
+	eUI16 size; //<! size
+public:
+
+	eSERIAL id; //!< the serial
+	eUI16 gump; //!< gump serial
+private:
+	eUI08 question_length; //!< question length
+public:
+	std::string question; //!< question text
+
+private:
+	eUI08 icon_count; //!< icon number
+public:
+	std::vector< pkg_icon_list_menu_st > icons; //!< icons
+
+	cPacketIconListMenu();
+	void send( NXWCLIENT ps );
+};
 
 //@}
 

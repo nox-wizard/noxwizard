@@ -40,21 +40,6 @@ cMenus::~cMenus()
 \param id the menu id
 \param x the x location on screen
 \param y the y location on screen
-\param options the options
-\return the serial of new menu
-*/
-SERIAL cMenus::createMenu( UI32 id, UI32 x, UI32 y, UI08 options )
-{
-	menuMap.insert( make_pair( current_serial++, new cMenu( current_serial++, id, x, y, options ) ) );
-	return current_serial -1;
-}
-
-/*!
-\brief Create a new menu
-\author Endymion
-\param id the menu id
-\param x the x location on screen
-\param y the y location on screen
 \param canMove true if can move
 \param canClose true if can close
 \param canDispose true if can dispose
@@ -62,7 +47,8 @@ SERIAL cMenus::createMenu( UI32 id, UI32 x, UI32 y, UI08 options )
 */
 SERIAL	cMenus::createMenu( UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose )
 {
-	return createMenu( id, x, y, OPTIONS2BITSET(canMove, canClose, canDispose) );
+	menuMap.insert( make_pair( current_serial++, new cMenu( current_serial++, id, x, y, canMove, canClose, canDispose ) ) );
+	return current_serial -1;
 }
 
 
@@ -194,45 +180,43 @@ LOGICAL cMenus::handleMenu( NXWCLIENT ps )
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-cMenu::cMenu()
+cBasicMenu::cBasicMenu( SERIAL menu, UI32 id )
 {
-	cMenu( INVALID, 0, 0, 0, MOVEABLE|CLOSEABLE|DISPOSEABLE );
+	serial=menu;
+	id=id;
 }
 
-cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose )
+cBasicMenu::~cBasicMenu()
 {
-	cMenu( menu, id, x, y, OPTIONS2BITSET(canMove, canClose, canDispose) );
 }
 
-cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, UI08 options )
+
+void cBasicMenu::setCallBack( const std::string& arg )
 {
-	setId( id );
+	callback = newAmxEvent( const_cast< char* >( arg.c_str() ) );
+}
+
+void cBasicMenu::setId( const UI32 arg )
+{
+	id = arg ;
+}
+
+
+
+
+
+
+
+cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose ) : cBasicMenu( menu, id )
+{
 	setX( x );
 	setY( y );
-	setOptions( options );
-	this->serial = serial;
+	setOptions( OPTIONS2BITSET(canMove, canClose, canDispose) );
 }
 
 cMenu::~cMenu()
 {
 	
-}
-
-void cMenu::setId( const UI32 arg )
-{
-	id = arg ;
 }
 
 void cMenu::setX( const UI32 arg )
@@ -386,13 +370,6 @@ void cMenu::handleButton( const NXWSOCKET socket, const UI32 button )
 	callback->Call( socket, button );
 }
 
-void cMenu::setCallBack( const std::string& arg )
-{
-	callback = newAmxEvent( const_cast< char* >( arg.c_str() ) );
-}
-
-
-
 void cMenu::setMoveAble( const bool arg )
 {
 	setOptions( MOVEABLE, arg );
@@ -447,238 +424,6 @@ void cMenu::show( P_CHAR pc )
 	packet.send( ps );
 }
 
-
-
-
-/* menu exaple
-  mnu_prepare(s, 1, 3);
-  mnu_setStyle(s, MENUSTYLE_SCROLL, 0x481);
-  mnu_setTitle(s, "Almanacco dei Ricercati");
-  mnu_addItem(s, 0, 0, "Condanna");
-  mnu_addItem(s, 0, 1, "Assolvi");
-  mnu_addItem(s, 0, 2, "Concedi la grazia divina");
-  mnu_setCallback(s, funcidx("alm_chosen"));
-  mnu_show(s);
-*/
-
-#define MENUSTYLE_LARGE 128
-
-cOldMenu::cOldMenu()
-{
-	setWidth( 320 );
-}
-
-cOldMenu::~cOldMenu()
-{
-}
-
-void cOldMenu::setParameters( int numPerPage, int numpages )
-{
-}
-
-/*!
-\brief adds an item at a given position of a correctly inizialized menu
-\author Endymion
-\since 0.82
-\param page the page number
-\param idx the index number
-\param desc the text
-*/
-void cOldMenu::addMenuItem( int page, int idx, char* desc )
-{
-//	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
-	wstring s;
-	string sDesc(desc);
-	string2wstring( sDesc, s );
-	std::map<UI32, wstring >& p= allPages[ page ];
-	p.insert( make_pair( idx, s ) );
-}
-
-/*void cOldMenu::setCallback( int cback ) 
-{ 
-}*/
-
-void cOldMenu::buildMenu ()
-{
-	switch( style&0x7F )
-	{
-		case MENUSTYLE_STONE:
-		case MENUSTYLE_SCROLL:
-		case MENUSTYLE_PAPER:
-		case MENUSTYLE_BLACKBOARD:
-		case MENUSTYLE_TRASPARENCY:
-			buildClassicMenu();
-			return;
-		case MENUSTYLE_ICONLIST:
-			buildIconList();
-			return;
-		case MENUSTYLE_ICONMENU:
-			buildIconMenu();
-			return;
-		default:
-			style = MENUSTYLE_STONE;
-			buildClassicMenu();
-			WarnOut("cCustomMenu::buildMenu() : unsupported menu style was used\n");
-	}
-
-}
-
-void cOldMenu::showMenu( NXWSOCKET s )
-{
-    NXWCLIENT ps= getClientFromSocket( s );
-	if( ps==NULL ) return;
-	this->show( ps->currChar() );
-}
-
-void cOldMenu::setTitle( char* str )
-{
-	string sDesc(str);
-	string2wstring( sDesc, title );
-}
-
-void cOldMenu::setWidth( int width )
-{
-	this->width=width;
-}
-
-void cOldMenu::setStyle( int style, int color )
-{
-	this->style=style;
-	setColor( color );
-}
-
-void cOldMenu::setColor( int color )
-{
-	this->color=color;
-}
-
-void cOldMenu::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
-{
-}
-
-void cOldMenu::buildClassicMenu()
-{
-
-	int pagebtny = 307;
-
-	if( style&MENUSTYLE_LARGE ) 
-		setWidth( 512 );
-
-	UI32 curr_style = style & ~MENUSTYLE_LARGE;
-
-	setId( curr_style );
-	setX( 0x6E );
-	setY( 0x46 );
-
-	//--static pages
-	if( curr_style==MENUSTYLE_STONE ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 2600, width, 340 );
-		addButton( 250, 17, 4017, 4017+1, 1 );
-		addText( 30, 40, title, color );
-		pagebtny = 300;
-	}
-	else if( curr_style==MENUSTYLE_BLACKBOARD ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 2620, 320, 340 );
-		addButton( 250, 17, 4017, 4017+1, 1 );
-		addText( 45, 17, title, color );
-		pagebtny = 307;
-	}
-	else if( curr_style==MENUSTYLE_PAPER ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 0x0DAC, 320, 340 );
-		addButton( 250, 7, 4017, 4017+1, 1 );
-		addText( 45, 7, title, color );
-		pagebtny = 307;
-	}
-	else if( curr_style==MENUSTYLE_SCROLL ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 0x1432, 320, 340 );
-		addButton( 250, 27, 4017, 4017+1, 1 );
-		addText( 45, 27, title, color );
-		pagebtny = 290;
-	}
-	else if (curr_style==MENUSTYLE_TRASPARENCY) {
-		setCloseAble( true );
-		addButton( 250, 27, 4017, 4017+1, 1 );
-		addText( 45, 27, title, color );
-		pagebtny = 290;
-	}
-
-
-
-	int pagenum = 1;
-	addPage( pagenum );
-
-	//this i don't think what are
-	//sprintf( temp, m_strTitle );
-	//m_lstLabels.push_back( new string( temp ) );
-	//
-
-	int oldk = 0;
-	int buttonnum=10; //button number
-	int position = 80, linenum = 1;
-
-	std::map< UI32, std::map< UI32, std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
-
-	for( int k=0; curr_page!=last_page; ++curr_page, ++k ) {
-
-		std::map< UI32, std::wstring >::iterator iter( curr_page->second.begin() ), end( curr_page->second.end() );
-	
-		for( int i=0; iter!=end; ++iter, ++i )
-		{
-				if ( k > oldk )
-				{
-					position = 80;
-					pagenum++;
-					addPage( pagenum );
-					oldk = k;
-				}
-
-				addText( 80, position, iter->second, color );
-
-				addButton( 50, position+3, 4005, 4005+1, buttonnum, pagenum );
-
-				position += 20;
-				++linenum;
-				++buttonnum;
-		}
-	}
-
-
-	curr_page = allPages.begin();
-
-	//there is not this check in old code
-	//if( allPages.size()==1 )
-	//	return; //not need back and forward buttons with only a page
-
-	//now add back and forward buttons
-	for( int p=1; curr_page!=last_page; ++curr_page, ++p )
-	{
-		addPage( p );
-		if( p > 1 )
-		{
-			addPageButton( 50, pagebtny, 4014, 4014+1, p-1 ); //back button
-		}
-		if( p < allPages.size() )
-		{
-			addPageButton( 254, pagebtny, 4005, 4005+1, p+1 ); //next button
-		}
-	}
-}
-
-void cOldMenu::buildIconList()
-{
-}
-
-void cOldMenu::buildIconMenu()
-{
-}
 
 
 

@@ -494,3 +494,46 @@ RECEIVE( MenuSelection ) {
 		text_entries.push_back( te );
 	}
 }
+
+
+CREATE( IconListMenu, PKG_ICON_LIST_MENU, 0x0A )
+SEND( IconListMenu ) {
+
+	if( ps == NULL ) return; 
+	NXWSOCKET s = ps->toInt();
+
+	//calc of packet size
+	UI32 temp=this->headerSize;
+
+	//question string
+	temp+=question.size();
+	this->question_length=temp;
+
+	
+	temp+=sizeof( icon_count );
+
+	std::vector< pkg_icon_list_menu_st >::iterator iter( icons.begin() ), end( icons.end() );
+	for( ; iter!=end; iter++ ) {
+		temp += sizeof( iter->model );
+		temp += sizeof( iter->color );
+		temp += sizeof( eUI08 ) + iter->response.size();
+	}
+	
+	this->size=temp;
+	
+	//send of header
+	Xsend( s, this->getBeginValid(), this->headerSize );
+	
+
+	Xsend( s, question.c_str(), question.size() );
+
+	icon_count = icons.size();
+
+	iter = icons.begin();
+	for( ; iter!=end; iter++ ) {
+		Xsend( s, (char*)&iter->model, ( sizeof(iter->model) +sizeof(iter->color) ) );
+		eUI08 rl; rl=iter->response.size();
+		Xsend( s, iter->response.c_str(), iter->response.size() ); //not send null terminator
+	}
+
+}

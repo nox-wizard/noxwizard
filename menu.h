@@ -21,21 +21,43 @@ enum MENU_OPTIONS {
 	DISPOSEABLE = 0x04
 };
 
+/*!
+\brief an Basic Menu
+\author Endymion
+*/
+class cBasicMenu {
+	protected:
+		UI32	serial; //!< serial
+		UI32	id; //!< gump id
+
+		AmxEvent* callback; //function callback
+
+	public:
+		cBasicMenu( SERIAL menu, UI32 id );
+		virtual ~cBasicMenu();
+
+		void	setCallBack( const std::string& arg );
+		void	setId( const UI32 arg );
+
+		virtual void 	handleButton( const NXWSOCKET socket, const UI32 button );
+		virtual void	show( P_CHAR pc );
+
+
+};
+
 
 /*!
 \brief an Menu
+\author Endymion
 */
-class cMenu
+class cMenu : public cBasicMenu
 {
 	private:
 		std::vector< std::string >	commands; //!< all commands
 		std::vector< wstring >	texts; //!< all strings
 		UI08	options; //!< menu options
-		UI32	id; //!< gump id
-		UI32	serial; //!< serial
 		UI32	x; //!< x coord where show
 		UI32	y; //!< y location where show
-		class AmxEvent	*callback; //!< amx callback
 		map< UI32, std::string > responseMap; //!< response for every input
 
 	private:
@@ -43,18 +65,14 @@ class cMenu
 
 	public:
 				
-		cMenu();
-		cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, UI08 options );
 		cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose );
 		virtual ~cMenu();
 
-		void	setId( const UI32 arg );
 		void	setX( const UI32 arg );
 		void	setY( const UI32 arg );
 
-		void 	handleButton( const NXWSOCKET socket, const UI32 button );
-		void	setCallBack( const std::string& arg );
-		void	show( P_CHAR pc );
+		virtual void 	handleButton( const NXWSOCKET socket, const UI32 button );
+		virtual void	show( P_CHAR pc );
 
 		void	addCommand( const std::string& command = "" );
 		void	addCommand( char const* s, ... );
@@ -87,44 +105,7 @@ class cMenu
 
 
 
-
-/*!
-\brief an Old type menu
-*/
-class cOldMenu : public cMenu
-{
-
-private:
-
-	void buildClassicMenu();
-	void buildIconList();
-	void buildIconMenu();
-
-	UI32 style;
-	UI32 color;
-	UI32 width;
-	wstring title;
-	std::map< UI32, std::map< UI32, std::wstring >  > allPages;
-
-public:
-	cOldMenu();
-	~cOldMenu();
-
-	void setParameters( int numPerPage, int numpages );
-	void addMenuItem( int page, int idx, char *desc );
-	//void setCallback( int cback );
-	void buildMenu();
-	void showMenu( NXWSOCKET s );
-	void setTitle( char *str );
-	void setWidth( int width );
-	void setStyle( int style, int color = 0 );
-	void setColor( int color );
-	virtual void buttonSelected(NXWSOCKET s, unsigned short int buttonPressed, int type );
-
-};
-
-
-typedef cMenu* P_MENU;
+typedef cBasicMenu* P_MENU;
 typedef std::map< UI32, P_MENU > MENU_MAP;
 
 /*!
@@ -141,7 +122,6 @@ class cMenus
 		virtual ~cMenus();
 
 		SERIAL	createMenu( UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose );
-		SERIAL	createMenu( UI32 id, UI32 x, UI32 y, UI08 options );
 		LOGICAL	deleteMenu( SERIAL gump );
 		LOGICAL	handleMenu( NXWCLIENT ps );
 		P_MENU selectMenu( SERIAL menu );
