@@ -132,6 +132,8 @@ void RcvAttack(NXWCLIENT ps)
 
 void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 {
+	if ( s < 0 || s >= now )
+		return;
 
 	P_CHAR attacker = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( attacker );
