@@ -17,6 +17,109 @@
 
 
 
+//The function that is called after the control done in speech.cpp
+//This should be put in another file or in a namespace (?)
+
+void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /ADD
+	{
+		unsigned char *comm;
+		unsigned char nonuni[512];
+
+		cmd_offset = 1;
+
+		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC( pc_currchar );
+
+		strcpy((char*)nonuni, speech);
+		strcpy((char*)tbuffer, (char*)nonuni);
+
+		strupr((char*)nonuni);
+		cline = (char*)&nonuni[0];
+		splitline();
+
+		if (tnum<1)	return;
+		// Let's ignore the command prefix;
+		comm = nonuni + 1;
+
+		P_COMMAND cmd= commands->findCommand((char*)comm);
+		NXWCLIENT client= getClientFromSocket(s);
+
+		if(cmd==NULL) {
+		client->sysmsg("Unrecognized command: %s", comm);
+			return;
+		}
+		if(cmd->notValid(pc_currchar)) {
+			client->sysmsg("Access denied.");
+			return;
+		}
+
+		switch(cmd->cmd_type) {
+		// Single step commands
+			case CMD_FUNC:
+				(*((CMD_EXEC)cmd->cmd_extra)) (client);
+				break;
+			case CMD_TARGET: {
+				P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+				targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+				targ->send( client );
+				client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				break;
+			}
+			case CMD_TARGETN:
+				if(tnum==2) {
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer[0]=strtonum(1);
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else 
+					client->sysmsg("This command takes one number as an argument.");
+				break;
+			case CMD_TARGETNNN:
+				if(tnum==4) {
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer[0]=strtonum(1);
+					targ->buffer[1]=strtonum(2);
+					targ->buffer[2]=strtonum(3);
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else
+					sysmessage(s, "This command takes three numbers as arguments.");
+				break;
+			case CMD_TARGETS:
+				if(tnum==2) {
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer_str[0]=&tbuffer[Commands::cmd_offset+strlen(cmd->cmd_name)];
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else
+					sysmessage(s, "This command takes a string as arguments.");
+				break;
+			case CMD_MANAGEDCMD:
+				client->startCommand(cmd, speech);
+				break;
+			default:
+				client->sysmsg("INTERNAL ERROR: Command has a bad command type set!");
+				break;
+		}
+
+	}
+
+
+
+
+/*///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//Implementations of classes declared in cmds.h
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////*/
+
+
 //Implementation of cCommand Class
 
 cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback) {
@@ -69,6 +172,17 @@ else
 }
 
 
+
+cCommandMap* commands = new cCommandMap();
+
+
+
+
+/*///////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////
+//Todo's
+////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////*/
 
 
 /*
