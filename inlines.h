@@ -125,5 +125,34 @@ inline std::string toString(double value)
 	return std::string(gcvt(value, sizeof(s), s));
 }
 
+/*
+\brief Convert a string to an wstring
+\author Endymion
+\param from the source string
+\param to the dest wstring
+*/
+inline string2wstring( string& from, wstring& to )
+{
+	to.erase();
+	string::iterator iter( from.begin() ), end( from.end() );
+	for( ; iter!=end; iter++ ) {
+		to+=static_cast<wchar_t>(*iter);
+	}
+}
+
+/*
+\brief Convert a wstring to an string
+\author Endymion
+\param from the source wstring
+\param to the dest string
+*/
+inline wstring2string( wstring& from, string& to )
+{
+	to.erase();
+	wstring::iterator iter( from.begin() ), end( from.end() );
+	for( ; iter!=end; iter++ ) {
+		to+=static_cast<char>(*iter);
+	}
+}
 
 #endif //__INLINES_H__
