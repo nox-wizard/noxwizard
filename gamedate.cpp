@@ -47,11 +47,7 @@ void cGameDate::setDateTimeSeparator( char separator )
 
 cGameDate::cGameDate()
 {
-	year 	= Calendar::g_nYear;
-	month	= Calendar::g_nMonth;
-	day	= Calendar::g_nDay;
-	hour	= Calendar::g_nHour;
-	minute	= Calendar::g_nMinute;
+	setDefaultDate();
 }
 
 cGameDate::cGameDate( const cGameDate &copy )
@@ -65,6 +61,45 @@ cGameDate::cGameDate( const cGameDate &copy )
 
 cGameDate::~cGameDate()
 {
+}
+
+void	cGameDate::setDefaultDate()
+{
+	setDefaultYear()	;
+	setDefaultMonth()	;
+	setDefaultDay()		;
+	setDefaultTime()	;
+}
+
+void	cGameDate::setDefaultYear()
+{
+	year 	= Calendar::g_nYear;
+}
+
+void	cGameDate::setDefaultMonth()
+{
+	month	= Calendar::g_nMonth;
+}
+
+void	cGameDate::setDefaultDay()
+{
+	day	= Calendar::g_nDay;
+}
+
+void	cGameDate::setDefaultTime()
+{
+	setDefaultHour();
+	setDefaultMinute();
+}
+
+void	cGameDate::setDefaultHour()
+{
+	hour	= Calendar::g_nHour;
+}
+
+void	cGameDate::setDefaultMinute()
+{
+	minute	= Calendar::g_nMinute;
 }
 
 UI16 cGameDate::getYear()
@@ -152,5 +187,82 @@ std::string cGameDate::toString()
 std::string cGameDate::toString( eDateFormat format )
 {
 	return toDateString( format ) + dateTimeSeparator + toTimeString();
+}
+
+void cGameDate::fromString( const std::string& arg )
+{
+	fromString( arg, dateFormat );
+}
+
+void cGameDate::fromString( const std::string& arg, eDateFormat format )
+{
+	LOGICAL success = false;
+
+	if( !arg.empty() )
+	{
+		UI32 start = 0;
+		UI32 index = arg.find_first_of( dateSeparator );
+
+		switch( format )
+		{
+			case YMD:
+				if( index == start + 4 )
+				{
+					setYear( (UI16) str2num( const_cast<char*>( arg.substr( start, 4 ).c_str() ) ) );
+					start = index + 1;
+					index = arg.find_first_of( dateSeparator, start );
+					if( index == start + 2 )
+					{
+						setMonth( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+						start = index + 1;
+						index = arg.find_first_of( dateTimeSeparator, start );
+						if( index == start + 2 )
+						{
+							setDay( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+							start = index + 1;
+							index = arg.find_first_of( timeSeparator, start );
+							if( index == start + 2 )
+							{
+								setHour( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+								start = index + 1;
+								setMinute( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+								success = true;
+							}
+						}
+					}
+				}
+				break;
+			case DMY:
+				if( index == start + 2 )
+				{
+					setDay( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+					start = index + 1;
+					index = arg.find_first_of( dateSeparator, start );
+					if( index == start + 2 )
+					{
+						setMonth( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+						start = index + 1;
+						index = arg.find_first_of( dateTimeSeparator, start );
+						if( index == start + 4 )
+						{
+							setYear( (UI16) str2num( const_cast<char*>( arg.substr( start, 4 ).c_str() ) ) );
+							start = index + 1;
+							index = arg.find_first_of( timeSeparator, start );
+							if( index == start + 2 )
+							{
+								setHour( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+								start = index + 1;
+								setMinute( (UI08) str2num( const_cast<char*>( arg.substr( start, 2 ).c_str() ) ) );
+								success = true;
+							}
+						}
+					}
+				}
+				break;
+		}
+	}
+
+	if( !success )
+		setDefaultDate();
 }
 

@@ -58,7 +58,7 @@ LOGICAL Guild::parse()
 			{
 				pGuild = new Guild();
 
-				//pGuild->id = str2num( *sectionParms );
+				pGuild->id = str2num( *sectionParms );
 
 				do
 				{
@@ -73,18 +73,19 @@ LOGICAL Guild::parse()
 						case 'A':
 							if ( lha == "ABBR" )
 							{
-								//pGuild->abbreviation = rha;
+								pGuild->abbreviation = rha.substr(0,3);
 							}
 							break;
 						case 'D':
 							if ( lha == "DATE" )
 							{
+								pGuild->dateCreated.fromString( rha );
 							}
 							break;
 						case 'N':
 							if ( lha == "NAME" )
 							{
-								//pGuild->name = rha;
+								pGuild->name = rha;
 							}
 							break;
 						case 'T':
@@ -97,7 +98,17 @@ LOGICAL Guild::parse()
 					}
 				}
 				while ( lha[0] != '}' );
-				//guilds[ pGuild->getId() ] = pGuild;
+				//
+				//	Validate guild data
+				//
+
+				//
+				//	Add guild to map
+				//
+				guilds[ pGuild->getId() ] = pGuild;
+				//
+				//	Get next guild section
+				//
 				iter = 0;
 				sectionParms = wsc->getNextSectionParmsInStr( sectionName );
 			}

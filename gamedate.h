@@ -56,6 +56,16 @@ class cGameDate
 		std::string		toTimeString();
 		std::string		toString();
 		std::string		toString( eDateFormat format );
+		void			fromString( const std::string& arg );
+		void			fromString( const std::string& arg, eDateFormat format );
+	private:
+		void			setDefaultDate();
+		void			setDefaultYear();
+		void			setDefaultMonth();
+		void			setDefaultDay();
+		void			setDefaultTime();
+		void			setDefaultHour();
+		void			setDefaultMinute();
 };
 
 #endif
