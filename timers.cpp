@@ -16,17 +16,17 @@ TIMERSMAP timers::pausedtimers;
 \brief Contructor
 \author Endymion
 */
-cTimer::cTimer(SERIAL serial, UI32 secs, UI08 flags, SI32 n, UI32 more1, UI32 more2)
+cTimer::cTimer(SERIAL newSerial, UI32 newSecs, UI08 newFlags, SI32 n, UI32 newMore1, UI32 newMore2)
 {
-	this->serial=serial;
-	this->timer=uiCurrentTime+MY_CLOCKS_PER_SEC*secs;
-	this->continued=n;
-	this->more1=more1;
-	this->more2=more2;
-	this->flags=flags;
-	this->amxevent=NULL;
-	this->event=NULL;
-	this->secs=secs;
+	serial=newSerial;
+	timer=uiCurrentTime+MY_CLOCKS_PER_SEC*secs;
+	continued=n;
+	more1=newMore1;
+	more2=newMore2;
+	flags=newFlags;
+	amxevent=NULL;
+	event=NULL;
+	secs=newSecs;
 };
 
 /*!
@@ -44,33 +44,33 @@ cTimer::~cTimer()
 */
 void cTimer::onTimer()
 {
-	if( this->continued!=INVALID ) {
-		this->continued--;		
+	if( continued!=INVALID ) {
+		continued--;		
 	}
 
-	this->setTimer(this->secs);
+	setTimer(secs);
 
-	if (this->amxevent!=NULL) {
+	if (amxevent!=NULL) {
 		g_bByPass = false;
-		this->amxevent->Call(this->serial, this->more1, this->more2);
+		amxevent->Call(serial, more1, more2);
 		if (g_bByPass==true)
 			return;
 	}
 
 	if(event!=NULL) {
 		bool breakTimer=false;
-		P_CHAR pc=pointers::findCharBySerial( this->serial );
+		P_CHAR pc=pointers::findCharBySerial( serial );
 		if(ISVALIDPC(pc)) 
-			breakTimer=this->event(pc, this->more1, this->more2);
+			breakTimer=event(pc, more1, more2);
 		else {
-			P_ITEM pi=pointers::findItemBySerial( this->serial );
+			P_ITEM pi=pointers::findItemBySerial( serial );
 			if(ISVALIDPI(pi))
-				breakTimer=this->event(pi, this->more1, this->more2);
+				breakTimer=event(pi, more1, more2);
 			else //not serial of char.. not of item.. is invalid so destroy
 				breakTimer=true;
 		}
 		if(breakTimer)
-			this->continued=0; //will be destroyed after end of check
+			continued=0; //will be destroyed after end of check
 	}
 };
 
@@ -81,9 +81,9 @@ void cTimer::onTimer()
 */
 bool cTimer::checkTimer()
 {
-	if( TIMEOUT( this->timer ) ) {
-		this->onTimer();
-		if(this->continued==0)
+	if( TIMEOUT( timer ) ) {
+		onTimer();
+		if(continued==0)
 			return true;
 	}
 	return false;
@@ -97,7 +97,7 @@ bool cTimer::checkTimer()
 */
 void cTimer::setTimer( UI32 secs )
 {
-	this->timer=uiCurrentTime+MY_CLOCKS_PER_SEC *secs;
+	timer=uiCurrentTime+MY_CLOCKS_PER_SEC *secs;
 }
 
 
@@ -108,7 +108,7 @@ void cTimer::setTimer( UI32 secs )
 */
 inline bool cTimer::canPause()
 {
-	return ( this->flags && TIMER_PAUSE );
+	return ( flags && TIMER_PAUSE );
 }
 
 /*!
@@ -118,7 +118,7 @@ inline bool cTimer::canPause()
 */
 inline bool cTimer::canSave()
 {
-	return ( this->flags && TIMER_SAVE );
+	return ( flags && TIMER_SAVE );
 }
 
 

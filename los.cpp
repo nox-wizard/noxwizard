@@ -50,10 +50,10 @@ bool cRectangle::includes(SI16 x, SI16 y)
 */
 bool cRectangle::overlaps(cRectangle& other)
 {
-	return ((this->includes(other.lowerLeftX, other.lowerLeftY)  )||
-			(this->includes(other.lowerLeftX, other.upperRightY) )||
-			(this->includes(other.upperRightX,other.lowerLeftY)	 )||
-			(this->includes(other.upperRightX,other.upperRightY) ));
+	return ((includes(other.lowerLeftX, other.lowerLeftY)  )||
+			(includes(other.lowerLeftX, other.upperRightY) )||
+			(includes(other.upperRightX,other.lowerLeftY)	 )||
+			(includes(other.upperRightX,other.upperRightY) ));
 }
 
 
@@ -226,9 +226,9 @@ bool cLoS::isBlockedByItem(P_ITEM pi)
 	VALIDATEPIR(pi,true);
 	if (pi->id1 < 0x40)	// unbelievable, but this significantly helps performance (Duke)
 	{
-		if (!this->crossesTile(pi->getPosition("x"), pi->getPosition("y")))
+		if (!crossesTile(pi->getPosition("x"), pi->getPosition("y")))
 			return false;
-		if (this->isBlockedByTile(pi))
+		if (isBlockedByTile(pi))
 			return true;
 	}
 	else
@@ -237,7 +237,7 @@ bool cLoS::isBlockedByItem(P_ITEM pi)
 							pi->getPosition("x") + BUILDRANGE,pi->getPosition("y") + BUILDRANGE);
 		if (!maxRect.overlaps(lineRect))
 			return false;
-		if (this->isBlockedByMulti(pi))
+		if (isBlockedByMulti(pi))
 			return true;
 	}
 	return false;
@@ -267,7 +267,7 @@ bool cLoS::isBlockedByMulti(P_ITEM pi)
 	{
 		st_multi multi;
 		mfile->get_st_multi(&multi);
-		if ((multi.visible) && this->crossesTile(pi->getPosition("x")+multi.x, pi->getPosition("y")+multi.y))
+		if ((multi.visible) && crossesTile(pi->getPosition("x")+multi.x, pi->getPosition("y")+multi.y))
 		{
 			short zLine=getZatXY(pi->getPosition("x")+multi.x, pi->getPosition("y")+multi.y);
 			if (isBlockedByHeight(multi.tile, pi->getPosition("z")+multi.z, zLine))

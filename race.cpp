@@ -396,13 +396,13 @@ void Race::parseRaceDescription( const string& sectionName )
 	{
 		loopexit=0;
 		descriptionIndex = 0;
-		string description;
+		string Description;
 		do
 		{
-			description = iter->getEntry()->getFullLine();
-			if( description[0] != '{' && description[0] != '}' )
-				this->description[descriptionIndex++] = new string( description );
-		} while ( ( description[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
+			Description = iter->getEntry()->getFullLine();
+			if( Description[0] != '{' && Description[0] != '}' )
+				description[descriptionIndex++] = new string( Description );
+		} while ( ( Description[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
 
@@ -420,7 +420,6 @@ void Race::parsePoisonResistance( const string& sectionName )
 	}
 	else
 	{
-//		R32 	pr;
 		string	lha, rha;
 
 		loopexit=0;
@@ -433,23 +432,23 @@ void Race::parsePoisonResistance( const string& sectionName )
 				{
 					case 'D':
 						if ( lha == "DEADLY" )
-							sscanf( rha.c_str(), "%f", &this->poisonResistance[DEADLYPOISON] );
+							sscanf( rha.c_str(), "%f", &poisonResistance[DEADLYPOISON] );
 						break;
 					case 'G':
 						if ( lha == "GREATER" )
-							sscanf( rha.c_str(), "%f", &this->poisonResistance[GREATERPOISON] );
+							sscanf( rha.c_str(), "%f", &poisonResistance[GREATERPOISON] );
 						break;
 					case 'L':
 						if ( lha == "LETHAL" )
-							sscanf( rha.c_str(), "%f", &this->poisonResistance[LETHALPOISON] );
+							sscanf( rha.c_str(), "%f", &poisonResistance[LETHALPOISON] );
 						break;
 					case 'N':
 						if ( lha == "NORMAL" )
-							sscanf( rha.c_str(), "%f", &this->poisonResistance[REGULARPOISON] );
+							sscanf( rha.c_str(), "%f", &poisonResistance[REGULARPOISON] );
 						break;
 					case 'W':
 						if ( lha == "WEAK" )
-							sscanf( rha.c_str(), "%f", &this->poisonResistance[LESSERPOISON]  );
+							sscanf( rha.c_str(), "%f", &poisonResistance[LESSERPOISON]  );
 						break;
 					default:
 						WarnOut("Race::parseRaceSection unknown tag %s\n", lha.c_str());
@@ -465,7 +464,7 @@ void Race::parseSkill( const string& sectionName )
 	string section("SECTION RACESKILL ");
 	section += sectionName;
 	RaceScriptEntry	rse( script, section );
-	this->skills += rse;
+	skills += rse;
 }
 
 void Race::parseAbilityModifiers( const RACIALABILITY ability, const string& sectionName )
@@ -475,9 +474,9 @@ void Race::parseAbilityModifiers( const RACIALABILITY ability, const string& sec
 	RaceScriptEntry	rse( script, section );
 	switch( ability )
 	{
-		case STRENGTH 		:	this->strModifiers = rse; break;
-		case DEXTERITY		: this->dexModifiers = rse; break;
-		case INTELLIGENCE : this->intModifiers = rse; break;
+		case STRENGTH 		:	strModifiers = rse; break;
+		case DEXTERITY		: dexModifiers = rse; break;
+		case INTELLIGENCE : intModifiers = rse; break;
 	}
 }
 
@@ -496,12 +495,12 @@ void Race::parseBeardColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		this->beardColor.clear();
+		beardColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
 			if( color[0] != '{' && color[0] != '}' )
-				this->beardColor.push_back( hex2num(color) );
+				beardColor.push_back( hex2num(color) );
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
@@ -521,7 +520,7 @@ void Race::parseHairColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		this->hairColor.clear();
+		hairColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
@@ -531,7 +530,7 @@ void Race::parseHairColor( const string& sectionName )
 				case '}' :
 					break;
 				default:
-					this->hairColor.push_back( hex2num(color) );
+					hairColor.push_back( hex2num(color) );
 			}
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
@@ -552,12 +551,12 @@ void Race::parseSkinColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		this->skinColor.clear();
+		skinColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
 			if( color[0] != '{' && color[0] != '}' )
-				this->skinColor.push_back( hex2num(color) );
+				skinColor.push_back( hex2num(color) );
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
@@ -567,7 +566,7 @@ void Race::parseStartItem( const string& itemReference )
 	//
 	// Clear startItems vector as multiple startitem tags may be available (e.g. by using #copy)
 	//
-	this->startItems.clear();
+	startItems.clear();
 
 	string 		section("SECTION STARTITEM ");
 	section += itemReference;
@@ -581,7 +580,7 @@ void Race::parseStartItem( const string& itemReference )
 		{
 			itemId = iter->getEntry()->getFullLine();
 			if( itemId[0] != '{' && itemId[0] != '}' )
-				this->parseStartItemDetails( itemId );
+				parseStartItemDetails( itemId );
 		}
 		while (( itemId[0] != '}') && (++loopexit < MAXLOOPS) );
 	}
@@ -632,7 +631,7 @@ void Race::parseStartItemDetails( const string& itemReference )
 		if( !raceItem.layer && raceItem.protectedItem )
 			raceItem.protectedItem = false; // no protection on layer 0
 
-		//this->startItems.push_back( raceItem );
+		//startItems.push_back( raceItem );
 	}
 	else
 		ErrOut( "Race::parseStartItemDetails() unknown %s\n", itemReference.c_str() );
@@ -2307,98 +2306,100 @@ bool Race::isProtectedLayer( unsigned char layer )
 	return false;
 }
 
-UI32 Race::getSkillCap( void )
+UI32 Race::getSkillCap()
 {
-	return this->skillCap;
+	return skillCap;
 }
 
-void	Race::setSkillCap( UI32 newSkillCap )
+void Race::setSkillCap( UI32 newSkillCap )
 {
-	this->skillCap = newSkillCap;
+	skillCap = newSkillCap;
 }
 
 UI32 Race::getSkillAdvanceSuccess( UI32 skillId, UI32 baseSkill )
 {
-	return this->skills.getSkill( skillId ).getAdvance( baseSkill ).getSuccess();
+	return skills.getSkill( skillId ).getAdvance( baseSkill ).getSuccess();
 }
 
 UI32 Race::getSkillAdvanceFailure( UI32 skillId, UI32 baseSkill )
 {
-	return this->skills.getSkill( skillId ).getAdvance( baseSkill ).getFailure();
+	return skills.getSkill( skillId ).getAdvance( baseSkill ).getFailure();
 }
 
 UI32 Race::getSkillAdvanceStrength( UI32 skillId )
 {
-	return this->skills.getSkill( skillId).getAdvanceStrength();
+	return skills.getSkill( skillId).getAdvanceStrength();
 }
 
 UI32 Race::getSkillAdvanceDexterity( UI32 skillId )
 {
-	return this->skills.getSkill( skillId).getAdvanceDexterity();
+	return skills.getSkill( skillId).getAdvanceDexterity();
 }
 
 UI32 Race::getSkillAdvanceIntelligence( UI32 skillId )
 {
-	return this->skills.getSkill( skillId).getAdvanceIntelligence();
+	return skills.getSkill( skillId).getAdvanceIntelligence();
 }
 
-UI32 Race::getStatCap( void )
+UI32 Race::getStatCap()
 {
-	return this->statCap;
+	return statCap;
 }
 
-UI32 Race::getStrCap( void )
+UI32 Race::getStrCap()
 {
-	return this->strCap;
+	return strCap;
 }
 
 int Race::getStrModifier( UI32 baseStr )
 {
-	return this->strModifiers.getAbilityModifier( baseStr ).getModifier();
+	return strModifiers.getAbilityModifier( baseStr ).getModifier();
 }
 
-UI32 Race::getStrStart( void )
+UI32 Race::getStrStart()
 {
-	return this->strStart;
+	return strStart;
 }
 
-UI32 Race::getDexCap( void )
+UI32 Race::getDexCap()
 {
-	return this->dexCap;
+	return dexCap;
 }
 
 int Race::getDexModifier( UI32 baseDex )
 {
-	return this->dexModifiers.getAbilityModifier( baseDex ).getModifier();
+	return dexModifiers.getAbilityModifier( baseDex ).getModifier();
 }
 
-UI32 Race::getDexStart( void )
+UI32 Race::getDexStart()
 {
-	return this->dexStart;
+	return dexStart;
 }
 
-UI32 Race::getIntCap( void )
+UI32 Race::getIntCap()
 {
-	return this->strCap;
+	return intCap;
 }
 
 int Race::getIntModifier( UI32 baseInt )
 {
-	return this->intModifiers.getAbilityModifier( baseInt ).getModifier();
+	return intModifiers.getAbilityModifier( baseInt ).getModifier();
 }
 
-UI32 Race::getIntStart( void )
+UI32 Race::getIntStart()
 {
-	return this->strCap;
+	return intCap;
 }
 
 bool Race::getCanUseSkill( UI32 skillId )
 {
-	return this->skills.getSkill( skillId ).getCanUseSkill();
+	return skills.getSkill( skillId ).getCanUseSkill();
+	
 }
 
-void Race::show( void )
+void Race::show()
 {
-	SDbgOut("Race %d %s\n", this->id, this->name.c_str() );
+	SDbgOut("Race %d %s\n", id, name.c_str() );
 	skills.show();
 }
+

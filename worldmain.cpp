@@ -32,12 +32,12 @@
 CWorldMain::CWorldMain()
 {
 	isSaving = false;
-	this->cWsc=NULL;
-	this->gWsc=NULL;
-	this->iWsc=NULL;
-	this->jWsc=NULL;
-	this->chr_curr=0;
-	this->itm_curr=0;
+	cWsc=NULL;
+	gWsc=NULL;
+	iWsc=NULL;
+	jWsc=NULL;
+	chr_curr=0;
+	itm_curr=0;
 }
 
 CWorldMain::~CWorldMain()
@@ -1045,17 +1045,15 @@ void loaditem()
 	amxVS.moveVariable( INVALID, pi->getSerial32() );
 
 	if( pi->layer==LAYER_TRADE_RESTOCK )
-		Restocks->addNewRestock( pi );
+		restocks::addNewRestock( pi );
 
 }
 
-void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
+//! Load world from NXW*.WSC
+void CWorldMain::loadNewWorld()
 {
 	std::string fileName;
-//	unsigned char memerr=0; // unused variable
 	char outper[4];
-//	unsigned int i=0; // unused variable
-//	unsigned int percent=0,a=0,pred=0,maxm=0; // unused variable
 	*outper='\0';
 
 
@@ -1337,7 +1335,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 	if (pc->spawnregion!=INVALID || pc->spawnserial!=INVALID ) valid=0;
 	if (valid)
 	{
-			fprintf(cWsc, "SECTION CHARACTER %i\n", this->chr_curr++);
+			fprintf(cWsc, "SECTION CHARACTER %i\n", chr_curr++);
 			fprintf(cWsc, "{\n");
 			fprintf(cWsc, "SERIAL %i\n", pc->getSerial32());
 			//Luxor: if the char is morphed, we have to save the original values.
@@ -1781,7 +1779,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
 	{
-		fprintf(iWsc, "SECTION WORLDITEM %i\n", this->itm_curr++);
+		fprintf(iWsc, "SECTION WORLDITEM %i\n", itm_curr++);
 		fprintf(iWsc, "{\n");
 		fprintf(iWsc, "SERIAL %i\n", pi->getSerial32());
 		fprintf(iWsc, "NAME %s\n", pi->getCurrentNameC());
@@ -2110,8 +2108,8 @@ void CWorldMain::realworldsave ()
 	//Luxor: reload dynamic spawners here.
 	Spawns->clearDynamic();
 	cAllObjectsIter objs;
-	this->chr_curr=0;
-	this->itm_curr=0;
+	chr_curr=0;
+	itm_curr=0;
 	P_ITEM pi = NULL;
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{

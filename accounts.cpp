@@ -121,14 +121,10 @@ void cAccount::changePassword ( std::string password )
 		str[0] = '!'; str[1] = '\0';
 		strcat(str,pwd);
 		safedelete(pwd); //xan : avoid a repetitive memory leak :)
-		password.erase();
 		password = str;    //someone with a bit of knowledge about STL strings.. plz chg this!
 	}
 
-
-	this->pass = password;
-
-
+	pass = password;
 }
 
 /*!
@@ -139,8 +135,8 @@ void cAccount::changePassword ( std::string password )
 void cAccount::getAllChars(  NxwCharWrapper& sc )
 {
 	sc.clear();
-	for( unsigned int i=0; i<this->pgs.size(); i++ ) {
-		sc.insertSerial( this->pgs[i] );
+	for( unsigned int i=0; i<pgs.size(); i++ ) {
+		sc.insertSerial( pgs[i] );
 	}
 }
 
@@ -152,9 +148,9 @@ void cAccount::getAllChars(  NxwCharWrapper& sc )
 */
 void cAccount::addCharToAccount( P_CHAR pc )
 {
-	if( this->pgs.size() < 5 ) {
-		this->pgs.push_back( pc->getSerial32() );
-		pc->account=this->number;
+	if( pgs.size() < 5 ) {
+		pgs.push_back( pc->getSerial32() );
+		pc->account=number;
 	}
 	else 
 		pc->account=INVALID;
@@ -298,9 +294,9 @@ void cAccounts::LoadAccounts( void )
 /*!
 \brief Save all account
 */
-void cAccounts::SaveAccounts( void )
+void cAccounts::SaveAccounts()
 {
-	ACCOUNT_LIST::iterator iter_account( this->acctlist.begin() ), iter_account_end( this->acctlist.end() );
+	ACCOUNT_LIST::iterator iter_account( acctlist.begin() ), iter_account_end( acctlist.end() );
 
 	std::string  line ;
 	FILE* F = fopen("config/accounts.adm", "wt") ;
@@ -338,12 +334,12 @@ void cAccounts::SaveAccounts( void )
 SI32 cAccounts::Authenticate(std::string username, std::string password)
 {
 
-	ACCOUNT_LIST_BY_NAME::iterator iter_account_by_name(this->accbyname.find(username));
+	ACCOUNT_LIST_BY_NAME::iterator iter_account_by_name(accbyname.find(username));
 
-	if (iter_account_by_name != this->accbyname.end())
+	if (iter_account_by_name != accbyname.end())
 	{
-		ACCOUNT_LIST::iterator iter_account( this->acctlist.find(iter_account_by_name->second) );
-		if( iter_account==this->acctlist.end() )
+		ACCOUNT_LIST::iterator iter_account( acctlist.find(iter_account_by_name->second) );
+		if( iter_account==acctlist.end() )
 			return LOGIN_NOT_FOUND;
 
 		if ((iter_account->second.pass[0])=='!') {
@@ -400,13 +396,13 @@ SI32 cAccounts::Authenticate(std::string username, std::string password)
 */
 bool cAccounts::AuthenticateRAS(std::string username, std::string password)
 {
-	ACCOUNT_LIST_BY_NAME::iterator iter_account_by_name(this->accbyname.find(username));
+	ACCOUNT_LIST_BY_NAME::iterator iter_account_by_name(accbyname.find(username));
 
-	if (iter_account_by_name != this->accbyname.end())
+	if (iter_account_by_name != accbyname.end())
 	{
 
-		ACCOUNT_LIST::iterator iter_account( this->acctlist.find(iter_account_by_name->second) );
-		if( iter_account==this->acctlist.end() )
+		ACCOUNT_LIST::iterator iter_account( acctlist.find(iter_account_by_name->second) );
+		if( iter_account==acctlist.end() )
 			return false;
 
 		if ((iter_account->second.pass.c_str())[0]=='!') {
@@ -502,11 +498,9 @@ bool cAccounts::IsOnline( ACCOUNT acctnum )
 {
 	if ( acctnum <= INVALID )
 		return false;
-	ACCOUNT_LIST::iterator iter( this->acctlist.find(acctnum) );
-	if (iter != this->acctlist.end())
-	{
+	ACCOUNT_LIST::iterator iter( acctlist.find(acctnum) );
+	if (iter != acctlist.end())
 		return iter->second.isOnline();
-	} 
 	else 
 		return false;
 }
@@ -520,8 +514,8 @@ SERIAL cAccounts::GetInWorld( ACCOUNT acctnum )
 {
 	if (acctnum <= INVALID )
 		return INVALID;
-	ACCOUNT_LIST::iterator iter( this->acctlist.find(acctnum) );
-	if (iter != this->acctlist.end())
+	ACCOUNT_LIST::iterator iter( acctlist.find(acctnum) );
+	if (iter != acctlist.end())
 	{
 		return iter->second.getInWorld();
 	} 
@@ -537,8 +531,8 @@ SERIAL cAccounts::GetInWorld( ACCOUNT acctnum )
 void cAccounts::SetOnline( ACCOUNT acctnum, P_CHAR pc )
 {
 	VALIDATEPC(pc);
-	ACCOUNT_LIST::iterator iter( this->acctlist.find(pc->account) );
-	if (iter != this->acctlist.end())
+	ACCOUNT_LIST::iterator iter( acctlist.find(pc->account) );
+	if (iter != acctlist.end())
 	{
 		iter->second.setOnline( pc );
 	}
@@ -554,8 +548,8 @@ void cAccounts::SetOnline( ACCOUNT acctnum, P_CHAR pc )
 */
 void cAccounts::SetOffline( ACCOUNT acctnum )
 {
-	ACCOUNT_LIST::iterator iter( this->acctlist.find(acctnum) );
-	if (iter != this->acctlist.end())
+	ACCOUNT_LIST::iterator iter( acctlist.find(acctnum) );
+	if (iter != acctlist.end())
 	{
 		iter->second.setOffline();
 	}
@@ -572,9 +566,9 @@ void cAccounts::OnLogin(ACCOUNT acct, NXWSOCKET sck)
 	if(sck<=INVALID) 
 		return;
 
-	ACCOUNT_LIST::iterator iter_account( this->acctlist.find(acct) );
+	ACCOUNT_LIST::iterator iter_account( acctlist.find(acct) );
 
-	if(iter_account!=this->acctlist.end())
+	if(iter_account!=acctlist.end())
 	{
 		iter_account->second.onLogin( sck );
 	}
@@ -587,9 +581,9 @@ void cAccounts::OnLogin(ACCOUNT acct, NXWSOCKET sck)
 */
 void cAccounts::SetEntering( ACCOUNT acctnum ) 
 {
-	ACCOUNT_LIST::iterator iter_account( this->acctlist.find(acctnum) );
+	ACCOUNT_LIST::iterator iter_account( acctlist.find(acctnum) );
 
-	if(iter_account!=this->acctlist.end())
+	if(iter_account!=acctlist.end())
 	{
 		iter_account->second.setEntering();
 	}
@@ -605,8 +599,8 @@ void cAccounts::SetEntering( ACCOUNT acctnum )
 SI32 cAccounts::ChangePassword( ACCOUNT acctnum, std::string password)
 {
 
-	ACCOUNT_LIST::iterator iter( this->acctlist.find( acctnum ));
-	if( iter!=this->acctlist.end() )
+	ACCOUNT_LIST::iterator iter( acctlist.find( acctnum ));
+	if( iter!=acctlist.end() )
 	{
 		iter->second.changePassword( password );
 		unsavedaccounts++;
@@ -627,8 +621,8 @@ SI32 cAccounts::ChangePassword( ACCOUNT acctnum, std::string password)
 */
 void cAccounts::GetAllChars( ACCOUNT acctnum, NxwCharWrapper& sc )
 {
-	ACCOUNT_LIST::iterator iter( this->acctlist.find( acctnum ));
-	if( iter!=this->acctlist.end() )
+	ACCOUNT_LIST::iterator iter( acctlist.find( acctnum ));
+	if( iter!=acctlist.end() )
 	{
 		iter->second.getAllChars( sc );
 	}
@@ -649,8 +643,8 @@ void cAccounts::AddCharToAccount( ACCOUNT acctnum, P_CHAR pc )
 		return;
 	}
 
-	ACCOUNT_LIST::iterator iter( this->acctlist.find( acctnum ));
-	if( iter!=this->acctlist.end() )
+	ACCOUNT_LIST::iterator iter( acctlist.find( acctnum ));
+	if( iter!=acctlist.end() )
 	{
 		iter->second.addCharToAccount( pc );
 	}

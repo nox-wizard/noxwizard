@@ -52,12 +52,12 @@ void cTargeT::Do( NXWCLIENT ps )
 
 cTargetSerial::cTargetSerial( ) : cTargeT(  ) 
 {
-	this->call=NULL;
+	call=NULL;
 }
 
 cTargetSerial::cTargetSerial( processSerialTarget callThis ) : cTargeT(  ) 
 {
-	this->call=callThis;
+	call=callThis;
 }
 
 bool cTargetSerial::isObjectTarget( NXWCLIENT ps )
@@ -72,22 +72,22 @@ SERIAL cTargetSerial::makeSerial( NXWCLIENT ps )
 
 void cTargetSerial::Do( NXWCLIENT ps )
 {
-	if( this->isObjectTarget( ps ) ) {
-		this->call( ps, makeSerial( ps ) );
+	if( isObjectTarget( ps ) ) {
+		call( ps, makeSerial( ps ) );
 	}
 	else
-		this->Error( ps, "Invalid Object selected" );
+		Error( ps, "Invalid Object selected" );
 
 }
 
 cTargetItem::cTargetItem( processItemTarget callThis ) : cTargetSerial( ) 
 {
-	this->call=callThis;
+	call=callThis;
 };
 
 bool cTargetItem::isItemTarget( NXWCLIENT ps )
 {
-	if( this->isObjectTarget( ps ) ) {
+	if( isObjectTarget( ps ) ) {
 		return isItemSerial( makeSerial( ps ) );
 	}
 	else
@@ -96,22 +96,22 @@ bool cTargetItem::isItemTarget( NXWCLIENT ps )
 
 void cTargetItem::Do( NXWCLIENT ps )
 {
-	if( this->isItemTarget( ps ) ) {
-		this->call( ps, pointers::findItemBySerial( makeSerial( ps ) ) );
+	if( isItemTarget( ps ) ) {
+		call( ps, pointers::findItemBySerial( makeSerial( ps ) ) );
 	}
 	else
-		this->Error( ps, "Invalid Item selected" );
+		Error( ps, "Invalid Item selected" );
 }
 
 
 cTargetChar::cTargetChar( processCharTarget callThis ) : cTargetSerial( ) 
 {
-	this->call=callThis;
+	call=callThis;
 }
 
 bool cTargetChar::isCharTarget( NXWCLIENT ps )
 {
-	if( this->isObjectTarget( ps ) ) {
+	if( isObjectTarget( ps ) ) {
 		return isCharSerial( makeSerial( ps ) );
 	}
 	else
@@ -120,10 +120,10 @@ bool cTargetChar::isCharTarget( NXWCLIENT ps )
 
 void cTargetChar::Do( NXWCLIENT ps )
 {
-	if( this->isCharTarget( ps ) )
-		this->call( ps, pointers::findCharBySerial( makeSerial( ps ) ) );
+	if( isCharTarget( ps ) )
+		call( ps, pointers::findCharBySerial( makeSerial( ps ) ) );
 	else
-		this->Error( ps, "Invalid Char selected" );
+		Error( ps, "Invalid Char selected" );
 }
 
 
@@ -134,7 +134,7 @@ bool cTargetLocation::isLocationTarget( NXWCLIENT ps )
 
 cTargetLocation::cTargetLocation( processLocationTarget callThis ) : cTargeT( ) 
 {
-	this->call=callThis;
+	call=callThis;
 }
 
 Location cTargetLocation::makeLocation( NXWCLIENT ps ) 
@@ -148,9 +148,9 @@ Location cTargetLocation::makeLocation( NXWCLIENT ps )
 
 void cTargetLocation::Do( NXWCLIENT ps )
 {
-	if( this->isLocationTarget( ps ) )
-		this->call( ps, makeLocation( ps ) );
+	if( isLocationTarget( ps ) )
+		call( ps, makeLocation( ps ) );
 	else
-		this->Error( ps, "Invalid Location selected" );
+		Error( ps, "Invalid Location selected" );
 }
 

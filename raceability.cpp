@@ -9,24 +9,24 @@
 
 #include "raceability.h"
 
-RaceAbilityModifier::RaceAbilityModifier( void )
+RaceAbilityModifier::RaceAbilityModifier()
 {
 	base = modification = 0;
 }
 
-UI32 RaceAbilityModifier::getBase( void )
+UI32 RaceAbilityModifier::getBase()
 {
-	return this->base;
+	return base;
 }
 
-int RaceAbilityModifier::getModifier( void )
+int RaceAbilityModifier::getModifier()
 {
-	return this->modification;
+	return modification;
 }
 
 RaceAbilityModifier& RaceAbilityModifier::operator=( const string& that )
 {
-	sscanf( that.c_str(), "%u %d", &this->base, &this->modification );
+	sscanf( that.c_str(), "%u %d", &base, &modification );
 	return *this;
 }
 

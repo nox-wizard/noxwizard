@@ -98,35 +98,35 @@ void cOldMenu::setTitle( wstring& str )
 \brief Set width
 \author Endymion
 \since 0.82
-\param width the width
+\param newWidth the width
 */
-void cOldMenu::setWidth( int width )
+void cOldMenu::setWidth( int newWidth )
 {
-	this->width=width;
+	width=newWidth;
 }
 
 /*!
 \brief Set style
 \author Endymion
 \since 0.82
-\param style the style
-\param color the color
+\param newStyle the style
+\param newColor the color
 */
-void cOldMenu::setStyle( int style, int color )
+void cOldMenu::setStyle( int newStyle, int newColor )
 {
-	this->style=style;
-	setColor( color );
+	style=newStyle;
+	setColor( newColor );
 }
 
 /*!
 \brief Set color
 \author Endymion
 \since 0.82
-\param color the color
+\param newColor the color
 */
-void cOldMenu::setColor( int color )
+void cOldMenu::setColor( int newColor )
 {
-	this->color=color;
+	color=newColor;
 }
 
 /*!

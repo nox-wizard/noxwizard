@@ -3069,7 +3069,8 @@ void StartClasses()
 	Partys=new cPartys;
 	Spawns=new cSpawns;
 	Areas=new cAreas;
-	Restocks= new cRestockMng();
+
+	restocks::initialize();
 
 	ConOut(" [ OK ]\n");
 }
@@ -3086,7 +3087,6 @@ void DeleteClasses()
 	delete Spawns;
 	delete Areas;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
-	delete Restocks;
 	//objects.clear();
 }
 ////////////////////////////

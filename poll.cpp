@@ -22,9 +22,9 @@ SERIAL cPoll::getSerial()
 	return serial;
 }
 
-void cPoll::setSerial( const SERIAL serial )
+void cPoll::setSerial( const SERIAL newSerial )
 {
-	this->serial = serial;
+	serial = newSerial;
 }
 
 std::string cPoll::getQuestion()
@@ -32,9 +32,9 @@ std::string cPoll::getQuestion()
 	return question;
 }
 
-void cPoll::setQuestion( const std::string &question )
+void cPoll::setQuestion( const std::string &newQuestion )
 {
-	this->question = question;
+	question = newQuestion;
 }
 
 UI32 cPoll::getRunForDays()
@@ -44,7 +44,7 @@ UI32 cPoll::getRunForDays()
 
 void cPoll::setRunForDays( UI32 days )
 {
-	this->runForDays = days;
+	runForDays = days;
 }
 
 std::string cPoll::getPollOption( const UI32 option )

@@ -4218,13 +4218,13 @@ TargetLocation::TargetLocation(PKGx6C* pp)
 		return;
 	}
 
-	this->m_pc=NULL;
-	this->m_pcSerial=INVALID;
-	this->m_pi=NULL;
-	this->m_piSerial=INVALID;
-	this->m_x=0;
-	this->m_y=0;
-	this->m_z=0;
+	m_pc=NULL;
+	m_pcSerial=INVALID;
+	m_pi=NULL;
+	m_piSerial=INVALID;
+	m_x=0;
+	m_y=0;
+	m_z=0;
 }
 
 

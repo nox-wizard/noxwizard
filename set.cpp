@@ -335,7 +335,7 @@ void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
 \brief Constructor
 */
 NxwWrapper::NxwWrapper() { 
-	this->rewind();
+	rewind();
 };
 
 /*!
@@ -352,7 +352,7 @@ NxwWrapper::~NxwWrapper() {
 */
 bool NxwWrapper::isEmpty()
 {
-	return ( ( this->vect.size()==0 ) || ( current==vect.end() ) );	
+	return ( ( vect.size()==0 ) || ( current==vect.end() ) );	
 };
 
 /*!
@@ -373,7 +373,7 @@ NxwWrapper& NxwWrapper::operator++(int)
 void NxwWrapper::clear()
 {
 	vect.clear();
-	this->rewind();
+	rewind();
 }
 
 /*!
@@ -482,7 +482,7 @@ void NxwSerialWrapper::insertSerial( SERIAL s )
 void NxwSerialWrapper::insertSerial( cObject* obj )
 {
 	if( (obj!=NULL) )
-		this->insertSerial( obj->getSerial32() );
+		insertSerial( obj->getSerial32() );
 };
 
 
@@ -1043,7 +1043,7 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 		if( Race::isRaceSystemActive() )
 			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->race, pi_j->layer ) ) ) 
 				continue;
-		this->insertSerial( pi_j->getSerial32() );
+		insertSerial( pi_j->getSerial32() );
 	}
 
 }

@@ -20,17 +20,11 @@ JAILEDVECTOR prison::jailed;
 */
 cJailed::cJailed()
 {
-	this->sec = 0;
-	this->timer = 0;
-	this->why = "";
-	this->cell=INVALID;
+	sec = 0;
+	timer = 0;
+	why = "";
+	cell=INVALID;
 };
-
-/*!
-\brief Destructor of cJailed
-\author Endymion
-*/
-cJailed::~cJailed() { };
 
 /*!
 \brief Constructor of cPrisonCell
@@ -38,9 +32,9 @@ cJailed::~cJailed() { };
 */
 cPrisonCell::cPrisonCell()
 {
-	this->pos.x=0; this->pos.y=0; this->pos.z=0; this->pos.dispz=0;
-	this->serial=INVALID;
-	this->free=true;
+	pos.x=0; pos.y=0; pos.z=0; pos.dispz=0;
+	serial=INVALID;
+	free=true;
 };
 
 /*!

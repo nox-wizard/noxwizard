@@ -29,31 +29,24 @@ typedef struct {
 
 #include <queue>
 
-class cRestockMng {
+/*!
+ \brief Restocks related stuff
+ */
+namespace restocks
+{
+	void initialize(); //!< Initialize the restock system
 
-private:
-
-	TIMERVAL timer;
-	std::queue< SERIAL > needrestock;
-	std::queue< SERIAL > restocked;
+	extern TIMERVAL timer;
+	extern std::queue< SERIAL > needrestock;
+	extern std::queue< SERIAL > restocked;
 
 	void rewindList();
 	void updateTimer();
 
-
-public:
-	
-	cRestockMng();
-
-
 	void doRestock();
 	void doRestockAll();
-
 	void addNewRestock( P_ITEM pi );
-
-};
-
-extern cRestockMng* Restocks;
-
+}
 
 #endif
+

@@ -54,7 +54,6 @@ namespace PartySystem
 			MEMBER_LIST members;
 		public:
 			cParty( SERIAL ser );
-			~cParty();
 
 			SERIAL serial;	//!< party serial
 			
@@ -84,7 +83,6 @@ namespace PartySystem
 
 		public:
 			cPartys();
-			~cPartys();
 
 			SERIAL newParty();
 

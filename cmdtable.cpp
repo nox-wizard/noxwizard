@@ -2456,14 +2456,14 @@ void command_restock(NXWSOCKET  s)
 // Forces a manual vendor restock.
 {
 	sysmessage(s, "Manual shop restock has occurred.");
-	Restocks->doRestock();
+	restocks::doRestock();
 }
 
 void command_restockall(NXWSOCKET  s)
 // Forces a manual vendor restock to maximum values.
 {
 	sysmessage(s, "Restocking all shops to their maximums");
-	Restocks->doRestockAll();
+	restocks::doRestockAll();
 }
 
 void command_setshoprestockrate(NXWSOCKET  s)
