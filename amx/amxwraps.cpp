@@ -2722,25 +2722,25 @@ NATIVE(_itm_sound)
 
 /*!
 \brief Open a set
-\author Xanathar
-\since 0.55
+\author Endymion
+\since 0.82
 \return the set
 */
-NATIVE(_set_open)
+NATIVE( _set_create )
 {
-	return nxwset::open();
+	return amxSet::create( );
 }
 
 /*!
 \brief Close a set
-\author Xanathar
-\since 0.55
+\author Endymion
+\since 0.82
 \param 1: the set
-\return 0
+\return 1
 */
-NATIVE(_set_close)
+NATIVE( _set_delete )
 {
-	nxwset::close(params[1]);
+	amxSet::deleteSet(params[1]);
 	return 0;
 }
 
@@ -2751,9 +2751,9 @@ NATIVE(_set_close)
 \param 1: the set
 \return 0
 */
-NATIVE(_set_rewind)
+NATIVE( _set_rewind )
 {
-	nxwset::rewind(params[1]);
+	amxSet::rewind(params[1]);
 	return 0;
 }
 
@@ -2764,9 +2764,9 @@ NATIVE(_set_rewind)
 \param 1: the set
 \return 0
 */
-NATIVE(_set_next)
+NATIVE( _set_next )
 {
-	nxwset::next(params[1]);
+	amxSet::next(params[1]);
 	return 0;
 }
 
@@ -2775,116 +2775,127 @@ NATIVE(_set_next)
 \author Endymion
 \since 0.82
 \param 1: the set
-\return 0
+\return 1 if at end, 0 else
 */
-NATIVE(_set_end)
+NATIVE( _set_end )
 {
-	return nxwset::end(params[1]);
+	return amxSet::end(params[1]);
 }
 
-
- 
-/*!
-\brief Fill a set with chars owned by a player
-\author Xanathar
-\since 0.55
-\param 1: the set
-\param 2: serial of character near whom online players are collected. Can be Invalid. In that case all online players are collected.
-\param 3: range, is meaning only whe param 2 != Invalid.
-\return the set
-*/
-NATIVE( _set_fillOnline )
-{
-	nxwset::fillOnlineSockets( params[1], params[2], params[3] );
-	return params[1];
-}
-
-/*!
-\brief Fill a set with chars owned by a player
-\author Xanathar
-\since 0.55
-\param 1: the set
-\param 2: character owner
-\param 3: include also stabled NPCs
-\param 4: include only following NPCs
-\return the set
-*/
-NATIVE(_set_fillChrOwndByChr)
-{
-    P_CHAR pc = pointers::findCharBySerial(params[2]);
-    VALIDATEPCR(pc, INVALID);
-    nxwset::fillOwnedNpcs(params[1],pc,params[3]!=0,params[4]!=0);
-	return params[1];
-}
-
-
-/*!
-\brief Fill a set with chars near given location
-\author Xanathar
-\since 0.55
-\param 1: the set
-\param 2: x
-\param 3: y
-\param 4: distance ( default 10 )
-\param 4: exclude offline players ( default true )
-\return the set
-*/
-NATIVE(_set_fillChrNearXY)
-{
-	nxwset::fillCharsNearXYZ(params[1],params[2],params[3],params[4],params[5]!=0);
-	return params[1];
-}
-
-/*!
-\brief Pop an element from a set
-\author Xanathar
-\since 0.55
-\param 1: the set
-\return the element
-*/
-NATIVE(_set_pop)
-{
-	return nxwset::get(params[1]);
-}
-
-/*!
-\brief Push an element from a set
-\author Xanathar
-\since 0.55
-\param 1: the set
-\param 2: the element
-\return the set
-*/
-NATIVE(_set_push)
-{
-	nxwset::insert(params[1], params[2]);
-	return params[1];
-}
-
-NATIVE (_set_fillItemsInCont)
-{
-	P_ITEM pi=pointers::findItemBySerial( params[2] );
-	VALIDATEPIR(pi, params[1]);
-	nxwset::fillItemsInContainer(params[1],pi,params[3]!=0,false);
-	return params[1];
-}
 
 /*!
 \brief Get number of element contained in a set
-\author Xanathar
-\since ??
+\author Endymion
+\since 0.82
 \param 1: the set
 \return element count
 */
 NATIVE ( _set_size )
 {
-	return nxwset::size( params[1] );
+	return amxSet::size( params[1] );
 }
 
-NATIVE (_set_fillItemsAtXY)
+/*!
+\brief Get current object of given set
+\author Endymion
+\since 0.82
+\param 1: the set
+\return the object
+*/
+NATIVE( _set_get )
 {
-	nxwset::fillItemsAtXY(params[1],params[2],params[3],params[4],params[5]);
-	return params[1];
+	return amxSet::get( params[1] );
+}
+
+/*!
+\brief Get current object of given set
+\author Endymion
+\since 0.82
+\param 1: the set
+\return the object
+*/
+NATIVE( _set_add )
+{
+	amxSet::add( params[1], params[2] );
+	return 0;
+}
+
+NATIVE( _set_addOwnedNpcs ) 
+{
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+	amxSet::addOwnedNpcs( params[1], pc, params[3]!=0, params[4]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addCharsNearXYZ ) 
+{
+	amxSet::addCharsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0, params[6]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addPartyFriend ) 
+{
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+	amxSet::addPartyFriend( params[1], pc, params[3], params[4]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addItemsInContainer ) 
+{
+	P_ITEM pi=pointers::findItemBySerial( params[2] );
+	VALIDATEPIR( pi, INVALID )
+	amxSet::addItemsInContainer( params[1], pi, params[3]!=0, params[4]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addItemWeared ) 
+{
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+	amxSet::addItemWeared( params[1], pc, params[3]!=0, params[4]!=0, params[5]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addItemsAtXY ) 
+{
+	amxSet::addItemsAtXY( params[1], params[2], params[3], params[4] );
+	return 0;
+}
+
+NATIVE( _set_addItemsNearXYZ ) 
+{
+	amxSet::addItemsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0 );
+	return 0;
+}
+
+NATIVE( _set_addAllOnlinePlayers )
+{
+	amxSet::addAllOnlinePlayers( params[1] );
+	return 0;
+}
+
+NATIVE( _set_addOnlinePlayersNearChar )
+{
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+	amxSet::addOnlinePlayersNearChar( params[1], pc, params[3]!=0, params[4] );
+	return 0;
+}
+
+NATIVE( _set_addOnlinePlayersNearItem )
+{
+	P_ITEM pi=pointers::findItemBySerial( params[2] );
+	VALIDATEPIR( pi, INVALID )
+	amxSet::addOnlinePlayersNearItem( params[1], pi, params[3] );
+	return 0;
+}
+
+NATIVE( _set_addOnlinePlayersNearXY )
+{
+	amxSet::addOnlinePlayersNearXY( params[1], params[2], params[3], params[4] );
+	return 0;
 }
 
 /*!
@@ -4292,19 +4303,6 @@ NATIVE(_itm_setLocalStrVar)
 }
 
 /*!
-\brief Fills a set with the items near the given coords
-\author Luxor
-\since 0.82
-\return params[1]
-*/
-NATIVE (_set_fillItemsNearXY)
-{
-	nxwset::fillItemsNearXYZ(params[1],params[2],params[3],params[4],params[5]);
-	return params[1];
-}
-
-
-/*!
 \brief Check if NPC can move in given location
 \author Sparhawk
 \since 0.82
@@ -5491,22 +5489,28 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "trig_getTItem", _getTriggeredItem },
  { "trig_getTrigType", _getTriggeredItemTrigType },
 // Set functions :
- { "set_open", _set_open },
- { "set_close", _set_close },
+ { "set_create", _set_create },
+ { "set_delete", _set_delete },
+ 
  { "set_rewind", _set_rewind },
  { "set_next", _set_next },
  { "set_end", _set_end },
  { "set_size", _set_size },
+
+ { "set_get", _set_get },
+ { "set_add", _set_add },
  
- { "set_fillOnline", _set_fillOnline },
- { "set_fillOwnedChars", _set_fillChrOwndByChr },
- { "set_fillChrNearXY", _set_fillChrNearXY },
- { "set_fillItemsInCont", _set_fillItemsInCont },
- 
- { "set_pop", _set_pop },
- { "set_push", _set_push },
- { "set_fillItemsAtXY", _set_fillItemsAtXY },
- { "set_fillItemsNearXY", _set_fillItemsNearXY},
+ { "set_addOwnedNpcs", _set_addOwnedNpcs },
+ { "set_addCharsNearXYZ", _set_addCharsNearXYZ },
+ { "set_addPartyFriend", _set_addPartyFriend },
+ { "set_addItemsInContainer", _set_addItemsInContainer },
+ { "set_addItemWeared", _set_addItemWeared },
+ { "set_addItemsAtXY", _set_addItemsAtXY },
+ { "set_addItemsNearXYZ", _set_addItemsNearXYZ },
+ { "set_addAllOnlinePlayers", _set_addAllOnlinePlayers },
+ { "set_addOnlinePlayersNearChar", _set_addOnlinePlayersNearChar },
+ { "set_addOnlinePlayersNearItem", _set_addOnlinePlayersNearItem },
+ { "set_addOnlinePlayersNearXY", _set_addOnlinePlayersNearXY },
 // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
