@@ -175,8 +175,12 @@ bool evaluateOneDefine (char *szLine)
 */
 static char* evaluateAllDefines (char *szLine)
 {
-	//this is an XSS builder metacommand, internal use
-	if ((szLine[0]=='/')&&(szLine[1]=='/')&&(szLine[2]=='$')&&(szLine[3]=='$')) return szLine;
+//	//this is an XSS builder metacommand, internal use
+//	if ((szLine[0]=='/')&&(szLine[1]=='/')&&(szLine[2]=='$')&&(szLine[3]=='$')) return szLine;
+
+	// ignore comments, so it doesn't give errors for undefined identifiers commented out
+	// it make non-sense the previous check. Akron
+	if ( szLine[0] == '/' && szLine[1] == '/' ) return szLine;
 
 	if ((szLine[0]=='#')&&(szLine[1]=='d')) return szLine;
 	while (evaluateOneDefine(szLine));
