@@ -736,17 +736,20 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (r == 0) return;
 
 				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
-				pc->setId( DBYTE2WORD( array[0], array[1] ) );
-				if( ISVALIDPC( m_pcCurrChar ) )
-					pc->putInto( m_pcCurrChar->getBackpack() );
-
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
-				// Added colormem token here! by Magius(CHE) §
+				pc->setId( DBYTE2WORD( array[0], array[1] ) );
 				if (m_nColor1 != 0xFF)
-				{
 					pc->setColor( (m_nColor1<<8)|(m_nColor2%256) );
-					pc->Refresh();
+
+				if( ISVALIDPC( m_pcCurrChar ) ) {
+					P_ITEM pack=m_pcCurrChar->getBackpack();
+					if( ISVALIDPI(pack) )
+						pack->AddItem( pc );
+					else {
+						pc->MoveTo( m_pcCurrChar->getPosition() );
+						pc->Refresh();
+					}
 				}
 
 				m_piAdded = pc;
