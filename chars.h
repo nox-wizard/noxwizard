@@ -644,6 +644,7 @@ class cChar : public cObject
 		cUnicodeString* getSpeechCurrent();
 		void setSpeechCurrent( cUnicodeString* speech );
 		void resetSpeechCurrent();
+		void deleteSpeechCurrent();
 
 	
 	public:

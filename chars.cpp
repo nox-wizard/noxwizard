@@ -4744,4 +4744,9 @@ void cChar::resetSpeechCurrent()
 	setSpeechCurrent( NULL );
 }
 
+void cChar::deleteSpeechCurrent()
+{
+	if( speechCurrent!=NULL )
+		delete speechCurrent;
+}
 
