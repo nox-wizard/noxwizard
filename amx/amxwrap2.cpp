@@ -3289,7 +3289,7 @@ NATIVE2(_getRaceProperty)
 		int p;
 		switch(params[2]) {
 			case RP_I_GENDER:
-				return race->getRaceGender();
+				p=race->getRaceGender();
 				break;
 			case INVALID:
 			default:
@@ -3320,6 +3320,8 @@ NATIVE2(_getRaceProperty)
 			case RP_S_SKIN:
 				p = ( !race->skinColor.empty() )? (short)race->skinColor[ rand()%race->skinColor.size() ] : (short)0;
 				break;
+			//case RP_S_BODY:
+			
 			default:
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
 				return INVALID;
