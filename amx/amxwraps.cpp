@@ -5736,7 +5736,7 @@ NATIVE( _gui_addHtmlGump )
 	VALIDATEPMR( menu, 0 );
 
 	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
+	amx_GetAddr(amx,params[6], &cstr);
 	wstring s;
 	amx_GetStringUnicode( s, cstr );
 

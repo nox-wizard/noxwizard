@@ -393,6 +393,17 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 	}
 }
 
+cMulti* cMulti::findMulti(Location position)
+{
+	P_HOUSE house=cHouses::findHouse( position );
+	if ( house != NULL )
+		return (cMulti*) house;
+	P_BOAT boat = cBoat::findBoat(position);
+	if ( boat != NULL )
+		return (cMulti*) boat;
+	return NULL;
+}
+
 void cHouse::transfer(SERIAL newOwner)
 {
 	P_CHAR pc = pointers::findCharBySerial(newOwner);
@@ -1235,22 +1246,22 @@ bool cHouse::isPublicHouse()
 	return this->publicHouse == 1;
 }
 
-SI32 cHouse::getCurrentZPosition(P_CHAR pc)
+SI32 cMulti::getCurrentZPosition(P_CHAR pc)
 {
 	SI32 tempZ=pc->getPosition().z;
-	P_ITEM iHouse = pointers::findItemBySerial(serial);
+	P_ITEM iMulti = pointers::findItemBySerial(serial);
 
 	Location pos;
-	pos.x=(UI16)(iHouse->getPosition().x - pc->getPosition().x);
-	pos.y=(UI16)(iHouse->getPosition().y - pc->getPosition().y);
-	pos.z=(SI08)(iHouse->getPosition().z - pc->getPosition().z);
+	pos.x=(UI16)(iMulti->getPosition().x - pc->getPosition().x);
+	pos.y=(UI16)(iMulti->getPosition().y - pc->getPosition().y);
+	pos.z=(SI08)(iMulti->getPosition().z - pc->getPosition().z);
 	multiVector m;
-	int itemCount =data::seekMulti( (short) (iHouse->getId()-0x4000), m );
+	int itemCount =data::seekMulti( (short) (iMulti->getId()-0x4000), m );
 	if ( itemCount < 0 )
 		return 0;
 	for (int i =0;i < m.size() ;++i)
 	{
-		if (( m[i].flags != 0 ) && ( m[i].x == (SI32)(pc->getPosition().x - iHouse->getPosition().x ) ) && ( m[i].y == (SI32)(pc->getPosition().y - iHouse->getPosition().y ) ))
+		if (( m[i].flags != 0 ) && ( m[i].x == (SI32)(pc->getPosition().x - iMulti->getPosition().x ) ) && ( m[i].y == (SI32)(pc->getPosition().y - iMulti->getPosition().y ) ))
 		{
 			// found a candidate for the height
 			tile_st tile;

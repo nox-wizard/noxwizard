@@ -61,6 +61,7 @@ public:
 	static void makeKeys(cMulti* pMulti, P_CHAR pc);
 	static void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t );
 	static void cMulti::buildmulti( P_CHAR builder, P_ITEM deed);
+	static cMulti* findMulti(Location position);
 	bool increaseLockedItems(unsigned int amount=1);
 	bool decreaseLockedItems(unsigned int amount=1);
 	void setLockedItems(unsigned int amount);
@@ -73,6 +74,7 @@ public:
 	unsigned int getSecuredItems();
 	unsigned int getMaxSecuredItems();
 	void setMaxSecuredItems(unsigned int amount);
+	SI32 getCurrentZPosition(P_CHAR pc);
 };
 
 extern std::map< SERIAL, P_HOUSE > houses;
@@ -119,7 +121,6 @@ public:
 	bool isBanned(P_CHAR pc);
 	std::vector<SERIAL> getHouseBannedList();
 
-	SI32 getCurrentZPosition(P_CHAR pc);
 	void createHouse(UI32 houseNumber);
 	void transfer(SERIAL newOwner);
 	void save(ofstream  *output);

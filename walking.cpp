@@ -315,30 +315,30 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
-		P_HOUSE house=cHouses::findHouse( pc->getPosition() );
+		cMulti* multi=cMulti::findMulti( pc->getPosition() );
 		P_ITEM pi_multi=NULL;
-		if ( house != NULL )
-			pi_multi=pointers::findItemBySerial (house->getSerial());
+		if ( multi != NULL )
+			pi_multi=pointers::findItemBySerial (multi->getSerial());
 
 		if((!ISVALIDPI(pi_multi))&&(pc->getMultiSerial32() != INVALID))
 		{
+			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			pi_multi=pointers::findItemBySerial (pc->getMultiSerial32());
 			if ( pi_multi->amxevents[EVENT_CHR_ONMULTILEAVE] ) 
 			{
 				g_bByPass = false;
-				pi_multi->amxevents[EVENT_CHR_ONMULTILEAVE]->Call( house->getSerial(), pc->getSerial32(), dir, sequence );
+				pi_multi->amxevents[EVENT_CHR_ONMULTILEAVE]->Call( multi->getSerial(), pc->getSerial32(), dir, sequence );
 				if ( g_bByPass==true )
 					return true;
 			}
 
-			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			//xan : probably the plr has exited the boat walking!
 			//pc->multi1 = pc->multi2 = pc->multi3 = pc->multi4 = 0xFF;
 		}
 
 		if(ISVALIDPI(pi_multi))
 		{
-			z=(signed char)house->getCurrentZPosition(pc);
+			z=(signed char)multi->getCurrentZPosition(pc);
 			if (pc->getMultiSerial32() < 0)
 			{
 				//xan : probably the plr has entered the boat walking!
@@ -364,11 +364,12 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
 				SI32 sx, sy, ex, ey;
+				P_HOUSE house = ((P_HOUSE)multi);
 				if ( house->isInsideHouse(pc->getPosition()) )
 				{
 					if ( pc->amxevents[EVENT_CHR_ONMULTIENTER] ) {
 						g_bByPass = false;
-						pc->amxevents[EVENT_CHR_ONMULTIENTER]->Call( house->getSerial(), pc->getSerial32(), dir, sequence );
+						pc->amxevents[EVENT_CHR_ONMULTIENTER]->Call( multi->getSerial(), pc->getSerial32(), dir, sequence );
 						if ( g_bByPass==true )
 							return true;
 					}

@@ -70,7 +70,7 @@ char cShipItems[4][6]=
 //============================================================================================
 
 
-bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these chords (Z is NOT checked right now)
+bool cBoat::inmulti(Location where, P_ITEM pi)//see if they are in the multi at these chords (Z is NOT checked right now)
 // PARAM WARNING: z is unreferenced
 {
 	VALIDATEPIR(pi,false);
@@ -1817,5 +1817,22 @@ LOGICAL cBoat::makeBoatItems(P_ITEM pBoat)
 	mapRegions->add(pBoat);
 #endif
 	return true;
+}
+
+LOGICAL cBoat::insideShip(Location position)
+{
+	return inmulti(position, this->getShipLink());
+}
+
+cBoat* cBoat::findBoat(Location position)
+{
+	std::map< SERIAL, P_BOAT >::iterator allboats (s_boat.begin());
+	for ( ;allboats!=s_boat.end();allboats++)
+	{
+		P_BOAT boat=allboats->second;
+		if ( boat != NULL && boat->insideShip(position) )
+			return boat;
+	}
+	return NULL;
 }
 

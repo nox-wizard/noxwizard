@@ -93,6 +93,7 @@ private:
 		void setHold(SERIAL holdSerial);
 		void setHold(P_ITEM hold);
 		void setShipLink(P_ITEM ship);
+		LOGICAL insideShip(Location position);
 		P_ITEM getTiller();
 		P_ITEM getLeftPlank();
 		P_ITEM getRightPlank();
@@ -105,6 +106,7 @@ private:
 		static bool inmulti(Location where,P_ITEM pi);
 		static void cBoat::insert_boat(P_ITEM pi, cBoat* boat);
 		static void cBoat::remove_boat(P_ITEM pi);
+		static cBoat* findBoat(Location position);
 		static cBoat* search_boat(SI32 ser);
 		static P_ITEM search_boat_by_plank(P_ITEM pl);
 
