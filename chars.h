@@ -351,10 +351,10 @@ class cChar : public cObject
 		{ privLevel = pLevel; }
 
 		inline const LOGICAL	IsGM() const
-		{ return ( privLevel > PRIVLEVEL_GM ); }
+		{ return ( privLevel >= PRIVLEVEL_GM ); }
 
 		inline const LOGICAL	IsCounselor() const
-		{ return ( privLevel > PRIVLEVEL_CNS ); }
+		{ return ( privLevel >= PRIVLEVEL_CNS ); }
 
 		inline const LOGICAL	IsGMorCounselor() const
 		{ return IsCounselor(); }
