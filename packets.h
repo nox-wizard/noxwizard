@@ -1565,8 +1565,62 @@ public:
 
 };
 
+//@}
+
+//@{
+/*!
+\name walking packets
+\brief walking relatede packets
+*/
+
+#define PKG_WALK 0x97;
+/*!
+\brief Moves player played by client one step in requested direction.
+\author Endymion
+\since 0.83
+\note 0x97
+\note Doesn’t move if there are obstacles
+*/
+class cPacketWalk : public cServerPacket {
+
+public:
+	eUI08   direction;	//!< direction
+	cPacketWalk();
+	void send( NXWCLIENT ps );
+
+};
 
 
+#define PKG_WALK_ACK 0x22;
+/*!
+\brief Character Move ACK/ Resync Request
+\author Endymion
+\since 0.83
+\note 0x22
+\note for notoriety see NOTORIETY
+\note server packet: move ack for 0x02.
+\note client packet: Whenever client thinks it’s out of synch (basicly: sequence doesn’t fit) it sends a 0x22 0 0 / Resync request. (server should resend items / npcs / etc around)
+*/
+class cPacketWalkAck : public cServerPacket {
+
+public:
+	eUI08   sequence;	//!< sequence
+	eUI08   notoriety;	//!< notoriety ( see note and NOTORIETY )
+	cPacketWalkAck();
+	void send( NXWCLIENT ps );
+
+};
+
+enum NOTORIETY {
+	NOT_VALID =0, //!< invalid/across server line
+	INNOCENT, //!< innocent (blue)
+	GUILDED, //!< guilded/ally (green)
+	ATTACKABLE, //!< attackable but not criminal (gray)
+	CRIMINAL, //!< criminal (gray)
+	ENEMY, //!< enemy (orange)
+	MURDERER, //!< murderer (red)
+	TRASLUCENT //!< unknown use (translucent (like 0x4000 hue))
+};
 
 
 //@}

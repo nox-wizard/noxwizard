@@ -331,3 +331,6 @@ SEND( UnicodeSpeech ) {
 
 CREATE( Map, PKG_MAP, 0x0B )
 CREATE( MapMessage, PKG_MAP_MESSAGE, 0x13 )
+
+CREATE( Walk, PKG_WALK, 0x02 )
+CREATE( WalkAck, PKG_WALK_ACK, 0x03 )
