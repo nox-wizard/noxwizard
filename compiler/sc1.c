@@ -5,7 +5,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc1.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
+ *  Version: $Id: sc1.c,v 1.3 2003/07/13 16:59:06 dgp85 Exp $
  */
 #include <assert.h>
 #include <ctype.h>
@@ -935,8 +935,8 @@ static void setconstants(void)
     add_constant("cellmin",SHRT_MIN,sGLOBAL,0);
   #else
     add_constant("cellbits",32,sGLOBAL,0);
-    add_constant("cellmax",LONG_MAX,sGLOBAL,0);
-    add_constant("cellmin",LONG_MIN,sGLOBAL,0);
+    add_constant("cellmax",INT_MAX,sGLOBAL,0);
+    add_constant("cellmin",INT_MIN,sGLOBAL,0);
   #endif
   add_constant("charbits",charbits,sGLOBAL,0);
   add_constant("charmin",0,sGLOBAL,0);
