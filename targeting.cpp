@@ -1170,7 +1170,7 @@ void cTargets::DvatTarget(NXWSOCKET s)
 static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
 {
 	if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-	P_CHAR pc=archive::getNewChar();
+	P_CHAR pc=archive::character::New();
 
 	pc->setCurrentName("Dummy");
 	pc->SetBodyType((addid1[s]<<8)|(addid2[s]%256));

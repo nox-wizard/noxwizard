@@ -561,7 +561,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// Now lets spawn him/her
 					//
 
-					pc=archive::getNewChar();
+					pc=archive::character::New();
 					if(!ISVALIDPC(pc))
 					{
 						safedelete(iter);

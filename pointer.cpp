@@ -32,7 +32,7 @@ void setptr(lookuptr_st *ptr, int item) //set item in pointer array
 
 	//resize(ptr->pointer, ptr->max, ptr->max+ALLOCATING_UNIT);
 	// Must be out of slots, so reallocate some and set item
-	if ((ptr->pointer = (int *)realloc(ptr->pointer, (ptr->max+ALLOCATING_UNIT)*sizeof(int)))==NULL)
+	if ((ptr->pointer = (int *)realloc(ptr->pointer, (ptr->max+ALLOCATING_UNIT)*sizeof(int)))==0)
 	{
 		PanicOut("Can't reallocate memory!\n");
 		error=1;
@@ -58,7 +58,7 @@ int findbyserial(lookuptr_st *ptr, int nSerial, int nType)
 	if (nSerial < 0) 
 		return INVALID;  //prevent errors from some clients being slower than the server clicking on nolonger valid items
 
-	if (ptr == NULL || ptr->pointer == NULL) // Blackwind / Crashfix
+	if (ptr == 0 || ptr->pointer == 0) // Blackwind / Crashfix
 		return INVALID;
 
 	for (int i=0;i<(ptr->max);i++)
@@ -240,8 +240,8 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
     int loop = 0;
     it = ch = INVALID;
 
-	P_CHAR pc=NULL;
-	P_ITEM pi=NULL;
+	P_CHAR pc=0;
+	P_ITEM pi=0;
 
     while ((++loop) < 500)
     {
@@ -538,7 +538,7 @@ namespace pointers {
 		pCharWorldMap.clear();
 		pItemWorldMap.clear();
 		//Chars and Stablers
-		P_CHAR pc = NULL;
+		P_CHAR pc = 0;
 
 		cAllObjectsIter objs;
 
@@ -882,7 +882,7 @@ namespace pointers {
 	*/
 	P_CHAR findCharBySerial(int serial)
 	{
-		if (serial < 0 || !isCharSerial(serial)) return NULL;
+		if (serial < 0 || !isCharSerial(serial)) return 0;
 
 		return static_cast<P_CHAR>( objects.findObject(serial) );
 
@@ -896,7 +896,7 @@ namespace pointers {
 	*/
 	P_ITEM findItemBySerial(SERIAL serial)
 	{
-		if (serial < 0 || !isItemSerial(serial)) return NULL;
+		if (serial < 0 || !isItemSerial(serial)) return 0;
 
 		return static_cast<P_ITEM>( objects.findObject(serial) );
 	}
@@ -910,7 +910,7 @@ namespace pointers {
 	P_CHAR findCharBySerPtr(UI08 *p)
 	{
 		int serial=LongFromCharPtr(p);
-		if (serial < 0) return NULL;
+		if (serial < 0) return 0;
 		return findCharBySerial(serial);
 	}
 
@@ -924,7 +924,7 @@ namespace pointers {
 	P_ITEM findItemBySerPtr(unsigned char *p)
 	{
 		int serial=LongFromCharPtr(p);
-		if(serial < 0) return NULL;
+		if(serial < 0) return 0;
 		return findItemBySerial(serial);
 	}
 
@@ -938,55 +938,34 @@ namespace pointers {
 	*/
 	P_ITEM containerSearch(int serial, int *index)
 	{
-	if (serial < 0 || (*index) < 0)
-				return NULL;
+		if (serial < 0 || (*index) < 0)
+			return 0;
 
-	P_ITEM pi = NULL;
-	//extern std::map<int, vector <P_ITEM> > pContMap
+		P_ITEM pi = 0;
 
-			vector<P_ITEM> &pcm = pContMap[serial];
+		vector<P_ITEM> &pcm = pContMap[serial];
 
-	for (pi = 0; pi == 0; (*index)++)
+		for (pi = 0; pi == 0; (*index)++)
+		{
+			if ( pcm.empty())
+				return 0;
+
+			if ((UI32)(*index) >= pcm.size())
+				return 0;
+
+			pi = pcm[*index];
+
+			if (!(ISVALIDPI(pi)))
 			{
-		if ( pcm.empty())
-					return NULL;
-
-		if ((UI32)(*index) >= pcm.size()) { return NULL; }
-
-		pi = pcm[*index];
-
-		if (!(ISVALIDPI(pi)))
-				{
-		if ((UI32)(*index)+1 < pcm.size() && !pcm.empty())
-						{
-			pcm[*index] = pcm[pcm.size()-1];
+				if ((UI32)(*index)+1 < pcm.size() && !pcm.empty())
+					pcm[*index] = pcm[pcm.size()-1];
+			}
+			pi = 0;
+			pcm.pop_back();
 		}
-		pi = NULL;
-		pcm.pop_back();
-		}
-	}
-	/* not gcc 3.2 compileable, replaced by above code
-	for (pi = NULL; pi==NULL; (*index)++)
-			{
-		if (pContMap[serial].empty())
-					return NULL;
 
-		if ((*index) >= pContMap[serial].size()) { return NULL; }
-
-		pi = pContMap[serial][*index];
-
-		if (!(ISVALIDPI(pi)))
-				{
-		if ((*index)+1 < pContMap[serial].size() && !pContMap[serial].empty())
-						{
-			pContMap[serial][*index] = pContMap[serial][pContMap[serial].size()-1];
-		}
-		pi = NULL;
-		pContMap[serial].pop_back();
-		}
-	}
-	*/
-		if (!(ISVALIDPI(pi))) return NULL;
+		if ( !ISVALIDPI(pi) )
+			return 0;
 
 		return pi;
 	}
@@ -994,13 +973,14 @@ namespace pointers {
 
 	P_CHAR stableSearch(int serial, int *index)
 	{
-		if (serial < 0 || (*index) < 0) return NULL;
-		if (pStableMap[serial].empty()) return NULL;
-		if ((UI32)*index >= pStableMap[serial].size()) return NULL;
-		P_CHAR pet = NULL;
+		if (serial < 0 || (*index) < 0)
+			return 0;
+		if (pStableMap[serial].empty()) return 0;
+		if ((UI32)*index >= pStableMap[serial].size()) return 0;
+		P_CHAR pet = 0;
 		pet = pStableMap[serial][*index];
 		(*index)++;
-		VALIDATEPCR(pet, NULL);
+		VALIDATEPCR(pet, 0);
 		return pet;
 	}
 
@@ -1018,13 +998,13 @@ namespace pointers {
 	{
 		P_ITEM pi;
 		int loopexit=0;
-		while ( ((pi = containerSearch(serial,index)) != NULL) && (++loopexit < MAXLOOPS) )
+		while ( ((pi = containerSearch(serial,index)) != 0) && (++loopexit < MAXLOOPS) )
 		{
 			if (pi->id()==id  &&
 				(color==-1 || pi->color()==color) && ISVALIDPI(pi))
 			return pi;
 		}
-		return NULL;
+		return 0;
 	}
 
 	/*!

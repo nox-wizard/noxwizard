@@ -50,7 +50,7 @@ namespace item
 		if((iter = Scripts::Items->getNewIterator(sect)) == NULL)
 			return NULL;
 
-		P_ITEM pi= archive::getNewItem();
+		P_ITEM pi= archive::item::New();
 
 		if (!ISVALIDPI(pi)) {
 			safedelete(iter);
@@ -460,7 +460,7 @@ namespace item
 		tile_st tile;
 		Map->SeekTile(id, &tile);
 		pile = (tile.flag2&0x08);
-		P_ITEM pi=archive::getNewItem();
+		P_ITEM pi=archive::item::New();
 		if ( pi==NULL )
 			return NULL;
 

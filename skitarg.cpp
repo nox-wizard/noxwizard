@@ -2277,7 +2277,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 
 	poison->Delete();
 	//spawn an empty bottle after poisoning
-	P_ITEM emptybottle=archive::getNewItem();
+	P_ITEM emptybottle=archive::item::New();
 
 	emptybottle->setId(0x0F0E);
 	emptybottle->pileable=1;

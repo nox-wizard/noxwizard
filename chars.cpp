@@ -2275,7 +2275,7 @@ void cChar::Delete()
 		if ( ps != NULL )
 			ps->sendRemoveObject( static_cast<P_OBJECT>(this) );
 	}
-	archive::DeleteChar( this );
+	archive::character::Delete( this );
 }
 
 /*!

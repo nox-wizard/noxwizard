@@ -367,7 +367,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				else if (amount < pi->amount)
 				{ //get not all but a part of item ( piled? ), but anyway make a new one item
 
-					P_ITEM pin =archive::getNewItem();
+					P_ITEM pin =archive::item::New();
 					(*pin)=(*pi);
 
 					pin->amount = pi->amount - amount;

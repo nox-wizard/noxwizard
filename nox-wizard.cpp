@@ -223,7 +223,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		return;
 	}
 
-	P_CHAR pc=archive::getNewChar();
+	P_CHAR pc = archive::character::New();
 
 	pc->setCurrentName( (const char*)&buffer[s][10] );
 	Accounts->AddCharToAccount( acctno[s], pc );
@@ -2040,7 +2040,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 	{
 		int lsd=pi->morey; // save morey before overwritten
 
-		pi = archive::getNewItem();
+		pi = archive::item::New();
 
 		pi->setId(0x0F0E);
 

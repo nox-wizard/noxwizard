@@ -83,15 +83,13 @@ void cAllObjects::updateItemSerial( SERIAL ser )
 
 namespace archive {
 
-P_ITEM getNewItem( ) 
-{
-	return new cItem( objects.getNextItemSerial() ); //oh yes
-}
-
-P_ITEM getItemForCopy()
-{
-	return new cItem( INVALID ); //oh yes
-}
+	namespace item
+	{
+		P_ITEM New( LOGICAL forCopyPurpose )
+		{
+			return new cItem( forCopyPurpose ? INVALID : objects.getNextItemSerial() ); //oh yes
+		}
+	}
 
 void deleteItem( P_ITEM pi )
 {
@@ -144,58 +142,53 @@ void deleteItem( SERIAL i )
 	deleteItem( MAKE_ITEM_REF(i) );
 }
 
-
-P_CHAR getNewChar()
+namespace character
 {
-	return new cChar( objects.getNextCharSerial() ); //oh yes
-}
-
-P_CHAR getCharForCopy()
-{
-	return new cChar( INVALID ); //oh yes
-}
-
-void DeleteChar( P_CHAR pc )
-{
-	VALIDATEPC( pc );
-
-
-	pc->race = 0;
-
-	amxVS.deleteVariable( pc->getSerial32() );
-
-	UI32 pc_serial = pc->getSerial32();
-
-	if( pc->spawnregion!=INVALID )
+	P_CHAR New()
 	{
-		Spawns->removeObject( pc->spawnregion, pc );
+		return new cChar( objects.getNextCharSerial() ); //oh yes
 	}
 
-	if( pc->spawnserial!=INVALID ) 
+	P_CHAR Instance()
 	{
-		Spawns->removeSpawnDinamic( pc );
+		return new cChar( INVALID ); //oh yes
 	}
 
-	pointers::delChar(pc);	//Luxor
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	void Delete( P_CHAR pc )
 	{
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-			SendDeleteObjectPkt(j, pc_serial);
+		VALIDATEPC( pc );
+
+		pc->race = 0;
+
+		amxVS.deleteVariable( pc->getSerial32() );
+
+		UI32 pc_serial = pc->getSerial32();
+
+		if( pc->spawnregion!=INVALID )
+			Spawns->removeObject( pc->spawnregion, pc );
+
+		if( pc->spawnserial!=INVALID )
+			Spawns->removeSpawnDinamic( pc );
+
+		pointers::delChar(pc);	//Luxor
+
+		NxwSocketWrapper sw;
+		sw.fillOnline( pc );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET j=sw.getSocket();
+			if( j!=INVALID )
+				SendDeleteObjectPkt(j, pc_serial);
+		}
+		safedelete(pc);
 	}
 
-	safedelete(pc);
+	void Delete( SERIAL k )
+	{
+		Delete( MAKE_CHAR_REF( k ) );
+	}
 
 }
-
-void DeleteChar( SERIAL k )
-{
-	DeleteChar( MAKE_CHAR_REF( k ) );
-}
-
 
 }
 

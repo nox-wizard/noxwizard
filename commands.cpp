@@ -931,7 +931,7 @@ namespace Commands
 
 		if ( !pi_from->corpse )
 		{
-			P_ITEM pi_to = archive::getNewItem();
+			P_ITEM pi_to = archive::item::New();
 			(*pi_to)=(*pi_from);
 
 			pi_to->setContSerial( pack->getSerial32() );

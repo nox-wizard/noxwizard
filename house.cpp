@@ -835,7 +835,7 @@ int add_hlist(int c, int h, int t)
 
 	if((charpos.x >= (UI32)sx) && (charpos.y >= (UI32)sy) && (charpos.x <= (UI32)ex) && (charpos.y <= (UI32)ey))
 	{
-		P_ITEM pi=archive::getNewItem();
+		P_ITEM pi=archive::item::New();
 		
 
 		pi->morex= t;

@@ -81,9 +81,9 @@ wstring* HexVector2UnicodeString( char* s )
 
 void CWorldMain::loadChar() // Load a character from WSC
 {
-	P_CHAR pc=archive::getCharForCopy();
-	if (pc==NULL) return;
-
+	P_CHAR pc = archive::character::Instance();
+	if ( pc == 0 )
+		return;
 	//
 	// Sparhawk:	Fix for 0.73 worldfiles	where players can no longer use their characters
 	//		because removed player characters in 0.73 have ACCOUNT -1
@@ -95,8 +95,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 	//
 	//
 	//
-	int i ;
-	int j, loops=0;
+	int	i;
+	int	j,
+		loops = 0;
 
 	pc->hungertime=uiCurrentTime+(SrvParms->hungerrate*MY_CLOCKS_PER_SEC/2);    // avoid loss of one hungerpoint for each restart (Duke, 6.6.2001)
 
@@ -614,8 +615,10 @@ void CWorldMain::loadChar() // Load a character from WSC
 //! Load an item from WSC
 void loaditem()
 {
-	P_ITEM pi=archive::getItemForCopy();
-	if( pi==NULL ) return;
+	P_ITEM pi = archive::item::New( true );
+
+	if( pi == 0 )
+		return;
 
 	unsigned long int i;
 	int loops=0;
