@@ -216,37 +216,33 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 		//Luxor (6 dec 2001): Wrestling Disarm & Stun punch
 		if ( wresmove == WRESDISARM ) {
+			chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
+			chanceToHit += int( str1/10.0 - str2/10.0 );
 			if ( pc_def->getStrength() >= 150 || pc_def->dx >= 150 ) {
 				wresmove = 0;
 				sysmsg( TRANSLATE("You cannot disarm a creature so skilled!") );
-			} else {
-				chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
-				chanceToHit += int( str1/10.0 - str2/10.0 );
-				if ( chance( chanceToHit ) ) {
-					P_ITEM dWeapon=pc_def->getWeapon();
-					if (dWeapon!=NULL) {
-						Location charpos = pc_def->getPosition();
-						
-						wresmove = 0;
-						dWeapon->setContSerial( INVALID );
-						dWeapon->MoveTo( charpos );
-						dWeapon->Refresh();
-					}
+			} else if ( chance( chanceToHit ) ) {
+				P_ITEM dWeapon=pc_def->getWeapon();
+				if (dWeapon!=NULL) {
+					Location charpos = pc_def->getPosition();
+					
+					wresmove = 0;
+					dWeapon->setContSerial( INVALID );
+					dWeapon->MoveTo( charpos );
+					dWeapon->Refresh();
 				}
 			}
 		}
 
 		if ( wresmove == WRESSTUNPUNCH ) {
+			chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
+			chanceToHit += int( str1/10.0 - str2/10.0 );
 			if ( pc_def->getStrength() >= 150 ) {
 				wresmove = 0;
 				sysmsg( TRANSLATE("You cannot stun a creature so strong!") );
-			} else {
-				chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
-				chanceToHit += int( str1/10.0 - str2/10.0 );
-				if ( chance( chanceToHit ) ) {
-					wresmove = 0;
-					tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
-				}
+			} else if ( chance( chanceToHit ) ) {
+				wresmove = 0;
+				tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
 			}
 		}
 		//Luxor <End>
