@@ -24,14 +24,14 @@ SERIAL_VECTOR tempfxCheck;
 */
 void tempeffectson()
 {
-        if ( tempfxCheck.empty() )
+	if ( tempfxCheck.empty() )
 		return;
 		
 	P_OBJECT po = NULL;
 	
 	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
-        for ( ; it != tempfxCheck.end(); it++ ) {
-                po = objects.findObject( (*it) );
+	for ( ; it != tempfxCheck.end(); it++ ) {
+		po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );

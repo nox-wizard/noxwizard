@@ -774,7 +774,7 @@ bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 mo
 	if ( tempfx == NULL )
 		tempfx = new TempfxVector;
 
-	tempfx->push_back( tmpeff );
+	tempfx->push_front( tmpeff );
 
 	return true;
 }
@@ -792,15 +792,16 @@ void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
 		return;
 
 	TempfxVector::iterator it( tempfx->begin() );
-        for ( ; it != tempfx->end(); it++ ) {
-                if ( (*it).getNum() != num )
+	for ( ; it != tempfx->end();  ) {
+		if ( (*it).getNum() != num ) {
+			it++;
 			continue;
+		}
 
 		if ( executeExpireCode )
 			(*it).executeExpireCode();
 
-		tempfx->erase( it );
-		it--;
+		it = tempfx->erase( it );
 	}
 
 	if ( tempfx->empty() )
@@ -846,14 +847,16 @@ void cObject::checkTempfx()
 	if ( !hasTempfx() )
 		return;
 
-	for ( int i=0; i< tempfx->size(); i++ ) {
-		SI08 result = (*tempfx)[i].checkForExpire();
+	TempfxVector::iterator it( tempfx->begin() );
+	for ( ; it!=tempfx->end(); ) {
+		SI08 result = it->checkForExpire();
 		if ( result == 1 ) { // Tempfx has been executed
-			tempfx->erase( &(*tempfx)[i] );
-			i--;
+			it = tempfx->erase( it );
+			continue;
 		} 
 		else if ( result == INVALID ) // Tempfx has deleted the object!! Avoid Crash!
 			return; //ndEndy not need delete this?
+		++it;
 	}
 }
 
@@ -886,8 +889,8 @@ tempfx::cTempfx* cObject::getTempfx( SI32 num )
 		return NULL;
 
 	TempfxVector::iterator it( tempfx->begin() );
-        for ( ; it != tempfx->end(); it++ ) {
-                if ( (*it).getNum() == num )
+	for ( ; it != tempfx->end(); it++ ) {
+		if ( (*it).getNum() == num )
 			return &(*it);
 	}
 
