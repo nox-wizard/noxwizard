@@ -14,7 +14,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning ( push , 3 )
 #endif
 
@@ -60,7 +60,7 @@ extern bool g_bExceptionCaught;
 
 
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #pragma warning ( pop )
 #endif
 

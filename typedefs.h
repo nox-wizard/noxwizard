@@ -75,8 +75,10 @@ typedef slist<SERIAL>                   SERIAL_SLIST;	//!< slist of serials
 
 typedef std::set<SERIAL>		SERIAL_SET;	//!< set of serials
 
-#if defined __GNUC__ && __GNUC__ < 3
-typedef basic_string <wchar_t> wstring;
+#if defined __GNUC__ && (__GNUC__ < 3 || defined(WIN32))
+	typedef std::basic_string <wchar_t> wstring;
+#else
+	using std::wstring;
 #endif
 
 #ifdef __BORLANDC__

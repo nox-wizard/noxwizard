@@ -911,7 +911,7 @@ void updateMenus();
 
 void angelMode();
 
-#ifndef WIN32
+#ifndef _WINDOWS
 	#ifndef USES_QT
 		int main(int argc, char *argv[])
 	#else
