@@ -48,7 +48,7 @@ struct land_st
 struct map_st
 {
 	short int id;
-	signed char z;
+	SI08 z;
 };
 
 /*!
@@ -129,12 +129,12 @@ class MapStaticIterator
 private:
 	staticrecord staticArray;
 	SI32 pos;
-	unsigned char remainX, remainY;
+	UI08 remainX, remainY;
 	UI32 index, length, tileid, baseX, baseY;
 	bool exactCoords;
 
 public:
-	MapStaticIterator(UI32 x, UI32 y, bool exact = true);
+	MapStaticIterator(UI16 x, UI16 y, bool exact = true);
 	MapStaticIterator( Location where, bool exact= true);	// Added by Anthalir
 	~MapStaticIterator() { };
 
@@ -176,8 +176,8 @@ private:
 	{
 		unsigned short xb;
 		unsigned short yb;
-		unsigned char  xo;
-		unsigned char  yo;
+		UI08  xo;
+		UI08  yo;
 		map_st Cache;
 	};
 	MapCache Map0Cache[MAP0CACHE];
@@ -199,22 +199,22 @@ public:
 	// ok this is rather silly, allocating all the memory for the cache, even if
 	// they haven't chosen to cache?? - fur
 	StaCache_st StaticCache[MAXMAPTILEWIDTH][MAXMAPTILEHEIGHT];
-	unsigned char Cache;
+	UI08 Cache;
 	
 // Functions
 private:
 	char VerLand(int landnum, land_st *land);
-	signed char MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
-	int MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
+	SI08 MultiHeight(P_ITEM pi, UI16 x, UI16 y, SI08 oldz);
+	int MultiTile(P_ITEM pi, UI16 x, UI16 y, SI08 oldz);
 	SI32 VerSeek(SI32 file, SI32 block);
 	char VerTile(int tilenum, tile_st *tile);
 	bool IsTileWet(int tilenum);
 	bool TileWalk(int tilenum);
 	void CacheVersion();
 
-	int DynTile( UI32 x, UI32 y, signed char oldz );
+	int DynTile( UI16 x, UI16 y, SI08 oldz );
 	bool DoesTileBlock(int tilenum);
-	bool DoesStaticBlock(UI32 x, UI32 y, signed char oldz);
+	bool DoesStaticBlock(UI16 x, UI16 y, SI08 oldz);
 
 public:
 	cMapStuff();
@@ -223,17 +223,17 @@ public:
 	void Load();
 
 	// height functions
-	bool IsUnderRoof(UI32 x, UI32 y, signed char z);
-	signed char StaticTop(Location where);	// added by Anthalir
-	signed char StaticTop(UI32 x, UI32 y, signed char oldz);
-	signed char DynamicElevation(Location where);	// added by Anthalir
-	signed char DynamicElevation(UI32 x, UI32 y, signed char oldz);
-	signed char MapElevation(UI32 x, UI32 y);
-	signed char AverageMapElevation(Location where, int &id);	// added by Anthalir
-	signed char AverageMapElevation(UI32 x, UI32 y, int &id);
-	signed char TileHeight( int tilenum );
-	signed char Height(Location where);	// added by Anthalir
-	signed char Height(UI32 x, UI32 y, signed char oldz);
+	bool IsUnderRoof(UI16 x, UI16 y, SI08 z);
+	SI08 StaticTop(Location where);	// added by Anthalir
+	SI08 StaticTop(UI16 x, UI16 y, SI08 oldz);
+	SI08 DynamicElevation(Location where);	// added by Anthalir
+	SI08 DynamicElevation(UI16 x, UI16 y, SI08 oldz);
+	SI08 MapElevation(UI16 x, UI16 y);
+	SI08 AverageMapElevation(Location where, int &id);	// added by Anthalir
+	SI08 AverageMapElevation(UI16 x, UI16 y, int &id);
+	SI08 TileHeight( int tilenum );
+	SI08 Height(Location where);	// added by Anthalir
+	SI08 Height(UI16 x, UI16 y, SI08 oldz);
 
 	// look at tile functions
 	void MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2);
@@ -245,13 +245,13 @@ public:
 	bool IsRoofOrFloorTile( unitile_st *tile );
 
 	// misc functions
-	bool CanMonsterMoveHere( UI32 x, UI32 y, signed char z );
+	bool CanMonsterMoveHere( UI16 x, UI16 y, SI08 z );
 
 };
 
 #include "client.h"
 // use this value whereever you need to return an illegal z value
-const signed char illegal_z = -128;	// reduced from -1280 to -128, to fit in with a valid signed char
+const SI08 illegal_z = -128;	// reduced from -1280 to -128, to fit in with a valid SI08
 
 /*!
 \brief Weight related stuff

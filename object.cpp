@@ -394,7 +394,7 @@ void cObject::setPosition(Location where)
 \param y new Y-coord of the object
 \param z new Z-coord of the object
 */
-void cObject::setPosition(UI32 x, UI32 y, SI08 z)
+void cObject::setPosition(UI16 x, UI16 y, SI08 z)
 {
 	position.x= x;
 	position.y= y;

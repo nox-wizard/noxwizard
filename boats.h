@@ -60,9 +60,9 @@ P_ITEM search_boat_by_plank(P_ITEM pl);
 
 namespace boats
 {
-	LOGICAL boat_collision(P_ITEM pBoat1,UI32 x1, UI32 y1,int dir,P_ITEM pBoat2);
+	LOGICAL boat_collision(P_ITEM pBoat1,UI16 x1, UI16 y1,SI08 dir,P_ITEM pBoat2);
 	LOGICAL collision(P_ITEM pi, Location where,int dir);
-	LOGICAL good_position(P_ITEM pBoat, Location where, int dir);
+	LOGICAL good_position(P_ITEM pBoat, Location where, SI08 dir);
 	LOGICAL tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);
 	void LeaveBoat(P_CHAR pc, P_ITEM pi);
 	void TurnStuff_i(P_ITEM, P_ITEM, int, int);
@@ -75,7 +75,7 @@ namespace boats
 	void OpenPlank(P_ITEM pi);
 	void PlankStuff(P_CHAR pc, P_ITEM pi);
 	LOGICAL Build(NXWSOCKET s, P_ITEM pBoat, char);
-	void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
+	void Move(NXWSOCKET  s, SI08 dir, P_ITEM pBoat);
 	void Turn(P_ITEM, int);
 }
 

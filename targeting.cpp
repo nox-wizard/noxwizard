@@ -979,7 +979,7 @@ public:
         }
         else
         {
-            for (int j=0;j<=333;j++) bolteffect2(inx,w_anim[0],w_anim[1]);
+            for (int j=0;j<=333;j++) bolteffect2(MAKE_CHAR_REF(inx),w_anim[0],w_anim[1]);
         }
     }
 };

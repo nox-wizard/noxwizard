@@ -41,7 +41,7 @@ class Race
 		static	string*		globalWebRoot;
 		static	string*		globalWebLink;
 		static	bool		teleportOnEnlist;
-		static	short		startLocation[3];
+		static	UI16		startLocation[3];
 		static	bool		withWebInterface;
 
 	private:

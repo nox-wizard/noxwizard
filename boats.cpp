@@ -187,8 +187,8 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
 	//long int pos, pos2, length;
 
-	UI32 x,x2= lipos.x;
-	UI32 y,y2= lipos.y;
+	UI16 x,x2= lipos.x;
+	UI16 y,y2= lipos.y;
 	SI08 z= lipos.z;
 	SI08 mz,sz,typ;
 	P_ITEM pBoat=GetBoat(pc->getPosition());
@@ -749,18 +749,17 @@ LOGICAL boats::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,in
 	return false;
 }
 
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : good_position
-// Description       : check if this is a good position for building or moving a boat
-// Return type       : void
-// Author            : Elcabesa
-// Changes           : none yet
-
-LOGICAL boats::good_position(P_ITEM pBoat, Location where, int dir)
+/*!
+ \brief Check if this is a good position for building or moving a boat
+ \author Elcabesa
+ \return true if is a good position
+ \param pBoat the boat
+ \param where location to check
+ \param dir direction of the boat
+ */
+LOGICAL boats::good_position(P_ITEM pBoat, Location where, SI08 dir)
 {
-	UI32 x= where.x, y= where.y;
+	UI16 x= where.x, y= where.y;
 	LOGICAL good_pos=false;
 	char temp[TEMP_STR_SIZE];
 	map_st map;
@@ -792,16 +791,13 @@ LOGICAL boats::good_position(P_ITEM pBoat, Location where, int dir)
 			case 1:
 				map = Map->SeekMap0(x+multi.y,y-multi.x);
 				break;
-
 			case 2:
-
 				map = Map->SeekMap0(x-multi.x,y-multi.y);
-
 				break;
 			}
 			switch(map.id)
 			{
-	//water tiles:
+				//water tiles:
 				case 0x00A8://168
 				case 0x00A9://169
 				case 0x00AA://170
@@ -812,7 +808,7 @@ LOGICAL boats::good_position(P_ITEM pBoat, Location where, int dir)
 				case 0x3FF1://16369
 				case 0x3FF2://16370
 				case 0x3FF3://16371
-	//Lava tiles:
+				//Lava tiles:
 				case 0x01F4://500
 				case 0x01F5://501
 				case 0x01F6://502
@@ -1032,15 +1028,16 @@ LOGICAL boats::collision(P_ITEM pi,Location where,int dir)
  \author Elcabesa
  \return true if collision, else false
  \param pBoat1 first boat
+ \param dir direction of the first boat
  \param pBoat2 second boat
  */
-LOGICAL boats::boat_collision(P_ITEM pBoat1,UI32 x1, UI32 y1,int dir,P_ITEM pBoat2)
+LOGICAL boats::boat_collision(P_ITEM pBoat1,UI16 x1, UI16 y1,SI08 dir,P_ITEM pBoat2)
 {
 	char temp[TEMP_STR_SIZE];
 
 	int i,j;
 
-	UI32 x,y;
+	UI16 x,y;
 	SI32 length1,length2;			// signed long int on Intel
 	st_multi multi1,multi2;
 	MULFile *mfile1,*mfile2;
@@ -1150,8 +1147,8 @@ P_ITEM boats::GetBoat(Location pos)
 		P_ITEM pBoat=boat.p_serial;
 		if(!ISVALIDPI(pBoat))
 			continue;
-		UI32 xx= ( pos.x < boat.p_serial->getPosition().x ? pos.x - boat.p_serial->getPosition().x : boat.p_serial->getPosition().x - pos.x );
-		UI32 yy= ( pos.y < boat.p_serial->getPosition().y ? pos.y - boat.p_serial->getPosition().y : boat.p_serial->getPosition().y - pos.y );
+		UI16 xx= ( pos.x < boat.p_serial->getPosition().x ? pos.x - boat.p_serial->getPosition().x : boat.p_serial->getPosition().x - pos.x );
+		UI16 yy= ( pos.y < boat.p_serial->getPosition().y ? pos.y - boat.p_serial->getPosition().y : boat.p_serial->getPosition().y - pos.y );
 		double dist=hypot(xx, yy);
 		if(dist<10)
 		{
@@ -1170,7 +1167,7 @@ P_ITEM boats::GetBoat(Location pos)
 			for(i=0;i<length;i++)
 			{
 				mfile->get_st_multi(&multi);
-				if (   ((UI32)(multi.x + pBoat->getPosition().x) == pos.x) && ((UI32)(multi.y + pBoat->getPosition().y) == pos.y) )
+				if (   ((UI16)(multi.x + pBoat->getPosition().x) == pos.x) && ((UI16)(multi.y + pBoat->getPosition().y) == pos.y) )
 				{
 					return  pBoat;
 				}
@@ -1180,14 +1177,10 @@ P_ITEM boats::GetBoat(Location pos)
 	return NULL;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : Move
-// Description       : move a boat, not turn it
-// Return type       : int
-// Author            : unknow
-// Changes           : none yet
-
-void boats::Move(NXWSOCKET  s, int dir, P_ITEM pBoat)
+/*
+ \brief Move a boat, not turn it
+ */
+void boats::Move(NXWSOCKET  s, SI08 dir, P_ITEM pBoat)
 {
 	iMove(s,dir,pBoat,false);
 }
@@ -1263,8 +1256,8 @@ void boats::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 	Location boatpos= pBoat->getPosition();
 
-	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=((MapTileWidth*8)-XBORDER))
-		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=((MapTileHeight*8)-YBORDER))) //bugfix LB
+	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=(SI16)((MapTileWidth*8)-XBORDER))
+		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=(SI16)((MapTileHeight*8)-YBORDER))) //bugfix LB
 	{
 		pBoat->type2=0;
 		itemtalk(tiller,TRANSLATE("Arr, Sir, we've hit rough waters!"));

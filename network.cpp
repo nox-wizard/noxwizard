@@ -1012,7 +1012,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 	UI32 a, valid=0;
 	Location charpos= pc->getPosition();
-	UI32 x= charpos.x, y= charpos.y;
+	UI16 x= charpos.x, y= charpos.y;
 
 
 	AMXEXECSVNR(s,AMXT_SPECIALS, 8, AMX_BEFORE);

@@ -2313,7 +2313,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 */
 void cChar::circleFX(short id)
 {
-	bolteffect2(DEREF_P_CHAR(this),id >> 8,id & 0xFF);
+	bolteffect2(this,id >> 8,id & 0xFF);
 }
 
 /*!

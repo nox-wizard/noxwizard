@@ -592,11 +592,10 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 	}
 
-	UI32 max_x = MapTileWidth  * 8;
-	UI32 max_y = MapTileHeight * 8;
+	const UI16 max_x = MapTileWidth  * 8, max_y = MapTileHeight * 8;
 	Location pcpos= pc->getPosition();
 
-	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y) || (pcpos.x<0) || (pcpos.y<0)))
+	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y)) )
 	{
 		if( !pc->npc )
 			pc->MoveTo( 900,300,30 ); //player in an invalid location
@@ -616,7 +615,7 @@ void loaditem()
 	P_ITEM pi=archive::getItemForCopy();
 	if( pi==NULL ) return;
 
-	unsigned long int i;
+	UI32 i;
 	int loops=0;
 	char bad=0;
 
