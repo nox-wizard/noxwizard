@@ -475,7 +475,7 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 			if(ISVALIDPC(poOwnedChr))
 			{
 				if ((poOwnedChr->ftargserial==pc->getSerial32()) || 
-					( !bOnlyFollowing && bIncludeStabled && ( poOwnedChr->stablemaster_serial !=INVALID ) ) ) {
+					( !bOnlyFollowing && bIncludeStabled && ( poOwnedChr->isStabled() ) ) ) {
 					insertSerial(poOwnedChr->getSerial32());
 				} 
 			}
@@ -512,7 +512,7 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 						P_CHAR pc=pointers::findCharBySerial( *iter );
 						if( !ISVALIDPC( pc ) )
 							continue;
-						if(  pc->stablemaster_serial==INVALID && !pc->mounted ) {
+						if(  !pc->isStabled() && !pc->mounted ) {
 							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
 							if (iDist <= nDistance)
 								if ( ( !bOnlyPlayer && pc->npc ) ||

@@ -493,10 +493,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "STABLEMASTER"))
 			{
-				pc->stablemaster_serial=str2num(script2);
-				if (pc->stablemaster_serial!=INVALID)
-					pointers::addToStableMap(pc);
-				//setptr(&stablesp[pc->stablemaster_serial%HASHMAX], x);
+				pc->stable( pointers::findCharBySerial( str2num(script2) ) );
 			}
 		break;
 
@@ -1467,8 +1464,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 
         	if (pc->damagetype!=DAMAGE_PURE) //Luxor
             	fprintf(cWsc, "DAMAGETYPE %i\n", pc->damagetype);
-			if (pc->stablemaster_serial!=dummy.stablemaster_serial)
-			    fprintf(cWsc, "STABLEMASTER %i\n", pc->stablemaster_serial);
+			if (pc->getStablemaster()!=dummy.getStablemaster())
+			    fprintf(cWsc, "STABLEMASTER %i\n", pc->getStablemaster());
 			if (pc->npc_type!=dummy.npc_type)
 				fprintf(cWsc, "NPCTYPE %i\n", pc->npc_type);
 			if (pc->time_unused!=dummy.time_unused)

@@ -340,7 +340,7 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 {
 
 	VALIDATEPCR(pc,false);
-	if (pc->stablemaster_serial!=INVALID || pc->mounted) return false; // shouldnt be called for stabled pets, just to be on the safe side
+	if (pc->isStabled() || pc->mounted) return false; // shouldnt be called for stabled pets, just to be on the safe side
 
 
 

@@ -1414,7 +1414,7 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 			for( nearbyNpcs->rewind(); !nearbyNpcs->isEmpty(); (*nearbyNpcs)++ )
 			{
 				pc_a_npc = nearbyNpcs->getChar();
-				if( pc->isOwnerOf( pc_a_npc ) && pc_a_npc->stablemaster_serial == INVALID && !pc_a_npc->mounted )
+				if( pc->isOwnerOf( pc_a_npc ) && !pc_a_npc->isStabled() && !pc_a_npc->mounted )
 				{
 					if( (!findPetByName) || (findPetByName && !strcasecmp( petName.c_str(), pc_a_npc->getCurrentNameC())))
 						if( pc->distFrom( pc_stablemaster ) <= 8 )
@@ -1470,11 +1470,10 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 					pc->war  	= 0;
 					pc->targserial	= INVALID;
 					mapRegions->remove( pc_pet );
-					pc_pet->stablemaster_serial= pc_stablemaster->getSerial32();
+					pc_pet->stable( pc_stablemaster );
 					// set timer for fee calculation
 					pc_pet->time_unused=0;
 					pc_pet->timeused_last = getclock();
-					pointers::addToStableMap(pc_pet);
 				}
 				char temp[TEMP_STR_SIZE];
 				if( petsToStable.size() == 1 )
@@ -1611,8 +1610,9 @@ stabledPets.rewind();	// GH!
 				for( stabledPets.rewind(); !stabledPets.isEmpty(); stabledPets++  )
 				{
 					pc_pet = stabledPets.getChar();
-					pointers::delFromStableMap(pc_pet);
-					pc_pet->stablemaster_serial = INVALID;
+					
+					pc_pet->unStable();
+					
 					pc_pet->timeused_last = getclock();
 					pc_pet->time_unused=0;
 					mapRegions->add( pc_pet );

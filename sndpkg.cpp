@@ -2337,7 +2337,7 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 
 	UI08 removeitem[5]={ 0x1D, 0x00, 0x00, 0x00, 0x00 };
 
-	if (pc->stablemaster_serial!=INVALID || pc->mounted) 
+	if (pc->isStabled() || pc->mounted) 
 		return; // dont **show** stabled pets
 
 	bool sendit = true; //Luxor bug fix
