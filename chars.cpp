@@ -4760,3 +4760,28 @@ void cChar::deleteSpeechCurrent()
 	if( speechCurrent!=NULL )
 		delete speechCurrent;
 }
+
+void cChar::setRegenRate( StatType stat, UI32 rate )
+{
+	if( stat>=ALL_STATS ) return;
+	regens[stat].rate=rate;
+}
+
+UI32 cChar::getRegenRate( StatType stat )
+{
+	if( stat>=ALL_STATS ) return 0;
+	return regens[stat].rate;
+}
+
+bool cChar::regenTimerOk( StatType stat )
+{
+	if( stat>=ALL_STATS ) return false;
+	return TIMEOUT( regens[stat].timer );
+}
+
+void cChar::updateRegenTimer( StatType stat )
+{
+	if( stat>=ALL_STATS ) return;
+	regens[stat].timer= uiCurrentTime+ regens[stat].rate*MY_CLOCKS_PER_SEC;
+}
+

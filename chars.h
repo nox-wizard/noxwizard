@@ -580,7 +580,22 @@ class cChar : public cObject
 		void			doTarget();
 //@}
 
-		/********************************/
+//@{
+/*!
+\name Stats regen rate info
+*/
+private:
+	regen_st 	regens[ALL_STATS]; //!< stats regen info
+public:
+	void setRegenRate( StatType stat, UI32 rate );
+	UI32 getRegenRate( StatType stat );
+	bool regenTimerOk( StatType stat );
+	void updateRegenTimer( StatType stat );
+//@}
+
+		
+		
+	/********************************/
 	/*     TO REMOVE/REPLACE        */
 	/********************************/
 	public:
@@ -671,7 +686,6 @@ class cChar : public cObject
 
 		TIMERVAL		timeout; // Combat timeout (For hitting)
 		TIMERVAL		timeout2; // memory of last shot timeout
-		TIMERVAL		regen, regen2, regen3;//Regeneration times for mana, stamin, and str
 
 		TIMERVAL		npcmovetime; // Next time npc will walk
 		char			npcWander; // NPC Wander Mode
