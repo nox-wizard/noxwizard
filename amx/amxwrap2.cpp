@@ -537,6 +537,9 @@ NATIVE2(_setCharProperty)
 			case NXW_CP_I_REGENRATE :				  		//dec value: 271;
 				pc->setRegenRate( static_cast<StatType>(params[3]), p, static_cast<VarType>(params[5]) );
 				break;
+			case NXW_CP_I_SCRIPTID :			  				//dec value: 272;
+				pc->setScriptID( p );
+				break;
 			case NXW_CP_I_ROBE :			  				//dec value: 274;
 				pc->robe = p;
 				break;
@@ -1827,6 +1830,7 @@ static int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_QUESTORIGREGION , pc->questOrigRegion )  	//dec value: 269;
 		CHECK(  NXW_CP_I_REATTACKAT , pc->reattackat )  		//dec value: 270;
 		CHECK(  NXW_CP_I_REGENRATE, pc->getRegenRate( static_cast<StatType>(prop2), static_cast<VarType>(prop3) ); )
+		CHECK(  NXW_CP_I_SCRIPTID , pc->getScriptID() )  				//dec value: 272;
 		CHECK(  NXW_CP_I_ROBE , pc->robe )  				//dec value: 274;
 		CHECK(  NXW_CP_I_RUNNING , pc->running )  			//dec value: 275;
 		CHECK(  NXW_CP_I_SERIAL , pc->getSerial32() )  			//dec value: 276;
