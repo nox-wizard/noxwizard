@@ -741,30 +741,14 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if (ISVALIDPI(mypack))
 					{
-						P_ITEM pi_sp = item::CreateFromScript( "$item_gold_coin" );
+						char lo[1024], hi[1024];
+						splitLine( script2, lo, hi );
+						int amt = RandomNum( str2num(lo), str2num(hi) );
+
+						P_ITEM pi_sp = item::CreateFromScript( "$item_gold_coin", mypack, amt );
 						if( ISVALIDPI( pi_sp ) )
 						{
 							pi_sp->priv|=0x01;
-							gettokennum(script2, 0);
-							lovalue=str2num(gettokenstr);
-							gettokennum(script2, 1);
-							hivalue=str2num(gettokenstr);
-							if (hivalue==0)
-							{
-								if (lovalue/2!=0)
-									pi_sp->amount=lovalue/2 + (rand()%(lovalue/2));
-								else
-									pi_sp->amount=0;
-							}
-							else
-							{
-								if (hivalue-lovalue!=0)
-									pi_sp->amount=lovalue + (rand()%(hivalue-lovalue));
-								else
-									pi_sp->amount=lovalue;
-							}
-							if( ISVALIDPI(mypack ) )
-								pi_sp->setContSerial(mypack->getSerial32());
 						}
 						else
 							WarnOut("AddNPC: cannot spawn item 0x0EED\n");
@@ -931,16 +915,16 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					}
 					if ( buyRestockContainer != INVALID )
 					{
-						storeval=str2num(script2);
-						pi_n=item::CreateFromScript( storeval );
+						char itmnum[1024], amount[1024];
+						splitLine( script2, itmnum, amount );
+						
+						int amt=str2num( amount );
+						if( amt==0 )
+							amt=server_data.defaultSelledItem;
+						
+						pi_n=item::CreateFromScript( str2num(itmnum), MAKE_ITEM_REF( buyRestockContainer ), amt );
 						if (ISVALIDPI(pi_n))
 						{
-							if( !strcmp( script3, "" ) ) //use default amount value
-								pi_n->amount=server_data.defaultSelledItem;
-							else
-								pi_n->amount = str2num( script3 );
-							pi_n->setContSerial( buyRestockContainer );
-							pi_n->SetRandPosInCont( MAKE_ITEM_REF( buyRestockContainer ) );
 							if (pi_n->getSecondaryNameC() && (strcmp(pi_n->getSecondaryNameC(),"#")))
 								pi_n->setCurrentName(pi_n->getSecondaryNameC()); // Item identified! -- by Magius(CHE) 				}
 						}
