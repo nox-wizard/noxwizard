@@ -2637,10 +2637,10 @@ NATIVE (_direct_setSpellType)
 \brief Check the given skill in character
 \author Xanathar
 \since 0.53
-\param 1: character
-\param 2: skill
-\param 3: minimun skill required
-\param 4: maximum skill required
+\param 1 character
+\param 2 skill
+\param 3 minimun skill required
+\param 4 maximum skill required
 \return  0 failed, 1 right or INVALID if not valid character or socket
 \bug are used params[5] but not documented
 */
@@ -2656,7 +2656,7 @@ NATIVE (_chr_checkSkill)
 \brief Un mount the given character
 \author Xanathar
 \since 0.53
-\param 1: character
+\param 1 character
 \return 0 or INVALID if not valid character
 */
 NATIVE (_chr_unmountHorse)
@@ -2671,8 +2671,8 @@ NATIVE (_chr_unmountHorse)
 \brief The character mount the given animal
 \author Xanathar
 \since 0.53
-\param 1: socket
-\param 2: animal
+\param 1 socket
+\param 2 animal
 \return 0 or INVALID if not valid character/s
 */
 NATIVE (_chr_mountHorse)
@@ -2692,8 +2692,8 @@ NATIVE (_chr_mountHorse)
 \brief Given character play specified sound
 \author Xanathar
 \since 0.53
-\param 1: character
-\param 2: sound
+\param 1 character
+\param 2 sound
 \return 0 or INVALID if not valid character
 */
 NATIVE(_chr_sound)
@@ -2708,8 +2708,8 @@ NATIVE(_chr_sound)
 \brief Play a sound effect on a item
 \author Xanathar
 \since 0.54
-\param 1: item
-\param 2: sound
+\param 1 item
+\param 2 sound
 \return 0 or INVALID if not valid item
 */
 NATIVE(_itm_sound)
@@ -2735,8 +2735,8 @@ NATIVE( _set_create )
 \brief Close a set
 \author Endymion
 \since 0.82
-\param 1: the set
-\return 1
+\param 1 the set
+\return 0
 */
 NATIVE( _set_delete )
 {
@@ -2748,7 +2748,7 @@ NATIVE( _set_delete )
 \brief Rewind a set
 \author Endymion
 \since 0.82
-\param 1: the set
+\param 1 the set
 \return 0
 */
 NATIVE( _set_rewind )
@@ -2761,7 +2761,7 @@ NATIVE( _set_rewind )
 \brief Move to next item
 \author Endymion
 \since 0.82
-\param 1: the set
+\param 1 the set
 \return 0
 */
 NATIVE( _set_next )
@@ -2774,7 +2774,7 @@ NATIVE( _set_next )
 \brief Check if at end of the given set
 \author Endymion
 \since 0.82
-\param 1: the set
+\param 1 the set
 \return 1 if at end, 0 else
 */
 NATIVE( _set_end )
@@ -2787,7 +2787,7 @@ NATIVE( _set_end )
 \brief Get number of element contained in a set
 \author Endymion
 \since 0.82
-\param 1: the set
+\param 1 the set
 \return element count
 */
 NATIVE ( _set_size )
@@ -2799,9 +2799,9 @@ NATIVE ( _set_size )
 \brief Get current object of given set
 \author Endymion
 \since 0.82
-\param 1: the set
+\param 1 the set
 \return the object
-\note move index to next item
+\note move index to next
 */
 NATIVE( _set_get )
 {
@@ -2809,16 +2809,44 @@ NATIVE( _set_get )
 }
 
 /*!
-\brief Add object to given set
+\brief Get current character of given set
 \author Endymion
 \since 0.82
 \param 1 the set
-\param 2 the object
+\return the character
+\note move index to next
+*/
+NATIVE( _set_getChar )
+{
+	P_CHAR pc=pointers::findCharBySerial( amxSet::get( params[1] ) );
+	return ISVALIDPC(pc)? pc->getSerial32() : INVALID;
+}
+
+/*!
+\brief Get current item of given set
+\author Endymion
+\since 0.82
+\param 1 the set
+\return the item
+\note move index to next
+*/
+NATIVE( _set_getItem )
+{
+	P_ITEM pi=pointers::findItemBySerial( amxSet::get( params[1] ) );
+	return ISVALIDPI(pi)? pi->getSerial32() : INVALID;
+}
+
+/*!
+\brief Add to given set the value
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the value
 \return 0
 */
 NATIVE( _set_add )
 {
-	amxSet::add( params[1], params[2] ); 
+	amxSet::add( params[1], params[2] );
 	return 0;
 }
 
@@ -3038,11 +3066,11 @@ NATIVE(_chr_resurrect)
 \brief generic npctalk/npcemote handler
 \author Sparhawk
 \since 0.60
-\param 1: required function
-\param 2: player character (only used for npctalk,npctalk_runic,npcemote)
-\param 3: npc who'll do the talking or emoting
-\param 4: text to talk or emote
-\param 5: antispam flag
+\param 1 required function
+\param 2 player character (only used for npctalk,npctalk_runic,npcemote)
+\param 3 npc who'll do the talking or emoting
+\param 4 text to talk or emote
+\param 5 antispam flag
 \return 0 or INVALID if not valid character
 \note handle npctalk, npctalkall, npctalk_runic, npctalkall_runic, npcemote, npcemoteall
 */
@@ -5614,6 +5642,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_size", _set_size },
 
  { "set_get", _set_get },
+ { "set_getChar", _set_getChar },
+ { "set_getItem", _set_getItem },
  { "set_add", _set_add },
  
  { "set_addOwnedNpcs", _set_addOwnedNpcs },
