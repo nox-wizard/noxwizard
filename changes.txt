@@ -1,3 +1,232 @@
+2004-07-12	ai_wintermute
+	* amx/amxwrap2.cpp 1.98:
+	* amx/amxwraps.cpp 1.177:
+	* amx/amxwraps.h 1.35:
+	* network.cpp 1.95:
+		added several api functions for commands
+
+	* accounts.cpp 1.26:
+	* accounts.h 1.15:
+	* amx/amxwraps.cpp 1.178:
+		added removeAccount(account number)
+		add account_getName
+
+2004-07-11	ai_wintermute
+	* amx/amxwraps.cpp 1.176:
+		added chr_showStatus
+
+	* amx/amxwraps.cpp 1.175:
+	* constants.h 1.30:
+	* resourcemap.cpp 1.11:
+		fixed resource string maps and added isChar, isItem to native 
+		functions now checking for valid chars/items
+
+	* amx/amxwraps.cpp 1.174:
+	* chars.cpp 1.218:
+	* chars.h 1.125:
+	* combat.cpp 1.60:
+	* dragdrop.cpp 1.70:
+	* magic.cpp 1.56:
+	* nox-wizard.cpp 1.103:
+	* object.cpp 1.60:
+	* object.h 1.38:
+	* resourcemap.cpp 1.10:
+	* timing.cpp 1.33:
+	* tmpeff.cpp 1.39:
+	* tmpeff.h 1.7:
+	* trigger.cpp 1.46:
+	* typedefs.h 1.47:
+	* worldmain.cpp 1.111:
+		added saving of tempfx to worldsave, more variable of tempfx now 32 bit wide instead of 24 Bit
+		prepared binary save method for chars
+
+2004-07-09	ai_wintermute
+	* resourcemap.h 1.5:
+		fixed picky gcc warning
+
+2004-07-07	ai_wintermute
+	* resourcemap.cpp 1.9:
+		fixed a bug with resourcemaps getting the same index because of 
+		null filename
+
+2004-07-05	ai_wintermute
+	* coord.cpp 1.7:
+		fixed two conditions in line of sight checking that were a 
+		little bit too strict
+
+2004-07-04	ai_wintermute
+	* chars.cpp 1.217:
+		fixed a memory leak when using 'polymorph or all chr_morphs 
+		using a npc number
+
+	* sndpkg.cpp 1.67:
+		fixed bug when sending stats update for morphed players
+
+2004-07-02	ai_wintermute
+	* NoxWizard.dsp 1.22:
+		added resourcemap finally :)
+
+	* resourcemap.cpp 1.6:
+	* resourcemap.cpp 1.8:
+		fix for linux
+
+	* resourcemap.cpp 1.7:
+		fixed linux bugs
+
+2004-06-30	ai_wintermute
+	* tmpeff.cpp 1.38:
+		fixed a bug in tmpeff with custom effects that would work only 
+		with character serials
+
+2004-06-29	ai_wintermute
+	* tmpeff.cpp 1.37:
+		fixed a bug in tmpeff with custom effects that would work only 
+		with character serials
+
+2004-06-28	ai_wintermute
+	* resourcemap.cpp 1.5:
+		fixed a few bugs in resource maps with reloading files and 
+		changed createMap so that a already< loaded map with the same 
+		filename is returned instead of a new map
+
+2004-06-27	ai_wintermute
+	* amx/amxwraps.cpp 1.173:
+	* resourcemap.cpp 1.4:
+	* resourcemap.h 1.4:
+		fixed loading/saving of resource maps on start/worldsave, still 
+		no function to get a reloaded resource map index from a filename
+
+	* extractionskills.cpp 1.24:
+	* resourcemap.cpp 1.2:
+	* resourcemap.h 1.2:
+	* skitarg.cpp 1.58:
+		changed lumberjacking callback to pc serial, x,y,id of targetted tile
+		added support for direct write files to resource maps (absolutely untested, so expect trouble )
+
+	* resourcemap.cpp 1.3:
+	* resourcemap.h 1.3:
+	* worldmain.cpp 1.110:
+		added save/load of resource maps to server start/worldsave
+
+2004-06-26	ai_wintermute
+	* amx/amxwrap2.cpp 1.97:
+	* amx/amxwraps.cpp 1.172:
+	* constants.h 1.29:
+	* coord.cpp 1.6:
+	* coord.h 1.2:
+	* extractionskills.cpp 1.23:
+	* makefile.inc 1.23:
+	* resourcemap.cpp 1.1:
+	* resourcemap.h 1.1:
+		added support for resource maps which can be used from small to 
+		have a fast and memory efficient access to SI32 values if an 
+		array solution would be sparsely populated
+
+	* vc7/NoxWizard.vcproj 1.6:
+		added new files
+
+2004-06-22	ai_wintermute
+	* crontab.cpp 1.18:
+	* worldmain.cpp 1.109:
+		added broadcast for gms only on worldsave if the broadcast 
+		option is turned off in server cfg
+
+2004-06-20	ai_wintermute
+	* spawn.cpp 1.33:
+		fixed linux compile error
+
+	* spawn.cpp 1.32:
+		fixed linux compileerror
+
+2004-06-19	ai_wintermute
+	* amx/amxwraps.cpp 1.170:
+	* spawn.cpp 1.31:
+	* spawn.h 1.14:
+		added
+		native rgn_respawn(const region, const spawnWhat, const amount = 0);
+		native rgn_clearSpawn(const region, const spawntype);
+		stock rgn_respawnRegion ( const region, const amount)
+		stock rgn_respawnRegionRandom ( const region)
+		stock rgn_respawnRegionMax ( const region)
+		stock rgn_respawnAll ( )
+		stock rgn_respawnAllRandom ( )
+		stock rgn_respawnAllMax ( )
+
+	* chars.cpp 1.216:
+	* combat.cpp 1.59:
+	* globals.cpp 1.29:
+	* globals.h 1.33:
+		client idle time is now not always reset
+
+	* amx/amxwraps.cpp 1.171:
+	* nox-wizard.cpp 1.102:
+	* remadmin.cpp 1.14:
+		add recompile amx option to telnet remote admin console and 
+		standard console
+
+	* chars.cpp 1.215:
+	* magic.cpp 1.55:
+	* scripts.cpp 1.9:
+	* scripts.h 1.5:
+		added new file magic.xss to define menus used in magic spells
+
+	* chars.cpp 1.214:
+	* chars.h 1.124:
+	* constants.h 1.28:
+	* extractionskills.cpp 1.22:
+	* items.cpp 1.66:
+	* items.h 1.40:
+	* pointer.cpp 1.31:
+	* pointer.h 1.16:
+		added new type ITYPE_MINING and the other skill types, to fix 
+		mining with shovels
+
+2004-06-16	stonedz
+	* crontab.cpp 1.17:
+	* srvparms.h 1.17:
+	* worldmain.cpp 1.108:
+		Changes to make ANNOUNCE_SAVES in server.cfg works, if set to 0 
+		no message telling that a world save will be performed in 30 
+		seconds will be printed to clients, for the moment the message 
+		telling that a world save is being done at the moment is left as 
+		default and is not influenced by ANNOUNCE_SAVES setting.
+
+	* amx/amxwraps.cpp 1.169:
+		added garbageCollection() as requested on mantis #0000091
+
+2004-06-15	stonedz
+	* amx/amxwraps.cpp 1.166:
+		added setSecondsPerUoMinute() as requested on mantis #0000091. 
+		The value set this way is saved on server.cfg at first save.
+
+	* amx/amxwraps.cpp 1.164:
+		added final version for shutdown(int seconds,char* 
+		optional_message) api as requested on mantis #0000091, check my 
+		weekly report for more info.
+
+	* amx/amxwraps.cpp 1.165:
+	* cmds.cpp 1.62:
+	* cmds.h 1.37:
+		added reload_comands() api that reloads commands.txt directives 
+		into commands MAP, prints a message into console.
+
+	* amx/amxwraps.cpp 1.167:
+		fix for setSecondsPerUoMinute()
+
+	* amx/amxwraps.cpp 1.168:
+		minor changes in shutdown()
+
+2004-06-14	ai_wintermute
+	* amx/amxwraps.cpp 1.163:
+	* chars.cpp 1.213:
+		fixed a bug in polymorph
+
+2004-06-14	stonedz
+	* amx/amxwraps.cpp 1.162:
+		fir for reload_Scripts() and first version of shutdown(int 
+		seconds) that shuts down nox in sec seconds as requested on 
+		mantis #0000091
+
 2004-06-13	ai_wintermute
 	* magic.cpp 1.53:
 	* set.cpp 1.56:
