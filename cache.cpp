@@ -347,7 +347,7 @@ void MULFile::get_tile_st(struct tile_st *buff, unsigned int number)
     getChar(&(buff[i].unknown2));
     getChar(&(buff[i].unknown3));
     getChar(&(buff[i].height));
-    getChar(buff[i].name, 20);
+    getChar((signed char*)buff[i].name, 20);
   }
 }
 
@@ -365,7 +365,7 @@ void MULFile::get_st_multiidx(struct st_multiidx *buff, unsigned int number)
   for(unsigned int i = 0; i < number; i++)
   {
     getLong(&buff[i].start);
-    getLong(&buff[i].length);
+    getLong((SI32*)&buff[i].length);
     getLong(&buff[i].unknown);
   }
 }
