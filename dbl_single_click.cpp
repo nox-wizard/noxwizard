@@ -123,13 +123,6 @@ void doubleclick(NXWCLIENT ps)
 	P_ITEM pi = pointers::findItemBySerial(serial);
 	VALIDATEPI(pi);
 
-	if (pi->amxevents[EVENT_IONDBLCLICK]!=NULL)
-	{
-		g_bByPass = false;
-		pi->amxevents[EVENT_IONDBLCLICK]->Call(pi->getSerial32(), s);
-		if (g_bByPass==true)
-			return;
-	}
 	/*
 	g_bByPass = false;
 	pi->runAmxEvent( EVENT_IONDBLCLICK, pi->getSerial32(), s );
@@ -318,6 +311,14 @@ void doubleclick(NXWCLIENT ps)
 			return;
 		}
 	}
+
+	if (pi->amxevents[EVENT_IONDBLCLICK]!=NULL) {
+		g_bByPass = false;
+		pi->amxevents[EVENT_IONDBLCLICK]->Call(pi->getSerial32(), s);
+		if (g_bByPass==true)
+			return;
+	}
+
 	// Begin checking objects that we force an object delay for (std objects)
 	// start trigger stuff
 	if (pi->trigger > 0)

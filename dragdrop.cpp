@@ -1275,12 +1275,12 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	P_ITEM contOutMost = pCont->getOutMostCont();
 	P_CHAR contOwner = ( !contOutMost->isInWorld() )? pointers::findCharBySerial( contOutMost->getContSerial() ) : NULL;
 
-	if( ISVALIDPC(contOwner) )
-		if ((contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()!=pc->getSerial32()) )
-		{
-//		   abort=true;
+	if( ISVALIDPC(contOwner) ) {
+		//if ((contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()!=pc->getSerial32()) )
+		if ( contOwner->getOwnerSerial32() != pc->getSerial32() ) { // Luxor
 		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
 		}
+	}
 
 	if (pCont->amxevents[EVENT_IONPUTITEM]!=NULL) {
 		g_bByPass = false;
