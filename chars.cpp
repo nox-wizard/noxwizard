@@ -971,7 +971,7 @@ void cChar::fight(P_CHAR other)
 		setNpcMoveTime();*/
 		
 		//Luxor: let's use npcattack
-		npcattacktarget(DEREF_P_CHAR(this), DEREF_P_CHAR(other));
+		npcattacktarget(this, other);
 	}
 }
 

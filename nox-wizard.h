@@ -24,7 +24,7 @@ void InitMultis();
 void DeleteClasses();
 void telltime(NXWSOCKET s);
 void impaction(int s, int act);
-void npcattacktarget(int target2, int target);
+void npcattacktarget(P_CHAR npc, P_CHAR target);
 void enlist(int s, int listnum);		//!< For enlisting in army
 void gcollect();
 void initque();

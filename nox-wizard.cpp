@@ -1637,13 +1637,11 @@ int fielddir(CHARACTER s, int x, int y, int z)
 /*!
 \brief makes an npc attacking someone
 \author Luxor
-\param target2 the npc attacker
-\param target the victim
+\param pc the npc attacker
+\param pc_target the victim
 */
-void npcattacktarget(CHARACTER target2, CHARACTER target)
+void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 {
-	P_CHAR pc = pointers::findCharBySerial( target2 );
-	P_CHAR pc_target = pointers::findCharBySerial( target );
 	VALIDATEPC(pc);
 	VALIDATEPC(pc_target);
 	

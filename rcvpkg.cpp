@@ -193,7 +193,7 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 			P_CHAR guard = sc.getChar();
 			if ( ISVALIDPC( guard ) )
 				if ( guard->npcaitype == NPCAI_PETGUARD && ( attacker->distFrom( guard )<= 10 ) )
-					npcattacktarget(DEREF_P_CHAR(attacker), DEREF_P_CHAR(guard) );
+					npcattacktarget(attacker, guard);
 		}
 	}
 
@@ -223,7 +223,7 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 		else if( victim->npc && victim->npcaitype==NPCAI_TELEPORTGUARD)
 		{
 			criminal( attacker );
-			npcattacktarget(DEREF_P_CHAR(victim), DEREF_P_CHAR(attacker));
+			npcattacktarget(victim, attacker);
 		}
 		else if ((victim->npc || victim->tamed) && !victim->war && victim->npcaitype!=NPCAI_TELEPORTGUARD)
 		{
@@ -248,12 +248,12 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 			else if (victim->npc && victim->tamed)
 			{
 				criminal( attacker );
-				npcattacktarget(DEREF_P_CHAR(victim),DEREF_P_CHAR(attacker));
+				npcattacktarget(victim, attacker);
 			}
 			else if (victim->npc)
 			{
 				criminal( attacker );
-				npcattacktarget(DEREF_P_CHAR(victim),DEREF_P_CHAR(attacker));
+				npcattacktarget(victim, attacker);
 				if (victim->HasHumanBody() )
 				{
 					victim->talkAll(TRANSLATE("Help! Guards! Tis a murder being commited!"), 1);

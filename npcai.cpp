@@ -566,7 +566,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 				if( ISVALIDPC(pj) && pj->npc && pj->npcaitype==NPCAI_EVIL)
 				{
-					npcattacktarget(DEREF_P_CHAR(pc),DEREF_P_CHAR(pj));
+					npcattacktarget(pc, pj);
 					return;
 				}
 			}
@@ -585,7 +585,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 				if ( pj->IsInvul() || pj->dead || (pj->npcaitype != NPCAI_EVIL && !pj->IsCriminal() && !pj->IsMurderer())) continue;
 
-				npcattacktarget(DEREF_P_CHAR(pc), DEREF_P_CHAR(pj));
+				npcattacktarget(pc, pj);
 			}
 		}
 		break;
@@ -606,7 +606,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 						P_CHAR pc_attacker = pointers::findCharBySerial(pj->attackerserial);
 						VALIDATEPC(pc_attacker);
 						if (pc->distFrom(pc_attacker) <= 10) {
-							npcattacktarget(DEREF_P_CHAR(pc), DEREF_P_CHAR(pc_attacker));
+							npcattacktarget(pc, pc_attacker);
 							return;
 						}
 					}
@@ -698,7 +698,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					NPC_CASTSPELL(magic::SPELL_DISPEL, pj);
 				}
 
-				if (pj->hidden == UNHIDDEN) npcattacktarget(DEREF_P_CHAR(pc), DEREF_P_CHAR(pj));
+				if (pj->hidden == UNHIDDEN) npcattacktarget(pc, pj);
 				return;
 			}
 		} 

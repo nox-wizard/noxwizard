@@ -3045,7 +3045,7 @@ NATIVE(_chr_npcattack)
     P_CHAR pc2 = pointers::findCharBySerial(params[2]);
     VALIDATEPCR(pc2, INVALID);
 
-    npcattacktarget(DEREF_P_CHAR(pc1), DEREF_P_CHAR(pc2));
+    npcattacktarget(pc1, pc2);
 	return 0;
 }
 

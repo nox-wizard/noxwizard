@@ -174,7 +174,7 @@ void cTargets::AllAttackTarget(NXWSOCKET s)
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pet=sc.getChar();
 		if( ISVALIDPC(pet))
-			npcattacktarget(DEREF_P_CHAR(pet), DEREF_P_CHAR(pc_target));
+			npcattacktarget(pet, pc_target);
     }
 
 }
@@ -2382,7 +2382,7 @@ void cTargets::AttackTarget(NXWSOCKET s)
 	VALIDATEPC(pc_t2);
 
     AttackStuff(s,pc_t2); //xan : flag them all!
-    npcattacktarget(DEREF_P_CHAR(pc_t1), DEREF_P_CHAR(pc_t2));
+    npcattacktarget(pc_t1, pc_t2);
 }
 
 void cTargets::FollowTarget(NXWSOCKET s)
