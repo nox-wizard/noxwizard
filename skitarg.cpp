@@ -1429,8 +1429,9 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
             pc->playSFX(0x0248);
             pc->sysmsg(TRANSLATE("You cut some cloth into bandages, and put it in your backpack"));
 
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"clean bandage",0,0x0E21, color,1,1);
+            P_ITEM pcc=item::CreateFromScript( "$item_clean_bandages", pc->getBackpack() );
             VALIDATEPI(pcc);
+			pcc->setColor( color );
             // need to set amount and weight and pileable, note: cannot set pilable while spawning item -Fraz-
             pcc->weight=10;
             pcc->pileable=1;
@@ -1451,9 +1452,10 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
                 amt=40; //Fixed by Luxor
             pc->playSFX(0x0248);
 
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"cut cloth",0,0x1766, color,1,1);
+            P_ITEM pcc=item::CreateFromScript( "$item_cut_cloth", pc->getBackpack() );
             VALIDATEPI(pcc);
 
+			pcc->setColor( color );
             pcc->weight=10;
             pcc->pileable=1;
             pcc->amount=amt;
@@ -2507,7 +2509,9 @@ public:
     }
     virtual void createIt(NXWSOCKET s)
     {
-        item::SpawnItem(s,currchar[s],1,"an axle with gears",1,0x1051,0,1,1);
+		P_CHAR pc=pointers::findCharBySerial( currchar[s] );
+		VALIDATEPC(pc);
+		item::CreateFromScript( "$item_axles_with_gears", pc->getBackpack() );
     }
 };
 
@@ -2702,7 +2706,7 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 	{
 		if (pc->checkSkill( MINING, 0, 1000))
 		{
-			item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"#",1,0x1BF2,0x0961,1,1);
+			item::CreateFromScript( "$item_iron_ingots", pc->getBackpack() );
 			pc->sysmsg(TRANSLATE("you smelt the item and place some ingots in your pack."));
 			pi->deleteItem();
 			return;
@@ -2716,7 +2720,7 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 			switch(pi->smelt)
 			{
 				case 1:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"#",1,0x1BF2,0x0961,1,1);
+					item::CreateFromScript( "$item_iron_ingots", pc->getBackpack() );
 					break;
 				case 2:
 					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"silver ingot",1,0x1BF2,0,1,1);
