@@ -1788,7 +1788,7 @@ UI32 cChar::distFrom(P_ITEM pi)
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
-	P_ITEM p_boat = Boats->GetBoat(getPosition());
+	P_ITEM p_boat = boats::GetBoat(getPosition());
 
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());

@@ -249,11 +249,11 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 				}
 				else
 				{
-					Targ->JailTarget (s,pc->getSerial32());
+					targets::JailTarget (s,pc->getSerial32());
 					break;
 				}
 			case 203://release
-				Targ->ReleaseTarget(s,pc_c->getSerial32());
+				targets::ReleaseTarget(s,pc_c->getSerial32());
 				break;
 			case 204:
 				if(pc_c->getSerial32()==pc->getSerial32())
@@ -298,7 +298,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 					buffer[s][10] = addid4[s];
 					addx[s] = buffer[s][21];
 					addy[s] = buffer[s][22];
-					Targ->IDtarget(s);
+					targets::IDtarget(s);
 					sysmessage(s, TRANSLATE("House sign changed."));
 				}
 				return;
@@ -526,7 +526,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 	UI32 i;
 	bool house_gump=false, new_decay=false;
 	bool new_houseName = false; // House maintenance (Sparhawk)
-	int is,j=-1,ds;
+	int is,ds;
 	char tt[255];
 	char tt2[255];
 

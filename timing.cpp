@@ -405,12 +405,12 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 							if( TIMEOUT( pi->gatetime ) )
 							{
 								if (pi->type2==1)
-									Boats->Move(ps->toInt(),pi->dir,pi);
+									boats::Move(ps->toInt(),pi->dir,pi);
 								else
 								{
 									int dir=pi->dir+4;
 									dir%=8;
-									Boats->Move(ps->toInt(),dir,pi);
+									boats::Move(ps->toInt(),dir,pi);
 								}
 								pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
 							}

@@ -1189,7 +1189,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
 
-		P_ITEM p_boat = Boats->GetBoat(pi->getPosition());
+		P_ITEM p_boat = boats::GetBoat(pi->getPosition());
 
 		if(ISVALIDPI(p_boat))
 		{

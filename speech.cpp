@@ -882,7 +882,7 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			give=58981;
 		}
 		if (give) { //Luxor
-			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
+			item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
 		}
 		sprintf(temp, TRANSLATE("Today's purchases total %i gold. I am keeping %i gold for my self. Here is the remaining %i gold. Have a nice day."),pc_vendor->holdg,pay,give);
 		pc_vendor->talk(s,temp,0);
@@ -969,7 +969,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 					target(s,0,1,0,224," ");
 					return; // lb bugfix
 				}
-				else if(Targ->BuyShop(s, DEREF_P_CHAR(pc_vendor)))
+				else if(targets::BuyShop(s, DEREF_P_CHAR(pc_vendor)))
 					return; // lb bugfix
 			}
 		}
@@ -1033,7 +1033,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 						return;
 					}
 					else
-						if(Targ->BuyShop(s, DEREF_P_CHAR(pc)))
+						if(targets::BuyShop(s, DEREF_P_CHAR(pc)))
 							return;
 				}
 			}
@@ -1804,11 +1804,13 @@ static LOGICAL requestHelp( P_CHAR pc, NXWSOCKET socket, std::string &speech, Nx
 
 } // namespace Guards
 
+/*!
+\todo speakToVendor and buyFromVendor functions are not used, should be removed?
+*/
+
+#if 0
 static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCharWrapper &nearbyVendors );
 
-/*!
-\todo this function is not used, should be removed?
-*/
 static LOGICAL speakToVendor( P_CHAR pc, NXWSOCKET socket, string &speech )
 {
 	LOGICAL success = false;
@@ -1872,7 +1874,7 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 		success = true;
 	}
 	else
-		if( Targ->BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
+		if( targets::BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
 			success = true;
 	return success;
 	/*
@@ -1898,12 +1900,14 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 					target(s,0,1,0,224," ");
 					return; // lb bugfix
 				}
-				else if(Targ->BuyShop(s, vendor))
+				else if(targets::BuyShop(s, vendor))
 					return; // lb bugfix
 			}
 		}
 	*/
 }
+
+#endif
 
 }// namespace Speech
 
@@ -2183,7 +2187,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	if( callGuards( pc, socket, speech ) )
 		return;
 
-	if( Boats->Speech( pc, socket, speech ) )
+	if( boats::Speech( pc, socket, speech ) )
 		return;
 
 	if( house_speech( pc, socket, speech ) )

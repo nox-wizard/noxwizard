@@ -180,7 +180,6 @@ struct versionrecord
 struct staticrecord
 {
  SI16 itemid;
-// short int extra; // Unknown yet --Zippy unknown thus not used thus taking up mem.
  UI08 xoff;
  UI08 yoff;
  SI08 zoff;
@@ -255,32 +254,6 @@ struct logout_st//Instalog
 	UI32 x2;
 	UI32 y2;
 };
-
-/*
-	Sparhawk	-- moved to regions.h
-	
-struct region_st
-{
-	LOGICAL inUse;
- 	TEXT name[50];
- 	SI32 midilist;
- 	UI08 priv;	// 0x01 guarded, 0x02, mark allowed, 0x04, gate allowed, 0x08, recall
-			// 0x10 raining, 0x20, snowing, 0x40 magic damage reduced to 0
-	TEXT guardowner[50];
-	UI08 snowchance;
-	UI08 rainchance;
-	UI08 drychance;
-	UI08 keepchance;
-	UI08 wtype;
-	SI32 guardnum[10];
-	SI32 goodsell[256]; // Magius(CHE)
-	SI32 goodbuy[256]; // Magius(CHE)
-	SI32 goodrnd1[256]; // Magius(CHE) (2)
-	SI32 goodrnd2[256]; // Magius(CHE) (2)
-	SI32 forcedseason;
-	LOGICAL ignoreseason;
-};
-*/
 
 struct skill_st
 {

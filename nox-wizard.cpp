@@ -3063,12 +3063,9 @@ void StartClasses()
 	cwmWorldState=new CWorldMain;
 	mapRegions=new cRegion;
 	Accounts = new cAccounts;
-	Boats=new cBoat;
 	Guilds=new cGuilds;
 	Map=new cMapStuff;
-	Targ=new cTargets;
 	Network=new cNetwork;
-	//Respawn=new cRespawn;
 	Partys=new cPartys;
 	Spawns=new cSpawns;
 	Areas=new cAreas;
@@ -3082,12 +3079,9 @@ void DeleteClasses()
 	delete cwmWorldState;
 	delete mapRegions;
 	delete Accounts;
-	delete Boats;
 	delete Guilds;
 	delete Map;
-	delete Targ;
 	delete Network;
-	//delete Respawn;
 	delete Partys;
 	delete Spawns;
 	delete Areas;

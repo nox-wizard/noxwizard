@@ -1593,7 +1593,7 @@ void command_xtele(NXWSOCKET  s)
 // under that slot to you.</LI>
 // </UL>
 {
-			if (tnum==5 || tnum==2) Targ->XTeleport(s, tnum);
+			if (tnum==5 || tnum==2) targets::XTeleport(s, tnum);
 			else
 			{
 				target(s, 0, 1, 0, 136, "Select char to teleport to your position.");
@@ -1684,7 +1684,7 @@ void command_wipe(NXWSOCKET  s)
 				clicky[s]=strtonum(2);
 				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
 				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				Targ->Wiping(s);
+				targets::Wiping(s);
 			}
 
 			return;
@@ -1712,7 +1712,7 @@ void command_iwipe(NXWSOCKET  s)
 				clicky[s]=strtonum(2);
 				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
 				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				Targ->Wiping(s);
+				targets::Wiping(s);
 			}
 
 			return;

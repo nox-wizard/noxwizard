@@ -197,7 +197,7 @@ using namespace std;
     #define PTHREADS
 #endif
 
-#ifndef WIN32 && !defined PTHREADS
+#if !defined WIN32 && !defined PTHREADS
     #error Your platform is not supported by Trivial Threads :[
 #endif
 

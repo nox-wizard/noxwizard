@@ -66,7 +66,7 @@ void buildhouse(int s, int i)
 	char itemsdecay = 0;            // set to 1 to make stuff decay in houses
 	static int looptimes=0;         //for targeting
 	int cx=0,cy=0,cz=8;             //where the char is moved to when they place the house (Inside, on the steps.. etc...)(Offset)
-	int boat=0;//Boats
+	int boat=0;
 	int hdeed=0;//deed id #
 	int norealmulti=0,nokey=0,othername=0;
 	char name[512];
@@ -131,7 +131,7 @@ void buildhouse(int s, int i)
 				{
 					hdeed=str2num(script2);
 				}
-				else if (!(strcmp(script1, "BOAT"))) boat=1;//Boats
+				else if (!(strcmp(script1, "BOAT"))) boat=1;
 
 				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
 				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
@@ -240,7 +240,6 @@ void buildhouse(int s, int i)
 			}
 		}
 
-		//Boats ->
 		if((id % 256)>=18)
 			sprintf(temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
 		else
@@ -282,14 +281,14 @@ void buildhouse(int s, int i)
 
 		if(boat) //Boats
 		{
-			if(!Boats->Build(s,pHouse, id%256/*id2*/))
+			if(!boats::Build(s,pHouse, id%256/*id2*/))
 			{
 				pHouse->Delete();
 				return;
 			}
 		}
 
-		if (i)//Boats->.. Moved from up there ^
+		if (i)
 		{
 			P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
 			if ( pFx1 != 0 )

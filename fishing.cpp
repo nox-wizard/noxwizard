@@ -18,7 +18,7 @@
 #include "sndpkg.h"
 #include "debug.h"
 
-int SpawnFishingMonster(P_CHAR pc, char* cScript, char* cList, char* cNpcID)
+int fishing::SpawnFishingMonster(P_CHAR pc, char* cScript, char* cList, char* cNpcID)
 {
 	/*This function gets the random monster number from
 	the script and list specified.
@@ -61,7 +61,7 @@ int SpawnFishingMonster(P_CHAR pc, char* cScript, char* cList, char* cNpcID)
 	return INVALID;
 }
 
-int SpawnFishingItem(NXWSOCKET  s,int nInPack, char* cScript, char* cList, char* cItemID)
+int fishing::SpawnFishingItem(NXWSOCKET  s,int nInPack, char* cScript, char* cList, char* cItemID)
 {
  	/*This function gets the random item number from the list and recalls
  	  SpawnItemBackpack2 passing the new number*/
@@ -150,7 +150,7 @@ inline bool isWaterTarget(NXWSOCKET  s)
 }
 
 
-void cFishing::FishTarget(NXWCLIENT ps)
+void fishing::FishTarget(NXWCLIENT ps)
 {
 	int px,py,cx,cy;
 	NXWSOCKET  s=ps->toInt();
@@ -183,14 +183,13 @@ void cFishing::FishTarget(NXWCLIENT ps)
 	else
 		pPlayer->fishingtimer=fishing_data.basetime;
 	pPlayer->playSFX(0x023F);
-//	pPlayer->hidden=UNHIDDEN;
 	pPlayer->unHide();
 	Fish(DEREF_P_CHAR(pPlayer));		
 }
 
 
 // LB: added fish stacking !!
-void cFishing::Fish(CHARACTER i)
+void fishing::Fish(CHARACTER i)
 {
 //	const int max_fish_piles = 1;		// attention: thats per fish *type*, so the efffective limit of piles is *3
 //	const int max_fish_stacksize = 15;	// attention: rela max size = value+1

@@ -453,11 +453,11 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		#ifndef __NEWMAKESYS
 		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
 		#endif
-			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
+			item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
 		#ifndef __NEWMAKESYS
 		}
 		else {
-			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
+			Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
 		}
 		#endif
 		return;

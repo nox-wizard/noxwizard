@@ -3174,7 +3174,7 @@ static void test(int label,int parens,int invert)
     error(33,ptr);              /* array must be indexed */
   } /* if */
   if (lval.ident==iCONSTEXPR) { /* constant expression */
-    intest=(int)(long)popstk(); /* restore stack */
+    intest=popstk(); /* restore stack */
     stgdel(index,cidx);
     if (lval.constval) {        /* code always executed */
       error(206);               /* redundant test: always non-zero */

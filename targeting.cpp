@@ -39,7 +39,7 @@ extern void targetParty(NXWSOCKET  s);
 
 encapsulates the basic functions of target processing
 \note intendet to become a member of the 'transaction' class in the future
-\note the cTargets::multitarget shall become the ctarget::factory (Duke, 07/16/00)
+\note the targets::multitarget shall become the ctarget::factory (Duke, 07/16/00)
 \note Changed my mind. These classes are now considered 'experimental' (Duke, 07/11/00)
  */
 class cTarget
@@ -158,7 +158,7 @@ class cWpObjTarget : public cTarget
 \param s socket to attack
 \brief Manages all attack command
 */
-void cTargets::AllAttackTarget(NXWSOCKET s)
+void targets::AllAttackTarget(NXWSOCKET s)
 {
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -181,7 +181,7 @@ void cTargets::AllAttackTarget(NXWSOCKET s)
 
 
 
-void cTargets::PlVBuy(NXWSOCKET s)//PlayerVendors
+void targets::PlVBuy(NXWSOCKET s)//PlayerVendors
 {
     if (s==-1) return;
     int v=addx[s];
@@ -231,7 +231,7 @@ void cTargets::PlVBuy(NXWSOCKET s)//PlayerVendors
 \author Magius
 \param s socket
 */
-void cTargets::triggertarget(NXWSOCKET s)
+void targets::triggertarget(NXWSOCKET s)
 {
 
     if (s<0) return;
@@ -254,7 +254,7 @@ void cTargets::triggertarget(NXWSOCKET s)
 
 }
 
-void cTargets::BanTarg(NXWSOCKET s)
+void targets::BanTarg(NXWSOCKET s)
 {
 
 }
@@ -534,7 +534,7 @@ public:
 };
 
 //public !!
-void cTargets::IDtarget(NXWSOCKET s)
+void targets::IDtarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
@@ -557,7 +557,7 @@ void cTargets::IDtarget(NXWSOCKET s)
 }
 
 //public !!
-void cTargets::XTeleport(NXWSOCKET s, int x)
+void targets::XTeleport(NXWSOCKET s, int x)
 {
 	P_CHAR pc=MAKE_CHAR_REF( currchar[s] );
 	if ( !ISVALIDPC( pc ) )
@@ -714,7 +714,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
             //Boats ->
             else if(pi->type==ITYPE_BOATS && pi->type2==3)
             {
-                Boats->OpenPlank(pi);
+		boats::OpenPlank(pi);
                 pi->Refresh();
             }
             //End Boats --^
@@ -730,7 +730,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
     }//if
 }//keytarget()
 
-void cTargets::IstatsTarget(NXWSOCKET s)
+void targets::IstatsTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -754,7 +754,7 @@ void cTargets::IstatsTarget(NXWSOCKET s)
         }
     }
 }
-void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
+void /*targets::*/TargIdTarget(NXWSOCKET s) // Fraz
 {
     char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -947,7 +947,7 @@ void KillTarget(P_CHAR pc, int ly)
 		pi->Delete();
 }
 
-void cTargets::GhostTarget(NXWSOCKET s)
+void targets::GhostTarget(NXWSOCKET s)
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
     if(ISVALIDPC(pc))
@@ -1003,7 +1003,7 @@ public:
     }
 };
 
-void cTargets::CloseTarget(NXWSOCKET s)
+void targets::CloseTarget(NXWSOCKET s)
 {
     if(s<=INVALID)
 		return;
@@ -1017,7 +1017,7 @@ void cTargets::CloseTarget(NXWSOCKET s)
     }
 }
 
-int cTargets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
+int targets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
 {
     if ( (s>=0) && LongFromCharPtr(buffer[s]+11) == INVALID)
 		return INVALID;
@@ -1032,7 +1032,7 @@ int cTargets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
 }
 
 // public !!!
-int cTargets::NpcMenuTarget(NXWSOCKET s)
+int targets::NpcMenuTarget(NXWSOCKET s)
 {
     if (s < 0) return INVALID; // Luxor
 
@@ -1049,7 +1049,7 @@ int cTargets::NpcMenuTarget(NXWSOCKET s)
     return DEREF_P_CHAR(npc);
 }
 
-void cTargets::VisibleTarget (NXWSOCKET s)
+void targets::VisibleTarget (NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
 
@@ -1143,7 +1143,7 @@ static void OwnerTarget(NXWCLIENT ps, P_ITEM pi)
     }
 }
 
-void cTargets::DvatTarget(NXWSOCKET s)
+void targets::DvatTarget(NXWSOCKET s)
 {
 	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(Me);
@@ -1188,7 +1188,7 @@ static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
         pc->teleport();
 }
 
-void cTargets::AllSetTarget(NXWSOCKET s)
+void targets::AllSetTarget(NXWSOCKET s)
 {
     int j;
 
@@ -1336,7 +1336,7 @@ static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with m
 }
 
 /*
-void cTargets::TweakTarget(NXWSOCKET s)//Lag fix -- Zippy
+void targets::TweakTarget(NXWSOCKET s)//Lag fix -- Zippy
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if (serial == 0) //Client sends zero if invalid!
@@ -1437,7 +1437,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
 }
 
 /*
-void cTargets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this function - Crwth 01/11/1999
+void targets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this function - Crwth 01/11/1999
 {
     if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF) return;
 
@@ -1529,7 +1529,7 @@ static void Priv3Target(NXWSOCKET  s, P_CHAR pc)
     pc->priv3[6]=priv3g[s];
 }
 
-void cTargets::SquelchTarg(NXWSOCKET s)
+void targets::SquelchTarg(NXWSOCKET s)
 {
 	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(Me);
@@ -2049,7 +2049,7 @@ static void CorpseTarget(const NXWCLIENT pC)
     if (!n) sysmessage(s, TRANSLATE("That is too far away."));
 }
 
-void cTargets::SwordTarget(const NXWCLIENT pC)
+void targets::SwordTarget(const NXWCLIENT pC)
 {
 	if (pC == NULL) return;
 	NXWSOCKET  s = pC->toInt();
@@ -2097,7 +2097,7 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 		pc->sysmsg(TRANSLATE("You can't think of a way to use your blade on that."));
 }
 
-void cTargets::NpcTarget(NXWSOCKET s)
+void targets::NpcTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s] +7);
     int i=calcCharFromSer(serial);
@@ -2112,7 +2112,7 @@ void cTargets::NpcTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::NpcTarget2(NXWSOCKET s)
+void targets::NpcTarget2(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2125,7 +2125,7 @@ void cTargets::NpcTarget2(NXWSOCKET s)
         }
 }
 
-void cTargets::NpcRectTarget(NXWSOCKET s)
+void targets::NpcRectTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2142,7 +2142,7 @@ void cTargets::NpcRectTarget(NXWSOCKET s)
         }
 }
 
-void cTargets::NpcCircleTarget(NXWSOCKET s)
+void targets::NpcCircleTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2158,7 +2158,7 @@ void cTargets::NpcCircleTarget(NXWSOCKET s)
         }
 }
 
-void cTargets::NpcWanderTarget(NXWSOCKET s)
+void targets::NpcWanderTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2168,7 +2168,7 @@ void cTargets::NpcWanderTarget(NXWSOCKET s)
 }
 
 //taken from 6904t2(5/10/99) - AntiChrist
-void cTargets::NpcAITarget(NXWSOCKET s)
+void targets::NpcAITarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2180,7 +2180,7 @@ void cTargets::NpcAITarget(NXWSOCKET s)
     }
 }
 
-void cTargets::xBankTarget(NXWSOCKET s)
+void targets::xBankTarget(NXWSOCKET s)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
@@ -2190,7 +2190,7 @@ void cTargets::xBankTarget(NXWSOCKET s)
 	pc->openBankBox(pc2);
 }
 
-void cTargets::xSpecialBankTarget(NXWSOCKET s)
+void targets::xSpecialBankTarget(NXWSOCKET s)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
@@ -2200,7 +2200,7 @@ void cTargets::xSpecialBankTarget(NXWSOCKET s)
         pc->openSpecialBank(pc2);
 }
 
-void cTargets::SellStuffTarget(NXWSOCKET s)
+void targets::SellStuffTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2210,7 +2210,7 @@ void cTargets::SellStuffTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::ReleaseTarget(NXWSOCKET s, int c)
+void targets::ReleaseTarget(NXWSOCKET s, int c)
 {
 
 	P_CHAR pc = NULL;
@@ -2227,7 +2227,7 @@ void cTargets::ReleaseTarget(NXWSOCKET s, int c)
 \brief opens a creature's backpack
 \author Luxor
 */
-void cTargets::GmOpenTarget(NXWSOCKET s)
+void targets::GmOpenTarget(NXWSOCKET s)
 {
 	P_ITEM pi;
 	P_CHAR pc= MAKE_CHAR_REF(currchar[s]);
@@ -2248,7 +2248,7 @@ void cTargets::GmOpenTarget(NXWSOCKET s)
 	pc->sysmsg(TRANSLATE("No object was found at that layer on that character"));
 }
 
-void cTargets::StaminaTarget(NXWSOCKET s)
+void targets::StaminaTarget(NXWSOCKET s)
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
     if (ISVALIDPC(pc))
@@ -2262,7 +2262,7 @@ void cTargets::StaminaTarget(NXWSOCKET s)
     sysmessage(s,TRANSLATE("That is not a person."));
 }
 
-void cTargets::ManaTarget(NXWSOCKET s)
+void targets::ManaTarget(NXWSOCKET s)
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
     if (ISVALIDPC(pc))
@@ -2276,7 +2276,7 @@ void cTargets::ManaTarget(NXWSOCKET s)
     sysmessage(s,TRANSLATE("That is not a person."));
 }
 
-void cTargets::MakeShopTarget(NXWSOCKET s)
+void targets::MakeShopTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2291,7 +2291,7 @@ void cTargets::MakeShopTarget(NXWSOCKET s)
     sysmessage(s, TRANSLATE("Target character not found..."));
 }
 
-void cTargets::JailTarget(NXWSOCKET s, int c)
+void targets::JailTarget(NXWSOCKET s, int c)
 {
 
     P_CHAR pc = NULL;
@@ -2355,7 +2355,7 @@ void cTargets::JailTarget(NXWSOCKET s, int c)
 */
 }
 
-void cTargets::AttackTarget(NXWSOCKET s)
+void targets::AttackTarget(NXWSOCKET s)
 {
 
 
@@ -2368,7 +2368,7 @@ void cTargets::AttackTarget(NXWSOCKET s)
     npcattacktarget(pc_t1, pc_t2);
 }
 
-void cTargets::FollowTarget(NXWSOCKET s)
+void targets::FollowTarget(NXWSOCKET s)
 {
 
     P_CHAR pc = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
@@ -2380,7 +2380,7 @@ void cTargets::FollowTarget(NXWSOCKET s)
     pc->npcWander=1;
 }
 
-void cTargets::TransferTarget(NXWSOCKET s)
+void targets::TransferTarget(NXWSOCKET s)
 {
 
     P_CHAR pc1 = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
@@ -2411,19 +2411,19 @@ void cTargets::TransferTarget(NXWSOCKET s)
     pc1->npcWander=0;
 }
 
-void cTargets::BuyShopTarget(NXWSOCKET s)
+void targets::BuyShopTarget(NXWSOCKET s)
 {
     P_CHAR pc =pointers::findCharBySerPtr(buffer[s]+7);
     if (ISVALIDPC(pc))
         if ((pc->getSerial32() == pc->getSerial32()))
         {
-            Targ->BuyShop(s, DEREF_P_CHAR(pc));
+            targets::BuyShop(s, DEREF_P_CHAR(pc));
             return;
         }
 	sysmessage(s, TRANSLATE("Target shopkeeper not found..."));
 }
 
-int cTargets::BuyShop(NXWSOCKET s, CHARACTER c)
+int targets::BuyShop(NXWSOCKET s, CHARACTER c)
 {
     P_ITEM buyRestockContainer=NULL, buyNoRestockContainer=NULL;
 
@@ -2465,7 +2465,7 @@ int cTargets::BuyShop(NXWSOCKET s, CHARACTER c)
 // Changed hideing to make flamestrike and hide work better
 //
 //
-void cTargets::permHideTarget(NXWSOCKET s)
+void targets::permHideTarget(NXWSOCKET s)
 {
 	SERIAL serial = LongFromCharPtr(buffer[s] + 7);
 	int i = calcCharFromSer(serial);
@@ -2500,7 +2500,7 @@ void cTargets::permHideTarget(NXWSOCKET s)
 // Changed unhideing to make flamestrike and unhide work better
 //
 //
-void cTargets::unHideTarget(NXWSOCKET s)
+void targets::unHideTarget(NXWSOCKET s)
 {
 	SERIAL serial = LongFromCharPtr(buffer[s] + 7);
 	int i = calcCharFromSer(serial);
@@ -2533,7 +2533,7 @@ void cTargets::unHideTarget(NXWSOCKET s)
 // Aldur
 //////////////////////////////////
 
-void cTargets::SetSpeechTarget(NXWSOCKET s)
+void targets::SetSpeechTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2560,7 +2560,7 @@ static void SetSpAttackTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::SetSpaDelayTarget(NXWSOCKET s)
+void targets::SetSpaDelayTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2571,7 +2571,7 @@ void cTargets::SetSpaDelayTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::SetPoisonTarget(NXWSOCKET s)
+void targets::SetPoisonTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2582,7 +2582,7 @@ void cTargets::SetPoisonTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::SetPoisonedTarget(NXWSOCKET s)
+void targets::SetPoisonedTarget(NXWSOCKET s)
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
     if (ISVALIDPC(pc))
@@ -2593,7 +2593,7 @@ void cTargets::SetPoisonedTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::FullStatsTarget(NXWSOCKET s)
+void targets::FullStatsTarget(NXWSOCKET s)
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
     if (ISVALIDPC(pc))
@@ -2611,7 +2611,7 @@ void cTargets::FullStatsTarget(NXWSOCKET s)
     sysmessage(s,TRANSLATE("That is not a person."));
 }
 
-void cTargets::SetAdvObjTarget(NXWSOCKET s)
+void targets::SetAdvObjTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2627,7 +2627,7 @@ void cTargets::SetAdvObjTarget(NXWSOCKET s)
 // history:     by Antrhacks 1-3-99
 // Purpose:     Used for training by NPC's
 //
-void cTargets::CanTrainTarget(NXWSOCKET s)
+void targets::CanTrainTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2643,7 +2643,7 @@ void cTargets::CanTrainTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::SetSplitTarget(NXWSOCKET s)
+void targets::SetSplitTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2654,7 +2654,7 @@ void cTargets::SetSplitTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::SetSplitChanceTarget(NXWSOCKET s)
+void targets::SetSplitChanceTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
@@ -2679,7 +2679,7 @@ static void AxeTarget(NXWCLIENT pC, PKGx6C *pp)
 		Skills::BowCraft(s);
 }
 
-void cTargets::SetDirTarget(NXWSOCKET s)
+void targets::SetDirTarget(NXWSOCKET s)
 {
 	SERIAL serial=LongFromCharPtr(buffer[s]+7);
 	if (serial == -1)
@@ -2707,7 +2707,7 @@ void cTargets::SetDirTarget(NXWSOCKET s)
 	}
 }
 
-void cTargets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th function above? Wonder why. - Gandalf
+void targets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th function above? Wonder why. - Gandalf
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
@@ -2731,7 +2731,7 @@ void cTargets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th functio
     }
 }
 
-void cTargets::NewYTarget(NXWSOCKET s)
+void targets::NewYTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
@@ -2755,7 +2755,7 @@ void cTargets::NewYTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::IncXTarget(NXWSOCKET s)
+void targets::IncXTarget(NXWSOCKET s)
 {
 	Location position;
 	SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -2782,7 +2782,7 @@ void cTargets::IncXTarget(NXWSOCKET s)
 	}
 }
 
-void cTargets::IncYTarget(NXWSOCKET s)
+void targets::IncYTarget(NXWSOCKET s)
 {
 	Location position;
 	SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -2810,7 +2810,7 @@ void cTargets::IncYTarget(NXWSOCKET s)
 }
 
 /*
-void cTargets::IncZTarget(NXWSOCKET s)
+void targets::IncZTarget(NXWSOCKET s)
 {
 	Location position;
 	SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -2838,7 +2838,7 @@ void cTargets::IncZTarget(NXWSOCKET s)
 }
 */
 
-void cTargets::Priv3XTarget( NXWSOCKET socket )
+void targets::Priv3XTarget( NXWSOCKET socket )
 //Set Priv3 to target
 {
 	SERIAL serial=LongFromCharPtr(buffer[socket]+7);
@@ -2891,7 +2891,7 @@ void cTargets::Priv3XTarget( NXWSOCKET socket )
 }
 
 /*
-void cTargets::ShowPriv3Target(NXWSOCKET s) // crackerjack, jul 25/99
+void targets::ShowPriv3Target(NXWSOCKET s) // crackerjack, jul 25/99
 {
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -2921,7 +2921,7 @@ void cTargets::ShowPriv3Target(NXWSOCKET s) // crackerjack, jul 25/99
 }
 */
 
-void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change house owner
+void targets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change house owner
 {
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(curr);
@@ -2985,7 +2985,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 }
 
 
-void cTargets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someone out of house
+void targets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someone out of house
 {
     int c, h;
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -3016,9 +3016,9 @@ void cTargets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someo
     }
 }
 
-void cTargets::HouseBanTarget(NXWSOCKET s) // crackerjack 8/12/99 - ban someobdy from the house
+void targets::HouseBanTarget(NXWSOCKET s) // crackerjack 8/12/99 - ban someobdy from the house
 {
-	Targ->HouseEjectTarget(s);	// first, eject the player
+	targets::HouseEjectTarget(s);	// first, eject the player
 
 	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
 	VALIDATEPC(pc);
@@ -3045,7 +3045,7 @@ void cTargets::HouseBanTarget(NXWSOCKET s) // crackerjack 8/12/99 - ban someobdy
 	}
 }
 
-void cTargets::HouseFriendTarget(NXWSOCKET s) // crackerjack 8/12/99 - add somebody to friends list
+void targets::HouseFriendTarget(NXWSOCKET s) // crackerjack 8/12/99 - add somebody to friends list
 {
 	P_CHAR Friend = pointers::findCharBySerPtr(buffer[s]+7);
 
@@ -3075,7 +3075,7 @@ void cTargets::HouseFriendTarget(NXWSOCKET s) // crackerjack 8/12/99 - add someb
 	}
 }
 
-void cTargets::HouseUnlistTarget(NXWSOCKET s) // crackerjack 8/12/99 - remove somebody from a list
+void targets::HouseUnlistTarget(NXWSOCKET s) // crackerjack 8/12/99 - remove somebody from a list
 {
 	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
     P_ITEM pi= pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
@@ -3090,7 +3090,7 @@ void cTargets::HouseUnlistTarget(NXWSOCKET s) // crackerjack 8/12/99 - remove so
             sysmessage(s, TRANSLATE("That player is not on the house registry."));
     }
 }
-void cTargets::HouseLockdown( NXWSOCKET  s ) // Abaddon
+void targets::HouseLockdown( NXWSOCKET  s ) // Abaddon
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house
 // POST:    either locks down the item, or puts a message to the owner saying he's a moron
 // CODER:   Abaddon
@@ -3160,7 +3160,7 @@ void cTargets::HouseLockdown( NXWSOCKET  s ) // Abaddon
     }
 }
 
-void cTargets::HouseSecureDown( NXWSOCKET  s ) // Ripper
+void targets::HouseSecureDown( NXWSOCKET  s ) // Ripper
 // For locked down and secure chests
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -3216,7 +3216,7 @@ void cTargets::HouseSecureDown( NXWSOCKET  s ) // Ripper
     }
 }
 
-void cTargets::HouseRelease( NXWSOCKET  s ) // Abaddon & Ripper
+void targets::HouseRelease( NXWSOCKET  s ) // Abaddon & Ripper
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house, the item is locked down
 // POST:    either releases the item from lockdown, or puts a message to the owner saying he's a moron
 // CODER:   Abaddon
@@ -3269,7 +3269,7 @@ void cTargets::HouseRelease( NXWSOCKET  s ) // Abaddon & Ripper
     }
 }
 
-void cTargets::SetMurderCount( NXWSOCKET s )
+void targets::SetMurderCount( NXWSOCKET s )
 {
     P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
 	VALIDATEPC(pc);
@@ -3279,7 +3279,7 @@ void cTargets::SetMurderCount( NXWSOCKET s )
 
 }
 
-/*void cTargets::GlowTarget(NXWSOCKET s) // LB 4/9/99, makes items glow
+/*void targets::GlowTarget(NXWSOCKET s) // LB 4/9/99, makes items glow
 {
     int c,i;
 
@@ -3362,7 +3362,7 @@ void cTargets::SetMurderCount( NXWSOCKET s )
     impowncreate(s,cc,0); // if equipped send new color too
 }
 
-void cTargets::UnglowTaget(NXWSOCKET s) // LB 4/9/99, removes the glow-effect from items
+void targets::UnglowTaget(NXWSOCKET s) // LB 4/9/99, removes the glow-effect from items
 {
     int c,i;
 
@@ -3420,7 +3420,7 @@ void cTargets::UnglowTaget(NXWSOCKET s) // LB 4/9/99, removes the glow-effect fr
     //sysmessage(s,"unglow under cosntruction");
 }*/
 
-void cTargets::MenuPrivTarg(NXWSOCKET s)//LB's menu privs
+void targets::MenuPrivTarg(NXWSOCKET s)//LB's menu privs
 {
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
@@ -3439,7 +3439,7 @@ void cTargets::MenuPrivTarg(NXWSOCKET s)//LB's menu privs
 
 }
 
-void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
+void targets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
 {
     int a,j,k,b=0,c,z,zz,ges=0;
     char skill_info[(ALLSKILLS+1)*40];
@@ -3499,12 +3499,12 @@ void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
         sysmessage(s,TRANSLATE("no valid target"));
 }
 
-void cTargets::FetchTarget(NXWSOCKET  s) // Ripper
+void targets::FetchTarget(NXWSOCKET  s) // Ripper
 {
     sysmessage(s,TRANSLATE("Fetch is not available at this time."));
 }
 
-void cTargets::GuardTarget( NXWSOCKET  s )
+void targets::GuardTarget( NXWSOCKET  s )
 {
     P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
@@ -3525,7 +3525,7 @@ void cTargets::GuardTarget( NXWSOCKET  s )
     pc->guarded = true;
 }
 
-void cTargets::ResurrectionTarget( NXWSOCKET  s )
+void targets::ResurrectionTarget( NXWSOCKET  s )
 {
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(curr);
@@ -3542,12 +3542,12 @@ void cTargets::ResurrectionTarget( NXWSOCKET  s )
 }
 
 //AntiChrist - shows the COMMENT line in the account section of player current acct.
-void cTargets::ShowAccountCommentTarget(NXWSOCKET s)
+void targets::ShowAccountCommentTarget(NXWSOCKET s)
 {
 //TO BE REMOVED
 }
 
-void cTargets::SetHome(NXWSOCKET s)
+void targets::SetHome(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
@@ -3561,7 +3561,7 @@ void cTargets::SetHome(NXWSOCKET s)
     }
 }
 
-void cTargets::SetWork(NXWSOCKET s)
+void targets::SetWork(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
@@ -3575,7 +3575,7 @@ void cTargets::SetWork(NXWSOCKET s)
     }
 }
 
-void cTargets::SetFood(NXWSOCKET s)
+void targets::SetFood(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
@@ -3669,7 +3669,7 @@ static void ItemTarget(NXWCLIENT ps, PKGx6C *pt)
     }
 }
 
-void cTargets::LoadCannon(NXWSOCKET s)
+void targets::LoadCannon(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
@@ -3699,7 +3699,7 @@ void cTargets::LoadCannon(NXWSOCKET s)
     }
 }
 
-void cTargets::DupeTarget(NXWSOCKET s)
+void targets::DupeTarget(NXWSOCKET s)
 {
     if (addid1[s]>=1)
     {
@@ -3715,7 +3715,7 @@ void cTargets::DupeTarget(NXWSOCKET s)
     }
 }
 
-void cTargets::MoveToBagTarget(NXWSOCKET s)
+void targets::MoveToBagTarget(NXWSOCKET s)
 {
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
@@ -3736,7 +3736,7 @@ void cTargets::MoveToBagTarget(NXWSOCKET s)
     pi->Refresh();
 }
 
-void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with the targetting cursor
+void targets::MultiTarget(NXWCLIENT ps) // If player clicks on something with the targetting cursor
 {
 	if (ps == NULL)
 		return;
@@ -3798,12 +3798,12 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 4: DyeTarget(s); break;
         case 5: { cNewzTarget       T(ps);      T.process();} break;
         case 6: if (Iready) pi->type=addid1[s]; break; //Typetarget
-        case 7: Targ->IDtarget(s); break;
+        case 7: targets::IDtarget(s); break;
         case 8: XgoTarget(s); break;
         case 9: if (Cready) PrivTarget(s,pc); break;
         case 10: ItemTarget(ps,pt); break;//MoreTarget
         case 11: if (Iready) KeyTarget(s,pi); break;
-        case 12: Targ->IstatsTarget(s); break;
+        case 12: targets::IstatsTarget(s); break;
         case 13: if (Cready) CstatsTarget(ps,pc); break;
         case 14: if (Cready) GMTarget(ps,pc); break;
         case 15: if (Cready) CnsTarget(ps,pc); break;
@@ -3811,8 +3811,8 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 17: if (Cready) KillTarget(pc, 0x10); break;
         case 18: if (Cready) KillTarget(pc, 0x15); break;
         case 19: if (Cready) pc->fonttype=addid1[s]; break;
-        case 20: if (Cready) Targ->GhostTarget(s); break;
-        case 21: if (Cready) Targ->ResurrectionTarget(s); break; // needed for /resurrect command
+        case 20: if (Cready) targets::GhostTarget(s); break;
+        case 21: if (Cready) targets::ResurrectionTarget(s); break; // needed for /resurrect command
         case 22: { cBoltTarget      T(ps);  T.process();} break;
         case 23: { cSetAmountTarget T(ps);  T.process();} break;
         case 24:
@@ -3847,9 +3847,9 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
                 curr->envokeid2=0x00;
                 return;
             }
-        case 25: Targ->CloseTarget(s); break;
-        case 26: Targ->AddMenuTarget(s, 1, addmitem[s]); break;
-        case 27: Targ->NpcMenuTarget(s); break;
+        case 25: targets::CloseTarget(s); break;
+        case 26: targets::AddMenuTarget(s, 1, addmitem[s]); break;
+        case 27: targets::NpcMenuTarget(s); break;
         case 28: ItemTarget(ps,pt); break;//MovableTarget
         case 29: Skills::ArmsLoreTarget(s); break;
         case 30: if (Cready)
@@ -3858,19 +3858,19 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 				 	OwnerTarget(ps,pi);
 				 break;
         case 31: ItemTarget(ps,pt); break;//ColorsTarget
-        case 32: Targ->DvatTarget(s); break;
+        case 32: targets::DvatTarget(s); break;
         case 33: if (Lready) AddNpcTarget(s,pt); break;
         case 34: if (Cready) { pc->priv2|=2; pc->teleport(); } break;
         case 35: if (Cready) { pc->priv2&=0xfd; pc->teleport(); } break; // unfreeze, AntiChris used LB bugfix
 								 /*if (Cready)
 								 {
-								  Targ->CloseTarget(s);
+								  targets::CloseTarget(s);
 								 	pc->priv2&=0xfd;
-									Targ->XTeleport(s,0);
+									targets::XTeleport(s,0);
 									pc->priv2&=0xfd;
 								 }
 								 break;*/
-        case 36: Targ->AllSetTarget(s); break;
+        case 36: targets::AllSetTarget(s); break;
         case 37: Skills::AnatomyTarget(s); break;
         case 38: /*Magic->Recall(s); break;*/
         case 39: /*Magic->Mark(s); break;*/
@@ -3886,7 +3886,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         	pc_toheal->updateStats(STAT_HP);
         }
         break;
-        case 45: Fishing->FishTarget(ps); break;
+	case 45: fishing::FishTarget(ps); break;
         case 46: InfoTarget(s,pt); break;
         case 47: /* if (Cready) strcpy(pc->title,xtext[s]); */ break;//TitleTarget
         case 48: break; //XAN : THIS *IS* FREE
@@ -3897,18 +3897,18 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 53: npcact(s); break;
         case 54: Skills::CookOnFire(s,0x09B7,"bird"); break;
         case 55: Skills::CookOnFire(s,0x160A,"lamb"); break;
-        case 56: Targ->NpcTarget(s); break;
-        case 57: Targ->NpcTarget2(s); break;
+        case 56: targets::NpcTarget(s); break;
+        case 57: targets::NpcTarget2(s); break;
         case 58: VALIDATEPC(curr); curr->resurrect(); break;
-        case 59: Targ->NpcCircleTarget(s); break;
-        case 60: Targ->NpcWanderTarget(s); break;
-        case 61: Targ->VisibleTarget(s); break;
-        case 62: /* Targ->TweakTarget(s); */ break;
+        case 59: targets::NpcCircleTarget(s); break;
+        case 60: targets::NpcWanderTarget(s); break;
+        case 61: targets::VisibleTarget(s); break;
+        case 62: /* targets::TweakTarget(s); */ break;
         case 63: //MoreXTarget
         case 64: //MoreYTarget
         case 65: //MoreZTarget
         case 66: ItemTarget(ps,pt); break;//MoreXYZTarget
-        case 67: Targ->NpcRectTarget(s); break;
+        case 67: targets::NpcRectTarget(s); break;
         case 68: Skills::CookOnFire(s,0x09F2,"ribs"); break;
         case 69: Skills::CookOnFire(s,0x1608,"chicken legs"); break;
         case 70: Skills::TasteIDTarget(s); break;
@@ -3923,47 +3923,47 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 81: Skills::EnticementTarget1(s); break;
         case 82: Skills::EnticementTarget2(s); break;
 
-        case 86: Targ->SwordTarget(ps); break;
+        case 86: targets::SwordTarget(ps); break;
         case 87: /*Magic->SbOpenContainer(s);*/ break;
-        case 88: Targ->SetDirTarget(s); break;
+        case 88: targets::SetDirTarget(s); break;
         case 89: ItemTarget(ps,pt); break;//ObjPrivTarget
 
         case 100: /*Magic->NewCastSpell( s );*/ break;  // we now have this as our new spell targeting location
 
-        case 105: Targ->xSpecialBankTarget(s); break;//AntiChrist
-        case 106: Targ->NpcAITarget(s); break;
-        case 107: Targ->xBankTarget(s); break;
+        case 105: targets::xSpecialBankTarget(s); break;//AntiChrist
+        case 106: targets::NpcAITarget(s); break;
+        case 107: targets::xBankTarget(s); break;
         case 108: Skills::AlchemyTarget(s); break;
         case 109: Skills::BottleTarget(s); break;
-        case 110: Targ->DupeTarget(s); break;
+        case 110: targets::DupeTarget(s); break;
         case 111: ItemTarget(ps,pt); break;//MovableTarget
-        case 112: Targ->SellStuffTarget(s); break;
-        case 113: Targ->ManaTarget(s); break;
-        case 114: Targ->StaminaTarget(s); break;
-        case 115: Targ->GmOpenTarget(s); break;
-        case 116: Targ->MakeShopTarget(s); break;
-        case 117: Targ->FollowTarget(s); break;
-        case 118: Targ->AttackTarget(s); break;
-        case 119: Targ->TransferTarget(s); break;
-        case 120: Targ->GuardTarget( s ); break;
-        case 121: Targ->BuyShopTarget(s); break;
+        case 112: targets::SellStuffTarget(s); break;
+        case 113: targets::ManaTarget(s); break;
+        case 114: targets::StaminaTarget(s); break;
+        case 115: targets::GmOpenTarget(s); break;
+        case 116: targets::MakeShopTarget(s); break;
+        case 117: targets::FollowTarget(s); break;
+        case 118: targets::AttackTarget(s); break;
+        case 119: targets::TransferTarget(s); break;
+        case 120: targets::GuardTarget( s ); break;
+        case 121: targets::BuyShopTarget(s); break;
         case 122: ItemTarget(ps,pt); break;//SetValueTarget
         case 123: ItemTarget(ps,pt); break;//SetRestockTarget
-        case 124: Targ->FetchTarget(s); break;
+        case 124: targets::FetchTarget(s); break;
 
-        case 126: Targ->JailTarget(s,-1); break;
-        case 127: Targ->ReleaseTarget(s,-1); break;
+        case 126: targets::JailTarget(s,-1); break;
+        case 127: targets::ReleaseTarget(s,-1); break;
         case 129: ItemTarget(ps,pt); break;//SetAmount2Target
         case 130: Skills::HealingSkillTarget(s); break;
-        case 131: VALIDATEPC(curr); if (curr->IsGM()) Targ->permHideTarget(s); break; /* not used */
-        case 132: VALIDATEPC(curr); if (curr->IsGM()) Targ->unHideTarget(s); break; /* not used */
+        case 131: VALIDATEPC(curr); if (curr->IsGM()) targets::permHideTarget(s); break; /* not used */
+        case 132: VALIDATEPC(curr); if (curr->IsGM()) targets::unHideTarget(s); break; /* not used */
         case 133: ItemTarget(ps,pt); break;//SetWipeTarget
         case 134: Skills::Carpentry(s); break;
-        case 135: Targ->SetSpeechTarget(s); break;
-        case 136: Targ->XTeleport(s,0); break;
+        case 135: targets::SetSpeechTarget(s); break;
+        case 136: targets::XTeleport(s,0); break;
 
         case 150: SetSpAttackTarget(s); break;
-        case 151: Targ->FullStatsTarget(s); break;
+        case 151: targets::FullStatsTarget(s); break;
         case 152: Skills::BeggingTarget(s); break;
         case 153: Skills::AnimalLoreTarget(s); break;
         case 154: Skills::ForensicsTarget(s); break;
@@ -3984,15 +3984,15 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 166: Skills::Wheel(s, THREAD); break;
         case 167: Skills::Tailoring(s); break;
 
-        case 170: Targ->LoadCannon(s); break;
+        case 170: targets::LoadCannon(s); break;
         case 171: /*Magic->BuildCannon(s);*/ break;
         case 172: Skills::Fletching(s); break;
         case 173: Skills::MakeDough(s); break;
         case 174: Skills::MakePizza(s); break;
-        case 175: Targ->SetPoisonTarget(s); break;
-        case 176: Targ->SetPoisonedTarget(s); break;
-        case 177: Targ->SetSpaDelayTarget(s); break;
-        case 178: Targ->SetAdvObjTarget(s); break;
+        case 175: targets::SetPoisonTarget(s); break;
+        case 176: targets::SetPoisonedTarget(s); break;
+        case 177: targets::SetSpaDelayTarget(s); break;
+        case 178: targets::SetAdvObjTarget(s); break;
         case 179: if (Cready) SetInvulFlag(ps,pc); break;
         case 180: Skills::Tinkering(s); break;
         case 181: Skills::PoisoningTarget(ps); break;
@@ -4010,7 +4010,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
             break;
         } //</Luxor>
         case 192: PartySystem::targetParty(ps); break;   // Xan Party System
-        case 193: Targ->AllAttackTarget(s); break;      // Luxor All Attack
+        case 193: targets::AllAttackTarget(s); break;      // Luxor All Attack
 		case 194:
 		{
 		     TargetLocation TL(pt);
@@ -4020,52 +4020,52 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         /* -- END Custom NoX-Wizard targets */
 
         case 198: Tiling(s,pt); break;
-        case 199: /* Targ->Wiping(s); */ break;
+        case 199: /* targets::Wiping(s); */ break;
         case 200: Commands::SetItemTrigger(s); break;
         case 201: Commands::SetNPCTrigger(s); break;
         case 202: Commands::SetTriggerType(s); break;
         case 203: Commands::SetTriggerWord(s); break;
         case 204: triggertarget(s); break; // Fixed by Magius(CHE)
         case 205: Skills::StealingTarget(ps); break;
-        case 206: Targ->CanTrainTarget(s); break;
+        case 206: targets::CanTrainTarget(s); break;
         case 207: ExpPotionTarget(s,pt); break;
-        case 209: Targ->SetSplitTarget(s); break;
-        case 210: Targ->SetSplitChanceTarget(s); break;
+        case 209: targets::SetSplitTarget(s); break;
+        case 210: targets::SetSplitChanceTarget(s); break;
         case 212: Commands::Possess(s); break;
         case 213: Skills::PickPocketTarget(ps); break;
 
         case 220: Guilds->Recruit(s); break;
         case 221: Guilds->TargetWar(s); break;
         case 222: TeleStuff(s,pt); break;
-        case 223: Targ->SquelchTarg(s); break;//Squelch
-        case 224: Targ->PlVBuy(s); break;//PlayerVendors
-        case 225: Targ->Priv3XTarget(s); break; // SETPRIV3 +/- target
-        case 226: /* Targ->ShowPriv3Target(s); */ break; // SHOWPRIV3
-        case 227: Targ->HouseOwnerTarget(s); break; // cj aug11/99
-        case 228: Targ->HouseEjectTarget(s); break; // cj aug11/99
-        case 229: Targ->HouseBanTarget(s); break; // cj aug12/99
-        case 230: Targ->HouseFriendTarget(s); break; // cj aug 12/99
-        case 231: Targ->HouseUnlistTarget(s); break; // cj aug 12/99
-        case 232: Targ->HouseLockdown( s ); break; // Abaddon 17th December 1999
-        case 233: Targ->HouseRelease( s ); break; // Abaddon 17th December 1999
-        case 234: Targ->HouseSecureDown( s ); break; // Ripper
-        case 235: Targ->BanTarg(s); break;
+        case 223: targets::SquelchTarg(s); break;//Squelch
+        case 224: targets::PlVBuy(s); break;//PlayerVendors
+        case 225: targets::Priv3XTarget(s); break; // SETPRIV3 +/- target
+        case 226: /* targets::ShowPriv3Target(s); */ break; // SHOWPRIV3
+        case 227: targets::HouseOwnerTarget(s); break; // cj aug11/99
+        case 228: targets::HouseEjectTarget(s); break; // cj aug11/99
+        case 229: targets::HouseBanTarget(s); break; // cj aug12/99
+        case 230: targets::HouseFriendTarget(s); break; // cj aug 12/99
+        case 231: targets::HouseUnlistTarget(s); break; // cj aug 12/99
+        case 232: targets::HouseLockdown( s ); break; // Abaddon 17th December 1999
+        case 233: targets::HouseRelease( s ); break; // Abaddon 17th December 1999
+        case 234: targets::HouseSecureDown( s ); break; // Ripper
+        case 235: targets::BanTarg(s); break;
         case 236: Skills::RepairTarget(s); break; //Ripper..Repairing item
         //case 237: Skills->SmeltItemTarget(s); break; Ripper..Smelting item
         //taken from 6904t2(5/10/99) - AntiChrist
-        case 240: Targ->SetMurderCount( s ); break; // Abaddon 13 Sept 1999
+        case 240: targets::SetMurderCount( s ); break; // Abaddon 13 Sept 1999
 
         case 245: buildhouse(s,addid3[s]);   break;
 
-        case 247: Targ->ShowSkillTarget(s);break; //showskill target
-        case 248: Targ->MenuPrivTarg(s);break; // menupriv target
-        //case 249: Targ->UnglowTaget(s);break; // unglow
+        case 247: targets::ShowSkillTarget(s);break; //showskill target
+        case 248: targets::MenuPrivTarg(s);break; // menupriv target
+        //case 249: targets::UnglowTaget(s);break; // unglow
         case 250: if ((Cready)&&(ISVALIDPC(pc))) Priv3Target(s,pc); break; // meta gm target
-        case 251: Targ->NewXTarget(s); break; // NEWX
-        case 252: Targ->NewYTarget(s); break; // NEWY
-        case 253: Targ->IncXTarget(s); break; // INCX
-        case 254: Targ->IncYTarget(s); break; // INCY
-//        case 255: Targ->IncZTarget(s); break; // INCZ
+        case 251: targets::NewXTarget(s); break; // NEWX
+        case 252: targets::NewYTarget(s); break; // NEWY
+        case 253: targets::IncXTarget(s); break; // INCX
+        case 254: targets::IncYTarget(s); break; // INCY
+//        case 255: targets::IncZTarget(s); break; // INCZ
         // 255 Specially handled for managed commands (Rik)
         case 255: {
             TargetLocation target(pt);
@@ -4073,9 +4073,9 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
             ps->continueCommand();
             break;
         }
-        case 256: Targ->SetHome(s); break;
-        case 257: Targ->SetWork(s); break;
-        case 258: Targ->SetFood(s); break;
+        case 256: targets::SetHome(s); break;
+        case 257: targets::SetWork(s); break;
+        case 258: targets::SetFood(s); break;
 
         default:
             LogError("Fallout of switch statement, multitarget(), value=(%i)",pt->Tnum);

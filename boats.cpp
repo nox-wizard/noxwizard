@@ -49,12 +49,12 @@ signed short int iLargeShipOffsets[4][4][2]=
 //Ship Items
 //[4] = direction
 //[6] = Which Item (PT Plank Up,PT Plank Down, SB Plank Up, SB Plank Down, Hatch, TMan)
-char cShipItems[4][6]=
+UI08 cShipItems[4][6]=
 {
- {(unsigned char)0xB1,(unsigned char)0xD5,(unsigned char)0xB2,(unsigned char)0xD4,(unsigned char)0xAE,(unsigned char)0x4E},
- {(unsigned char)0x8A,(unsigned char)0x89,(unsigned char)0x85,(unsigned char)0x84,(unsigned char)0x65,(unsigned char)0x53},
- {(unsigned char)0xB2,(unsigned char)0xD4,(unsigned char)0xB1,(unsigned char)0xD5,(unsigned char)0xB9,(unsigned char)0x4B},
- {(unsigned char)0x85,(unsigned char)0x84,(unsigned char)0x8A,(unsigned char)0x89,(unsigned char)0x93,(unsigned char)0x50}
+ {0xB1,0xD5,0xB2,0xD4,0xAE,0x4E},
+ {0x8A,0x89,0x85,0x84,0x65,0x53},
+ {0xB2,0xD4,0xB1,0xD5,0xB9,0x4B},
+ {0x85,0x84,0x8A,0x89,0x93,0x50}
 };
 //============================================================================================
 
@@ -126,7 +126,7 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 	return false;
 }
 
-void cBoat::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double click Will send them here
+void boats::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double click Will send them here
 {
 	VALIDATEPC(pc);
 
@@ -178,7 +178,7 @@ void cBoat::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double cl
 
 }
 
-void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open plank while on the boat.
+void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open plank while on the boat.
 {
 	VALIDATEPC(pc);
 
@@ -244,7 +244,7 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 }
 
 
-void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
 {
 	VALIDATEPI(p_b);
 	VALIDATEPI(pi);
@@ -277,7 +277,7 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 }
 
 
-void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item that was on the boat when the boat was turned.
 {
 	VALIDATEPI(p_b);
 	VALIDATEPC(pc);
@@ -308,7 +308,7 @@ void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 	pc->teleport();
 }
 
-void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the people/items on the boat to turnboatstuff()
+void boats::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the people/items on the boat to turnboatstuff()
 {
 	VALIDATEPI(pi);
 
@@ -393,7 +393,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	//Set the DIR for use in the Offsets/IDs array
 	dir=(pi->dir&0x0F)/2;
 
-	char *pShipItems = cShipItems[ dir ];
+	UI08 *pShipItems = cShipItems[ dir ];
 
 	//set it's Z to 0,0 inside the boat
 	Location bpos= pi->getPosition();
@@ -425,7 +425,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	}
 }
 
-void cBoat::TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold )
+void boats::TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold )
 {
 	Location itmpos;
 	signed short int *pShipOffsets;
@@ -576,7 +576,7 @@ void cBoat::TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_IT
 }
 
 
-LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if they said a command.
+LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if they said a command.
 {
 	/*
 		pc & socket validation done in talking()
@@ -720,10 +720,10 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 // Return type       : bool
 // Author            : Elcabesa
 // Changes           : none yet
-// Called form		 : cBoat:good_position()
+// Called form		 : boats::good_position()
 
 
-LOGICAL cBoat::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
+LOGICAL boats::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
 {
 	land_st land;
 	int dx,dy;
@@ -786,9 +786,8 @@ LOGICAL cBoat::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,in
 // Return type       : void
 // Author            : Elcabesa
 // Changes           : none yet
-// Called form		 : cBoat:build()
 
-LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
+LOGICAL boats::good_position(P_ITEM pBoat, Location where, int dir)
 {
 	UI32 x= where.x, y= where.y;
 	LOGICAL good_pos=false;
@@ -870,7 +869,7 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 // Author            : Elcabesa
 // Changes           : none yet
 // Called form	     : buildhouse()
-LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
+LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 {
 	if ( s < 0 || s >= now )
 		return false;
@@ -1026,7 +1025,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 // Description       : handle if at these coord there is another boat
 // Return type       : bool TRUE boat collision,FALSE not obat collision
 // Author            : Elcabesa
-LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
+LOGICAL boats::collision(P_ITEM pi,Location where,int dir)
 {
 	int x= where.x, y= where.y;
 	std::map<int,boat_db>::iterator iter_boat;
@@ -1057,10 +1056,7 @@ LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 // Return type       : bool true: collision     false: no collision
 // Author            : Elcabesa
 // Changes           : none yet
-// Called from		 : cBoat:collision()
-
-
-LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2)
+LOGICAL boats::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2)
 {
 	char temp[TEMP_STR_SIZE];
 
@@ -1140,7 +1136,7 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 // Author            : unknow
 // Changes           : none yet
 
-void cBoat::OpenPlank(P_ITEM pi)
+void boats::OpenPlank(P_ITEM pi)
 {
 	switch(pi->id2)
 	{
@@ -1164,7 +1160,7 @@ void cBoat::OpenPlank(P_ITEM pi)
 \return the pointer to the boat or NULL
 \author Elcabesa
 */
-P_ITEM cBoat::GetBoat(Location pos)
+P_ITEM boats::GetBoat(Location pos)
 {
 
 	std::map<int,boat_db>::iterator iter_boat;
@@ -1213,7 +1209,7 @@ P_ITEM cBoat::GetBoat(Location pos)
 // Author            : unknow
 // Changes           : none yet
 
-void cBoat::Move(NXWSOCKET  s, int dir, P_ITEM pBoat)
+void boats::Move(NXWSOCKET  s, int dir, P_ITEM pBoat)
 {
 	iMove(s,dir,pBoat,false);
 }
@@ -1227,7 +1223,7 @@ void cBoat::Move(NXWSOCKET  s, int dir, P_ITEM pBoat)
 // Author            : Elcabesa
 // Changes           : none yet
 
-void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
+void boats::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 {
 	int tx=0,ty=0;
 	int serial;
@@ -1389,18 +1385,6 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	p2->Refresh();
 	hold->Refresh();
 }
-
-
-cBoat::cBoat()//Consturctor
-{
-	return;
-}
-
-cBoat::~cBoat()//Destructor
-{
-}
-
-
 
 /*!
 \brief insert a boat inside boat_db struct and add it to the s_boat map
