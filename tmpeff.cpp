@@ -640,115 +640,116 @@ SI08 cTempfx::checkForExpire()
 */
 void cTempfx::executeExpireCode()
 {
-	P_CHAR src = pointers::findCharBySerial(m_nSrc);
-	P_CHAR dest = pointers::findCharBySerial(m_nDest);
+	P_CHAR pc_src = pointers::findCharBySerial(m_nSrc);
+	P_CHAR pc_dest = pointers::findCharBySerial(m_nDest);
+	P_ITEM pi_src = pointers::findItemBySerial(m_nSrc);
 	P_ITEM pi_dest = pointers::findItemBySerial(m_nDest);
 
 	switch(m_nNum)
 	{
 		case SPELL_PARALYZE:
-			VALIDATEPC(dest);
-			if (dest->isFrozen())
-				dest->unfreeze( true );
+			VALIDATEPC(pc_dest);
+			if (pc_dest->isFrozen())
+				pc_dest->unfreeze( true );
 			break;
 
 		case SPELL_LIGHT:
-			VALIDATEPC(dest);
-			dest->fixedlight = 0xFF;
-			if (dest->getClient())
-				dolight(dest->getClient()->toInt(), worldbrightlevel);
+			VALIDATEPC(pc_dest);
+			pc_dest->fixedlight = 0xFF;
+			if (pc_dest->getClient())
+				dolight(pc_dest->getClient()->toInt(), worldbrightlevel);
 			break;
 
 		case SPELL_CLUMSY:
-			VALIDATEPC(dest);
-			dest->dx += m_nMore1;
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->dx += m_nMore1;
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_FEEBLEMIND:
-			VALIDATEPC(dest);
-			dest->in += m_nMore1;
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->in += m_nMore1;
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_WEAKEN:
-			VALIDATEPC(dest);
-			dest->modifyStrength(m_nMore1);
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->modifyStrength(m_nMore1);
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_AGILITY:
-			VALIDATEPC(dest);
-			dest->dx -= m_nMore1;
-			dest->stm = min(dest->stm, dest->dx);
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->dx -= m_nMore1;
+			pc_dest->stm = min(pc_dest->stm, pc_dest->dx);
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_STRENGHT:
-			VALIDATEPC(dest);
-			dest->modifyStrength(-m_nMore1);
-			dest->hp = min(dest->hp, (SI32)dest->getStrength());
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->modifyStrength(-m_nMore1);
+			pc_dest->hp = min(pc_dest->hp, (SI32)pc_dest->getStrength());
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_CUNNING:
-			VALIDATEPC(dest);
-			dest->in -= m_nMore1;
-			dest->mn = min(dest->mn, dest->in);
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->in -= m_nMore1;
+			pc_dest->mn = min(pc_dest->mn, pc_dest->in);
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_BLESS:
-			VALIDATEPC(dest);
-			dest->modifyStrength(-m_nMore1);
-			dest->dx -= m_nMore2;
-			dest->in -= m_nMore3;
-			dest->hp = min(dest->hp, (SI32)dest->getStrength());
-			dest->stm = min(dest->stm, dest->dx);
-			dest->mn = min(dest->mn, dest->in);
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->modifyStrength(-m_nMore1);
+			pc_dest->dx -= m_nMore2;
+			pc_dest->in -= m_nMore3;
+			pc_dest->hp = min(pc_dest->hp, (SI32)pc_dest->getStrength());
+			pc_dest->stm = min(pc_dest->stm, pc_dest->dx);
+			pc_dest->mn = min(pc_dest->mn, pc_dest->in);
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_CURSE:
-			VALIDATEPC(dest);
-			dest->modifyStrength(m_nMore1);
-			dest->dx += m_nMore2;
-			dest->in += m_nMore3;
-			if (dest->getClient())
-				statwindow(dest, dest);
+			VALIDATEPC(pc_dest);
+			pc_dest->modifyStrength(m_nMore1);
+			pc_dest->dx += m_nMore2;
+			pc_dest->in += m_nMore3;
+			if (pc_dest->getClient())
+				statwindow(pc_dest, pc_dest);
 			break;
 
 		case SPELL_INVISIBILITY:
-			VALIDATEPC(dest);
-			if (dest->IsHiddenBySpell()) {
-				dest->hidden = UNHIDDEN;
-				dest->morph();
-				dest->playSFX(0x203);
+			VALIDATEPC(pc_dest);
+			if (pc_dest->IsHiddenBySpell()) {
+				pc_dest->hidden = UNHIDDEN;
+				pc_dest->morph();
+				pc_dest->playSFX(0x203);
 			}
 			break;
 
 
 		case ALCHEMY_GRIND:
-			VALIDATEPC(dest);
+			VALIDATEPC(pc_dest);
 			if (m_nMore1 == 0)
 			{
 				if (m_nMore2 != 0)
-					dest->emoteall(TRANSLATE("*%s continues grinding.*"), 1, dest->getCurrentNameC());
+					pc_dest->emoteall(TRANSLATE("*%s continues grinding.*"), 1, pc_dest->getCurrentNameC());
 
-				dest->playSFX(0x242);
+				pc_dest->playSFX(0x242);
 			}
 			break;
 		case ALCHEMY_END:
-			VALIDATEPC(src);
+			VALIDATEPC(pi_src);
 			VALIDATEPI(pi_dest);
-			Skills::CreatePotion(DEREF_P_CHAR(src),(SI08) m_nMore1,(SI08) m_nMore2, DEREF_P_ITEM(pi_dest));
+			Skills::CreatePotion(DEREF_P_CHAR(pi_src),(SI08) m_nMore1,(SI08) m_nMore2, DEREF_P_ITEM(pi_dest));
 			break;
 
 		case AUTODOOR:
@@ -776,117 +777,123 @@ void cTempfx::executeExpireCode()
 			break;
 
 		case SPELL_REACTARMOR:
-			VALIDATEPC(dest);
-			dest->ra = 0;
+			VALIDATEPC(pc_dest);
+			pc_dest->ra = 0;
 			break;
 
 		case EXPLOTIONMSG:
-			VALIDATEPC(dest);
-			dest->sysmsg("%i", m_nMore3);
+			VALIDATEPC(pc_dest);
+			pc_dest->sysmsg("%i", m_nMore3);
 			break;
 
 		case EXPLOTIONEXP:
-			VALIDATEPC(src);
+			VALIDATEPC(pc_src);
 			VALIDATEPI(pi_dest);
-			if (src->getClient())
-				pi_dest->explode(src->getClient()->toInt());
+			if (pc_src->getClient())
+				pi_dest->explode(pc_src->getClient()->toInt());
 			break;
 
 		case SPELL_POLYMORPH:
-			VALIDATEPC(dest);
-			dest->morph();
-			dest->polymorph = false;
+			VALIDATEPC(pc_dest);
+			pc_dest->morph();
+			pc_dest->polymorph = false;
 			break;
 
 		case SPELL_INCOGNITO:
-			VALIDATEPC(dest);
-			dest->morph();
-			dest->incognito = false;
+			VALIDATEPC(pc_dest);
+			pc_dest->morph();
+			pc_dest->incognito = false;
 			break;
 
 		case HALLUCINATE:
-			if (dest->getClient() == NULL) return;
-			dest->sysmsg(TRANSLATE("The effect wears off."));
-			dest->stm = 3;
-			dest->mn = 3;
-			dest->hp /= 7;
-			dest->teleport();
+			if (pc_dest->getClient() == NULL) return;
+			pc_dest->sysmsg(TRANSLATE("The effect wears off."));
+			pc_dest->stm = 3;
+			pc_dest->mn = 3;
+			pc_dest->hp /= 7;
+			pc_dest->teleport();
 			break;
 
 		case SPELL_PROTECTION:
-			VALIDATEPC(dest);
-			dest->nxwflags[0] &= ~cChar::flagSpellProtection;
+			VALIDATEPC(pc_dest);
+			pc_dest->nxwflags[0] &= ~cChar::flagSpellProtection;
 			break;
 
 		case DRINK_EMOTE:
-			VALIDATEPC(src);
-			src->emote(src->getSocket(),"*glu*",1);
+			VALIDATEPC(pc_src);
+			pc_src->emote(pc_src->getSocket(),"*glu*",1);
 			break;
 
 		case DRINK_FINISHED:
-			VALIDATEPC(src);
+			VALIDATEPC(pc_src);
 			VALIDATEPI(pi_dest);
-			usepotion(src, pi_dest);
+			usepotion(pc_src, pi_dest);
 			break;
 
 		case GM_HIDING:
-			VALIDATEPC(dest);
-			dest->sysmsg(TRANSLATE("You have hidden yourself well."));
-			//dest->hideBySkill();
-			dest->hidden = HIDDEN_BYSKILL;
-			dest->teleport( TELEFLAG_NONE );
+			VALIDATEPC(pc_dest);
+			pc_dest->sysmsg(TRANSLATE("You have hidden yourself well."));
+			//pc_dest->hideBySkill();
+			pc_dest->hidden = HIDDEN_BYSKILL;
+			pc_dest->teleport( TELEFLAG_NONE );
 			break;
 
 		case GM_UNHIDING:
-			VALIDATEPC(dest);
-			dest->unHide();
-			dest->sysmsg(TRANSLATE("You are now visible."));
+			VALIDATEPC(pc_dest);
+			pc_dest->unHide();
+			pc_dest->sysmsg(TRANSLATE("You are now visible."));
 			break;
 
 		case HEALING_DELAYHEAL:
-			VALIDATEPC(src);
-			VALIDATEPC(dest);
-			if (src->war) {
-				src->sysmsg("You cannot heal while you are in a fight.");
+			VALIDATEPC(pc_src);
+			VALIDATEPC(pc_dest);
+			if (pc_src->war) {
+				pc_src->sysmsg("You cannot heal while you are in a fight.");
 				return;
 			}
-			dest->hp = min(dest->hp + m_nMore1, (SI32)dest->getStrength());
-			dest->sysmsg(TRANSLATE("After receiving some healing, you feel better."));
-			dest->updateStats(STAT_HP);
+			pc_dest->hp = min(pc_dest->hp + m_nMore1, (SI32)pc_dest->getStrength());
+			pc_dest->sysmsg(TRANSLATE("After receiving some healing, you feel better."));
+			pc_dest->updateStats(STAT_HP);
 			if (!m_nMore2)
-				add(src, dest, m_nNum, m_nMore1 +1, 1, m_nMore3);
+				add(pc_src, pc_dest, m_nNum, m_nMore1 +1, 1, m_nMore3);
 			break;
 
 		case AMXCUSTOM:
-			VALIDATEPC(src);
-			VALIDATEPC(dest);
+			{
+			cObject *src, *dest;
+			if ( ISVALIDPC(pc_dest) ) dest=pc_dest;
+			else if ( ISVALIDPC(pi_dest) ) dest=pi_dest;
+			if ( ISVALIDPC(pc_src) ) src=pc_src;
+			else if ( ISVALIDPC(pi_src) ) src=pi_src;
+
 			callCustomTempFx(src, dest, MODE_END, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
+			}
 			break;
 
 		case GREY:
-			VALIDATEPC(dest);
-			dest->nxwflags[0] &= ~cChar::flagGrey;
+			VALIDATEPC(pc_dest);
+			pc_dest->nxwflags[0] &= ~cChar::flagGrey;
 			break;
 
 		case CRIMINAL:
-			VALIDATEPC( dest );
-			dest->SetInnocent();
-			dest->sysmsg(TRANSLATE("You are no longer a criminal."));
+			VALIDATEPC( pc_dest );
+			pc_dest->SetInnocent();
+			pc_dest->sysmsg(TRANSLATE("You are no longer a criminal."));
 			break;
 
 		case SPELL_TELEKINESYS:
-			VALIDATEPC( dest );
-			dest->nxwflags[0] &= ~cChar::flagSpellTelekinesys;
+			VALIDATEPC( pc_dest );
+			pc_dest->nxwflags[0] &= ~cChar::flagSpellTelekinesys;
 			break;
 		case NPC_HIRECOST:
-			// src is hired noc, dest is employer
-			if ( dest->CountItems(ITEMID_GOLD) < src->getHireFee() )
+			// src is hired noc, pc_dest is employer
+			if ( pc_dest->CountItems(ITEMID_GOLD) < pc_src->getHireFee() )
 			{
 				// release npc
-				src->talkAll("You don't have enough money to employ me anymore!");
-				src->setOwner(NULL);
-				tempfx::add(src, 
-					dest,
+				pc_src->talkAll("You don't have enough money to employ me anymore!");
+				pc_src->setOwner(NULL);
+				tempfx::add(pc_src, 
+					pc_dest,
 					tempfx::NPC_REMOVE,
 					0,
 					0,
@@ -896,15 +903,15 @@ void cTempfx::executeExpireCode()
 			}
 			else
 			{
-				UI32 amount = dest->delItems(ITEMID_GOLD, src->getHireFee());
+				UI32 amount = pc_dest->delItems(ITEMID_GOLD, pc_src->getHireFee());
 				if ( amount > 0 )
 				{
 					// release npc
-					src->talkAll("You don't have enough money to employ me anymore!");
-					src->setOwner(NULL);
+					pc_src->talkAll("You don't have enough money to employ me anymore!");
+					pc_src->setOwner(NULL);
 					// remove npc after one hour without payment
-					tempfx::add(src, 
-						dest,
+					tempfx::add(pc_src, 
+						pc_dest,
 						tempfx::NPC_REMOVE,
 						0,
 						0,
@@ -913,8 +920,8 @@ void cTempfx::executeExpireCode()
 					);
 
 				}
-				tempfx::add(src, 
-					dest,
+				tempfx::add(pc_src, 
+					pc_dest,
 					tempfx::NPC_HIRECOST, 
 					0, 
 					0, 
@@ -925,9 +932,9 @@ void cTempfx::executeExpireCode()
 			}
 			break;
 		case NPC_REMOVE:
-			if ( src->getOwnerSerial32() == INVALID)
+			if ( pc_src->getOwnerSerial32() == INVALID)
 			{
-				src->Delete();
+				pc_src->Delete();
 			}
 		default:
 			break;
@@ -935,8 +942,8 @@ void cTempfx::executeExpireCode()
 
 
 
-	if (ISVALIDPC(dest))
-		dest->checkEquipement();
+	if (ISVALIDPC(pc_dest))
+		pc_dest->checkEquipement();
 }
 
 
