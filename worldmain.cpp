@@ -66,14 +66,16 @@ wstring* HexVector2UnicodeString( char* s )
 	wstring* w= new wstring();
 
 	int i=0;
-	int size= strlen( s );
 	char temp[6] = { '0','x', };
-	while( i<size ) {
+	wchar_t baffer=0;
+	do {
 		memcpy( &temp[2], &s[i], 4 );
 		char* dummy; 
-		(*w) += strtol( temp, &dummy, 0 );
+		baffer = strtol( temp, &dummy, 0 );
+		if( baffer!=0 )
+			(*w) += baffer;
 		i+=4;
-	}
+	} while ( baffer!=0 );
 	return w;
 }
 
