@@ -315,39 +315,15 @@ cOldMenuIconList::~cOldMenuIconList()
 {
 }
 
-//note to remove pd
-static inline char hex2byte (char *str)
-{
-	char c;
-	char b = 0;
-
-	c = str[0];
-	if ((c >= '0')&&(c <= '9')) c -= '0';
-	else if ((c >= 'A')&&(c <= 'F')) c -= 'A'-'\xa';
-	else if ((c >= 'a')&&(c <= 'f')) c -= 'a'-'\xa';
-	else c = 0;
-
-	b = c << 4;
-
-	c = str[1];
-	if ((c >= '0')&&(c <= '9')) c -= '0';
-	else if ((c >= 'A')&&(c <= 'F')) c -= 'A'-'\xa';
-	else if ((c >= 'a')&&(c <= 'f')) c -= 'a'-'\xa';
-	else c = 0;
-
-	b += (c & 0xF);
-
-	return b;
-}
-
-
 void cOldMenuIconList::addMenuItem( int page, int idx, char* desc )
 {
 	
 	pkg_icon_list_menu_st icon;
 
-	icon.color = hex2byte( desc );
-	icon.model = hex2num( desc +2 );
+	icon.color=0x0000;	
+	char num[5] = { 0x00, };
+	memcpy( num, desc, 4 );
+	icon.model=hex2num( num );
 	icon.response += (desc +5);
 	icons.push_back( icon );
 	
