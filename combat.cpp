@@ -94,8 +94,10 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if ( ISVALIDPC( pc_target ) ) {
                         SI32 att_value = pc_target->hp/10 + pc_def->distFrom( pc_target ) / 2;
                         SI32 this_value = hp/10 + distFrom( pc_def ) / 2;
-                        if ( this_value < att_value )
-				pc_def->fight( this );
+                        if ( this_value < att_value ) {
+				pc_def->targserial = getSerial32();
+				pc_def->attackerserial = getSerial32();
+			}
 		}
 	}
 
