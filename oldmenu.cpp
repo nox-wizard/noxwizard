@@ -179,6 +179,13 @@ void cOldMenu::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, in
 	//do nothing
 }
 
+void cOldMenu::show( P_CHAR pc )
+{
+}
+
+
+
+
 /*!
 \brief Build a classic menu
 \author Endymion

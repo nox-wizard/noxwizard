@@ -201,6 +201,13 @@ void cBasicMenu::setId( const UI32 arg )
 	id = arg ;
 }
 
+void cBasicMenu::handleButton( const NXWSOCKET socket, const UI32 button )
+{
+}
+
+void cBasicMenu::show( P_CHAR pc )
+{
+}
 
 
 
