@@ -908,12 +908,12 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 
 		if (pi->magic==1)
-			itmput[18]+=0x20;
-		if (pc->priv2&1) 
-			itmput[18]+=0x20;
+			itmput[18]|=0x20;
+		if (pc->priv2&1)
+			itmput[18]|=0x20;
 		if ((pi->magic==3 || pi->magic==4) && pc->getSerial32()==pi->getOwnerSerial32())
-			itmput[18]+=0x20;
-		
+			itmput[18]|=0x20;
+
 		if (pc->priv2&4)
 		{
 			if (pi->id()>=0x4000 && pi->id()<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
@@ -937,6 +937,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		}
 
 		itmput[2]=0x13+dir;
+
 		Xsend(s, itmput, 19+dir);
 		//pc->sysmsg( "sent item %s %i", pi->getCurrentNameC(), pi->magic );
 
@@ -1187,42 +1188,7 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 */
 void cChar::updateStats(SI32 stat)
 {
-
-	//Luxor safe stats system
-	if (this->hp > this->getStrength()) this->hp = this->getStrength();
-	if (this->stm > this->dx) this->stm = this->dx;
-	if (this->mn > this->in) this->mn = this->in;
-	tempfx::tempeffectsoff();
-
-	NxwItemWrapper si;
-	si.fillItemWeared( this, true, true, false );
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_ITEM pitem=si.getItem();
-		if(ISVALIDPI(pitem))
-		{
-			if (pitem->st2 != 0) this->modifyStrength(-pitem->st2);
-			if (pitem->dx2 != 0) this->dx -= pitem->dx2;
-			if (pitem->in2 != 0) this->in -= pitem->in2;
-		}
-	}
-	if (this->getStrength() != this->st3) this->setStrength(this->st3);
-	if (this->dx != this->dx3) this->dx = this->dx3;
-	if (this->in != this->in3) this->in = this->in3;
-
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_ITEM pitem=si.getItem();
-		if(ISVALIDPI(pitem))
-		{
-			if (pitem->st2 != 0) this->modifyStrength(pitem->st2);
-			if (pitem->dx2 != 0) this->dx += pitem->dx2;
-			if (pitem->in2 != 0) this->in += pitem->in2;
-		}
-	}
-	tempfx::tempeffectson();
-	//End safe stats system
-
+	checkSafeStats();
 
 	int a = 0, b = 0;
 	char updater[10]="\xA1\x01\x02\x03\x04\x01\x03\x01\x02";

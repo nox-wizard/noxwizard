@@ -242,19 +242,20 @@ class cChar : public cObject
 
 	public:
 		SI32			st2;				//!< Reserved for calculation
-		SI32			st3;				//!< xan : future use, to keep safe stats
+		SI32			st3;				//!< Luxor: safe strength value
 		SI32			dx;				//!< Dexterity
 		SI32			dx2;				//!< Reserved for calculation
-		SI32			dx3;				//!< xan : future use, to keep safe stats
+		SI32			dx3;				//!< Luxor: safe dexterity value
 		SI32			in;				//!< Intelligence
 		SI32			in2;				//!< Reserved for calculation
-		SI32			in3;				//!< xan : future use, to keep safe stats
+		SI32			in3;				//!< Luxor: safe intelligence value
 		SI32			statGainedToday;		//!< xan :-> for stat-gain cap
 
 		SI32			getStrength();			//!< Get the strength-value
 
 		void			setStrength(UI32 val, bool check= true);
 		void			modifyStrength(SI32 mod, bool check= true);
+		void			checkSafeStats();
 //@}
 
 	public:

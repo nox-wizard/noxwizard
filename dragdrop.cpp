@@ -1062,9 +1062,9 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
                         ps->resetDragging();
                         UpdateStatusWindow(s,pi);
                 }
+		pi->MoveTo( pi->getOldPosition() );
 		pi->setContSerial( pi->getContSerial(true) );
-                pi->MoveTo( pi->getOldPosition() );
-                pi->layer = pi->oldlayer;
+		pi->layer = pi->oldlayer;
 		pi->Refresh();
 		return;
 	}

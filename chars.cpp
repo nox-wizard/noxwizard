@@ -365,6 +365,74 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 	else if (!strcmp("@ONCREATION",script1)) 	newAmxEvent(script2)->Call(getSerial32(), INVALID);
 }
 
+/*!
+\author Luxor
+\brief Checks if the stats are regular
+*/
+void cChar::checkSafeStats()
+{
+	SI32 nHP, nMN, nSTM;
+
+	nHP = qmin( getStrength(), hp );
+	nSTM = qmin( dx, stm );
+	nMN = qmin( in, mn );
+
+	//
+	// Deactivate temp effects and items stats bonuses
+	//
+	tempfx::tempeffectsoff();
+	NxwItemWrapper si;
+	P_ITEM pi;
+	si.fillItemWeared( this, true, true, false );
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+		pi = si.getItem();
+		if ( !ISVALIDPI(pi) )
+			continue;
+
+		if ( pi->st2 != 0 )
+			modifyStrength(-pi->st2);
+		if ( pi->dx2 != 0 )
+			dx -= pi->dx2;
+		if ( pi->in2 != 0 )
+			in -= pi->in2;
+	}
+
+	//
+	// Check if stats are correct
+	//
+	if ( getStrength() != st3 )
+		setStrength(st3);
+
+	if ( dx != dx3 )
+		dx = dx3;
+
+	if ( in != in3 )
+		in = in3;
+
+	//
+	// Reactivate temp effects and items stats bonuses
+	//
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+		pi = si.getItem();
+		if ( !ISVALIDPI(pi) )
+			continue;
+
+		if ( pi->st2 != 0 )
+			modifyStrength(pi->st2);
+		if ( pi->dx2 != 0 )
+			dx += pi->dx2;
+		if ( pi->in2 != 0 )
+			in += pi->in2;
+	}
+
+	tempfx::tempeffectson();
+
+	hp = qmin( getStrength(), nHP );
+	stm = qmin( dx, nSTM );
+	mn = qmin( in, nMN );
+}
+
+
 void cChar::resetPriv3()
 {
 	for (register SI32 i=0;i<7;i++)
@@ -3091,41 +3159,10 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 
 	pi->layer= item.layer;
 	pi->setContSerial(getSerial32());
+
+	checkSafeStats();
 	teleport();
 
-        //Luxor safe stats system
-	if (hp > getStrength()) hp = getStrength();
-	if (stm > dx) stm = dx;
-	if (mn > in) mn = in;
-	tempfx::tempeffectsoff();
-
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-
-		P_ITEM pitem=si.getItem();
-		if(ISVALIDPI(pitem)) {
-			if (pitem->st2 != 0) modifyStrength(-pitem->st2);
-			if (pitem->dx2 != 0) dx -= pitem->dx2;
-			if (pitem->in2 != 0) in -= pitem->in2;
-		}
-	}
-	if (getStrength() != st3) setStrength(st3);
-	if (dx != dx3) dx = dx3;
-	if (in != in3) in = in3;
-
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-
-		P_ITEM pitem=si.getItem();
-		if(ISVALIDPI(pitem)) {
-			if (pitem->st2 != 0) modifyStrength(pitem->st2);
-			if (pitem->dx2 != 0) dx += pitem->dx2;
-			if (pitem->in2 != 0) in += pitem->in2;
-		}
-	}
-	tempfx::tempeffectson();
-	//End safe stats system
- 
 	return 0;
 }
 
@@ -3138,40 +3175,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 */
 SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 {
-        //Luxor safe stats system
-	if (hp > getStrength()) hp = getStrength();
-	if (stm > dx) stm = dx;
-	if (mn > in) mn = in;
-	tempfx::tempeffectsoff();
-	
-	NxwItemWrapper si;
-	si.fillItemWeared( this, true, true, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) {
-	
-		P_ITEM pitem= si.getItem();
-		if(ISVALIDPI(pitem)) {
-			if (pitem->st2 != 0) modifyStrength(-pitem->st2);
-			if (pitem->dx2 != 0) dx -= pitem->dx2;
-			if (pitem->in2 != 0) in -= pitem->in2;
-		}
-	}
-
-	if (getStrength() != st3) setStrength(st3);
-	if (dx != dx3) dx = dx3;
-	if (in != in3) in = in3;
-
-	for( si.rewind(); !si.isEmpty(); si++ ) {
-	
-		P_ITEM pitem= si.getItem();
-		if(ISVALIDPI(pitem)) {
-			if (pitem->st2 != 0) modifyStrength(pitem->st2);
-			if (pitem->dx2 != 0) dx += pitem->dx2;
-			if (pitem->in2 != 0) in += pitem->in2;
-		}
-	}
-
-	tempfx::tempeffectson();
-	//End safe stats system
+	checkSafeStats();
 
     NXWSOCKET s= calcSocketFromChar(DEREF_P_CHAR(this));
 	P_ITEM pack= getBackpack();
