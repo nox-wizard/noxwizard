@@ -202,12 +202,10 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 		if ( isCharSerial( pi->getContSerial()))
 		{
-			ConOut( "container is a char\n" );
 			owner = pointers::findCharBySerial( pi->getContSerial());
 		}
 		else  // its an item
 		{
-			ConOut( "container is an item\n" );
 			//Endymion Bugfix:
 			//before check the container.. but if this cont is a subcont?
 			//so get the outmostcont and check it else:
