@@ -45,6 +45,7 @@ SOURCES =	\
 		common_libs.cpp \
 		console.cpp \
 		containers.cpp \
+		coord.cpp \
 		crontab.cpp \
 		data.cpp \
 		dbl_single_click.cpp \
@@ -154,6 +155,7 @@ HEADERS =	\
 		common_libs.h \
 		console.h \
 		constants.h \
+		coord.h \
 		crontab.h \
 		data.h \
 		debug.h \

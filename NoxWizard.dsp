@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /GB /MDd /W3 /Gm /GX /ZI /Od /I ".\\" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /J /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".\\" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /J /FD /GZ /c
 # SUBTRACT CPP /WX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -247,6 +247,10 @@ SOURCE=.\console.cpp
 # Begin Source File
 
 SOURCE=.\containers.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\coord.cpp
 # End Source File
 # Begin Source File
 
@@ -683,6 +687,10 @@ SOURCE=.\constants.h
 # Begin Source File
 
 SOURCE=.\containers.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\coord.h
 # End Source File
 # Begin Source File
 

@@ -227,6 +227,9 @@
 				RelativePath="..\containers.cpp">
 			</File>
 			<File
+				RelativePath="..\coord.cpp">
+			</File>
+			<File
 				RelativePath="..\crontab.cpp">
 			</File>
 			<File
@@ -563,6 +566,9 @@
 			</File>
 			<File
 				RelativePath="..\containers.h">
+			</File>
+			<File
+				RelativePath="..\coord.h">
 			</File>
 			<File
 				RelativePath="..\crontab.h">
