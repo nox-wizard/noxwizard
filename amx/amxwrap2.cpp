@@ -64,14 +64,14 @@
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
-static cUnicodeString emptyUnicodeString;
+static wstring emptyUnicodeString;
 
 static bool  	getCharBoolProperty(P_CHAR pc, int property, int prop2);
 static int   	getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
 static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
 static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
 static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
-static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 );
+static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 );
 
 
 static bool  	getItemBoolProperty(P_ITEM pi, int property, int prop2);
@@ -198,7 +198,7 @@ NATIVE2(_getCharProperty)
 			if( pc->getSpeechCurrent()!=NULL ) {
 				cell *cptr;
 	  			amx_GetAddr(amx,params[4],&cptr);
-				amx_SetStringUnicode(cptr, &pc->getSpeechCurrent()->s );
+				amx_SetStringUnicode(cptr, pc->getSpeechCurrent() );
 				return pc->getSpeechCurrent()->length();
 			}
 		}
@@ -952,12 +952,12 @@ NATIVE2(_setCharProperty)
 		switch( params[2] )
 		{
 			case NXW_CP_UNI_SPEECH_CURRENT :		
-				pc->setSpeechCurrent( new cUnicodeString() );
-				amx_GetStringUnicode( &pc->getSpeechCurrent()->s, cstr );
+				pc->setSpeechCurrent( new wstring() );
+				amx_GetStringUnicode( pc->getSpeechCurrent(), cstr );
 				break;
 			case NXW_CP_UNI_PROFILE :				
-				pc->setProfile( new cUnicodeString() );
-				amx_GetStringUnicode( &pc->getProfile()->s, cstr );
+				pc->setProfile( new wstring() );
+				amx_GetStringUnicode( pc->getProfile(), cstr );
 				break;
 			default :
 				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
@@ -1976,7 +1976,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 	return const_cast<char*>(emptyString);
 }
 
-static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 )
+static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{

@@ -81,11 +81,25 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 \param from offset
 \param size read until NULL termination if INVALID, else read size char
 */
-void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, cUnicodeString* c, int& from, int size )
+void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size )
 {
-	c->copy( (char*)&buffer[s][from], size );
+	wchar_t* w=(wchar_t*)( &buffer[s][from] );
+	
+	c->erase( begin(), end() );
+	
+	int i=0;
+	if( size==INVALID ) {//until termination
+		while ( w[i]!=0 ) {
+			(*c)+=ntohs( w[i] );
+		}
+	}
+	else { //until size
+		for( ; i<size; ++i ) {
+			(*c)+=ntohs( w[i] );
+		}
+	}
 	if( size==INVALID )
-		from+=c->size();
+		from+=c->size()*2+2;
 	else
 		from+=size;
 }
