@@ -49,6 +49,7 @@ SOURCES =	\
 		dbl_single_click.cpp \
 		debug.cpp \
 		dragdrop.cpp \
+		endian.cpp \
 		extractionskills.cpp \
 		encryption.cpp \
 		fishing.cpp \

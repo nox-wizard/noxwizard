@@ -19,8 +19,8 @@
 //#define ENDY_NEW_WEAR
 
 #include "common_libs.h"
-#include "constants.h"
 #include "typedefs.h"
+#include "constants.h"
 #include "pointer.h"
 #include "console.h"
 #include "amx/amxscript.h"
@@ -78,5 +78,6 @@
 #include "addmenu.h"
 #include "rcvpkg.h"
 #include "network.h"
+#include "endian.h"
 
 #endif // __NXWCOMMON_H

@@ -11,7 +11,6 @@
 \file typedefs.h
 \brief contains typedefs for integer values and common structures.
 \todo complete the documentation of types
-\todo clean the commented types
 */
 
 #ifndef __TYPEDEFS_H__
@@ -58,20 +57,15 @@ typedef UI16				BODYTYPE;
 typedef SI32				CHARACTER;
 typedef UI16				COLOR;
 
-//typedef SI32				GUILDID;
 typedef SI32				ITEM;
-//typedef UI08				LIGHTLEVEL;
 typedef class cNxwClientObj*		NXWCLIENT;
 typedef SI32				NXWSOCKET;	//!< socket connection
-//typedef UI08				OCTET;
 typedef unsigned char			BYTE;
 typedef       class cChar*		P_CHAR;		//!< pointer to cChar
 typedef const class cChar*		PC_CHAR;	//!< const pointer to cChar
 typedef       class cItem*		P_ITEM;		//!< pointer to cItem
 typedef const class cItem*		PC_ITEM;	//!< const pointer to cItem
 typedef       class cObject*		P_OBJECT;	//!< pointer to cObject
-//typedef SI32				PLAYER;
-//typedef UI08				SECONDS;
 typedef SI32				SERIAL;		//!< 32-bit serial number
 typedef UI32				TIMERVAL;
 typedef SI32				ACCOUNT;

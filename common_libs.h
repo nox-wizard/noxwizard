@@ -42,7 +42,6 @@ warnings/errors/issues.
 
 	#define vsnprintf _vsnprintf
 	#define snprintf _snprintf
-	#define PACK_NEEDED
 	typedef int socklen_t;
 #endif
 
@@ -57,12 +56,10 @@ warnings/errors/issues.
 	#define strcasecmp strcmpi
 #endif
 
-#if defined(__BEOS__) && !defined(__unix__)
-	#define __unix__
-#endif
-
 #ifdef __GNUC__
 	#define PACK_NEEDED __attribute__ ((packed))
+#else
+	#define PACK_NEEDED
 #endif
 
 #ifdef  _MSC_VER

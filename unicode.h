@@ -10,6 +10,8 @@
 #ifndef __UNICODE_H__
 #define __UNICODE_H__
 
+#include "nxwcommn.h"
+
 typedef UI16 PACK_NEEDED UNI_TEXT;
 
 /*!
@@ -38,51 +40,5 @@ public:
 
 	void clear();
 } PACK_NEEDED;
-
-/*
-\brief endian buster
-\author Endymion
-\note used to remove problem with big-little endian 
-*/
-class endian {
-public:
-	endian() {}
-	~endian() {}
-} PACK_NEEDED;
-
-typedef UI08 PACK_NEEDED eUI08;
-typedef bool PACK_NEEDED eBool;
-
-
-/*
-\brief endian buster 16Bit
-\author Endymion
-*/
-class eUI16 : public endian {
-private:
-	UI16 a;
-public:
-	eUI16() { a=0; };
-	~eUI16() { };
-	void operator =( UI16 v );
-} PACK_NEEDED;
-
-typedef eUI16 PACK_NEEDED eCOLOR;
-
-/*
-\brief endian buster 32Bit
-\author Endymion
-*/
-class eUI32 : public endian {
-private:
-	UI32 a;
-public:
-	eUI32() { a=0; };
-	~eUI32() { };
-	void operator =( UI32 v );
-} PACK_NEEDED;
-
-typedef eUI32 PACK_NEEDED eSERIAL;
-
 
 #endif

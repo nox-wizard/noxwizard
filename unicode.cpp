@@ -87,20 +87,3 @@ void cUnicodeString::append( wchar_t c )
 	this->s.insert( before_term, c >> 8   );
 	this->s.insert( before_term, c & 0xFF );
 }
-
-
-
-
-
-
-
-void eUI16::operator =( UI16 v )
-{
-	this->a= htons( v );
-}
-
-
-void eUI32::operator =( UI32 v )
-{
-	this->a= htonl( v );
-}
