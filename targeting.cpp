@@ -1741,19 +1741,20 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		//AntiChrist & Magius(CHE) - store item's owner, so that lately
 		//if we want to know the owner we can do it
 		pi->setSameOwnerAs(pi3);
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Heart
 		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
 		pi=item::CreateFromScript( "$item_a_heart" );
 		VALIDATEPI(pi);
-		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
 		pi->setCurrentName( temp );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Body
@@ -1766,6 +1767,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Left Arm
@@ -1778,6 +1780,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Right Arm
@@ -1790,6 +1793,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Left Leg
@@ -1802,6 +1806,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//create the Rigth Leg
@@ -1814,6 +1819,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->layer=0x01;
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
+		pi->setCurrentName( temp ); //Luxor
 		pi->Refresh();
 
 		//human: always delete corpse!
