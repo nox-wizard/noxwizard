@@ -272,6 +272,38 @@ SERIAL cGuild::getMemberByIndex(int index)
 }
 
 /*!
+\brief Get the index of the guild member in the guild 
+\author Wintermute
+\param member the member
+*/
+int cGuild::getRecruitIndex(SERIAL member)
+{
+	std::map< SERIAL, P_GUILD_RECRUIT >::iterator iter( recruits.find( member ) );
+	return ( iter!=recruits.end() )? distance(recruits.begin(), iter) + 1 : INVALID;
+}
+
+/*!
+\brief Get  the guild member at the given index in the guild 
+\author Wintermute
+\param index, position of member
+*/
+SERIAL cGuild::getRecruitByIndex(int index)
+{
+	std::map< SERIAL, P_GUILD_RECRUIT >::iterator iter;
+	int count = 0;
+	for ( iter = recruits.begin();iter != recruits.end();iter++)
+	{
+		if ( count == index - 1)
+		{
+			P_GUILD_RECRUIT guildrecruit = iter->second;
+			
+			return guildrecruit->serial;
+		}
+	}
+	return INVALID;
+}
+
+/*!
 \brief Calculate the guild master after a member has changed his fealty
 \author Wintermute
 */

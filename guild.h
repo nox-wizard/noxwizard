@@ -166,7 +166,9 @@ class cGuild
 		void resignMember( P_CHAR pc );
 		P_GUILD_MEMBER getMember( SERIAL member );
 		int getMemberPosition(SERIAL member);
-		SERIAL cGuild::getMemberByIndex(int index);
+		SERIAL getMemberByIndex(int index);
+		int getRecruitIndex(SERIAL member);
+		SERIAL getRecruitByIndex(int index);
 
 	public:
 

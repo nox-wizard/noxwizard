@@ -4606,6 +4606,40 @@ NATIVE(_guild_memberAtIndex)
 }
 
 /*
+\brief Find the index of the member within the guild
+\author Wintermute
+\since 0.82
+\param 1 the guild
+\param 2 the member
+\return integer, index of member
+*/
+NATIVE(_guild_recruitIndex)
+{
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+
+	return guild->getRecruitIndex(pc->getSerial32());
+}
+
+/*
+\brief Find the member at the given the index within the guild
+\author Wintermute
+\since 0.82
+\param 1 the guild
+\param 2 the index of the member
+\return serial, serial of member, invalid if none
+*/
+NATIVE(_guild_recruitAtIndex)
+{
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
+	return guild->getRecruitByIndex( params[2] );
+}
+/*
 \brief Add a recuit to a guild
 \author Endymion
 \since 0.82
@@ -6116,6 +6150,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_resignMember", _guild_resignMember },
  { "guild_memberAtIndex", _guild_memberAtIndex },
  { "guild_getMemberIdx", _guild_getMemberIdx },
+ { "guild_getRecruitIdx", _guild_recruitIndex },
+ { "guild_getRecrAtIdx", _guild_recruitAtIndex },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
 // Guild member function and properties - Endymion
@@ -6124,7 +6160,6 @@ AMX_NATIVE_INFO nxw_API[] = {
 // Guild member function and properties - Endymion
  { "grecrui_setProperty", _guildRecruit_setProperty },
  { "grecrui_getProperty", _guildRecruit_getProperty },
-
 // Timer function - Endymion
 // Log message functions - Sparhawk
  { "log_message", _log_message },
