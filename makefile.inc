@@ -25,6 +25,7 @@ AMXOBJS =	\
 		amx/amx_dbg.o
 
 SOURCES =	\
+		abstraction/endian.cpp \
 		accounts.cpp \
 		addmenu.cpp \
 		ai.cpp \
@@ -122,9 +123,7 @@ SOURCES =	\
 		utils.cpp \
 		walking.cpp \
 		weight.cpp \
-		worldmain.cpp \
-		cmds.cpp \
-		abstraction/endian.cpp
+		worldmain.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
 SOURCES += $(AMXSRCS)
@@ -213,5 +212,4 @@ HEADERS =	\
 		trigger.h \
 		typedefs.h \
 		version.h \
-		worldmain.h \
-		cmds.h \
+		worldmain.h
