@@ -27,6 +27,7 @@ AMXOBJS =	\
 SOURCES =	\
 		accounts.cpp \
 		addmenu.cpp \
+		ai.cpp \
 		archive.cpp \
 		area.cpp \
 		basics.cpp \
@@ -146,6 +147,7 @@ HEADERS =	\
 		amx/amxwraps.h \
 		amx/amx_api.h \
 		amx/amx_comp.h \
+		ai.h \
 		archive.h \
 		area.h \
 		basetype.h \
