@@ -246,9 +246,6 @@ extern int g_nLineBuffer;
 
 extern int g_nUseMTSaves;
 
-extern int g_nMapWidth;//=758;
-extern int g_nMapHeight;//=512;
-
 extern int g_nDeamonMode;
 
 extern int g_nWeatherChangeRate;//=512;

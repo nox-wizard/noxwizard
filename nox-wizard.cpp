@@ -96,10 +96,6 @@ extern "C" int g_nTraceMode;
 
 RemoteAdmin TelnetInterface;	//!< remote administration
 
-UI32 MapTileWidth  = 768;
-UI32 MapTileHeight = 512;
-
-
 static void item_char_test()
 {
 	LogMessage("Starting item consistancy check");
@@ -979,9 +975,6 @@ void angelMode();
 	constart();
 	ConOut("[ OK ]\n");
 
-	MapTileWidth = ServerScp::g_nMapWidth;
-	MapTileHeight = ServerScp::g_nMapHeight;
-
 	openings = 0;
 	scpfilename[0] = 0;
 
@@ -1205,10 +1198,10 @@ void angelMode();
 
 	CIAO_IF_ERROR;
 
-	ConOut("\nMap size : %dx%d", MapTileWidth, MapTileHeight);
+	ConOut("\nMap size : %dx%d", map_width, map_height);
 
-	if ((MapTileWidth==768)&&(MapTileHeight==512)) ConOut(" [standard Britannia/Sosaria map size]\n");
-	else if ((MapTileWidth==288)&&(MapTileHeight==200)) ConOut(" [standard Ilshenar map size]\n");
+	if ((map_width==768)&&(map_height==512)) ConOut(" [standard Britannia/Sosaria map size]\n");
+	else if ((map_width==288)&&(map_height==200)) ConOut(" [standard Ilshenar map size]\n");
 	else ConOut(" [custom map size]\n");
 
 	if (ServerScp::g_nAutoDetectIP==1)  {

@@ -116,8 +116,6 @@ int g_nChopFameLoss=0;
 int g_nBountyKarmaGain=+100;
 int g_nBountyFameGain=50;
 int g_nEnableKarmaLock=1;
-int g_nMapWidth=768;
-int g_nMapHeight=512;
 int g_nMapCache = 0;
 int g_nVerboseCrontab = 0;
 int g_nPopUpHelp = 1;
@@ -752,8 +750,8 @@ static int loadnxwoptions (char *script1, char *script2)
 #endif*/
 	else if(!(strcmp(script1,"CHECKBYSMALL"))) ServerScp::g_nCheckBySmall|=(str2num(script2)!=0); // |= becuase can be also activated by arg -check
 	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
-	else if(!(strcmp(script1,"MAPHEIGHT"))) ServerScp::g_nMapHeight=str2num(script2);
-	else if(!(strcmp(script1,"MAPWIDTH"))) ServerScp::g_nMapWidth=str2num(script2);
+	else if(!(strcmp(script1,"MAPHEIGHT"))) map_height=str2num(script2);
+	else if(!(strcmp(script1,"MAPWIDTH"))) map_width=str2num(script2);
 	else if(!(strcmp(script1,"EXCHANLDING"))) ServerScp::g_nExceptionHandling=str2num(script2);
 	else if(!(strcmp(script1,"CPUCOOLING"))) ServerScp::g_nCPUCooling=str2num(script2);
 	else if(!(strcmp(script1,"AUTODETECTMULS"))) ServerScp::g_nAutoDetectMuls=str2num(script2);
@@ -1664,8 +1662,8 @@ void saveserverscript()
 	fprintf(file, "{\n");
 	fprintf(file, "// These are width and height of the map. Set to 768x512 for Britannian Maps, or \n");
 	fprintf(file, "// to 288x200 for Ilshenar maps. Remember to use different worldfiles! \n");
-	fprintf(file, "MAPWIDTH %i\n", ServerScp::g_nMapWidth); // lb
-	fprintf(file, "MAPHEIGHT %i\n", ServerScp::g_nMapHeight); // lb
+	fprintf(file, "MAPWIDTH %i\n", map_width); // lb
+	fprintf(file, "MAPHEIGHT %i\n", map_height); // lb
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION WALKING\n");

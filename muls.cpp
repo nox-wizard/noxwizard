@@ -18,8 +18,8 @@ std::string statics_path;
 bool statics_cache = false;
 
 std::string map_path;
-UI16 map_width;
-UI16 map_height;
+UI16 map_width = DEFAULTWIDTHMAP;
+UI16 map_height = DEFAULTHEIGHTMAP;
 
 std::string tiledata_path;
 bool tiledata_cache = false;
