@@ -6947,7 +6947,7 @@ NATIVE ( _world_save )
 \return true if the operation succedes, false elsewhere
 */
 
-NATIVE ( _set_msgboard_posttype)
+NATIVE ( _chr_setPostType)
 {
 	
 	if (ISVALIDPC( pointers::findCharBySerial(params[1])))
@@ -7408,7 +7408,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  
 // misc APIs need to be renamed
  { "world_save", _world_save },
- { "set_msgboard_posttype", _set_msgboard_posttype },
+ { "chr_setPostTypee", _chr_setPostType },
 
 
 // Terminator :
