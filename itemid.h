@@ -24,7 +24,7 @@ namespace itemById {
 };
 
 typedef enum {
-	WEAPON_INVALID=-1,
+	WEAPON_INVALID=INVALID,
 	SWORD1H=0,
 	SWORD2H,
 	AXE1H,
@@ -43,5 +43,7 @@ typedef enum {
 typedef std::map<SI32,WEAPONTYPE> WEAPONINFOMAP;
 
 void loadweaponsinfo();
+
+inline bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2=WEAPON_INVALID, WEAPONTYPE type3=WEAPON_INVALID );
 
 #endif
