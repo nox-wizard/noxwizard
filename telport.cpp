@@ -350,7 +350,7 @@ void objTeleporters(P_CHAR pc)
 	
 
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( charpos, VISRANGE, false );
+	si.fillItemsAtXY( charpos );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pmi=si.getItem();
 		if(!ISVALIDPI(pmi))
@@ -426,7 +426,7 @@ void teleporters(P_CHAR pc)
 	{
 		if( charpos.y == iter_tele_locations->second.origem.y )
 		{
-			if( iter_tele_locations->second.origem.z == 127 || charpos.z == iter_tele_locations->second.origem.z )
+			if( iter_tele_locations->second.origem.z == 127 || abs( charpos.z - iter_tele_locations->second.origem.z ) < 10 )
 			{
 				if ( !pc->npc )
 				{
@@ -453,6 +453,7 @@ void teleporters(P_CHAR pc)
 						iter_tele_locations->second.destination.y,
 						iter_tele_locations->second.destination.z );
 				pc->teleport();
+				ConOut(" TAKEN");
 				return;
 			}
 		}
