@@ -2718,17 +2718,17 @@ void itemeffectUO3D(P_ITEM pi, ParticleFx *sta)
 	particleSystem[10]=sta->effect[4]; // tileid1
 	particleSystem[11]=sta->effect[5]; // tileid2
 
-	particleSystem[12]= pi->getPosition("x") >> 8;
-	particleSystem[13]= pi->getPosition("x") % 256;
-	particleSystem[14]= pi->getPosition("y") >> 8;
-	particleSystem[15]= pi->getPosition("y") % 256;
-	particleSystem[16]= pi->getPosition("z");
+	particleSystem[12]= pi->getPosition().x >> 8;
+	particleSystem[13]= pi->getPosition().x % 256;
+	particleSystem[14]= pi->getPosition().y >> 8;
+	particleSystem[15]= pi->getPosition().y % 256;
+	particleSystem[16]= pi->getPosition().z;
 
-	particleSystem[17]= pi->getPosition("x") >> 8;
-	particleSystem[18]= pi->getPosition("x") % 256;
-	particleSystem[19]= pi->getPosition("y") >> 8;
-	particleSystem[20]= pi->getPosition("y") % 256;
-	particleSystem[21]= pi->getPosition("z") ;
+	particleSystem[17]= pi->getPosition().x >> 8;
+	particleSystem[18]= pi->getPosition().x % 256;
+	particleSystem[19]= pi->getPosition().y >> 8;
+	particleSystem[20]= pi->getPosition().y % 256;
+	particleSystem[21]= pi->getPosition().z;
 
 	particleSystem[22]= sta->effect[6]; // unkown1
 	particleSystem[23]= sta->effect[7]; // unkown2

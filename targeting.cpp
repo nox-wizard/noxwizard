@@ -517,16 +517,16 @@ public:
     void CharSpecific()
     {
 		VALIDATEPC( pc ); //Luxor
-		pc->setPosition("z", addx[s]);
-        pc->setPosition("dz", addx[s]);
+		pc->setPosition('z', addx[s]);
+        pc->setPosition('d', addx[s]);
 		P_CHAR pc_s=MAKE_CHAR_REF(inx);
 		VALIDATEPC( pc_s ) //Luxor
         pc_s->teleport();
     }
     void ItemSpecific()
     {
-		VALIDATEPIR( pi ) //Luxor
-        pi->setPosition("z", addx[s]);
+		VALIDATEPI( pi ) //Luxor
+        pi->setPosition('z', addx[s]);
 		P_ITEM pi_c= MAKE_ITEM_REF(inx);
 		VALIDATEPI( pi_c ) //Luxor
         pi_c->Refresh();
@@ -2702,48 +2702,38 @@ void targets::SetDirTarget(NXWSOCKET s)
 
 void targets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th function above? Wonder why. - Gandalf
 {
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
-    if (i!=-1)
+    P_ITEM pi=pointers::findItemBySerPtr( buffer[s]+7 );
+    if(ISVALIDPI(pi))
     {
-        //item::MoveTo(i,addx[s],pi->y,pi->z);
-		pi->MoveTo( addx[s], pi->getPosition("y"), pi->getPosition("z"));
+		pi->MoveTo( addx[s], pi->getPosition().y, pi->getPosition().z);
         pi->Refresh();
+		return;
     }
 
-    i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
-	Location pcpos= pc->getPosition();
-
-    if (i!=-1)
+    P_CHAR pc = pointers::findCharBySerPtr( buffer[s]+7 );
+    if(ISVALIDPC(pc))
     {
-        //Char_MoveTo(i, addx[s], pcpos.y, pcpos.z);
-		pc->MoveTo( addx[s], pcpos.y, pcpos.z );
+		pc->MoveTo( addx[s], pc->getPosition().y, pc->getPosition().z );
         pc->teleport();
+		return;
     }
 }
 
 void targets::NewYTarget(NXWSOCKET s)
 {
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
-    if (i!=-1)
+
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    if(ISVALIDPI(pi))
     {
-        //item::MoveTo(i,pi->x,addx[s],pi->z);
-		pi->MoveTo( pi->getPosition("x"), addx[s], pi->getPosition("z"));
+		pi->MoveTo( pi->getPosition().x, addx[s], pi->getPosition().z);
         pi->Refresh();
+		return;
     }
 
-    i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
-	Location pcpos= pc->getPosition();
-
-    if (i!=-1)
+    P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
+    if(ISVALIDPC(pc))
     {
-        //Char_MoveTo(i, pcpos.x, addx[s], pi->z);
-		pc->MoveTo( pcpos.x, addx[s], pcpos.z );
+		pc->MoveTo( pc->getPosition().x, addx[s], pc->getPosition().z );
         pc->teleport();
     }
 }
@@ -4107,9 +4097,9 @@ void TargetLocation::init(P_ITEM pi)
 {
 	m_pc = NULL;
 	if (pi->isInWorld()) {
-		m_x = pi->getPosition("x");
-		m_y = pi->getPosition("y");
-		m_z = pi->getPosition("z");
+		m_x = pi->getPosition().x;
+		m_y = pi->getPosition().y;
+		m_z = pi->getPosition().z;
 	} else {
 		m_x = m_y = m_z = 0;
 	}
@@ -4170,9 +4160,9 @@ void TargetLocation::extendItemTarget()
 	if (m_pi==NULL)
 		return;
 	if (m_pi->isInWorld()) {
-		m_x = m_pi->getPosition("x");
-		m_y = m_pi->getPosition("y");
-		m_z = m_pi->getPosition("z");
+		m_x = m_pi->getPosition().x;
+		m_y = m_pi->getPosition().y;
+		m_z = m_pi->getPosition().z;
 	}
 	else {
 		int it, ch;
