@@ -2046,7 +2046,7 @@ void Race::showRaceDescription( const NXWSOCKET socket, const UI32 raceId, BYTE 
 	menuLines0[linecount++] = "text 322   8   95  3";
 	menuLines0[linecount++] = "text 349   8  152  4";
 	menuLines0[linecount++] = "text 360   8   95  5";
-	sprintf( buffer, "text  %i 300  152  6", ( ( 640 - ( raceMap[raceId]->name.size() * 8 ) ) / 2 ) );	// Footer, center race name in background gump
+	sprintf( buffer, "text  %li 300  152  6", ( ( 640 - ( raceMap[raceId]->name.size() * 8 ) ) / 2 ) );	// Footer, center race name in background gump
 														// needs validation check!!
 	if ( withWebInterface )
 	{
