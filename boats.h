@@ -75,6 +75,7 @@ class cBoat
 		void TurnStuff_c(P_ITEM, P_CHAR, int, int);
 		void iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced = true);
 
+		void TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold );
 	public:
 
 		cBoat();
