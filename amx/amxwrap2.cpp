@@ -430,7 +430,7 @@ static char setCharCharProperty( P_CHAR pc, int property, int subproperty, int s
 		case NXW_CP_C_SKIN : 							//dec value: 126;
 			{
 			UI16 color = pc->getSkinColor();
-			if ( property > 1 )
+			if ( subproperty > 1 )
 				pc->setSkinColor((color & 0x00FF) | (value << 8));
 			else
 				pc->setSkinColor((color & 0xFF00) | (value %256));
