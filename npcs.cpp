@@ -345,14 +345,8 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 				if(j==i)
 				{
 					int storeval=str2num(script1);	//script1 = ITEM#
-					pi=item::CreateScriptItem(INVALID, storeval, 0);
+					pi=item::CreateFromScript( storeval, pack );
 
-					if(ISVALIDPI(pi) && ISVALIDPI(pack))
-					{
-						pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
-						//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(pack),1);
-						pi->setContSerial(pack->getSerial32());
-					}
 					break;
 				}
 				else j++;
@@ -874,7 +868,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					if (ISVALIDPI(mypack))
 					{
 						storeval=str2num(script2);
-						pi_n=item::CreateScriptItem(INVALID, storeval, mypack);
+						pi_n=item::CreateFromScript( storeval, mypack);
 						strcpy(script1, "DUMMY"); // Prevents unexpected matchups...
 					}
 					else
@@ -951,12 +945,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					if ( sellContainer != INVALID )
 					{
 						storeval=str2num(script2);
-						pi_n=item::CreateScriptItem(INVALID, storeval, 0);
+						pi_n=item::CreateFromScript( storeval, MAKE_ITEM_REF(sellContainer));
 						if (ISVALIDPI(pi_n))
 						{
-							pi_n->setCont(MAKE_ITEM_REF(sellContainer));
 							pi_n->value=pi_n->value/2;
-							pi_n->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 							if (pi_n->getSecondaryNameC() && (strncmp(pi_n->getSecondaryNameC(),"#", 1)))
 								pi_n->setCurrentName(pi_n->getSecondaryNameC()); // Item identified! -- by Magius(CHE) 				}
 						}
@@ -978,12 +970,9 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					if ( buyNoRestockContainer != INVALID )
 					{
 						storeval=str2num(script2);
-						pi_n=item::CreateScriptItem(INVALID, storeval, 0);
+						pi_n=item::CreateFromScript( storeval, MAKE_ITEM_REF(buyNoRestockContainer));
 						if (ISVALIDPI(pi_n))
 						{
-							//setserial(DEREF_P_ITEM(pi_n), buyNoRestockContainer, 1);
-							pi_n->setCont(MAKE_ITEM_REF(buyNoRestockContainer));
-							pi_n->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 							if (pi_n->getSecondaryNameC() && (strcmp(pi_n->getSecondaryNameC(),"#")))
 								pi_n->setCurrentName(pi_n->getSecondaryNameC()); // Item identified! -- by Magius(CHE) 				}
 						}

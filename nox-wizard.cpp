@@ -465,14 +465,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	// Give the character some gold
 	if ( goldamount > 0 )
 	{
-		P_ITEM packitm=pointers::findItemBySerial(pc->packitemserial);
-		if(ISVALIDPI(packitm)) {
-			pi = item::CreateScriptItem(s, 2000, 0);	// gold coin
-			if(ISVALIDPI(pi)) {
-				pi->setContSerial(packitm->getSerial32());
-				pi->setAmount(goldamount);
-			}
-		}
+		pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
 	}
 
 
