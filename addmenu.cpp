@@ -412,10 +412,13 @@ void cAddMenu::loadFromScript (int section, P_CHAR pc)
 void cAddMenu::buttonSelected(NXWSOCKET  s, UI16 btn, int seed )
 {
 	if (btn < 10) return;
+	/*
+	Sparhawk:	I commented this out as it blocked menu use because seed changes every time
 	if (seed!=m_nSeed) {
 		sysmessage(s, COLOR_LIGHTBLUE, TRANSLATE("Sorry, this menu was rather old :("));
 		return;
 	}
+	*/
 	//ConOut("MENUS : %s %s\n", m_vCommands1[btn-10].c_str(), m_vCommands2[btn-10].c_str());
 	scriptcommand (s, const_cast<char*>(m_vCommands1[btn-10].c_str()),
 	const_cast<char*>(m_vCommands2[btn-10].c_str())); // Execute command from script
