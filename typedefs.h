@@ -21,14 +21,15 @@ typedef double				R64;	//< 64 bits floating point
 typedef float				R32;	//< 32 bits floating point
 
 #if defined __GNUC__
+	#include <bits/types.h>
 	typedef uint8_t			UI08;
 	typedef uint16_t		UI16;
 	typedef uint32_t		UI32;
 	typedef uint64_t		UI64;
-	typedef int8_t			UI08;
-	typedef int16_t			UI16;
-	typedef int32_t			UI32;
-	typedef int64_t			UI64;
+	typedef int8_t			SI08;
+	typedef int16_t			SI16;
+	typedef int32_t			SI32;
+	typedef int64_t			SI64;
 #elif defined __BORLANDC__
 	typedef unsigned __int8		UI08;
 	typedef unsigned __int16	UI16;
