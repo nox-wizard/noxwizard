@@ -2162,12 +2162,12 @@ NATIVE(_getSocketCount)
 \brief Activate a temp effect
 \author Xanathar
 \since 0.53
-\param 1: type
-\param 2: source character
-\param 3: destination character
-\param 4: more
-\param 5: duration
-\param 6: callback
+\param 1 type
+\param 2 source character
+\param 3 destination character
+\param 4 more
+\param 5 duration
+\param 6 callback
 \return 0
 \note if type is 121 a custom tempeffect are created ana callback must be the index
 	to a temp effect callback function. Else a native tempeffect is called
@@ -2183,6 +2183,46 @@ NATIVE(_tempfx_activate)
 	//</Luxor>
 	return 0;
 }
+
+/*
+\brief Delete a temp effect
+\author Endymion
+\since 0.82
+\param 1 character
+\param 2 type
+\param 3 execute expire code
+\param 4 function callback index if type is a custom tempeffect
+\return 0, INVALID if error
+*/
+NATIVE(_tempfx_delete)
+{
+
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, INVALID )
+
+	pc->delTempfx( params[2], params[3], params[4] );
+	return 0;
+}
+
+/*
+\brief Check if a tempfx is active
+\author Endymion
+\since 0.82
+\param 1 character
+\param 2 type
+\param 3 function callback index if type is a custom tempeffect
+\return 1 if exist, 0 if not, INVALID if error
+*/
+NATIVE(_tempfx_isActive)
+{
+
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, INVALID )
+
+	return ( pc->getTempfx( params[2], params[3] ) != NULL )? 1 : 0;
+
+}
+
 /*
 \brief Get an event handler name from a given character
 \author Sparhawk
@@ -5538,6 +5578,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "rcve_skillsRequest", _rcve_skillsRequest },
 // Temp Effects functions :
  { "tempfx_activate", _tempfx_activate },
+ { "tempfx_delete", _tempfx_delete },
+ { "tempfx_isActive", _tempfx_isActive },
 // Old Menu functions :
  { "mnu_prepare", _menu_Prepare },
  { "mnu_setStyle", _menu_SetStyle },
