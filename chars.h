@@ -27,6 +27,9 @@
 #include "logsystem.h"
 #include "globals.h"
 
+#include "basics.h"
+#include "items.h"
+
 #ifndef TIMEOUT
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
 #endif

@@ -422,7 +422,7 @@ public:
 	LOGICAL		doDecay();
 
 	inline const LOGICAL canDecay() const
-	{ return return priv&0x01; }
+	{ return priv&0x01; }
 
 	void		setDecay( const LOGICAL on = true );
 

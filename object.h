@@ -21,7 +21,7 @@
 #include "typedefs.h"
 #include "amx/amxcback.h"
 #include "tmpeff.h"
-
+#include "basics.h"
 
 #define ISVALIDPO(po) ( ( po!=NULL && ( sizeof(*po) == sizeof(cObject) || sizeof(*po) == sizeof(cChar) || sizeof(*po) == sizeof(cItem) ) ) ? (po->getSerial32() >= 0) : false )
 #define VALIDATEPO(po) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
@@ -55,22 +55,22 @@ protected:
 \name Operators
 */
 public:
-	inline bool		operator> (const cObject&) const
+	inline bool		operator> (const cObject& obj) const
 	{ return(getSerial32() >  obj.getSerial32()); }
 
-	inline bool		operator< (const cObject&) const
+	inline bool		operator< (const cObject& obj) const
 	{ return(getSerial32() <  obj.getSerial32()); }
 
-	inline bool		operator>=(const cObject&) const
+	inline bool		operator>=(const cObject& obj) const
 	{ return(getSerial32() >= obj.getSerial32()); }
 
-	inline bool		operator<=(const cObject&) const
+	inline bool		operator<=(const cObject& obj) const
 	{ return(getSerial32() <= obj.getSerial32()); }
 
-	inline bool		operator==(const cObject&) const
+	inline bool		operator==(const cObject& obj) const
 	{ return(getSerial32() == obj.getSerial32()); }
 
-	inline bool		operator!=(const cObject&) const
+	inline bool		operator!=(const cObject& obj) const
 	{ return(getSerial32() != obj.getSerial32()); }
 //@}
 
@@ -127,7 +127,7 @@ public:
 	{ return OwnerSerial.serial32; }
 
 	inline void            	setOwnerSerial32Only(SI32 newserial)
-	{ OwnerSerial.serial32= ownser; }
+	{ OwnerSerial.serial32 = newserial; }
 
 	void            	setOwnerSerial32(SI32 newserial, bool force=false );
 	const void		setOwnerSerialByte(UI32 nByte, BYTE value);
