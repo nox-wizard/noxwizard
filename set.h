@@ -106,6 +106,7 @@ public:
 	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, LOGICAL bExcludeNotMovableItems = true);
 	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, LOGICAL bExcludeNotMovableItems = true);
 	void fillGuilds( SERIAL guild, int options=0 );
+	void fillHousesOwned( SERIAL chr);
 
 };
 
@@ -169,6 +170,7 @@ namespace amxSet {
 	void addHouseCoowners( SERIAL iSet, SERIAL house );
 	void addHouseFriends( SERIAL iSet, SERIAL house  );
 	void addHouseBans( SERIAL iSet, SERIAL house  );
+	void addOwnHouses( SERIAL iSet, SERIAL chr  );
 
 
 }

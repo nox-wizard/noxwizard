@@ -1388,6 +1388,20 @@ std::map< SERIAL, P_HOUSE >::iterator cHouses::findHouses(SERIAL owner)
 	return ownedHouses.begin();
 }
 
+std::map< SERIAL, P_HOUSE > cHouses::findOwnedHouses(SERIAL owner)
+{
+	std::map< SERIAL, P_HOUSE > ownedHouses;
+	std::map< SERIAL, P_HOUSE >::iterator allHouses (houses.begin());
+	for ( ;allHouses!=houses.end();allHouses++)
+	{
+		P_HOUSE house=allHouses->second;
+		if ( house->getOwner() == owner )
+			ownedHouses.insert(make_pair(house->getSerial(),house));
+	}
+	
+	return ownedHouses;
+}
+
 void cHouses::Delete(SERIAL houseserial)
 {
 	std::map< SERIAL, P_HOUSE >::iterator removeHouse(houses.find(houseserial));

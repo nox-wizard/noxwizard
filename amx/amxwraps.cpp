@@ -3179,6 +3179,30 @@ NATIVE( _set_addHouseBans )
 	return 0;
 }
 
+/*
+\brief Add to given set all house bans
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\return 0
+*/
+NATIVE( _set_getOwnedHouses )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	if ( ! isCharSerial(params[2]))
+	{
+		LogError("Illegal char serial used in set_getOwnedHouses" );
+		return 1;
+	}
+	amxSet::addOwnHouses( params[1], params[2] );
+	return 0;
+}
+
 /*!
 \brief Add to given set all race
 \author Endymion
@@ -7413,6 +7437,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_getCoOwners", _set_addHouseCoowners },
  { "set_getFriends", _set_addHouseFriends },
  { "set_getBanned", _set_addHouseBans },
+ { "set_getOwnedHouses", _set_getOwnedHouses },
  // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk

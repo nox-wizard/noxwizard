@@ -363,6 +363,20 @@ void addHouseBans( SERIAL iSet, SERIAL house  )
 	}
 }
 
+void addOwnHouses( SERIAL iSet, SERIAL chr  )
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
+		si->fillHousesOwned( chr );
+		si->rewind();
+	}
+}
+
+
+
+
 } //namespace
 
 
@@ -1203,7 +1217,27 @@ void NxwItemWrapper::fillGuilds( SERIAL guild, int options )
 
 }
 
+/*!
+\brief Fills a set with a list of all houses a given char owns
+\author Wintermute
+\param guild INVALID for all or specific for use guild options
+\param options 
+\warning this function ADD new char to current list
+*/
+void NxwItemWrapper::fillHousesOwned( SERIAL chr)
+{
+	std::map< SERIAL, P_HOUSE > houses=cHouses::findOwnedHouses(chr);
+	std::map< SERIAL, P_HOUSE >::iterator iter;
 
+	for ( iter=houses.begin();iter != houses.end(); iter++)
+	{
+		P_HOUSE pHouse = iter->second;
+		if( pHouse != NULL )
+		{
+			insertSerial( pHouse->getSerial() );
+		}
+	}
+}
 
 /*!
 \brief Constructor
