@@ -7200,40 +7200,8 @@ NATIVE ( _world_save )
 
 }
 
-
 /*!
-\brief reload all accounts
-\author stonedz
-\since 0.82
-\fn reload_accounts
-\
-*/
-
-NATIVE (_reload_accounts )
-{
-
-	InfoOut("Reloading accounts file...");
-	Accounts->LoadAccounts();
-	cAllObjectsIter objs;
-	for( objs.rewind(); !objs.IsEmpty(); objs++ )
-	{
-		if( isCharSerial( objs.getSerial() ) )
-		{
-			P_CHAR pc = (P_CHAR) objs.getObject();
-			if ( ! pc->npc ) // seems to be a player
-			{
-				Accounts->AddCharToAccount(pc->account, pc);
-			}
-		}
-	}
-	ConOut("[DONE]\n");
-	
-	return 0;
-}
-
-
-/*!
-\brief
+\brief set the post type for a char
 \author stonedz
 \since 0.82
 \fn chr_setPostType
@@ -7256,11 +7224,59 @@ NATIVE ( _chr_setPostType )
 }
 
 
+
 /*!
-\brief
+\brief reload all accounts
+\author stonedz
+\since 0.82
+\fn reload_accounts
+\return true if succeds.
+\
+*/
+
+NATIVE (_reload_accounts )
+{
+
+	InfoOut("Reloading accounts file...");
+	Accounts->LoadAccounts();
+	cAllObjectsIter objs;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ )
+	{
+		if( isCharSerial( objs.getSerial() ) )
+		{
+			P_CHAR pc = (P_CHAR) objs.getObject();
+			if ( ! pc->npc ) // seems to be a player
+			{
+				Accounts->AddCharToAccount(pc->account, pc);
+			}
+		}
+	}
+	ConOut("[DONE]\n");
+	
+	return true;
+}
+
+/*!
+\brief reloads scripts
 \author stonedz
 \since 0.82
 \fn 
+\return
+*/
+
+NATIVE ( _reload_scripts )
+{
+	InfoOut("Reloading XSS scripts...\n");
+	deleteNewScripts();
+	newScriptsInit();
+	ConOut("[DONE]\n");
+}
+
+/*!
+\brief set light level in world
+\author stonedz
+\since 0.82
+\fn setLightLevel
 \param 1 light level: 0=brightest, 15=darkest, -1=enable day/night cycles.
 \return true if the operation succedes, false elsewhere
 */
@@ -7800,6 +7816,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_setPostType", _chr_setPostType },
  { "setLightLevel", _setLightLevel },
  { "reload_accounts", _reload_accounts },
+ { "reload_scripts", _reload_scripts },
  { "recompileSmall", _recompileSmall },
 
 // speech APIs
