@@ -1,3 +1,18 @@
+2004-11-23	fax
+	* noxwizard.kdevses 1.1:
+	* noxwizard.kdevelop.pcs 1.1:
+	* noxwizard.kdevelop.filelist 1.1:
+	* noxwizard.kdevelop:
+		added project files
+
+	*race.h:
+	*race.cpp:
+	*archive.h:
+	*archive.cpp:
+	*ai.cpp:
+	*accounts.cpp:
+		added documentation and comments
+
 2004-09-28	ai_wintermute
 	* spawn.cpp 1.34:
 		fix for static spawns that doubled the spawn every server 
@@ -7247,7 +7262,7 @@
 		added features packet
 
 	* worldmain.cpp 1.7:
-		added save fìor unicode strig.. not work right read
+		added save fï¿½r unicode strig.. not work right read
 
 	* db/db.h 1.1:
 		db module creation
