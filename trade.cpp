@@ -149,7 +149,7 @@ void buyaction(int s)
 				{
 					if ((iter->item)->pileable)
 					{
-						P_ITEM pi = item::CreateFromScript(  iter->item->getScriptID(), pack, iter->amount );
+						item::CreateFromScript(  iter->item->getScriptID(), pack, iter->amount );
 					}
 					else
 					{
@@ -167,7 +167,7 @@ void buyaction(int s)
 							if ((iter->item)->pileable)
 							{
 
-								P_ITEM pi = item::CreateFromScript( iter->item->getScriptID(), pack, iter->amount );
+								item::CreateFromScript( iter->item->getScriptID(), pack, iter->amount );
 
 							}
 							else
