@@ -190,7 +190,7 @@ public:
 /*!
 \name Appearence
 */
-protected:
+public:
 	string			secondary_name;
 /*!<
 Real name of the char, 30 chars max + '\\0'<br>

@@ -1630,14 +1630,15 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			fprintf(cWsc, "{\n");
 			fprintf(cWsc, "SERIAL %i\n", pc->getSerial32());
 			//Luxor: if the char is morphed, we have to save the original values.
+			printf("Test: %i %i\n", pc->morphed,dummy.morphed);
 			if(pc->morphed!=dummy.morphed)
 			{//save original name
 #ifndef DESTROY_REFERENCES
 				if ( pc->getBackupStats() != NULL )
-					fprintf(cWsc, "NAME %s\n", pc->getBackupStats()->getName());
+					fprintf(cWsc, "NAME %s\n", pc->getBackupStats()->getName().c_str());
 				else
 				{
-					fprintf(cWsc, "NAME %s\n", pc->getRealNameC());
+					fprintf(cWsc, "NAME %s\n", pc->secondary_name.c_str());
 				}
 #else
 				if (pc->npc)
@@ -1648,7 +1649,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			} else
 			{
 #ifndef DESTROY_REFERENCES
-				fprintf(cWsc, "NAME %s\n", pc->getCurrentNameC());
+				fprintf(cWsc, "NAME %s\n", pc->current_name.c_str());
 #else
 				if (pc->npc)
 					fprintf(cWsc, "NAME %s\n", pc->name);
