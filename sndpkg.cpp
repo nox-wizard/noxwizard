@@ -699,7 +699,6 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		Location pos = pi->getPosition();
 
 		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
-/*
 		//if player is a gm, this item
 		//is shown like a candle (so that he can move it),
 		//....if not, the item is a normal
@@ -711,7 +710,6 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		{//else like a normal item
 			ShortToCharPtr(pi->animid(), itmput +7); // elcabesa animation tryyy
 		}
-*/
 		ShortToCharPtr(pi->amount, itmput +9);
 		ShortToCharPtr(pos.x, itmput +11);
 		ShortToCharPtr(pos.y | 0xC000, itmput +13);
