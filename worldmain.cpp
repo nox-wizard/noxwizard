@@ -1095,7 +1095,7 @@ void loaditem()
 			else if (!(strcmp(script1, "SECUREIT")))
 				pi->secureIt=str2num(script2);
 			else if (!(strcmp(script1, "SOUNDFX")))
-				pi->itemSoundEffect=(UI16) str2num(script2);
+				pi->itemSoundEffect=(SI32) str2num(script2);
 			else if (!(strcmp(script1, "ST")))
 				pi->st=str2num(script2);
 			else if (!(strcmp(script1, "ST2")))

@@ -405,7 +405,7 @@ public:
 //	SI08		glow_effect;
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
-	UI16		itemSoundEffect;
+	SI32		itemSoundEffect;
 	void		explode(NXWSOCKET  s);
 
 
@@ -417,7 +417,7 @@ private:
 	TIMERVAL	decaytime;
 
 public:
-	inline const UI16 getSound() const
+	inline const SI32 getSound() const
 	{ return itemSoundEffect; }
 	inline		void setSound(UI16 newSound) 
 	{ itemSoundEffect = newSound; }

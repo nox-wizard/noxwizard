@@ -64,7 +64,7 @@ int response(NXWSOCKET  s)
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	UI16 x=-1;
+	UI16 x=0;
 	UI16 y=0;
 
 	char *comm;
