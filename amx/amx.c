@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.8 2003/07/13 19:24:54 dgp85 Exp $
+ *  Version: $Id: amx.c,v 1.9 2003/07/15 19:30:18 dgp85 Exp $
  */
 
 //XAN
@@ -228,6 +228,7 @@ void swap32(uint32_t *v)
   s[2]=t;
 }
 
+#ifdef __alpha__
 void swap64(uint64_t *v)
 {
   unsigned char *s = (unsigned char *)v;
@@ -251,6 +252,7 @@ void swap64(uint64_t *v)
   s[3]=s[4];
   s[4]=t;
 }
+#endif
 
 uint16_t *amx_Align16(uint16_t *v)
 {
@@ -270,6 +272,7 @@ uint32_t *amx_Align32(uint32_t *v)
   return v;
 }
 
+#ifdef __alpha__
 uint64_t *amx_Align64(uint64_t *v)
 {
   assert(sizeof(cell)==8);
@@ -278,6 +281,7 @@ uint64_t *amx_Align64(uint64_t *v)
     swap64(v);
   return v;
 }
+#endif
 
 #if defined BIT16
   #define swapcell	swap16

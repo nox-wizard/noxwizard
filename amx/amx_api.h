@@ -82,7 +82,9 @@ int printstring(AMX *amx,cell *cstr,cell *params,int num);
 extern int amx_getLittleEndian();
 extern void swap16(uint16_t *v);
 extern void swap32(uint32_t *v);
+#ifdef __alpha__
 extern void swap64(uint64_t *v);
+#endif
 
 }
 
