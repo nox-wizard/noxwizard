@@ -283,7 +283,7 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 
 	int i=0;
 	for( ; point!=end; point++, ++i )
-		b[i]=ntohs(*point);
+		b[i]=htons(*point);
 	
 	if( alsoTermination )
 		b[i]=0x0000;
