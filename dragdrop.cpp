@@ -426,11 +426,32 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+1);
 	VALIDATEPI(pi);
 
+	bool resetDragging = false;
+
+	if (pi->id1 >= 0x40)  // LB, client crashfix if multi-objects are moved to PD
+		resetDragging = true;
+
 	tile_st tile;
 	int serial/*, letsbounce=0*/; // AntiChrist (5) - new ITEMHAND system
 
-	/*if ( (buffer[s][5] == 0xd || buffer[s][5] == 0x5) && (ISVALIDPI(chars[cc].GetItemOnLayer(0xd)) || ISVALIDPI(chars[cc].GetItemOnLayer(0x5))) )	//Luxor
+	Map->SeekTile(pi->id(), &tile);
+
+	if( ( clientDimension[s]==3 ) &&  (tile.layer==0) )
 	{
+		ps->sysmsg(TRANSLATE("You can't wear that"));
+		resetDragging = true;
+	}
+	else {
+		P_ITEM outmost = pi->getOutMostCont();
+		P_CHAR vendor = pointers::findCharBySerial( outmost->getContSerial() );
+		if( ISVALIDPC( vendor ) && ( vendor->getOwnerSerial32() != pc->getSerial32() ) ) 
+		{
+			resetDragging = true;
+		}
+
+	}
+
+	if( resetDragging ) {
 		Sndbounce5(s);
 		if (ps->isDragging())
 		{
@@ -439,81 +460,42 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			UpdateStatusWindow(s,pi);
 		}
 		return;
-	}*/
-
-
-	Map->SeekTile(pi->id(), &tile);
-
-	if (clientDimension[s]==3)
-	{
-		//Map->SeekTile(pi->id(), &tile);
-		// sprintf(temp, "Tiledata: name: %s flag1: %i flag2: %i flag3: %i flag4: %i layer: %i\n", tile.name, tile.flag1, tile.flag2, tile.flag3, tile.flag4, tile.layer);
-		// ConOut(temp);
-
-		if (tile.layer==0)
-		{
-			ps->sysmsg(TRANSLATE("You can't wear that"));
-			Sndbounce5(s);
-			if (ps->isDragging())
-			{
-				ps->resetDragging();
-				item_bounce4(s,pi);
-				UpdateStatusWindow(s,pi);
-			}
-			return;
-		}
 	}
-
-	if (pi->id1 >= 0x40) { return; } // LB, client crashfix if multi-objects are moved to PD
 
 	if ( pck->getSerial32() == pc->getSerial32() || pc->IsGM() )
 	{
-		if ( pck->getSerial32() == pc->getSerial32() && pi->st > pck->getStrength() && !pi->isNewbie() ) // now you can equip anything if it's newbie
+		
+		if ( !pc->IsGM() && pi->st > pck->getStrength() && !pi->isNewbie() ) // now you can equip anything if it's newbie
 		{
 			ps->sysmsg(TRANSLATE("You are not strong enough to use that."));
-			Sndbounce5(s);
-			if (ps->isDragging())
-			{
-				ps->resetDragging();
-				item_bounce4(s,pi);
-				UpdateStatusWindow(s,pi);
-			}
-			return;
+			resetDragging = true;
 		}
-
-		if ( pck->getSerial32() == pc->getSerial32() && !checkItemUsability(pc, pi, ITEM_USE_WEAR))
+		else if ( !pc->IsGM() && !checkItemUsability(pc, pi, ITEM_USE_WEAR) )
 		{
-			Sndbounce5(s);
-			if (ps->isDragging())
-			{
-				ps->resetDragging();
-				item_bounce4(s,pi);
-				UpdateStatusWindow(s,pi);
-			}
-			return;
+			resetDragging = true;
 		}
-
-		if (pc->GetBodyType() == BODY_MALE) // Ripper...so males cant wear female armor
-			if (pi->id1==0x1c && ( pi->id2==0x00 || pi->id2==0x02 || pi->id2==0x04 || pi->id2==0x06 || pi->id2==0x08 || pi->id2==0x0a || pi->id2==0x0c))
-			{
-				ps->sysmsg(TRANSLATE("You cant wear female armor!"));
-				Sndbounce5(s);
-				if (ps->isDragging())
-				{
-					ps->resetDragging();
-					item_bounce4(s,pi);
-					UpdateStatusWindow(s,pi);
-				}
-				return;
-			}
-
-		//if (clientDimension[s]==2)
-		if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && (!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
+		else if ( (pc->GetBodyType() == BODY_MALE) && (pi->id1==0x1c && ( pi->id2==0x00 || pi->id2==0x02 || pi->id2==0x04 || pi->id2==0x06 || pi->id2==0x08 || pi->id2==0x0a || pi->id2==0x0c)) ) // Ripper...so males cant wear female armor
+		{
+			ps->sysmsg(TRANSLATE("You cant wear female armor!"));
+			resetDragging = true;
+		}
+		else if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && (!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 				( (pi->magic==3|| pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 		{
-			item_bounce6(ps,pi);
+			resetDragging = true;
+		}
+
+		if( resetDragging ) {
+			Sndbounce5(s);
+			if (ps->isDragging())
+			{
+				ps->resetDragging();
+				item_bounce4(s,pi);
+				UpdateStatusWindow(s,pi);
+			}
 			return;
 		}
+
 
 
 		// - AntiChrist (4) - checks for new ITEMHAND system
@@ -534,9 +516,9 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				Sndbounce5(s);
 				if (ps->isDragging())
 				{
-        				ps->resetDragging();
+        			ps->resetDragging();
 					UpdateStatusWindow(s,pi);
-	        		}
+	        	}
 				pi->setContSerial( pi->getContSerial(true) );
 				pi->setPosition( pi->getOldPosition() );
 				pi->layer = pi->oldlayer;
