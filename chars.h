@@ -682,6 +682,7 @@ public:
 	public:
 
 
+		SERIAL oldmenu; //!< old menu serial
 
 		SI32			stat3crc; // xan : future use to keep safe stats
 		//class			AmxEvent *amxevents[ALLCHAREVENTS];

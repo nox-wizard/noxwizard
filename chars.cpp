@@ -330,6 +330,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	vendorItemsSell = NULL;
 	vendorItemsBuy = NULL;
 
+	oldmenu=INVALID;
+
 }
 
 /*
