@@ -1394,7 +1394,7 @@ static void *labels[] = {
   if (index==AMX_EXEC_MAIN) {
     if (hdr->cip<0)
 	{
-		WarnOut("Index error in amx");
+		WarnOut("Index error in amx\n");
 		return AMX_ERR_INDEX;
 	}
     cip=(cell *)(code + (int)hdr->cip);
@@ -1410,12 +1410,12 @@ static void *labels[] = {
     cip=(cell *)(code + (int)amx->cip);
   } else if (index<0) 
   {
-	WarnOut("Index error in amx");
+	WarnOut("Index error in amx\n");
     return AMX_ERR_INDEX;
   } else {
 		if (index>=NUMENTRIES(*hdr,publics,natives))
 		{
-			WarnOut("Index error in amx");
+			WarnOut("Index error in amx\n");
 			return AMX_ERR_INDEX;
 		}    
 		func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
@@ -2324,7 +2324,7 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
   if (index==AMX_EXEC_MAIN) {
     if (hdr->cip<0)
 	{
-		WarnOut("Index error in amx");
+		WarnOut("Index error in amx\n");
 		return AMX_ERR_INDEX;
 	}
     cip=(cell *)(code + (int)hdr->cip);
@@ -2339,12 +2339,12 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
     reset_hea=amx->reset_hea;
     cip=(cell *)(code + (int)amx->cip);
   } else if (index<0) {
-		WarnOut("Index error in amx");
+		WarnOut("Index error in amx\n");
 		return AMX_ERR_INDEX;
   } else {
     if (index>=(cell)NUMENTRIES(*hdr,publics,natives))
 	{
-		WarnOut("Index error in amx");
+		WarnOut("Index error in amx\n");
 		return AMX_ERR_INDEX;
 	}
     func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));

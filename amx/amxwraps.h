@@ -138,6 +138,7 @@ const int NXW_CP_I_RESISTS = 132;
 const int NXW_CP_C_TRAININGPLAYERIN = 133;
 const int NXW_CP_C_PRIV = 134;
 const int NXW_CP_C_DAMAGETYPE = 135;
+const int NXW_CP_C_PRIV4 = 136;
 
 const int NXW_CP_I_ACCOUNT = 200;
 const int NXW_CP_I_ADVOBJ = 201;

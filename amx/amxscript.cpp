@@ -379,7 +379,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	  err = amx_Exec(m_AMX, &ret, idx, 6, par1, par2, par3, par4, par5, par6);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 6, par1, par2, par3, par4, par5, par6);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			ConOut("Err: %d msg: %s\n", err, amx_errMsg[err]);
 	  return ret;
 
 	} catch(...) {
@@ -387,7 +387,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -424,7 +424,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	  err = amx_Exec(m_AMX, &ret, idx, 7, par1, par2, par3, par4, par5, par6, par7);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 7, par1, par2, par3, par4, par5, par6, par7);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
@@ -433,7 +433,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -472,7 +472,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	  err = amx_Exec(m_AMX, &ret, idx, 8, par1, par2, par3, par4, par5, par6, par7, par8);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 8, par1, par2, par3, par4, par5, par6, par7, par8);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
@@ -481,7 +481,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -521,7 +521,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -553,7 +553,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	  err = amx_Exec(m_AMX, &ret, idx, 4, par1, par2, par3, par4);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 4, par1, par2, par3, par4);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
@@ -563,7 +563,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -592,7 +592,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3 )
 	  err = amx_Exec(m_AMX, &ret, idx, 4, par1, par2, par3 );
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 4, par1, par2, par3 );
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
@@ -601,7 +601,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3 )
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -630,7 +630,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2)
 	  err = amx_Exec(m_AMX, &ret, idx, 2, par1, par2);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 2, par1, par2);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
@@ -639,7 +639,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2)
 		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
 		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -665,15 +665,14 @@ cell AmxProgram::CallFn (int idx, int param)
 	  err = amx_Exec(m_AMX, &ret, idx, 1, par);
   	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 1, par);
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return ret;
 
 	} catch(...) {
 		AMX *amx = m_AMX;
 		
-		
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
 }
@@ -709,12 +708,12 @@ cell AmxProgram::CallFn (const char *fn)
 	  if (fn!=NULL) err = amx_FindPublic (m_AMX, (char*)fn, &idx);
 	  if ((err!=0)||(fn==NULL)) idx = AMX_EXEC_MAIN;
 		if ( err != AMX_ERR_NONE )
-			ConOut("Got error %d during amx execution of function", err);
+			LogError("Err: %d msg: %s\n", err, amx_errMsg[err]);
 
 	  return CallFn(idx);
 
 	} catch(...) {
-		ConOut("Exception Handled during AMX Script Execution : skipping script %s\n", fn);
+		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", fn);
 		return -1;
 	}
 }
@@ -937,7 +936,7 @@ void AmxOverride::Parse(char *line)
 
 
 	} catch(...) {
-		ConOut("Error parsing override.scp, line : %s", line);
+		LogError("Error parsing override.scp, line : %s", line);
 		file = NULL;
 		m_function = NULL;
 		m_mode = AMX_NONE;

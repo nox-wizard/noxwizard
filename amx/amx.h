@@ -183,6 +183,13 @@ typedef struct __amx_header {
 } AMX_HEADER;
 #define AMX_MAGIC       0xf1e0
 
+static const char amx_errMsg [30] [50] = {
+	"forced exit", "assertion failed", "stack/heap collision", "index out of bounds", "invalid memory access", "invalid instruction", "stack underflow",
+	"heap underflow", "no callback, or invalid callback", "native function failed", "divide by zero", "go into sleepmode - code can be restarted", "", "", "",""
+	"out of memory", "invalid file format", "file is for a newer version of the AMX", "function not found", "invalid index parameter (bad entry point)",
+	"debugger cannot run", "AMX not initialized (or doubly initialized)", "unable to set user data field (table full)", "cannot initialize the JIT", 
+	"parameter error", "", "", "", "" };
+
 enum {
   AMX_ERR_NONE,
   /* reserve the first 15 error codes for exit codes of the abstract machine */
