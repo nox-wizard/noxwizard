@@ -331,7 +331,6 @@ SI08 mapAverageElevation( UI32 x, UI32 y )
 		return z;
 	}
 
-	return illegal_z;
 }
 
 /*!

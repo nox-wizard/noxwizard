@@ -741,7 +741,6 @@ void cNetwork::ActivateFeatures(NXWSOCKET s)
 			break;
 		default:  // I don't know, what you want :P
 			return;
-			break;
 	}
 
 	ShortToCharPtr(features, feat+1);

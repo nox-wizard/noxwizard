@@ -452,7 +452,6 @@ LOGICAL cItem::isSpawner()
 		default:
 			return false;
 	}
-	return false;
 }
 
 

@@ -150,7 +150,6 @@ LOGICAL isSrcRepeatable(int num)
 			return true;
 	}
 
-	return false;
 }
 
 /*!
@@ -182,7 +181,6 @@ LOGICAL isDestRepeatable(int num)
 			return true;
 	}
 
-	return false;
 }
 
 
