@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.5 2003/07/13 19:09:48 dgp85 Exp $
+ *  Version: $Id: amx.c,v 1.6 2003/07/13 19:16:32 dgp85 Exp $
  */
 
 //XAN
@@ -1053,7 +1053,7 @@ int AMXAPI amx_GetPubVar(AMX *amx, int index, char *varname, cell *amx_addr)
 
   var=(AMX_FUNCSTUB *)(amx->base+(int)hdr->pubvars+index*sizeof(AMX_FUNCSTUB));
   strcpy(varname,var->name);
-  *amx_addr=var->address;
+  *amx_addr=(cell)var->address;
   return AMX_ERR_NONE;
 }
 
@@ -1117,7 +1117,7 @@ int AMXAPI amx_GetTag(AMX *amx, int index, char *tagname, cell *tag_id)
 
   tag=(AMX_FUNCSTUB *)(amx->base+(int)hdr->tags+index*sizeof(AMX_FUNCSTUB));
   strcpy(tagname,tag->name);
-  *tag_id=tag->address;
+  *tag_id=(cell)tag->address;
   return AMX_ERR_NONE;
 }
 
@@ -1358,7 +1358,7 @@ static void *labels[] = {
     if (index>=NUMENTRIES(*hdr,publics,natives))
       return AMX_ERR_INDEX;
     func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
-    cip=(cell *)(code + (int)func->address);
+    cip=(cell *)(code + (long)func->address);
   } /* if */
   /* check values just copied */
   CHKSTACK();
@@ -3196,7 +3196,7 @@ int AMXAPI amx_Release(AMX *amx,cell amx_addr)
 #if defined BIT16
   #define CHARMASK      (0xffffu << 8*(2-sizeof(char)))
 #elif defined(__alpha__)
-  #define CHARMASK	(0xffffffffffffffffuLL << 8*(6-sizeof(char))
+  #define CHARMASK	(0xffffffffffffffffuLL << 8*(6-sizeof(char)))
 #else
   #define CHARMASK      (0xffffffffuL << 8*(4-sizeof(char)))
 #endif

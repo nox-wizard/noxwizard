@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.h,v 1.3 2003/07/13 19:09:48 dgp85 Exp $
+ *  Version: $Id: amx.h,v 1.4 2003/07/13 19:16:32 dgp85 Exp $
  *
  *  Changed by Luxor for FreeBSD Compatibility
  */
@@ -126,7 +126,7 @@ typedef struct {
 #define AMX_USERNUM     4
 #define sEXPMAX         19
 typedef struct {
-  void *address;
+  cell address;
   char name[sEXPMAX+1];
 } AMX_FUNCSTUB;
 
