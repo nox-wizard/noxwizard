@@ -3409,7 +3409,23 @@ NATIVE2(_getRaceGlobalProp)
 
 		int p;
 		switch(params[1]) {
+			
+		case RP_I_STARTLOCATION:
+
+			switch(params[2]) {
+
+			case RSP_I_LOCATION_X :
+				p = Race::startLocation[1];
+
+			case RSP_I_LOCATION_Y :
+				p = Race::startLocation[2];
+
+			case RSP_I_LOCATION_Z :
+				p = Race::startLocation[3];
+			}
+
 			case INVALID:
+			
 			default:
 				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
 				return INVALID;
@@ -3428,6 +3444,9 @@ NATIVE2(_getRaceGlobalProp)
 			break;
 			case RP_B_WITH_WEB_INTERFACE:
 				p = Race::withWebInterface;
+			break;
+			case RP_B_MODE:
+				p = Race::isRaceSystemActive();
 			break;
 			default:
 				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
@@ -3465,7 +3484,7 @@ NATIVE2(_getRaceGlobalProp)
 
 	case T_STRING: {
 
-		//we're here so we should pass a string, params[4] is a str ptr
+		//we're here so we should pass a string, params[3] is a str ptr
 
 	  	char str[100];
 		cell *cptr;
@@ -3473,12 +3492,15 @@ NATIVE2(_getRaceGlobalProp)
 			case RP_STR_WEBROOT:
 				strcpy( str, Race::globalWebRoot.c_str() );
 				break;
+			case RP_STR_WEBLINK:
+				strcpy( str, Race::globalWebLink.c_str() );
+				break;
 			default:
 				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
 				return INVALID;
 		}
 
-		amx_GetAddr(amx,params[4],&cptr);
+		amx_GetAddr(amx,params[3],&cptr);
   		amx_SetString(cptr,str, g_nStringMode);
 
 		return strlen(str);
