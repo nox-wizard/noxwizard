@@ -1311,7 +1311,8 @@ void cContainerItem::setRandPos(P_ITEM pItem)
 	}
 }
 
-UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts/*= false*/)
+/*
+UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts)
 {
 	UI32 count= 0;
 	vector<SI32>::iterator it= ItemList.begin();
@@ -1335,6 +1336,7 @@ UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts/*= false*/)
 	return count;
 }
 
+*/
 UI32 cContainerItem::removeItems(UI32 scriptID, UI32 amount/*= 1*/)
 {
 	UI32 rest= amount;

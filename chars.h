@@ -1173,6 +1173,7 @@ public:
 		void 			hideBySkill();
 		void 			hideBySpell(SI32 timer = INVALID);
 		UI32  			CountItems(short ID, short col= INVALID);
+		UI32  			CountItemsByType(short type);
 
 		inline const UI32 	CountGold()
 		{ return CountItems(ITEMID_GOLD); }

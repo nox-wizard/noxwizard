@@ -237,6 +237,8 @@ public:
 
 	inline const SI32	CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts) const
 	{ return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts); }
+	inline const SI32	CountItemsByType(unsigned int type, LOGICAL bAddAmounts) const
+	{ return pointers::containerCountItemsByType(getSerial32(), type, bAddAmounts); }
 //@}
 
 //@{
@@ -422,6 +424,12 @@ public:
 	inline		void setSound(UI16 newSound) 
 	{ itemSoundEffect = newSound; }
 
+	inline	UI32	getType()
+	{ return type; };
+
+	inline	void setType(UI32 newType)
+	{ type=newType; };
+
 	LOGICAL		doDecay();
 
 	inline const LOGICAL canDecay() const
@@ -485,6 +493,7 @@ public:
 	UI32				removeItems(UI32 scriptID, UI32 amount/*= 1*/);
 	void				dropItem(P_ITEM pi);
 	UI32				countItems(UI32 scriptID, LOGICAL bAddAmounts= false);
+	UI32				countItemsByType(short type, LOGICAL bAddAmounts=false);
 
 } PACK_NEEDED;
 

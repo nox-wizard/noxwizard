@@ -67,6 +67,8 @@ namespace pointers {
 	P_ITEM containerSearchFor(const int serial, int *index, short id, short color);
 	UI32 containerCountItems(SERIAL serial, short id, short color, LOGICAL bAddAmounts = true, LOGICAL recurseSubpack=true);
 	UI32 containerCountItemsByID(SERIAL serial, UI32 scriptID, LOGICAL bAddAmounts);
+	UI32 containerCountItemsByType(SERIAL serial, UI32 type, LOGICAL bAddAmounts=true, LOGICAL recurseSubpack=true);
+
 	P_CHAR stableSearch(int serial, int *index);
 #ifdef SPAR_LOCATION_MAP
 	//

@@ -157,26 +157,23 @@ static LOGICAL canMine( P_CHAR pc, P_ITEM weapon )
 
 	VALIDATEPCR(pc,false);
 	
-	if( !ISVALIDPI(weapon) )
-		pc->sysmsg(TRANSLATE("You can't mine with nothing in your hand !!"));
+	if( !ISVALIDPI(weapon) && ( pc->CountItemsByType(ITYPE_MINING) <= 0 ) )
+			pc->sysmsg( TRANSLATE("You must have a pickaxe or shovel in hand in order to mine."));
 	else
-		switch( weapon->getId() )
+	{
+		if ( (ISVALIDPI(weapon) && ( weapon->getType() == ITYPE_MINING )) || (pc->CountItemsByType(ITYPE_MINING) > 0 ))
+		// Let's see if he has a shovel in his pack
 		{
-			case 0x0E85	:
-			case 0x0E86	:
-			case 0x0F39	:
-			case 0x0F3A	:
-				if (pc->isMounting())
-					pc->sysmsg( TRANSLATE("You cant mine while on a horse!"));
+			if (pc->isMounting())
+				pc->sysmsg( TRANSLATE("You cant mine while on a horse!"));
+			else
+				if( !pc->IsGM() && (ores.stamina<0) && (abs( ores.stamina )>pc->stm) )
+					pc->sysmsg( TRANSLATE("You are too tired to mine."));
 				else
-					if( !pc->IsGM() && (ores.stamina<0) && (abs( ores.stamina )>pc->stm) )
-						pc->sysmsg( TRANSLATE("You are too tired to mine."));
-					else
-						return true;
-				break;
-			default :
-				pc->sysmsg( TRANSLATE("You must have a pickaxe or shovel in hand in order to mine."));
+					return true;
+					
 		}
+	}
 
 	return false;
 }

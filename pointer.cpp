@@ -964,6 +964,47 @@ namespace pointers {
 	}
 
 	/*!
+	\brief returns the number of elements with the given type of the vector of a container (identified by serial)
+	\author Wintermute
+	\return the number of elements found
+	\param serial the serial of the container
+	\param type the type which we're searching for
+	\param color the color which we're searching for
+	\param bAddAmounts if true we want to add the amount of the items to the return value
+	\param recurseSubpack if true we search also in subpack
+	*/
+	UI32 containerCountItemsByType(SERIAL serial, UI32 type, LOGICAL bAddAmounts, LOGICAL recurseSubpack)
+	{
+
+		std::map< SERIAL , vector<P_ITEM> >::iterator cont( pointers::pContMap.find( serial ) );
+		if( cont==pointers::pContMap.end() || cont->second.empty() )
+			return 0;
+
+		UI32 total=0;
+
+		std::vector<P_ITEM>::iterator iter( cont->second.begin() );
+		for( ; iter!=cont->second.end(); iter++ )
+		{
+
+			P_ITEM pi=(*iter);
+			if (pi->isContainer() && recurseSubpack) 
+			{
+				total += containerCountItems(pi->getSerial32(), type, bAddAmounts, true);
+				continue;
+			}
+			if (pi->getType()==type )
+			{
+				if (bAddAmounts) 
+					total += pi->amount;
+				else 
+					total++;
+			}
+		}
+		return total;
+	}
+
+
+	/*!
 	\brief returns the number of elements with the given id and color of the vector of a container (identified by serial)
 	\author Luxor
 	\return the number of elements found

@@ -1028,6 +1028,19 @@ UI32 cChar::CountItems(short ID, short col)
 	return (ISVALIDPI(pi))? pi->CountItems(ID, col) : 0 ;
 }
 
+/*!
+\brief count items of given type
+\author Duke
+\date 26/03/2001
+\param type type  of items to count
+Searches the character recursively, counting the items of the given type
+*/
+UI32 cChar::CountItemsByType(short type)
+{
+	P_ITEM pi= getBackpack();
+	return (ISVALIDPI(pi))? pi->CountItemsByType(type, true) : 0 ;
+}
+
 SI32 cChar::countBankGold()
 {
 	P_ITEM pi = GetBankBox(BANK_GOLD);
