@@ -131,7 +131,13 @@ class cGuild
 		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
 		std::string	abbreviation;	//!< abbreviation ( es KCS )
 		SERIAL guildMaster;
-	
+	typedef enum  {
+		RANK_GUILDMASTER,
+		RANK_GUILDVICE,
+		RANK_GUILDMEMBER,
+		RANK_GUILDRECRUIT,
+		ALL_RANKS
+	} GUILD_RANK;	
 	public:
 
 		std::wstring	charter;	//!< charter
@@ -149,7 +155,8 @@ class cGuild
 		// Helper functions for 
 		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };
 		inline void		cGuild::setGuildMaster(SERIAL newGuildMaster)  
-		{ guildMaster=newGuildMaster; };
+		{ guildMaster=newGuildMaster; getMember(guildMaster)->rank=RANK_GUILDMASTER; };
+		void cGuild::calculateFealty();
 
 	public:
 
@@ -159,6 +166,7 @@ class cGuild
 		void resignMember( P_CHAR pc );
 		P_GUILD_MEMBER getMember( SERIAL member );
 		int getMemberPosition(SERIAL member);
+		SERIAL cGuild::getMemberByIndex(int index);
 
 	public:
 

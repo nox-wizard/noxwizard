@@ -251,6 +251,71 @@ int cGuild::getMemberPosition(SERIAL member)
 }
 
 /*!
+\brief Get  the guild member at the given index in the guild 
+\author Wintermute
+\param index, position of member
+*/
+SERIAL cGuild::getMemberByIndex(int index)
+{
+	std::map< SERIAL, P_GUILD_MEMBER >::iterator iter;
+	int count = 0;
+	for ( iter = members.begin();iter != members.end();iter++)
+	{
+		if ( count == index)
+		{
+			P_GUILD_MEMBER guildmember = iter->second;
+			
+			return guildmember->serial;
+		}
+	}
+	return INVALID;
+}
+
+/*!
+\brief Calculate the guild master after a member has changed his fealty
+\author Wintermute
+*/
+void cGuild::calculateFealty()
+{
+	std::map< SERIAL, P_GUILD_MEMBER >::iterator iter;
+	std::map< SERIAL, int> votes;
+	std::map< SERIAL, int>::iterator voteIndex;
+	int voteCount = 0;
+	for ( iter = members.begin();iter != members.end();iter++)
+	{
+		P_GUILD_MEMBER guildmember = iter->second;
+		P_GUILD_MEMBER votedGuildMember=getMember(guildmember->fealty);
+		voteIndex=votes.find(votedGuildMember->serial);
+		if ( voteIndex != votes.end() )
+		{
+			voteCount=voteIndex->second+1;
+		}
+		else
+		{
+			voteCount=1;
+		}
+		votes.insert(make_pair(votedGuildMember->serial, voteCount));
+	}
+	int highest;
+	SERIAL master;
+	for ( voteIndex = votes.begin();voteIndex != votes.end();voteIndex++)
+	{
+		if ( highest < voteIndex->second )
+		{
+			highest=voteIndex->second;
+			master=voteIndex->first;
+		}
+	}
+	if ( master != getGuildMaster() )
+	{
+		P_GUILD_MEMBER oldMaster=getMember(getGuildMaster());
+		oldMaster->rank=RANK_GUILDMEMBER;
+		setGuildMaster(master);
+	}
+}
+
+
+/*!
 \brief Add a new recruit
 \author Endymion
 */
