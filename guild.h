@@ -48,13 +48,15 @@ typedef enum {
 */
 class cGuildMember
 {
+
+
 	public:
 		
 		SERIAL serial;	//!< the member
 		std::string	title;	//!< title
 		GUILD_TITLE_TOGGLE toggle; //!< title toggle
 		UI32 rank; //!< the rank
-
+		SERIAL fealty;
 		cGuildMember( SERIAL serial );
 		~cGuildMember();
 

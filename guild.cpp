@@ -319,7 +319,8 @@ void cGuildMember::load( cStringFile& file )
 			toggle=static_cast<GUILD_TITLE_TOGGLE>( str2num(r) );
 		else if( l=="RANK" )
 			rank=str2num(r);	
-
+		else if ( l=="FEALTY" )
+			fealty=str2num(r);	
 	}
 	while( true );
 }
@@ -330,6 +331,8 @@ void cGuildMember::save( FILE* file )
 	fprintf( file, "{\n");
 	fprintf( file, "TITLE %s\n",	title.c_str() );
 	fprintf( file, "TOGGLE %d\n",	toggle );
+	fprintf( file, "RANK %d\n",		rank );
+	fprintf( file, "FEALTY %d\n",		fealty );
 	fprintf( file, "}\n");
 }
 
