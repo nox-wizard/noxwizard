@@ -2137,7 +2137,7 @@ void MsgBoardQuestEscortArrive( P_CHAR pc, P_CHAR pc_k)
 	}
 
 	// Inform the PC of what he has just been given as payment
-	pc_k->sysmsg(TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title );
+	pc_k->sysmsg(TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title.c_str() );
 
 	// Take the NPC out of quest mode
 	pc->npcWander = 2;         // Wander freely
