@@ -485,7 +485,7 @@ void cItem::playSFX(UI16 sound, NXWSOCKET s)
 	Location pos = getPosition();
 	pos.z = 0;
 
-	if ( s == INVALID )
+	if ( s != INVALID )
 	{
 		SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
 	} else {		
