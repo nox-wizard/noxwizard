@@ -1637,8 +1637,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 					fprintf(cWsc, "NAME %s\n", pc->getBackupStats()->getName());
 				else
 				{
-					std::string realname = pc->getRealName();
-					fprintf(cWsc, "NAME %s\n", realname.c_str());
+					fprintf(cWsc, "NAME %s\n", pc->getRealNameC());
 				}
 #else
 				if (pc->npc)

@@ -2850,6 +2850,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 {
 	P_ITEM phair = getHairItem() ;
 	P_ITEM pbeard = getBeardItem();
+	this->setRealName(this->getCurrentName());
 	if ((bodyid==INVALID)&&(skincolor==INVALID)&&(hairstyle==INVALID)&&
 	    (haircolor==INVALID)&&(beardstyle==INVALID)&&(beardcolor==INVALID)&& (newname==NULL))
 	{ // if empty morph called, no matter which bBackup status, used for unmorphing
