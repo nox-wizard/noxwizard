@@ -61,6 +61,7 @@ protected:
 
 	virtual bool checkValidity( UI32 id, T b ) {	return true; }
 	virtual UI32 getIndex( UI32 id ) {	return id;	}
+	virtual UI32 getIndexForCache( UI32 id, T b ) {	return id;	}
 
 public:
 
@@ -378,6 +379,7 @@ protected:
 	
 	virtual bool checkValidity( UI32 id, statics_st b ) {	return (((id>>16)%8)==b.x) && (((id&0xFFFF)%8)==b.y); }
 	virtual UI32 getIndex( UI32 id ) {	return blockFromXY( id>>16, id&0xFFFF );	}
+	virtual UI32 getIndexForCache( UI32 id, statics_st b );
 	UI32 getHash( UI32 x, UI32 y )	{	return (x<<16) +y;	}
 	SERIAL blockFromXY( UI16 x, UI16 y ); 
 

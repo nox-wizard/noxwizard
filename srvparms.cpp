@@ -116,7 +116,6 @@ int g_nChopFameLoss=0;
 int g_nBountyKarmaGain=+100;
 int g_nBountyFameGain=50;
 int g_nEnableKarmaLock=1;
-int g_nMapCache = 0;
 int g_nVerboseCrontab = 0;
 int g_nPopUpHelp = 1;
 int g_nStatDailyLimit = 999;
@@ -399,7 +398,6 @@ void loadserverdefaults()
     server_data.n_badpass=0;			//elcabesa tempblock
 	server_data.time_badpass=0;			//elcabesa tempblock
 	server_data.always_add_hex=0;	//endymion add command stuff
-	server_data.cache_tiledata=1;  //endymion cache tiledata stuff
 	server_data.staminaonhorse=0.50; 
 	server_data.disable_z_checking=0;
  	server_data.archivePath="save/";
@@ -422,7 +420,6 @@ static int loadspeed(char *script1, char *script2)//Lag Fix -- Zippy -- NEW FUNC
         else if(!(strcmp(script1,"CHECK_TAMEDNPCS"))) speed.tamednpctime=(float)atof(script2);//AntiChrist
 		else if(!(strcmp(script1,"CHECK_NPCFOLLOW"))) speed.npcfollowtime=(float)atof(script2);//Ripper
 		else if(!(strcmp(script1,"CHECKMEM"))) speed.checkmem=str2num(script2);
-		else if(!(strcmp(script1,"CACHE_MUL"))) ServerScp::g_nMapCache = atoi(script2);
 		else return -1;
 		return 0;
 }
@@ -583,7 +580,6 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"DAILYSTATCAP"))		ServerScp::g_nStatDailyLimit =str2num(script2);
 		else if(!strcmp(script1,"BANKITEMLIMIT"))		ServerScp::g_nBankLimit=str2num(script2);
 		else if(!strcmp(script1,"ADDCOMMANDHEX"))		server_data.always_add_hex=str2num(script2); //Endymion
-		else if(!strcmp(script1,"CACHE_TILEDATA"))		server_data.cache_tiledata=str2num(script2); //Endymion
 		else if(!strcmp(script1,"CSSOVERRIDES"))		ServerScp::g_css_override_case_sensitive=str2num(script2); //Endymion
 		else if(!strcmp(script1,"SPARRINGLIMIT"))		ServerScp::g_nLimitPlayerSparring=str2num(script2);
 		else if(!strcmp(script1,"LIMITEROLENUMBERS"))		ServerScp::g_nLimitRoleNumbers=str2num(script2);
@@ -802,11 +798,14 @@ static int loadinioptions (char *script1, char *script2)
 	else if(!(strcmp(script1,"MAP"))) strcpy(temp_map, script2);
 	else if(!(strcmp(script1,"STATICS"))) strcpy(temp_statics, script2);
 	else if(!(strcmp(script1,"STAIDX"))) strcpy(temp_staidx, script2);
+	else if(!(strcmp(script1,"STATICS_CACHE"))) statics_cache = str2num( script2 );
 	else if(!(strcmp(script1,"VERDATA"))) strcpy(temp_verdata, script2);
 	else if(!(strcmp(script1,"TILEDATA"))) strcpy(temp_tiledata, script2);
+	else if(!(strcmp(script1,"TILEDATA_CACHE"))) tiledata_cache = str2num( script2 );
 	else if(!(strcmp(script1,"MULTIMUL"))) strcpy(temp_multimul, script2);
 	else if(!(strcmp(script1,"MULTIIDX"))) strcpy(temp_multiidx, script2);
-	else return -1;
+	else if(!(strcmp(script1,"MULTI_CACHE"))) multi_cache = str2num( script2 );
+	else return INVALID;
 	return 0;
 }
 
@@ -1086,18 +1085,24 @@ void saveserverscript()
 	fprintf(file, "// \n");
 	fprintf(file, "// The file containing the map, usually map0.mul for T2A client and Britannia on UO3D,\n");
 	fprintf(file, "// map2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "MAP %s\n", data::getPath( MUL_MAP ).c_str()); // lb
+	fprintf(file, "MAP %s\n", data::getPath( MUL_MAP ).c_str());
 	fprintf(file, "// The files containing the statics, usually statics0.mul and staidx0.mul for T2A client\n");
 	fprintf(file, "// and Britannia on UO3D, statics2.mul and staidx2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "STATICS %s\n", data::getPath( MUL_STATICS ).c_str()); // lb
-	fprintf(file, "STAIDX %s\n", data::getPath( MUL_STATIDX ).c_str()); // lb
+	fprintf(file, "STATICS %s\n", data::getPath( MUL_STATICS ).c_str());
+	fprintf(file, "STAIDX %s\n", data::getPath( MUL_STATIDX ).c_str());
+	fprintf(file, "//  Setting to 1 loads the statics's ifo into RAM, significant speed boost\n");
+	fprintf(file, "STATICS_CACHE %i\n", statics_cache );
 	fprintf(file, "// The version data you'll use (verdata.mul, usually)\n");
-	fprintf(file, "VERDATA %s\n", data::getPath( MUL_VERDATA ).c_str()); // lb
+	fprintf(file, "VERDATA %s\n", data::getPath( MUL_VERDATA ).c_str());
 	fprintf(file, "// The tile data you'll use (tiledata.mul, usually)\n");
-	fprintf(file, "TILEDATA %s\n", data::getPath( MUL_TILEDATA ).c_str()); // lb
+	fprintf(file, "TILEDATA %s\n", data::getPath( MUL_TILEDATA ).c_str());
+	fprintf(file, "//  Setting to 1 loads the tiledata's info into RAM, significant speed boost\n");
+	fprintf(file, "TILEDATA_CACHE %i\n", tiledata_cache );
 	fprintf(file, "// The files containing multi data (multi.mul and multi.idx usually)\n");
-	fprintf(file, "MULTIMUL %s\n", data::getPath( MUL_MULTI ).c_str()); // lb
-	fprintf(file, "MULTIIDX %s\n", data::getPath( MUL_MULTIIDX ).c_str()); // lb
+	fprintf(file, "MULTIMUL %s\n", data::getPath( MUL_MULTI ).c_str()); 
+	fprintf(file, "MULTIIDX %s\n", data::getPath( MUL_MULTIIDX ).c_str()); 
+	fprintf(file, "//  Setting to 1 loads the multi's info into RAM, significant speed boost\n");
+	fprintf(file, "MULTI_CACHE %i\n", multi_cache );
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION SKILLS\n");
@@ -1328,8 +1333,6 @@ void saveserverscript()
 	fprintf(file, "LANGUAGE %s\n",server_data.Unicodelanguage);			//End-N6
 	fprintf(file, "// 1 = Add command params are in hex ( no need 0x ), 0 = normal \n");	//Endymion
 	fprintf(file, "ADDCOMMANDHEX %d\n",server_data.always_add_hex);		//Endymion
-	fprintf(file, "// 1 = Tiledata.mul are cached, 0 = no \n");	//Endymion
-	fprintf(file, "CACHE_TILEDATA %d\n",server_data.cache_tiledata);		//Endymion
 	fprintf(file, "// 1 = Speech override are case sensitive, 0 = case insensitive \n");	//Endymion
 	fprintf(file, "CSSOVERRIDES %d\n",ServerScp::g_css_override_case_sensitive);		//Endymion
 	fprintf(file, "// 1 = Disable Z checking ( cool for worldbuilder but not for gamplay ) \n");	//Endymion
@@ -1378,8 +1381,6 @@ void saveserverscript()
 	fprintf(file, "CHECK_SPAWNREGIONS %i\n",speed.srtime);
 	fprintf(file, "// Doesn't affect anything, leave at default  \n");
 	fprintf(file, "CHECKMEM %i\n", speed.checkmem);
-	fprintf(file, "// Setting to 1 loads the statics, tiles and a map cache into RAM, significant speed boost  \n");
-	fprintf(file, "CACHE_MUL %i\n", ServerScp::g_nMapCache);
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION COMBAT\n");

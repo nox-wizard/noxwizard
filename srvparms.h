@@ -25,7 +25,6 @@ void saveserverscript();
 #define SrvParms (&server_data)	// in preparation of making sever_data a class.Use SrvParms->xxx instead of server_dat.xxx (Duke)
 
 #define MAXTRACKINGTARGETS 20   // maximum number of trackable targets
-#define STABLOCKCACHESIZE 1000
 #define NPCSPEED .2	// 5 steps every second
 #define NPCFOLLOWSPEED ((NPCSPEED)/4)
 #define TRACKINGRANGE 10        // tracking range is at least TRACKINGRANGE, additional distance is calculated by Skill,INT
@@ -180,7 +179,6 @@ struct server_st
  unsigned int time_badpass;	//elcabesa tempblock
 
  int always_add_hex; //!< Endymion, if 1 the add command paramters are hexadecimal, else normal 
- int cache_tiledata; //!< Endymion, if 1 the tiledata.mul are cached 
 
  double staminaonhorse; //!< Endymion, is the % of stamina loss when riding
  int disable_z_checking; //!< Endymion, if 1 the z cheching is disabled ( cool for worldbuilder, not for gameplay )
@@ -249,8 +247,6 @@ extern int g_nUseMTSaves;
 extern int g_nDeamonMode;
 
 extern int g_nWeatherChangeRate;//=512;
-
-extern int g_nMapCache;
 
 extern int g_nPopUpHelp;
 

@@ -159,7 +159,7 @@ void cMULFile<T>::loadCache() {
 			continue;
 
 		if( ( index.size % sizeof(T) ) != 0  ) {
-			ErrOut( "data corrupted ( index=%i ) in %s ", i, idx->path.c_str() );
+			ErrOut( "data corrupted ( index=%i ) in %s ", i-1, idx->path.c_str() );
 			continue;
 		}
 
@@ -167,7 +167,7 @@ void cMULFile<T>::loadCache() {
 		for( int s=0; s< (index.size % sizeof(T)); ++s ) {
 			T baffer;
 			data->file.read( (char*)&baffer, sizeof(T));
-			cache[i].push_back( baffer );
+			cache[ getIndexForCache( i-1, baffer ) ].push_back( baffer );
 		}
 
 	}
@@ -606,6 +606,13 @@ SERIAL cStatics::blockFromXY( UI16 x, UI16 y ) {
 	}
 
 	return blockX*height+blockY;
+}
+
+UI32 cStatics::getIndexForCache( UI32 id, statics_st b ) {
+
+	UI16 blockX = id/height, blockY = id%height;
+	return getHash( (blockX*8)+b.x, (blockY*8)+b.y );
+
 }
 
 
