@@ -156,7 +156,7 @@ cItem& cItem::operator=(cItem& b)
 	}
 	vendorDescription = b.vendorDescription;
 	amxVS.copyVariable(getSerial32(), b.getSerial32());
-	
+
         return *this;
 }
 
@@ -258,11 +258,6 @@ cItem::~cItem()
 
 }
 
-void cItem::setCont(P_OBJECT obj)
-{
-	setContSerial(obj->getSerial32());
-}
-
 /*!
 \brief set the serial of the item's container
 \author Anthalir
@@ -289,7 +284,7 @@ void cItem::setContSerial(SI32 serial, LOGICAL old, LOGICAL update )
 void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)
 {
 	Serial *cont;
-	
+
 	if( old )
 		cont= &oldcontserial;
 	else
@@ -308,7 +303,7 @@ void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)
 BYTE cItem::getContSerialByte(UI32 nByte, LOGICAL old/*= false*/) const
 {
 	const Serial *cont;
-	
+
 	if( old )
 		cont= &oldcontserial;
 	else
@@ -347,11 +342,6 @@ const cObject* cItem::getContainer() const
 	return NULL;					// container serial is invalid
 }
 
-LOGICAL cItem::isInWorld()
-{
-	return (contserial.serial32==-1);
-}
-
 /*!
 \author Luxor
 \brief execute decay on the item
@@ -371,7 +361,7 @@ LOGICAL cItem::doDecay()
 	if ( TIMEOUT( decaytime ) )
 	{
 
-		
+
 		if ( amxevents[EVENT_IONDECAY] !=NULL )
 		{
 			g_bByPass = false;
@@ -498,7 +488,7 @@ void cItem::explode(NXWSOCKET  s)
 Reduces the given item's amount by 'amt' and deletes it if necessary and returns 0.
 If the request could not be fully satisfied, the remainder is returned
 */
-SI32 cItem::ReduceAmount(const short amt)
+SI32 cItem::ReduceAmount(const SI16 amt)
 {
 	long rest=0;
 	if( amount > amt )
@@ -518,21 +508,11 @@ SI32 cItem::ReduceAmount(const short amt)
 \brief increase the amount of piled items
 \param amt amount to add to item amount
 */
-SI32 cItem::IncreaseAmount(const short amt)
+SI32 cItem::IncreaseAmount(const SI16 amt)
 {
 	amount+= amt;
 	Refresh();
 	return amount;
-}
-
-/*!
-\brief set the amount of piled items
-\param amt amount to set the item to
-*/
-void cItem::setAmount(const short amt)
-{
-	amount= amt;
-	Refresh();
 }
 
 /*
@@ -596,14 +576,6 @@ void cItem::SetMultiSerial(SI32 mulser)
 /*!
 \author Anthalir
 */
-void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
-{
-	MoveTo( Loc(x, y, z) );
-}
-
-/*!
-\author Anthalir
-*/
 void cItem::MoveTo(Location newloc)
 {
 #ifdef SPAR_I_LOCATION_MAP
@@ -625,7 +597,7 @@ void cItem::MoveTo(Location newloc)
 */
 LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 {
-	
+
 	VALIDATEPIR(pItem,false);
 
 	NxwSocketWrapper sw;
@@ -645,7 +617,7 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 			pItem->SetRandPosInCont(this);		// not piled, random pos
 			pItem->setContSerial( getSerial32() );
 		}
-		else 
+		else
 			return true; //Luxor: we cannot do a refresh because item was piled
 	}
 	pItem->Refresh();
@@ -654,7 +626,7 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 }
 
 /*
-\brief Check if two item are similar so pileable 
+\brief Check if two item are similar so pileable
 \author Endymion
 \todo add amx vars and events
 \note if same item is compared, false is returned
@@ -669,7 +641,7 @@ inline bool operator ==( cItem& a, cItem& b ) {
 }
 
 /*
-\brief Check if two item are not similar so not pileable 
+\brief Check if two item are not similar so not pileable
 \author Endymion
 */
 inline bool operator !=( cItem& a, cItem& b ) {
@@ -697,7 +669,7 @@ bool cItem::PileItem( P_ITEM pItem )
 			pItem->SetRandPosInCont( cont );
 		else
 			pItem->setPosition( getPosition().x+1, getPosition().y, getPosition().z );
-			
+
 		pItem->setContSerial( getContSerial() );
 
 		pItem->amount=(amount+pItem->amount)-MAX_ITEM_AMOUNT;
@@ -735,20 +707,6 @@ bool cItem::ContainerPileItem( P_ITEM pItem)
 	}
 	return false;
 
-}
-
-
-int cItem::CountItems(short ID, short col, LOGICAL bAddAmounts)
-{
-	return pointers::containerCountItems(getSerial32(), ID, col, bAddAmounts);
-}
-
-/*!
-\author Anthalir
-*/
-int cItem::CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts)
-{
-	return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts);
 }
 
 /*!
@@ -814,7 +772,9 @@ void cItem::animSetId(SI16 id)
 	animid2=id&0x00FF;
 }
 
-
+/*!
+\todo backport
+*/
 int cItem::getName(char* itemname)
 {
 	return item::getname(DEREF_P_ITEM(this),itemname);
@@ -864,10 +824,6 @@ R32 cItem::getWeight()
 \return the weigth actual
 \todo make return value float
 */
-R32 cItem::getWeightActual()
-{
-	return (amount>1)? getWeight()*amount : getWeight();
-}
 
 cItem::cItem( SERIAL ser )
 {
@@ -944,7 +900,7 @@ cItem::cItem( SERIAL ser )
 	magic=0; // 0=Default as stored in client, 1=Always movable, 2=Never movable, 3=Owner movable.
 	gatetime=0;
 	gatenumber=INVALID;
-	
+
 	visible=0; // 0=Normally Visible, 1=Owner & GM Visible, 2=GM Visible
 	spawnserial=INVALID;
 	spawnregion=INVALID;
@@ -973,7 +929,7 @@ cItem::cItem( SERIAL ser )
 	for (i=0;i<MAX_RESISTANCE_INDEX;i++)
 		resists[i]=0;
 
-	for (int X=0; X<ALLITEMEVENTS; X++) 
+	for (int X=0; X<ALLITEMEVENTS; X++)
 		amxevents[X] = NULL;
 	//desc[0]=0x00;
 	vendorDescription = std::string("");
@@ -985,8 +941,8 @@ LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 {
 
 #define CASEITEMEVENT( NAME, ID ) 	else if (!(strcmp(NAME,script1))) pi->amxevents[ID] = newAmxEvent(script2);
-	
-	if (!strcmp("@ONSTART",script1))	{	
+
+	if (!strcmp("@ONSTART",script1))	{
 		pi->amxevents[EVENT_IONSTART] = newAmxEvent(script2);
 		newAmxEvent(script2)->Call(pi->getSerial32(), -1);
 	}
@@ -1021,12 +977,12 @@ const char* cItem::getRealItemName()
 {
 	if ( strncmp(getCurrentNameC(), "#", 1) )
 		return getCurrentNameC();
-    else
+	else
 	{
 		tile_st tile;
 		data::seekTile(getId(), tile);
-        return reinterpret_cast<char*>(tile.name);
-    }
+        	return reinterpret_cast<char*>(tile.name);
+	}
 }
 
 /*!
@@ -1037,40 +993,11 @@ const char* cItem::getRealItemName()
 Skill cItem::getCombatSkill()
 {
 	if (fightskill != INVALID_SKILL) return fightskill;
-    else if (IsSwordType())		return SWORDSMANSHIP;
-    else if (IsMaceType() || IsSpecialMace())		return MACEFIGHTING;
-    else if (IsFencingType())	return FENCING;
-    else if (IsBowType())		return ARCHERY;
+	else if (IsSwordType())		return SWORDSMANSHIP;
+	else if (IsMaceType() || IsSpecialMace())		return MACEFIGHTING;
+	else if (IsFencingType())	return FENCING;
+	else if (IsBowType())		return ARCHERY;
 	return WRESTLING;
-}
-
-/*!
-\brief check if item is a container
-\author Endymion
-\return LOGICAL
-\todo remove after cContainerClass work
-*/
-LOGICAL cItem::isContainer()
-{
-	if(type==1 || type==12 || type==63 ||
-		type==8 || type==13 || type==64)
-        return true;
-	else 
-		return false;
-}
-
-/*!
-\brief check if item is a secure container
-\author Endymion
-\return LOGICAL
-\todo remove after cContainerClass work
-*/
-LOGICAL cItem::isSecureContainer()
-{
-	if(type==8 || type==13 || type==64)
-        return true;
-	else 
-		return false;
 }
 
 /*!
@@ -1080,13 +1007,13 @@ LOGICAL cItem::isSecureContainer()
 */
 int cItem::countSpellsInSpellBook()
 {
-    
+
 	int spellcount=0;
 
 	NxwItemWrapper si;
 	si.fillItemsInContainer( this, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
-        
+
 		P_ITEM pj=si.getItem();
 		if(!ISVALIDPI(pj)) continue;
 		if (pj->getId() == 0x1F6D)
@@ -1132,6 +1059,7 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 /*!
 \author Luxor
 \brief deletes the item
+\todo backport
 */
 void cItem::Delete()
 {
@@ -1162,7 +1090,7 @@ void cItem::Refresh()
 	//first check: let's check if it's on the ground....
 	if(isInWorld())
 	{
-		
+
 		NxwSocketWrapper sw;
 		sw.fillOnline( this );
 		for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -1232,7 +1160,7 @@ SI16 cContainerItem::getGumpType()
 	{
 	case 0x09b0:
 	case 0x09aa:
-	case 0x09a8: 
+	case 0x09a8:
 	case 0x0e79:
 	case 0x0e7a:
 	case 0x0e76:
@@ -1246,7 +1174,7 @@ SI16 cContainerItem::getGumpType()
 	case 0x0e3e:
 	case 0x0e3f:
 	case 0x0e78:
-	case 0x0e7e: 
+	case 0x0e7e:
 		return 2;
 
 	case 0x09ab:
@@ -1254,7 +1182,7 @@ SI16 cContainerItem::getGumpType()
 	case 0x0e41:
 	case 0x0e42:
 	case 0x0e43:
-	case 0x0e7c: 
+	case 0x0e7c:
 		return 3;
 
 	case 0x0e75:
@@ -1265,20 +1193,20 @@ SI16 cContainerItem::getGumpType()
 	case 0x0EFA: 	// spellbook. Position shouldn't matter, but as it can be opened like a backpack...(Duke)
 		return 4;
 
-	case 0x2006: 
+	case 0x2006:
 		return 5;	// a corpse/coffin
 
-	default: 
+	default:
 		return -1;
 	}
 }
 
 LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the container to stack with
 {
-	
+
 	NxwItemWrapper si;
 	si.fillItemsInContainer( this, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) 
+	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
 		if(!ISVALIDPI(pi)) continue;
@@ -1314,29 +1242,29 @@ void cContainerItem::setRandPos(P_ITEM pItem)
 
 	switch( getGumpType() )
 	{
-	case 1: 
-		pItem->setPosition("y", RandomNum(50, 100));		
+	case 1:
+		pItem->setPosition("y", RandomNum(50, 100));
 		break;
 
-	case 2: 
-		pItem->setPosition("y", RandomNum(30, 80));		
+	case 2:
+		pItem->setPosition("y", RandomNum(30, 80));
 		break;
 
-	case 3: 
-		pItem->setPosition("y", RandomNum(100, 140));		
+	case 3:
+		pItem->setPosition("y", RandomNum(100, 140));
 		break;
 
-	case 4: 
-		pItem->setPosition("y", RandomNum(60, 140));	
-		pItem->setPosition("x", RandomNum(60, 140));			
+	case 4:
+		pItem->setPosition("y", RandomNum(60, 140));
+		pItem->setPosition("x", RandomNum(60, 140));
 		break;
 
-	case 5: 
+	case 5:
 		pItem->setPosition("y", RandomNum(85, 160));
-		pItem->setPosition("x", RandomNum(20, 70));		
+		pItem->setPosition("x", RandomNum(20, 70));
 		break;
 
-	default: 
+	default:
 		pItem->setPosition("y", RandomNum(30, 80));
 		break;
 	}
@@ -1437,7 +1365,6 @@ P_ITEM cItem::getOutMostCont( short rec )
 */
 P_CHAR cItem::getPackOwner()
 {
-
 	P_ITEM cont=getOutMostCont();
 	if(cont->isInWorld())
 		return NULL;
@@ -1472,9 +1399,9 @@ UI32 cItem::distFrom( P_ITEM pi )
 	VALIDATEPIR(cont, VERY_VERY_FAR);
 	P_ITEM mycont=getOutMostCont();
 	VALIDATEPIR(mycont, VERY_VERY_FAR );
-	
+
 	if(cont->isInWorld() ) {
-		if( mycont->isInWorld() ) 
+		if( mycont->isInWorld() )
 			return (int)dist(mycont->getPosition(),cont->getPosition());
 		else { //this is weared
 			SERIAL outcontserial=cont->getContSerial();
@@ -1483,7 +1410,7 @@ UI32 cItem::distFrom( P_ITEM pi )
 				VALIDATEPCR(pc,VERY_VERY_FAR);
 				return (int)dist(pc->getPosition(),cont->getPosition());
 			}
-			else 
+			else
 				return VERY_VERY_FAR; //not world, not weared.. and another cont can't be
 		}
 	}
@@ -1492,19 +1419,14 @@ UI32 cItem::distFrom( P_ITEM pi )
 		if(isCharSerial(outcontserial)) { //can be weared
 			P_CHAR pc_i=pointers::findCharBySerial( outcontserial );
 			VALIDATEPCR(pc_i,VERY_VERY_FAR);
-			if( mycont->isInWorld() ) 
+			if( mycont->isInWorld() )
 				return (int)dist(pc_i->getPosition(),mycont->getPosition());
 			else
 				return pc_i->distFrom(mycont);
 		}
-		else return VERY_VERY_FAR;		
+		else return VERY_VERY_FAR;
 
 	}
-}
-
-LOGICAL cItem::canDecay()
-{
-	return priv&0x01;
 }
 
 void cItem::setDecay( const LOGICAL on )
@@ -1515,32 +1437,12 @@ void cItem::setDecay( const LOGICAL on )
 		priv &= ~0x01;
 }
 
-void cItem::setDecayTime( const TIMERVAL delay )
-{
-	decaytime = delay;
-}
-
-TIMERVAL cItem::getDecayTime()
-{
-	return decaytime;
-}
-
-LOGICAL cItem::isNewbie()
-{
-	return priv&0x02;
-}
-
 void cItem::setNewbie( const LOGICAL on )
 {
 	if( on )
 		priv |= 0x02;
 	else
 		priv &= ~0x02;
-}
-
-LOGICAL cItem::isDispellable()
-{
-	return priv&0x04;
 }
 
 void cItem::setDispellable( const LOGICAL on )

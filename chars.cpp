@@ -4860,3 +4860,18 @@ void cChar::modifyFame( SI32 value )
 		}
 	}
 }
+
+/*!
+\author Luxor
+\brief checks a skill for success (with sparring check)
+\return true if success
+\param sk skill
+\param low low bound
+\param high high bound
+\todo document pcd parameter
+\todo backport from Skills::
+*/
+const LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
+{
+	return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd);
+}

@@ -34,9 +34,12 @@ typedef map< UI32, AmxEvent* > AmxEventMap;
 typedef slist< tempfx::cTempfx > TempfxVector;
 
 //! == operator redefinition for Location
-int operator ==(Location a, Location b);
+inline bool operator ==(Location a, Location b)
+{ return ((a.x==b.x) && (a.y==b.y) && (a.z==b.z)); }
+
 //! != operator redefinition for Location
-int operator !=(Location a, Location b);
+inline bool operator !=(Location a, Location b)
+{ return ((a.x!=b.x) || (a.y!=b.y) || (a.z!=b.z)); }
 
 /*!
 \brief Base class of cItem and cChar
@@ -52,12 +55,23 @@ protected:
 \name Operators
 */
 public:
-	bool			operator> (cObject&);
-	bool			operator< (cObject&);
-	bool			operator>=(cObject&);
-	bool			operator<=(cObject&);
-	bool			operator==(cObject&);
-	bool			operator!=(cObject&);
+	inline bool		operator> (const cObject&) const
+	{ return(getSerial32() >  obj.getSerial32()); }
+
+	inline bool		operator< (const cObject&) const
+	{ return(getSerial32() <  obj.getSerial32()); }
+
+	inline bool		operator>=(const cObject&) const
+	{ return(getSerial32() >= obj.getSerial32()); }
+
+	inline bool		operator<=(const cObject&) const
+	{ return(getSerial32() <= obj.getSerial32()); }
+
+	inline bool		operator==(const cObject&) const
+	{ return(getSerial32() == obj.getSerial32()); }
+
+	inline bool		operator!=(const cObject&) const
+	{ return(getSerial32() != obj.getSerial32()); }
 //@}
 
 public:
@@ -79,22 +93,47 @@ private:
 	Serial			OwnerSerial;		//!< If Char is an NPC, this sets its owner
 
 public:
-	const Serial		getSerial() const;
-	const SI32		getSerial32() const;
+	//! return the object's serial
+	inline const Serial	getSerial() const
+	{ return serial; }
+
+	//! return the serial of the object
+	inline const SI32	getSerial32() const
+	{ return serial.serial32; }
+
 	void			setSerial32(SI32 newserial);
 	const void		setSerialByte(UI32 nByte, BYTE value);
 
-	const Serial		getMultiSerial() const;
-	const SI32		getMultiSerial32() const;
-	void			setMultiSerial32Only(SI32 newserial);
+	//! return the object's multi serial
+	inline const Serial	getMultiSerial() const
+	{ return multi_serial; }
+
+	//! return the multi serial of the object
+	inline const SI32	getMultiSerial32() const
+	{ return multi_serial.serial32; }
+
+	//! Set the multi serial of the object
+	inline void		setMultiSerial32Only(SI32 newserial)
+	{ multi_serial.serial32= newserial; }
+
 	const void		setMultiSerialByte(UI32 nByte, BYTE value);
 
-	const Serial		getOwnerSerial() const;
-	const SI32      	getOwnerSerial32() const;
+	//! return the object's owner serial
+	inline const Serial	getOwnerSerial() const
+	{ return OwnerSerial; }
+
+	//! return the object's owner serial
+	inline const SI32      	getOwnerSerial32() const
+	{ return OwnerSerial.serial32; }
+
+	inline void            	setOwnerSerial32Only(SI32 newserial)
+	{ OwnerSerial.serial32= ownser; }
+
 	void            	setOwnerSerial32(SI32 newserial, bool force=false );
-	void            	setOwnerSerial32Only(SI32 newserial);
 	const void		setOwnerSerialByte(UI32 nByte, BYTE value);
-	void			setSameOwnerAs(const cObject* obj);
+
+	inline void		setSameOwnerAs(const cObject* obj)
+	{ setOwnerSerial32Only(obj->getOwnerSerial32()); }
 //@}
 
 //@{
@@ -107,17 +146,29 @@ private:
 	Location		position;		//!< current position of object
 
 public:
-	Location		getPosition() const;
+	//! return the position of the object
+	inline const Location	getPosition() const
+	{ return position; }
+
 	SI32			getPosition(const char *what) const;
 	void			setPosition(const char *what, SI32 value);
-	void			setPosition(UI32 x, UI32 y, SI08 z);
 	void			setPosition(Location where);
 
-	Location		getOldPosition() const;
+	//! Set the position of the object
+	inline void		setPosition(UI32 x, UI32 y, SI08 z)
+	{ setPosition( Loc( x, y, z ) ); }
+
+	inline const Location	getOldPosition() const
+	{ return old_position; }
+
 	SI32			getOldPosition(const char *what) const;
 	void			setOldPosition(const char *what, SI32 value);
-	void			setOldPosition(SI32 x, SI32 y, signed char z, signed char dispz);
-	void			setOldPosition(Location where);
+
+	inline void		setOldPosition(const Location where)
+	{ old_position = where; }
+
+	inline void		setOldPosition(SI32 x, SI32 y, signed char z, signed char dispz)
+	{ setOldPosition( Loc(x, y, z, dispz) ); }
 //@}
 
 //@{
@@ -133,21 +184,52 @@ Also used to store the secondary name of items.
 	string			current_name;	//!< Name displayed everywhere for this object, 30 char max + '\\0'
 
 public:
-	string 			getRealName() const;
-	const char*		getRealNameC() const;
-	void			setRealName(string s);
-	void			setRealName(const char *str);
+	//! return the real name of object
+	inline const string 	getRealName() const
+	{ return secondary_name; }
 
-	string			getCurrentName() const;
-	const char*		getCurrentNameC() const;
-	void			setCurrentName(string s);
-	void			setCurrentName(const char *str);
+	//! return the real name of object
+	inline const char*		getRealNameC() const
+	{ return secondary_name.c_str(); }
+
+	//! Set the real name of object
+	inline void		setRealName(string s)
+	{ secondary_name = s; }
+
+	//! Set the real name of object
+	inline void		setRealName(const char *str)
+	{ secondary_name = string(str); }
+
+	//! return the current name of object
+	inline const string	getCurrentName() const
+	{ return current_name;  }
+
+	//! return the current name of object
+	inline const char*	getCurrentNameC() const
+	{ return current_name.c_str(); }
+
+	//! Set the current name of object
+	inline void		setCurrentName(string s)
+	{ current_name = s; }
+
+	//! Set the current name of object
+	inline void		setCurrentName(const char *str)
+	{ current_name = string(str); }
+
 	void			setCurrentName(char *format, ...);
 
-	// for items
-	void 			setSecondaryName( string s );
-	const char*		getSecondaryNameC() const;
-	string			getSecondaryName() const;
+	//! Set the secondary name of object
+	inline void		setSecondaryName( string s )
+	{ secondary_name = s; }
+
+	//! Get the secondary name of the object
+	inline const char*	getSecondaryNameC() const
+	{ return secondary_name.c_str(); }
+
+	//! Get the secondary name of the object
+	inline const string	getSecondaryName() const
+	{ return secondary_name; }
+
 	void			setSecondaryName(const char *format, ...);
 //@}
 
@@ -167,14 +249,19 @@ public:
 	void			tempfxOff();
 	LOGICAL			hasTempfx();
 	tempfx::cTempfx*	getTempfx( SI32 num, SERIAL funcidx = INVALID );
-	UI32			getScriptID();
-	void			setScriptID(UI32 sid);
-
 //@}
+
+	//! return the object's script number
+	inline const UI32	getScriptID() const
+	{ return ScriptID; }
+
+	//! set the object's script number
+	inline void		setScriptID(UI32 sid)
+	{ ScriptID = sid; }
 
 	UI32	disabled;	//!< Disabled object timer, cant trigger.
 	std::string*	disabledmsg; //!< Object is disabled, so display this message.
-					
+
 
 public:
 	virtual	void		Delete();
@@ -182,20 +269,32 @@ public:
 private:
 	UI16 id_old;
 	UI16 id;
-public:
-	void setId( UI16 newId );
-	UI16 getId();
-	void setOldId( UI16 oldId );
-	UI16 getOldId();
-
-private:
 	COLOR color;
 	COLOR color_old;
 public:
-	void setColor( COLOR newColor );
-	COLOR getColor();
-	void setOldColor( COLOR oldColor );
-	COLOR getOldColor();
+	inline void setId( UI16 newId )
+	{ id = newId; }
+
+	inline const UI16 getId() const
+	{ return id; }
+
+	inline void setOldId( UI16 oldId )
+	{ id_old = oldId; }
+
+	inline const UI16 getOldId() const
+	{ return id_old; }
+
+	inline void setColor( COLOR newColor )
+	{ color = newColor; }
+
+	inline const COLOR getColor() const
+	{ return color; }
+
+	inline void setOldColor( COLOR oldColor )
+	{ color_old = oldColor; }
+
+	inline const COLOR getOldColor() const
+	{ return this->color_old; }
 
 } PACK_NEEDED;
 

@@ -181,11 +181,19 @@ public:
 	BYTE		getContSerialByte(UI32 nByte, LOGICAL old= false) const;
 	const cObject*	getContainer() const;
 
-	void		setCont(P_OBJECT obj);
+	inline void	setCont(P_OBJECT obj)
+	{ setContSerial(obj->getSerial32()); }
+
 	void		setContSerial(SI32 serial, LOGICAL old= false, LOGICAL update= true);
 	void		setContSerialByte(UI32 nByte, BYTE value, LOGICAL old= false);
-	LOGICAL		isContainer(); //Endymion
-	LOGICAL		isSecureContainer(); //Endymion
+
+	//! check if item is a container
+	inline const LOGICAL isContainer() const
+	{ return type==1 || type==12 || type==63 || type==8 || type==13 || type==64; }
+
+	inline const LOGICAL isSecureContainer() const
+	{ return type==8 || type==13 || type==64; }
+
 	//SI16		GetContGumpType();
 	void		SetRandPosInCont(P_ITEM pCont);
 	bool		ContainerPileItem( P_ITEM pItem );	// try to find an item in the container to stack with
@@ -217,30 +225,43 @@ public:
 */
 	UI16		amount;		//!< Amount of items in pile
 	UI16		amount2;	//!< Used to track things like number of yards left in a roll of cloth
-	SI32		ReduceAmount(const short amount);
-	SI32		IncreaseAmount(const short amount);
-	void		setAmount(const short amt);
-	SI32		DeleteAmount(int amount, short id, short color=-1);
-	SI32		CountItems(short ID=-1, short col= -1,LOGICAL bAddAmounts = true);
-	SI32		CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts);
+	SI32		ReduceAmount(const SI16 amount);
+	SI32		IncreaseAmount(const SI16 amount);
+
+	//! set the amount of piled items
+	inline void	setAmount(const UI16 amt)
+	{ amount= amt; Refresh(); }
+
+	SI32			DeleteAmount(int amount, short id, short color=-1);
+	inline const SI32	CountItems(short ID=-1, short col= -1,LOGICAL bAddAmounts = true) const
+	{ return pointers::containerCountItems(getSerial32(), ID, col, bAddAmounts); }
+
+	inline const SI32	CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts) const
+	{ return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts); }
 //@}
 
 //@{
 /*!
 \name Weight
 */
-	UI32		weight;
-	R32		getWeight();
-	R32		getWeightActual();
+	UI32			weight;
+	R32			getWeight();
+
+	inline const R32	getWeightActual()
+	{ return (amount>1)? getWeight()*amount : getWeight(); }
 //@}
 
 //@{
 /*!
 \name Position
 */
-	LOGICAL		isInWorld();
-	void		MoveTo(Location newloc);
-	void		MoveTo(SI32 x, SI32 y, SI08 z);
+	inline const LOGICAL	isInWorld() const
+	{ return contserial.serial32==INVALID; }
+
+	void			MoveTo(Location newloc);
+
+	inline void		MoveTo(SI32 x, SI32 y, SI08 z)
+	{ MoveTo( Loc(x, y, z) ); }
 //@}
 
 //@{
@@ -384,7 +405,7 @@ public:
 //	SI32		glow; // LB identifies glowing objects
 //	SI08		glow_c1; // for backup of old color
 //	SI08		glow_c2;
-//	SI08		glow_effect; 
+//	SI08		glow_effect;
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
 	void		explode(NXWSOCKET  s);
@@ -399,16 +420,26 @@ private:
 
 public:
 	LOGICAL		doDecay();
-	LOGICAL		canDecay();
+
+	inline const LOGICAL canDecay() const
+	{ return return priv&0x01; }
+
 	void		setDecay( const LOGICAL on = true );
 
-	void		setDecayTime( const TIMERVAL delay = uiCurrentTime+(SrvParms->decaytimer*MY_CLOCKS_PER_SEC) );
-	TIMERVAL	getDecayTime();
+	inline const void setDecayTime( const TIMERVAL delay = uiCurrentTime+(SrvParms->decaytimer*MY_CLOCKS_PER_SEC) )
+	{ decaytime = delay; }
 
-	LOGICAL		isNewbie();
+	inline const TIMERVAL getDecayTime() const
+	{ return decaytime; }
+
+	inline const LOGICAL isNewbie() const
+	{ return priv&0x02; }
+
 	void		setNewbie( const LOGICAL on = true );
 
-	LOGICAL		isDispellable();
+	inline const LOGICAL isDispellable() const
+	{ return priv&0x04; }
+
 	void		setDispellable( const LOGICAL on = true );
 
 	LOGICAL		pileable; // Can item be piled

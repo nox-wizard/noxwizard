@@ -27,6 +27,10 @@
 #include "logsystem.h"
 #include "globals.h"
 
+#ifndef TIMEOUT
+#define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
+#endif
+
 enum WanderMode {
 	WANDER_NOMOVE = 0,
 	WANDER_FOLLOW,
@@ -148,6 +152,8 @@ class cChar : public cObject
 		static const UI08 flagKarmaMurderer	= 0x01; //!< Char is murderer
 		static const UI08 flagKarmaCriminal	= 0x02; //!< Char is criminal
 //@}
+		char			nxwflags[4]; // for special nxw features
+
 		inline const LOGICAL resistsFire() const
 		{ return nxwflags[0] & flagResistFire; }
 
@@ -242,13 +248,13 @@ class cChar : public cObject
 		{ return priv2 & flagPriv2Reflection; }
 
 		inline void setAllMove(LOGICAL set = true)
-		{ setPriv2(flagPriv2AllMove, set) }
+		{ setPriv2(flagPriv2AllMove, set); }
 
 		inline void setViewHouseIcon(LOGICAL set = true)
-		{ setPriv2(flagPriv2ViewHouseIcon, set) }
+		{ setPriv2(flagPriv2ViewHouseIcon, set); }
 
 		inline void setPermaHidden(LOGICAL set = true)
-		{ setPriv2(flagPriv2PermaHidden, set) }
+		{ setPriv2(flagPriv2PermaHidden, set); }
 
 		inline void setReflection(LOGICAL set = true)
 		{ setPriv2(flagPriv2Reflection, set); }
@@ -332,7 +338,7 @@ class cChar : public cObject
 		void 			unHide();
 
 		//! Return the karma of the char
-		inline const SI32	GetKarma() const;
+		inline const SI32	GetKarma() const
 		{ return karma; }
 
 		//! Set the karma of the char
@@ -369,7 +375,7 @@ class cChar : public cObject
 	public:
 		//! Set the creation day of a character
 		inline void		SetCreationDay(TIMERVAL day)
-		{ creationday = CreateDay; }
+		{ creationday = day; }
 
 		//! Get the creation day of a character
 		inline const TIMERVAL	GetCreationDay() const
@@ -616,7 +622,7 @@ class cChar : public cObject
 		{ cantrain = c; }
 
 		inline void		resetCanTrain()
-		{ setCanTray(false); }
+		{ setCanTrain(false); }
 //@}
 
 //@{
@@ -818,7 +824,6 @@ public:
 		TIMERVAL		summontimer; //Timer for summoned creatures.
 		TIMERVAL		fishingtimer; // Timer used to delay the catching of fish
 
-		char			nxwflags[4]; // for special nxw features
 	//SI32			amxflags[16]; // for special things implemented by scripts :)
 		SI32			magicsphere; // for npc ai
 		//<Luxor>
@@ -1053,19 +1058,7 @@ public:
 		LOGICAL			checkSkill(Skill sk, SI32 low, SI32 high, LOGICAL bRaise = true);
 		SI32			delItems(short id, SI32 amount = 1, short color = INVALID);
 
-		/*!
-		\author Luxor
-		\brief checks a skill for success (with sparring check)
-		\return true if success
-		\param sk skill
-		\param low low bound
-		\param high high bound
-		\todo document pcd parameter
-		\todo backport from Skills::
-		*/
-		inline const LOGICAL	checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
-		{ return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd); }
-
+		const LOGICAL	checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd);
 
 		UI32			getAmount(short id, short col=INVALID, bool onlyPrimaryBackpack=false );
 

@@ -103,7 +103,7 @@ cObject::cObject()
 	old_position = Loc(0,0,0);
 	position = Loc(0,0,0);
 	ScriptID = 0;
-	
+
 	color = color_old = 0;
 	id = id_old = 0;
 
@@ -131,76 +131,6 @@ cObject::~cObject()
 	if( disabledmsg!=NULL )
 		safedelete( disabledmsg );
 }
-/*
-			Operators definitions
-*/
-
-
-int operator ==(Location a, Location b)
-{
-	return ((a.x==b.x) && (a.y==b.y) && (a.z==b.z));
-}
-
-int operator !=(Location a, Location b)
-{
-	return ((a.x!=b.x) || (a.y!=b.y) || (a.z!=b.z));
-}
-
-
-bool cObject::operator> (cObject &obj){ return(getSerial32() >  obj.getSerial32()); }
-bool cObject::operator< (cObject &obj){ return(getSerial32() <  obj.getSerial32()); }
-bool cObject::operator>=(cObject &obj){ return(getSerial32() >= obj.getSerial32()); }
-bool cObject::operator<=(cObject &obj){ return(getSerial32() <= obj.getSerial32()); }
-bool cObject::operator==(cObject &obj){ return(getSerial32() == obj.getSerial32()); }
-bool cObject::operator!=(cObject &obj){ return(getSerial32() != obj.getSerial32()); }
-
-
-
-
-
-/*!
-\brief return the object's script number
-\author Anthalir
-\return UI32
-\since 0.82a
-*/
-UI32 cObject::getScriptID()
-{
-	return ScriptID;
-}
-
-/*!
-\brief set the object's script number
-\author Anthalir
-\param sid the new serial
-\since 0.82a
-*/
-void cObject::setScriptID(UI32 sid)
-{
-	ScriptID= sid;
-}
-
-/*!
-\brief return the serial of the object
-\author Anthalir
-\return unsigned int
-\since 0.82a
-*/
-const SI32 cObject::getSerial32() const
-{
-	return serial.serial32;
-}
-
-/*!
-\brief return the object's serial
-\author Anthalir
-\return Serial structure
-\since 0.82a
-*/
-const Serial cObject::getSerial() const
-{
-	return serial;
-}
 
 /*!
 \brief set one byte of the object's serial
@@ -223,12 +153,6 @@ const void cObject::setSerialByte(UI32 nByte, BYTE value)
 		WarnOut("cannot access byte %i of serial !!", nByte);
 		break;
 	}
-}
-
-
-void cObject::setSameOwnerAs(const cObject* obj)
-{
-	setOwnerSerial32Only(obj->getOwnerSerial32());
 }
 
 /*!
@@ -259,30 +183,6 @@ const void cObject::setOwnerSerialByte(UI32 nByte, BYTE value)
 		WarnOut("cannot access byte %i of serial !!", nByte);
 		break;
 	}
-}
-
-/*!
-\brief return the multi serial of the object
-\author Anthalir
-\return unsigned int
-\since 0.82a
-\remarks What is the multi serial used for ??? don't know
-
-*/
-const SI32 cObject::getMultiSerial32() const
-{
-	return multi_serial.serial32;
-}
-
-/*!
-\brief return the object's multi serial
-\author Anthalir
-\return Serial structure
-\since 0.82a
-*/
-const Serial cObject::getMultiSerial() const
-{
-	return multi_serial;
 }
 
 /*!
@@ -327,49 +227,6 @@ void cObject::setSerial32(SI32 newserial)
 		objects.insertObject( this );
 }
 
-/*!
-\brief Set the multi serial of the object
-\author Anthalir
-\since 0.82a
-\param newserial the new serial (unsigned int)
-*/
-void cObject::setMultiSerial32Only(SI32 newserial)
-{
-	multi_serial.serial32= newserial;
-}
-
-/*!
-\brief return the object's owner serial
-\author Anthalir
-\return Serial structure
-\since 0.82a
-*/
-const Serial cObject::getOwnerSerial() const
-{
-	return OwnerSerial;
-}
-
-/*!
-\brief return the object's owner serial
-\author Anthalir
-\return SI32
-\since 0.82a
-*/
-const SI32 cObject::getOwnerSerial32() const
-{
-    return OwnerSerial.serial32;
-}
-
-///////////////////////
-// Name:	setters for various serials
-// history: by Duke, 2.6.2001
-// Purpose: encapsulates revoval/adding to the pointer arrays
-//
-void cObject::setOwnerSerial32Only(SI32 ownser)
-{
-	OwnerSerial.serial32= ownser;
-}
-
 void cObject::setOwnerSerial32(SI32 ownser, bool force)
 {
 
@@ -406,17 +263,6 @@ void cObject::setOwnerSerial32(SI32 ownser, bool force)
 	else
 		pointers::addToOwnerMap( (P_ITEM)( this ) );
 	//End Endymion..
-}
-
-/*!
-\brief return the position of the object
-\author Anthalir
-\since 0.82a
-\return Location structure containing the current object position
-*/
-Location cObject::getPosition() const
-{
-	return position;
 }
 
 /*!
@@ -474,19 +320,6 @@ void cObject::setPosition(Location where)
 }
 
 /*!
-\brief Set the position of the object
-\author Anthalir
-\since 0.82a
-\param x new X-coord of the object
-\param y new Y-coord of the object
-\param z new Z-coord of the object
-*/
-void cObject::setPosition(UI32 x, UI32 y, SI08 z)
-{
-	setPosition( Loc( x, y, z ) ); // Luxor
-}
-
-/*!
 \brief Set one coord of the object position
 \author Anthalir
 \since 0.82a
@@ -524,11 +357,6 @@ void cObject::setPosition( const char *what, SI32 value)
 			position.dispz= value;
 		break;
 	}
-}
-
-Location cObject::getOldPosition() const
-{
-	return old_position;
 }
 
 SI32 cObject::getOldPosition( const char *what) const
@@ -573,100 +401,6 @@ void cObject::setOldPosition( const char *what, SI32 value)
 	}
 }
 
-void cObject::setOldPosition(SI32 x, SI32 y, signed char z, signed char dispz)
-{
-	setOldPosition( Loc(x, y, z, dispz) );
-}
-
-void cObject::setOldPosition(Location where)
-{
-	old_position= where;
-}
-
-
-
-/*!
-\brief return the real name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C++ string object
-*/
-string cObject::getRealName() const
-{
-	return secondary_name;
-}
-
-
-/*!
-\brief return the real name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C char pointer
-\attention the pointer you get is not the pointer to the real data, don't use it to set the name !!
-*/
-const char* cObject::getRealNameC() const
-{
-	return secondary_name.c_str();
-}
-
-/*!
-\brief Set the real name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\param s C++ string
-*/
-void cObject::setRealName(string s)
-{
-	secondary_name = s;
-}
-
-
-/*!
-\brief Set the real name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\param str C char pointer
-*/
-void cObject::setRealName( const char *str )
-{
-	secondary_name = string(str);
-}
-
-/*!
-\brief return the current name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C++ string
-*/
-string cObject::getCurrentName() const
-{
-	return current_name;
-}
-
-
-/*!
-\brief return the current name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C char pointer
-\attention the pointer you get is not the pointer to the real data, don't use it to set the name !!
-*/
-const char* cObject::getCurrentNameC() const
-{
-	return current_name.c_str();
-}
-
-/*!
-\brief Set the current name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\param s C++ string, the new name
-*/
-void cObject::setCurrentName( string s )
-{
-	current_name = s;
-}
-
 /*!
 \brief Set the current name of object
 \author Anthalir, rewritten by Luxor
@@ -676,34 +410,13 @@ void cObject::setCurrentName( string s )
 void cObject::setCurrentName( char *format, ... )
 {
 	char tmp[150];
-    va_list vargs;
-    va_start(vargs, format);
-    vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
-    va_end(vargs);
-
+	va_list vargs;
+	va_start(vargs, format);
+	vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
+	va_end(vargs);
 	current_name=string( tmp );
 }
 
-/*!
-\brief Set the current name of object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\param str C char pointer, the new name
-*/
-void cObject::setCurrentName( const char *str )
-{
-	current_name = string(str);
-}
-/*!
-\brief Set the secondary name of object
-\author Sparhawk
-\since 0.82a
-\param s the new name
-*/
-void cObject::setSecondaryName( string s )
-{
-	secondary_name = s;
-}
 /*!
 \brief Set the secondary name of the object
 \author Anthalir, rewritten by Luxor
@@ -721,30 +434,6 @@ void cObject::setSecondaryName(const char *format, ...)
 
         tmp[sizeof(tmp)-1] = '\0';
 	secondary_name = string(tmp);
-}
-
-/*!
-\brief Get the secondary name of the object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C char pointer
-\warning This function must only be used by items because it use same var than real name of chars
-*/
-const char *cObject::getSecondaryNameC() const
-{
-	return secondary_name.c_str();
-}
-
-/*!
-\brief Get the secondary name of the object
-\author Anthalir, rewritten by Luxor
-\since 0.82a
-\return C char pointer
-\warning This function must only be used by items because it use same var than real name of chars
-*/
-string cObject::getSecondaryName() const
-{
-	return secondary_name;
 }
 
 /*!
@@ -803,7 +492,7 @@ cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2, SI32 param3, 
 	AmxEvent* event = getAmxEvent( eventID );
 
 	g_bByPass = false;
-	
+
 	if( event != NULL )
 		return event->Call( param1, param2, param3, param4 );
 
@@ -949,7 +638,7 @@ void cObject::checkTempfx()
 		if ( result == 1 ) { // Tempfx has been executed
 			it = tempfx->erase( it );
 			continue;
-		} 
+		}
 		else if ( result == INVALID ) // Tempfx has deleted the object!! Avoid Crashing!
 			return;
 		++it;
@@ -1000,44 +689,3 @@ tempfx::cTempfx* cObject::getTempfx( SI32 num, SERIAL funcidx )
 
 	return NULL;
 }
-
-void cObject::setId( UI16 newId )
-{
-	this->id = newId;
-}
-
-UI16 cObject::getId()
-{
-	return this->id;
-}
-
-void cObject::setOldId( UI16 oldId )
-{
-	this->id_old = oldId;
-}
-
-UI16 cObject::getOldId()
-{
-	return this->id_old;
-}
-
-void cObject::setColor( COLOR newColor )
-{
-	this->color = newColor;
-}
-
-COLOR cObject::getColor()
-{
-	return this->color;
-}
-
-void cObject::setOldColor( COLOR oldId )
-{
-	this->color_old = oldId;
-}
-
-COLOR cObject::getOldColor()
-{
-	return this->color_old;
-}
-
