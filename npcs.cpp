@@ -18,6 +18,243 @@
 #include "commands.h"
 #include "npcai.h"
 
+COLOR addrandomcolor(cObject* po, char *colorlist)
+{
+	
+	if( (po!=NULL) && isCharSerial( po->getSerial32() ) )
+		{ VALIDATEPCR(po,0); }
+	else 
+		VALIDATEPIR(po,0);
+	
+	char sect[512];
+	int i,j,storeval = 0;
+	i=0; j=0;
+	cScpIterator* iter = NULL;
+	char script1[1024];
+
+	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
+	iter = Scripts::Colors->getNewIterator(sect);
+	if (iter==NULL) {
+		WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
+		return 0;
+	}
+
+	int loopexit=0;
+	do
+	{
+		strcpy(script1, iter->getEntry()->getFullLine().c_str());
+		if ((script1[0]!='}')&&(script1[0]!='{'))
+		{
+			i++;
+		}
+	}
+	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+
+	safedelete(iter);
+
+	if(i>0)
+	{
+		i=rand()%i;
+		i++;
+		iter = Scripts::Colors->getNewIterator(sect);
+		if (iter==NULL) {
+			WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
+			return 0;
+		}
+		loopexit=0;
+		do
+		{
+			strcpy(script1, iter->getEntry()->getFullLine().c_str());
+			if ((script1[0]!='}')&&(script1[0]!='{'))
+			{
+				j++;
+				if(j==i)
+				{
+					storeval=hex2num(script1);
+				}
+			}
+		}
+		while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		safedelete(iter);
+	}
+	return (storeval);
+
+}
+
+static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
+{
+
+	VALIDATEPCR(pc,0);
+
+	char sect[512];
+	int i,j,haircolor = 0;
+	i=0; j=0;
+	cScpIterator* iter = NULL;
+	char script1[1024];
+
+	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
+	iter = Scripts::Colors->getNewIterator(sect);
+	if (iter==NULL)
+	{
+		WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
+		return 0;
+	}
+
+	int loopexit=0;
+	do
+	{
+		strcpy(script1, iter->getEntry()->getFullLine().c_str());
+		if ((script1[0]!='}')&&(script1[0]!='{'))
+		{
+			i++;
+		}
+	}
+	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+
+	safedelete(iter);
+
+	if(i>0)
+	{
+		i=rand()%i;
+		i++;
+		iter = Scripts::Colors->getNewIterator(sect);
+		if (iter==NULL)
+		{
+			WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
+			return 0;
+		}
+		loopexit=0;
+		do
+		{
+			strcpy(script1, iter->getEntry()->getFullLine().c_str());
+			if ((script1[0]!='}')&&(script1[0]!='{'))
+			{
+				j++;
+				if(j==i)
+				{
+					haircolor=hex2num(script1);
+				}
+			}
+		}
+		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		safedelete(iter);
+	}
+	return (haircolor);
+
+
+}
+
+char* getRandomName(char * namelist)
+{
+        char sect[512];
+	static char script1[1024];
+        int i=0,j=0;
+
+		cScpIterator* iter = NULL;
+
+        sprintf(sect, "SECTION RANDOMNAME %s", namelist);
+		iter = Scripts::Npc->getNewIterator(sect);
+        if (iter==NULL) {
+                //sprintf(chars[s].name, "Error Namelist %s Not Found", namelist);
+                return "I_am_a_bug";
+        }
+	
+        int loopexit=0;
+        do
+        {
+                strcpy(script1, iter->getEntry()->getFullLine().c_str());
+                if ((script1[0]!='}')&&(script1[0]!='{'))
+                {
+                        i++;
+                }
+        }
+        while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+
+        iter->rewind();
+
+        if(i>0)
+        {
+                i=rand()%(i);
+                loopexit=0;
+                do
+                {
+                        strcpy(script1, iter->getEntry()->getFullLine().c_str());
+                        if ((script1[0]!='}')&&(script1[0]!='{'))
+                        {
+                                if(j==i)
+                                {
+                                        //return((char*)(&script1));
+					return(script1); // anthalir elcabesa bug fix
+                                }
+                                else j++;
+                        }
+                }
+                while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+                safedelete(iter);
+        }
+
+	return "I_am_a_bug";
+}
+
+void setrandomname(P_CHAR pc, char * namelist)
+{
+	
+
+	VALIDATEPC(pc);
+	
+	char sect[512];
+	int i=0,j=0;
+	char script1[1024];
+	cScpIterator* iter = NULL;
+
+	sprintf(sect, "SECTION RANDOMNAME %s", namelist);
+	iter = Scripts::Npc->getNewIterator(sect);
+	if (iter==NULL) {
+		//sprintf(chars[s].getCurrentNameC(), "Error Namelist %s Not Found", namelist);
+		//chars[s].setCurrentName("Error Namelist " + string(namelist) + " Not Found");
+		char tmp[30];
+		sprintf(tmp, "Namelist not found: %10s", namelist);
+		pc->setCurrentName(tmp);
+		return;
+	}
+
+	int loopexit=0;
+	do
+	{
+		strcpy(script1, iter->getEntry()->getFullLine().c_str());
+		if ((script1[0]!='}')&&(script1[0]!='{'))
+		{
+			i++;
+		}
+	}
+	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+
+	iter->rewind();
+
+	if(i>0)
+	{
+		i=rand()%(i);
+		loopexit=0;
+		do
+		{
+			strcpy(script1, iter->getEntry()->getFullLine().c_str());
+			if ((script1[0]!='}')&&(script1[0]!='{'))
+			{
+				if(j==i)
+				{
+					//strcpy(chars[s].name,(char*)script1);
+					pc->setCurrentName( script1 );
+					break;
+				}
+				else j++;
+			}
+		}
+		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		safedelete(iter);
+	}
+
+}
+
 namespace npcs {	//Luxor
 
 
@@ -58,7 +295,7 @@ void SpawnGuard(P_CHAR pc, P_CHAR pc_i, int x, int y, signed char z)
 		  pc_c->summontimer=(getclock()+(MY_CLOCKS_PER_SEC*25));
 
 		  pc_c->playSFX(0x01FE);
-		  staticeffect(DEREF_P_CHAR(pc_c), 0x37, 0x2A, 0x09, 0x06);
+		  pc_c->staticFX(0x372A, 9, 6);
 
 		  pc_c->teleport();
 		  pc_c->talkAll(TRANSLATE("Thou shalt regret thine actions, swine!"),1);
@@ -159,7 +396,7 @@ int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
 		if (spawnpoint==-1)
 		{
 			addmitem[s]=k;
-			return Targ->NpcMenuTarget(s);
+			return targets::NpcMenuTarget(s);
 			//return -1;
 		}
 		else
@@ -324,7 +561,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// Now lets spawn him/her
 					//
 
-					pc=archive::getNewChar();
+					pc=archive::character::New();
 					if(!ISVALIDPC(pc))
 					{
 						safedelete(iter);
@@ -493,10 +730,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "COLORLIST" == script1 )
 								{
+									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
 									if (ISVALIDPI(pi_n))
 									{
-										std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
-										pi_n->setColor( hex2num( value ) );
+										pi_n->setColor( storeval );
 									}
 									script1 = "DUMMY";
 								}
@@ -610,11 +847,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 							case 'H':
 								if	( "HAIRCOLOR" == script1 )
 								{
-									if( ISVALIDPI(pi_n) )
+									if (ISVALIDPI(pi_n))
 									{
-										std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
-										haircolor = hex2num( value );
-										if ( haircolor != INVALID )
+										haircolor=addrandomhaircolor(pc, const_cast<char*>(script2.c_str()));
+										if (haircolor!=-1)
 										{
 											pi_n->setColor( haircolor );
 										}
@@ -766,8 +1002,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "NAMELIST" == script1 )
 								{
-									pc->setCurrentName( cObject::getRandomScriptValue( string("RANDOMNAME"), script2 ) );
-									pc->setRealName( pc->getCurrentName() );
+									setrandomname(pc,const_cast<char*>(script2.c_str()));
+									pc->setRealName( pc->getCurrentNameC() );
 									script1 = "DUMMY";
 								}
 								else if ( "NOTRAIN" == script1 )
@@ -952,9 +1188,9 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "SKINLIST" == script1 )
 								{
-									std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
-									pc->setSkinColor( hex2num( value ) );
-									pc->setOldSkinColor( pc->getSkinColor() );
+									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
+									pc->setSkinColor(storeval);
+									pc->setOldSkinColor(storeval);
 									script1 = "DUMMY";
 								}
 								else if ( "SNOOPING" == script1 )
@@ -1078,7 +1314,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (k>=50) //this CAN be a bit laggy. adjust as nessicary
 									{
-										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition("x"), pi_i->getPosition("y"), pi_i->getPosition("z"));
+										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition().x, pi_i->getPosition().y, pi_i->getPosition().z);
 										xos=0;
 										yos=0;
 										break;
@@ -1088,7 +1324,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									//ConOut("AddNPC Spawning at Offset %i,%i (%i,%i,%i) [-%i,%i <-> -%i,%i]. [Loop #: %i]\n",xos,yos,items[i].x+xos,items[i].y+yos,items[i].z,items[i].more3,items[i].more3,items[i].more4,items[i].more4,k); /** lord binary, changed %s to %i, crash when uncommented ! **/
 									k++;
 
-									if ((pi_i->getPosition("x")+xos<1) || (pi_i->getPosition("y")+yos<1))
+									if ((pi_i->getPosition().x+xos<1) || (pi_i->getPosition().y+yos<1))
 										lb=0; /* lord binary, fixes crash when calling npcvalid with negative coordiantes */
 									else { //<Luxor>
 										Location newpos = Loc( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, pi_i->getPosition().z );
@@ -1096,7 +1332,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									MapStaticIterator msi(pi_i->getPosition("x") + xos, pi_i->getPosition("y") + yos);
+									MapStaticIterator msi(pi_i->getPosition().x + xos, pi_i->getPosition().y + yos);
 									staticrecord *stat;
 									loopexit=0;
 									while ( ((stat = msi.Next())!=NULL) && (++loopexit < MAXLOOPS) )
@@ -1197,7 +1433,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// End - Dupois
 
 					//Char mapRegions
-					mapRegions->add(pc);
+					regions::add(pc);
 					pointers::delCharFromLocationMap( pc ); // char may already have been added by previous MoveTo()
 					pointers::addCharToLocationMap( pc );
 					//

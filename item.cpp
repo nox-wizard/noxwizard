@@ -50,7 +50,7 @@ namespace item
 		if((iter = Scripts::Items->getNewIterator(sect)) == NULL)
 			return NULL;
 
-		P_ITEM pi= archive::getNewItem();
+		P_ITEM pi= archive::item::New();
 
 		if (!ISVALIDPI(pi)) {
 			safedelete(iter);
@@ -172,8 +172,10 @@ namespace item
 						pi->creator = rha;
 					else if ( lha == "COLORLIST" )
 					{
-						std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), rha );
-						pi->setColor( hex2num( value ) );
+						tmp = addrandomcolor(pi, const_cast<char*>(rha.c_str()));
+						{
+							pi->setColor(tmp);
+						}
 					}
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
@@ -231,7 +233,7 @@ namespace item
 					}
 					else if ( lha == "ITEMLIST" )
 					{
-						pi->deleteItem();
+						pi->Delete();
 						pi=item::CreateScriptRandomItem( const_cast<char*>(rha.c_str()), cont);
 						/*
 						if( ISVALIDPI(pi) )
@@ -458,7 +460,7 @@ namespace item
 		tile_st tile;
 		Map->SeekTile(id, &tile);
 		pile = (tile.flag2&0x08);
-		P_ITEM pi=archive::getNewItem();
+		P_ITEM pi=archive::item::New();
 		if ( pi==NULL )
 			return NULL;
 
@@ -516,7 +518,7 @@ namespace item
 			else
 				if (pi->isInWorld())
 				{
-					mapRegions->add(pi);
+					regions::add(pi);
 					pointers::addItemToLocationMap( pi );
 				}
 		}
@@ -525,6 +527,7 @@ namespace item
 
 	}
 
+#if 0
 	/*
 	\author Duke
 	\brief Create an item for a socket
@@ -594,7 +597,8 @@ namespace item
 		}
 		return pi;
 	}*/
-
+#endif
+	
 	SI32 getname(int i, char* itemname)
 	{
 		tile_st tile;

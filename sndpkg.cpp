@@ -1438,86 +1438,6 @@ void itemtalk(P_ITEM pi, char *txt)
 // simply dont set them in that case
 // the last parameter is for particlesystem optimization only (dangerous). don't use unless you know 101% what you are doing.
 
-void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop,  bool UO3DonlyEffekt, ParticleFx *sta, bool skip_old)
-{
-	P_CHAR pc=MAKE_CHAR_REF(player);
-	VALIDATEPC(pc);
-
-	UI16 eff = (eff1<<8)|(eff2%256);
-	UI08 effect[28]={ 0x70, 0x00, };
-
-    	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	 int a0,a1,a2,a3,a4;
-	 Location charpos= pc->getPosition();
-
-	 if (!skip_old)
-	 {
-Location pos2;
-pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
-	 }
-
-	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
-	 {
-
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( pc, false );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			NXWSOCKET s = sw.getSocket();
-			Xsend(s, effect, 28);
-//AoS/			Network->FlushBuffer(s);
-		 }
-	   
-	   return;
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-	   unsigned char particleSystem[49];
-
-
-		NxwSocketWrapper sw;
-	    sw.fillOnline( pc, false );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			 NXWSOCKET j=sw.getSocket();
-			 if(j==INVALID) continue;
-			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
-			 {
-				 Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-			 {
-				staticeffectUO3D(player, sta);
-
-				// allow to fire up to 4 layers at same time (like on OSI servers)
-				a0 = sta->effect[10];
-
-				a1 = ( ( a0 & 0x000000ff )       );
-				a2 = ( ( a0 & 0x0000ff00 ) >> 8  );
-				a3 = ( ( a0 & 0x00ff0000 ) >> 16 );
-				a4 = ( ( a0 & 0xff000000 ) >> 24 );
-
-				if (a1!=0xff) { particleSystem[46] = a1; Xsend(j, particleSystem, 49); }
-				if (a2!=0xff) { particleSystem[46] = a2; Xsend(j, particleSystem, 49); }
-				if (a3!=0xff) { particleSystem[46] = a3; Xsend(j, particleSystem, 49); }
-				if (a4!=0xff) { particleSystem[46] = a4; Xsend(j, particleSystem, 49); }
-
-//AoS/				Network->FlushBuffer(j);
-				//sprintf(temp, "a0: %x a1: %x a2: %x a3: %x a4: %x \n",a0,a1,a2,a3,a4);
-				//ConOut(temp);
-			 }
-			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); } // attention: a simple else is wrong !
-		 
-	   } // end for
-	} // end UO:3D effect
-
-	// remark: if a UO:3D effect is send and ALL clients are UO:3D ones, the pre-calculation of the 2-d packet
-	// is redundant. but we can never know, and probably it will take years till the 2d cliet dies.
-	// I think it's too infrequnet to consider this as optimization.
-}
-
 void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 {
 
@@ -2448,82 +2368,70 @@ void tellmessage(int i, int s, char *txt)
 // effect 12 ->
 
 
-void staticeffectUO3D(CHARACTER player, ParticleFx *sta)
+/*!
+ \brief Write particleSystem packet for UO3D Static effects
+ \author Unknown - pseudo-totally rewritten by Akron
+ \param pc_cs source character
+ \param sta effect
+ \param particleSystem packet
+ */
+void staticeffectUO3D(P_CHAR pc_cs, ParticleFx *sta, UI08 *particleSystem)
 {
+	VALIDATEPC(pc_cs);
 
-   PC_CHAR pc_cs=MAKE_CHAR_REF(player);
-   VALIDATEPC(pc_cs);
-   Location charpos= pc_cs->getPosition();
+	particleSystem[0]= 0xc7;
+	particleSystem[1]= 0x3;
 
-   // please no optimization of p[...]=0's yet :)
+	LongToCharPtr(pc_cs->getSerial32(), particleSystem+2);
 
-   unsigned char particleSystem[49];
-   particleSystem[0]= 0xc7;
-   particleSystem[1]= 0x3;
+	particleSystem[6]= 0x0; // always 0 for this type
+	particleSystem[7]= 0x0;
+	particleSystem[8]= 0x0;
+	particleSystem[9]= 0x0;
 
-   particleSystem[2]= pc_cs->getSerial().ser1;
-   particleSystem[3]= pc_cs->getSerial().ser2;
-   particleSystem[4]= pc_cs->getSerial().ser3;
-   particleSystem[5]= pc_cs->getSerial().ser4;
+	particleSystem[10]= sta->effect[4]; // tileid1
+	particleSystem[11]= sta->effect[5]; // tileid2
 
-   particleSystem[6]= 0x0; // always 0 for this type
-   particleSystem[7]= 0x0;
-   particleSystem[8]= 0x0;
-   particleSystem[9]= 0x0;
+	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+12);
+	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+14);
+	particleSystem[16] = (UI08)pc_cs->getPosition().z;
 
-   particleSystem[10]= sta->effect[4]; // tileid1
-   particleSystem[11]= sta->effect[5]; // tileid2
+	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+17);
+	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+19);
+	particleSystem[21] = (UI08)pc_cs->getPosition().z;
 
-   particleSystem[12]= (charpos.x)>>8;
-   particleSystem[13]= (charpos.x)%256;
-   particleSystem[14]= (charpos.y)>>8;
-   particleSystem[15]= (charpos.y)%256;
-   particleSystem[16]= (charpos.z);
+	particleSystem[22]= sta->effect[6]; // unkown1
+	particleSystem[23]= sta->effect[7]; // unkown2
 
-   particleSystem[17]= (charpos.x)>>8;
-   particleSystem[18]= (charpos.x)%256;
-   particleSystem[19]= (charpos.y)>>8;
-   particleSystem[20]= (charpos.y)%256;
-   particleSystem[21]= (charpos.z);
+	particleSystem[24]=0x0; // only non zero for type 0
+	particleSystem[25]=0x0;
 
-   particleSystem[22]= sta->effect[6]; // unkown1
-   particleSystem[23]= sta->effect[7]; // unkown2
+	particleSystem[26]=0x1;
+	particleSystem[27]=0x0;
 
-   particleSystem[24]=0x0; // only non zero for type 0
-   particleSystem[25]=0x0;
+	particleSystem[28]=0x0;
+	particleSystem[29]=0x0;
+	particleSystem[30]=0x0;
+	particleSystem[31]=0x0;
+	particleSystem[32]=0x0;
+	particleSystem[33]=0x0;
+	particleSystem[34]=0x0;
+	particleSystem[35]=0x0;
 
-   particleSystem[26]=0x1;
-   particleSystem[27]=0x0;
+	particleSystem[36]=sta->effect[8]; // effekt #
+	particleSystem[37]=sta->effect[9];
 
-   particleSystem[28]=0x0;
-   particleSystem[29]=0x0;
-   particleSystem[30]=0x0;
-   particleSystem[31]=0x0;
-   particleSystem[32]=0x0;
-   particleSystem[33]=0x0;
-   particleSystem[34]=0x0;
-   particleSystem[35]=0x0;
+	particleSystem[38]=sta->effect[11];
+	particleSystem[39]=sta->effect[12];
 
-   particleSystem[36]=sta->effect[8]; // effekt #
-   particleSystem[37]=sta->effect[9];
+	particleSystem[40]=0x00;
+	particleSystem[41]=0x00;
 
-   particleSystem[38]=sta->effect[11];
-   particleSystem[39]=sta->effect[12];
+	LongToCharPtr(pc_cs->getSerial32(), particleSystem+42);
 
-   particleSystem[40]=0x00;
-   particleSystem[41]=0x00;
-
-   particleSystem[42]=pc_cs->getSerial().ser1;
-   particleSystem[43]=pc_cs->getSerial().ser2;
-   particleSystem[44]=pc_cs->getSerial().ser3;
-   particleSystem[45]=pc_cs->getSerial().ser4;
-
-   particleSystem[46]=0; // layer, gets set afterwards for multi layering
-
-   particleSystem[47]=0x0; // has to be always 0 for all types
-   particleSystem[48]=0x0;
-
-
+	particleSystem[46]=0x0; // layer, gets set afterwards for multi layering
+	particleSystem[47]=0x0; // has to be always 0 for all types
+	particleSystem[48]=0x0;
 }
 
 // ParticleFx layout:

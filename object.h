@@ -22,7 +22,6 @@
 #include "amx/amxcback.h"
 #include "tmpeff.h"
 
-class cScpIterator;
 
 #define ISVALIDPO(po) ( ( po!=NULL && ( sizeof(*po) == sizeof(cObject) || sizeof(*po) == sizeof(cChar) || sizeof(*po) == sizeof(cItem) ) ) ? (po->getSerial32() >= 0) : false )
 #define VALIDATEPO(po) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
@@ -61,18 +60,13 @@ public:
 	bool			operator!=(cObject&);
 //@}
 
-public:
-	static std::string	getRandomScriptValue( std::string section, std::string& sectionId );
-private:
-	static cScpIterator*	getScriptIterator( std::string section, std::string& sectionId );
-
-public:
 	cObject();
 	virtual ~cObject();
 //@{
 /*!
 \name Serials
 \brief functions for handle serials stuff
+\author Anthalir & Sparhawk
 */
 private:
 	Serial			serial;			//!< serial of the object
@@ -80,21 +74,21 @@ private:
 	Serial			OwnerSerial;		//!< If Char is an NPC, this sets its owner
 
 public:
-	const Serial		getSerial() const;
-	const SI32		getSerial32() const;
+	const Serial		getSerial() const { return serial; } //!< return the object's serial
+	const SI32		getSerial32() const { return serial.serial32; } //!< return the serial of the object
 	void			setSerial32(SI32 newserial);
 	const void		setSerialByte(UI32 nByte, BYTE value);
 
-	const Serial		getMultiSerial() const;
-	const SI32		getMultiSerial32() const;
+	const Serial		getMultiSerial() const { return multi_serial; } //!< return the object's multi serial
+	const SI32		getMultiSerial32() const { return multi_serial.serial32; } //!< return the multi serial of the object
 	void			setMultiSerial32Only(SI32 newserial);
 	const void		setMultiSerialByte(UI32 nByte, BYTE value);
 
-	const Serial		getOwnerSerial() const;
-	const SI32      	getOwnerSerial32() const;
+	const Serial		getOwnerSerial() const { return OwnerSerial; } //!< return the object's owner seriald
+	const SI32      	getOwnerSerial32() const { return OwnerSerial.serial32; } //!< return the object's owner serial
 	void            	setOwnerSerial32(SI32 newserial, bool force=false );
 	void            	setOwnerSerial32Only(SI32 newserial);
-	const void		setOwnerSerialByte(UI32 nByte, BYTE value);
+	void			setOwnerSerialByte(UI32 nByte, BYTE value);
 	void			setSameOwnerAs(const cObject* obj);
 //@}
 
@@ -108,16 +102,14 @@ private:
 	Location		position;		//!< current position of object
 
 public:
-	Location		getPosition() const;
-	SI32			getPosition(const char *what) const;
-	void			setPosition(const char *what, SI32 value);
-	void			setPosition(UI32 x, UI32 y, SI08 z);
+	const Location		getPosition() const { return position; } //!< return the position of the object
+	void			setPosition(Coords what, SI32 value);
+	void			setPosition(UI16 x, UI16 y, SI08 z = -128, SI08 dispz = -128);
 	void			setPosition(Location where);
 
-	Location		getOldPosition() const;
-	SI32			getOldPosition(const char *what) const;
-	void			setOldPosition(const char *what, SI32 value);
-	void			setOldPosition(SI32 x, SI32 y, signed char z, signed char dispz);
+	const Location		getOldPosition() const { return old_position; } //!< return the old position of the object
+	void			setOldPosition(Coords what, SI32 value);
+	void			setOldPosition(SI32 x, SI32 y, SI08 z = -128, SI08 dispz = -128);
 	void			setOldPosition(Location where);
 //@}
 
@@ -134,21 +126,21 @@ Also used to store the secondary name of items.
 	string			current_name;	//!< Name displayed everywhere for this object, 30 char max + '\\0'
 
 public:
-	string 			getRealName() const;
-	const char*		getRealNameC() const;
+	const string 		getRealName() const { return secondary_name; } //!< return the real name of object
+	const char*		getRealNameC() const { return secondary_name.c_str(); } //!< return the real name of object
 	void			setRealName(string s);
 	void			setRealName(const char *str);
 
-	string			getCurrentName() const;
-	const char*		getCurrentNameC() const;
+	const string		getCurrentName() const { return current_name; } //!< return the current name of object
+	const char*		getCurrentNameC() const { return current_name.c_str(); } //!< return the current name of object
 	void			setCurrentName(string s);
 	void			setCurrentName(const char *str);
 	void			setCurrentName(char *format, ...);
 
 	// for items
 	void 			setSecondaryName( string s );
-	const char*		getSecondaryNameC() const;
-	string			getSecondaryName() const;
+	const char*		getSecondaryNameC() const { return secondary_name.c_str(); } //!< Get the secondary name of the object
+	const string		getSecondaryName() const { return secondary_name; } //!< Get the secondary name of the object
 	void			setSecondaryName(const char *format, ...);
 //@}
 
@@ -168,7 +160,7 @@ public:
 	void			tempfxOff();
 	LOGICAL			hasTempfx();
 	tempfx::cTempfx*	getTempfx( SI32 num, SERIAL funcidx = INVALID );
-	UI32			getScriptID();
+	UI32			getScriptID() const { return ScriptID; } //!< Return the object's script number
 	void			setScriptID(UI32 sid);
 
 //@}
@@ -177,6 +169,8 @@ public:
 	std::string*	disabledmsg; //!< Object is disabled, so display this message.
 					
 
+public:
+	virtual	void		Delete();
 
 /*
 private:

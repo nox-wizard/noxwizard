@@ -1138,7 +1138,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	if( pi->id1 == 0x1B && ( pi->id2 == 0xC3 || pi->id2 == 0xC4 ) )
 	{
 		pc->playSFX( 0x01FE);
-		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x2A, 0x09, 0x06);
+		pc->staticFX(0x372A, 9, 6);
 		pi->Delete();
 		return;
 	}

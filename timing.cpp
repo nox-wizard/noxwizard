@@ -107,8 +107,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Accounts
 	//
-	if (SrvParms->auto_a_reload > 0 && TIMEOUT( Accounts->lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
-		Accounts->CheckAccountFile();
+	if (SrvParms->auto_a_reload > 0 && TIMEOUT( accounts::lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
+		accounts::CheckAccountFile();
 	//
 	// Weather (change is handled by crontab)
 	//
@@ -261,15 +261,15 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Spawns
 	//
-	if( TIMEOUT( Spawns->check ) )
+	if( TIMEOUT( spawns::check ) )
 	{
-		Spawns->doSpawn();
+		spawns::doSpawn();
 	}
 
 	//
 	// Shoprestock
 	//
-	Restocks->doRestock();
+	restocks::doRestock();
 
 	//
 	// Prison release
@@ -367,12 +367,12 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 							if( TIMEOUT( pi->gatetime ) )
 							{
 								if (pi->type2==1)
-									Boats->Move(ps->toInt(),pi->dir,pi);
+									boats::Move(ps->toInt(),pi->dir,pi);
 								else
 								{
 									int dir=pi->dir+4;
 									dir%=8;
-									Boats->Move(ps->toInt(),dir,pi);
+									boats::Move(ps->toInt(),dir,pi);
 								}
 								pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
 							}

@@ -2203,10 +2203,7 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 
 	UI08 effect[28]={ 0x70, 0x00, };
 
-	bool skip_old = true;
-	
-	if (!skip_old)
-		MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
+	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
 
 	if (!part) // no UO3D effect ? lets send old effect to all clients
 	{
@@ -2233,7 +2230,7 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 			{
 				if (clientDimension[j]==2 ) // 2D client, send old style'd
 				{
-					if ( !skip_old ) Xsend(j, effect, 28);
+					Xsend(j, effect, 28);
 				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 				{
 					static UI08 particleSystem[49];
@@ -2256,14 +2253,72 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 \param part optional particles data
 \note if part == NULL then id, speed and loop MUST be >= 0
 */
-void cChar::staticFX(short id, SI32 speed, SI32 loop, ParticleFx* part)
+void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, ParticleFx* part)
 {
 	if (part!=NULL) {
-		if (id<=-1) id = (part->effect[0] << 8) + part->effect[1];
-		if (speed<=-1) speed = part->effect[2];
-		if (loop<=-1) loop = part->effect[3];
+		if (id == 0xFF) id = (part->effect[0] << 8) + part->effect[1];
+		if (speed == 0xFF) speed = part->effect[2];
+		if (loop == 0xFF) loop = part->effect[3];
 	}
-	staticeffect(DEREF_P_CHAR(this), id >> 8, id & 0xFF, speed, loop, part!=NULL, part);
+
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	MakeGraphicalEffectPkt(effect, 0x03, getSerial32(), 0, eff, getPosition(), Loc(0, 0, 0), speed, loop, 1, 0); 
+
+	if (!part) // no UO3D effect ? lets send old effect to all clients
+	{
+
+		NxwSocketWrapper sw;
+		sw.fillOnline( this, false );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET s = sw.getSocket();
+			Xsend(s, effect, 28);
+//AoS/			Network->FlushBuffer(s);
+		}
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+		NxwSocketWrapper sw;
+		sw.fillOnline( this, false );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			 NXWSOCKET j=sw.getSocket();
+			 if(j==INVALID) continue;
+			 if (clientDimension[j]==2) // 2D client, send old style'd
+			 {
+				Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+			 {
+				static UI08 particleSystem[49];
+				staticeffectUO3D(this, part, particleSystem);
+
+				// allow to fire up to 4 layers at same time (like on OSI servers)
+				UI08	a1 = part->effect[10] & 0xFF,
+					a2 = (part->effect[10] >> 8) & 0xFF,
+					a3 = (part->effect[10] >> 16) & 0xFF,
+					a4 = (part->effect[10] >> 24) & 0xFF;
+
+				if (a1!=0xff) { particleSystem[46] = a1; Xsend(j, particleSystem, 49); }
+				if (a2!=0xff) { particleSystem[46] = a2; Xsend(j, particleSystem, 49); }
+				if (a3!=0xff) { particleSystem[46] = a3; Xsend(j, particleSystem, 49); }
+				if (a4!=0xff) { particleSystem[46] = a4; Xsend(j, particleSystem, 49); }
+
+//AoS/				Network->FlushBuffer(j);
+			}
+			else 
+			{
+				 LogError("Invalid Client Dimension: %i\n",clientDimension[j]);
+			} // attention: a simple else is wrong !
+		 
+	   } // end for
+	} // end UO:3D effect
+
+	// remark: if a UO:3D effect is send and ALL clients are UO:3D ones, the pre-calculation of the 2-d packet
+	// is redundant. but we can never know, and probably it will take years till the 2d cliet dies.
+	// I think it's too infrequnet to consider this as optimization.
 }
 
 /*!
@@ -2317,7 +2372,7 @@ void cChar::hideBySkill()
 
     	if ( IsGM() )
     	{
-        	staticeffect( DEREF_P_CHAR(this), 0x37, 0x09, 0x09, 0x19);
+		staticFX(0x3709, 0x09, 0x19);
         	playSFX( 0x0208 );
         	tempfx::add(this, this, tempfx::GM_HIDING, 1, 0, 0);
         	// immediate hiding overwrites the effect.
@@ -4040,7 +4095,7 @@ void cChar::pc_heartbeat()
 		if ( TIMEOUT( smokedisplaytimer ) )
 		{
 			smokedisplaytimer = uiCurrentTime + 5 * MY_CLOCKS_PER_SEC;
-			staticeffect( DEREF_P_CHAR( this ), 0x37, 0x35, 0, 30 );
+			staticFX(0x3735, 0, 30);
 			playSFX( 0x002B );
 			switch( RandomNum( 0, 6 ) )
 			{

@@ -101,7 +101,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 
 	if ((pc->advobj==0)||(allways==1))
 	{
-		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
+		pc->staticFX(0x373A, 0, 15);
 		pc->playSFX( 0x01E9);
 		pc->advobj=x;
 		sprintf(sect, "SECTION ADVANCEMENT %i", x);

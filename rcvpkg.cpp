@@ -33,7 +33,7 @@ void deadattack (NXWSOCKET  s, CHARACTER i)
 				{//let's resurrect him!
 					pc_other->playAction(0x10);
 					pc->resurrect();
-					staticeffect(cc, 0x37, 0x6A, 0x09, 0x06);
+					pc->staticFX(0x376A, 9, 6);
 					switch(RandomNum(0, 4))
 					{
 					case 0: pc_other->talkAll( TRANSLATE("Thou art dead, but 'tis within my power to resurrect thee.  Live!"),0); break;
@@ -61,7 +61,7 @@ void deadattack (NXWSOCKET  s, CHARACTER i)
 				{//let's resurrect him!
 					pc_other->playAction(0x10);
 					pc->resurrect();
-					staticeffect(cc, 0x37, 0x09, 0x09, 0x19); //Flamestrike effect
+					pc->staticFX(0x3709, 9, 0x19);
 					switch(rand()%5)
 					{
 						case 0: pc_other->talkAll( TRANSLATE("Fellow minion of Mondain, Live!!"),0); break;

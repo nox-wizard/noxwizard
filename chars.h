@@ -991,7 +991,7 @@ public:
 		UI32			getAmount(short id, short col=INVALID, bool onlyPrimaryBackpack=false );
 
 		void			movingFX(P_CHAR dst, UI16 id, UI08 speed, UI08 loop, LOGICAL explode, class ParticleFx* part = NULL);
-		void			staticFX(short id, SI32 speed, SI32 loop, class ParticleFx* part = NULL);
+		void			staticFX(UI16 id, UI08 speed, UI08 loop, class ParticleFx* part = NULL);
 		void			boltFX(LOGICAL bNoParticles);
 		void			circleFX(short id);
 

@@ -2254,7 +2254,7 @@ void targets::StaminaTarget(NXWSOCKET s)
     if (ISVALIDPC(pc))
     {
         pc->playSFX( 0x01F2);
-        staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
+	pc->staticFX(0x376A, 9, 6); // Sparkle effect	
         pc->stm=pc->dx;
         pc->updateStats(2);
         return;
@@ -2268,7 +2268,7 @@ void targets::ManaTarget(NXWSOCKET s)
     if (ISVALIDPC(pc))
     {
         pc->playSFX( 0x01F2);
-        staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
+	pc->staticFX(0x376A, 9, 6); // Sparkle effect
         pc->mn=pc->in;
         pc->updateStats(1);
         return;
@@ -2599,7 +2599,7 @@ void targets::FullStatsTarget(NXWSOCKET s)
     if (ISVALIDPC(pc))
     {
         pc->playSFX( 0x01F2);
-        staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
+	pc->staticFX(0x376A, 9, 6); // Sparkle effect
         pc->mn=pc->in;
         pc->hp=pc->getStrength();
         pc->stm=pc->dx;
