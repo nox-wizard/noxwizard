@@ -90,6 +90,8 @@ public:
 	bool needSpawn();
 	void remove( SERIAL serial );
 	void addSpawned(P_OBJECT obj);
+	void clear();
+
 
 };
 

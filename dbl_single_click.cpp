@@ -728,8 +728,9 @@ void doubleclick(NXWCLIENT ps)
 		{
 		// reset dynamic spawners on double click
 		cSpawnDinamic *spawn = Spawns->getDynamicSpawn(pi->getSerial32());
-		spawn->remove(pi->getSerial32());
+		spawn->clear();
 		pi->amount2=0;
+		spawn->current=0;
 		spawn->nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
 		return;
 		}

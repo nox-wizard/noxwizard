@@ -1032,7 +1032,7 @@ void cHouse::remove()
 		P_ITEM p_item=si.getItem();
 		if(ISVALIDPI(p_item)) 
 		{
-			if( inHouse(p_item->getPosition()))
+			if( (p_item->getSerial32() != serial) && (inHouse(p_item->getPosition())) )
 			{
 					p_item->Delete();
 			}

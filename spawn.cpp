@@ -545,6 +545,29 @@ cSpawnDinamic::~cSpawnDinamic()
 {
 
 }
+
+/*!
+\author Wintermute
+\brief delete all spawned items or npcs in the world
+*/
+
+void cSpawnDinamic::clear()
+{
+	SERIAL_SET::iterator iter=items_spawned.begin();
+	for( ; iter!=items_spawned.end(); iter++ ) 
+	{
+		P_ITEM itm=pointers::findItemBySerial(*iter);
+		itm->Delete();
+	}
+	iter=npcs_spawned.begin();
+	for( ; iter!=npcs_spawned.end(); iter++ ) 
+	{
+		P_CHAR pc=pointers::findCharBySerial(*iter);
+		pc->Delete();
+	}
+
+}
+
 /*!
 \author Endymion, modified by Wintermute
 \brief spawn a npc/item from a dynamic spawner

@@ -2866,7 +2866,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			P_ITEM temp = item::CreateFromScript( pi->morex, NULL);
 			if ( !ISVALIDPI(temp) )
 			{
-				objects.eraseObject (pi);
+				objects.eraseObject (temp);
 				return;
 			}
 			P_HOUSE newHouse = new cHouse();

@@ -7069,10 +7069,17 @@ NATIVE ( _house_delete )
 	P_HOUSE house = cHouses::findHouse(params[1]);
 	if ( house == NULL )
 	{
-		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		LogWarning("Illegal house serial %d used in _house_delete\n", params[1]);
 		return false;
 	}
 	house->remove();
+	P_ITEM iHouse = pointers::findItemBySerial(params[1]);
+	if ( ! ISVALIDPI(iHouse))
+	{
+		LogWarning("No item found for house serial %d used in _house_delete\n", params[1]);
+		return false;
+	}
+	iHouse->Delete();
 	return true;
 }
 
