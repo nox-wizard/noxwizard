@@ -819,7 +819,7 @@ void target_setpriv( NXWCLIENT ps, P_TARGET t )
 		WriteGMLog(curr, "%s as given %s Priv [%x][%x]\n", curr->getCurrentNameC(), pc->getCurrentNameC(), t->buffer[0], t->buffer[1] );
 
     pc->SetPriv( t->buffer[0] );
-    pc->priv2=t->buffer[1];
+    pc->SetPriv2( t->buffer[1] );
 }
 
 void target_setprivItem( NXWCLIENT ps, P_TARGET t )
@@ -1267,7 +1267,7 @@ void command_allmoveon( NXWCLIENT ps )
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	pc->priv2 |= flagPriv2AllMove;
+	pc->setAllMove(true);
 	pc->teleport();
 	pc->sysmsg("ALLMOVE enabled.");
 }
@@ -1281,7 +1281,7 @@ void command_allmoveoff( NXWCLIENT ps )
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	pc->priv2 &= ~flagPriv2AllMove;
+	pc->setAllMove(false);
 	pc->teleport();
 	pc->sysmsg("ALLMOVE disabled.");
 }
@@ -1292,7 +1292,7 @@ void command_showhs( NXWCLIENT ps )
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	pc->priv2 |= flagPriv2ViewHouseIcon;
+	pc->setViewHouseIcon(true);
 	pc->teleport();
 	pc->sysmsg("House icons visible. (Houses invisible)");
 }
@@ -1303,7 +1303,7 @@ void command_hidehs( NXWCLIENT ps )
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	pc->priv2 &= ~flagPriv2ViewHouseIcon;
+	pc->setViewHouseIcon(false);
 	pc->teleport();
 	pc->sysmsg("House icons hidden. (Houses visible)");
 }
@@ -2532,7 +2532,7 @@ void target_hide( NXWCLIENT ps, P_TARGET t )
 
 	Location pcpos= pc->getPosition();
 
-	if( pc->hidden!=UNHIDDEN )
+	if( pc->IsHidden() )
 	{
 		if( pc->getSerial32() == ps->currCharIdx() )
 			ps->sysmsg( TRANSLATE("You are already hiding.") );
@@ -2540,7 +2540,7 @@ void target_hide( NXWCLIENT ps, P_TARGET t )
 			ps->sysmsg(  TRANSLATE("He is already hiding.") );
 	}
 	else {
-		pc->priv2 |= flagPriv2PermaHidden;
+		pc->setPermaHidden(true);
 		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_HIDING, 1, 0, 0);
@@ -2555,7 +2555,7 @@ void target_unhide( NXWCLIENT ps, P_TARGET t )
 
 	Location pcpos= pc->getPosition();
 
-	if( pc->hidden==UNHIDDEN )
+	if( pc->IsHidden() )
 	{
 		if( pc->getSerial32()==ps->currCharIdx() )
 			ps->sysmsg( TRANSLATE("You are not hiding."));
@@ -2563,7 +2563,7 @@ void target_unhide( NXWCLIENT ps, P_TARGET t )
 			ps->sysmsg( TRANSLATE("He is not hiding."));
 	}
 	else {
-		pc->priv2 &= ~flagPriv2PermaHidden;
+		pc->setPermaHidden(false);
 		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_UNHIDING, 1, 0, 0);
@@ -2786,7 +2786,7 @@ void target_makegm( NXWCLIENT ps, P_TARGET t )
     pc->setColor(0x8021);
     pc->setOldColor(0x8021);
     pc->SetPriv(0xF7);
-    pc->priv2 = (unsigned char) (0xD9);
+    pc->SetPriv2(0xD9);
 
     for( int j=0; j<TRUESKILLS; j++ )
     {

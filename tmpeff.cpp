@@ -649,7 +649,7 @@ void cTempfx::executeExpireCode()
 	{
 		case SPELL_PARALYZE:
 			VALIDATEPC(dest);
-			if (dest->IsFrozen())
+			if (dest->isFrozen())
 				dest->unfreeze( true );
 			break;
 
@@ -998,7 +998,7 @@ void cTempfx::deactivate()
 	switch(m_nNum)
 	{
 		case SPELL_PARALYZE:
-			if (dest->IsFrozen())
+			if (dest->isFrozen())
 				dest->unfreeze( true );
 			break;
 

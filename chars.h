@@ -141,11 +141,16 @@ class cChar : public cObject
 		static const UI08 flagKarmaMurderer	= 0x01; //!< Char is murderer
 		static const UI08 flagKarmaCriminal	= 0x02; //!< Char is criminal
 //@}
+		inline const LOGICAL resistsFire() const
+		{ return nxwflags[0] & flagResistFire; }
+
+		inline const LOGICAL resistsFreeze() const
+		{ return nxwflags[0] & flagResistParalisys; }
 
 //@{
 /*!
 \name cchar_privs
-\brief Priv variables used by priv, priv2 and priv4
+\brief Priv variables used by priv and priv2
 */
 
 		static const UI08 flagPrivGM		= 0x01; //!< Char is GM
@@ -167,22 +172,23 @@ class cChar : public cObject
 		static const UI08 flagPriv2NoUseReagents= 0x80;
 //@}
 
-		inline const LOGICAL resistsFire() const
-		{ return nxwflags[0] & flagResistFire; }
-
-		inline const LOGICAL resistsFreeze() const
-		{ return nxwflags[0] & flagResistParalisys; }
 //@{
 /*!
 \name Priviledges
 */
 	protected:
+		// We really need so many vars?
 		UI08 priv;	//!< see cchar_privs
-	public: // this will become private and i don't think 3 variables are needed to store privs...
-		UI08			priv2;		//!< see cchar_privs
-		UI08			priv4;		//!< see cchar_privs
-
+		UI08 priv2;	//!< see cchar_privs
 		UI08 privLevel; //!< privilege level
+
+		inline void setPriv2(UI08 priv, LOGICAL set)
+		{
+			if ( set )
+				priv2 |= priv;
+			else
+				priv2 &= ~priv;
+		}
 
 	public:
 		const LOGICAL		IsTrueGM() const;
@@ -196,19 +202,50 @@ class cChar : public cObject
 		const LOGICAL		IsGMorCounselor() const;
 
 		inline const LOGICAL	IsInvul() const
-		{ return (priv & flagPrivInvulnerable); }
+		{ return priv & flagPrivInvulnerable; }
 
 		inline const LOGICAL	CanSnoop() const
-		{ return (priv & flagPrivCanSnoopAll); }
+		{ return priv & flagPrivCanSnoopAll; }
 
 		inline const LOGICAL	CanBroadcast() const
-		{ return (priv & flagPrivBroadcast); }
+		{ return priv & flagPrivBroadcast; }
 
 		inline const LOGICAL	CanSeeSerials() const
-		{ return (priv & flagPrivCanViewSerials); }
+		{ return priv & flagPrivCanViewSerials; }
+
+		inline const LOGICAL	isFrozen() const
+		{ return (priv2 & flagPriv2Frozen); }
+
+		inline const LOGICAL	isPermaHidden() const
+		{ return priv2 & flagPriv2PermaHidden; }
 
 		inline const LOGICAL	isDispellable() const
 		{ return priv2 & flagPriv2Dispellable; }
+
+		inline const LOGICAL	canAllMove() const
+		{ return priv2 & flagPriv2AllMove; }
+
+		inline const LOGICAL	dontUseMana() const
+		{ return priv2 & flagPriv2NoUseMana; }
+
+		inline const LOGICAL	dontUseReagents() const
+		{ return priv2 & flagPriv2NoUseReagents; }
+
+		inline const LOGICAL	hasReflection() const
+		{ return priv2 & flagPriv2Reflection; }
+
+		inline void setAllMove(LOGICAL set = true)
+		{ setPriv2(flagPriv2AllMove, set) }
+
+		inline void setViewHouseIcon(LOGICAL set = true)
+		{ setPriv2(flagPriv2ViewHouseIcon, set) }
+
+		inline void setPermaHidden(LOGICAL set = true)
+		{ setPriv2(flagPriv2PermaHidden, set) }
+
+		inline void setReflection(LOGICAL set = true)
+		{ setPriv2(flagPriv2Reflection, set); }
+
 
 		inline const UI08 	GetPriv() const
 		{ return priv; }
@@ -227,12 +264,6 @@ class cChar : public cObject
 
 		inline void		SetPriv2(SI08 p)
 		{ priv2 = p; }
-
-		inline const UI08	GetPriv4() const
-		{ return priv4; }
-
-		inline void		SetPriv4(SI08 p)
-		{ priv4 = p; }
 //@}
 
 //@{
@@ -275,9 +306,6 @@ class cChar : public cObject
 		LOGICAL const		IsOverWeight();
 		LOGICAL const		InGuardedArea() const;
 		LOGICAL const		IsOnline() const;
-
-		INLINE CONST LOGICAL	IsFrozen() const
-		{ return (priv2 & flagPriv2Frozen); }
 
 		LOGICAL const		CanDoGestures() const;
 

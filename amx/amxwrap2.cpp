@@ -12,7 +12,7 @@
 
  This is one of the borest files I've ever written :D - Xan
  This file contains property stuff
- 
+
  \date 12-09-2002 Luxor: changed to work with serials instead of old indexes
  */
 
@@ -142,7 +142,7 @@ NATIVE2(_setItemProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 		case T_INT: {
 			int p = *cptr;
 			setItemIntProperty( pi, params[2], params[3], p );
@@ -169,9 +169,9 @@ NATIVE2(_setItemProperty)
 			printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
 
-	
+
 			setItemStrProperty( pi, params[2], params[3], g_cAmxPrintBuffer );
-	
+
 			g_nAmxPrintPtr=0;
 			return 0;
 		}
@@ -181,7 +181,7 @@ NATIVE2(_setItemProperty)
 			amx_GetStringUnicode( buffer, cptr );
 
 			setItemUniProperty( pi, params[2], params[3], buffer );
-	
+
 			g_nAmxPrintPtr=0;
 			return 0;
 		}
@@ -190,7 +190,7 @@ NATIVE2(_setItemProperty)
 	}
 }
 
-void setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value ) 
+void setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value )
 {
 	switch( property )
 	{
@@ -445,7 +445,7 @@ void setItemShortProperty(P_ITEM pi, int property, int prop2, short value )
 			pi->dir = value;
 			break;
 		case NXW_IP_S_COLOR :
-			pi->setColor( value ); 
+			pi->setColor( value );
 			break;
 		case NXW_IP_S_ID :
 			pi->setId( value );
@@ -515,7 +515,7 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 				case 4:
 					pi->more4 = value;
 					break;
-			} 
+			}
 			break;
 		case NXW_IP_C_MOREB:
 			switch(prop2) {
@@ -531,7 +531,7 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 				case 4:
 					pi->moreb4 = value;
 					break;
-			} 
+			}
 			break;
 
 		case NXW_IP_C_DAMAGETYPE :						//dec value: 121;
@@ -804,7 +804,7 @@ NATIVE2(_getCharProperty)
 			}
 			case T_STRING: {
 				//we're here so we should pass a string, params[4] is a str ptr
-	  			char str[100];	
+	  			char str[100];
 	  			strcpy(str, getCharStrProperty( pc, params[2], params[3] ) );
 
 	  			cell *cptr;
@@ -874,7 +874,7 @@ NATIVE2(_setCharProperty)
 
 			printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-		
+
 			setCharStrProperty( pc, params[2], params[3], params[5], g_cAmxPrintBuffer );
 
 			g_nAmxPrintPtr=0;
@@ -1107,7 +1107,7 @@ void setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_B_FROZEN :
 			if( value )
 				pc->freeze();
-			else 
+			else
 				pc->unfreeze();
 			break;
 		default :
@@ -1410,7 +1410,7 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 				case NXW_CP2_Z :
 					pc->prevZ = value;
 					break;
-			} 
+			}
 			break;
 		case NXW_CP_I_QUESTBOUNTYPOSTSERIAL :					  //dec value: 266;
 			pc->questBountyPostSerial = value;
@@ -1629,7 +1629,7 @@ bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_GUILDTOGGLE , pc->HasGuildTitleToggle() )  	//dec value: 14;
 		CHECK(  NXW_CP_B_OVERWEIGHTED, pc->IsOverWeight() )     	//dec value: 15;
 		CHECK(  NXW_CP_B_MOUNTED, pc->mounted )     	//dec value: 15;
-		CHECK(  NXW_CP_B_FROZEN, pc->IsFrozen() )     	//dec value: 15;
+		CHECK(  NXW_CP_B_FROZEN, pc->isFrozen() )     	//dec value: 15;
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return false;
@@ -2070,7 +2070,7 @@ NATIVE2(_guild_setProperty)
 	amx_GetAddr(amx,params[4],&cptr);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
 		int p = *cptr;
 
@@ -2177,7 +2177,7 @@ NATIVE2(_guild_setProperty)
 	}
 	break;
 
-	default: 
+	default:
 		return INVALID;
 	}
 }
@@ -2196,9 +2196,9 @@ NATIVE2(_guild_getProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case INVALID:
@@ -2208,12 +2208,12 @@ NATIVE2(_guild_getProperty)
 		}
 		cell i = p;
 		return i;
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
-		bool p; 
+		bool p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2241,7 +2241,7 @@ NATIVE2(_guild_getProperty)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2285,7 +2285,7 @@ NATIVE2(_guild_getProperty)
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case NXW_GP_UNI_CHARTER :		
+			case NXW_GP_UNI_CHARTER :
 				w = &pGuild->charter;
 				break;
 			default :
@@ -2298,7 +2298,7 @@ NATIVE2(_guild_getProperty)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -2323,12 +2323,12 @@ NATIVE2(_guildMember_setProperty)
 	// params[4] = value to set property to
 
 	SERIAL member_serial = params[1];
-	
+
 	P_CHAR pc = pointers::findCharBySerial( member_serial );
 	VALIDATEPCR( pc, INVALID );
 
 	P_GUILD_MEMBER member = pc->getGuildMember();
-	if ( member==NULL )	
+	if ( member==NULL )
 	{
 		LogError( "guildMember_setProperty called with invalid member %d", member_serial );
 		return INVALID;
@@ -2340,7 +2340,7 @@ NATIVE2(_guildMember_setProperty)
 	amx_GetAddr(amx,params[4],&cptr);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
 		int p = *cptr;
 
@@ -2443,7 +2443,7 @@ NATIVE2(_guildMember_setProperty)
 	}
 	break;
 
-	default: 
+	default:
 		return INVALID;
 	}
 }
@@ -2452,12 +2452,12 @@ NATIVE2(_guildMember_getProperty)
 {
 
 	SERIAL member_serial = params[1];
-	
+
 	P_CHAR pc = pointers::findCharBySerial( member_serial );
 	VALIDATEPCR( pc, INVALID );
 
 	P_GUILD_MEMBER member = pc->getGuildMember();
-	if ( member==NULL )	
+	if ( member==NULL )
 	{
 		LogError( "guildMember_getProperty called with invalid member %d", member_serial );
 		return INVALID;
@@ -2467,9 +2467,9 @@ NATIVE2(_guildMember_getProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case INVALID:
@@ -2479,12 +2479,12 @@ NATIVE2(_guildMember_getProperty)
 		}
 		cell i = p;
 		return i;
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
-		bool p; 
+		bool p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2512,7 +2512,7 @@ NATIVE2(_guildMember_getProperty)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case NXW_GMP_C_RANK :				  		//dec value: 100;
 				p = member->rank;
@@ -2555,7 +2555,7 @@ NATIVE2(_guildMember_getProperty)
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case INVALID :		
+			case INVALID :
 			default :
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -2566,7 +2566,7 @@ NATIVE2(_guildMember_getProperty)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -2612,7 +2612,7 @@ NATIVE2(_guildRecruit_setProperty)
 	amx_GetAddr(amx,params[4],&cptr);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
 		int p = *cptr;
 
@@ -2710,7 +2710,7 @@ NATIVE2(_guildRecruit_setProperty)
 	}
 	break;
 
-	default: 
+	default:
 		return INVALID;
 	}
 }
@@ -2729,9 +2729,9 @@ NATIVE2(_guildRecruit_getProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case INVALID:
@@ -2741,12 +2741,12 @@ NATIVE2(_guildRecruit_getProperty)
 		}
 		cell i = p;
 		return i;
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
-		bool p; 
+		bool p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2774,7 +2774,7 @@ NATIVE2(_guildRecruit_getProperty)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2818,7 +2818,7 @@ NATIVE2(_guildRecruit_getProperty)
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case NXW_GP_UNI_CHARTER :		
+			case NXW_GP_UNI_CHARTER :
 				w = &pGuild->charter;
 				break;
 			default :
@@ -2831,7 +2831,7 @@ NATIVE2(_guildRecruit_getProperty)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -2869,7 +2869,7 @@ NATIVE2(_setMenuProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
 		int p = *cptr;
 
@@ -2997,7 +2997,7 @@ NATIVE2(_setMenuProperty)
 	}
 	break;
 
-	default: 
+	default:
 		return INVALID;
 	}
 }
@@ -3017,9 +3017,9 @@ NATIVE2(_getMenuProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case NXW_MP_I_X:
@@ -3039,9 +3039,9 @@ NATIVE2(_getMenuProperty)
 				return INVALID;
 		}
 		return static_cast<cell>(p);
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
 		bool p;
@@ -3090,7 +3090,7 @@ NATIVE2(_getMenuProperty)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -3131,7 +3131,7 @@ NATIVE2(_getMenuProperty)
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case NXW_MP_UNI_TEXT :		
+			case NXW_MP_UNI_TEXT :
 				w = menu->getText( params[3] );
 				break;
 			default :
@@ -3144,7 +3144,7 @@ NATIVE2(_getMenuProperty)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -3175,9 +3175,9 @@ NATIVE2(_getRaceProperty)
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case INVALID:
@@ -3186,9 +3186,9 @@ NATIVE2(_getRaceProperty)
 				return INVALID;
 		}
 		return static_cast<cell>(p);
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
 		bool p;
@@ -3219,7 +3219,7 @@ NATIVE2(_getRaceProperty)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case RP_C_TYPE:
 				p = race->raceType.getValue();
@@ -3229,7 +3229,7 @@ NATIVE2(_getRaceProperty)
 					p = race->beardPerm;
 				else if( params[2]==LAYER_HAIR )
 					p = race->hairPerm;
-				else 
+				else
 			default:
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
 				return INVALID;
@@ -3273,7 +3273,7 @@ NATIVE2(_getRaceProperty)
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case INVALID :		
+			case INVALID :
 			default :
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -3284,7 +3284,7 @@ NATIVE2(_getRaceProperty)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -3299,9 +3299,9 @@ NATIVE2(_getRaceGlobalProp)
 	VAR_TYPE tp = getPropertyType(params[1]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[1]) {
 			case INVALID:
@@ -3310,9 +3310,9 @@ NATIVE2(_getRaceGlobalProp)
 				return INVALID;
 		}
 		return static_cast<cell>(p);
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
 		bool p;
@@ -3347,7 +3347,7 @@ NATIVE2(_getRaceGlobalProp)
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[1]) {
 			case INVALID:
 			default:
@@ -3385,7 +3385,7 @@ NATIVE2(_getRaceGlobalProp)
 		wstring* w=NULL;
 		switch( params[1] )
 		{
-			case INVALID :		
+			case INVALID :
 			default :
 				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
 				break;
@@ -3396,7 +3396,7 @@ NATIVE2(_getRaceGlobalProp)
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 
@@ -3434,7 +3434,7 @@ NATIVE2( _party_setProperty )
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
 		int p = *cptr;
 
@@ -3460,7 +3460,7 @@ NATIVE2( _party_setProperty )
 				P_PARTY_MEMBER member = party->getMember( params[3] );
 				if( member==NULL )
 					return p;
-				else 
+				else
 					member->canLoot = p;
 				break;
 			}
@@ -3537,7 +3537,7 @@ NATIVE2( _party_setProperty )
 	}
 	break;
 
-	default: 
+	default:
 		return INVALID;
 	}
 }
@@ -3561,9 +3561,9 @@ NATIVE2( _party_getProperty )
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
-	
+
 	case T_INT: {
-	
+
 		int p;
 		switch(params[2]) {
 			case PP_I_LEADER: {
@@ -3575,9 +3575,9 @@ NATIVE2( _party_getProperty )
 				return INVALID;
 		}
 		return static_cast<cell>(p);
-	} 
+	}
 	break;
-	
+
 	case T_BOOL: {
 
 		bool p;
@@ -3612,7 +3612,7 @@ NATIVE2( _party_getProperty )
 
 	case T_CHAR: {
 
-		char p; 
+		char p;
 		switch(params[2]) {
 			case PP_C_MEMBERS:
 				p=party->members.size();
@@ -3653,7 +3653,7 @@ NATIVE2( _party_getProperty )
 		wstring* w=NULL;
 		switch( params[2] )
 		{
-			case INVALID :		
+			case INVALID :
 			default :
 				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -3664,7 +3664,7 @@ NATIVE2( _party_getProperty )
 	  	amx_GetAddr(amx,params[4],&cptr);
 		amx_SetStringUnicode(cptr, *w );
 		return w->length();
-		
+
 	}
 	break;
 

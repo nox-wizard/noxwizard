@@ -739,7 +739,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								else if ( "PRIV1" == script1 )
 									pc->SetPriv(str2num(script2));
 								else if ( "PRIV2" == script1 )
-									pc->priv2=str2num(script2);
+									pc->SetPriv2(str2num(script2));
 								else if ( "PROVOCATION" == script1 )
 									pc->baseskill[PROVOCATION] = getRangedValue(script2);
 								break;

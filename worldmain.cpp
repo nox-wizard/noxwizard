@@ -47,7 +47,7 @@ void split( std::string& source, std::string& first, std::string& second )
 {
 	first = "";
 	second = "";
-	
+
 	int i=0;
 	int size=source.size();
 
@@ -89,7 +89,7 @@ void cStringFile::read( std::string& line )
 	while( !feof(f) )
 	{
 		char c=(char)fgetc(f);
-		
+
 		if( c==10 )
 			continue;
 
@@ -105,9 +105,9 @@ void cStringFile::read( std::string& line )
 
 void cStringFile::read( std::string& first, std::string& second )
 {
-	
+
 	first=""; second="";
-	
+
 	std::string line;
 	read( line );
 
@@ -328,7 +328,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					Accounts->AddCharToAccount( str2num(script2), pc );
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
-				pc->priv2=str2num(script2);
+				pc->SetPriv2(str2num(script2))
 			else if (!strcmp(script1, "ATT"))
 				pc->att=str2num(script2);
 			else if (!strcmp(script1, "ADVOBJ"))
@@ -1529,8 +1529,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if (pc->time_unused!=dummy.time_unused)
 				fprintf(cWsc, "TIME_UNUSED %i\n", pc->time_unused);
 
-			if (pc->priv2!=dummy.priv2)
-				fprintf(cWsc, "ALLMOVE %i\n", pc->priv2);
+			if (pc->GetPriv2()!=dummy.GetPriv2())
+				fprintf(cWsc, "ALLMOVE %i\n", pc->GetPriv2());
 			if (pc->fonttype!=dummy.fonttype)
 				fprintf(cWsc, "FONT %i\n", pc->fonttype);
 			if ( pc->saycolor != dummy.saycolor )

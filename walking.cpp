@@ -155,7 +155,7 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 		}
 	}
 
-	if(pc->IsFrozen()) // lord binary !!!
+	if(pc->isFrozen()) // lord binary !!!
 	{
 		pc->teleport();
 		if (s>INVALID)
@@ -317,7 +317,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
 		P_ITEM pi_multi=findmulti( pc->getPosition() );
-		
+
 		if((!ISVALIDPI(pi_multi))&&(pc->getMultiSerial32() != INVALID))
 		{
 			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
@@ -335,11 +335,11 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 				P_ITEM boat = Boats->GetBoat(pc->getPosition());
 				if (boat!=NULL) {
 					pc->setMultiSerial( boat->getSerial32() );
-					
+
 					NxwCharWrapper pets;
 					pets.fillOwnedNpcs( pc, false, true );
 					for( pets.rewind(); !pets.isEmpty(); pets++ ) {
-					   
+
 						P_CHAR pc_b=pets.getChar();
 						if(ISVALIDPC(pc_b)) {
 							pc->MoveTo( boat->getPosition("x")+1, boat->getPosition("y")+1, boat->getPosition("z")+2 );
@@ -441,7 +441,7 @@ void WalkingHandleRainSnow(P_CHAR pc)
 /*void WalkingHandleGlowingItems(P_CHAR pc)
 {
 	VALIDATEPC(pc);
-	
+
 	int i;
 	if (pc->IsOnline())
 	{
@@ -500,7 +500,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		//if (pc->hidden==1) walkok.notoriety=0x00;
 		//if (pc->isHidden()) walkok.notoriety=0x00;
 		walkok.send( pc->getClient() );
-		
+
 		walksequence[s]=sequence;
 		walksequence[s]%=255;
 	}
@@ -517,7 +517,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		ConOut("dir-screwed : %i\n",dir);
 
 
-	if( oldx!=newx || oldy!=newy ) 
+	if( oldx!=newx || oldy!=newy )
 	{
 		//Luxor: moved WalkHandleItemsAtNewPos before socket check.
 		handleItemsAtNewPos( pc, oldx, oldy, newx, newy );
@@ -549,7 +549,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		}
     }
 
-} 
+}
 
 
 
@@ -711,14 +711,14 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 				bOk = true;
 				break;
 			}
-			
+
 			// West
 			loc = Loc( pos.x - i, pos.y, pos.z );
 			if ( isWalkable( loc, WALKFLAG_ALL, this ) != illegal_z ) {
 				bOk = true;
 				break;
 			}
-                        
+
 			// South
 			loc = Loc( pos.x, pos.y + i, pos.z );
 			if ( isWalkable( loc, WALKFLAG_ALL, this ) != illegal_z ) {
@@ -772,7 +772,7 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 */
 void cChar::walkNextStep()
 {
-	if ( IsFrozen() )
+	if ( isFrozen() )
 		return;
 	if ( !hasPath() )
 		return;
@@ -822,7 +822,7 @@ void cChar::flee( P_CHAR pc, SI32 seconds )
 	oldnpcWander = npcWander;
 	npcWander = WANDER_FLEE;
 	targserial=pc->getSerial32();
-	
+
 }
 
 
@@ -831,7 +831,7 @@ void cChar::flee( P_CHAR pc, SI32 seconds )
 */
 void cChar::follow( P_CHAR pc )
 {
-	if ( IsFrozen() ) {
+	if ( isFrozen() ) {
 		if ( hasPath() )
 			safedelete( path );
 		return;
@@ -956,7 +956,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 {
 	VALIDATEPC(pc_i);
 
-	if (pc_i->priv2 & CHRPRIV2_FROZEN) return;
+	if (pc_i->isFrozen()) return;
 
 	Location charpos= pc_i->getPosition();
 
@@ -1051,7 +1051,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			}
 		}
 
-		
+
 		if ( (!valid || !move) && pc_i->amxevents[EVENT_CHR_ONBLOCK] )
 		{
 			g_bByPass = false;
@@ -1201,16 +1201,16 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 			dir |= 0x80;
 
 		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
-			
+
 			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
 			if( creature!=NULL )
 				if( creature->canFly() )
-					if( pc->fly_steps > 0 ) 
+					if( pc->fly_steps > 0 )
 					{
 						pc->fly_steps--;
 						dir |= 0x80; // run mode = fly for that ones that can fly
-					} 
-					else 
+					}
+					else
 					{
 						if ( (rand()%18)==0 )
 							pc->fly_steps = ( rand()%27 ) + 2;
@@ -1241,7 +1241,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 			hi_color = 1;		// If a good, show as blue.
 		else if ( pc->flag == 0x08 )
 			hi_color = 2;		// green (guilds)
-		else if ( pc->flag == 0x10 ) 
+		else if ( pc->flag == 0x10 )
 			hi_color = 5;		// orange (guilds)
 		else
 			hi_color = 3;		// grey

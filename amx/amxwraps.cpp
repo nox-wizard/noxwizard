@@ -288,10 +288,10 @@ NATIVE(_mnu_SetTitle)
 	amx_GetAddr(amx,params[2],&cstr);
 	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	
+
 	std::wstring t;
 	string2wstring( std::string( g_cAmxPrintBuffer ), t );
-	
+
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->title = t;
 	g_nAmxPrintPtr=0;
@@ -345,7 +345,7 @@ NATIVE(_mnu_AddItem)
 
 	std::wstring t;
 	string2wstring( std::string( g_cAmxPrintBuffer ), t );
-	
+
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->addMenuItem( params[2], params[3], t );
 	g_nAmxPrintPtr=0;
@@ -455,7 +455,7 @@ NATIVE(_getNXWPlatform)
 NATIVE(_sprintf)
 {
 	cell *src;
-	if (params[2] < 0) 
+	if (params[2] < 0)
 		return 0;
 	amx_GetAddr(amx,params[2],&src);
 	printstring(amx,src,params+3,(int)(params[0]/sizeof(cell))-1);
@@ -490,7 +490,7 @@ NATIVE(_chr_message)
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
-	
+
 	ps->sysmsg( params[2], g_cAmxPrintBuffer );
 	return true;
 
@@ -642,7 +642,7 @@ NATIVE(_CountGold)
 \param 1: the character
 \param 2: the item type?
 \param 3: the color?
-\return the number of item or INVALID if not valid character 
+\return the number of item or INVALID if not valid character
 */
 NATIVE(_CountColoredItems)
 {
@@ -1111,7 +1111,7 @@ NATIVE(_contAddItem)
 	VALIDATEPIR( pi, false );
 	P_ITEM pi1 = pointers::findItemBySerial(params[2]);
 	VALIDATEPIR( pi1, false );
-	return pi->AddItem(pi1, params[3],params[4]); 
+	return pi->AddItem(pi1, params[3],params[4]);
 }
 
 
@@ -1225,7 +1225,7 @@ NATIVE(_DelAmountByID)
 \return 0 or INVALID if not valid item
 */
 NATIVE(_imoveto)
-{	
+{
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( pi, INVALID );
 	pi->MoveTo( params[2], params[3],params[4] );
@@ -1308,7 +1308,7 @@ NATIVE(_isetContSerialonly)
 \return 0 or INVALID  if not valid item
 */
 NATIVE(_isetMultiSerial)
-{	
+{
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( pi, INVALID );
 	pi->SetMultiSerial(params[2]);
@@ -1324,7 +1324,7 @@ NATIVE(_isetMultiSerial)
 \return 0 or INVALID  if not valid item
 */
 NATIVE(_isetOwnSerial)
-{	
+{
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( pi, INVALID );
 	pi->setOwnerSerial32(params[2]); return 0;
@@ -1399,7 +1399,7 @@ NATIVE(_itm_createByDef)
 	P_OBJECT po = NULL;
 	if ( params[2] != INVALID )
 		po = objects.findObject( params[2] );
-		
+
         P_ITEM pi = NULL;
 	cell *cstr;
 	amx_GetAddr( amx, params[1], &cstr );
@@ -1426,7 +1426,7 @@ NATIVE(_itm_createInBp)
 {
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
-		
+
 	P_ITEM pi = item::CreateFromScript( params[1], pc->getBackpack(), params[3] );
 
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
@@ -1445,7 +1445,7 @@ NATIVE(_itm_createInBpDef)
 {
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
-		
+
 	cell *cstr;
 	amx_GetAddr( amx, params[1], &cstr );
 	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
@@ -1469,7 +1469,7 @@ NATIVE(_itm_createInBank)
 {
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
-		
+
 	P_ITEM pi = item::CreateFromScript( params[1], pc->GetBankBox(), params[3] );
 
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
@@ -1488,7 +1488,7 @@ NATIVE(_itm_createInBankDef)
 {
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
-		
+
 	cell *cstr;
 	amx_GetAddr( amx, params[1], &cstr );
 	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
@@ -1673,7 +1673,7 @@ NATIVE( _chr_getGuild )
 {
 	P_CHAR pChar = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pChar, INVALID);
-	
+
 	P_GUILD guild = pChar->getGuild();
 	return ( guild!=NULL )? guild->serial : INVALID;
 }
@@ -1730,7 +1730,7 @@ NATIVE(_chr_guildCompare)
 NATIVE(_magic_castFieldSpell)
 {
 
-	P_CHAR mage = pointers::findCharBySerial( params[1] ); 
+	P_CHAR mage = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( mage, INVALID );
 	TargetLocation targ(params[2],params[3],params[4]);
 	mage->castSpell(static_cast<magic::SpellId>( params[5] ), targ, SPELLFLAG_DONTCHECKSPELLBOOK|SPELLFLAG_DONTCHECKSKILL|SPELLFLAG_SILENTSPELL|SPELLFLAG_NOUSEMANA|SPELLFLAG_DONTREQREAGENTS );
@@ -1829,7 +1829,7 @@ NATIVE(_magic_castHarm)
 }
 
 NATIVE(_magic_castMagicArrow)
-{ 
+{
 	CASTTOPC( params[1], params[2], magic::SPELL_MAGICARROW )
 }
 
@@ -1867,7 +1867,7 @@ NATIVE(_magic_castWeaken)
 \return 0 or INVALID if not valid socket
 */
 NATIVE(_send_send)
-{ 
+{
 
 	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, false );
@@ -1937,7 +1937,7 @@ NATIVE(_send_confirmAttack)
 	if ( ps == NULL )
 		return INVALID;
 
-    SndAttackOK( ps->toInt(), pc->getSerial32() ); 
+    SndAttackOK( ps->toInt(), pc->getSerial32() );
 	return 0;
 }
 
@@ -2033,7 +2033,7 @@ NATIVE(_tempfx_isActive)
 \brief Flee from target
 \author Endymion
 \since 0.82
-\param 1 npc 
+\param 1 npc
 \param 2 from character
 \param 3 seconds
 \return 0 or INVALID if not valid character
@@ -2068,7 +2068,7 @@ NATIVE(_chr_getEventHandler)
 
 	char str[100];
 	cell *cptr;
-	
+
 	if( pc->amxevents[params[2]] != NULL )
 		strcpy(str, pc->amxevents[params[2]]->getFuncName() );
 	else
@@ -2129,7 +2129,7 @@ NATIVE(_itm_getEventHandler)
 
 	char str[100];
 	cell *cptr;
-	
+
 	if( pi->amxevents[params[2]] != NULL )
 		strcpy(str, pi->amxevents[params[2]]->getFuncName() );
 	else
@@ -2781,7 +2781,7 @@ NATIVE( _set_add )
 \param 4 only following
 \return 0
 */
-NATIVE( _set_addOwnedNpcs ) 
+NATIVE( _set_addOwnedNpcs )
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
@@ -2799,7 +2799,7 @@ NATIVE( _set_addOwnedNpcs )
 \param 4 distance
 \return 0
 */
-NATIVE( _set_addNpcsNearXY ) 
+NATIVE( _set_addNpcsNearXY )
 {
 	amxSet::addNpcsNearXY( params[1], params[2], params[3], params[4] );
 	return 0;
@@ -2814,7 +2814,7 @@ NATIVE( _set_addNpcsNearXY )
 \param 4 distance
 \return 0
 */
-NATIVE( _set_addNpcsNearObj ) 
+NATIVE( _set_addNpcsNearObj )
 {
 	if( isCharSerial( params[2] ) ) {
 		amxSet::addNpcsNearObj( params[1], pointers::findCharBySerial(params[2]), params[3] );
@@ -2835,7 +2835,7 @@ NATIVE( _set_addNpcsNearObj )
 \param 4 exclude this
 \return 0
 */
-NATIVE( _set_addPartyFriend ) 
+NATIVE( _set_addPartyFriend )
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
@@ -2853,7 +2853,7 @@ NATIVE( _set_addPartyFriend )
 \param 4 only first subcontainer
 \return 0
 */
-NATIVE( _set_addItemsInCont ) 
+NATIVE( _set_addItemsInCont )
 {
 	P_ITEM pi=pointers::findItemBySerial( params[2] );
 	VALIDATEPIR( pi, INVALID )
@@ -2872,7 +2872,7 @@ NATIVE( _set_addItemsInCont )
 \param 5 exclude illegar layer
 \return 0
 */
-NATIVE( _set_addItemWeared ) 
+NATIVE( _set_addItemWeared )
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
@@ -2890,7 +2890,7 @@ NATIVE( _set_addItemWeared )
 \param 4 type
 \return 0
 */
-NATIVE( _set_addItemsAtXY ) 
+NATIVE( _set_addItemsAtXY )
 {
 	amxSet::addItemsAtXY( params[1], params[2], params[3], params[4] );
 	return 0;
@@ -2907,7 +2907,7 @@ NATIVE( _set_addItemsAtXY )
 \param 5 exclude not moveable
 \return 0
 */
-NATIVE( _set_addItemsNearXY ) 
+NATIVE( _set_addItemsNearXY )
 {
 	amxSet::addItemsNearXY( params[1], params[2], params[3], params[4], params[5]!=0 );
 	return 0;
@@ -3074,7 +3074,7 @@ NATIVE(_chr_resurrect)
 		pc->resurrect();
 		return 0;
 	}
-	else 
+	else
 		return INVALID;
 }
 
@@ -3188,7 +3188,7 @@ NATIVE(_chr_distance)
 \brief A character Attack another
 \author Luxor
 \since 0.82
-\param 1: attacker 
+\param 1: attacker
 \param 2: target
 \return 0 or INVALID if not valid character/s
 */
@@ -3207,7 +3207,7 @@ NATIVE(_chr_npcattack)
 \brief Update a character
 \author Luxor
 \since 0.82
-\param 1: character 
+\param 1: character
 \return 0 or INVALID if not valid character
 */
 NATIVE(_chr_updatechar)
@@ -3223,7 +3223,7 @@ NATIVE(_chr_updatechar)
 \author Luxor
 \since 0.82
 \param 1: character
-\param 2: effect 
+\param 2: effect
 \return 0 or INVALID if not valid character
 */
 NATIVE(_send_staticfx)
@@ -3618,9 +3618,9 @@ NATIVE(_chr_unmorph)
 */
 NATIVE(_itm_speech)
 {
-	
+
 	P_CHAR pc = pointers::findCharBySerial( params[1] );
-	
+
 	P_ITEM cur = pointers::findItemBySerial(params[2]);
 	VALIDATEPIR(cur,INVALID);
 
@@ -3809,7 +3809,7 @@ NATIVE(_chr_skillMakeMenu)
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
     if (pc->getClient() == NULL) return INVALID;
-    
+
 	Skills::MakeMenu( pc, params[2], params[3], MAKE_ITEM_REF(params[4]), MAKE_ITEM_REF(params[5]) );
     return 1;
 }
@@ -4478,7 +4478,7 @@ NATIVE(_guild_create)
 */
 NATIVE(_guild_addMember)
 {
-	
+
 	P_GUILD guild = Guildz.getGuild( params[1] );
 	if ( guild==NULL )	return INVALID;
 
@@ -4488,12 +4488,12 @@ NATIVE(_guild_addMember)
 
 	P_GUILD_MEMBER member = guild->addMember( pc );
 	if ( member==NULL)	return INVALID;
-	
+
 	member->rank = params[3];
 	member->toggle = static_cast<GUILD_TITLE_TOGGLE>( params[4] );
-	
+
 	std::string title;
-	
+
 	cell *cstr;
 	amx_GetAddr(amx,params[5],&cstr);
 	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
@@ -4516,7 +4516,7 @@ NATIVE(_guild_addMember)
 */
 NATIVE(_guild_resignMember)
 {
-	
+
 	P_GUILD guild = Guildz.getGuild( params[1] );
 	if ( guild==NULL )	return false;
 
@@ -4539,7 +4539,7 @@ NATIVE(_guild_resignMember)
 */
 NATIVE(_guild_addRecruit)
 {
-	
+
 	P_GUILD guild = Guildz.getGuild( params[1] );
 	if ( guild==NULL )	return INVALID;
 
@@ -4563,7 +4563,7 @@ NATIVE(_guild_addRecruit)
 */
 NATIVE(_guild_refuseRecruit)
 {
-	
+
 	P_GUILD guild = Guildz.getGuild( params[1] );
 	if ( guild==NULL )	return false;
 
@@ -4823,7 +4823,7 @@ NATIVE( _chr_isFrozen )
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, 0);
-	return pc->IsFrozen();
+	return pc->isFrozen();
 }
 
 /*
@@ -4875,7 +4875,7 @@ NATIVE( _chr_unStable )
 
 
 //
-// New Menu API 
+// New Menu API
 //
 
 /*!
@@ -4972,7 +4972,7 @@ NATIVE ( _gui_addButton )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
-	
+
 	menu->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
 
 	return 1;
@@ -4996,14 +4996,14 @@ NATIVE ( _gui_addButtonFn )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
-	
+
 	cell *cstr;
 	amx_GetAddr(amx,params[8],&cstr);
 	printstring(amx,cstr,params+9,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 	FUNCIDX fn = AmxFunction::g_prgOverride->getFnOrdinal( g_cAmxPrintBuffer );
-	
+
 	menu->addButtonFn( params[2], params[3], params[4], params[5], params[6], params[7], fn );
 	g_nAmxPrintPtr=0;
 
@@ -5405,7 +5405,7 @@ NATIVE( _gui_createIconList )
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	menu->question = g_cAmxPrintBuffer;
 	g_nAmxPrintPtr=0;
-	
+
 	return menu->serial;
 }
 
@@ -5438,7 +5438,7 @@ NATIVE( _gui_addIcon )
 
 
 //
-// New Target API 
+// New Target API
 //
 
 /*!
@@ -5471,7 +5471,7 @@ NATIVE( _target_create )
 	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
-	
+
 	targ->amx_callback = new AmxFunction( g_cAmxPrintBuffer );
 
 	if( params[4] )
@@ -5503,15 +5503,15 @@ NATIVE( _target_do )
 		targ->send( ps );
 		return true;
 	}
-	else 
+	else
 		return false;
 
-	
+
 }
 
 
 //
-// New Party API 
+// New Party API
 //
 
 /*!
@@ -5545,7 +5545,7 @@ NATIVE( _party_addMember )
 	P_PARTY party = Partys.getParty( params[1] );
 	if( party==NULL )
 		return false;
-	
+
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, false );
 
@@ -5567,7 +5567,7 @@ NATIVE( _party_delMember )
 	P_PARTY party = Partys.getParty( params[1] );
 	if( party==NULL )
 		return false;
-	
+
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, false );
 
@@ -5589,7 +5589,7 @@ NATIVE( _party_addCandidate )
 	P_PARTY party = Partys.getParty( params[1] );
 	if( party==NULL )
 		return false;
-	
+
 	P_CHAR leader = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( leader, false );
 
@@ -5613,7 +5613,7 @@ NATIVE( _party_delCandidate )
 	P_PARTY party = Partys.getParty( params[1] );
 	if( party==NULL )
 		return false;
-	
+
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, false );
 
@@ -5634,7 +5634,7 @@ NATIVE( _party_isCandidate )
 	P_PARTY party = Partys.getParty( params[1] );
 	if( party==NULL )
 		return false;
-	
+
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, false );
 
@@ -5662,7 +5662,7 @@ NATIVE( _party_broadcast )
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
-	
+
 	std::wstring w;
 	string2wstring( std::string( g_cAmxPrintBuffer ), w );
 	party->talkToAll( w, params[2] );
@@ -5991,7 +5991,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_create", _set_create },
  { "set_delete", _set_delete },
  { "set_clear", _set_clear },
- 
+
  { "set_rewind", _set_rewind },
  { "set_next", _set_next },
  { "set_end", _set_end },
@@ -6001,7 +6001,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_getChar", _set_getChar },
  { "set_getItem", _set_getItem },
  { "set_add", _set_add },
- 
+
  { "set_addOwnedNpcs", _set_addOwnedNpcs },
  { "set_addPartyFriend", _set_addPartyFriend },
  { "set_addNpcsNearXY", _set_addNpcsNearXY },

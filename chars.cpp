@@ -142,7 +142,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	SetPriv(0); // 1:GM clearance, 2:Broadcast, 4:Invulnerable, 8: single click serial numbers
 	// 10: Don't show skill titles, 20: GM Pagable, 40: Can snoop others packs, 80: Counselor clearance
 	priv2=0;	// 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
-	priv4=0;	// 1:Allshow
 	// 10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
 	fonttype=3; // Speech font to use
 	saycolor=0x1700; // Color for say messages
@@ -937,7 +936,7 @@ void cChar::disturbMed()
 void cChar::unHide()
 {
 	//if hidden but not permanently or forced unhide requested
-	if ( IsHiddenBySkill() && !(priv2 & flagPriv2PermaHidden) )
+	if ( IsHiddenBySkill() && isPermaHidden() )
 	{
 		stealth=-1;
 		hidden=UNHIDDEN;
@@ -1390,7 +1389,7 @@ void cChar::unfreeze( LOGICAL calledByTempfx )
     if( !calledByTempfx )
 		delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
 
-	if (priv2 & flagPriv2Frozen)
+	if ( isFrozen() )
 	{
 		priv2 &= ~flagPriv2Frozen;
 		if (!casting) //Luxor
@@ -3769,7 +3768,7 @@ void cChar::onSingleClick( P_CHAR clickedBy )
 */
 void cChar::doGmEffect()
 {
-	if( !(priv2 & flagPriv2PermaHidden) )
+	if( !isPermaHidden() )
 	{
 		Location charpos= getPosition();
 
@@ -3874,7 +3873,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 			strcat(temp1,temp);
 		}
 	}
-	if ( IsFrozen() )
+	if ( isFrozen() )
 	{
 		if (strcmp(::title[13].other,""))
 		{

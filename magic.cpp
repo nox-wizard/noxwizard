@@ -239,7 +239,7 @@ static inline bool checkMana(P_CHAR pc, SpellId num)
 	VALIDATEPCR(pc, false);
 
 //	if( pc->IsGM() ) return true;
-	if (pc->priv2&flagPriv2NoUseMana) return true;
+	if ( pc->dontUseMana() ) return true;
 
 	if (pc->mn >= g_Spells[num].mana) return true;
 
@@ -260,7 +260,7 @@ static inline void subtractMana(P_CHAR pc, SpellId spellnumber)
 {
 	VALIDATEPC(pc);
 
-	if (pc->priv2&flagPriv2NoUseMana) return;
+	if ( pc->dontUseMana() ) return;
 
 	if (pc->mn >= g_Spells[spellnumber].mana) pc->mn -= g_Spells[spellnumber].mana;
 	else pc->mn = 0;
@@ -283,8 +283,8 @@ static bool checkReflection(P_CHAR &pa, P_CHAR &pd)
 {
 	VALIDATEPCR(pa, false);
 	VALIDATEPCR(pd, false);
-	if (pd->priv2 & flagPriv2Reflection) {
-		pd->priv2 &= ~flagPriv2Reflection;
+	if ( pd->hasReflection() ) {
+		pd->setReflection(false);
 		pd->staticFX(0x373A, 0, 15);
 		qswap(pa, pd);
 		return !checkReflection(pa, pd);
@@ -693,7 +693,7 @@ bool checkReagents(P_CHAR pc, reag_st reagents)
 
 //	if( pc->IsGM() ) return true;
 
-	if (pc->priv2&flagPriv2NoUseReagents) return true;
+	if ( pc->dontUseReagents() ) return true;
 	if (pc->npc) return true;
 
 	fail.ash=fail.drake=fail.garlic=fail.moss=fail.pearl=fail.shade=fail.silk = 0;
@@ -1026,7 +1026,7 @@ bool checkRequiredTargetType(SpellId spellnum, TargetLocation& t)
 void consumeReagents( P_CHAR pc, reag_st reags )
 {
 	VALIDATEPC(pc);
-	if (pc->priv2&flagPriv2NoUseReagents) return;
+	if ( pc->dontUseReagents() ) return;
 	pc->delItems(0x0F7A, reags.pearl);
 	pc->delItems(0x0F7B, reags.moss);
 	pc->delItems(0x0F84, reags.garlic);
@@ -1622,7 +1622,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_REFLECTION:
 			spellFX(spellnumber, src, pd);
 			if ((pd==NULL)&&(src!=NULL)) pd = src;
-			if (pd!=NULL) pd->priv2|=flagPriv2Reflection;
+			if (pd!=NULL) pd->setReflection(true);
 			break;
 
 

@@ -334,7 +334,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	pc->setOldId( pc->getId() );
 	pc->setOldColor( pc->getColor() );
 	pc->SetPriv(defaultpriv1);
-	pc->priv2=defaultpriv2;
+	pc->SetPriv2(defaultpriv2);
 
 	Location charpos;
 	charpos.x= str2num(start[buffer[s][0x5B]][2]);
@@ -1888,7 +1888,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		targ->buffer[0]= pi->getSerial32();
 		targ->send( getClientFromSocket(s) );
 		sysmessage( s, "*throw*" );
-		return; 
+		return;
 	}
 	case 4: // Heal Potion
 		switch(pi->morez)
@@ -2028,7 +2028,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 		pi = archive::item::New();
 
-		pi->setId( 0x0F0E ); 
+		pi->setId( 0x0F0E );
 
 		if (lsd==10) // empty Lsd potions
 		{

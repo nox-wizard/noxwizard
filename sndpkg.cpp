@@ -80,7 +80,7 @@ void SndDyevat(NXWSOCKET  s, int serial, short id)
 	UI08 dyevat[9] ={ 0x95, 0x00, };
 	LongToCharPtr(serial, dyevat +1);
 	ShortToCharPtr(0x0000, dyevat +5);	// ignored on send ....
-	ShortToCharPtr(id, dyevat +7);		// def. on send 0x0FAB		
+	ShortToCharPtr(id, dyevat +7);		// def. on send 0x0FAB
 	Xsend(s, dyevat, 9);
 //AoS/	Network->FlushBuffer(s);
 }
@@ -117,11 +117,11 @@ UI16 goldsfx(int goldtotal)
 {
 	UI16 sound;
 
-	if (goldtotal==1) 
+	if (goldtotal==1)
 		sound = 0x0035;
 	else if (goldtotal<6)
 		sound = 0x0036;
-	else 
+	else
 		sound = 0x0037;
 
 	return sound;
@@ -140,7 +140,7 @@ with the proper sound function to play for a certain item as shown.
 \param item the item
 \return soundfx for the item
 \remarks \remark Use the DEFAULT case for ranges of items (like all ingots make the same thump).
-		 \remark Sounds: 
+		 \remark Sounds:
 			\li coins dropping (all the same no matter what amount because all id's equal 0x0EED
 			\li ingot dropping (makes a big thump - used the heavy gem sound)
 			\li gems dropping (two type broke them in half to make some sound different then others)
@@ -236,9 +236,9 @@ void dosocketmidi(NXWSOCKET s)
 
 	char sect[512];
 
-	if (pc->war) 
+	if (pc->war)
 		strcpy(sect, "MIDILIST COMBAT");
-	else 
+	else
 		sprintf(sect, "MIDILIST %i", region[pc->region].midilist);
 
 	iter = Scripts::Regions->getNewIterator(sect);
@@ -290,7 +290,7 @@ void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only
 void soundeffect3(P_ITEM pi, UI16 sound)
 {
 	VALIDATEPI(pi);
-	
+
 	Location pos = pi->getPosition();
 
 	pos.z = 0;
@@ -384,7 +384,7 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 
 void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower left corner)
 {
-	if(s < 0) 
+	if(s < 0)
 		return;
 
 	UI08 unicodetext[512];
@@ -402,7 +402,7 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 			NXWCLIENT gm = pc->getClient();
 			if( gm!=NULL )
 				gm->sysmsg( "spy %s : %s", pc->getCurrentNameC(), msg );
-			else 
+			else
 				clientInfo[s]->spyTo=INVALID;
 		}
 		else
@@ -481,7 +481,7 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 void wearIt(const NXWSOCKET  s, const P_ITEM pi)
 {
 	VALIDATEPI(pi);
-	
+
 	UI08 wearitem[15]={ 0x2E, 0x00, };
 
 	LongToCharPtr(pi->getSerial32(), wearitem +1);
@@ -636,10 +636,10 @@ void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop
 
 Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
 
-MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0);
 
 pos1.z=0;
-	
+
 	NxwSocketWrapper sw;
 	sw.fillOnline( pos1 );
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -696,7 +696,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 	else
 	if(item_inVisRange(pc,pi) )
 	{
-		Location pos = pi->getPosition(); 
+		Location pos = pi->getPosition();
 
 		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
 
@@ -737,7 +737,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 			}
 		}
 
-		if (dontsendcandidate && !pc->IsGM()) 
+		if (dontsendcandidate && !pc->IsGM())
 			return; // LB 9-12-99, client 1.26.2 visibility correction
 
 		if (pi->visible==2)
@@ -748,12 +748,12 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 		if (pi->magic==1)
 			itmput[18]|=0x20;
-		if (pc->priv2 & CHRPRIV2_ALLMOVE)
+		if (pc->canAllMove())
 			itmput[18]|=0x20;
 		if ((pi->magic==3 || pi->magic==4) && pc->getSerial32()==pi->getOwnerSerial32())
 			itmput[18]|=0x20;
 
-		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
+		if (pc->canViewHouseIcon())
 		{
 			if (pi->getId()>=0x4000 && pi->getId()<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
 			{
@@ -805,7 +805,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 	if (pi->isInWorld())
 	{
-		Location pos = pi->getPosition(); 
+		Location pos = pi->getPosition();
 
 		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
 		ShortToCharPtr(pi->getId(), itmput +7);
@@ -836,12 +836,12 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 		if (pi->magic==1) itmput[18]|=0x20;
 
-		if (pc->priv2 & CHRPRIV2_ALLMOVE) itmput[18]|=0x20;
+		if (pc->canAllMove()) itmput[18]|=0x20;
 
 		if ((pi->magic==3 || pi->magic==4) && pc->getSerial32()==pi->getOwnerSerial32())
 			itmput[18]|=0x20;
 
-		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
+		if (pc->canViewHouseIcon())
 		{
 			if (pi->getId()>=0x4000 && pi->getId()<=0x40FF)
 			{
@@ -899,7 +899,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 	for ( i=0, sc.rewind(); !sc.isEmpty(); sc++)
 	{
 		P_CHAR pc_a=sc.getChar();
-		if(!ISVALIDPC(pc_a)) 
+		if(!ISVALIDPC(pc_a))
 			continue;
 
 		if(i == buffer[s][0x22])
@@ -919,7 +919,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 
 		if (ISVALIDPC(TrashMeUp))
 		{
-			if( SrvParms->checkcharage && 
+			if( SrvParms->checkcharage &&
 			   (getclockday() < TrashMeUp->GetCreationDay() + 7) ) {
 				delete_error_msg[1] = 0x03;
 				Xsend(s, delete_error_msg, 2);
@@ -933,18 +933,18 @@ void chardel (NXWSOCKET  s) // Deletion of character
 //AoS/				Network->FlushBuffer(s);
 				return;
 			}
-			
+
 			TrashMeUp->Delete();
 
 			Accounts->GetAllChars( acctno[s], sc );
-			
+
 			delete_resend_char_1[3] = sc.size();
 
 			Xsend(s, delete_resend_char_1, 4);
 
 			for ( i=0, sc.rewind(); !sc.isEmpty(); sc++) {
 				P_CHAR pc_a=sc.getChar();
-				if(!ISVALIDPC(pc_a)) 
+				if(!ISVALIDPC(pc_a))
 					continue;
 
 				strcpy((char *)delete_resend_char_2, pc_a->getCurrentNameC());
@@ -962,7 +962,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 
 			return; // All done ;]
 		}
-	} 
+	}
 // Any possible error ....
 	Xsend(s, delete_error_msg, 2);
 //AoS/	Network->FlushBuffer(s);
@@ -982,7 +982,7 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 
 	len = 0x015D;					// Hardcoded -_-;  // hack for that 3 new skills+1.26.2 client, LB 4'th dec 1999
 	ShortToCharPtr(len, skillstart +1);
-	skillstart[3] = 0x00;				// Type: 
+	skillstart[3] = 0x00;				// Type:
 							// 0x00 = full list, 0xFF = single skill update,
 							// 0x02 = full list with skillcap, 0xDF = single skill update with cap
 
@@ -1041,7 +1041,7 @@ void cChar::updateStats(SI32 stat)
 	{
 		NxwSocketWrapper sw;
 		sw.fillOnline( this, false );
-		for( sw.rewind(); !sw.isEmpty(); sw++ ) 
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
 		{
 			NXWSOCKET i=sw.getSocket();
 			if( i!=INVALID )
@@ -1176,8 +1176,8 @@ void updates(NXWSOCKET  s) // Update Window
 
 	UI08 updscroll[10]={ 0xA6, 0x00, };
 	ShortToCharPtr(y, updscroll +1); 		// len of pkt.
-	updscroll[3]=2; 				// MOTD ? Type: 0x00 tips, 0x02 updates 
-	LongToCharPtr(0, updscroll +4);			// tip num. 
+	updscroll[3]=2; 				// MOTD ? Type: 0x00 tips, 0x02 updates
+	LongToCharPtr(0, updscroll +4);			// tip num.
 	ShortToCharPtr(y-10, updscroll +8);		// len of only mess.
 	Xsend(s, updscroll, 10); 		// Send 1st part (header)
 
@@ -1196,11 +1196,11 @@ void tips(NXWSOCKET s, UI16 i, UI08 want_next) // Tip of the day window
 {
 	int x, y, j;
 	char temp[512];
-    
+
 	cScpIterator* iter = NULL;
 	char script1[1024];
 	char script2[1024];
-	
+
 	if(want_next) i = i+1;
 	else i = i-1;
 
@@ -1248,8 +1248,8 @@ void tips(NXWSOCKET s, UI16 i, UI08 want_next) // Tip of the day window
 
 	UI08 updscroll[10]={ 0xA6, 0x00, };
 	ShortToCharPtr(y, updscroll +1); 		// len of pkt.
-	updscroll[3]=0; 				// Type: 0x00 tips, 0x02 updates 
-	LongToCharPtr(i, updscroll +4);			// tip num. 
+	updscroll[3]=0; 				// Type: 0x00 tips, 0x02 updates
+	LongToCharPtr(i, updscroll +4);			// tip num.
 	ShortToCharPtr(y-10, updscroll +8);		// len of only mess.
 	Xsend(s, updscroll, 10); 		// Send 1st part (header)
 
@@ -1280,7 +1280,7 @@ void deny(NXWSOCKET  s, P_CHAR pc, int sequence)
 void weblaunch(int s, const char *txt) // Direct client to a web page
 {
 	cPacketWebBrowser launch;
-	
+
 	launch.link+=txt;
 	launch.send( getClientFromSocket(s) );
 }
@@ -1303,15 +1303,15 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 		{
 			UI32 id;
 			UI16 model,font, color;
-			
+
 			id = pc->getSerial32();
 			model = pc->getId();
-			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
+			color = ShortFromCharPtr(buffer[s] +4);		// use color from client
 			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
 			UI08 name[30]={ 0x00, };
 			strcpy((char *)name, pc->getCurrentNameC());
-			
+
 			NxwSocketWrapper sw;
 			sw.fillOnline();
 			for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -1333,7 +1333,7 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 
 			id = pc->getSerial32();
 			model = pc->getId();
-			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
+			color = ShortFromCharPtr(buffer[s] +4);		// use color from client
 			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
 			UI32 lang =  LongFromCharPtr(buffer[s] +9);
@@ -1403,7 +1403,7 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 	 {
 Location pos2;
 pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0);
 	 }
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1417,7 +1417,7 @@ MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, 
 			Xsend(s, effect, 28);
 //AoS/			Network->FlushBuffer(s);
 		 }
-	   
+
 	   return;
 	}
 	else
@@ -1458,7 +1458,7 @@ MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, 
 				//ConOut(temp);
 			 }
 			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); } // attention: a simple else is wrong !
-		 
+
 	   } // end for
 	} // end UO:3D effect
 
@@ -1485,12 +1485,12 @@ void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode);
 	}
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
 	 {
-	   
+
 		 NxwSocketWrapper sw;
 		 sw.fillOnline( );
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -1500,14 +1500,14 @@ MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), ef
 			 {
 				Xsend(j, effect, 28);
 //AoS/				Network->FlushBuffer(j);
-			 } 
+			 }
 		 }
 	   return;
 	}
 	else
 	{
 		// UO3D effect -> let's check which client can see it
-	   
+
 		NxwSocketWrapper sw;
 		sw.fillOnline();
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -1608,7 +1608,7 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt_(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode);
 	}
 
 	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1680,7 +1680,7 @@ void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
 	if (pos2.y>4096) pos2.y=4096;
 
 charpos.z = 0; pos2.z = 127;
-MakeGraphicalEffectPkt_(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0);
 
 	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
 
@@ -1710,7 +1710,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 
 	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode);
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -1718,7 +1718,7 @@ MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, 
 	 {
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
-		{   
+		{
 			Xsend(j, effect, 28);
 //AoS/			Network->FlushBuffer(j);
 		}
@@ -1734,7 +1734,7 @@ void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff
 
 Location pos = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode);
 
 pos.z = 0;
 
@@ -1766,7 +1766,7 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
-MakeGraphicalEffectPkt_(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
+MakeGraphicalEffectPkt_(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode);
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1799,7 +1799,7 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 
 	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
 
-MakeGraphicalEffectPkt_(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode);
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1941,16 +1941,16 @@ void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, U
 	Xsend(s, goxyz, 19);
 //AoS/	Network->FlushBuffer(s);
 }
- 
+
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color)
 {
-	UI08 extmove[17]={ 0x77, 0x00 }; 
+	UI08 extmove[17]={ 0x77, 0x00 };
 
 	LongToCharPtr(player_id, extmove +1);
 	ShortToCharPtr(model, extmove +5);
 	ShortToCharPtr(pos.x, extmove +7);
 	ShortToCharPtr(pos.y, extmove +9);
-	extmove[11]=pos.dispz;			// ??!?!?!?!? .z ?! 
+	extmove[11]=pos.dispz;			// ??!?!?!?!? .z ?!
 	extmove[12]=dir;
 	ShortToCharPtr(color, extmove +13);
 	extmove[15]=flag;
@@ -2042,7 +2042,7 @@ void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3
 {
 	UI16 len;
 	UI08 msg[17]={ 0x6F, 0x00, };
-	
+
 
 	len = 17;		//Size - no name in this message -  so len is fixed
 	msg[3]=action;		//State
@@ -2083,7 +2083,7 @@ void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI
 	UI08 talk2[18]={ 0xAE, 0x00, };
 
 	tl = 18 + 30 + unicodelen;
-	
+
 	ShortToCharPtr(tl, talk2 +1);
 	LongToCharPtr(id, talk2 +3);
 	ShortToCharPtr(model, talk2 +7);
@@ -2122,12 +2122,12 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
 
-	if (pc->isStabled() || pc->mounted) 
+	if (pc->isStabled() || pc->mounted)
 		return; // dont **show** stabled pets
 
 	bool sendit = true; //Luxor bug fix
-	if (pc->IsHidden() && pc->getSerial32()!=pc_currchar->getSerial32() && !pc_currchar->IsGM()) 
-		sendit=false; 
+	if (pc->IsHidden() && pc->getSerial32()!=pc_currchar->getSerial32() && !pc_currchar->IsGM())
+		sendit=false;
 
 	if( !pc->npc && !pc->IsOnline()  && !pc_currchar->IsGM() )
 	{
@@ -2136,7 +2136,7 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 	}
 	// hidden chars can only be seen "grey" by themselves or by gm's
 	// other wise they are invisible=dont send the packet
-	if (!sendit) 
+	if (!sendit)
 		return;
 
 	SendDrawObjectPkt(s, pc, z);
@@ -2165,7 +2165,7 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 	NxwItemWrapper si;
 	si.fillItemsInContainer( pi, false );
 	int loopexit=0;
-	for( si.rewind(); !si.isEmpty(); si++, ++loopexit ) 
+	for( si.rewind(); !si.isEmpty(); si++, ++loopexit )
 	{
 		P_ITEM pj=si.getItem();
 		if (ISVALIDPI(pj))
@@ -2178,7 +2178,7 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 				ShortToCharPtr(pj->getId(), m1+m1t+4);
 				m1[m1t+6]=0;			//Always zero
 				ShortToCharPtr(pj->amount, m1+m1t+7); //Amount for sale
-				ShortToCharPtr(loopexit, m1+m1t+9); 
+				ShortToCharPtr(loopexit, m1+m1t+9);
 				ShortToCharPtr(loopexit, m1+m1t+11);
 				LongToCharPtr(pi->getSerial32(), m1+m1t+13); //Container serial number
 				ShortToCharPtr(pj->getColor(), m1+m1t+17);
@@ -2186,7 +2186,7 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 				m1t += 19;
 				value=pj->value;
 				value=calcValue(DEREF_P_ITEM(pj), value);
-				if (SrvParms->trade_system==1) 
+				if (SrvParms->trade_system==1)
 					value=calcGoodValue(c,DEREF_P_ITEM(pj),value,0); // by Magius(CHE)
 				LongToCharPtr(value, m2+m2t+0);		// Item value/price
 				namelen = pj->getName((char *)itemname);
@@ -2242,7 +2242,7 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 	VALIDATEPIR(pack, 0);
 
 	UI08 m1[2048]={ 0x9E, 0x00, };
-	
+
 	LongToCharPtr(pc->getSerial32(), m1 +3);
 	ShortToCharPtr(0, m1 +7);	// Num items  m1[7],m1[8]
 
@@ -2253,7 +2253,7 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 
 	NxwItemWrapper s_pack;
 	s_pack.fillItemsInContainer( pack, false );
-	
+
 	NxwItemWrapper si;
 	si.fillItemsInContainer( pp, false );
 	for( si.rewind(); !si.isEmpty(); si++ )
@@ -2265,7 +2265,7 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 			for( s_pack.rewind(); !s_pack.isEmpty(); s_pack++ )
 			{
 				if (m1[8] >= 50) continue;
-				
+
 				P_ITEM pj1 = s_pack.getItem();
 				if (ISVALIDPI(pj1)) // LB crashfix
 				{
@@ -2274,8 +2274,8 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 					strupr(ciname); // Added by Magius(CHE)
 					strupr(cinam2); // Added by Magius(CHE)
 
-					if (pj1->getId()==pj->getId()  && 
-						pj1->type==pj->type && 
+					if (pj1->getId()==pj->getId()  &&
+						pj1->type==pj->type &&
 						((SrvParms->sellbyname==0)||(SrvParms->sellbyname==1 && (!strcmp(ciname,cinam2))))) // If the names are the same! --- Magius(CHE)
 					{
 						UI08 namelen;
@@ -2388,7 +2388,7 @@ void endtrade(SERIAL serial)
 	if (s2 > -1)	// player may have been disconnected (Duke)
 		SendSecureTradingPkt(s2, 0x01, c2->getSerial32(), 0, 0);
 
-	
+
 	NxwItemWrapper si;
 	si.fillItemsInContainer( c1, false );
 	for( si.rewind(); !si.isEmpty(); si++ )

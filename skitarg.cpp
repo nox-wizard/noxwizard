@@ -83,7 +83,7 @@ void Skills::target_removeTraps( NXWCLIENT ps, P_TARGET t )
 	if (pi->amxevents[EVENT_IONREMOVETRAP]==NULL)
 	{
 		sysmessage(s, TRANSLATE("There are no traps on this object"));
-		if ((rand()%3)==0) 
+		if ((rand()%3)==0)
 			pc->checkSkill( REMOVETRAPS, 0, 750); //ndEny is good?
 	}
 	else
@@ -111,7 +111,7 @@ void Skills::target_tailoring( NXWCLIENT ps, P_TARGET t )
 
     if( pi->magic==4)
 		return;
-    
+
 	if( pi->IsCutLeather() || pi->IsCutCloth() || pi->IsHide() )
     {
 		if (CheckInPack(s,pi))
@@ -121,7 +121,7 @@ void Skills::target_tailoring( NXWCLIENT ps, P_TARGET t )
 				pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
 				return;
 			}
-                
+
             if(	pi->IsCutLeather()  ) {
 				if( tannering == NULL )
 					tannering = new AmxFunction( AMXTANNERING );
@@ -136,7 +136,7 @@ void Skills::target_tailoring( NXWCLIENT ps, P_TARGET t )
 			}
 
         }
-        
+
     }
 	else pc->sysmsg(TRANSLATE("You cannot use that material for tailoring."));
 
@@ -294,7 +294,7 @@ static void AnvilTarget( NXWSOCKET s, P_ITEM pi, int ma, int mm, char* matname)
         {
 			Skills::MakeMenu(pc,mm,BLACKSMITHING,pi);
 		}
-	
+
     }
 }
 
@@ -317,7 +317,7 @@ void Skills::target_smith( NXWCLIENT ps, P_TARGET t )
 
     if (pi->magic!=4) // Ripper
     {
-        if (!CheckInPack(ps->toInt(),pi)) 
+        if (!CheckInPack(ps->toInt(),pi))
 			return;
 
         if (pi->getId()==0x1BEF || pi->getId()==0x1BF2)   // is it an ingot ?
@@ -427,14 +427,14 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
     int a, b;
     unsigned int c;
     unsigned long int curtime=uiCurrentTime;
-	
+
 	if( pc->isMounting() ) {
 		pc->sysmsg(TRANSLATE("You cannot do this on a horse"));
 		return;
 	}
 
 	Location charpos= pc->getPosition();
-	Location location = t->getLocation();	
+	Location location = t->getLocation();
 
 
     if( dist( charpos, location )>2 )
@@ -519,12 +519,12 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
         pc->sysmsg(TRANSLATE("You chop for a while, but fail to produce any usable wood."));
-        if(logamount[a][b]>0 && rand()%2==1) 
+        if(logamount[a][b]>0 && rand()%2==1)
 			logamount[a][b]--;//Randomly deplete resources even when they fail 1/2 chance you'll loose wood.
         return;
     }
 
-    if(logamount[a][b]>0) 
+    if(logamount[a][b]>0)
 		logamount[a][b]--;
 
     AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
@@ -736,7 +736,7 @@ void Skills::target_wheel( NXWCLIENT ps, P_TARGET t )	//Spinning wheel
         }
     }
 
-    if(!tailme) 
+    if(!tailme)
 		pc_currchar->sysmsg(TRANSLATE("You cant tailor here."));
 }
 
@@ -801,7 +801,7 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 		}
 	}
 
-	if(!tailme) 
+	if(!tailme)
 		pc_currchar->sysmsg(TRANSLATE("You can't tailor here."));
 }
 
@@ -877,7 +877,7 @@ void Skills::target_detectHidden( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPC(pc);
 
 	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,DETECTINGHIDDEN,AMX_BEFORE);
-	
+
 	Location location = t->getLocation();
 
 	SI32 nSkill = pc->skill[DETECTINGHIDDEN];
@@ -901,7 +901,8 @@ void Skills::target_detectHidden( NXWCLIENT ps, P_TARGET t )
 		if ( !ISVALIDPC(pc_curr) )
 			continue;
 
-		if ( pc_curr->IsHiddenBySkill() && !(pc->priv2 & CHRPRIV2_PERMAHIDDEN) ) {
+		if ( pc_curr->IsHiddenBySkill() && !pc->isPermaHidden() )
+		{
 			nDist = SI32( dist(lCharPos, pc_curr->getPosition()) );
 			nLow = SI32( (nDist * 20.0) + (pc_curr->skill[HIDING] / 2.0) );
 			if ( nLow < 0 )
@@ -2008,7 +2009,7 @@ public:
     virtual void DoIt( NXWCLIENT ps, P_TARGET t )
     {
         NXWSOCKET s = ps->toInt();
-		
+
 		P_ITEM piClick = pointers::findItemBySerial( t->buffer[0] );
         if( piClick == NULL )
         {
