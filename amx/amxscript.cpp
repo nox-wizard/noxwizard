@@ -1112,10 +1112,10 @@ void LoadOverrides (void)
 /*!
 \brief checks speech from socket s for override invoking
 \author Xanathar
-\param s socket who spoken
+\param chr player who spoken
 \param speech speech of socket s
 */
-void checkAmxSpeech(int s, char *speech)
+void checkAmxSpeech( SERIAL chr, char *speech)
 {
 	if( ServerScp::g_css_override_case_sensitive==0 )
 		strupr( speech );
@@ -1127,7 +1127,7 @@ void checkAmxSpeech(int s, char *speech)
 			extern char script2[512];
 			strcpy( script1, g_strAmxSpeeches[i] );
 			strcpy( script2, speech );
-			AMXEXECSV(s,AMXT_SPEECH, i, AMX_BEFORE);
+			AMXEXECSV( chr,AMXT_SPEECH, i, AMX_BEFORE);
 		}
 	}
 }

@@ -1960,7 +1960,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 	std::string back( speech.c_str() ); //Luxor
 		
-	checkAmxSpeech(socket, const_cast<char *>(back.c_str()) );
+	checkAmxSpeech( pc->getSerial32(), const_cast<char *>(back.c_str()) );
 	//
 	// Allow for bypass set in checkAmxSpeech.This way certain speech like passwords will not be echoed to the screen
 	//
