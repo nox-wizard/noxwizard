@@ -72,6 +72,10 @@ warnings/errors/issues.
 #endif
 #ifdef __BORLANDC__
 	#pragma warn -pck	//Gets rid of BAD stl warnings
+	#pragma warn -pch
+	#pragma warn -par
+	#pragma warn -sig
+	#pragma warn -rch
 #endif
 #include <cstdio>
 #include <cstdlib>

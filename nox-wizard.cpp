@@ -393,9 +393,9 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	{
 		pc->baseskill[ii]=0;
 		if (ii==buffer[s][0x4a])
-			pc->baseskill[buffer[s][0x4a]]=buffer[s][0x4b]*10;
-		if (ii==buffer[s][0x4c]) pc->baseskill[buffer[s][0x4c]]= buffer[s][0x4d]*10;
-		if (ii==buffer[s][0x4e]) pc->baseskill[buffer[s][0x4e]]=buffer[s][0x4f]*10;
+			pc->baseskill[buffer[s][0x4a]]=(char) buffer[s][0x4b]*10;
+		if (ii==buffer[s][0x4c]) pc->baseskill[buffer[s][0x4c]]= (char) buffer[s][0x4d]*10;
+		if (ii==buffer[s][0x4e]) pc->baseskill[buffer[s][0x4e]]= (char) buffer[s][0x4f]*10;
 		Skills::updateSkillLevel(pc, ii);
 	}
 

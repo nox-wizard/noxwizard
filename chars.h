@@ -241,12 +241,12 @@ class cChar : public cObject
 		UI08 priv2;	//!< see cchar_privs
 		UI08 privLevel; //!< privilege level
 
-		inline void setPriv2(UI08 priv, LOGICAL set)
+		inline void setPriv2(UI08 privFlag, LOGICAL set)
 		{
 			if ( set )
-				priv2 |= priv;
+				priv2 |= privFlag;
 			else
-				priv2 &= ~priv;
+				priv2 &= (UI08) ~privFlag;
 		}
 
 	public:
@@ -386,10 +386,10 @@ class cChar : public cObject
 		{ if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0, 0x7FFF); }
 
 		inline			void setTelekinesisFlag(LOGICAL state)
-		{ nxwflags[0] |= flagSpellTelekinesys*state; }
+		{ nxwflags[0] |= (char) flagSpellTelekinesys*state; }
 
 		inline			void setGreyFlag(LOGICAL state)
-		{ nxwflags[0] |= flagGrey*state; }
+		{ nxwflags[0] |= (char) flagGrey*state; }
 
 
 		void 			unHide();

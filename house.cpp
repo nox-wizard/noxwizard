@@ -1392,15 +1392,15 @@ bool cHouse::inHouse(Location where)
 }
 
 
-static cHouse *findHouse(Location loc)
+static cHouse *cHouses::findHouse(Location loc)
 {
 	return NULL;
 }
-static cHouse *findHouse(int x, int y, int z)
+static cHouse *cHouses::findHouse(int x, int y, int z)
 {
 	return NULL;
 }
-static std::map< SERIAL, P_CHAR >::iterator findHouses(SERIAL owner)
+static std::map< SERIAL, P_HOUSE >::iterator *cHouses::findHouses(SERIAL owner)
 {
 	return NULL;
 }

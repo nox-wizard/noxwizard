@@ -54,7 +54,7 @@ class cHouses
 public:
 	static cHouse *findHouse(Location loc);
 	static cHouse *findHouse(int x, int y, int z);
-	static std::map findHouses(SERIAL owner);
+	static std::map< SERIAL, P_HOUSE >::iterator *findHouses(SERIAL owner);
 	static void killkeys(SERIAL serial);
 	static void target_houseOwner( NXWCLIENT ps, P_TARGET t );
 	static void target_houseEject( NXWCLIENT ps, P_TARGET t );

@@ -82,6 +82,8 @@ typedef       class cChar*		P_CHAR;		//!< pointer to cChar
 typedef const class cChar*		PC_CHAR;	//!< const pointer to cChar
 typedef       class cItem*		P_ITEM;		//!< pointer to cItem
 typedef const class cItem*		PC_ITEM;	//!< const pointer to cItem
+typedef       class cHouse*		P_HOUSE;		//!< pointer to cItem
+typedef const class cHouse*		PC_HOUSE;	//!< const pointer to cItem
 typedef       class cObject*		P_OBJECT;	//!< pointer to cObject
 typedef SI32				SERIAL;		//!< 32-bit serial number
 typedef UI32				TIMERVAL;
