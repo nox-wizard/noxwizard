@@ -3029,7 +3029,6 @@ void StartClasses()
 	Accounts = new cAccounts;
 	Boats=new cBoat;
 	Guilds=new cGuilds;
-	Gumps=new cGump;
 	Map=new cMapStuff;
 	Targ=new cTargets;
 	Network=new cNetwork;
@@ -3049,7 +3048,6 @@ void DeleteClasses()
 	delete Accounts;
 	delete Boats;
 	delete Guilds;
-	delete Gumps;
 	delete Map;
 	delete Targ;
 	delete Network;

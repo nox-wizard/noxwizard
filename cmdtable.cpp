@@ -2344,12 +2344,10 @@ void command_readini(NXWSOCKET  s)
 void command_gumpmenu(NXWSOCKET  s)
 // (d) Opens the specified GUMP menu.
 {
-			if (tnum==2)
-			{
-				Gumps->Menu(s, strtonum(1),NULL);
-			}
-			return;
-
+	if (tnum==2)
+	{
+		gumps::Menu(s, strtonum(1),NULL);
+	}
 }
 
 void command_cachestats(NXWSOCKET  s)
@@ -2525,9 +2523,8 @@ void command_midi(NXWSOCKET  s)
 void command_gumpopen(NXWSOCKET  s)
 // (h h) Opens the specified GUMP menu.
 {
-			if (tnum==3) Gumps->Open(s, currchar[s], strtonum(1), strtonum(2));
-			return;
-
+	if (tnum==3) 
+		gumps::Open(s, currchar[s], strtonum(1), strtonum(2));
 }
 
 // Forces a respawn.

@@ -116,9 +116,8 @@ public:
 };
 ////////////////////////END REMOVE////////////////////////////
 
-class cGump
+namespace gumps
 {
-public:
 	void Button(int s, UI32 button, char tser1, char tser2,char tser3, char tser4, UI32 type, char radio);
 	void Input(int s);
 	void Menu(NXWSOCKET s, int m, P_ITEM pi_it);

@@ -21,7 +21,7 @@
 extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 
 
-void cGump::Button(int s, UI32 button, char tser1, char tser2, char tser3, char tser4, UI32 type, char radio)
+void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char tser4, UI32 type, char radio)
 {
 	if (s < 0) return; //Luxor
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -67,7 +67,7 @@ void cGump::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 
 	if(button>10000) {
 		i=button-10000;
-		Gumps->Menu(s, i,NULL);
+		gumps::Menu(s, i,NULL);
 		return;
 	}
 	else
@@ -353,7 +353,7 @@ void cGump::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	}
 }
 
-void cGump::Input(int s)
+void gumps::Input(int s)
 {
 	
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -513,7 +513,7 @@ void cGump::Input(int s)
 }
 
 
-void cGump::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
+void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 {
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -1653,7 +1653,7 @@ void itemmenu(int s, int m) // Menus for item creation
 	}
 }
 
-void cGump::Open(int s, int i, int num1, int num2)
+void gumps::Open(int s, int i, int num1, int num2)
 {
 	P_CHAR pc=MAKE_CHAR_REF(i);
 	VALIDATEPC(pc);

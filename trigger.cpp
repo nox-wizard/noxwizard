@@ -1033,7 +1033,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			// OPENGUMP
 			//////////////////////////////////////////////////////////////////////////
 		if (!strcmp("OPENGUMP", cmd)) {
-			Gumps->Menu(m_socket, str2num(par), 0);
+			gumps::Menu(m_socket, str2num(par), 0);
 				}
 
 		else if (!strcmp("OUTRANGE", cmd)) {

@@ -647,7 +647,7 @@ void doubleclick(NXWCLIENT ps)
 			addid2[s] = pi->getSerial().ser2;
 			addid3[s] = pi->getSerial().ser3;
 			addid4[s] = pi->getSerial().ser4;
-			Gumps->Menu(s, pi->morex, pi);
+			gumps::Menu(s, pi->morex, pi);
 			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{

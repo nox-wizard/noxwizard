@@ -1894,7 +1894,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_GUMPMENU_SELECT:
-					Gumps->Button(	s,
+					gumps::Button(	s,
 							(buffer[s][11]<<24)| (buffer[s][12]<<16) | (buffer[s][13]<<8) | (buffer[s][14]),
 							buffer[s][3],
 							buffer[s][4],
@@ -1905,7 +1905,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_GUMP_TEXTENTRY_INPUT:
-					Gumps->Input(s);
+					gumps::Input(s);
 					break;
 
 				case PACKET_RESURRECT_CHOICE:
