@@ -316,22 +316,16 @@ void cMenu::setOptions( const UI08 options, const bool value )
 void cMenu::setMoveAble( const bool arg )
 {
 	setOptions( MOVEABLE, arg );
-	//if (!moveable)
-	//	addCommand("{nomove}");
 }
 
 void cMenu::setCloseAble( const bool arg )
 {
 	setOptions( CLOSEABLE, arg );
-	//if (!closeable)
-	//	addCommand("{noclose}");
 }
 
 void cMenu::setDisposeAble( const bool arg )
 {
 	setOptions( DISPOSEABLE, arg );
-	//if (!disposeable)
-	//	addCommand("{nodispose}");
 }
 
 
@@ -362,6 +356,16 @@ void cMenu::show( P_CHAR pc )
 
 	NXWCLIENT ps=pc->getClient();
 	if( ps==NULL ) return;
+
+	if( !(options&MOVEABLE) )
+		addCommand("{nomove}");
+
+	if( !(options&CLOSEABLE) )
+		addCommand("{noclose}");
+
+	if( !(options&DISPOSEABLE) )
+		addCommand("{nodispose}");
+
 
 	cPacketMenu	packet; //!< menu packet with new packet system
 
