@@ -624,7 +624,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 
 			if (new_decay)
 			{
-				ConOut("adjusting size for decay number length\n");
+				//ConOut("adjusting size for decay number length\n");
 				if (ISVALIDPI(pi_j))
 				{
 					if (SrvParms->housedecay_secs!=0)
@@ -650,7 +650,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 			// 3) calc housename length
 			if (new_houseName)
 			{
-				InfoOut("adjusting size for real house name length\n");
+				//InfoOut("adjusting size for real house name length\n");
 				length -= strlen("House Name") * 2;
 				length += strlen(pi_j->getCurrentNameC()) * 2;
 			}
@@ -692,16 +692,16 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 			/*sprintf(tt,"pos3: %s\n",script1);
 			LogMessage(tt);*/
 
-			if (house_gump && j>-1)
+			if (house_gump && ISVALIDPI(pi_j))
 			{
 				if (!strcmp(script1,"Decay Status :"))
 				{
-				   strcpy(tt2,script1);
-				   strcat(tt," %");
-                   	   strcat(script1, " ");
-				   strcat(script1,tt);
-				   //ConOut("final string: %s\n",script1);
-				   //ConOut("orig_len : %i new_len: %i\n",strlen(tt2),strlen(script1));
+					strcpy(tt2,script1);
+					strcat(tt," %");
+					strcat(script1, " ");
+					strcat(script1,tt);
+					//ConOut("final string: %s\n",script1);
+					//ConOut("orig_len : %i new_len: %i\n",strlen(tt2),strlen(script1));
 				}
 				else	// SPARHAWK 2002-01-28 house gump now shows house name
 					if (!strcmp(script1,"House Name"))
