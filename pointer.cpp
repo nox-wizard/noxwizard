@@ -112,7 +112,7 @@ void setserial(int nChild, int nParent, int nType)
   // types: 1-item container, 2-item spawn, 3-Item's owner 4-container is PC/NPC
   //        5-NPC's owner, 6-NPC spawned
 
-	if (nChild == INVALID || nParent == INVALID ) 
+	if (nChild == INVALID || nParent == INVALID )
 		return;
 	
 	switch(nType)
@@ -297,7 +297,27 @@ namespace pointers {
 
 	PCHARLOCATIONMAP	pCharLocationMap;
 
-	std::map< UI32, vector < P_ITEM > > pItemWorldMap;
+	static UI32 location2key( const Location& l );
+	static UI32 location2key( const UI32 x, const UI32 y );
+
+	static UI32 location2key( const Location& l )
+	{
+		return location2key( l.x, l.y );
+	}
+
+	static UI32 location2key( const UI32 x, const UI32 y )
+	{
+		return (x << 16) + y;
+	}
+
+	struct XY
+	{
+		UI32	x;
+		UI32	y;
+	};
+
+	static XY upperLeft	;
+	static XY lowerRight	;
 
 	void addCharToLocationMap( const P_CHAR who )
 	{
@@ -322,8 +342,10 @@ namespace pointers {
 				pCharLocationMap.erase( it.first );
 				break;
 			}
+		/*
 		if( it.first == it.second )
 			WarnOut("delCharFromWorldMap: could not delete char %i at x %i y %i from location map\n", who->getSerial32(), who->getPosition().x, who->getPosition().y );
+		*/
 	}
 
 	void showCharLocationMap()
@@ -339,7 +361,7 @@ namespace pointers {
 		UI32 	invalidCount	=  0;
 		SI32 	x	  	=  0;
 		SI32 	y		=  0;
-		SERIAL	serial		= -1;
+		SERIAL	serial		= INVALID;
 		for( ; it != end; ++it )
 		{
 			x = it->first >> 16;
@@ -378,26 +400,18 @@ namespace pointers {
 				validCall = true;
 			}
 			if( validCall )
-				pvCharsInRange = getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, serial );
+				pvCharsInRange = getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, self );
 		}
 		return pvCharsInRange;
 	}
 
-	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, serial )
+	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, SERIAL serial )
 	{
 		pCharVector* pvCharsInRange = 0;
 
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
 		{
 			pvCharsInRange = new pCharVector();
-			struct XY
-			{
-				UI32	x;
-				UI32	y;
-			};
-
-			XY upperLeft	;
-			XY lowerRight	;
 
 			if( x - range < 1 )
 				upperLeft.x = 1;
@@ -447,7 +461,8 @@ namespace pointers {
 									select = true;
 								if ( (flags & OFFLINE) && !it->second->IsOnline() )
 									select = true;
-								//if ( (flags & DEAD) && !pc->dead ) continue;
+								if ( (flags & DEAD) && it->second->dead )
+									select = true;
 							}
 						}
 					}
@@ -456,6 +471,7 @@ namespace pointers {
 				}
 				else	// cleanup
 				{
+					pCharLocationMap.erase( it );
 					WarnOut( "getCharFromLocationMap removed invalid entry\n" );
 				}
 				select = false;
@@ -464,55 +480,73 @@ namespace pointers {
 		return pvCharsInRange;
 	}
 
+	typedef std::multimap< UI32, P_ITEM >	PITEMLOCATIONMAP;
+	typedef PITEMLOCATIONMAP::iterator	PITEMLOCATIONMAPIT;
+
+	PITEMLOCATIONMAP	pItemLocationMap;
+
+
 	void addItemToLocationMap( const P_ITEM what )
 	{
 		VALIDATEPI(what);
-		UI32 key  = what->getPosition().x;
-		key	<<= 16;
-		key	 += what->getPosition().y;
-
-		pItemWorldMap[key].push_back( what );
+		UI32 key  = (what->getPosition().x << 16) +  what->getPosition().y;
+		//ConOut("addItemToWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
+		pItemLocationMap.insert( pair< UI32, P_ITEM >( key, what ) );
 	}
 
 	void delItemFromLocationMap( const P_ITEM what )
 	{
 		VALIDATEPI(what);
-		UI32 key  = what->getPosition().x;
-		key	<<= 16;
-		key	 += what->getPosition().y;
+		UI32 key  = (what->getPosition().x << 16) +  what->getPosition().y;
+		//ConOut("delItemFromWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
+		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( key );
 
-		std::map< UI32, pItemVector >::iterator locIt( pItemWorldMap.find( key ) );
-		if( locIt != pItemWorldMap.end() )
-		{
-			pItemVectorIt itemIt( locIt->second.begin() ), itemEnd( locIt->second.end() );
-			LOGICAL found = false;
-			while( itemIt != itemEnd && !found )
+		for( ; it.first != it.second; ++it.first )
+			if( it.first->second->getSerial32() == what->getSerial32() )
 			{
-				if( (*itemIt)->getSerial32() == what->getSerial32() )
-				{
-					found = true;
-					locIt->second.erase( itemIt );
-				}
-				else
-					++itemIt;
+				pItemLocationMap.erase( it.first );
+				break;
 			}
-		}
+		/*
+		if( it.first == it.second )
+			WarnOut("delCharFromWorldMap: could not delete char %i at x %i y %i from location map\n", who->getSerial32(), who->getPosition().x, who->getPosition().y );
+		*/
 	}
 
-	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags )
+
+	pItemVector* getItemsNearLocation( cObject* pObject, SI32 range, UI32 flags )
 	{
-		pItemVector vItemsInRange;
-		/*
+		pItemVector* 	pvItemsInRange	= 0;
+		LOGICAL		validCall	= false;
+		SERIAL		self		= INVALID;
+
+		if( pObject != 0 )
+		{
+			if( isItemSerial( pObject->getSerial32() ) )
+			{
+				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+				{
+					self = pObject->getSerial32();
+					validCall = true;
+				}
+			}
+			else
+			{
+				validCall = true;
+			}
+			if( validCall )
+				pvItemsInRange = getItemsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, self );
+		}
+		return pvItemsInRange;
+	}
+
+	pItemVector* getItemsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, SERIAL serial )
+	{
+		pItemVector* pvItemsInRange;
+
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
 		{
-			struct XY
-			{
-				UI32	x;
-				UI32	y;
-			};
-
-			XY upperLeft	;
-			XY lowerRight	;
+			pvItemsInRange = new pItemVector();
 
 			if( x - range < 1 )
 				upperLeft.x = 1;
@@ -534,39 +568,38 @@ namespace pointers {
 			else
 				lowerRight.y = y + range;
 
+			//ConOut( "getItemFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
+			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 
-			UI32 numberOfRows = lowerRight.x - upperLeft.x;
-			UI32 lowerBoundKey;
-			UI32 upperBoundKey;
-			LOGICAL finished = false;
-			std::map< UI32, pItemVector >::iterator mapIt;
-			const std::map< UI32, pItemVector >::iterator mapEnd( pItemWorldMap.end() );
+			PITEMLOCATIONMAPIT it(  pItemLocationMap.lower_bound( ( upperLeft.x << 16 ) + upperLeft.y ) ),
+					   end( pItemLocationMap.upper_bound( ( lowerRight.x << 16 ) + lowerRight.y ));
 
-			for( UI32 rowIndex = 0; rowIndex < numberOfRows; ++rowIndex )
+			LOGICAL select = false;
+
+			for( ; it != end; ++it )
 			{
-				lowerBoundKey = ( (upperLeft.x + rowIndex) << 16 ) + upperLeft.y;
-				upperBoundKey = ( (upperLeft.x + rowIndex) << 16 ) + lowerRight.y;
-
-				for( mapIt = pItemWorldMap.lower_bound( lowerBoundKey ); mapIt != mapEnd && !finished; ++mapIt )
+				if( ISVALIDPI( it->second ) )
 				{
-					if( mapIt->first >= lowerBoundKey && mapIt->first <= upperBoundKey )
+					if( flags )
 					{
-						pItemVectorIt itemIt( mapIt->second.begin() ), itemEnd( mapIt->second.end() );
-
-						while( itemIt != itemEnd )
+						if ( !(flags & EXCLUDESELF) ||
+						      ((flags & EXCLUDESELF) && serial != it->second->getSerial32() ) )
 						{
-							P_ITEM pi = (*itemIt);
-							vItemsInRange.push_back( pi );
-							++itemIt;
+							select = true;
 						}
 					}
-					else
-						finished = true;
+					if( select )
+						pvItemsInRange->push_back( it->second );
 				}
+				else	// cleanup
+				{
+					pItemLocationMap.erase( it );
+					WarnOut( "getItemFromLocationMap removed invalid entry\n" );
+				}
+				select = false;
 			}
 		}
-		*/
-		return vItemsInRange;
+		return pvItemsInRange;
 	}
 #endif
 	/*!

@@ -86,7 +86,8 @@ namespace pointers {
 		ONLINE		=  1,
 		OFFLINE 	=  2,
 		NPC		=  4,
-		SELF		=  8
+		EXCLUDESELF	=  8,
+		DEAD		= 16
 	};
 
 	void showCharLocationMap();
@@ -96,7 +97,8 @@ namespace pointers {
 	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags = 0, SERIAL self = INVALID );
 	void addItemToLocationMap( const P_ITEM what );
 	void delItemFromLocationMap( const P_ITEM what );
-	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
+	pItemVector* getItemsNearLocation( cObject* pObject, SI32 range, UI32 flags = 0 );
+	pItemVector* getItemsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags = 0, SERIAL self = INVALID );
 #endif
 }
 
