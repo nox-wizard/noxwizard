@@ -315,7 +315,7 @@ void cSpawns::loadFromScript()
 */
 void cSpawns::clearDynamic()
 {
-	dinamic.clear();
+	dynamic.clear();
 }
 
 /*!
@@ -335,7 +335,7 @@ void cSpawns::loadFromItem( P_ITEM pi )
 	//
 	// Insert the spawner in the map.
 	//
-	Spawns->dinamic.insert( make_pair( pi->getSerial32(), cSpawnDinamic(pi) ) );
+	Spawns->dynamic.insert( make_pair( pi->getSerial32(), cSpawnDynamic(pi) ) );
 }
 
 void cSpawns::doSpawn()
@@ -345,8 +345,8 @@ void cSpawns::doSpawn()
 		iter_scr->second.doSpawn();
 	}
 
-	SPAWN_DINAMIC_DB::iterator iter_din( dinamic.begin() );
-	for( ; iter_din!=dinamic.end(); iter_din++ ) {
+	SPAWN_DYNAMIC_DB::iterator iter_din( dynamic.begin() );
+	for( ; iter_din!=dynamic.end(); iter_din++ ) {
 		if( iter_din->second.needSpawn() )
 			iter_din->second.doSpawn();
 	}
@@ -364,8 +364,8 @@ void cSpawns::doSpawnAll()
 		iter->second.doSpawnAll();
 	}
 
-	SPAWN_DINAMIC_DB::iterator iter_din( dinamic.begin() );
-	for( ; iter_din!=dinamic.end(); iter_din++ ) {
+	SPAWN_DYNAMIC_DB::iterator iter_din( dynamic.begin() );
+	for( ; iter_din!=dynamic.end(); iter_din++ ) {
 		iter_din->second.doSpawn();
 	}
 
@@ -398,17 +398,17 @@ void cSpawns::removeObject( SERIAL spawn, P_CHAR pc )
 		iter->second.removeObject( pc );
 }
 
-void cSpawns::removeSpawnDinamic( P_ITEM pi )
+void cSpawns::removeSpawnDynamic( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	SPAWN_DINAMIC_DB::iterator iter( dinamic.find( pi->getSerial32() ) );
-	if( iter!=dinamic.end() ) {
-		dinamic.erase( iter );
+	SPAWN_DYNAMIC_DB::iterator iter( dynamic.find( pi->getSerial32() ) );
+	if( iter!=dynamic.end() ) {
+		dynamic.erase( iter );
 	}
 	else {
 		if( pi->spawnserial!=INVALID ) {
-			iter= dinamic.find( pi->spawnserial );
-			if( iter!=dinamic.end() ) {
+			iter= dynamic.find( pi->spawnserial );
+			if( iter!=dynamic.end() ) {
 				iter->second.remove( pi->getSerial32() );
 			}
 		}
@@ -416,19 +416,19 @@ void cSpawns::removeSpawnDinamic( P_ITEM pi )
 
 }
 
-void cSpawns::removeSpawnDinamic( P_CHAR pc )
+void cSpawns::removeSpawnDynamic( P_CHAR pc )
 {
 	VALIDATEPC(pc);
 	if( pc->spawnserial!=INVALID ) {
-		SPAWN_DINAMIC_DB::iterator iter= dinamic.find( pc->spawnserial );
-		if( iter!=dinamic.end() ) {
+		SPAWN_DYNAMIC_DB::iterator iter= dynamic.find( pc->spawnserial );
+		if( iter!=dynamic.end() ) {
 			iter->second.remove( pc->getSerial32() );
 		}
 	}
 
 }
 
-cSpawnDinamic::cSpawnDinamic( P_ITEM pi )
+cSpawnDynamic::cSpawnDynamic( P_ITEM pi )
 {
 	item=pi->getSerial32();
 	item_spawned.clear();
@@ -437,7 +437,7 @@ cSpawnDinamic::cSpawnDinamic( P_ITEM pi )
 	nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
 }
 
-void cSpawnDinamic::doSpawn()
+void cSpawnDynamic::doSpawn()
 {
 	P_ITEM spawn=pointers::findItemBySerial( item );
 	VALIDATEPI(spawn);
@@ -475,7 +475,7 @@ void cSpawnDinamic::doSpawn()
 
 }
 
-void cSpawnDinamic::remove( SERIAL serial )
+void cSpawnDynamic::remove( SERIAL serial )
 {
 	
 	if( isCharSerial( serial ) ) {
@@ -498,7 +498,7 @@ void cSpawnDinamic::remove( SERIAL serial )
 		
 }
 
-bool cSpawnDinamic::needSpawn()
+bool cSpawnDynamic::needSpawn()
 {
 	return ( TIMEOUT( nextspawn ) );//&& ( current<max
 }

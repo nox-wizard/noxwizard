@@ -843,7 +843,7 @@ public:
 
 		UI08			commandLevel; 			// 0 = player, 1 = counselor, 2 = GM
 
-		SERIAL			spawnserial; //!< Spawned by dinamic
+		SERIAL			spawnserial; //!< Spawned by dynamic
 		SERIAL			spawnregion; //!< Spawned by scripted
 
 		char			npc_type;		// currently only used for stabling, (type==1 -> stablemaster)

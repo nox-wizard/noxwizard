@@ -69,10 +69,10 @@ public:
 
 };
 
-class cSpawnDinamic {
+class cSpawnDynamic {
 public:
 
-	cSpawnDinamic( P_ITEM pi );
+	cSpawnDynamic( P_ITEM pi );
 
 	SERIAL item; //!< the spawner
 	SERIAL_SET item_spawned; //!< spawned items
@@ -87,13 +87,13 @@ public:
 };
 
 typedef std::map< SERIAL, cSpawnScripted > SPAWN_SCRIPTED_DB;
-typedef std::map< SERIAL, cSpawnDinamic  > SPAWN_DINAMIC_DB;
+typedef std::map< SERIAL, cSpawnDynamic  > SPAWN_DYNAMIC_DB;
 
 class cSpawns {
 private:
 
 	SPAWN_SCRIPTED_DB scripted; //!< list of scripted spawn
-	SPAWN_DINAMIC_DB dinamic; //!< list of dinamic spawn
+	SPAWN_DYNAMIC_DB dynamic; //!< list of dynamic spawn
 
 public:
 	cSpawns();
@@ -111,8 +111,8 @@ public:
 
 	void removeObject( SERIAL spawn, P_ITEM pi );
 	void removeObject( SERIAL spawn, P_CHAR pc );
-	void removeSpawnDinamic( P_ITEM pi );
-	void removeSpawnDinamic( P_CHAR pc );
+	void removeSpawnDynamic( P_ITEM pi );
+	void removeSpawnDynamic( P_CHAR pc );
 
 };
 
