@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.1 2003/04/26 19:58:52 luxornox Exp $
+ *  Version: $Id: amx.c,v 1.2 2003/04/29 17:50:29 luxornox Exp $
  */
 
 //XAN
@@ -176,6 +176,15 @@ typedef enum {
 static int amx_LittleEndian = -1;   /* set to TRUE for Little Endian, and
                                      * to FALSE for Big Endian */
 
+/*!
+\author Luxor
+\brief Returns the amx_LittleEndian integer value.
+*/
+int amx_getLittleEndian()
+{
+	return amx_LittleEndian;
+}
+
 static void init_little_endian(void)
 {
   if (amx_LittleEndian < 0) {       /* initialize this variable only once */
@@ -191,7 +200,7 @@ static void init_little_endian(void)
   } /* if */
 }
 
-static void swap16(uint16_t *v)
+void swap16(uint16_t *v)
 {
   unsigned char *s = (unsigned char *)v;
   unsigned char t;
@@ -203,7 +212,7 @@ static void swap16(uint16_t *v)
   s[1]=t;
 }
 
-static void swap32(uint32_t *v)
+void swap32(uint32_t *v)
 {
   unsigned char *s = (unsigned char *)v;
   unsigned char t;

@@ -78,7 +78,7 @@ int AMXAPI amx_SetUserData(AMX *amx, long tag, void *ptr);
 int AMXAPI amx_StrLen(cell *cstring, int *length);
 int printstring(AMX *amx,cell *cstr,cell *params,int num);
 
-extern int amx_LittleEndian;
+extern int amx_getLittleEndian();
 extern void swap16(uint16_t *v);
 extern void swap32(uint32_t *v);
 
