@@ -1078,7 +1078,7 @@ void command_setpriv3(NXWSOCKET  s)
 					//
 					//	Sparhawk:	Very very dirty trick to get setpriv3 cmd working again
 					//
-					addx[s]= (int) cmd;
+					addx[s]= (int)(reinterpret_cast<long>cmd);
 					addy[s]=y;
 					sprintf(s_szCmdTableTemp, "Select player to alter %s command access.", cmd->cmd_name);
 					target(s, 0, 1, 0, 225, s_szCmdTableTemp);

@@ -22,9 +22,9 @@ COLOR addrandomcolor(cObject* po, char *colorlist)
 {
 	
 	if( (po!=NULL) && isCharSerial( po->getSerial32() ) )
-		{ VALIDATEPCR((P_CHAR)po,0); }
+		{ VALIDATEPCR(po,0); }
 	else 
-		VALIDATEPIR((P_ITEM)po,0);
+		VALIDATEPIR(po,0);
 	
 	char sect[512];
 	int i,j,storeval = 0;
