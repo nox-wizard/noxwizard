@@ -635,6 +635,7 @@ void cNetwork::ActivateFeatures(int s)
 
 	ShortToCharPtr(features, feat+1);
 	Xsend(s, feat, 3);
+	FlushBuffer(s);
 }
 
 void cNetwork::GoodAuth(int s)
@@ -697,6 +698,7 @@ void cNetwork::GoodAuth(int s)
 	if(server_data.feature == 2) 	// LBR: NPC Popup Menu   (not currently impl.)
 		tail[3] = 0x08;
 	Xsend(s, tail, 4);
+	FlushBuffer(s);
 }
 
 void cNetwork::CharList(int s) // Gameserver login and character listing
