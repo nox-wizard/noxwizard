@@ -1019,7 +1019,7 @@ void cTargets::CloseTarget(NXWSOCKET s)
 
 int cTargets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
 {
-    if ( (s>=0) && LongFromCharPtr(buffer[s]+11) == (long)0xFFFFFFFF)
+    if ( (s>=0) && LongFromCharPtr(buffer[s]+11) == INVALID)
 		return INVALID;
 
     P_ITEM pi = item::CreateScriptItem(s, addmitem, 0);

@@ -500,7 +500,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		case '@':
 			if (!(strcmp("@CALL", cmd))) {
 				g_nCurrentSocket = m_socket;
-				int rt = AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(par), m_socket, reinterpret_cast<int>(this));
+				int rt = AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(par), m_socket );
 				if (rt) STOPTRIGGER;
 			}
 			break;

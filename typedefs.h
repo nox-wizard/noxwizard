@@ -19,39 +19,48 @@
 
 typedef double				R64;	//< 64 bits floating point
 typedef float				R32;	//< 32 bits floating point
-#ifdef  _MSC_VER
-	#if _MSC_VER<=1200
-		typedef unsigned long		UI64;
-		typedef signed long		SI64;
-	#else
-		// can microsoft be compatible with borland and gnu? no, obviously...
-		// so __int64 is micro$oft 64-bit integer type, and long long the
-		// usual integer type for other compilers.... - Akron
-		typedef unsigned __int64	UI64;
-		typedef signed __int64		SI64;
-	#endif
 
+#if defined __GNUC__
+	typedef uint8_t			UI08;
+	typedef uint16_t		UI16;
+	typedef uint32_t		UI32;
+	typedef uint64_t		UI64;
+	typedef int8_t			UI08;
+	typedef int16_t			UI16;
+	typedef int32_t			UI32;
+	typedef int64_t			UI64;
+#elif defined __BORLANDC__
+	typedef unsigned __int8		UI08;
+	typedef unsigned __int16	UI16;
+	typedef unsigned __int32	UI32;
+	typedef unsigned __int64	UI64;
+	typedef __int8			UI08;
+	typedef __int16			UI16;
+	typedef __int32			UI32;
+	typedef __int64			UI64;
 #else
-	#if defined __BORLANDC__ && __BORLANDC__ < 0x0560
-		// also borland c++ builder previous than 6.0 doesn't accept long long -_- - Akron
-		typedef unsigned __int64	UI64;
-		typedef signed __int64		SI64;
+	#ifdef _MSC_VER
+		#if _MSC_VER<=1200
+			typedef unsigned long		UI64;
+			typedef signed long		SI64;
+		#else
+			typedef unsigned __int64	UI64;
+			typedef signed __int64		SI64;
+		#endif
 	#else
-		typedef unsigned long long	UI64;	//!< unsigned 64 bits integer
-		typedef signed long long	SI64;	//!< signed 64 bits integer
+		typedef unsigned long long	UI64;
+		typedef long long		SI64;
 	#endif
+	typedef unsigned int			UI32;		//!< unsigned 32 bits integer
+	typedef signed int			SI32;		//!< signed 32 bits integer
+	typedef unsigned short int		UI16;		//!< unsigned 16 bits integer
+	typedef signed short int		SI16;		//!< signed 16 bits integer
+	typedef unsigned char			UI08;		//!< unsigned 8 bits integer
+	typedef signed char			SI08;		//!< signed 8 bits integer
 #endif
 
-typedef unsigned int			UI32;		//!< unsigned 32 bits integer
-typedef signed int			SI32;		//!< signed 32 bits integer
-typedef unsigned short int		UI16;		//!< unsigned 16 bits integer
-typedef signed short int		SI16;		//!< signed 16 bits integer
-typedef unsigned char			UI08;		//!< unsigned 8 bits integer
-typedef signed char			SI08;		//!< signed 8 bits integer
 typedef bool				LOGICAL;	//!< boolean type
 typedef char				TEXT;		//!< character type
-
-
 typedef UI08				ARMORCLASS;
 typedef UI16				BODYTYPE;
 typedef SI32				CHARACTER;

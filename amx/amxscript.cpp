@@ -287,7 +287,7 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	  cell par2 = param2;
 	  cell par3 = param3;
 	  cell par4 = param4;
-      cell par5 = param5;
+	  cell par5 = param5;
    	  cell par6 = param6;
 	  int err;
 
