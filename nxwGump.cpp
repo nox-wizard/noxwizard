@@ -140,7 +140,8 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			callback = newAmxEvent( const_cast< char* >( sCallback.c_str() ) );
 			callback->Call( gump, gumpSerial, button, pc->getSerial32() );
 
-			responseMap.erase( it );
+			// Commented out to have concurrent gump controll
+			//responseMap.erase( it );
 		}			
 		return true;
 	}
