@@ -670,7 +670,6 @@ LOGICAL cObject::isValidAmxEvent( UI32 eventId )
 
 AmxEvent* cObject::getAmxEvent( UI32 eventId )
 {
-
 	if( isValidAmxEvent( eventId ) )
 	{
 		if( amxEvents != 0 )
@@ -689,10 +688,10 @@ AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamic
 
 	if( isValidAmxEvent( eventId ) )
 	{
+		delAmxEvent( eventId );
+
 		if( amxEvents == NULL )
 			amxEvents = new AmxEventMap;
-		else
-			delAmxEvent( eventId );
 
 		event = newAmxEvent( amxFunction, dynamicEvent );
 		amxEvents->insert( make_pair( eventId, event ) );
@@ -840,7 +839,6 @@ void cObject::tempfxOff()
 
 /*!
 \author Luxor
-\todo by endy, move temfx from vector to list
 */
 void cObject::checkTempfx()
 {

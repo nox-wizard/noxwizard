@@ -402,6 +402,11 @@ namespace item
 
 		safedelete(iter);
 		pi->setScriptID(itemnum);
+
+		//Luxor: put it in the container
+                if ( ISVALIDPO( cont ) )
+			pi->setCont( cont );
+		
 		return pi;
 
 	}
