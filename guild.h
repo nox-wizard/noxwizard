@@ -158,6 +158,7 @@ class cGuild
 		P_GUILD_MEMBER addMember( P_CHAR pc );
 		void resignMember( P_CHAR pc );
 		P_GUILD_MEMBER getMember( SERIAL member );
+		int getMemberPosition(SERIAL member);
 
 	public:
 
@@ -166,7 +167,7 @@ class cGuild
 		P_GUILD_RECRUIT addNewRecruit( P_CHAR recruit, P_CHAR recruiter );
 		void refuseRecruit( P_CHAR pc );
 		P_GUILD_RECRUIT getRecruit( SERIAL recruit );
-
+		
 	public:
 
 		std::map< SERIAL, cGuildPolitics > political_to_guild;	//!< all guild politics related to other guild

@@ -240,6 +240,17 @@ P_GUILD_MEMBER cGuild::getMember( SERIAL member )
 
 
 /*!
+\brief Get the index of the guild member in the guild 
+\author Wintermute
+\param member the member
+*/
+int cGuild::getMemberPosition(SERIAL member)
+{
+	std::map< SERIAL, P_GUILD_MEMBER >::iterator iter( members.find( member ) );
+	return ( iter!=members.end() )? distance(members.begin(), iter) : INVALID;
+}
+
+/*!
 \brief Add a new recruit
 \author Endymion
 */
