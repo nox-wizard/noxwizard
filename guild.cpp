@@ -91,9 +91,9 @@ cGuild::cGuild( SERIAL serial )
 			case 'C':
 			case 'c':
 				if (!strcmp(script1, "CHARTER")) {
-					wstring baffer;
-					string2wstring( std::string( script2 ), baffer );
-					setCharter( baffer );
+					wstring* w = HexVector2UnicodeString( script2 );
+					setCharter( *w );
+					delete w;
 				}
 				break;
 			case 'M':
@@ -599,7 +599,7 @@ void cGuildz::save( FILE *gWsc )
 		fprintf(gWsc, "{\n");
 		fprintf(gWsc, "NAME %s\n",		pGuild->getName().c_str());
 		fprintf(gWsc, "ABBR %s\n",		pGuild->getAbbreviation().c_str());
-		fprintf(gWsc, "CHARTER %s\n",		pGuild->getCharter().c_str());
+		fprintWstring( gWsc, "CHARTER", &pGuild->getCharter() );
 		fprintf(gWsc, "WEBPAGE %s\n",		pGuild->getWebPage().c_str());
 		fprintf(gWsc, "TYPE %i\n",		pGuild->getType());
 		fprintf(gWsc, "MASTER %i\n",		pGuild->getGuildMaster());
