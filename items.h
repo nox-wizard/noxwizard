@@ -464,6 +464,7 @@ public:
 
 public:
 	virtual void	Delete();
+//	virtual void	saveBin(ofstream *out);
 /*
 public:
 	LOGICAL 	isValidAmxEvent( UI32 eventId );

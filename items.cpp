@@ -1505,4 +1505,340 @@ LOGICAL cItem::isValidAmxEvent( UI32 eventId )
 		return false;
 }
 */
+/*
+const unsigned int NAME_ID=0xFA00;
+const unsigned int TITLE_ID=0xFA01;
+const unsigned int ACCOUNT_ID=0xFA02;
+const unsigned int CREATIONDAY_ID=0xFA03;
+const unsigned int GMMOVEEFF_ID=0xFA04;
+const unsigned int GUILDTYPE=0xFA05;
+const unsigned int GUILDTRAITOR_ID=0xFA06;
+const unsigned int POS_X_ID=0xFA07;
+const unsigned int POS_Y_ID=0xFA08;
+const unsigned int POS_Z_ID=0xFA09;
+const unsigned int POS_DISPZ_ID=0xFA0A;
+const unsigned int POS_M_ID=0xFA0B;
+const unsigned int POS_OLDX_ID=0xFA0C;
+const unsigned int POS_OLDY_ID=0xFA0D;
+const unsigned int POS_OLDZ_ID=0xFA0E;
+const unsigned int POS_OLDM_ID=0xFA0F;
+const unsigned int DIR_ID = 0xFA10;
+const unsigned int DOORUSE_ID = 0xFA11;
+const unsigned int BODY_ID = 0xFA12;
+const unsigned int XBODY_ID = 0xFA13;
+const unsigned int SKIN_ID = 0xFA14;
+const unsigned int XSKIN_ID = 0xFA15;
+const unsigned int PRIV_ID = 0xFA16;
+const unsigned int ALLMOVE_ID = 0xFA17;
+const unsigned int DAMAGETYPE_ID = 0xFA18;
+const unsigned int STABLEMASTER_ID = 0xFA19;
+const unsigned int NPCTYPE_ID = 0xFA1A;
+const unsigned int TIME_UNUSED_ID = 0xFA1B;
+const unsigned int FONT_ID = 0xFA1C;
+const unsigned int SAY_ID = 0xFA1D;
+const unsigned int EMOTE_ID = 0xFA1E;
+const unsigned int STRENGTH_ID = 0xFA1F;
+const unsigned int STRENGTH2_ID = 0xFA20;
+const unsigned int DEXTERITY_ID = 0xFA21;
+const unsigned int DEXTERITY2_ID = 0xFA22;
+const unsigned int INTELLIGENCE_ID = 0xFA23;
+const unsigned int INTELLIGENCE2_ID = 0xFA24;
+const unsigned int HITPOINTS_ID = 0xFA25;
+const unsigned int STAMINA_ID = 0xFA26;
+const unsigned int MANA_ID = 0xFA27;
+const unsigned int NPC_ID = 0xFA28;
+const unsigned int POSSESSEDSERIAL_ID = 0xFA29;
+const unsigned int HOLDGOLD_ID = 0xFA2A;
+const unsigned int OWN_ID = 0xFA2B;
+const unsigned int ROBE_ID = 0xFA2C;
+const unsigned int KARMA_ID = 0xFA2D;
+const unsigned int FAME_ID = 0xFA2E;
+const unsigned int KILLS_ID = 0xFA2F;
+const unsigned int DEATHS_ID = 0xFA30;
+const unsigned int FIXEDLIGHT_ID = 0xFA31;
+const unsigned int SPEECH_ID = 0xFA32;
+
+void cItem::saveBin( ofstream *out)
+{
+	static cItem dummy( false );
+	if( isInWorld() ) 
+	{
+		if ( ( pi->getPosition().x < 100) && ( pi->getPosition().y < 100 ) ) 
+		{ //garbage positions
+			//Luxor: we must check if position is 0,0 for dragged items
+			if (pi->getPosition().x != 0 && pi->getPosition().y != 0) 
+			{
+				pi->Delete();
+				return;
+			}
+		}
+		if( pi->doDecay() )
+			return;
+	}
+	// converting old house styles to new housesystem
+	if ( pi->IsHouse() )
+	{
+		// Look if pi serial connects to a house in cHouses
+		P_HOUSE house=cHouses::findHouse(pi->getSerial32());
+		if ( house == NULL )
+		{
+			// No house information has been made yet
+			P_ITEM temp = item::CreateFromScript( pi->morex, NULL);
+			if ( !ISVALIDPI(temp) )
+			{
+				objects.eraseObject (temp);
+				return;
+			}
+			P_HOUSE newHouse = new cHouse();
+			newHouse->setSerial(pi->getSerial32());
+			newHouse->createMulti(temp->morex, pi);
+			newHouse->setOwner(pi->getOwnerSerial32());
+			cHouses::addHouse(newHouse );
+			temp->Delete();
+
+		}
+	}
+	if ( (pi->type == ITYPE_NPC_SPAWNER )|| (pi->type == ITYPE_ITEM_SPAWNER ))
+	{
+		cSpawnDinamic *spawn = Spawns->getDynamicSpawn(pi->getSerial32());
+		if ( spawn == NULL )
+		{
+			// No spawner has been made yet
+			Spawns->loadFromItem(pi);
+			spawn = Spawns->getDynamicSpawn(pi->getSerial32());
+			spawn->clear();
+			pi->amount2=0;
+			spawn->current=0;
+			spawn->nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
+		}
+	}
+	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
+	{
+		out->write( (char *)  "SECTION WORLDITEM %i\n", this->itm_curr++);
+		out->write( (char *)  "{\n");
+		out->write( (char *)  "SERIAL %i\n", pi->getSerial32());
+		out->write( (char *)  "NAME %s\n", pi->getCurrentNameC());
+		//<Luxor>: if the item is beard or hair of a morphed char, we must save the original ID and COLOR value
+		if ( (pi->layer == LAYER_BEARD || pi->layer == LAYER_HAIR) && isCharSerial( pi->getContSerial() ) ) {
+			P_CHAR pc_morphed = (P_CHAR)(pi->getContainer());
+			if (ISVALIDPC(pc_morphed)) 
+			{
+				if (pc_morphed->morphed) 
+				{
+					if (pi->layer == LAYER_BEARD) 
+					{ //beard
+						if ( pc_morphed->getBackupStats() != NULL )
+						{
+							out->write( (char *)  "ID %i\n", pc_morphed->getBackupStats()->getBeardStyle());
+							out->write( (char *)  "COLOR %i\n", pc_morphed->getBackupStats()->getBeardColor());
+
+						}
+					} 
+					else 
+					{ //hair
+						if ( pc_morphed->getBackupStats() != NULL )
+						{
+							out->write( (char *)  "ID %i\n", pc_morphed->getBackupStats()->getHairStyle());
+							out->write( (char *)  "COLOR %i\n", pc_morphed->getBackupStats()->getHairColor());
+
+						}
+					}
+				} 
+				else 
+				{
+					out->write( (char *)  "ID %i\n", pi->getId());
+					if (pi->getColor()!=dummy.getColor())
+						out->write( (char *)  "COLOR %i\n", pi->getColor());
+				}
+			} else {
+				out->write( (char *)  "ID %i\n", pi->getId());
+				if (pi->getColor()!=dummy.getColor())
+					out->write( (char *)  "COLOR %i\n", pi->getColor());
+			}
+		} else {
+			out->write( (char *)  "ID %i\n", pi->getId());
+			if (pi->getColor()!=dummy.getColor())
+				out->write( (char *)  "COLOR %i\n", pi->getColor());
+		}
+		//</Luxor>
+		if( pi->getScriptID()!=dummy.getScriptID() )
+			out->write( (char *)  "SCRIPTID %u\n", pi->getScriptID());
+		if ((pi->animid()!=pi->getId() )&&(pi->animid()!=dummy.animid()))
+			out->write( (char *)  "ANIMID %i\n", pi->animid());
+		out->write( (char *)  "NAME2 %s\n", pi->getSecondaryNameC());
+#ifndef DESTROY_REFERENCES
+		if ( !pi->creator.empty())	out->write( (char *)  "CREATOR %s\n", pi->creator.c_str() ); // by Magius(CHE)
+#endif
+		if (pi->madewith!=dummy.madewith)
+			out->write( (char *)  "SK_MADE %i\n", pi->madewith ); // by Magius(CHE)
+
+		out->write( (char *)  "X %i\n", pi->getPosition().x);
+		out->write( (char *)  "Y %i\n", pi->getPosition().y);
+		out->write( (char *)  "Z %i\n", pi->getPosition().z);
+
+		if (pi->getContSerial()!=dummy.getContSerial())
+			out->write( (char *)  "CONT %i\n", pi->getContSerial());
+		if (pi->layer!=dummy.layer)
+			out->write( (char *)  "LAYER %i\n", pi->layer);
+		if (pi->itmhand!=dummy.itmhand)
+			out->write( (char *)  "ITEMHAND %i\n", pi->itmhand);
+		if (pi->type!=dummy.type)
+			out->write( (char *)  "TYPE %i\n", pi->type);
+		//xan : don't save type2 for boats, so they'll restart STOPPED
+		// elcabesa se non lo salvi per le barche poi non le riapri =)
+		if (pi->type2!=dummy.type2)
+		{
+			if ( !( (pi->type==117) && ((pi->type2==1) ||(pi->type2==2)) ) )
+			{
+				out->write( (char *)  "TYPE2 %i\n", pi->type2);
+			}
+		}
+		if (pi->offspell!=dummy.offspell)
+			out->write( (char *)  "OFFSPELL %i\n", pi->offspell);
+		if (((unsigned char)pi->more1<<24)+((unsigned char)pi->more2<<16)+((unsigned char)pi->more3<<8)+(unsigned char)pi->more4) //;
+			out->write( (char *)  "MORE %i\n", ((unsigned char)pi->more1<<24)+((unsigned char)pi->more2<<16)+((unsigned char)pi->more3<<8)+(unsigned char)pi->more4);
+		if (((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4)
+			out->write( (char *)  "MORE2 %i\n", ((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4);
+		if (pi->morex!=dummy.morex)
+			out->write( (char *)  "MOREX %i\n", pi->morex);
+		if (pi->morey!=dummy.morey)
+			out->write( (char *)  "MOREY %i\n", pi->morey);
+		if (pi->morez!=dummy.morez)
+			out->write( (char *)  "MOREZ %i\n", pi->morez);
+		if (pi->amount!=dummy.amount)
+			out->write( (char *)  "AMOUNT %i\n", pi->amount);
+		if (pi->amount2!=dummy.amount)
+			out->write( (char *)  "AMOUNT2 %i\n", pi->amount2);
+		if (pi->pileable!=dummy.pileable)
+			out->write( (char *)  "PILEABLE %i\n", pi->pileable);
+		if (pi->doordir!=dummy.doordir)
+			out->write( (char *)  "DOORFLAG %i\n", pi->doordir);
+		if (pi->dye!=dummy.dye)
+			out->write( (char *)  "DYEABLE %i\n", pi->dye);
+		if (pi->corpse!=dummy.corpse)
+			out->write( (char *)  "CORPSE %i\n", pi->corpse);
+		if (pi->att!=dummy.att)
+			out->write( (char *)  "ATT %i\n", pi->att);
+		if (pi->def!=dummy.def)
+			out->write( (char *)  "DEF %i\n", pi->def);
+		if (pi->hidamage!=dummy.hidamage)
+			out->write( (char *)  "HIDAMAGE %i\n", pi->hidamage);
+		if (pi->lodamage!=dummy.lodamage)
+			out->write( (char *)  "LODAMAGE %i\n", pi->lodamage);
+		if (pi->auxdamage!=dummy.auxdamage)
+			out->write( (char *)  "AUXDAMAGE %i\n", pi->auxdamage);
+		if (pi->damagetype!=dummy.damagetype)
+			out->write( (char *)  "DAMAGETYPE %i\n", pi->damagetype);
+		if (pi->auxdamagetype!=dummy.auxdamagetype)
+			out->write( (char *)  "AUXDAMAGETYPE %i\n", pi->auxdamagetype);
+		if (pi->ammo !=dummy.ammo )
+			out->write( (char *)  "AMMO %i\n", pi->ammo);
+		if (pi->ammoFx !=dummy.ammoFx )
+			out->write( (char *)  "AMMOFX %i\n", pi->ammoFx);
+		if (pi->st!=dummy.st)
+			out->write( (char *)  "ST %i\n", pi->st);
+		if (pi->time_unused!=dummy.time_unused)
+			out->write( (char *)  "TIME_UNUSED %i\n", pi->time_unused);
+		if (pi->weight!=dummy.weight)
+			out->write( (char *)  "WEIGHT %i\n", pi->weight);
+		if (pi->hp!=dummy.hp)
+			out->write( (char *)  "HP %i\n", pi->hp);
+		if (pi->maxhp!=dummy.maxhp)
+			out->write( (char *)  "MAXHP %i\n", pi->maxhp ); // Magius(CHE)
+		if (pi->rank!=dummy.rank)
+			out->write( (char *)  "RANK %i\n", pi->rank ); // Magius(CHE)
+		if (pi->st2!=dummy.st2)
+			out->write( (char *)  "ST2 %i\n", pi->st2);
+		if (pi->dx!=dummy.dx)
+			out->write( (char *)  "DX %i\n", pi->dx);
+		if (pi->dx2!=dummy.dx2)
+			out->write( (char *)  "DX2 %i\n", pi->dx2);
+		if (pi->in!=dummy.in)
+			out->write( (char *)  "IN %i\n", pi->in);
+		if (pi->in2!=dummy.in2)
+			out->write( (char *)  "IN2 %i\n", pi->in2);
+		if (pi->spd!=dummy.spd)
+			out->write( (char *)  "SPD %i\n", pi->spd);
+		if (pi->poisoned!=dummy.poisoned)
+			out->write( (char *)  "POISONED %i\n", pi->poisoned);
+		if (pi->wipe!=dummy.wipe)
+			out->write( (char *)  "WIPE %i\n", pi->wipe);
+		if (pi->magic!=dummy.magic)
+			out->write( (char *)  "MOVABLE %i\n", pi->magic);
+		if (pi->getOwnerSerial32()!=dummy.getOwnerSerial32())
+			out->write( (char *)  "OWNER %i\n", pi->getOwnerSerial32());
+		if (pi->visible!=dummy.visible)
+			out->write( (char *)  "VISIBLE %i\n", pi->visible);
+		if (pi->dir!=dummy.dir)
+			out->write( (char *)  "DIR %i\n", pi->dir);
+		if (pi->priv!=dummy.priv)
+			out->write( (char *)  "PRIV %i\n", pi->priv);
+		if (pi->value!=dummy.value)
+			out->write( (char *)  "VALUE %i\n", pi->value);
+		if (pi->restock!=dummy.restock)
+			out->write( (char *)  "RESTOCK %i\n", pi->restock);
+		if (pi->trigger!=dummy.trigger)
+			out->write( (char *)  "TRIGGER %i\n", pi->trigger);
+		if (pi->trigtype!=dummy.trigtype)
+			out->write( (char *)  "TRIGTYPE %i\n", pi->trigtype);
+		if (pi->disabled!=dummy.disabled)
+			out->write( (char *)  "DISABLED %i\n", pi->disabled);
+		if (pi->disabledmsg!=NULL)
+			out->write( (char *)  "DISABLEMSG %s\n", pi->disabledmsg->c_str() );
+		if (pi->tuses!=dummy.tuses)
+			out->write( (char *)  "USES %i\n", pi->tuses);
+		if (pi->good!=dummy.good )
+			out->write( (char *)  "GOOD %i\n", pi->good); // Magius(CHE)
+		if (pi->secureIt!=dummy.secureIt)
+			out->write( (char *)  "SECUREIT %i\n", pi->secureIt);
+		if (pi->smelt!=dummy.smelt)
+			out->write( (char *)  "SMELT %i\n", pi->smelt);
+		if (pi->itemSoundEffect!=dummy.itemSoundEffect)
+			out->write( (char *)  "SOUNDFX %i\n", pi->itemSoundEffect);
+		// Spawns
+		if (pi->getSpawnSerial() != dummy.getSpawnSerial())
+			out->write( (char *) "SPAWNSERIAL %i\n", pi->getSpawnSerial());
+		if (pi->getSpawnRegion() != dummy.getSpawnRegion())
+			out->write( (char *) "SPAWNREGION %i\n", pi->getSpawnRegion());
+		if (!pi->vendorDescription.empty())
+			out->write( (char *)  "DESC %s\n", pi->vendorDescription.c_str() );
+		if (pi->hasTempfx())
+		{
+			TempfxVector *itemTempfxVec = pi->getTempfxVec( );
+			TempfxVector::iterator iter=itemTempfxVec->begin();
+			for ( ; iter != itemTempfxVec->end(); iter++)
+			{
+				tempfx::cTempfx fx = *iter;
+				fx.save(iWsc);
+			}
+		}
+#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) out->write( (char *)  "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
+//#define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) out->write( (char *)  "%s %s\n", A, event->getFuncName()); }
+		SAVEITEMEVENT("@ONSTART", EVENT_IONSTART);
+		SAVEITEMEVENT("@ONCHECKCANUSE", EVENT_IONCHECKCANUSE);
+		SAVEITEMEVENT("@ONCLICK", EVENT_IONCLICK);
+		SAVEITEMEVENT("@ONDAMAGE", EVENT_IONDAMAGE);
+		SAVEITEMEVENT("@ONDBLCLICK", EVENT_IONDBLCLICK);
+		SAVEITEMEVENT("@ONDECAY", EVENT_IONDECAY);
+		SAVEITEMEVENT("@ONDROPINLAND", EVENT_IDROPINLAND);
+		SAVEITEMEVENT("@ONDROPONCHAR", EVENT_IDROPONCHAR);
+		SAVEITEMEVENT("@ONEQUIP", EVENT_IONEQUIP);
+		SAVEITEMEVENT("@ONLOCKPICK", EVENT_IONLOCKPICK);
+		SAVEITEMEVENT("@ONPOISONED", EVENT_IONPOISONED);
+		SAVEITEMEVENT("@ONPUTINBACKPACK", EVENT_IPUTINBACKPACK);
+		SAVEITEMEVENT("@ONREMOVETRAP", EVENT_IONREMOVETRAP);
+		SAVEITEMEVENT("@ONSTOLEN", EVENT_IONSTOLEN);
+		SAVEITEMEVENT("@ONTRANSFER", EVENT_IONTRANSFER);
+		SAVEITEMEVENT("@ONUNEQUIP", EVENT_IONUNEQUIP);
+		SAVEITEMEVENT("@ONWALKOVER", EVENT_IONWALKOVER);
+		SAVEITEMEVENT("@ONPUTITEM", EVENT_IONPUTITEM);
+		SAVEITEMEVENT("@ONTAKEFROMCONTAINER", EVENT_ITAKEFROMCONTAINER);
+		//
+		// SAVE NEW AMX VARS
+		//
+		amxVS.saveVariable( pi->getSerial32(), iWsc );
+		out->write( (char *)  "}\n\n");
+	}
+}
+*/
 
