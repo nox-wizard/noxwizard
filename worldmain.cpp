@@ -358,11 +358,12 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "CANTRAIN"))		{ pc->cantrain = true; }
 			else if (!strcmp(script1, "COMMANDLEVEL"))  
 			{ 
-				pc->commandLevel = str2num(script2);
 				if ( pc->commandLevel == 1 )
 					pc->setPrivLevel(PRIVLEVEL_CNS);
 				else if ( pc->commandLevel == 2 )
 					pc->setPrivLevel(PRIVLEVEL_GM);
+				else
+					pc->setPrivLevel(str2num(script2));
 			}
 		break;
 

@@ -103,8 +103,8 @@ class cGuildPolitics {
 
 typedef enum {
 	GUILD_TYPE_NORMAL,
-	GUILD_TYPE_ORDER,
 	GUILD_TYPE_CHAOS,
+	GUILD_TYPE_ORDER,
 	GUILD_TYPE_CITY
 } GUILD_TYPE;
 
@@ -155,7 +155,7 @@ private:
 		std::string getAbbreviation();
 		inline const	GUILD_TYPE	getGuildType() const { return type; };
 		inline void		setGuildType(GUILD_TYPE newGuildType)  
-		{ if ( newGuildType >= GUILD_TYPE_NORMAL && newGuildType <=  GUILD_TYPE_CHAOS) type = newGuildType; };
+		{ if ( newGuildType >= GUILD_TYPE_NORMAL && newGuildType <=  GUILD_TYPE_ORDER) type = newGuildType; };
 
 		// Helper functions for 
 		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };

@@ -31,6 +31,7 @@ cGuildz Guildz;
 cGuild::cGuild( SERIAL guildstone )
 {
 	serial	= guildstone;
+	type = (GUILD_TYPE) 0;
 }
 
 /*!
@@ -70,6 +71,8 @@ void cGuild::load( cStringFile& file )
 			case 'a':
 				if ( l=="ABBR" )
 					this->abbreviation = r;
+				else if ( l=="ALIGN" )
+					this->type = (GUILD_TYPE) str2num(r);
 				break;
 			case 'C':
 			case 'c':
@@ -136,6 +139,7 @@ void cGuild::save( FILE* file )
 	fprintf( file, "{\n");
 	fprintf( file, "NAME %s\n", getName().c_str());
 	fprintf( file, "ABBR %s\n", getAbbreviation().c_str());
+	fprintf( file, "ALIGN %d\n", getGuildType());
 	fprintWstring(  file, "CHARTER", charter );
 	fprintf( file, "WEBPAGE %s\n", webpage.c_str());
 
@@ -494,9 +498,9 @@ void cGuildRecruit::load( cStringFile& file )
 
 void cGuildRecruit::save( FILE* file )
 {
-	fprintf( file, "RECRUIT %d\n", serial );
+	fprintf( file, "RECRUIT %d %d\n", serial,	recruiter->serial );
 	fprintf( file, "{\n" );
-	fprintf( file, "RECRUITER %d\n",	recruiter->serial );
+//	fprintf( file, "RECRUITER %d\n",	recruiter->serial );
 	fprintf( file, "}\n" );
 }
 
