@@ -147,6 +147,7 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 
 	MakeParamType type = MAKE_NEED_NAME;
 	bool error=false;
+	bool canSee = true;
 	int item = INVALID;
 
     int loopexit=0;
@@ -218,6 +219,7 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 						item--;
 						names.pop_back();
 						models.pop_back();
+						canSee = false;
 					}
 					else {
 						makeItems.push_back( imk );
@@ -232,14 +234,16 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 						}
 						string2wstring( std::string( b ), w );
 						oldmenu->addMenuItem( 0, item, w );
+						type=MAKE_NEED_MENUORITEM;
+						canSee = true;
 					}
-
 					type=MAKE_NEED_MENUORITEM;
 				}
 				break;
 			case MAKE_NEED_MENUORITEM: //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 				if( ( lha=="MAKEMENU" ) || ( lha=="ADDITEM" ) ) {
-					imk->command = new cScriptCommand( lha, rha );
+					if( canSee )
+						imk->command = new cScriptCommand( lha, rha );
 					type = MAKE_NEED_INFO;
 				}
 				else {
@@ -449,8 +453,10 @@ void Skills::MakeMenu( P_CHAR pc, int m, int skill, UI16 firstId, COLOR firstCol
 	
 	VALIDATEPC(pc);
 
-	if( pc->custmenu!=INVALID )
+	if( pc->custmenu!=INVALID ) {
 		Menus.removeMenu( pc->custmenu, pc );
+		pc->custmenu=INVALID;
+	}
 
 	P_MENU pm = Menus.insertMenu( new cMakeMenu( m, pc, skill, firstId, firstColor, secondId, secondColor ) );
 	pc->custmenu = pm->serial;

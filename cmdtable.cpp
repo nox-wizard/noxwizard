@@ -37,6 +37,7 @@
 #include "jail.h"
 #include "skills.h"
 #include "layer.h"
+#include "scripts.h"
 
 static char s_szCmdTableTemp[TEMP_STR_SIZE];
 
@@ -2190,15 +2191,18 @@ void command_set( NXWCLIENT ps )
 		std::string prop;
 		int i=Commands::cmd_offset+4;
 		int loopexit=0;
-		while( tbuffer[i]!=' ' && tbuffer[i]!=0 && (++loopexit < MAXLOOPS) ) 
-			i++;
+		while( tbuffer[i++]!=0 && (++loopexit < MAXLOOPS) );
 
-		prop.copy( &tbuffer[Commands::cmd_offset+4], i-Commands::cmd_offset+4);
+		char b[TEMP_STR_SIZE];
+		memcpy( b, &tbuffer[Commands::cmd_offset+4], i-(Commands::cmd_offset+4)+1 );
+		prop = b;
 		strupr(prop);
+		std::string propName, propValue;
+		splitLine( prop, propName, propValue );
 
 		P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
-		targ->buffer_str[0]=prop;
-		targ->buffer[0]=strtonum(2);
+		targ->buffer_str[0]=propName;
+		targ->buffer[0]=str2num( propValue );
 		targ->code_callback=target_allSet;
 		targ->send( getClientFromSocket(s) );
 		sysmessage( s, "Select character to modify.");
