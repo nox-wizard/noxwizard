@@ -599,8 +599,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 	}
 
-	UI32 max_x = MapTileWidth  * 8;
-	UI32 max_y = MapTileHeight * 8;
+	UI32 max_x = map_width  * 8;
+	UI32 max_y = map_height * 8;
 	Location pcpos= pc->getPosition();
 
 	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y) || (pcpos.x<0) || (pcpos.y<0)))
@@ -1030,8 +1030,8 @@ void loaditem()
 
 	if (pi->isInWorld())
 	{
-		int max_x = MapTileWidth  * 8;
-		int max_y = MapTileHeight * 8;
+		int max_x = map_width  * 8;
+		int max_y = map_height * 8;
 
 #ifdef SPAR_I_LOCATION_MAP
 		pointers::addToLocationMap(pi);

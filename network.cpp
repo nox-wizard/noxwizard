@@ -832,7 +832,7 @@ void cNetwork::enterchar(int s)
 	UI08 modeset[5]={0x72, 0x00, 0x00, 0x32, 0x00};
 	UI08 LoginOK[1] = {0x55}, TimeZ[4]={0x5B, 0x0C, 0x13, 0x03};
 
-	if (MapTileHeight<300) world[5]=0x02;
+	if (map_height<300) world[5]=0x02;
 
 	cPacketFeatures features;
 	features.feature= FEATURE_T2A | FEATURE_LBR;

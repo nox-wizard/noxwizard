@@ -189,7 +189,7 @@ void buildhouse(int s, int i)
 #define YBORDER 200
 
 		//XAN : House placing fix :)
-		if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((MapTileWidth*8)-XBORDER) || y >(UI32)((MapTileHeight*8)-YBORDER) ))  )
+		if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
 		{
 			sysmessage(s, TRANSLATE("You cannot build your structure there!"));
 			return;

@@ -1308,8 +1308,8 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 	Location boatpos= pBoat->getPosition();
 
-	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=((MapTileWidth*8)-XBORDER))
-		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=((MapTileHeight*8)-YBORDER))) //bugfix LB
+	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=((map_width*8)-XBORDER))
+		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=((map_height*8)-YBORDER))) //bugfix LB
 	{
 		pBoat->type2=0;
 		itemtalk(tiller,TRANSLATE("Arr, Sir, we've hit rough waters!"));
