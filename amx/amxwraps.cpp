@@ -492,6 +492,11 @@ NATIVE(_chr_message)
 	amx_GetAddr(amx,params[3],&cstr);
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	if (g_nAmxPrintPtr > 512 )
+	{
+		LogWarning("chr_message: String longer than 512 Characters, cutting off after 511 characters");
+		g_cAmxPrintBuffer[512] = '\0';
+	}
 	g_nAmxPrintPtr=0;
 
 	ps->sysmsg( params[2], g_cAmxPrintBuffer );
