@@ -160,7 +160,7 @@ static LOGICAL canMine( P_CHAR pc, P_ITEM weapon )
 	if( !ISVALIDPI(weapon) )
 		pc->sysmsg("You can't mine with nothing in your hand !!");
 	else
-		switch( weapon->id() )
+		switch( weapon->id )
 		{
 			case 0x0E85	:
 			case 0x0E86	:

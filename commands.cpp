@@ -555,12 +555,12 @@ namespace Commands
 
 			if (! ((color & 0x4000) || (color & 0x8000)) )
 			{
-				pi->setColor(color);
+				pi->color=color;
 			}
 
 			if (color == 0x4631)
 			{
-				pi->setColor(color);
+				pi->color=color;
 			}
 
 			pi->Refresh();
@@ -605,7 +605,7 @@ namespace Commands
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI( pi );
-		pi->setId( id );
+		pi->id =id;
 		pi->pileable = pileable;
 
 		if(ISVALIDPI(pi))//AntiChrist - to preview crashes

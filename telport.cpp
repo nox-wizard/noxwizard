@@ -210,7 +210,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						P_ITEM phair= hairobject;
 						if(ISVALIDPI(phair)) {
 
-							phair->setColor( hex2num(script2) );
+							phair->color = hex2num(script2);
 							phair->Refresh();
 							pc->teleport();
 						}
@@ -235,7 +235,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pbeard= beardobject;
 							if(ISVALIDPI(pbeard)) {
-								pbeard->setColor( hex2num(script2) );
+								pbeard->color = hex2num(script2);
 								pbeard->Refresh();
 								pc->teleport();
 							}

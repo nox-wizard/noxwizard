@@ -49,7 +49,7 @@ class cTriggerContext
 
 //Trigger routines
 void triggernpc(NXWSOCKET  ts,int ti, int ttype);  // trigger.cpp --- Changed by Magius(CHE) §
-bool checkenvoke(char eid1, char eid2);  //trigger.scp
+bool checkenvoke( UI16 eid );
 
 #define TRIGTYPE_DBLCLICK 1
 #define TRIGTYPE_WALKOVER 2

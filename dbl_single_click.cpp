@@ -171,7 +171,7 @@ void doubleclick(NXWCLIENT ps)
 	VALIDATEPI( pack );
 
 
-	data::seekTile( pi->id(), item );
+	data::seekTile( pi->id, item );
 //////FINEVARIABILI
 	if ( ServerScp::g_nEquipOnDclick )
 	{
@@ -231,14 +231,14 @@ void doubleclick(NXWCLIENT ps)
 						}
 					}
 				}
-				pc->playSFX( itemsfx(pi->id()) );
+				pc->playSFX( itemsfx(pi->id) );
 				pc->Equip( pi );
 			}
 			else
 			{
 				if (drop[0] == -1)
 				{
-					pc->playSFX( itemsfx(pi->id()) );
+					pc->playSFX( itemsfx(pi->id) );
 					pc->Equip( pi );
 				}
 			}
@@ -349,11 +349,10 @@ void doubleclick(NXWCLIENT ps)
 
 	// check this on trigger in the event that the .trigger property is not set on the item
 	// trigger code.  Check to see if item is envokable by id
-	else if (checkenvoke(pi->id1, pi->id2))
+	else if (checkenvoke( pi->id ))
 	{
 		pc->envokeitem = pi->getSerial32();
-		pc->envokeid1 = pi->id1;
-		pc->envokeid2 = pi->id2;
+		pc->envokeid = pi->id;
 		P_TARGET targ = clientInfo[s]->newTarget( new cObjectTarget() );
 		targ->code_callback=target_envoke;
 		targ->send( ps );
@@ -393,10 +392,18 @@ void doubleclick(NXWCLIENT ps)
 
 		if (pi->type2 == 3)
 		{
-			if(pi->id2 == 0x84 || pi->id2 == 0xD5 || pi->id2 == 0xD4 || pi->id2 == 0x89)
-				Boats->PlankStuff(pc, pi);
-			else
-				pc->sysmsg( TRANSLATE("That is locked."));
+			char id2 = pi->id & 0xFF;
+			switch( pi->id & 0xFF ) {
+				case 0x84:
+				case 0xD5:
+				case 0xD4:
+				case 0x89:
+					Boats->PlankStuff(pc, pi);
+					break;
+				default:
+					pc->sysmsg( TRANSLATE("That is locked."));
+					break;
+			}
 			return;
 		}
 	case ITYPE_CONTAINER: // bugfix for snooping not working, lb
@@ -657,20 +664,20 @@ void doubleclick(NXWCLIENT ps)
 			pc->sysmsg( TRANSLATE("Gulp !"));
 			return;
 	case ITYPE_GUILDSTONE:
-			if ( pi->id() == 0x14F0  ||  pi->id() == 0x1869 )	// Check for Deed/Teleporter + Guild Type
+			if ( pi->id == 0x14F0  ||  pi->id == 0x1869 )	// Check for Deed/Teleporter + Guild Type
 			{
 				pc->fx1 = DEREF_P_ITEM(pi);
 				Guilds->StonePlacement(s);
 				return;
 			}
-			else if (pi->id() == 0x0ED5)	// Check for Guildstone + Guild Type
+			else if (pi->id == 0x0ED5)	// Check for Guildstone + Guild Type
 			{
 				pc->fx1 = DEREF_P_ITEM(pi);
 				Guilds->Menu(s, 1);
 				return;
 			}
 			else
-				WarnOut("Unhandled guild item type named: %s with ID of: %X\n", pi->getCurrentNameC(), pi->id());
+				WarnOut("Unhandled guild item type named: %s with ID of: %X\n", pi->getCurrentNameC(), pi->id);
 			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{
@@ -750,7 +757,7 @@ void doubleclick(NXWCLIENT ps)
 	{
 		if (ISVALIDPI(pack))
 			if( pi->getContSerial()==pack->getSerial32()) {
-				magic::SpellId spn = magic::spellNumberFromScrollId(pi->id());	// avoid reactive armor glitch
+				magic::SpellId spn = magic::spellNumberFromScrollId(pi->id);	// avoid reactive armor glitch
 				if ((spn>=0)&&(magic::beginCasting(spn, ps, magic::CASTINGTYPE_SCROLL)))
 					pi->ReduceAmount(1);							// remove scroll if successful
 			} 
@@ -792,9 +799,9 @@ void target_selectdyevat( NXWCLIENT ps, P_TARGET t )
     P_ITEM pi=pointers::findItemBySerial(t->getClicked());
     VALIDATEPI(pi);
 
-    if( pi->id()==0x0FAB ||                     //dye vat
-        pi->id()==0x0EFF || pi->id()==0x0E27 )  //hair dye
-            SndDyevat( ps->toInt(), pi->getSerial32(), pi->id() );
+    if( pi->id==0x0FAB ||                     //dye vat
+        pi->id==0x0EFF || pi->id==0x0E27 )  //hair dye
+            SndDyevat( ps->toInt(), pi->getSerial32(), pi->id );
         else
             ps->sysmsg( TRANSLATE("You can only use this item on a dye vat."));
 }
@@ -813,7 +820,7 @@ void target_dyevat( NXWCLIENT ps, P_TARGET t )
 
 		if( pc->getSerial32()==curr->getSerial32() || pi->isInWorld())
 		{
-			pi->setColor( t->buffer[0] );
+			pi->color = t->buffer[0];
 			pi->Refresh();
 			curr->playSFX(0x023E); // plays the dye sound, LB
 		} 
@@ -830,7 +837,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 	P_TARGET targ = NULL;
 	NXWCLIENT ps = getClientFromSocket( s );
 
-	switch (pi->id())
+	switch (pi->id)
 	{
 		case 0x0FA9: // dye
 			targ = clientInfo[s]->newTarget( new cItemTarget() );
@@ -841,7 +848,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x0FAB:// dye vat
 			targ = clientInfo[s]->newTarget( new cItemTarget() );
 			targ->code_callback=target_dyevat;
-			targ->buffer[0]=pi->color();
+			targ->buffer[0]=pi->color;
 			targ->send( ps );
 			ps->sysmsg( TRANSLATE("Select the clothing to use this on.") );
 			return;// dye vat
@@ -1003,7 +1010,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1508: // magic statue?
 			if (pc->checkSkill( ITEMID, 0, 10))
 			{
-				pi->setId(0x1509);
+				pi->id =0x1509;
 				pi->type = 45;
 				pi->Refresh();// AntiChrist
 			}
@@ -1015,7 +1022,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1509:
 			if (pc->checkSkill(  ITEMID, 0, 10))
 			{
-				pi->setId(0x1508);
+				pi->id =0x1508;
 				pi->type = 45;
 				pi->Refresh();// AntiChrist
 			}
@@ -1028,7 +1035,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1246: // guillotines?
 			if (pc->checkSkill(  ITEMID, 0, 10))
 			{
-				pi->setId(0x1245);
+				pi->id = 0x1245;
 				pi->type = 45;
 				pi->Refresh();// AntiChrist
 			}
@@ -1040,7 +1047,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1245: // Guillotine stop animation
 			if (pc->checkSkill(  ITEMID, 0, 10))
 			{
-				pi->setId(0x1230);
+				pi->id = 0x1230;
 				pi->type = 45;
 				pi->Refresh();// AntiChrist
 			}

@@ -411,11 +411,11 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	{
 		P_ITEM pi = item::CreateFromScript( "$item_short_hair" );
 		VALIDATEPI(pi);
-		pi->setId( ShortFromCharPtr(buffer[s] + 0x52) );
-		pi->setColor( ShortFromCharPtr(buffer[s] + 0x54) );
-		if ((pi->color()<0x044E) || (pi->color()>0x04AD) )
+		pi->id = ShortFromCharPtr(buffer[s] + 0x52);
+		pi->color = ShortFromCharPtr(buffer[s] + 0x54);
+		if ((pi->color<0x044E) || (pi->color>0x04AD) )
 		{
-			pi->setColor(0x044E);
+			pi->color =0x044E;
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_HAIR;
@@ -425,11 +425,11 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	{
 		P_ITEM pi = item::CreateFromScript( "$item_short_beard" );
 		VALIDATEPI(pi);
-		pi->setId( ShortFromCharPtr(buffer[s] + 0x56) );
-		pi->setColor( ShortFromCharPtr(buffer[s] + 0x58) );
-		if ( (pi->color()<0x044E) || (pi->color()>0x04AD) )
+		pi->id = ShortFromCharPtr(buffer[s] + 0x56) ;
+		pi->color = ShortFromCharPtr(buffer[s] + 0x58);
+		if ( (pi->color<0x044E) || (pi->color>0x04AD) )
 		{
-			pi->setColor(0x044E);
+			pi->color =0x044E;
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_BEARD;
@@ -462,7 +462,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	VALIDATEPI(pi);
 
 	// pant/skirt color -> old client code, random color
-	pi->setColor( ShortFromCharPtr(buffer[s] +102) );
+	pi->color = ShortFromCharPtr(buffer[s] +102);
 	pi->setCont(pc);
 
 	if( !(rand()%2) )
@@ -471,7 +471,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pi= item::CreateFromScript( "$item_shirt");
 
 	VALIDATEPI(pi);
-	pi->setColor( ShortFromCharPtr(buffer[s] +100) );
+	pi->color = ShortFromCharPtr(buffer[s] +100);
 	pi->setCont(pc);
 
 // what is this ??? (Anthalir)
@@ -2018,7 +2018,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		break;
 
 	case 10: //LB's LSD potion, 5'th november 1999
-		if (pi->id()!=0x1841) return; // only works with an special flask
+		if (pi->id!=0x1841) return; // only works with an special flask
 		if (s==INVALID) return;
 		if (LSD[s]==1)
 		{
@@ -2047,11 +2047,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 		pi = archive::item::New();
 
-		pi->setId(0x0F0E);
+		pi->id =0x0F0E;
 
 		if (lsd==10) // empty Lsd potions
 		{
-			pi->setId(0x183d);
+			pi->id =0x183d;
 		}
 
 		pi->pileable=1;

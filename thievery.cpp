@@ -125,7 +125,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPI(pi);
 
 	//steal a pickpocket, a steal training dummy
-	if( pi->id() == 0x1E2D || pi->id() == 0x1E2C )
+	if( pi->id == 0x1E2D || pi->id == 0x1E2C )
 	{
 		Skills::PickPocketTarget(ps);
         	return;

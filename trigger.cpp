@@ -187,7 +187,7 @@ void cTriggerContext::parseIAddCommand(char* par)
     // Added colormem token here! by Magius(CHE) §
     if( ISVALIDPI(pi) ) {
 		if( m_nColor1!=0xFF ) {
-			pi->setColor( (m_nColor1<<8)|(m_nColor2%256) );
+			pi->color = DBYTE2WORD( m_nColor1, m_nColor2 );
 			pi->Refresh();
 		}
     }
@@ -201,15 +201,15 @@ void cTriggerContext::parseIAddCommand(char* par)
 \param eid2 id of the item
 \return true if the item is an envoker
 */
-bool checkenvoke(char eid1, char eid2)
+bool checkenvoke( UI16 eid )
 {
     char temp[100];
     char temp2[100];
     char script1[1024];
 
     cScpIterator* iter = 0;
-    sprintf(temp, "x%x%xx", eid1, eid2);      // antichrist
-    sprintf(temp2, "x%x%x ", eid1, eid2);      // antichrist
+    sprintf(temp, "x%xx", eid );      // antichrist
+    sprintf(temp2, "x%x ", eid );      // antichrist
 
 
     iter = Scripts::Envoke->getNewIterator("SECTION ENVOKE");
@@ -293,7 +293,7 @@ void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, UI16 id)
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigtype)
 {
 	if (trigtype==TRIGMODE_ENVOKED) {
-		init(number, s, trigtype, itm->id());
+		init(number, s, trigtype, itm->id);
 		m_pi = itm;
 	} else if (trigtype==TRIGMODE_STATIC) {
 		init(number, s, trigtype, ShortFromCharPtr(buffer[s] +17) );
@@ -727,7 +727,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (m_pi!=0) {
 					DYNAONLY;
 					char sect[128], *p;
-					sprintf(sect, "x%x%x", m_pcCurrChar->envokeid1, m_pcCurrChar->envokeid2);
+					sprintf(sect, "x%x", m_pcCurrChar->envokeid );
 					p = strstr(par, sect);
 					if (p != 0)
 					{
@@ -756,9 +756,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
-				pc->setId( DBYTE2WORD( array[0], array[1] ) );
-				if (m_nColor1 != 0xFF)
-					pc->setColor( (m_nColor1<<8)|(m_nColor2%256) );
+				pc->id = DBYTE2WORD( array[0], array[1] );
+				if( m_nColor1 != 0xFF)
+					pc->color = DBYTE2WORD( m_nColor1, m_nColor2 );
 
 				if( ISVALIDPC( m_pcCurrChar ) ) {
 					P_ITEM pack=m_pcCurrChar->getBackpack();
@@ -987,7 +987,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				for( si.rewind(); !si.isEmpty(); si++ ) {
 					m_piNeededItem=si.getItem();
 					if (ISVALIDPI(m_piNeededItem)) {
-						sprintf(sect, "x%x%x", m_piNeededItem->id1, m_piNeededItem->id2);
+						sprintf(sect, "x%x", m_piNeededItem->id );
 						if (strstr(par, sect))
 						{
 							break;
@@ -1163,7 +1163,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		else if (!(strcmp("REQ", cmd)))  // Check if envoked by certain item. Added By Magius(CHE) to fix Targ trigger
 		{
 			char sect[128];
-					sprintf(sect, "x%x%x", m_pcCurrChar->envokeid1, m_pcCurrChar->envokeid2);
+					sprintf(sect, "x%x", m_pcCurrChar->envokeid );
 			if (!strstr(par, sect))
 			{
 			sysmessage(m_socket, TRANSLATE("That didn't seem to work."));
@@ -1237,8 +1237,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			//////////////////////////////////////////////////////////////////////////
 		else if (!(strcmp("SETID", cmd)))  // Set chars id to new id
 		{
-					int array[2];
-					fillIntArray(par, array, 2, 0, 16);
+			int array[2];
+			fillIntArray(par, array, 2, 0, 16);
 
 			if ((ISNPC(m_nTriggerType))&&(m_pcNpc!=0)) {
 			m_pcNpc->SetBodyType((array[0]<<8)|(array[1]%256));
@@ -1248,20 +1248,18 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				m_pcNpc->teleport();
 			}
 			if ((ISNOTNPC(m_nTriggerType))&&(m_pi!=0)) {
-			m_pi->id1 = array[0];
-			m_pi->id2 = array[1];
-						m_pi->Refresh();
-					}
+				m_pi->id = DBYTE2WORD( array[0], array[1] );
+				m_pi->Refresh();
+			}
 		}
 		else if (!(strcmp("SETEVID", cmd)))  // Set envoked items id to new id
 		{
-					int array[2];
-					fillIntArray(par, array, 2, 0, 16);
+			int array[2];
+			fillIntArray(par, array, 2, 0, 16);
 			if (m_piEnvoked != 0)
 			{
-			m_piEnvoked->id1 = array[0];
-			m_piEnvoked->id2 = array[1];
-						m_piEnvoked->Refresh();
+				m_piEnvoked->id = DBYTE2WORD( array[0], array[1] );
+				m_piEnvoked->Refresh();
 			}
 		}
 		//////////////////////////////////////////////////////////////////////////

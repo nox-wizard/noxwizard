@@ -236,7 +236,7 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
 		if(ISVALIDPI(pj))
 			if( pj->IsSpellScroll() || pi->CountItems(0x1F6D,-1,false) > 0)
 			{
-				if (((pj->id()-0x1F2D)>=0)&&((pj->id()-0x1F2D)<70)) spells[(pj->id()-0x1F2D)]=1;
+				if (((pj->id-0x1F2D)>=0)&&((pj->id-0x1F2D)<70)) spells[(pj->id-0x1F2D)]=1;
 			}
     }
 

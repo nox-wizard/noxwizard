@@ -764,15 +764,15 @@ void cTempfx::executeExpireCode()
 
 		case TRAINDUMMY:
 			VALIDATEPI(pi_dest);
-			if (pi_dest->id() == 0x1071)
+			if (pi_dest->id == 0x1071)
 			{
-				pi_dest->setId(0x1070);
+				pi_dest->id =0x1070;
 				pi_dest->gatetime = 0;
 				pi_dest->Refresh();
 			}
-			else if (pi_dest->id()==0x1075)
+			else if (pi_dest->id==0x1075)
 			{
-				pi_dest->setId(0x1074);
+				pi_dest->id =0x1074;
 				pi_dest->gatetime = 0;
 				pi_dest->Refresh();
 			}

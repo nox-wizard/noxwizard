@@ -77,89 +77,89 @@ bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2, WEAPONTYPE type3
 
 bool cItem::IsSword()
 {
-	return isWeaponLike( this->id(), SWORD1H );
+	return isWeaponLike( this->id, SWORD1H );
 }
 
 bool cItem::IsAxe()
 {
-	return isWeaponLike( this->id(), AXE1H);
+	return isWeaponLike( this->id, AXE1H);
 }
 
 bool cItem::IsSwordType()
 {
-	return isWeaponLike( this->id(), SWORD1H, AXE1H );
+	return isWeaponLike( this->id, SWORD1H, AXE1H );
 }
 
 bool cItem::IsMace1H()
 {
 
-	return isWeaponLike( this->id(), MACE1H);
+	return isWeaponLike( this->id, MACE1H);
 
 }
 
 bool cItem::IsMace2H()
 {
-	return isWeaponLike( this->id(), MACE2H);
+	return isWeaponLike( this->id, MACE2H);
 
 }
 
 bool cItem::IsMaceType()
 {
-	return isWeaponLike( this->id(), MACE1H, MACE2H );
+	return isWeaponLike( this->id, MACE1H, MACE2H );
 }
 
 bool cItem::IsFencing1H()
 {
-	return isWeaponLike( this->id(), FENCING1H);
+	return isWeaponLike( this->id, FENCING1H);
 
 }
 
 bool cItem::IsFencing2H()
 {
-	return isWeaponLike( this->id(), FENCING2H);
+	return isWeaponLike( this->id, FENCING2H);
 }
 
 bool cItem::IsFencingType()
 {
-	return isWeaponLike( this->id(), FENCING1H, FENCING2H );
+	return isWeaponLike( this->id, FENCING1H, FENCING2H );
 }
 
 bool cItem::IsBow()
 {
-	return isWeaponLike( this->id(), BOW );
+	return isWeaponLike( this->id, BOW );
 }
 bool cItem::IsCrossbow()	
 {
-	return isWeaponLike( this->id(), CROSSBOW );
+	return isWeaponLike( this->id, CROSSBOW );
 
 }
 
 bool cItem::IsHeavyCrossbow()
 {
-	return isWeaponLike( this->id(), HEAVYCROSSBOW );
+	return isWeaponLike( this->id, HEAVYCROSSBOW );
 
 }
 
 bool cItem::IsBowType()
 {
-	return isWeaponLike( this->id(), BOW, CROSSBOW, HEAVYCROSSBOW );
+	return isWeaponLike( this->id, BOW, CROSSBOW, HEAVYCROSSBOW );
 }
 
 bool cItem::IsStave() // -Fraz- added
 {
-	return isWeaponLike( this->id(), STAVE1H, STAVE2H );
+	return isWeaponLike( this->id, STAVE1H, STAVE2H );
 
 }
 
 bool cItem::IsSpecialMace() // -Fraz- The OSI macing weapons that do stamina and armor damage 2handed only
 {
-	return isWeaponLike( this->id(), STAVE1H, STAVE2H, MACE2H );
+	return isWeaponLike( this->id, STAVE1H, STAVE2H, MACE2H );
 }
 
 SI08 cItem::isFieldSpellItem() //LB
 {
 	int a= 0;
-	UI16 id= this->id();
+	UI16 id= this->id;
 
 	if( (id==0x3996) || (id==0x398C) ) a= 1; // fire field
 	if( (id==0x3915) || (id==0x3920) ) a= 2; // poison field
@@ -172,7 +172,7 @@ SI08 cItem::isFieldSpellItem() //LB
 
 bool cItem::IsDagger()
 {
-    return ( id()==0x0F51 || id()==0x0F52 );
+    return ( id==0x0F51 || id==0x0F52 );
 }
 
 bool itemById::IsCorpse( UI16 id )
@@ -180,7 +180,7 @@ bool itemById::IsCorpse( UI16 id )
 	return (id==0x2006);
 }
 
-bool cItem::IsCorpse() { return itemById::IsCorpse( this->id() ); }
+bool cItem::IsCorpse() { return itemById::IsCorpse( this->id ); }
 
 bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 {
@@ -197,7 +197,7 @@ bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 	return false;
 }
 
-bool cItem::IsTree() { return itemById::IsTree( this->id() ); }
+bool cItem::IsTree() { return itemById::IsTree( this->id ); }
 
 bool itemById::IsTree2( UI16 id )	// this is used in SwordTarget() to give kindling. Donno why it's different
 {
@@ -210,43 +210,43 @@ bool itemById::IsTree2( UI16 id )	// this is used in SwordTarget() to give kindl
 	return false;
 }
 
-bool cItem::IsTree2() { return itemById::IsTree2( this->id() ); }
+bool cItem::IsTree2() { return itemById::IsTree2( this->id ); }
 
 bool cItem::IsSpellScroll()
 {
-	return (id()>0x1F2C && id()<0x1F6D);
+	return (id>0x1F2C && id<0x1F6D);
 }
 
 bool cItem::IsSpellScroll72()
 {
-	return (id() >= 0x1F2D && id() <= 0x1F72);
+	return (id >= 0x1F2D && id <= 0x1F72);
 }
 
 bool cItem::IsInstrument()
 {
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return (id==0x0E9C || id==0x0E9D || id==0x0E9E || id==0x0EB1 || id==0x0EB2 || id==0x0EB3 || id==0x0EB4);
 }
 
 bool cItem::IsArrow()
 {
-	return ((id()==0x0F3F)||(id()==0x0F42));
+	return ((id==0x0F3F)||(id==0x0F42));
 }
 
 bool cItem::IsBolt()
 {
-	return ((id()==0x1BFB)||(id()==0x1BFE));
+	return ((id==0x1BFB)||(id==0x1BFE));
 }
 
 
 bool cItem::IsChaosOrOrderShield()
 {
-	return (id()>=0x1BC3 && id()<=0x1BC5);
+	return (id>=0x1BC3 && id<=0x1BC5);
 }
 
 bool cItem::IsShield()
 {
-	return ((id()>=0x1B72 && id()<=0x1B7B) || IsChaosOrOrderShield());
+	return ((id>=0x1B72 && id<=0x1B7B) || IsChaosOrOrderShield());
 }
 
 bool itemById::IsLog( UI16 id )
@@ -254,7 +254,7 @@ bool itemById::IsLog( UI16 id )
 	return ( id>=0x1BDD && id<=0x1BE2 );
 }
 
-bool cItem::IsLog() { return itemById::IsLog( this->id()); }
+bool cItem::IsLog() { return itemById::IsLog( this->id); }
 
 
 bool itemById::IsShaft( UI16 id )
@@ -262,12 +262,12 @@ bool itemById::IsShaft( UI16 id )
 	return ( id>=0x1BD4 && id<=0x1BD6 );
 }
 
-bool cItem::IsShaft() { return itemById::IsShaft( this->id() ); }
+bool cItem::IsShaft() { return itemById::IsShaft( this->id ); }
 
 
 bool cItem::IsBoard()
 {
-	return ( id()>=0x1BD7 && id()<=0x1BDC );
+	return ( id>=0x1BD7 && id<=0x1BDC );
 }
 
 bool itemById::IsFeather( UI16 id )
@@ -275,31 +275,31 @@ bool itemById::IsFeather( UI16 id )
 	return ( id>=0x1BD1 && id<=0x1BD3 );
 }
 
-bool cItem::IsFeather() { return itemById::IsFeather( this->id() ); }
+bool cItem::IsFeather() { return itemById::IsFeather( this->id ); }
 
 bool cItem::IsCutLeather()
 {
-	return ( id()==0x1067 || id()==0x1068 || id()==0x1081 || id()==0x1082 );
+	return ( id==0x1067 || id==0x1068 || id==0x1081 || id==0x1082 );
 }
 
 bool cItem::IsHide()
 {
-	return ( id()==0x1078 || id()==0x1079 );
+	return ( id==0x1078 || id==0x1079 );
 }
 
 bool cItem::IsForge()
 {
-	return ( id()==0x0FB1 || ( id()>=0x197A && id()<=0x19A9 ) );
+	return ( id==0x0FB1 || ( id>=0x197A && id<=0x19A9 ) );
 }
 
 bool cItem::IsAnvil()
 {
-	return ( id()==0x0FAF || id()==0x0FB0 );
+	return ( id==0x0FAF || id==0x0FB0 );
 }
 
 bool cItem::IsCookingPlace()
 {
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return ((id>=0x0DE3 && id<=0x0DE9)||
 			(id==0x0FAC || id==0x0FB1)||
 			(id>=0x197A && id<=0x19B6)||
@@ -315,22 +315,22 @@ bool cItem::IsCookingPlace()
 
 bool cItem::IsCutCloth()
 {
-	return ( id()>=0x1766 && id()<=0x1768 );
+	return ( id>=0x1766 && id<=0x1768 );
 }
 
 bool cItem::IsCloth()
 {
-	return ((id()>=0x175D && id()<=0x1765)|| IsCutCloth() );
+	return ((id>=0x175D && id<=0x1765)|| IsCutCloth() );
 }
 
 bool cItem::IsBoltOfCloth()
 {
-	return ( id()>=0x0F95 && id()<=0x0F9C );
+	return ( id>=0x0F95 && id<=0x0F9C );
 }
 
 bool cItem::IsChest()
 {
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return (( id>=0x09A8 && id<=0x09AB) ||
 		    ( id>=0x0E40 && id<=0x0E43) ||
 		    ( id==0x0E7C) || (id==0x0E7D) ||
@@ -339,7 +339,7 @@ bool cItem::IsChest()
 
 bool cItem::IsFishWater() // -Fraz- needed water tiles for fishing
 {
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return ((id==0x1798) || (id==0x179B) ||
 			(id==0x179C) || (id==0x1799) ||
 			(id==0x1797) || (id==0x179A) ||
@@ -357,46 +357,46 @@ bool cItem::IsFishWater() // -Fraz- needed water tiles for fishing
 
 bool cItem::IsFish()
 {
-	return ( id()>=0x09CC && id()<=0x09CF );
+	return ( id>=0x09CC && id<=0x09CF );
 }
 
 
 bool cItem::IsSign() 
 { 
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return ((id==0x0B95 || id==0x0B96)|| (id>=0x0BA3 && id<=0x0C0E)|| (id==0x0C43 || id==0x0C44)); 
 } 
 
 bool cItem::IsWoodenSign() 
 { 
-	return ((id()==0x0BCF || id()==0x0BD0)); 
+	return ((id==0x0BCF || id==0x0BD0)); 
 } 
 
 bool cItem::IsBrassSign() 
 { 
-	return ((id()==0x0BD1 || id()==0x0BD2)); 
+	return ((id==0x0BD1 || id==0x0BD2)); 
 }
 
 bool cItem::IsGuildSign() 
 { 
-	return ((id() >= 0x0BD3 && id() <= 0x0C0A)); 
+	return ((id >= 0x0BD3 && id <= 0x0C0A)); 
 } 
 
 bool cItem::IsTradeSign() 
 { 
-	UI16 id= this->id();
+	UI16 id= this->id;
 	return ((id==0x0B95 || id==0x0B96) || 
 			(id >= 0x0BA3 && id <= 0x0BCE)); 
 } 
 
 bool cItem::IsBankSign() 
 { 
-	return ((id() >= 0x0C0B && id() <= 0x0C0C)); 
+	return ((id >= 0x0C0B && id <= 0x0C0C)); 
 } 
 
 bool cItem::IsTheatreSign() 
 { 
-	return ((id() >= 0x0C0D && id() <= 0x0C0E)); 
+	return ((id >= 0x0C0D && id <= 0x0C0E)); 
 } 
 
 
@@ -430,7 +430,7 @@ bool itemById::IsHouse( UI16 id )
 
 bool cItem::IsHouse()
 {
-    return itemById::IsHouse( this->id() );
+    return itemById::IsHouse( this->id );
 }
 
 /*!

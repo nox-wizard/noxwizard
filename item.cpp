@@ -67,7 +67,7 @@ namespace item
 		}
 
 		pi->animSetId(0);
-		pi->setId(0x0915);
+		pi->id =0x0915;
 		amxVS.setServerMode();
 
 		do
@@ -141,7 +141,7 @@ namespace item
 					if	( lha == "COLOR" )
 					{
 						tmp = hex2num(rha);
-						pi->setColor(tmp);
+						pi->color=tmp;
 					}
 					else if ( lha == "CONTAINS" )
 					{
@@ -182,7 +182,7 @@ namespace item
 					else if ( lha == "COLORLIST" )
 					{
 						std::string value(cObject::getRandomScriptValue("RANDOMCOLOR", rha ));
-						pi->setColor( hex2num(value) );
+						pi->color= hex2num(value);
 					}
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
@@ -236,7 +236,7 @@ namespace item
 					if ( lha == "ID" )
 					{
 						tmp = hex2num(rha);
-						pi->setId(tmp);
+						pi->id =tmp;
 					}
 					else if ( lha == "ITEMLIST" )
 					{
@@ -390,7 +390,7 @@ namespace item
 		pi->useAnimId=(pi->animid()!=0);
 
 		tile_st tile;
-		data::seekTile(pi->id(), tile);
+		data::seekTile(pi->id, tile);
 
 		if (tile.flags&TILEFLAG_STACKABLE)
 			pi->pileable = 1;
@@ -470,8 +470,8 @@ namespace item
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
    		VALIDATEPIR( pi, NULL );
-    		pi->setId( id );
-		pi->setColor( color );
+    	pi->id = id;
+		pi->color= color ;
     		pi->pileable = pile;
 
 		if(cName!=NULL)
@@ -613,7 +613,7 @@ namespace item
 			strcpy(itemname, pi->getCurrentNameC());
 			return strlen(itemname)+1;
 		}
-		data::seekTile(pi->id(), tile);
+		data::seekTile(pi->id, tile);
 		if (tile.flags&TILEFLAG_PREFIX_AN) strcpy(itemname, "an ");
 		else if (tile.flags&TILEFLAG_PREFIX_A) strcpy(itemname, "a ");
 		else itemname[0]=0;
@@ -721,7 +721,7 @@ namespace item
 
 		if(pi == NULL) return;
 
-		sprintf(buff,"x%x",pi->id());
+		sprintf(buff,"x%x",pi->id);
 
 
 		pi->animSetId(0);
@@ -758,7 +758,7 @@ namespace item
 						else if (!(strcmp("COLOR",script1)))
 						{
 							tmp=hex2num(script2);
-							pi->setColor(tmp);
+							pi->color=tmp;
 						}
 					break;
 

@@ -66,7 +66,7 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 			if ( pi->getPosition().x == pc->getPosition().x && pi->getPosition().y == pc->getPosition().y )
 
 				//Luxor: added new field damage handling
-				switch( pi->id() ) 
+				switch( pi->id ) 
 				{
 					case 0x3996:
 					case 0x398C: //Fire Field

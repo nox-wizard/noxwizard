@@ -59,7 +59,7 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 
 	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
-	pi1->setId( 0x122A );
+	pi1->id = 0x122A ;
 	P_ITEM pi2=MAKE_ITEM_REF(npcshape[0]);
 	VALIDATEPI(pi2);
 	mapRegions->remove(pi1);
@@ -134,7 +134,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
-	pi1->setId( 0x122A );
+	pi1->id = 0x122A ;
 	P_ITEM pi2=MAKE_ITEM_REF(npcshape[0]);
 	VALIDATEPI(pi2);
 	P_ITEM pi3=MAKE_ITEM_REF(i);
@@ -157,9 +157,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Head
 		sprintf(temp,"the head of %s",pi3->getSecondaryNameC());
-               	P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DA0 );
+        P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DA0 ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -187,9 +187,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Body
 		sprintf(temp,"the body of %s",pi3->getSecondaryNameC());
-               	pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DAD );
+        pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DAD ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -201,9 +201,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Left Arm
 		sprintf(temp,"the left arm of %s",pi3->getSecondaryNameC());
-               	pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DA1 );
+        pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DA1 ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -215,9 +215,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Right Arm
 		sprintf(temp,"the right arm of %s",pi3->getSecondaryNameC());
-               	pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DA2 );
+        pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DA2 ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -229,9 +229,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Left Leg
 		sprintf(temp,"the left leg of %s",pi3->getSecondaryNameC());
-               	pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DAE );
+        pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DAE ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -243,9 +243,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Rigth Leg
 		sprintf(temp,"the right leg of %s",pi3->getSecondaryNameC());
-               	pi = item::CreateFromScript( "$item_hardcoded" );
-                VALIDATEPI(pi);
-                pi->setId( 0x1DA4 );
+        pi = item::CreateFromScript( "$item_hardcoded" );
+        VALIDATEPI(pi);
+        pi->id = 0x1DA4 ;
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -574,21 +574,18 @@ void target_envoke( NXWCLIENT ps, P_TARGET t )
         P_ITEM pi = MAKE_ITEM_REF(serial);
 		VALIDATEPI( pi );
         triggerItem( ps->toInt(),pi, TRIGTYPE_ENVOKED );
-        curr->envokeid1=0x00;
-        curr->envokeid2=0x00;
+        curr->envokeid=0x0000;
     }
 	else if( isCharSerial( serial ) )
 	{
         P_CHAR pc = MAKE_CHAR_REF(serial);
 		VALIDATEPC(pc);
         triggerNpc( ps->toInt(), pc, TRIGTYPE_NPCENVOKED );
-        curr->envokeid1=0x00;
-        curr->envokeid2=0x00;
+        curr->envokeid=0x0000;
     }
 	else {
         triggerTile( ps->toInt() );
-        curr->envokeid1=0x00;
-        curr->envokeid2=0x00;
+        curr->envokeid=0x0000;
 	}
 }
 
@@ -667,7 +664,7 @@ void target_key( NXWCLIENT ps, P_TARGET t )
                 sysmessage(s, TRANSLATE("You unlock the door."));
                 return;
             }
-            else if (pi->id()==0x0BD2)
+            else if (pi->id==0x0BD2)
             {
                 sysmessage(s, TRANSLATE("What do you wish the sign to say?"));
                 pc->keyserial=pi->getSerial32(); //Morrolan sign kludge

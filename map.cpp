@@ -110,7 +110,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 				continue;
 
 			tile_st tile;
-			data::seekTile( pi->id(), tile );
+			data::seekTile( pi->id, tile );
 
 			height = tile.height;
 			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
@@ -345,7 +345,7 @@ SI08 dynamicElevation( Location pos )
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pi = si.getItem();
 
-		temp_z = pi->getPosition().z + tileHeight( pi->id() );
+		temp_z = pi->getPosition().z + tileHeight( pi->id );
 		if ( temp_z < ( pos.z + MaxZstep ) && temp_z > max_z )
 			max_z = temp_z;
 	}
@@ -367,7 +367,7 @@ SI08 getHeight( Location pos )
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pi = si.getItem();
 
-		data::seekTile( pi->id(), tile );
+		data::seekTile( pi->id, tile );
 
 		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? pi->getPosition().z : pi->getPosition().z + tile.height;
 		temp_z = pi->getPosition().z + tile.height;
@@ -466,7 +466,7 @@ void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 )
 	VALIDATEPI( pi );
 
 	multiVector m;
-	data::seekMulti( pi->id() - 0x4000, m );
+	data::seekMulti( pi->id - 0x4000, m );
 	for( UI32 i = 0; i < m.size(); i++ ) {
 		x1 = qmin( x1, m[i].x );
 		x2 = qmax( x2, m[i].x );

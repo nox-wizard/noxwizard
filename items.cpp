@@ -60,10 +60,10 @@ cItem& cItem::operator=(cItem& b)
         good = b.good;
         rndvaluerate = b.rndvaluerate;
         //setMultiSerial32(b.getMultiSerial32());
-        setId(b.id());
+        id = b.id;
         //setPosition(b.getPosition());
         //setOldPosition(b.getOldPosition());
-        setColor(b.color());
+        color = b.color;
         setContSerial(INVALID);
         //setContSerial(b.getContSerial(true), true);
         layer = b.layer;
@@ -657,8 +657,8 @@ inline bool operator ==( cItem& a, cItem& b ) {
 	return  ( a.pileable && b.pileable ) &&
 			( a.getSerial32() != b.getSerial32() ) &&
 			( a.getScriptID() == b.getScriptID() ) &&
-			( a.id() == b.id() ) &&
-			( a.color() == b.color() ) &&
+			( a.id == b.id ) &&
+			( a.color == b.color ) &&
 			( a.poisoned == b.poisoned );
 }
 
@@ -762,7 +762,7 @@ int cItem::DeleteAmount(int amount, short id, short color)
 		P_ITEM pi=si.getItem();
 		if(ISVALIDPI(pi) && (rest > 0) )
 		{
-			if (pi->id()==id && (color==INVALID || (pi->color()==color)))
+			if (pi->id==id && (color==INVALID || (pi->color==color)))
 				rest=pi->ReduceAmount(rest);
 		}
 	}
@@ -798,17 +798,6 @@ int cItem::DeleteAmountByID(int amount, unsigned int scriptID)
 
 }
 
-void cItem::setId(SI16 id)
-{
-	id1=id>>8;
-	id2=id&0x00FF;
-}
-
-void cItem::setColor(UI16 color)
-{
-	color1 = color >>8;
-	color2 = color %256;
-}
 
 /*!
 \author Elcabesa
@@ -833,7 +822,7 @@ int cItem::getName(char* itemname)
 R32 cItem::getWeight()
 {
 
-	if (id() == ITEMID_GOLD)
+	if (id == ITEMID_GOLD)
 		return (R32)SrvParms->goldweight;
 
 	R32 itemweight=0.0;
@@ -843,7 +832,7 @@ R32 cItem::getWeight()
 	else
 	{
 		tile_st tile;
-		data::seekTile(id(), tile);
+		data::seekTile(id, tile);
 		if (tile.weight==0) // can't find weight
 		{
 			if(type != ITYPE_FOOD)
@@ -891,10 +880,10 @@ cItem::cItem( SERIAL ser )
 	rank=0; // Magius(CHE)
 	good=-1; // Magius(CHE)
 	rndvaluerate=0; // Magius(CHE) (2)
-	setId(0x0001); // Item visuals as stored in the client
+	id = 0x0001; // Item visuals as stored in the client
 	setPosition(100, 100, 0);
 	setOldPosition( getPosition() );
-	setColor(0x0000); // Hue
+	color = 0x0000; // Hue
 	contserial.serial32= INVALID; // Container that this item is found in
 	oldcontserial.serial32= INVALID;
 	layer=oldlayer=0; // Layer if equipped on paperdoll
@@ -1029,7 +1018,7 @@ const char* cItem::getRealItemName()
     else
 	{
 		tile_st tile;
-		data::seekTile(id(), tile);
+		data::seekTile(id, tile);
         return reinterpret_cast<char*>(tile.name);
     }
 }
@@ -1094,7 +1083,7 @@ int cItem::countSpellsInSpellBook()
         
 		P_ITEM pj=si.getItem();
 		if(!ISVALIDPI(pj)) continue;
-		if (pj->id() == 0x1F6D)
+		if (pj->id == 0x1F6D)
             spellcount = 64;
         else
             spellcount++;
@@ -1126,7 +1115,7 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 		P_ITEM pj=si.getItem();
 		if(!ISVALIDPI(pj)) continue;
 
-        if((pj->id()==(0x1F2D+spellnum) || pj->id()==0x1F6D) || pj->id() == 0x1F6D)
+        if((pj->id==(0x1F2D+spellnum) || pj->id==0x1F6D) || pj->id == 0x1F6D)
         {
             return true;
         }
@@ -1233,7 +1222,7 @@ x-range 18 .. 118 for 1,2,3; 40 for 4
 */
 SI16 cContainerItem::getGumpType()
 {
-	switch( id() )
+	switch( id )
 	{
 	case 0x09b0:
 	case 0x09aa:
@@ -1309,8 +1298,8 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 		if(!ISVALIDPI(pi)) continue;
 
 		if (!(pileable && pItem->pileable &&
-			id()==pItem->id() &&
-			color()==pItem->color() ))
+			id==pItem->id &&
+			color==pItem->color ))
 			return false;	//cannot stack.
 
 		if (amount+pItem->amount>65535)

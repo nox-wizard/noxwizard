@@ -1481,7 +1481,7 @@ void target_addTarget( NXWCLIENT ps, P_TARGET t )
 	tile_st tile;
     data::seekTile( id, tile );
 
-    pi->setId( id );
+    pi->id = id;
     pi->pileable = tile.flags&TILEFLAG_STACKABLE;
     pi->setDecay( false );
 	Location location = t->getLocation();
@@ -3133,17 +3133,17 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 		{
 			if( color==INVALID ) //open dye vat
 			{
-				SndDyevat( ps->toInt(), pi->getSerial32(), pi->id() );
+				SndDyevat( ps->toInt(), pi->getSerial32(), pi->id );
 			}	
 			else {
 				if (! ((color & 0x4000) || (color & 0x8000)) )
 				{
-					pi->setColor(color);
+					pi->color=color;
 				}
 
 				if (color == 0x4631)
 				{
-					pi->setColor(color);
+					pi->color=color;
 				}
 
 				pi->Refresh();
@@ -3266,7 +3266,7 @@ void target_setid( NXWCLIENT ps, P_TARGET t )
 		P_ITEM pi=pointers::findItemBySerial( serial );
 		VALIDATEPI(pi);
 
-		pi->setId( value );
+		pi->id = value;
         pi->Refresh();
 	}
 }
@@ -3679,7 +3679,7 @@ void target_makecns( NXWCLIENT ps, P_TARGET t )
     pc->setSkinColor(0x8003);
     pc->setOldSkinColor(0x8002);
     pc->SetPriv(0xB6);
-    pc->SetPriv2(0x8D);
+    pc->SetPriv2(0x008D);
     pc->gmrestrict = 0;
 	pc->setCurrentName("Counselor %s", pc->getCurrentNameC());
 

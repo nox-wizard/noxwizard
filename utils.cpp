@@ -355,14 +355,14 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		return;
 	}*/
 
-	x=pi->id();
+	x=pi->id;
 	for (i=0;i<DOORTYPES;i++)
 	{
 		db=doorbase[i];
 
 		if (x==(db+0))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -372,7 +372,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+1))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -381,7 +381,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+2))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -391,7 +391,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+3))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -400,7 +400,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+4))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->Refresh();
 			changed=1;
@@ -409,7 +409,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+5))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->Refresh();
 			changed=1;
@@ -417,7 +417,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+6))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -427,7 +427,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+7))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -436,7 +436,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+8))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -446,7 +446,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+9))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -455,7 +455,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+10))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -465,7 +465,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+11))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -475,7 +475,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		}
 		else if (x==(db+12))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -483,14 +483,14 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+13))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
 			pi->dooropen=0;
 		} else if (x==(db+14))
 		{
-			pi->id2++;
+			pi->id++;
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
@@ -499,7 +499,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+15))
 		{
-			pi->id2--;
+			pi->id--;
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;

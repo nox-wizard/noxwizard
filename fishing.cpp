@@ -358,8 +358,8 @@ void Fishing::Fish(CHARACTER i)
 			P_ITEM fish = item::CreateFromScript( "$item_fish" );
 			VALIDATEPI(fish);
 		
-			fish->setColor(color);
-			fish->id2= idnum;
+			fish->color=color;
+			fish->id |= idnum;
 		
 			if (ISVALIDPI(pc_bp))
 				pc_bp->AddItem( fish );

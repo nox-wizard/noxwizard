@@ -93,15 +93,9 @@ public:
 /*!
 \name Look
 */
-	inline SI16 id()
-	{ return (SI16)((id1<<8)|id2); }
-
 	inline SI16 animid()
-	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : id(); }
+	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : id; }
 
-	UI08	id1;			//!< Item visuals as stored in the client
-	UI08	id2;
-	void	setId(SI16 id);
 	SI08	isFieldSpellItem();
 
 	LOGICAL IsCorpse();
@@ -164,13 +158,6 @@ public:
 	UI08		animid2;	//!< elcabesa animation
 	void		animSetId(SI16 id);	//!< elcabesa animation
 	LOGICAL		useAnimId;
-
-	UI08		color1;		//!< Hue
-	UI08		color2;		//!< Hue
-
-	inline SI16 color()
-	{ return (SI16)((color1<<8)|color2); }
-	void	setColor(UI16 color);
 
 	SI08		layer;		//!< Layer if equipped on paperdoll
 	SI08		oldlayer;	//!< Old layer - used for bouncing bugfix - AntiChrist
@@ -481,7 +468,7 @@ extern LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2
 
 #define DEREF_P_ITEM(pi) ( ( ISVALIDPI(pi) ) ? pi->getSerial32() : INVALID )
 
-#define ISVALIDPI(pi) ( ( pi!=NULL && sizeof(*pi) == sizeof(cItem) ) ? (pi->getSerial32() >= 0) : false )
+#define ISVALIDPI(pi) ( ( pi!=NULL && sizeof(*pi) == sizeof(cItem) ) ? (pi->getSerial32() > 0) : false )
 
 #define VALIDATEPI(pi) if (!ISVALIDPI(pi)) { LogWarning("Warning: a non-valid P_ITEM pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
 #define VALIDATEPIR(pi, r) if (!ISVALIDPI(pi)) { LogWarning("Warning: a non-valid P_ITEM pointer was used in %s:%d", basename(__FILE__), __LINE__); return r; }
