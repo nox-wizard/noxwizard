@@ -1811,13 +1811,13 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		walksequence[socket] = INVALID;
 	}
 
-	NxwSocketWrapper sw;
 
-        //
-        // Send the object remove packet
-        //
+    //
+    // Send the object remove packet
+    //
 	if ( cli == NULL ) {
-		sw.fillOnline();
+		NxwSocketWrapper sw;
+		sw.fillOnline( this, false, VISRANGE );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_w = sw.getClient();
 			if ( ps_w != NULL )
@@ -1830,6 +1830,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         // Send worn items and the char itself to the char (if online) and other players
         //
 	if ( cli == NULL ) {
+		NxwSocketWrapper sw;
 		sw.fillOnline( this, false );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_i = sw.getClient();
@@ -1852,8 +1853,8 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         //
         if ( cli == NULL || cli == getClient() )
 	if ( socket != INVALID ) {
-                if ( flags&TELEFLAG_SENDNEARCHARS ) {
-                        NxwCharWrapper sc;
+		if ( flags&TELEFLAG_SENDNEARCHARS ) {
+			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pc=sc.getChar();
