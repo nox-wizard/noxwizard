@@ -2077,25 +2077,25 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
 				speechGhostUni=new cUnicodeString();
-				makeGhost( pc->speechCurrent, speechGhostUni );
+				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->speechCurrent = speechGhostUni;
+			pc->setSpeechCurrent( speechGhostUni );
 			ghost=true;
 		}
 		else
-			pc->speechCurrent = speechUni;
+			pc->setSpeechCurrent( speechUni );
 
 		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
 			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
 		}		
 
-		talk.msg=pc->speechCurrent;
+		talk.msg=pc->getSpeechCurrent();
 		talk.send( a_pc->getClient() );
 	}
 
 
 	delete speechUni;
-	pc->speechCurrent=NULL;
+	pc->resetSpeechCurrent();
 	if( speechGhostUni!=NULL )
 		delete speechGhostUni;
 
