@@ -45,13 +45,17 @@ public:
 //a cCallCommand object is created every time a command is executed. 
 //and destroyed whn the command has finished
 //All parameters given by the char who call the command goes here.
-//stonedz :Maybe, if Small supports it, we can use an array dinamically allocated.
+//stonedz :Maybe, if Small supports it, we can use an array dynamically allocated.
  
 
 
 class cCallCommand : public cCommand {
 
 public:
+
+	cCallCommand(/*...*/);
+	~cCallCommand();
+
 	string param1;
 	string param2;
 	/* .... */

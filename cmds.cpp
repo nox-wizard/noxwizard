@@ -71,11 +71,30 @@ else
 
 
 
+/*
+
+*******
+A function to construct a cCallCommand object and call the small function
+for the command
+*******
+
+
+void command_execute( NXWCLIENT ps, P_COMMAND cmd , cCallCommand* params )
+{
+ ...
+
+}
+
+*/
+
+
+
+
 
 /*
 
 
-*****
+*******
 Must add a native function for AMX to get command property
 for use it in small scripting.
 Something like :
@@ -88,7 +107,7 @@ Something like :
   NATIVE (_getCmdProperty){
 	...
   }
-*****
+*******
 
 */
 
@@ -152,22 +171,3 @@ NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting fo
   	return INVALID;
 }
 
-/*
-
-*****
-A function that is called after 
-*****
-
-*/
-
-void command_execute( NXWCLIENT ps, P_COMMAND cmd /*should be replaced with a cCallCommand* params*/ )
-{
- 
-	NXWSOCKET s = ps->toInt();
-
-	AmxFunction* cmd=NULL;
-	if( cmd==NULL )
-		cmd = new AmxFunction("command_stats");
-
-	cmd->Call( s );
-}
