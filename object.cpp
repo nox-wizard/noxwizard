@@ -122,7 +122,6 @@ const Serial cObject::getSerial() const
 /*!
 \brief set one byte of the object's serial
 \author Sparhawk
-\return void
 \since 0.82a
 \param nByte byte number to get
 \param value to set serial byte to
@@ -152,7 +151,6 @@ void cObject::setSameOwnerAs(const cObject* obj)
 /*!
 \brief set one byte of the object's owner serial
 \author Sparhawk
-\return void
 \since 0.82a
 \param nByte byte number to get
 \param value to set serial byte to
@@ -207,7 +205,6 @@ const Serial cObject::getMultiSerial() const
 /*!
 \brief set one byte of the object's multi serial
 \author Sparhawk
-\return void
 \since 0.82a
 \param nByte byte number to get
 \param value to set serial byte to

@@ -2230,7 +2230,6 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 /*!
 \brief Poison target
 \author AntiChrist, rewritten by Endymion
-\return void
 \param ps the client
 \note pi->morez is the poison type
 */

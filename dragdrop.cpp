@@ -141,7 +141,6 @@ static void item_bounce6(const NXWCLIENT client, const P_ITEM pi)
 /*!
 \brief Get an item
 \author Unknow, revamped by Endymion
-\return void
 \param client the client
 */
 void get_item( NXWCLIENT client ) // Client grabs an item

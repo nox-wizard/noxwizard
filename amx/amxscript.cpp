@@ -205,7 +205,6 @@ static int AMXAPI amx_AbortProc(AMX *amx)
 /*!
 \brief Loads an amx program in memory
 \author Xanathar
-\return void
 \param filename *.amx file name
 */
 #pragma pack(1)
@@ -593,7 +592,6 @@ static char *strMode(int a)
 /*!
 \brief parses a line of override.scp
 \author Xanathar
-\return void
 \param line the line to be parsed
 */
 void AmxOverride::Parse(char *line)
@@ -673,7 +671,6 @@ AmxOverride g_Scripts[AMX_MAXTYPE][AMX_MAXNUMBER];
 /*!
 \brief check the integrity of exported natives apis
 \author Xanathar
-\return void
 \param line the line to be parsed
 */
 void check_Natives (void)
@@ -713,7 +710,6 @@ void check_Natives (void)
 /*!
 \brief Loads override.amx (eventually building it) and override.scp
 \author Xanathar
-\return void
 */
 void LoadOverrides (void)
 {
@@ -879,7 +875,6 @@ void LoadOverrides (void)
 /*!
 \brief checks speech from socket s for override invoking
 \author Xanathar
-\return void
 \param s socket who spoken
 \param speech speech of socket s
 */

@@ -35,7 +35,6 @@ cAccount::cAccount( ACCOUNT num ) {
 /*!
 \brief Set Account in entering
 \author Endymion
-\return void
 */
 void cAccount::setEntering( )
 {
@@ -45,7 +44,6 @@ void cAccount::setEntering( )
 /*!
 \brief Set online with given char
 \author Endymion
-\return void
 \param pc the char
 */
 void cAccount::setOnline( P_CHAR pc )
@@ -83,7 +81,6 @@ SERIAL cAccount::getInWorld( )
 /*!
 \brief Set offline
 \author Endymion
-\return void
 */
 void cAccount::setOffline(  )
 {
@@ -94,7 +91,6 @@ void cAccount::setOffline(  )
 /*!
 \brief On login of account
 \author Endymion
-\return void
 */
 void cAccount::onLogin( NXWSOCKET socket )
 {
@@ -111,7 +107,6 @@ void cAccount::onLogin( NXWSOCKET socket )
 /*!
 \brief Change password of account
 \author Endymion
-\return void
 */
 void cAccount::changePassword ( std::string password )
 {
@@ -136,7 +131,6 @@ void cAccount::changePassword ( std::string password )
 /*!
 \brief Get list of pg of this account
 \author Endymion
-\return void
 \param sc the list
 */
 void cAccount::getAllChars(  NxwCharWrapper& sc )
@@ -151,7 +145,6 @@ void cAccount::getAllChars(  NxwCharWrapper& sc )
 /*!
 \brief Add given char to account
 \author Endymion
-\return void
 \param pc the char
 */
 void cAccount::addCharToAccount( P_CHAR pc )
@@ -185,7 +178,6 @@ cAccounts::~cAccounts(void)
 
 /*!
 \brief Safe insert info list
-\return void
 \param acc the account
 */
 void cAccounts::safeInsert( cAccount& acc )
@@ -198,9 +190,8 @@ void cAccounts::safeInsert( cAccount& acc )
 
 /*!
 \brief Reload the Account
-\return void
 \param acctnumb Account number
-\param F Account file 
+\param F Account file
 */
 void cAccounts::LoadAccount( ACCOUNT acctnumb, FILE* F )
 {
@@ -247,7 +238,6 @@ int cAccounts::Count()
 
 /*!
 \brief Reload all account
-\return void
 */
 void cAccounts::LoadAccounts( void )
 {
@@ -304,7 +294,6 @@ void cAccounts::LoadAccounts( void )
 
 /*!
 \brief Save all account
-\return void
 */
 void cAccounts::SaveAccounts( void )
 {
@@ -483,7 +472,6 @@ ACCOUNT cAccounts::CreateAccount(std::string username, std::string password)
 
 /*!
 \brief Check the account file status
-\return void
 \remarks Reload Account if modified
 */
 void cAccounts::CheckAccountFile(void)
@@ -540,7 +528,6 @@ SERIAL cAccounts::GetInWorld( ACCOUNT acctnum )
 
 /*!
 \brief Set Online the player
-\return void
 \param acctnum Account number
 \param pc The Character
 */
@@ -560,7 +547,6 @@ void cAccounts::SetOnline( ACCOUNT acctnum, P_CHAR pc )
 
 /*!
 \brief Set Offline the player
-\return void
 \param acctnum Account number
 */
 void cAccounts::SetOffline( ACCOUNT acctnum )
@@ -575,7 +561,6 @@ void cAccounts::SetOffline( ACCOUNT acctnum )
 
 /*!
 \brief Update account information
-\return void
 \param acct Account number
 \param sck Socket
 */
@@ -595,7 +580,6 @@ void cAccounts::OnLogin(ACCOUNT acct, NXWSOCKET sck)
 
 /*!
 \brief Account are loggin into
-\return void
 \param acctnum Account number
 */
 void cAccounts::SetEntering( ACCOUNT acctnum ) 
@@ -652,7 +636,6 @@ void cAccounts::GetAllChars( ACCOUNT acctnum, NxwCharWrapper& sc )
 /*!
 \brief Add given char to account
 \author Endymion
-\return void
 \param acctnum the account
 \param pc the char
 */

@@ -68,7 +68,6 @@ static bool chrInStr(char c, char *str)
 
 /*!
 \brief sets a season globally
-\return void
 \author Xanathar
 \param nSeason season number
 \since 0.52a
@@ -90,7 +89,6 @@ void setSeason(int nSeason)
 
 /*!
 \brief commits season changes to a given player
-\return void
 \author Xanathar
 \param pc poniter to char which will rcv season changes
 \since 0.52a
@@ -179,7 +177,6 @@ static void parseWeekday(int m, FILE *F);
 
 /*!
 \brief loads calendar.scp file
-\return void
 \author Xanathar
 \since 0.52a
 \todo should be changed when we'll use new scripts with stl maps

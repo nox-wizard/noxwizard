@@ -51,7 +51,6 @@ map<int, MakeItemPtr> g_mapMakeItems;	//!< All the MakeItems
 /*!
 \brief Parses a "raw" item stored in a single line
 \author Xanathar
-\return void
 \param sz byte number to get
 */
 void RawItem::parse(char *sz)
@@ -173,7 +172,6 @@ MakeItem* getMakeItem(int n)
 /*!
 \brief shows the new kind of add menus
 \author Xanathar
-\return void
 \param pc the char to send the menu to
 \param menu the itemmenu number
 */
@@ -193,7 +191,6 @@ void showAddMenu(P_CHAR pc, int menu)
 /*!
 \brief executes a "MAKE" command
 \author Xanathar
-\return void
 \param pc player who do make
 \param n item number
 */
@@ -287,7 +284,6 @@ void execMake(P_CHAR pc, int n)
 /*!
 \brief decides where a menu item should be shown
 \author Xanathar
-\return void
 \param entry the script item
 \param pc the player
 */
@@ -328,7 +324,6 @@ char* cAddMenu::cleanString(const char *s)
 /*!
 \brief loads an itemmenu from a script
 \author Xanathar
-\return void
 \param section itemmenu number to be loaded
 \param pc the player
 */
@@ -410,7 +405,6 @@ void cAddMenu::loadFromScript (int section, P_CHAR pc)
 /*!
 \brief see custmenu.h / custmenu.cpp for explanations :)
 \author Xanathar
-\return void
 \param s socket which clicked the button
 \param btn button number
 \param seed menu seed

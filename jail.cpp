@@ -53,7 +53,6 @@ namespace prison {
 /*!
 \brief archive a jail worldfile
 \author Sparhawk
-\return void
 */
 void archive()
 {
@@ -93,7 +92,6 @@ void prison::safeoldsave()
 /*!
 \brief jail a character
 \author Endymion
-\return void
 \param jailer the jailer
 \param pc the player who jail
 \param secs the second of jail
@@ -149,7 +147,6 @@ void prison::jail( P_CHAR jailer, P_CHAR pc, UI32 secs )
 /*!
 \brief Auto check and free of jailed people
 \author Endymion
-\return void
 */
 void prison::checkForFree()
 {
@@ -177,7 +174,6 @@ void prison::checkForFree()
 /*!
 \brief Release a jailed player
 \author Endymion
-\return void
 \param releaser the releaser
 \param pc the player jailed
 */
@@ -216,7 +212,6 @@ void prison::release( P_CHAR releaser, P_CHAR pc )
 /*!
 \brief Free a cell
 \author Endymion
-\return void
 \param cell the cell serial
 \note only use internal.. use release for release a player
 */

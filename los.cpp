@@ -351,9 +351,9 @@ bool cLoS::isBlockedByStatic(SI16 x, SI16 y)
 /*!
 \brief firstTile will iterate through the tiles *along* the line
 \author Duke
-\param x position
-\param y position
-\return void
+\param x ptr to position
+\param y ptr to position
+\todo use references?
 */
 void cLoS::firstTile(SI16* x, SI16* y)
 {

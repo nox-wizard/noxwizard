@@ -242,7 +242,6 @@ SERIAL cGuild::getSerial()
 /*!
 \brief Set the new guild name
 \author Endymion
-\return void
 \param newName the new name
 \note Maximun MAX_NAME_LENGTH ( 41 now ) characters
 */
@@ -400,7 +399,6 @@ LOGICAL cGuild::addMember( P_CHAR pc )
 /*!
 \brief Remove a guild member
 \author Endymion
-\return void
 \param pc the player
 \note if are guildmaster can't be removed.. before change guildmaster :D
 */
@@ -427,7 +425,6 @@ LOGICAL cGuild::resignMember( P_CHAR pc )
 /*!
 \brief Set the guildmaster
 \author Endymion
-\return void
 \param pc the player
 */
 void cGuild::setGuildMaster( P_CHAR pc )
@@ -613,7 +610,6 @@ cGuilded::~cGuilded()
 /*!
 \brief Set the new guilded title
 \author Endymion
-\return void
 \param newTitle the new guilded title
 \todo define title length and code the check.
 */
@@ -635,7 +631,6 @@ std::string cGuilded::getTitle()
 /*!
 \brief Set the guilded title show mode
 \author Endymion
-\return void
 \param newToggle the new show title mode
 */
 void cGuilded::setToggle( UI08 newToggle )

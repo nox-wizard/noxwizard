@@ -1938,7 +1938,6 @@ void CWorldMain::SaveItem( P_ITEM pi )
 /*!
 \brief Save prison
 \author Endymion
-\return void
 */
 void CWorldMain::savePrison()
 {
@@ -2024,7 +2023,6 @@ void CWorldMain::loadjailed()
 /*!
 \brief Load jail
 \author Endymion
-\return void
 */
 void CWorldMain::loadPrison()
 {

@@ -14,7 +14,6 @@
 /*!
 \brief Snoop into container
 \author Unknow, completly rewritten by Endymion
-\return void
 \param snooper the snooper
 \param cont the contanier
 */
@@ -87,7 +86,6 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 /*!
 \brief Steal something
 \author Unknow, completly rewritten by Endymion
-\return void
 \param ps the client
 */
 void Skills::StealingTarget(NXWCLIENT ps)
@@ -247,7 +245,6 @@ void Skills::StealingTarget(NXWCLIENT ps)
 /*!
 \brief Steal from a pickpocket, a stealing training dummy
 \author Ripper, updated by Endymion
-\return void
 \param ps the client
 */
 void Skills::PickPocketTarget(NXWCLIENT ps)
@@ -274,7 +271,6 @@ void Skills::PickPocketTarget(NXWCLIENT ps)
 /*!
 \brief Steal random
 \author Unknow, updated by Endymion
-\return void
 \param ps the client
 \todo add string because it's locked contanier into translate
 */
@@ -445,7 +441,6 @@ void Skills::RandomSteal(NXWCLIENT ps)
 \author Unknow, rewrite by Endymion
 \since 0.53
 \param ps the client
-\return void
 */
 void Skills::LockPick(NXWCLIENT ps)
 {

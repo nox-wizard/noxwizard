@@ -14,7 +14,6 @@
 /*!
 \brief Search player's paperdoll and then backpacks for items with weight then set the weight of the current player
 \author Ison (02/20/99), rewrote by Tauriel (03/20/99)
-\return void
 \param pc the character
 \note  The called character's weight is first set to zero then re-calculated during the function.
 */

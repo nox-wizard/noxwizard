@@ -281,7 +281,6 @@ bool cVerdata::isReady()
 /*!
 \brief Cache verdata
 \author Endymion
-\return void
 */
 void cVerdata::loadForCaching() {
 
@@ -405,7 +404,6 @@ bool cStatics::isReady()
 /*!
 \brief Cache Statics
 \author Endymion
-\return void
 */
 void cStatics::loadForCaching() {
 
@@ -547,7 +545,6 @@ bool cMulti::isReady()
 /*!
 \brief Cache Multis
 \author Endymion
-\return void
 */
 void cMulti::loadForCaching() {
 

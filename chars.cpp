@@ -1233,7 +1233,6 @@ void cChar::helpStuff(P_CHAR pc_i)
 /*!
 \brief applies a poison to a char
 \author Xanathar, modified by Endymion
-\return void
 \param poisontype the poison
 \param secs the duration of poison ( if INVALID ( default ) default duration is used )
 */

@@ -154,7 +154,6 @@ static AmxEvent *Queue = NULL;
 /*!
 \brief initializes to nulls the hash queues for amx events
 \author Xanathar
-\return void
 */
 void initAmxEvents(void)
 { 
@@ -203,19 +202,6 @@ AmxEvent* newAmxEvent(char *funcname, bool dynamic)
 	return p;
 }
 
-
-	
-
-
-
-
-
-
-
-
-	
-
-
 /////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 //// TIMER CALLBACKS 
@@ -238,7 +224,6 @@ static _timevent_st _timevent[MAXTIMERS];
 /*!
 \brief Initializes amx timers
 \author Xanathar
-\return void 
 */
 void initTimers (void)
 {
@@ -278,7 +263,6 @@ int addTimer (int cback, int time, int more1, int more2)
 /*!
 \brief checks amx timers for events
 \author Xanathar
-\return void 
 */
 void checkTimer (void)
 {
@@ -322,7 +306,6 @@ int amxTarget (int s, int callback, char *phrase)
 /*!
 \brief handles the callback of amx targets
 \author Xanathar, rewritten by Luxor
-\return void 
 \param s socket to send the target to
 \param TL Target Location
 \remarks Luxor - Totally rewritten to use TargetLocation class
@@ -379,20 +362,3 @@ void cAmxMenu::buttonSelected (NXWSOCKET  s, unsigned short btn, int seed)
 	if (m_nCallback>=0) g_prgOverride->CallFn(m_nCallback, s, page, item);	
 	else sysmessage(s, 0x0d, TRANSLATE("*You should install a callback for the menu to work*"));
 }
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

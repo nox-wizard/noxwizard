@@ -68,7 +68,6 @@ static bool Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 /*!
 \brief Double click
 \author Ripper, rewrite by Endymion
-\return void
 \param ps client of player dbclick
 \note Completely redone by Morrolan 20-07-99
 \warning I use a define CASE for make more readable the code, if you change name of P_ITEM pi chage also the macro
@@ -1166,7 +1165,6 @@ void doubleclick(NXWCLIENT ps)
 /*!
 \brief Single click
 \author Ripper
-\return void
 \param s socket of player who click
 */
 void singleclick(NXWSOCKET  s)

@@ -41,7 +41,6 @@ cTimer::~cTimer()
 /*!
 \brief on timer
 \author Endymion
-\return void
 */
 void cTimer::onTimer()
 {
