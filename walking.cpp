@@ -385,24 +385,21 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 
 }
 
-///////////////
-// Name:	WalkEvaluateBlockers
-// history:	cut from walking() by Duke, 20.11.2000
-// Purpose:	Decides if something in the array blocks the walker
-//
+/*!
+ \brief Decides if something in the array blocks the walker
+ \author Duke (cut from walking() )
+ */
 void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 {
 	VALIDATEPC(pc);
 	
 	if( blockers == 0 ) return;	// nothing to do since there is nothing on the way
 
-	SI08 z, oldz, seekz,dispz = -128;
+	SI08 z = -128, oldz, seekz,dispz = -128;
 	int num;
 	UI32 i;
 	char gmbody;
 	UI32 blockers_count= blockers;
-
-	z=-128;
 
 	Location pcpos= pc->getPosition();
 
@@ -711,7 +708,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		return false;
 	}
 
-	int nowx2,nowy2;
+	UI16 nowx2,nowy2;
 
 	//Char mapRegions
 	pcpos= pc->getPosition();
