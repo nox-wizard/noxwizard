@@ -52,6 +52,7 @@ protected:
 	char* getBeginValidForReceive();
 	void getFromSocket( NXWSOCKET socket, char* b, int size, int& from );
 	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
+	void getUnicodeStringFromSocket( NXWSOCKET s, cUnicodeString* c, int& from, int size=INVALID ); 
 
 public:
 	void receive( NXWCLIENT ps );

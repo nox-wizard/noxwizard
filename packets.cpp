@@ -71,6 +71,25 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 }
 
 /*!
+\brief read an unicode string from socket buffer
+\author Endymion
+\since 0.83a
+\param s the socket
+\param c the string
+\param from offset
+\param size read until NULL termination if INVALID, else read size char
+*/
+void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, cUnicodeString* c, int& from, int size )
+{
+	c->copy( (char*)&buffer[from], size );
+	if( size==INVALID )
+		from+=c->size();
+	else
+		from+=size;
+}
+
+
+/*!
 \brief Receive packet from client
 \author Endymion
 \since 0.83a
@@ -322,7 +341,7 @@ RECEIVE( DeleteCharacter ) {
 CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
 	if( ps == NULL ) return; 
-	this->size=this->headerSize +30 + (msg->length() +1)*2; 
+	this->size=this->headerSize +30 + msg->size(); 
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
@@ -347,16 +366,7 @@ RECEIVE( CharProfileReq ) {
 	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize, offset );
 	if( update ) { //complete packet so
 		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
-		wchar_t t=0;
-		for( int i=0; ; ++i ) {
-			if( i%2==0 ) {
-				t=buffer[s][offset+i];
-			}
-			else {
-				t+=buffer[s][offset+i]<<8;
-				profile+= t;
-			}
-		}
+		getUnicodeStringFromSocket( s, &this->profile, offset, len.get() );
 	}
 }
 
@@ -364,7 +374,7 @@ CREATE( CharProfile, PKG_CHAR_PROFILE, 0x07 )
 SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	if( profile==NULL ) profile=&emptyUnicodeString;
-	this->size=this->headerSize +(title->size()+1) + (profile->length() +1)*2 + (staticProfile->length() +1)*2 ;
+	this->size=this->headerSize +(title->size()+1) + profile->size() + staticProfile->size();
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->title->c_str(), title->size()+1 );
 	Xsend( ps->toInt(), this->staticProfile->s.begin(), this->staticProfile->s.end() );
