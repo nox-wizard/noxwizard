@@ -33,7 +33,6 @@ class cScriptCommand {
 };
 
 
-void npcact(int s);
 int calcSerFromChar(int ser);
 int checkBoundingBox(int xPos, int yPos, int fx1, int fy1, int fz1, int fx2, int fy2);
 int checkBoundingCircle(int xPos, int yPos, int fx1, int fy1, int fz1, int radius);

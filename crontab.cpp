@@ -653,7 +653,7 @@ static void exec_broadcast(char *txt)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWSOCKET s=sw.getSocket();
 		if( s!=INVALID ) {
-			SendSpeechMessagePkt(s, 0x01010101, 0x0101, 1, 0x0040, 0x0003, sysname, (UI08 *)txt);
+			SendSpeechMessagePkt(s, 0x01010101, 0x0101, 1, 0x0040, 0x0003, sysname, txt);
 		}
 	}
 	Network->ClearBuffers(); // uhm ..... 
@@ -673,7 +673,7 @@ static void exec_gy(char *txt)
 		P_CHAR pj=ps->currChar();
 		if (ISVALIDPC(pj) && pj->IsGM())
 		{
-			SendSpeechMessagePkt(ps->toInt(), 0x01010101, 0x0101, 1, 0x0040, 0x0003, name, (UI08 *)txt);
+			SendSpeechMessagePkt(ps->toInt(), 0x01010101, 0x0101, 1, 0x0040, 0x0003, name, txt);
 		}
 	}
 

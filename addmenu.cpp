@@ -22,9 +22,15 @@ cMakeMenu::cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM
 	oldmenu = new cOldMenu();
 	this->section=section;
 	this->skill=skill;
-	this->makeItems = NULL;
 
-	loadFromScript( pc, first, second );
+	mat[0].id = ISVALIDPI(first)? first->id() : 0;
+	mat[0].color= ISVALIDPI(first)? first->color() : 0;
+
+
+	mat[1].id = ISVALIDPI(second)? second->id() : 0;
+	mat[1].color =  ISVALIDPI(second)? second->color() : 0;
+
+	loadFromScript( pc );
 }
 
 cMakeMenu::~cMakeMenu()
@@ -32,34 +38,9 @@ cMakeMenu::~cMakeMenu()
 	if( oldmenu!=NULL )
 		delete oldmenu;
 
-	if( makeItems!=NULL )
-		delete makeItems;
 }
 
-/*!
-\brief Decides where a menu item should be shown
-\author Endymion
-\param entry the script item
-\param pc the player
-*/
-bool cMakeMenu::checkShouldAdd (cScpEntry* entry, P_CHAR pc)
-{
-    if( entry==NULL ) return false;
 
-    if( entry->getParam1().c_str()==NULL ) return false;
-
-    // always all options for standard menu options :]
-    if( strstr(entry->getParam1().c_str(), "MAKE")==NULL ) return true;
-    
-    if( pc->IsGM() ) return true; // gee, GMs can do *anything*...
-
-    if( entry->getParam2().c_str()==NULL ) return false;
-
-	cMakeItem* mi = getcMakeItem( atoi(entry->getParam2().c_str()) );
-	if (mi==NULL) return false;
-
-	return mi->checkReq(pc, true);
-}
 
 /*!
 \brief Clean a String
@@ -75,7 +56,7 @@ std::string cMakeMenu::cleanString( std::string s )
 	return s;
 }
 
-void cMakeMenu::loadFromScript( P_CHAR pc, P_ITEM first, P_ITEM second )
+void cMakeMenu::loadFromScript( P_CHAR pc )
 {
 	VALIDATEPC(pc);
 
@@ -87,17 +68,11 @@ void cMakeMenu::loadFromScript( P_CHAR pc, P_ITEM first, P_ITEM second )
 
 	std::vector<std::string> info; //name
     
-	COLOR mat1Color = ISVALIDPI( first )? first->color() : INVALID;
-	int mat1Id = ISVALIDPI( first )? first->color() : INVALID;
-	COLOR mat2Color = ISVALIDPI( second )? second->color() : INVALID;
-	int mat2Id = ISVALIDPI( second )? second->color() : INVALID;
+	this->mat[0].number = ( mat[0].id!=0 )? pc->CountItems( mat[0].id, mat[0].color ) : 0;
+	this->mat[1].number = ( mat[1].id!=0 )? pc->CountItems( mat[1].id, mat[1].color ) : 0;
 
-	int mat1Has = ( mat1Id!=INVALID )? pc->CountItems( mat1Id, mat1Color ) : 0;
-	int mat2Has = ( mat2Id!=INVALID )? pc->CountItems( mat2Id, mat2Color ) : 0;
+	//da passare a checkReq PDPD
 	
-
-	if( ( mat1Id!=INVALID ) && ( mat2Id!=INVALID ) )
-		makeItems = new std::vector<cMakeItem>;
 
 	cMakeItem* imk = NULL;
     pc->making=skill;
@@ -162,7 +137,6 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 	MakeParamType type = MAKE_NEED_NAME;
 	bool error=false;
 	int item = INVALID;
-	bool mustAdd;
 
     int loopexit=0;
     do
@@ -201,9 +175,13 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 
 					imk = new cMakeItem();
 					
-					imk->reqitems.push_back( cRawItem( mat1Id, mat1Color, needs ) );
-					if( mat2Id!=INVALID )
-						imk->reqitems.push_back( cRawItem( mat2Id, mat2Color, needs ) );
+					imk->skillToCheck=this->skill;
+					imk->reqitems[0].id=mat[0].id;
+					imk->reqitems[0].color=mat[0].color;
+					imk->reqitems[0].number=needs;
+					imk->reqitems[1].id=mat[1].id;
+					imk->reqitems[1].color=mat[1].color;
+					imk->reqitems[1].number=needs;
 
 					type=MAKE_NEED_SKILL;
 				}
@@ -221,20 +199,16 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 					if( imk->maxskill<200 )
 						imk->maxskill=200;
 
-			        mustAdd = ( ( mat1Has < imk->reqitems[0].number ) || 
-						( ( mat2Id!=INVALID ) && ( mat2Has < imk->reqitems[1].number ) ) || 
-						( pc->skill[skill]< imk->minskill ) );
-					
-					if( !mustAdd )
+					if( !imk->checkReq( pc, true ) )
 					{
 						safedelete( imk );
 						item--;
 					}
 					else {
-						makeItems->push_back( *imk );
+						makeItems.push_back( *imk );
 						
 						std::wstring w;
-						if( mat1Id!=INVALID ) {
+						if( mat[0].id!=0 ) {
 							char b[TEMP_STR_SIZE];
 							sprintf( b, "%s - [%d/%d.%d]", info[item].c_str(), imk->reqitems[0].number, imk->minskill/10, imk->minskill%10 );
 							string2wstring( std::string( b ), w );
@@ -302,11 +276,108 @@ void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second 
 
 cServerPacket* cMakeMenu::build()
 {
-	return NULL;
+	oldmenu->serial=this->serial;
+	oldmenu->id=this->id;
+	
+	return oldmenu->build();
 }
 
 void cMakeMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
+	SERIAL button;
+	if( isIconList( pkg->cmd ) )
+		button = ((cPacketResponseToDialog*)pkg)->index.get();
+	else {
+		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
+		if( button!=MENU_CLOSE )
+			button = ((cMenu*)oldmenu->type)->getButton( button );
+	}
+
+	if( button<=MENU_CLOSE )
+		return;
+
+	execMake( ps, button-1 );
+}
+
+
+/*!
+\brief executes a "MAKE" command
+\author Xanathar
+\param pc player who do make
+\param n item number
+*/
+void cMakeMenu::execMake( NXWCLIENT ps, UI32 button )
+{
+    
+	P_CHAR pc = ps->currChar();
+
+
+    if( pc->dead ) {
+        pc->sysmsg(TRANSLATE("Ever thought an ethereal soul can't really do some actions ?"));
+        return;
+    }
+
+	cMakeItem& mi = (makeItems)[button];
+
+	if( !mi.checkReq( pc, false ) )
+		return;
+
+    
+	//we're here -> we can do the stuff ;]
+
+    // sequence is :
+    //  - item removals
+    //  - skill check
+    //  - stat removals
+    //  - do what should be done
+
+	for( int j=0; j<2; ++j ) {
+		cRawItem& raw = mi.reqitems[j];
+		if( raw.id!=0 )
+	        pc->delItems( raw.id, raw.number, raw.color );
+    }
+
+    if( !pc->checkSkill((Skill)mi.skillToCheck, mi.minskill, mi.maxskill) ) {
+        pc->sysmsg(TRANSLATE("You failed"));
+        return;
+    }
+
+	mi.command.execute( ps->toInt() );
+
+}
+
+/*!
+\brief Check if the player is skilled enough and have requested items
+\return bool can or can't 
+\param pc the player
+\param inMenu if write a sysmessage on error
+\todo Add message if haven't enough item..
+*/
+bool cMakeItem::checkReq( P_CHAR pc, bool inMenu )
+{
+
+    if( pc->IsGM() ) 
+		return true;
+
+    if( (skillToCheck!=INVALID) && (pc->skill[skillToCheck]<minskill) ) {
+        if( !inMenu ) 
+			pc->sysmsg(TRANSLATE("You're not enough skilled"));
+        return false;
+    }
+
+	for( int i=0; i<2; ++i ) {
+        cRawItem& raw = reqitems[i];
+		if( raw.id!=0 ) {
+			if( pc->CountItems( raw.id, raw.color)< raw.number ) {
+				if( !inMenu )
+					pc->sysmsg(TRANSLATE("You've not enough resources"));
+				return false;
+			}
+        }
+    }
+
+
+    return true;
 }
 
 
@@ -314,8 +385,7 @@ void cMakeMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 
 
 
-
-cAddMenu::cAddMenu( SERIAL section, P_CHAR pc ) : cMakeMenu( serial, pc, NULL, NULL )
+cAddMenu::cAddMenu( SERIAL section, P_CHAR pc ) : cMakeMenu( section, pc, NULL, NULL )
 {
 }
 
@@ -383,20 +453,19 @@ void cAddMenu::loadFromScript( P_CHAR pc )
 		if (entry->getFullLine().c_str()[0]!='}') {
 
 			cScpEntry* entry2 = iter->getEntry();
-			if( checkShouldAdd(entry2, pc) ) {
    				
-				std::wstring w;
+			std::wstring w;
 				
-				if (!bIcons) 
-					string2wstring( cleanString( entry->getFullLine() ), w );
-   				else 
-					string2wstring( entry->getFullLine(), w);
+			if (!bIcons) 
+				string2wstring( cleanString( entry->getFullLine() ), w );
+			else 
+				string2wstring( entry->getFullLine(), w);
 
-				oldmenu->addMenuItem( nOpt/10, nOpt%10, w );
+			oldmenu->addMenuItem( nOpt/10, nOpt%10, w );
 
-   				commands.push_back( cScriptCommand( entry2->getParam1(), entry2->getParam2() ) );
-				nOpt++;
-			}
+			commands.push_back( cScriptCommand( entry2->getParam1(), entry2->getParam2() ) );
+			nOpt++;
+
 		}
 	}
 
@@ -416,7 +485,7 @@ void cAddMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	else {
 		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
 		if( button!=MENU_CLOSE )
-			button = ((cMenu*)oldmenu->type)->rc_button[button];
+			button = ((cMenu*)oldmenu->type)->getButton( button );
 	}
 
 	if( button<=MENU_CLOSE )
@@ -426,46 +495,8 @@ void cAddMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 }
 
-cServerPacket* cAddMenu::build()
-{
-
-	oldmenu->serial=this->serial;
-	oldmenu->id=this->id;
-	
-	return oldmenu->build();
-}
 
 
-
-
-/*!
-\brief Check if the player is skilled enough and have requested items
-\return bool can or can't 
-\param pc the player
-\param inMenu if write a sysmessage on error
-\todo Add message if haven't enough item..
-*/
-bool cMakeItem::checkReq( P_CHAR pc, bool inMenu )
-{
-    VALIDATEPCR(pc,false);
-
-    if (pc->IsGM()) return true;
-
-    if( (skillToCheck!=INVALID) && (pc->skill[skillToCheck]<minskill) ) {
-        if (!inMenu) 
-			pc->sysmsg(TRANSLATE("You're not enough skilled"));
-        return false;
-    }
-
-	std::vector< cRawItem >::iterator iter( reqitems.begin() ), end( reqitems.end() );
-	for( ; iter!=end; iter++ ) {
-        if( iter->id!=0 ) {
-           if( pc->CountItems( iter->id, iter->color)<iter->number ) 
-			   return false;
-        }
-    }
-    return true;
-}
 
 
 
@@ -493,7 +524,6 @@ cRawItem::~cRawItem()
 
 cMakeItem::cMakeItem()
 {
-    mana = stam = hit = 0;
     skillToCheck = INVALID;
     minskill = 0; maxskill = 1000;
     reqspell = INVALID;
@@ -503,161 +533,6 @@ cMakeItem::~cMakeItem()
 {
 }
 
-cMakeItem* getcMakeItem( SERIAL n )
-{
-
-	static std::map< SERIAL, class cMakeItem > make_items; //!< make items cached
-
-	std::map< SERIAL, cMakeItem >::iterator mi_iter( make_items.find( n ) );
-	if( mi_iter!=make_items.end() ) {
-		return &mi_iter->second;
-	}
-
-    // we're here so no makeitem number n has been loaded yet
-    // so search it :]
-    cScpIterator* iter = Scripts::Create->getNewIterator( "SECTION MAKE %d", n );
-
-    if (iter==NULL) 
-		return NULL;
-
-    cMakeItem mi;
-    int reqres = 0;
-
-	std::string script1, script2;
-    do {
-		iter->parseLine( script1, script2 );
-		if( script1=="DO" ) {
-		    if( script2.size() < 4) {
-		        WarnOut("Malformed DO command\n");
-		        return NULL;
-		    }
-		    char *p = strstr(script2.c_str(), " ");
-		    if (p==NULL) {
-		        mi.command.command = script2;
-		        mi.command.param = "";
-		    } else {
-		        *p = '\0';
-		        mi.command.command = script2;
-		        mi.command.param = p+1;
-		    }
-		} else if ( script1 =="SKILL" ) {
-		    mi.skillToCheck = str2num(script2);
-		} else if ( script1=="MINSKILL" ) {
-		    mi.minskill = str2num(script2);
-		} else if ( script1=="MAXSKILL" ) {
-		    mi.maxskill = str2num(script2);
-		} else if ( script1=="MANA" ) {
-		    mi.mana = str2num(script2);
-		} else if ( script1=="STAM" ) {
-		    mi.stam = str2num(script2);
-		} else if ( script1=="REQSPELL" ) {
-		    mi.reqspell = str2num(script2);
-		} else if ( script1=="HP" ) {
-		    mi.hit = str2num(script2);
-		}  else if ( script1=="REQ" ) {
-   		    mi.reqitems.push_back( cRawItem(script2) );
-			reqres++;
-		}
-    } while( script1!="}" );
-
-    make_items.insert( make_pair( n, mi ) );
-
-    return getcMakeItem(n);
-
-}
-
-
-/*!
-\brief executes a "MAKE" command
-\author Xanathar
-\param pc player who do make
-\param n item number
-*/
-void execMake( P_CHAR pc, int n )
-{
-    
-	VALIDATEPC( pc );
-
-    cMakeItem* mi = getcMakeItem(n);
-	if( mi==NULL )
-		return;
-
-    if (pc->dead) {
-        pc->sysmsg(TRANSLATE("Ever thought an ethereal soul can't really do some actions ?"));
-        return;
-    }
-
-    NXWCLIENT cli = pc->getClient();
-    if(cli==NULL) return;
-
-    NXWSOCKET sock = cli->toInt();
-    if(sock<=INVALID) return;
-
-    if (mi->reqspell!=INVALID) {
-        if (!pc->knowsSpell((magic::SpellId)mi->reqspell)) {
-            pc->sysmsg(TRANSLATE("You don't know that spell."));
-            return;
-        }
-    }
-
-    if (pc->hp < mi->hit) {
-        pc->sysmsg(TRANSLATE("You could die for it.. "));
-        return;
-    }
-    if (pc->stm < mi->stam) {
-        pc->sysmsg(TRANSLATE("You're too tired "));
-        return;
-    }
-    if (pc->mn < mi->mana) {
-        pc->sysmsg(TRANSLATE("Your mind is too tired "));
-        return;
-    }
-    if (mi->skillToCheck>INVALID) {
-        if (pc->skill[mi->skillToCheck] < mi->minskill) {
-            pc->sysmsg(TRANSLATE("You need to experience more to do that"));
-            return;
-        }
-    }
-
-	std::vector< cRawItem >::iterator iter( mi->reqitems.begin() ), end( mi->reqitems.end() );
-	for( ; iter!=end; ++iter ) {
-
-        if( iter->id > 0) {
-           if( pc->CountItems( iter->id, iter->color)< iter->number ) {
-               pc->sysmsg(TRANSLATE("You've not enough resources"));
-               return;
-           }
-        }
-
-    }
-    
-	//we're here -> we can do the stuff ;]
-
-    // sequence is :
-    //  - item removals
-    //  - skill check
-    //  - stat removals
-    //  - do what should be done
-
-	for( iter=mi->reqitems.begin(); iter!=end; ++iter ) {
-        pc->delItems( iter->id, iter->number, iter->color );
-    }
-
-    if( !pc->checkSkill((Skill)mi->skillToCheck, mi->minskill, mi->maxskill) ) {
-        pc->sysmsg(TRANSLATE("You failed"));
-        return;
-    }
-
-    if( mi->hit )
-		pc->damage( mi->hit,  DAMAGE_PURE, STAT_HP );
-    if( mi->mana )
-	    pc->damage( mi->mana, DAMAGE_PURE, STAT_MANA );
-    if( mi->stam )
-	    pc->damage( mi->stam, DAMAGE_PURE, STAT_STAMINA );
-
-	mi->command.execute( sock );
-
-}
 
 
 
@@ -1359,7 +1234,6 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
         Xsend(s, &lentext, 1);
         Xsend(s, gmtext[i], lentext);
     }
-    targetok[s]=1;
 
 }*/
 

@@ -418,6 +418,12 @@ void cMenu::addGroup( UI32 group )
 }
 */
 
+SI32 cMenu::getButton( SI32 rawButton )
+{
+	return rc_button[ rawButton ];
+}
+
+
 
 void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
@@ -432,7 +438,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	UI32 buttonReturnCode;
 	if( button!=MENU_CLOSE ) { 
 
-		buttonReturnCode = rc_button[ button ];
+		buttonReturnCode = getButton( button );
 
 		std::map< SERIAL, FUNCIDX >::iterator iter( buttonCallbacks.find( button ) );
 		if( iter!=buttonCallbacks.end() ) {

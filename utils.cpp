@@ -103,7 +103,7 @@ void cScriptCommand::execute( NXWSOCKET s )
 		targ->code_callback = target_npcMenu;
 		targ->buffer[0]=str2num(param);
 		targ->send( getClientFromSocket(s) );
-		sysmessage( s, "Select location for NPC. [Number: %i]", addmitem[s]);
+		sysmessage( s, "Select location for NPC. [Number: %i]", targ->buffer[0]);
 		return;
 	} else if ( command == "NOP" ) {
 	    return;
@@ -136,11 +136,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 			pc->MoveTo( x, y, z );
 			pc->teleport();
 		}
-	} else if ( command == "GRINDPOTION" ) {
-		int type = str2num(param);
-		int sub = type % 10;
-		type /= 10 ;
-		Skills::DoPotion(s, type, sub, pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s])));
 	} else if ( command == "ADDBYID" ) {
 		if (s<=INVALID) return;
 		P_ITEM pb = pc->getBackpack();
@@ -164,8 +159,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 		AmxProgram *prg = new AmxProgram(param.c_str());
 		prg->CallFn(INVALID);
 		safedelete(prg);
-	} else if ( command == "MAKE" ) {
-		execMake(pc, atoi(param.c_str()));
 	} else {
 	    ErrOut("script command syntax error : unknown command %s", command.c_str());
 	}
@@ -611,13 +604,6 @@ void batchcheck(int s) // Do we have to run a batch file
 }
 
 
-
-void npcact(int s)
-{
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
-	VALIDATEPC( pc );
-	pc->playAction(addid1[s]);
-}
 
 int checkBoundingBox(int xPos, int yPos, int fx1, int fy1, int fz1, int fx2, int fy2)
 {

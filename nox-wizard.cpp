@@ -1517,8 +1517,11 @@ void initclock()
 #endif
 }
 
-void telltime( NXWSOCKET  s )
+void telltime( NXWCLIENT ps )
 {
+
+	NXWSOCKET s = ps->toInt();
+
 	char tstring[60];
 	char tstring2[60];
 	int hour = Calendar::g_nHour % 12;
@@ -2553,7 +2556,6 @@ void StartClasses()
 	Boats=new cBoat;
 	Guilds=new cGuilds;
 
-	Targ=new cTargets;
 	Network=new cNetwork;
 	//Respawn=new cRespawn;
 	Partys=new cPartys;
@@ -2572,7 +2574,6 @@ void DeleteClasses()
 	delete Boats;
 	delete Guilds;
 
-	delete Targ;
 	delete Network;
 	//delete Respawn;
 	delete Partys;

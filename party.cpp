@@ -218,7 +218,7 @@ void cPartyMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg )
 	else {
 		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
 		if( button!=MENU_CLOSE )
-			button = ((cMenu*)type)->rc_button[ button ];
+			button = ((cMenu*)type)->getButton( button );
 	}
 	
 	if( button == 1 ) {

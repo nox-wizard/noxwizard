@@ -215,7 +215,6 @@ const int NXW_CP_I_ROBE = 274;
 const int NXW_CP_I_RUNNING = 275;
 const int NXW_CP_I_SERIAL = 276;
 const int NXW_CP_I_SKILLDELAY = 277;
-const int NXW_CP_I_SMELTITEM = 278;
 const int NXW_CP_I_SMOKEDISPLAYTIME = 279;
 const int NXW_CP_I_SMOKETIMER = 280;
 const int NXW_CP_I_SPADELAY = 281;

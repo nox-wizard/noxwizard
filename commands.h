@@ -34,7 +34,7 @@ namespace Commands
 	void RegSpawnMax(NXWSOCKET s, int r);
 	void RegSpawnNum(NXWSOCKET s, int r, int n);
 	void KillAll(NXWSOCKET s, int percent, char * sysmsg);
-	void AddHere(NXWSOCKET s, char z);
+	void AddHere(NXWSOCKET s, UI16 id, char z);
 	void ShowGMQue(NXWSOCKET s, int type);
 	void Wipe(NXWSOCKET s);
 	void CPage(NXWSOCKET s, std::string reason);
@@ -42,10 +42,6 @@ namespace Commands
 	void Command( NXWSOCKET , char * );
 	void MakeShop(int c);
 	void DyeItem(NXWSOCKET s);
-	void SetItemTrigger(NXWSOCKET s);
-	void SetTriggerType(NXWSOCKET s);
-	void SetTriggerWord(NXWSOCKET s);
-	void SetNPCTrigger(NXWSOCKET s);
 	void DupeItem(NXWSOCKET s, int i, int amount);
 	void Possess(NXWSOCKET s);
 };

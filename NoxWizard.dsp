@@ -102,10 +102,6 @@ SOURCE=.\addmenu.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\commands\addremove.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ai.cpp
 # End Source File
 # Begin Source File
@@ -382,10 +378,6 @@ SOURCE=.\poll.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\commands\privlevels.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\race.cpp
 # End Source File
 # Begin Source File
@@ -522,10 +514,6 @@ SOURCE=.\trigger.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\commands\tweaking.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\utils.cpp
 # End Source File
 # Begin Source File
@@ -555,10 +543,6 @@ SOURCE=.\accounts.h
 # Begin Source File
 
 SOURCE=.\addmenu.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\commands\addremove.h
 # End Source File
 # Begin Source File
 
@@ -838,10 +822,6 @@ SOURCE=.\poll.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\commands\privlevels.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\race.h
 # End Source File
 # Begin Source File
@@ -975,10 +955,6 @@ SOURCE=.\translation.h
 # Begin Source File
 
 SOURCE=.\trigger.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\commands\tweaking.h
 # End Source File
 # Begin Source File
 

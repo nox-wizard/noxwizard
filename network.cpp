@@ -415,7 +415,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		perm[j]=perm[jj];
 		binlength[j]=binlength[jj];
 		boutlength[j]=boutlength[jj];
-		usedfree[j]=usedfree[jj];
 		clientInfo[j]=clientInfo[jj];
 		walksequence[j]=walksequence[jj];
 		DRAGGED[j]=DRAGGED[jj];
@@ -427,15 +426,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 
 		memcpy(&buffer[j], &buffer[jj], MAXBUFFER); // probably not nec.
 		memcpy(&outbuffer[j], &outbuffer[jj], MAXBUFFER); // very important
-		memcpy(&xtext[j], &xtext[jj], 31);
 
-		addid1[j]=addid1[jj];
-		addid2[j]=addid2[jj];
-		addid3[j]=addid3[jj];
-		addid4[j]=addid4[jj];
-		addx[j]=addx[jj];
-		addy[j]=addy[jj];
-		addz[j]=addz[jj];
 		priv3a[j]=priv3a[jj];
 		priv3b[j]=priv3b[jj];
 		priv3c[j]=priv3c[jj];
@@ -443,17 +434,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		priv3e[j]=priv3e[jj];
 		priv3f[j]=priv3f[jj];
 		priv3g[j]=priv3g[jj];
-		addid5[j]=addid5[jj];
-		tempint[j]=tempint[jj];
-		dyeall[j]=dyeall[jj];
-		addx2[j]=addx2[jj];
-		addy2[j]=addy2[jj];
-		addz[j]=addz[jj];
-		addmitem[j]=addmitem[jj];
-		clickx[j]=clickx[jj];
-		clicky[j]=clicky[jj];
-		targetok[j]=targetok[jj];
-		currentSpellType[j]=currentSpellType[jj];
 #ifdef USE_MTHREAD_SEND
 		g_NT[j] = g_NT[jj];
 #endif
@@ -864,7 +844,6 @@ void cNetwork::enterchar(int s)
 	features.send( pc->getClient() );
 
 	perm[s]=1;
-	targetok[s]=0;
 
 	Location charpos= pc->getPosition();
 
@@ -1318,7 +1297,6 @@ void cNetwork::CheckConn() // Check for connection requests
 				binlength[now]=0;
 				boutlength[now]=0;
 				cryptclient[now]=0;
-				usedfree[now]=0;
 				clientInfo[now]= new cClient();
 				walksequence[now]=-1;
 
@@ -1329,19 +1307,9 @@ void cNetwork::CheckConn() // Check for connection requests
 
 				clientDimension[now]=2;
 
-				addid1[now]=0;addid2[now]=0;addid3[now]=0;addid4[now]=0;
 				//priv3a[now]=0;priv3b[now]=0;priv3c[now]=0;
 				//priv3d[now]=0;priv3e[now]=0;priv3f[now]=0;
 				//priv3g[now]=0;
-				addid5[now]=0;
-	   		    tempint[now]=0;
-				addid1[now]=0;addid2[now]=0;addid3[now]=0;addid4[now]=0;
-				dyeall[now]=0;
-				addx[now]=0;addy[now]=0;
-				addx2[now]=0;addy2[now]=0;addz[now]=0;
-				addmitem[now]=0;
-				clickx[now]=0;clicky[now]=0; targetok[now]=0;
-				currentSpellType[now]=0;
 
 				++global_lis; // not 100% correct, but only cosmetical stuff, hence ok not to be 100% correct :>
                           			// doesnt get correct status if kicked out due to worng pw etc.

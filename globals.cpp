@@ -251,35 +251,14 @@ char unsigned buffer[MAXCLIENT][MAXBUFFER];
 char  outbuffer[MAXCLIENT][MAXBUFFER];
 int client[MAXCLIENT];
 short int walksequence[MAXCLIENT];
-signed char addid5[MAXCLIENT];
 int acctno[MAXCLIENT];
 unsigned char clientip[MAXCLIENT][4];
-int tempint[MAXCLIENT];
-unsigned char addid1[MAXCLIENT];
-unsigned char addid2[MAXCLIENT];
-unsigned char addid3[MAXCLIENT];
-unsigned char addid4[MAXCLIENT];
-unsigned char dyeall[MAXCLIENT];
-int addx[MAXCLIENT];
-int addy[MAXCLIENT];
-int addx2[MAXCLIENT];
-int addy2[MAXCLIENT];
-signed char addz[MAXCLIENT];
-int addmitem[MAXCLIENT];
-char xtext[MAXCLIENT][31];
 unsigned char perm[MAXCLIENT];
 unsigned char cryptclient[MAXCLIENT];
-unsigned char usedfree[MAXCLIENT];
 int binlength[MAXIMUM+1];
 int boutlength[MAXIMUM+1];
 
-int clickx[MAXCLIENT];
-int clicky[MAXCLIENT];
-int currentSpellType[MAXCLIENT]; //!< 0=spellcast, 1=scrollcast, 2=wand cast
-unsigned char targetok[MAXCLIENT];
 unsigned char clientDimension[MAXCLIENT];
-SERIAL spyTo[MAXCLIENT];
-//int spattackValue[MAXCLIENT];
 
 //////////////////////////////////////////////
 //              MAxBuffer                  //

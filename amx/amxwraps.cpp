@@ -225,7 +225,7 @@ NATIVE(_getTarget)
 
 	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cTarget() );
 	targ->amx_callback = new AmxFunction( params[2] );
-	targ->code_callback = amxCallback;
+	targ->code_callback = amxCallbackOld;
 	targ->send( ps );
 	ps->sysmsg( g_cAmxPrintBuffer );
 
@@ -3351,7 +3351,7 @@ NATIVE( _chr_showMessage )
 		UI08 sysname[30]={ 0x00, };
 		strcpy((char *)sysname, "System");
 
-		SendSpeechMessagePkt(s, pc2->getSerial32(), pc2->GetBodyType(), 6, params[4], (UI16)pc1->fonttype, sysname, (UI08 *)g_cAmxPrintBuffer);
+		SendSpeechMessagePkt(s, pc2->getSerial32(), pc2->GetBodyType(), 6, params[4], (UI16)pc1->fonttype, sysname, g_cAmxPrintBuffer);
 		return 0;
 	}
 	return INVALID;
@@ -3859,7 +3859,7 @@ NATIVE(_itm_speech)
 	UI08 sysname[30]={ 0x00, };
 	strcpy((char *)sysname, "System");
 
-	SendSpeechMessagePkt(s, cur->getSerial32(), 0x0101, 6, 0x0481, 0x0003, sysname, (UI08 *)g_cAmxPrintBuffer);
+	SendSpeechMessagePkt(s, cur->getSerial32(), 0x0101, 6, 0x0481, 0x0003, sysname, g_cAmxPrintBuffer);
 
 	return 0;
 }

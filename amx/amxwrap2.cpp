@@ -1450,9 +1450,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 		case NXW_CP_I_SKILLDELAY :				  		//dec value: 277;
 			pc->skilldelay = value;
 			break;
-		case NXW_CP_I_SMELTITEM :			  			//dec value: 278;
-			pc->smeltserial = value;
-			break;
 		case NXW_CP_I_SMOKEDISPLAYTIME :			  		//dec value: 279;
 			pc->smokedisplaytimer = value;
 			break;
@@ -1777,7 +1774,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_RUNNING , pc->running )  			//dec value: 275;
 		CHECK(  NXW_CP_I_SERIAL , pc->getSerial32() )  			//dec value: 276;
 		CHECK(  NXW_CP_I_SKILLDELAY , pc->skilldelay )  		//dec value: 277;
-		CHECK(  NXW_CP_I_SMELTITEM , pc->smeltserial )  			//dec value: 278;
 		CHECK(  NXW_CP_I_SMOKEDISPLAYTIME , pc->smokedisplaytimer )  	//dec value: 279;
 		CHECK(  NXW_CP_I_SMOKETIMER , pc->smoketimer )  		//dec value: 280;
 		CHECK(  NXW_CP_I_SPADELAY , pc->spadelay )  			//dec value: 281;

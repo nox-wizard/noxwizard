@@ -33,7 +33,7 @@ public:
     UI32 number;
 
 	cRawItem( std::string& s );
-	cRawItem( SI32 id, COLOR color, UI32 number );
+	cRawItem( SI32 id=0, COLOR color=0, UI32 number=0 );
 	~cRawItem();
 
 };
@@ -51,8 +51,7 @@ public:
     SI32 minskill;
     SI32 maxskill;
     SI32 reqspell;
-	std::vector<cRawItem> reqitems;
-    SI32 mana, stam, hit;
+	cRawItem reqitems[2];
 
     
 	cMakeItem();
@@ -60,14 +59,11 @@ public:
     bool checkReq( P_CHAR pc, bool inMenu = false );
 };
 
-cMakeItem* getcMakeItem( SERIAL n );
-
 class cMakeMenu : public cBasicMenu 
 {
 
 	private:
-		int skill;
-		std::vector<cMakeItem>*	makeItems;
+		std::vector<cMakeItem>	makeItems;
 
 	protected:
 
@@ -75,14 +71,18 @@ class cMakeMenu : public cBasicMenu
 		P_OLDMENU oldmenu;
 		std::vector< cScriptCommand > commands;
 
-		virtual void loadFromScript( P_CHAR pc, P_ITEM first, P_ITEM second );
-		bool checkShouldAdd( class cScpEntry* entry, P_CHAR pc);
+		virtual void loadFromScript( P_CHAR pc );
 		std::string cleanString( std::string s );
+		void execMake( NXWCLIENT ps, UI32 button );
 
 	protected:
 		virtual cServerPacket* build();
 
 	public:
+
+		int skill;
+		cRawItem mat[2];
+		
 		cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second=NULL );
 		~cMakeMenu();
 
@@ -96,9 +96,6 @@ class cAddMenu : public cMakeMenu
 	private:
 		virtual void loadFromScript( P_CHAR pc = NULL );
 
-	protected:
-		virtual cServerPacket* build();
-
 	public:
 		cAddMenu( SERIAL section, P_CHAR pc );
 		~cAddMenu();
@@ -107,7 +104,6 @@ class cAddMenu : public cMakeMenu
 
 };
 
-void execMake( P_CHAR pc, int n );
 void showAddMenu( P_CHAR pc, int menu );
 
 /*!

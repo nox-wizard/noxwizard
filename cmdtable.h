@@ -39,10 +39,9 @@ enum CmdType
 {
 	CMD_TARGET=1,		//!< Call target struct specified in cmd_extra
 	CMD_FUNC,		//!< Call function specified in cmd_extra, must be of type GMFUNC
-	CMD_TARGETX,		//!< target with addx[] argument
-	CMD_TARGETXYZ,		//!< target with addx & y & z [] arguments
-	CMD_TARGETHID1,		//!< target with 1 hex addid #
-	CMD_TARGETLOC,		//!< target a location, no params
+	CMD_TARGETN,		//!< target with 1 param
+	CMD_TARGETNNN,		//!< target with 3 param
+	CMD_TARGETS,		//!< target with 1 string param
 	CMD_MANAGEDCMD =32	//!< command is full self managed
 };
 
@@ -125,17 +124,18 @@ private:
 
 extern cCommandTable* commands;
 
-#define CMD_EXEC	void (*) (int)
+#define CMD_EXEC	void (*) ( NXWCLIENT )
 #define CMD_DEFINE	void (*)()
 
 typedef struct {
+	TARG_TYPE type;
 	processTarget func;
 	char msg[128];
 } target_st;
 
 
 /* All command_ functions take an int value of the player that triggered the command. */
-#define CMD_HANDLER(name) extern void name (int)
+#define CMD_HANDLER(name) extern void name ( NXWCLIENT ps )
 
 
 /* Defined commands that are just being mapped to internal functions */
@@ -275,8 +275,6 @@ CMD_HANDLER(command_readaccounts);
 
 CMD_HANDLER(command_serversleep);
 
-CMD_HANDLER(command_setmenupriv);
-
 //taken from 6904t2(5/10/99) - AntiChrist
 CMD_HANDLER(command_setmurder);
 CMD_HANDLER(command_jail);
@@ -324,6 +322,7 @@ void target_telestuff( NXWCLIENT ps, P_TARGET t );
 void target_emptypack( NXWCLIENT ps, P_TARGET t );
 void target_ban( NXWCLIENT ps, P_TARGET t );
 void target_spy( NXWCLIENT ps, P_TARGET t );
+void target_title( NXWCLIENT ps, P_TARGET t );
 
 
 

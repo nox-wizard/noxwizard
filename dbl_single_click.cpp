@@ -1063,7 +1063,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x104B:
 		case 0x104C:
 		case 0x1086: // Clock and bracelet
-			telltime(s);
+			telltime(ps);
 			return;
 		case 0x0E9B: // Mortar for Alchemy
 			pc->objectdelay = ((SrvParms->objectdelay * MY_CLOCKS_PER_SEC)*3) + uiCurrentTime;

@@ -52,7 +52,7 @@ namespace npcs
 
 	P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist);
 
-	int AddRandomNPC(int s, char *npclist, int spawnpoint);
+	int AddRandomNPC(int s, char *npclist);
 	
 	void checkAI(P_CHAR pc );
 

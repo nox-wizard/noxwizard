@@ -86,27 +86,10 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 	return pi;
 }
 
-/*** s: socket ***/
-//Xan : upgraded to new scripts
-int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
+int AddRandomNPC(NXWSOCKET s, char * npclist)
 {
-	std::string	value(npclist);
-	std::string 	strnpc( cObject::getRandomScriptValue( "NPCLIST", value ) );
-	int		npc = str2num( strnpc );
-
-	if( npc != 0 )
-	{
-		if (spawnpoint==-1)
-		{
-			addmitem[s] = npc;
-			npc = Targ->NpcMenuTarget(s);
-		}
-	}
-	else
-	{
-		npc = INVALID;
-	}
-	return npc;
+	int npc = str2num( cObject::getRandomScriptValue( "NPCLIST", std::string( npclist ) ) );
+	return (npc!=0)? npc : INVALID;
 }
 
 //o---------------------------------------------------------------------------o
@@ -225,7 +208,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if ( "NPCLIST" == script1 )
 					{
-						npcNum=npcs::AddRandomNPC( s, const_cast<char*>(script2.c_str()), 1);
+						npcNum=npcs::AddRandomNPC( s, const_cast<char*>(script2.c_str()));
 						if ( npcNum == INVALID )
 						{
 							error = true;

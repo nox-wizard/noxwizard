@@ -43,7 +43,6 @@ void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 {
 	UI08 multitarcrs[26]= { 0x99, 0x01, 0x40, 0x01, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-	targetok[s]=1;
 	multitarcrs[2]=a1;
 	multitarcrs[3]=a2;
 	multitarcrs[4]=a3;
@@ -1178,11 +1177,6 @@ void target_houseLockdown( NXWCLIENT ps, P_TARGET t )
     if(ISVALIDPI(pi))
     {
 
-        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
-        house = calcItemFromSer(houseSer);*/
-
-        // not needed anymore, cause called from house_sped that already checks that ...
-
         // time to lock it down!
 
         if( pi->isFieldSpellItem() )
@@ -1320,8 +1314,6 @@ void target_houseRelease( NXWCLIENT ps, P_TARGET t )
             sysmessage(s, TRANSLATE("You cant release doors or signs!"));
             return;
         }
-        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
-        house = calcItemFromSer(houseSer);*/
         // time to lock it down!
         P_ITEM multi = findmulti( pi->getPosition() );
         if( ISVALIDPI(multi) && pi->magic==4 || pi->type==1)

@@ -95,10 +95,6 @@ typedef cBasicMenu* P_MENU;
 class cMenu : public cBasicMenu
 {
 
-	friend class cAddMenu;
-	friend class cOldMenu;
-	friend class cPartyMenu;
-
 	private:
 
 		bool closeable;
@@ -184,6 +180,7 @@ class cMenu : public cBasicMenu
 		bool getCheckBox( SERIAL checkbox, bool raw=false );
 		bool getRadio( SERIAL radio, bool raw=false );
 		std::wstring* getText( SERIAL text, bool raw=false );
+		SI32 getButton( SI32 rawButton );
 };
 
 

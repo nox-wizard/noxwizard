@@ -71,42 +71,49 @@ namespace Commands
 		switch(cmd->cmd_type) {
 		// Single step commands
 			case CMD_FUNC:
-				(*((CMD_EXEC)cmd->cmd_extra)) (s);
+				(*((CMD_EXEC)cmd->cmd_extra)) (client);
 				break;
 			case CMD_TARGET: {
-				P_TARGET target = clientInfo[s]->newTarget( new cTarget() );
-				target->code_callback=((target_st*)cmd->cmd_extra)->func;
-				target->send( client, true );
+				P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+				targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+				targ->send( client );
 				client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
 				break;
 			}
-			case CMD_TARGETX:
+			case CMD_TARGETN:
 				if(tnum==2) {
-					P_TARGET target = clientInfo[s]->newTarget();
-					target->buffer[0]=strtonum(1);
-					target->send( client, false );
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer[0]=strtonum(1);
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else 
 					client->sysmsg("This command takes one number as an argument.");
-				}
 				break;
-			case CMD_TARGETXYZ:
+			case CMD_TARGETNNN:
 				if(tnum==4) {
-					addx[s]=strtonum(1);
-					addy[s]=strtonum(2);
-					addz[s]=strtonum(3);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer[0]=strtonum(1);
+					targ->buffer[1]=strtonum(2);
+					targ->buffer[2]=strtonum(3);
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else
 					sysmessage(s, "This command takes three numbers as arguments.");
-				}
 				break;
-			case CMD_TARGETHID1:
+			case CMD_TARGETS:
 				if(tnum==2) {
-					addid1[s]=strtonum(1);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes one hex number as an argument.");
-				}
+					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
+					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
+					targ->buffer_str[0]=&tbuffer[Commands::cmd_offset+strlen(cmd->cmd_name)];
+					targ->send( client );
+					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
+				} 
+				else
+					sysmessage(s, "This command takes a string as arguments.");
 				break;
 			case CMD_MANAGEDCMD:
 				client->startCommand(cmd, speech);
@@ -540,12 +547,9 @@ namespace Commands
 			color = ShortFromCharPtr(buffer[s] +7);
 
 
-			if(!(dyeall[s]))
+			if (( color<0x0002) || (color>0x03E9))
 			{
-				if (( color<0x0002) || (color>0x03E9))
-				{
-					color = 0x03E9;
-				}
+				color = 0x03E9;
 			}
 
 
@@ -589,57 +593,19 @@ namespace Commands
 	}
 
 
-	void SetItemTrigger(NXWSOCKET s)
-	{
-		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-		VALIDATEPC(pc);
-
-		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] + 7);
-		if (ISVALIDPI(pi))
-		{
-			pc->sysmsg("Item triggered");
-			pi->trigger=addx[s];
-		}
-	}
-
-	void SetTriggerType(NXWSOCKET s)
-	{
-		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-		VALIDATEPC(pc);
-
-		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] + 7);
-		if (ISVALIDPI(pi))
-		{
-			pc->sysmsg("Trigger type set");
-			pi->trigtype=addx[s];
-		}
-	}
-
-	void SetTriggerWord(NXWSOCKET s)
-	{
-		P_CHAR Me=MAKE_CHAR_REF(currchar[s]);
-		VALIDATEPC(Me);
-
-		P_CHAR pc=pointers::findCharBySerPtr(buffer[s]+7);
-		VALIDATEPC(pc);
-
-		Me->sysmsg("Trigger word set");
-		pc->trigword=xtext[s];
-	}
-
-	void AddHere(NXWSOCKET s, char z)
+	void AddHere(NXWSOCKET s, UI16 id, char z)
 	{
 		if ( s < 0 || s >= now )
 			return;
 		LOGICAL pileable=false;
 		tile_st tile;
 
-		data::seekTile((addid1[s]<<8)|addid2[s], tile);
+		data::seekTile( id, tile);
 		if (tile.flags&TILEFLAG_STACKABLE) pileable=true;
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI( pi );
-		pi->setId( (addid1[s]<<8) | addid2[s] );
+		pi->setId( id );
 		pi->pileable = pileable;
 
 		if(ISVALIDPI(pi))//AntiChrist - to preview crashes
@@ -655,22 +621,6 @@ namespace Commands
 			pi->Refresh();//AntiChrist
 		}
 
-		addid1[s]=0;
-		addid2[s]=0;
-	}
-
-
-	void SetNPCTrigger(NXWSOCKET s)
-	{
-		P_CHAR Me=MAKE_CHAR_REF(currchar[s]);
-		VALIDATEPC(Me);
-
-		P_CHAR pc=pointers::findCharBySerPtr(buffer[s]+7);
-		if( ISVALIDPC(pc))
-		{
-			Me->sysmsg("NPC triggered");
-			pc->trigger=addx[s];
-		}
 	}
 
 
