@@ -4457,7 +4457,7 @@ NATIVE(_map_getFloorTileID)
 NATIVE(_map_getZ)
 {
 	map_st m;
-	if ( !data::seekMap( param[1], param[2], m ) )
+	if ( !data::seekMap( params[1], params[2], m ) )
 		return INVALID;
 	return m.z;
 }
