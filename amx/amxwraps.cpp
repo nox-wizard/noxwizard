@@ -2498,7 +2498,7 @@ NATIVE (_send_boltfx)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
-	pc->boltFX();
+	pc->boltFX(true); 
 	return 0;
 }
 
