@@ -1526,7 +1526,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					if ((pi->morex < 10)&&(pi->morey < 10)) {
 						src->sysmsg(TRANSLATE("The rune is not marked yet."));
 					} else {
-						P_ITEM pgate = item::CreateFromScript( "$item_a_blue_moongate" );
+						P_ITEM pgate = item::CreateFromScript( "$item_blue_moongate" );
 						VALIDATEPI( pgate );
 						pgate->MoveTo( srcpos );
 						pgate->morex = pi->morex;
@@ -1537,7 +1537,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 						pgate->setDecayTime( uiCurrentTime + 30*MY_CLOCKS_PER_SEC );
 						pgate->Refresh();
 
-						P_ITEM pgate2 = item::CreateFromScript( "$item_a_blue_moongate" );
+						P_ITEM pgate2 = item::CreateFromScript( "$item_blue_moongate" );
 						VALIDATEPI( pgate2 );
 						pgate2->MoveTo( pi->morex, pi->morey, pi->morez );
 						pgate2->morex = srcpos.x;

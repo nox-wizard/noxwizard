@@ -1025,7 +1025,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
   					//</Luxor>
 			if (pc->checkSkill(  CAMPING, 0, 500)) // Morrolan TODO: insert logout code for campfires here
 			{
-				P_ITEM pFire = item::CreateFromScript( "$item_a_campfire" );
+				P_ITEM pFire = item::CreateFromScript( "$item_campfire" );
 				if(ISVALIDPI(pFire))
 				{
 					pFire->type = 45;

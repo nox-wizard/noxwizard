@@ -399,8 +399,8 @@ P_ITEM tradestart(P_CHAR pc1, P_CHAR pc2)
                 return NULL;
         }
 
-        P_ITEM cont1 = item::CreateFromScript( "$item_a_bulletin_board" );
-		P_ITEM cont2 = item::CreateFromScript( "$item_a_bulletin_board" );
+        P_ITEM cont1 = item::CreateFromScript( "$item_bulletin_board" );
+		P_ITEM cont2 = item::CreateFromScript( "$item_bulletin_board" );
         VALIDATEPIR(cont1, NULL);
         VALIDATEPIR(cont2, NULL);
 

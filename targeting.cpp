@@ -173,7 +173,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Heart
 		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
-		pi=item::CreateFromScript( "$item_a_heart" );
+		pi=item::CreateFromScript( "$item_heart" );
 		VALIDATEPI(pi);
 		pi->setCurrentName( temp );
 		pi->setContSerial(INVALID);
