@@ -12,6 +12,8 @@
 #include "network.h"
 
 cUnicodeString emptyUnicodeString;
+char stringTerminator = 0x00;
+char unicodeStringTerminator[2] = { 0x00, 0x00 };
 
 /*!
 \brief get pointer at first valid position in packet ( headerSize is used internal )
@@ -394,18 +396,55 @@ SEND( WebBrowser ) {
 
 CREATE( Menu, PKG_MENU, 0x15 )
 SEND( Menu ) {
-	if( ps == NULL ) return; 
-	/*this->size=this->headerSize + (commands->size()+1 );
-	this->cmd_length=this->commands.size();
-	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
-	Xsend( ps->toInt(), this->commands.c_str(), commands.size()+1 );
-	numTextLines=texts.size();
 
-	std::vector<cUnicodeString>::iterator iter( texts.begin() ), end( texts.end() );
-	for( ; iter!=end; iter++ ) {
-		len=iter->length();
-		Xsend( ps->toInt(), (char*)&len, sizeof( eUI16) );
-	}*/
+	if( ps == NULL ) return; 
+	NXWSOCKET s = ps->toInt();
+
+	//calc of packet size
+	UI32 temp=this->headerSize;
+
+	//command string
+	UI32 size_of_commands=0;
+	std::vector< std::string >::iterator its( commands->begin() ), ends( commands->end() );
+	for( ; its!=ends; its++ ) {
+		size_of_commands += its->length();
+	}
+	++size_of_commands; // terminator of command string
+	this->cmd_length=size_of_commands;
+
+	temp+=size_of_commands;
+	temp+=sizeof( numTextLines );
+
+	std::vector< cUnicodeString >::iterator itu( texts->begin() ), endu( texts->end() );
+	for( ; itu!=endu; itu++ ) {
+		temp += itu->size() +sizeof( len );
+	}
+	
+	this->size=temp;
+	
+	this->numTextLines=texts->size();
+
+	//send of header
+	Xsend( s, this->getBeginValid(), this->headerSize );
+	
+	//send of command string
+	its = commands->begin();
+	for( ; its!=ends; its++ ) {
+		Xsend( s, its->c_str(), its->size() );
+	}
+	Xsend( s, &stringTerminator, sizeof( stringTerminator ) );
+
+
+	//send of text
+	numTextLines=texts->size();
+	Xsend( s, (char*)&numTextLines, sizeof( numTextLines ) );
+
+	itu = texts->begin();
+	for( ; itu!=endu; itu++ ) {
+		len=itu->length();
+		Xsend( s, (char*)&len, sizeof( len ) );
+		Xsend( s, itu->s.begin(), itu->s.end() );
+	}
 
 }
 
