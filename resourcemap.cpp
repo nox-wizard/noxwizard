@@ -101,7 +101,7 @@ void cResourceMap::load()
 
 		_findclose( hFile );
 	}
-#elseif __unix__
+#elif __unix__
 		DIR *dirp;
 	struct dirent *entry;
 
