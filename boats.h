@@ -94,7 +94,7 @@ class cBoat
 };
 
 typedef std::map<int,boat_db> BOATS;
-BOATS	s_boat;
+extern BOATS	s_boat;
 
 
 #endif

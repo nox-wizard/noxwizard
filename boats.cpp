@@ -7,7 +7,10 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+#include "boats.h"
 #include "nxwcommn.h"
+
+BOATS	s_boat;
 
 
 #define X 0
