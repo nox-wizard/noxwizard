@@ -81,7 +81,7 @@ private:
 public:
 
 	AmxFunction( char* funName );
-	//AmxFunction( int funIdx ); //ndEndy how i can obtain func name from idx?
+	AmxFunction( int funIdx ); //ndEndy how i can obtain func name from idx?
 
 
 	char* getFuncName();

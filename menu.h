@@ -30,13 +30,14 @@ class cBasicMenu {
 		UI32	serial; //!< serial
 		UI32	id; //!< gump id
 
-		AmxEvent* callback; //function callback
+		AmxFunction* callback; //function callback
 
 	public:
 		cBasicMenu( SERIAL menu, UI32 id );
 		virtual ~cBasicMenu();
 
 		void	setCallBack( const std::string& arg );
+		void	setCallBack( int fn );
 		void	setId( const UI32 arg );
 
 		virtual void 	handleButton( const NXWSOCKET socket, const UI32 button );

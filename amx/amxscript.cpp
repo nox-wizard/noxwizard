@@ -942,6 +942,11 @@ AmxFunction::AmxFunction( char* funName )
 	funcName.copy( funName, strlen(funName) );
 }
 
+AmxFunction::AmxFunction( int fn )
+{
+	function = fn;
+}
+
 /*
 \brief Get function name
 \author Endymion

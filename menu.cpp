@@ -188,7 +188,12 @@ cBasicMenu::~cBasicMenu()
 
 void cBasicMenu::setCallBack( const std::string& arg )
 {
-	callback = newAmxEvent( const_cast< char* >( arg.c_str() ) );
+	callback = new AmxFunction( const_cast< char* >( arg.c_str() ) );
+}
+
+void cBasicMenu::setCallBack( int fn )
+{
+	callback = new AmxFunction( fn );
 }
 
 void cBasicMenu::setId( const UI32 arg )
