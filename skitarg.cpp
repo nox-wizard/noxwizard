@@ -683,7 +683,7 @@ void Skills::target_smeltOre( NXWCLIENT ps, P_TARGET t )
                 P_ITEM pix=pointers::findItemBySerial( t->buffer[0] );
 				VALIDATEPI( pix );
 
-                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->getColor() >> 8), (pix->getColor() % 256), pix->getSerial32());
+                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), pc->getSerial32(), pix->getColor(), pix->getSerial32());
             }
         }
     }

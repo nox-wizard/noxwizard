@@ -973,7 +973,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 			if( race_enlist==NULL )
 				race_enlist = new AmxFunction( "__race_enlist" );
 
-			race_enlist->Call( s );
+			race_enlist->Call( pc->getSerial32() );
 		}
 		//else
 		//	validate pc race and decide what to do if race is invalid or has been deactivated
