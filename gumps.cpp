@@ -23,14 +23,17 @@ extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 
 void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char tser4, UI32 type, char radio)
 {
-	if (s < 0) return; //Luxor
+	if (s < 0)
+		return; //Luxor
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC( pc );
-	
-	P_CHAR pc_c;
 
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int /*j=-1,*/i,serhash;
+	P_CHAR	pc_c;
+
+	char	temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	int	i,
+		serhash;
 
 	/*
 	ConOut("Button: datasize %i\n", ShortFromCharPtr(buffer[s] +1) );
@@ -72,25 +75,6 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	else
 	{
 		serial=calcserial(tser1,tser2,tser3,tser4);
-		//
-		// Sparhawk: new gump API, currently only activated for cstats, istats and tweak char & item
-		//
-		/*switch( type )
-		{
-			case   1	:	// character properties
-			case   2	:	// item properties
-			case  20	:	// region choice list
-			case  21	:	// region properties
-			case  50	:	// guild stone menu
-			case  51	:	// guild members
-			case  52	:	// guild recruits
-			case  53	:	// guild properties
-			case 999	:
-				nxwGump::handleGump( pc, buffer[s] );
-				return;
-			default		:
-				break;
-		}*/
 		//
 		// Luxor: new gump API activated also for users
 		//
@@ -692,7 +676,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 			/*sprintf(tt,"pos3: %s\n",script1);
 			LogMessage(tt);*/
 
-			if (house_gump && ISVALIDPI(pi_j))
+			if (house_gump && pi_j)
 			{
 				if (!strcmp(script1,"Decay Status :"))
 				{
