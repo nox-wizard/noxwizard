@@ -450,85 +450,104 @@ void cTempfx::start()
 			break;
 
 		case SPELL_INCOGNITO:
-			//Luxor's incognito code :)
-			if (dest->morphed)
-				dest->morph();	//if the char is morphed, unmorph him
-			dest->incognito = true;
-			UI16 body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, x;
-			char *newname;
+			{
+				//Luxor's incognito code :)
+				if (dest->morphed)
+					dest->morph();	//if the char is morphed, unmorph him
 
-			//--Sex--
-			(chance(50) == true)? body = BODY_MALE : body = BODY_FEMALE;
-			//--Skin color--
-			x=rand()%6;
-			switch(x)
-			{
-				case 0:	skincolor = 0x83EA; break;
-				case 1: skincolor = 0x8405; break;
-				case 2:	skincolor = 0x83EF; break;
-				case 3: skincolor = 0x83F5; break;
-				case 4:	skincolor = 0x841C; break;
-				case 5:	skincolor = 0x83FB; break;
-				default: skincolor = 0x83FB;break;
-			}
-			//--Hair Style--
-			x=rand()%10;
-			switch(x)
-			{
-				case 0:	hairstyle = 0x203B; break;
-				case 1: hairstyle = 0x203C; break;
-				case 2:	hairstyle = 0x203D; break;
-				case 3: hairstyle = 0x2044; break;
-				case 4:	hairstyle = 0x2045; break;
-				case 5:	hairstyle = 0x2046; break;
-				case 6:	hairstyle = 0x2047; break;
-				case 7:	hairstyle = 0x2048; break;
-				case 8:	hairstyle = 0x2049; break;
-				case 9:	hairstyle = 0x204A; break;
-				default: hairstyle = 0x204A;break;
-			}
-			//--Beard Style--
-			if (body == BODY_MALE)
-			{
-				x=rand()%7;
+				dest->incognito = true;
+
+				UI16	body,
+					skincolor,
+					hairstyle,
+					haircolor,
+					beardstyle,
+					beardcolor,
+					x;
+
+				//--Sex--
+				(chance(50) == true)? body = BODY_MALE : body = BODY_FEMALE;
+				//--Skin color--
+				x=rand()%6;
 				switch(x)
 				{
-					case 0:	beardstyle = 0x203E; break;
-					case 1: beardstyle = 0x203F; break;
-					case 2:	beardstyle = 0x2040; break;
-					case 3: beardstyle = 0x2041; break;
-					case 4:	beardstyle = 0x204B; break;
-					case 5:	beardstyle = 0x204C; break;
-					case 6:	beardstyle = 0x204D; break;
-					default: beardstyle = 0x204D;break;
+					case 0:	skincolor = 0x83EA; break;
+					case 1: skincolor = 0x8405; break;
+					case 2:	skincolor = 0x83EF; break;
+					case 3: skincolor = 0x83F5; break;
+					case 4:	skincolor = 0x841C; break;
+					case 5:	skincolor = 0x83FB; break;
+					default: skincolor = 0x83FB;break;
 				}
+				//--Hair Style--
+				x=rand()%10;
+				switch(x)
+				{
+					case 0:	hairstyle = 0x203B; break;
+					case 1: hairstyle = 0x203C; break;
+					case 2:	hairstyle = 0x203D; break;
+					case 3: hairstyle = 0x2044; break;
+					case 4:	hairstyle = 0x2045; break;
+					case 5:	hairstyle = 0x2046; break;
+					case 6:	hairstyle = 0x2047; break;
+					case 7:	hairstyle = 0x2048; break;
+					case 8:	hairstyle = 0x2049; break;
+					case 9:	hairstyle = 0x204A; break;
+					default: hairstyle = 0x204A;break;
+				}
+				//--Beard Style--
+				if (body == BODY_MALE)
+				{
+					x=rand()%7;
+					switch(x)
+					{
+						case 0:	beardstyle = 0x203E; break;
+						case 1: beardstyle = 0x203F; break;
+						case 2:	beardstyle = 0x2040; break;
+						case 3: beardstyle = 0x2041; break;
+						case 4:	beardstyle = 0x204B; break;
+						case 5:	beardstyle = 0x204C; break;
+						case 6:	beardstyle = 0x204D; break;
+						default: beardstyle = 0x204D;break;
+					}
+				}
+				//--Hair color--
+				x=rand()%6;
+				switch(x)
+				{
+					case 0:	haircolor = 0x83EA; break;
+					case 1: haircolor = 0x8405; break;
+					case 2:	haircolor = 0x83EF; break;
+					case 3: haircolor = 0x83F5; break;
+					case 4:	haircolor = 0x841C; break;
+					case 5:	haircolor = 0x83FB; break;
+					default: haircolor = 0x83FB;break;
+				}
+				//--Beard color--
+				x=rand()%6;
+				switch(x)
+				{
+					case 0:	beardcolor = 0x83EA; break;
+					case 1: beardcolor = 0x8405; break;
+					case 2:	beardcolor = 0x83EF; break;
+					case 3: beardcolor = 0x83F5; break;
+					case 4:	beardcolor = 0x841C; break;
+					case 5:	beardcolor = 0x83FB; break;
+					default: beardcolor = 0x83FB;break;
+				}
+				std::string* newname;
+				if( body == BODY_MALE )
+				{
+					std::string value("1");
+					newname = new std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) );
+				}
+				else
+				{
+					std::string value("2");
+					newname = new std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) );
+				}
+				dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname->c_str(), true);
 			}
-			//--Hair color--
-			x=rand()%6;
-			switch(x)
-			{
-				case 0:	haircolor = 0x83EA; break;
-				case 1: haircolor = 0x8405; break;
-				case 2:	haircolor = 0x83EF; break;
-				case 3: haircolor = 0x83F5; break;
-				case 4:	haircolor = 0x841C; break;
-				case 5:	haircolor = 0x83FB; break;
-				default: haircolor = 0x83FB;break;
-			}
-			//--Beard color--
-			x=rand()%6;
-			switch(x)
-			{
-				case 0:	beardcolor = 0x83EA; break;
-				case 1: beardcolor = 0x8405; break;
-				case 2:	beardcolor = 0x83EF; break;
-				case 3: beardcolor = 0x83F5; break;
-				case 4:	beardcolor = 0x841C; break;
-				case 5:	beardcolor = 0x83FB; break;
-				default: beardcolor = 0x83FB;break;
-			}
-			(body == BODY_MALE)? newname = getRandomName("1") : newname = getRandomName("2");
-			dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname, true);
 			break;
 
 		case LSD:

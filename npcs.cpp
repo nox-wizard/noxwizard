@@ -77,68 +77,14 @@ static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
 		safedelete(iter);
 	}
 	return (haircolor);
-
-
-}
-
-char* getRandomName(char * namelist)
-{
-        char sect[512];
-	static char script1[1024];
-        int i=0,j=0;
-
-		cScpIterator* iter = NULL;
-
-        sprintf(sect, "SECTION RANDOMNAME %s", namelist);
-		iter = Scripts::Npc->getNewIterator(sect);
-        if (iter==NULL) {
-                //sprintf(chars[s].name, "Error Namelist %s Not Found", namelist);
-                return "I_am_a_bug";
-        }
-	
-        int loopexit=0;
-        do
-        {
-                strcpy(script1, iter->getEntry()->getFullLine().c_str());
-                if ((script1[0]!='}')&&(script1[0]!='{'))
-                {
-                        i++;
-                }
-        }
-        while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-        iter->rewind();
-
-        if(i>0)
-        {
-                i=rand()%(i);
-                loopexit=0;
-                do
-                {
-                        strcpy(script1, iter->getEntry()->getFullLine().c_str());
-                        if ((script1[0]!='}')&&(script1[0]!='{'))
-                        {
-                                if(j==i)
-                                {
-                                        //return((char*)(&script1));
-					return(script1); // anthalir elcabesa bug fix
-                                }
-                                else j++;
-                        }
-                }
-                while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-                safedelete(iter);
-        }
-
-	return "I_am_a_bug";
 }
 
 void setrandomname(P_CHAR pc, char * namelist)
 {
-	
+
 
 	VALIDATEPC(pc);
-	
+
 	char sect[512];
 	int i=0,j=0;
 	char script1[1024];

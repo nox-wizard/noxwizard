@@ -15,7 +15,6 @@
 #ifndef NPCS_INCLUDE
 #define NPCS_INCLUDE
 
-char* getRandomName(char * namelist);
 void setrandomname(P_CHAR pc, char * namelist);
 
 namespace npcs
