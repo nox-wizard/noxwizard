@@ -73,6 +73,7 @@
 #include "npcai.h"
 #include "network.h"
 #include "tmpeff.h"
+#include "layer.h"
 
 #ifdef _WINDOWS
 	#include "nxwgui.h"
@@ -278,25 +279,23 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	pc->npc=false;
 
-	if (buffer[s][0x46]!='\x00')
+	if (buffer[s][0x46] != 0x00)
 	{
-		WORD2DBYTE( BODY_FEMALE, pc->id1, pc->id2 );
+		pc->SetBodyType( BODY_FEMALE );
 	}
 	else {
-		WORD2DBYTE( BODY_MALE, pc->id1, pc->id2 );
+		pc->SetBodyType( BODY_MALE );
 	}
 
-	pc->skin1=buffer[s][0x50]|0x80;
-	pc->skin2=buffer[s][0x51];
+	pc->setSkinColor(ShortFromCharPtr(buffer[s] + 0x50) | 0x8000);
 
-	if ((((pc->skin1<<8)+pc->skin2)<0x83EA) ||
-		(((pc->skin1<<8)+pc->skin2)>0x8422) )
+	if ( (pc->getSkinColor()<0x83EA) || (pc->getSkinColor()>0x8422) )
 	{
-		pc->skin1='\x83';
-		pc->skin2='\xEA';
+		pc->setSkinColor(0x83EA);
 	}
-	pc->xskin1=pc->skin1;
-	pc->xskin2=pc->skin2;
+
+	pc->SetOldBodyType(pc->GetBodyType());
+	pc->setOldSkinColor(pc->getSkinColor());
 	pc->SetPriv(defaultpriv1);
 	pc->priv2=defaultpriv2;
 
@@ -374,33 +373,28 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	if (validhair(buffer[s][0x52],buffer[s][0x53]))
 	{
-		const P_ITEM pi=item::SpawnItem(s,1, "#", 0, (buffer[s][0x52]<<8)+buffer[s][0x53], (buffer[s][0x54]<<8)+buffer[s][0x55],0,0);
+		P_ITEM pi=item::SpawnItem(s,1, "#", 0, ShortFromCharPtr(buffer[s] +0x52), ShortFromCharPtr(buffer[s] +0x54),0,0);
 		VALIDATEPI(pi);
-		if ((((pi->color1<<8)+pi->color2)<0x044E) ||
-			(((pi->color1<<8)+pi->color2)>0x04AD) )
+		if ((pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
 			pi->color1=0x04;
 			pi->color2=0x4E;
 		}
-		//setserial(DEREF_P_ITEM(pi), DEREF_P_CHAR(pc), 4);
 		pi->setContSerial(pc->getSerial32());
-		pi->layer=0x0B;
-
+		pi->layer=LAYER_HAIR;
 	}
 
-	if ( (validbeard(buffer[s][0x56],buffer[s][0x57])) && (pc->id2==0x90) )
+	if ( (validbeard(buffer[s][0x56],buffer[s][0x57])) && (pc->GetBodyType() == BODY_MALE) )
 	{
-		P_ITEM pi=item::SpawnItem(s,1, "#", 0, (buffer[s][0x56]<<8)+buffer[s][0x57], (buffer[s][0x58]<<8)+buffer[s][0x59],0,0);
+		P_ITEM pi=item::SpawnItem(s,1, "#", 0, ShortFromCharPtr(buffer[s] +0x56), ShortFromCharPtr(buffer[s] +0x58), 0, 0);
 		VALIDATEPI(pi);
-		if ((((pi->color1<<8)+pi->color2)<0x044E) ||
-			(((pi->color1<<8)+pi->color2)>0x04AD) )
+		if ( (pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
 			pi->color1=0x04;
 			pi->color2=0x4E;
 		}
-		//setserial(DEREF_P_ITEM(pi), DEREF_P_CHAR(pc), 4);
 		pi->setContSerial(pc->getSerial32());
-		pi->layer=0x10;
+		pi->layer=LAYER_BEARD;
 	}
 
 	P_ITEM pi;
@@ -414,14 +408,14 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 // - create pants
 	if( RandomNum(0, 1)==0 )
 	{
-		if( (pc->id2==0x90) && (pc->xid2==0x90) )
+		if( pc->GetBodyType() == BODY_MALE )
 			pi= item::CreateFromScript(s, "$item_long_pants");
 		else
 			pi= item::CreateFromScript(s, "$item_a_skirt");
 	}
 	else
 	{
-		if( (pc->id2==0x90) && (pc->xid2==0x90) )
+		if( pc->GetBodyType() == BODY_MALE  )
 			pi= item::CreateFromScript(s, "$item_short_pants");
 		else
 			pi= item::CreateFromScript(s, "$item_a_kilt");
@@ -475,7 +469,6 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		if(ISVALIDPI(packitm)) {
 			pi = item::CreateScriptItem(s, 2000, 0);	// gold coin
 			if(ISVALIDPI(pi)) {
-				//setserial(DEREF_P_ITEM(pi), DEREF_P_ITEM(packitm) , 1);
 				pi->setContSerial(packitm->getSerial32());
 				pi->setAmount(goldamount);
 			}
@@ -710,7 +703,7 @@ void checkkey ()
 				ConOut("Timer code: %fmsec [%i samples]\n" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
 				ConOut("Auto code: %fmsec [%i samples]\n" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
 				ConOut("Loop Time: %fmsec [%i samples]\n" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
-				//ConOut("Characters: %i (Dynamic)		Items: %i (Dynamic)\n" _ charcount _ char_mem::cmem _ itemcount _ item_mem::imem);
+				//ConOut("Characters: %i (Dynamic)		Items: %i (Dynamic)\n" , charcount , char_mem::cmem , itemcount , item_mem::imem);
 				ConOut("Simulation Cycles: %f per sec\n" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 				break;
 			case 'W':
@@ -723,7 +716,7 @@ void checkkey ()
 					P_CHAR pc_i=MAKE_CHAR_REF(currchar[i]);
 					if(ISVALIDPC(pc_i) && perm[i]) //Keeps NPC's from appearing on the list
 					{
-						ConOut("%i) %s [%x %x %x %x]\n", j, pc_i->getCurrentNameC(), pc_i->getSerial().ser1, pc_i->getSerial().ser2, pc_i->getSerial().ser3, pc_i->getSerial().ser4);
+						ConOut("%i) %s [ %08x ]\n", j, pc_i->getCurrentNameC(), pc_i->getSerial32());
 						j++;
 					}
 				}
@@ -1098,8 +1091,6 @@ void angelMode();
 	read_in_teleport();
 	ConOut("[DONE]\n");
 
-	//Map->TileCache(); // has to be exactly here, or loadnewlorld cant access correct tiles ... LB
-	// (it does access them ..)
 	ConOut("Initializing random number seed... [ OK ]\n");
 
 	srand(uiCurrentTime); // initial randomization call
