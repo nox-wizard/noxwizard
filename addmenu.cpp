@@ -317,8 +317,10 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		return;
 	}
 
-	if( pc->IsGM() )
+	if( pc->IsGM() ) {
 		mi->command->execute( ps->toInt() );
+		return;
+	}
 
 	if( !mi->checkReq( pc ) )
 		return;

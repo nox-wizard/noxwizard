@@ -2237,8 +2237,7 @@ void target_addNpc( NXWCLIENT ps, P_TARGET t )
 		pc->teleport();
 	}
 	else {
-		//PDDAFARE
-		//P_CHAR pc = npcs::
+		npcs::AddNPCxyz( ps->toInt(), t->buffer[1], t->getLocation() );
 	}
 }
 
