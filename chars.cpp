@@ -167,7 +167,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	targserial=INVALID; // Current combat target
 	timeout=0; // Combat timeout (For hitting)
 	timeout2=0;
-	
+
 	setRegenRate( STAT_HP, SrvParms->hitpointrate, VAR_REAL );
 	setRegenRate( STAT_HP, SrvParms->hitpointrate, VAR_EFF );
 	updateRegenTimer( STAT_HP );
@@ -316,7 +316,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	this->oldhaircolor=0;
 	this->oldhairstyle=0;
 
-    possessorSerial = INVALID; //Luxor
+	possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
 	
 	mounted=false;
@@ -4094,18 +4094,18 @@ void cChar::generic_heartbeat()
 			med = 0;
 		}
 
-		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );;
+		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
-				manarate += UI32(calcDef(0) - ((skill[MEDITATION]/100)*4.5));
+				manarate += calcDef(0) - UI32( skill[MEDITATION]/222.2 );
 			else
 				manarate += calcDef(0)*2;
 		}
 		else
 		{
 			if(med)
-				manarate -= UI32((skill[MEDITATION]/100)*4.5);
+				manarate -= UI32( skill[MEDITATION]/222.2 );
 		}
 		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
 		this->updateRegenTimer( STAT_MANA );
