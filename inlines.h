@@ -108,8 +108,8 @@ inline void SetTimerSec( TIMERVAL *timer, const short seconds)
 	*timer=seconds * MY_CLOCKS_PER_SEC + uiCurrentTime;
 }
 
-inline bool isCharSerial(long ser) {return (ser >= 0 && ser <  0x40000000);}
-inline bool isItemSerial(long ser) {return (/*ser >= 0 && */ser >= 0x40000000);}
+inline bool isCharSerial( long ser ) { return ( ser > 0 && ser <  0x40000000 ); } //ndEndy 0 is not a char serial, see curr_charSerial note
+inline bool isItemSerial( long ser ) { return ( /*ser >= 0 && */ser >= 0x40000000 ); } 
 
 
 

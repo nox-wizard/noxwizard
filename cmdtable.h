@@ -30,31 +30,19 @@
 #define __CMDTABLE_H
 
 #include "nxwcommn.h"
+#include "target.h"
 
 /*!
 \brief Type of command
 */
 enum CmdType
 {
-	CMD_ITEMMENU =1,	//!< Open item menu specified in cmd_extra
-	CMD_TARGET,		//!< Call target struct specified in cmd_extra
+	CMD_TARGET=1,		//!< Call target struct specified in cmd_extra
 	CMD_FUNC,		//!< Call function specified in cmd_extra, must be of type GMFUNC
 	CMD_TARGETX,		//!< target with addx[] argument
-	CMD_TARGETXY,		//!< target with addx & y [] arguments
 	CMD_TARGETXYZ,		//!< target with addx & y & z [] arguments
-	CMD_TARGETHX,		//!< target with hex addx[] argument
-	CMD_TARGETHXY,		//!< target with hex addx & y [] arguments
-	CMD_TARGETHXYZ,		//!< target with hex addx & y & z [] arguments
-	CMD_TARGETID1,		//!< target with 1 addid #
-	CMD_TARGETID2,		//!< target with 2 addid #s
-	CMD_TARGETID3,		//!< target with 3 addid #s
-	CMD_TARGETID4,		//!< target with 4 addid #s
 	CMD_TARGETHID1,		//!< target with 1 hex addid #
-	CMD_TARGETHID2,		//!< target with 2 hex addid #s
-	CMD_TARGETHID3,		//!< target with 3 hex addid #s
-	CMD_TARGETHID4,		//!< target with 4 hex addid #s
-	CMD_TARGETTMP,		//!< target with tempint
-	CMD_TARGETHTMP,		//!< target with hex tempint
+	CMD_TARGETLOC,		//!< target a location, no params
 	CMD_MANAGEDCMD =32	//!< command is full self managed
 };
 
@@ -140,15 +128,15 @@ extern cCommandTable* commands;
 #define CMD_EXEC	void (*) (int)
 #define CMD_DEFINE	void (*)()
 
-typedef struct target_s TARGET_S;
-struct target_s {	/* arguments to the target() function */
-	int	a1, a2, a3, a4;
-	char	txt[128];
-};
+typedef struct {
+	processTarget func;
+	char msg[128];
+} target_st;
+
 
 /* All command_ functions take an int value of the player that triggered the command. */
 #define CMD_HANDLER(name) extern void name (int)
-#define TAR_HANDLER(name) extern TARGET_S name
+
 
 /* Defined commands that are just being mapped to internal functions */
 #define command_time telltime
@@ -160,7 +148,6 @@ CMD_HANDLER(command_post);
 CMD_HANDLER(command_gpost);
 CMD_HANDLER(command_rpost);
 CMD_HANDLER(command_lpost);
-CMD_HANDLER(command_cleanup);
 CMD_HANDLER(command_regspawnall);
 CMD_HANDLER(command_wipenpcs);
 CMD_HANDLER(command_gms);
@@ -178,8 +165,7 @@ CMD_HANDLER(command_where);
 CMD_HANDLER(command_q);
 CMD_HANDLER(command_next);
 CMD_HANDLER(command_clear);
-CMD_HANDLER(command_reloadcachedscripts);
-/* CMD_HANDLER(command_gmtransfer); */
+CMD_HANDLER(command_newz);
 CMD_HANDLER(command_password);
 CMD_HANDLER(command_goplace);
 CMD_HANDLER(command_gochar);
@@ -192,18 +178,16 @@ CMD_HANDLER(command_action);
 CMD_HANDLER(command_xtele);
 CMD_HANDLER(command_go);
 CMD_HANDLER(command_zerokills);
-CMD_HANDLER(command_tile);
 //CMD_HANDLER(command_wipe);
 //CMD_HANDLER(command_iwipe);
 CMD_HANDLER(command_add);
 CMD_HANDLER(command_appetite);
 CMD_HANDLER(command_addx);
 CMD_HANDLER(command_cfg);
-//CMD_HANDLER(command_rename);
-//CMD_HANDLER(command_title);
+CMD_HANDLER(command_rename);
+CMD_HANDLER(command_title);
 CMD_HANDLER(command_save);
 CMD_HANDLER(command_dye);
-CMD_HANDLER(command_wtrig);
 CMD_HANDLER(command_setpriv);
 CMD_HANDLER(command_nodecay);
 CMD_HANDLER(command_send);
@@ -242,8 +226,6 @@ CMD_HANDLER(command_hidehs);
 CMD_HANDLER(command_set);
 CMD_HANDLER(command_temp);
 CMD_HANDLER(command_addnpc);
-CMD_HANDLER(command_readini);
-CMD_HANDLER(command_cachestats);
 CMD_HANDLER(command_npcrect);
 CMD_HANDLER(command_npccircle);
 CMD_HANDLER(command_npcwander);
@@ -276,22 +258,14 @@ CMD_HANDLER(command_invul);
 CMD_HANDLER(command_noinvul);
 CMD_HANDLER(command_guardson);
 CMD_HANDLER(command_guardsoff);
-CMD_HANDLER(command_announceon);
-CMD_HANDLER(command_announceoff);
-CMD_HANDLER(command_wf);
 CMD_HANDLER(command_decay);
-CMD_HANDLER(command_killall);
 CMD_HANDLER(command_pdump);
 //CMD_HANDLER(command_rename);
-CMD_HANDLER(command_readspawnregions);
-/* CMD_HANDLER(command_cleanup); */
 CMD_HANDLER(command_gy);
 CMD_HANDLER(command_yell);
-CMD_HANDLER(command_tilew);
 CMD_HANDLER(command_squelch);
 CMD_HANDLER(command_squelch);
 CMD_HANDLER(command_spawnkill);
-CMD_HANDLER(command_wanim);
 
 /*
 CMD_HANDLER(command_setacct);
@@ -309,10 +283,7 @@ CMD_HANDLER(command_setmenupriv);
 
 //taken from 6904t2(5/10/99) - AntiChrist
 CMD_HANDLER(command_setmurder);
-CMD_HANDLER(command_delid); // Ripper
-CMD_HANDLER(command_deltype); // Ripper
 CMD_HANDLER(command_jail);
-CMD_HANDLER(command_eclipse);
 CMD_HANDLER(command_sysm);
 
 // SPARHAWK reload race script
@@ -321,87 +292,44 @@ CMD_HANDLER(command_reloadracescript);
 CMD_HANDLER(command_npcrectcoded);
 CMD_HANDLER(command_tweak);
 
-/* all defined target commands */
-TAR_HANDLER(target_use);
-TAR_HANDLER(target_jail);
-TAR_HANDLER(target_release);
-TAR_HANDLER(target_tele);
-TAR_HANDLER(target_xgo);
-TAR_HANDLER(target_setmorex);
-TAR_HANDLER(target_setmorey);
-TAR_HANDLER(target_setmorez);
-TAR_HANDLER(target_setmorexyz);
-TAR_HANDLER(target_sethexmorexyz);
-TAR_HANDLER(target_setnpcai);
-TAR_HANDLER(target_xbank);
-TAR_HANDLER(target_xsbank);//AntiChrist
-TAR_HANDLER(target_remove);
-TAR_HANDLER(target_newz);
-TAR_HANDLER(target_settype);
-TAR_HANDLER(target_itrig);
-TAR_HANDLER(target_ctrig);
-TAR_HANDLER(target_ttrig);
-TAR_HANDLER(target_setid);
-TAR_HANDLER(target_trainer);
-TAR_HANDLER(target_setmore);
-TAR_HANDLER(target_makegm);
-TAR_HANDLER(target_makecns);
-TAR_HANDLER(target_killhair);
-TAR_HANDLER(target_killbeard);
-TAR_HANDLER(target_killpack);
-TAR_HANDLER(target_setfont);
-TAR_HANDLER(target_kill);
-TAR_HANDLER(target_resurrect);
-TAR_HANDLER(target_bolt);
-TAR_HANDLER(target_npcaction);
-TAR_HANDLER(target_setamount);
-TAR_HANDLER(target_setamount2);
-TAR_HANDLER(target_kick);
-TAR_HANDLER(target_movetobag);
-TAR_HANDLER(target_setmovable);
-TAR_HANDLER(target_setvisible);
-TAR_HANDLER(target_setdir);
-TAR_HANDLER(target_setspeech);
-TAR_HANDLER(target_setowner);
-TAR_HANDLER(target_freeze);
-TAR_HANDLER(target_unfreeze);
-TAR_HANDLER(target_tiledata);
-TAR_HANDLER(target_recall);
-TAR_HANDLER(target_mark);
-TAR_HANDLER(target_gate);
-TAR_HANDLER(target_heal);
-TAR_HANDLER(target_npctarget);
-//TAR_HANDLER(target_tweak);
-TAR_HANDLER(target_sbopen);
-TAR_HANDLER(target_mana);
-TAR_HANDLER(target_stamina);
-TAR_HANDLER(target_makeshop);
-TAR_HANDLER(target_buy);
-TAR_HANDLER(target_setvalue);
-TAR_HANDLER(target_setrestock);
-TAR_HANDLER(target_sell);
-TAR_HANDLER(target_setspattack);
-TAR_HANDLER(target_setspadelay);
-TAR_HANDLER(target_setpoison);
-TAR_HANDLER(target_setpoisoned);
-TAR_HANDLER(target_setadvobj);
-TAR_HANDLER(target_setwipe);
-TAR_HANDLER(target_fullstats);
-TAR_HANDLER(target_hide);
-TAR_HANDLER(target_unhide);
-TAR_HANDLER(target_house);
-TAR_HANDLER(target_split);
-TAR_HANDLER(target_splitchance);
-TAR_HANDLER(target_possess);
-TAR_HANDLER(target_telestuff);
-TAR_HANDLER(target_newx);
-TAR_HANDLER(target_newy);
-TAR_HANDLER(target_incx);
-TAR_HANDLER(target_incy);
-TAR_HANDLER(target_incz);
-TAR_HANDLER(target_ban);
-//TAR_HANDLER(target_glow);
-//TAR_HANDLER(target_unglow);
-TAR_HANDLER(target_spy);
+
+
+
+
+void target_tele( NXWCLIENT ps, P_TARGET t );
+void target_remove( NXWCLIENT ps, P_TARGET t );
+void target_jail( NXWCLIENT ps, P_TARGET t );
+void target_release( NXWCLIENT ps, P_TARGET t );
+void target_xbank( NXWCLIENT ps, P_TARGET t );
+void target_xsbank( NXWCLIENT ps, P_TARGET t );
+void target_makegm( NXWCLIENT ps, P_TARGET t );
+void target_makecns( NXWCLIENT ps, P_TARGET t );
+void target_killhair( NXWCLIENT ps, P_TARGET t );
+void target_killbeard( NXWCLIENT ps, P_TARGET t );
+void target_kill( NXWCLIENT ps, P_TARGET t );
+void target_resurrect( NXWCLIENT ps, P_TARGET t );
+void target_bolt( NXWCLIENT ps, P_TARGET t );
+void target_kick( NXWCLIENT ps, P_TARGET t );
+void target_xgo( NXWCLIENT ps, P_TARGET t );
+void target_movetobag( NXWCLIENT ps, P_TARGET t );
+void target_npcaction( NXWCLIENT ps, P_TARGET t );
+void target_setamount( NXWCLIENT ps, P_TARGET t );
+void target_freeze( NXWCLIENT ps, P_TARGET t );
+void target_unfreeze( NXWCLIENT ps, P_TARGET t );
+void target_tiledata( NXWCLIENT ps, P_TARGET t );
+void target_heal( NXWCLIENT ps, P_TARGET t );
+void target_mana( NXWCLIENT ps, P_TARGET t );
+void target_stamina( NXWCLIENT ps, P_TARGET t );
+void target_fullstats( NXWCLIENT ps, P_TARGET t );
+void target_hide( NXWCLIENT ps, P_TARGET t );
+void target_unhide( NXWCLIENT ps, P_TARGET t );
+void target_possess( NXWCLIENT ps, P_TARGET t );
+void target_telestuff( NXWCLIENT ps, P_TARGET t );
+void target_emptypack( NXWCLIENT ps, P_TARGET t );
+void target_ban( NXWCLIENT ps, P_TARGET t );
+void target_spy( NXWCLIENT ps, P_TARGET t );
+
+
+
 
 #endif /* __CMDTABLE_H */

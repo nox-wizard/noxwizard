@@ -64,8 +64,10 @@ for the house section in house.cpp. Extra items can be added
 using HOUSE ITEM, (this includes all doors!) and locked "LOCK"
 Space around the house with SPACEX/Y and CHAR offset CHARX/Y/Z
 */
-void buildhouse(int s, int i)
+void buildhouse( NXWCLIENT ps, P_TARGET t )
 {
+	NXWSOCKET s = ps->toInt();
+	int i = t->buffer[2];
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	int loopexit=0;//where they click, and the house/key items
 	UI32 x, y, k, sx = 0, sy = 0, icount=0;
@@ -79,13 +81,13 @@ void buildhouse(int s, int i)
 	int hdeed=0;//deed id #
 	int norealmulti=0,nokey=0,othername=0;
 	char name[512];
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 	Location charpos= pc->getPosition();
 
 	SI16 id = INVALID; //house ID
 
-	if(LongFromCharPtr(buffer[s] +11)== INVALID) return; // do nothing if user cancels, avoids CRASH!
+	
 
 	hitem[0]=0;//avoid problems if there are no HOUSE_ITEMs by initializing the first one as 0
 	if (i)
@@ -166,14 +168,23 @@ void buildhouse(int s, int i)
 		if (i)
 		{
 
-			addid1[s]=0x40;addid2[s]=100;//Used in addtarget
-			if (norealmulti) target(s, 0, 1, 0, 245, TRANSLATE("Select a place for your structure: ")); else
+			
+			if (norealmulti) {
+				P_TARGET targ = clientInfo[s]->newTarget( new cLocationTarget() );
+				targ->code_callback=buildhouse;
+				targ->buffer[0]=0x40;
+				targ->buffer[1]=100;
+				//targ->buffer[2]; never setted
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Select a place for your structure: ")); 
+			}
+			else
 				mtarget(s, 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
 
 		}
 		else
 		{
-			mtarget(s, 0, 1, 0, 0, addid1[s]-0x40, addid2[s], TRANSLATE("Select location for building."));
+			mtarget(s, 0, 1, 0, 0, t->buffer[0]-0x40, t->buffer[1], TRANSLATE("Select location for building."));
 		}
 		looptimes++;//for when we come back after they target something
 		return;
@@ -280,11 +291,7 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-#ifdef SPAR_I_LOCATION_MAP
-			pointers::addToLocationMap(pHouse);
-#else
 			mapRegions->add(pHouse);
-#endif
 		}
 		if (!hitem[0] && !boat)
 		{
@@ -472,11 +479,7 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-#ifdef SPAR_I_LOCATION_MAP
-						pointers::addToLocationMap(pi_l);
-#else
 						mapRegions->add(pi_l);
-#endif
 					}
 				safedelete(iter);
 			}
@@ -697,45 +700,6 @@ int check_house_decay()
 	return 0;
 }
 
-void addthere(int s, int xx, int yy, int zz, int t)
-{
-	
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-	
-	//unsigned int j;
-	//ConOut("addthere!x=%d y=%d z=%d\n",xx,yy,zz);
-	tile_st tile;
-
-	P_ITEM pi=item::CreateFromScript( "$item_hardcoded" );
-	VALIDATEPI(pi);
-
-        pi->setId( (addid1[s]<<8) | addid2[s] );
-	pi->setPosition(xx, yy, zz);
-	pi->amount=1;
-	pi->doordir=0;
-	pi->type=t;
-
-	if (pi->isInWorld()) 
-	{
-#ifdef SPAR_I_LOCATION_MAP
-		pointers::addToLocationMap(pi);
-#else
-		mapRegions->add(pi);
-#endif
-	}
-
-	data::seekTile(pi->id(), tile);
-	if(pc->making==999) 
-		pc->making=DEREF_P_ITEM(pi); // store item #
-
-	if(tile.flags&TILEFLAG_STACKABLE)
-		pi->pileable=1;
-
-	pi->Refresh();
-	addid1[s]=0;
-	addid2[s]=0;
-}
 
 /*!
 \author Luxor
@@ -939,11 +903,11 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	//
 	if( talk.find("I BAN THEE") != std::string::npos )
 	{
-		addid1[socket] = pi->getSerial().ser1;
-		addid2[socket] = pi->getSerial().ser2;
-		addid3[socket] = pi->getSerial().ser3;
-		addid4[socket] = pi->getSerial().ser4;
-		target(socket, 0, 1, 0, 229, TRANSLATE("Select person to ban from house."));
+		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
+		targ->code_callback=target_houseBan;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( getClientFromSocket( socket) );
+		sysmessage( socket, TRANSLATE("Select person to ban from house."));
 		return true;
 	}
 	//
@@ -951,11 +915,11 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	//
 	if( talk.find("REMOVE THYSELF") != std::string::npos )
 	{
-		addid1[socket] = pi->getSerial().ser1;
-		addid2[socket] = pi->getSerial().ser2;
-		addid3[socket] = pi->getSerial().ser3;
-		addid4[socket] = pi->getSerial().ser4;
-		target(socket, 0, 1, 0, 228, TRANSLATE("Select person to eject from house."));
+		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
+		targ->code_callback=target_houseEject;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( getClientFromSocket( socket) );
+		sysmessage( socket, TRANSLATE("Select person to eject from house."));
 		return true;
 	}
 	//
@@ -963,7 +927,11 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	//
 	if ( talk.find("I WISH TO LOCK THIS DOWN") != std::string::npos )
 	{
-		target(socket, 0, 1, 0, 232, TRANSLATE("Select item to lock down"));
+		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
+		targ->code_callback=target_houseLockdown;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( getClientFromSocket( socket) );
+		sysmessage( socket, TRANSLATE("Select item to lock down"));
 		return true;
 	}
 	//
@@ -971,7 +939,11 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	//
 	if ( talk.find("I WISH TO RELEASE THIS") != std::string::npos )
 	{
-		target(socket, 0, 1, 0, 233, TRANSLATE("Select item to release"));
+		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
+		targ->code_callback=target_houseRelease;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( getClientFromSocket( socket) );
+		sysmessage( socket, TRANSLATE("Select item to release"));
 		return true;
 	}
 	//
@@ -979,7 +951,11 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	//
 	if ( talk.find("I WISH TO SECURE THIS") != std::string::npos )
 	{
-		target(socket, 0, 1, 0, 234, TRANSLATE("Select item to secure"));
+		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
+		targ->code_callback=target_houseSecureDown;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( getClientFromSocket( socket) );
+		sysmessage( socket, TRANSLATE("Select item to secure"));
 		return true;
 	}
 	return false;
@@ -1014,3 +990,360 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy)
 	else
 		return false;
 }
+
+// buffer 0 the sign
+void target_houseOwner( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR curr=ps->currChar();
+	VALIDATEPC(curr);
+
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	P_ITEM pSign=pointers::findItemBySerial( t->buffer[0] );
+	VALIDATEPI(pSign);
+
+	P_ITEM pHouse=pointers::findItemBySerial(calcserial(pSign->more1, pSign->more2, pSign->more3, pSign->more4));
+	VALIDATEPI(pHouse);
+
+
+	NXWSOCKET s = ps->toInt();
+	if(pc->getSerial32() == curr->getSerial32())
+	{
+		sysmessage(s, "you already own this house!");
+		return;
+	}
+
+	pSign->setOwnerSerial32(pc->getSerial32());
+
+	pHouse->setOwnerSerial32(pc->getSerial32());
+
+	killkeys( pHouse->getSerial32() );
+
+
+	NXWCLIENT osc=pc->getClient();
+	NXWSOCKET os= (osc!=NULL)? osc->toInt() : INVALID;
+
+	P_ITEM pi3=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
+	VALIDATEPI(pi3);
+	pi3->setCurrentName( "a house key" );
+	if(os!=INVALID)
+	{
+		pi3->setCont( pc->getBackpack() );
+	}
+	else
+	{
+		pi3->MoveTo( pc->getPosition() );
+	}
+	pi3->Refresh();
+	pi3->more1= pHouse->getSerial().ser1;
+	pi3->more2= pHouse->getSerial().ser2;
+	pi3->more3= pHouse->getSerial().ser3;
+	pi3->more4= pHouse->getSerial().ser4;
+	pi3->type=7;
+
+	sysmessage(s, "You have transferred your house to %s.", pc->getCurrentNameC());
+	char temp[520];
+	sprintf(temp, "%s has transferred a house to %s.", curr->getCurrentNameC(), pc->getCurrentNameC());
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pc, false );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWSOCKET k=sw.getSocket();
+		if(k!=INVALID)
+			sysmessage(k, temp);
+	}
+}
+
+// buffer[0] house
+void target_houseEject( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc = MAKE_CHAR_REF(t->getClicked());
+	VALIDATEPC(pc);
+	P_ITEM pi_h=MAKE_ITEM_REF(t->buffer[0]);
+	VALIDATEPI(pi_h);
+
+	NXWSOCKET s=ps->toInt();
+
+	Location pcpos= pc->getPosition();
+
+	UI32 sx, sy, ex, ey;
+    getMultiCorners(pi_h, sx,sy,ex,ey);
+    if((pcpos.x>=(UI32)sx) && (pcpos.y>=(UI32)sy) && (pcpos.x<=(UI32)ex) && (pcpos.y<=(UI32)ey))
+    {
+		pc->MoveTo( ex, ey, pcpos.z );
+        pc->teleport();
+        sysmessage(s, TRANSLATE("Player ejected."));
+    }
+	else 
+		sysmessage(s, TRANSLATE("That is not inside the house."));
+
+}
+
+//buffer[0] house
+void target_houseBan( NXWCLIENT ps, P_TARGET t )
+{
+	target_houseEject(ps, t);	// first, eject the player
+
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	P_CHAR curr=ps->currChar();
+	VALIDATEPC(curr);
+
+	NXWSOCKET s = ps->toInt();
+
+	P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
+	if(ISVALIDPI(pi))
+	{
+		if(pc->getSerial32() == curr->getSerial32())
+			return;
+		int r=add_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), H_BAN);
+		if(r==1)
+		{
+			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
+		}
+		else if(r==2)
+		{
+			sysmessage(s, "That player is already on a house register.");
+		}
+		else
+			sysmessage(s, "That player is not on the property.");
+	}
+}
+
+// buffer[0] the house
+void target_houseFriend( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR Friend = pointers::findCharBySerial( t->getClicked() );
+
+	P_CHAR curr=ps->currChar();
+	VALIDATEPC(curr);
+
+	NXWSOCKET s = ps->toInt();
+
+	P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
+
+	if(ISVALIDPC(Friend) && ISVALIDPI(pi))
+	{
+		if(Friend->getSerial32() == curr->getSerial32())
+		{
+			sysmessage(s,"You cant do that!");
+			return;
+		}
+		int r=add_hlist(DEREF_P_CHAR(Friend), DEREF_P_ITEM(pi), H_FRIEND);
+		if(r==1)
+		{
+			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
+		}
+		else if(r==2)
+		{
+			sysmessage(s, "That player is already on a house register.");
+		}
+		else
+			sysmessage(s, "That player is not on the property.");
+	}
+}
+
+// bugffer[0] the hose
+void target_houseUnlist( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+    P_ITEM pi= pointers::findItemBySerial( t->buffer[0] );
+	NXWSOCKET s = ps->toInt();
+    if(ISVALIDPC(pc) && ISVALIDPI(pi))
+    {
+        int r=del_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi));
+        if(r>0)
+        {
+            sysmessage(s, TRANSLATE("%s has been removed from the house registry."), pc->getCurrentNameC());
+        }
+        else
+            sysmessage(s, TRANSLATE("That player is not on the house registry."));
+    }
+}
+void target_houseLockdown( NXWCLIENT ps, P_TARGET t )
+// PRE:     S is the socket of a valid owner/coowner and is in a valid house
+// POST:    either locks down the item, or puts a message to the owner saying he's a moron
+// CODER:   Abaddon
+// DATE:    17th December, 1999
+{
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+	NXWSOCKET s = ps->toInt();
+
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+    if(ISVALIDPI(pi))
+    {
+
+        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
+        house = calcItemFromSer(houseSer);*/
+
+        // not needed anymore, cause called from house_sped that already checks that ...
+
+        // time to lock it down!
+
+        if( pi->isFieldSpellItem() )
+        {
+            sysmessage(s,TRANSLATE("you cannot lock this down!"));
+            return;
+        }
+        if (pi->type==12 || pi->type==13 || pi->type==203)
+        {
+            sysmessage(s, TRANSLATE("You cant lockdown doors or signs!"));
+            return;
+        }
+        if ( pi->IsAnvil() )
+        {
+            sysmessage(s, TRANSLATE("You cant lockdown anvils!"));
+            return;
+        }
+        if ( pi->IsForge() )
+        {
+            sysmessage(s, TRANSLATE("You cant lockdown forges!"));
+            return;
+        }
+
+        P_ITEM multi = findmulti( pi->getPosition() );
+        if( ISVALIDPI(multi))
+        {
+            if(pi->magic==4)
+            {
+                sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
+                return;
+            }
+            pi->magic = 4;  // LOCKED DOWN!
+            DRAGGED[s]=0;
+            pi->setOwnerSerial32Only(pc->getSerial32());
+            pi->Refresh();
+            return;
+        }
+        else
+        {
+            // not in a multi!
+            sysmessage( s, TRANSLATE("That item is not in your house!" ));
+            return;
+        }
+    }
+    else
+    {
+        sysmessage( s, TRANSLATE("Invalid item!" ));
+        return;
+    }
+}
+
+void target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
+// For locked down and secure chests
+{
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+	NXWSOCKET s = ps->toInt();
+
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+    if(ISVALIDPI(pi))
+    {
+        // time to lock it down!
+
+        if( pi->isFieldSpellItem() )
+        {
+            sysmessage(s,TRANSLATE("you cannot lock this down!"));
+            return;
+        }
+        if (pi->type==12 || pi->type==13 || pi->type==203)
+        {
+            sysmessage(s, TRANSLATE("You cant lockdown doors or signs!"));
+            return;
+        }
+        if(pi->magic==4)
+        {
+            sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
+            return;
+        }
+
+        P_ITEM multi = findmulti( pi->getPosition() );
+        if( ISVALIDPI(multi) && pi->type==1)
+        {
+            pi->magic = 4;  // LOCKED DOWN!
+            pi->secureIt = 1;
+            DRAGGED[s]=0;
+            pi->setOwnerSerial32Only(pc->getSerial32());
+            pi->Refresh();
+            return;
+        }
+        if(pi->type!=1)
+        {
+            sysmessage(s,TRANSLATE("You can only secure chests!"));
+            return;
+        }
+        else
+        {
+            // not in a multi!
+            sysmessage( s, TRANSLATE("That item is not in your house!" ));
+            return;
+        }
+    }
+    else
+    {
+        sysmessage( s, TRANSLATE("Invalid item!" ));
+        return;
+    }
+}
+
+void target_houseRelease( NXWCLIENT ps, P_TARGET t )
+// PRE:     S is the socket of a valid owner/coowner and is in a valid house, the item is locked down
+// POST:    either releases the item from lockdown, or puts a message to the owner saying he's a moron
+// CODER:   Abaddon
+// DATE:    17th December, 1999
+// update: 5-8-00
+{
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+	NXWSOCKET s = ps->toInt();
+
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+    if(ISVALIDPI(pi))
+    {
+        if(pi->getOwnerSerial32() != pc->getSerial32())
+        {
+            sysmessage(s,TRANSLATE("This is not your item!"));
+            return;
+        }
+        if( pi->isFieldSpellItem() )
+        {
+            sysmessage(s,TRANSLATE("you cannot release this!"));
+            return;
+        }
+        if (pi->type==12 || pi->type==13 || pi->type==203)
+        {
+            sysmessage(s, TRANSLATE("You cant release doors or signs!"));
+            return;
+        }
+        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
+        house = calcItemFromSer(houseSer);*/
+        // time to lock it down!
+        P_ITEM multi = findmulti( pi->getPosition() );
+        if( ISVALIDPI(multi) && pi->magic==4 || pi->type==1)
+        {
+            pi->magic = 1;  // Default as stored by the client, perhaps we should keep a backup?
+            pi->secureIt = 0;
+            pi->Refresh();
+            return;
+        }
+        else if( !ISVALIDPI(multi) )
+        {
+            // not in a multi!
+            sysmessage( s, TRANSLATE("That item is not in your house!" ));
+            return;
+        }
+    }
+    else
+    {
+        sysmessage( s, TRANSLATE("Invalid item!" ));
+        return;
+    }
+}
+
+
+

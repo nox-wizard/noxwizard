@@ -32,7 +32,9 @@
 #include "basics.h"
 #include "inlines.h"
 #include "nox-wizard.h"
-
+#include "archive.h"
+#include "map.h"
+#include "jail.h"
 
 // Includes command definitions
 #include "commands/tweaking.h"
@@ -45,334 +47,40 @@ static char s_szCmdTableTemp[TEMP_STR_SIZE];
 /*!
 \name Targets
 */
-TARGET_S target_use = { 0, 1, 0, 24, "What object will you use?" };
-TARGET_S target_jail = { 0, 1, 0, 126, "Select player to jail." };
-TARGET_S target_release = { 0, 1, 0, 127, "Select player to release from jail." };
-TARGET_S target_tele = { 0, 1, 0, 2, "Select teleport target." };
-TARGET_S target_xbank = { 0, 1, 0, 107, "Select target to open bank of." };
-TARGET_S target_xsbank = { 0, 1, 0, 105, "Select target to open specialbank of." };//AntiChrist
-TARGET_S target_remove = { 0, 1, 0, 3, "Select item to remove." };
-TARGET_S target_makegm = { 0, 1, 0, 14, "Select character to make a GM." };
-TARGET_S target_makecns = { 0, 1, 0, 15, "Select character to make a Counselor." };
-TARGET_S target_killhair = { 0, 1, 0, 16, "Select character for cutting hair." };
-TARGET_S target_killbeard = { 0, 1, 0, 17, "Select character for shaving." };
-TARGET_S target_kill = { 0, 1, 0, 20, "Select character to kill." };
-TARGET_S target_resurrect = { 0, 1, 0, 21, "Select character to resurrect." };
-TARGET_S target_bolt = { 0, 1, 0, 22, "Select character to bolt." };
-// This fires a harmless bolt at the user.
-TARGET_S target_kick = { 0, 1, 0, 25, "Select character to kick." };
-// This disconnects the player targeted from the game. They can still log back in.
-TARGET_S target_movetobag = { 0, 1, 0, 111, "Select an item to move into your bag." };
-TARGET_S target_xgo = { 0, 1, 0, 8, "Select char to teleport." };
-TARGET_S target_setmorex = { 0, 1, 0, 63, "Select object to set morex on." };
-TARGET_S target_setmorey = { 0, 1, 0, 64, "Select object to set morey on." };
-TARGET_S target_setmorez = { 0, 1, 0, 65, "Select object to set morez on." };
-TARGET_S target_setmorexyz = { 0, 1, 0, 66, "Select object to set morex, morey, and morez on." };
-TARGET_S target_sethexmorexyz = { 0, 1, 0, 66, "Select object to set hex morex, morey, and morez on." };
-TARGET_S target_setnpcai = { 0, 1, 0, 106, "Select npc to set AI type on." };
-TARGET_S target_newz = { 0, 1, 0, 5, "Select item to reposition." };
-TARGET_S target_settype = { 0, 1, 0, 6, "Select item to edit type." };
-TARGET_S target_itrig = { 0, 1, 0, 200, "Select item to trigger." };
-TARGET_S target_ctrig = { 0, 1, 0, 201, "Select NPC to trigger." };
-TARGET_S target_ttrig = { 0, 1, 0, 202, "Select item to set trigger type." };
-TARGET_S target_setid = { 0, 1, 0, 7, "Select item to polymorph." };
-TARGET_S target_setmore = { 0, 1, 0, 10, "Select item to edit 'more' value." };
-TARGET_S target_setfont = { 0, 1, 0, 19, "Select character to change font." };
-TARGET_S target_npcaction = { 0, 1, 0, 53, "Select npc to make act." };
-TARGET_S target_setamount = { 0, 1, 0, 23, "Select item to edit amount." };
-TARGET_S target_setamount2 = { 0, 1, 0, 129, "Select item to edit amount." };
-TARGET_S target_setmovable = { 0, 1, 0, 28, "Select item to edit mobility." };
-TARGET_S target_setvisible = { 0, 1, 0, 61, "Select item to edit visibility." };
-TARGET_S target_setdir = { 0, 1, 0, 88, "Select item to edit direction." };
-TARGET_S target_setspeech = { 0, 1, 0, 135, "Select NPC to edit speech." };
-TARGET_S target_setowner = { 0, 1, 0, 30, "Select NPC or OBJECT to edit owner." };
-TARGET_S target_freeze = { 0, 1, 0, 34, "Select player to freeze in place." };
-TARGET_S target_unfreeze = { 0, 1, 0, 35, "Select player to unfreeze." };
-TARGET_S target_tiledata = { 0, 1, 0, 46, "Select item to inspect." };
-TARGET_S target_recall = { 0, 1, 0, 38, "Select rune from which to recall." };
-TARGET_S target_mark = { 0, 1, 0, 39, "Select rune to mark." };
-TARGET_S target_gate = { 0, 1, 0, 43, "Select rune from which to gate." };
-TARGET_S target_heal = { 0, 1, 0, 44, "Select person to heal." };
-TARGET_S target_npctarget = { 0, 1, 0, 56, "Select player for the NPC to follow." };
-//TARGET_S target_tweak = { 0, 1, 0, 62, "Select item or character to tweak." };
-TARGET_S target_sbopen = { 0, 1, 0, 87, "Select spellbook to open as a container." };
-TARGET_S target_mana = { 0, 1, 0, 113, "Select person to restore mana to." };
-TARGET_S target_stamina = { 0, 1, 0, 114, "Select person to refresh." };
-TARGET_S target_makeshop = { 0, 1, 0, 116, "Select the character to add shopkeeper buy containers to." };
-TARGET_S target_buy = { 0, 1, 0, 121, "Select the shopkeeper you'd like to buy from." };
-TARGET_S target_setvalue = { 0, 1, 0, 122, "Select item to edit value." };
-TARGET_S target_setrestock = { 0, 1, 0, 123, "Select item to edit amount to restock." };
-TARGET_S target_sell = { 0, 1, 0, 112, "Select the NPC to sell to." };
-TARGET_S target_setspattack = { 0, 1, 0, 150, "Select creature to set SPATTACK on." };
-TARGET_S target_setspadelay = { 0, 1, 0, 177, "Select creature to set SPADELAY on." };
-TARGET_S target_setpoison = { 0, 1, 0, 175, "Select creature to set POISON." };
-TARGET_S target_setpoisoned = { 0, 1, 0, 176, "Select creature to set POISONED." };
-TARGET_S target_setadvobj = { 0, 1, 0, 178, "Select creature to set ADVOBJ." };
-TARGET_S target_setwipe = { 0, 1, 0, 133, "Select item to modify." };
-TARGET_S target_fullstats = { 0, 1, 0, 151, "Select creature to restore full stats." };
-TARGET_S target_hide = { 0, 1, 0, 131, "Select creature to hide." };
-TARGET_S target_unhide = { 0, 1, 0, 132, "Select creature to reveal." };
-TARGET_S target_house = { 0, 1, 0, 207, "Select location for house." };
-TARGET_S target_split = { 0, 1, 0, 209, "Select creature to make able to split." };
-TARGET_S target_splitchance = { 0, 1, 0, 210, "Select creature to set it's chance of splitting." };
-TARGET_S target_possess = { 0, 1, 0, 212, "Select creature to possess." };
-TARGET_S target_telestuff = { 0, 1, 0, 222, "Select player/object to teleport." };
-TARGET_S target_killpack = { 0, 1, 0, 18, "Select character to remove pack." };
-TARGET_S target_trainer = { 0, 1, 0, 206, "Select character to become a trainer." };
-//TARGET_S target_showpriv3 = { 0, 1, 0, 226, "Select character to display priviliges." };
-TARGET_S target_ban = { 0, 1, 0, 235, "Select character to BAN." };
-TARGET_S target_newx = { 0, 1, 0, 251, "Select item to reposition." };
-TARGET_S target_newy = { 0, 1, 0, 252, "Select item to reposition." };
-TARGET_S target_incx = { 0, 1, 0, 253, "Select item to reposition." };
-TARGET_S target_incy = { 0, 1, 0, 254, "Select item to reposition." };
-TARGET_S target_incz = { 0, 1, 0, 255, "Select item to reposition." };
-//TARGET_S target_glow = { 0, 1, 0, 247, "Select player to glow..." };
-//TARGET_S target_unglow = { 0, 1, 0, 249, "Select item to deactivate glowing." };
-TARGET_S target_spy = { 0, 1, 0, 247, "Select player to spy..." };
-TARGET_S target_sethome = { 0,1,0,256, "Set home location for a npc."};
-TARGET_S target_setwork = { 0,1,0,257, "Set work location for a npc."};
-TARGET_S target_setfood = { 0,1,0,258, "Set food location for a npc."};
+
+target_st target_s_tele = { target_tele, "Select teleport target..." };
+target_st target_s_remove = { target_remove, "Select item to remove..." };
+target_st target_s_release = { target_release, "Select player to release from jail." };
+target_st target_s_xbank = { target_xbank, "Select target to open bank of." };
+target_st target_s_xsbank = { target_xsbank, "Select target to open specialbank of." };//AntiChrist
+target_st target_s_makegm = { target_makegm, "Select character to make a GM." };
+target_st target_s_makecns = { target_makecns, "Select character to make a Counselor." };
+target_st target_s_killhair = { target_killhair, "Select character for cutting hair." };
+target_st target_s_killbeard = { target_killbeard, "Select character for shaving." };
+target_st target_s_kill = { target_kill, "Select character to kill." };
+target_st target_s_resurrect = { target_resurrect, "Select character to resurrect." };
+target_st target_s_bolt = { target_bolt, "Select character to bolt." };
+target_st target_s_kick = { target_kick, "Select character to kick." };
+target_st target_s_xgo = { target_xgo, "Select char to teleport." };
+target_st target_s_npcaction = { target_npcaction, "Select npc to make act." };
+target_st target_s_setamount = { target_setamount, "Select item to edit amount." };
+target_st target_s_freeze = { target_freeze, "Select player to freeze in place." };
+target_st target_s_unfreeze = { target_unfreeze, "Select player to unfreeze." };
+target_st target_s_tiledata = { target_tiledata, "Select item to inspect." };
+target_st target_s_heal = { target_heal, "Select person to heal." };
+target_st target_s_mana = { target_mana, "Select person to restore mana to." };
+target_st target_s_stamina = { target_stamina, "Select person to refresh." };
+target_st target_s_fullstats = { target_fullstats, "Select creature to restore full stats." };
+target_st target_s_hide = { target_hide, "Select creature to hide." };
+target_st target_s_unhide = { target_unhide, "Select creature to reveal." };
+target_st target_s_possess = { target_possess, "Select creature to possess." };
+target_st target_s_telestuff = { target_telestuff, "Select player/object to teleport." };
+target_st target_s_emptypack = { target_emptypack, "Select character to empty pack." };
+target_st target_s_ban = { target_ban, "Select character to BAN." };
+target_st target_s_spy = { target_spy, "Select player to spy..." };
+
 //@}
 
-/*
-CMDTABLE_S command_table[] = {
-//free for all
-{"BOUNTY",	255,	0,	CMD_FUNC,		(CMD_DEFINE)&command_bounty},
-//byte 0
-{"RELOADRACE",	0,	0,	CMD_FUNC,		(CMD_DEFINE)&command_reloadracescript},
-{"SETPRIV3",	0,	0,	CMD_FUNC,		(CMD_DEFINE)&command_setpriv3},
-{"SPREADPRIV3",	0,	0,	CMD_FUNC,		(CMD_DEFINE)&command_spreadpriv3},
-{"USE",		0,	1,	CMD_TARGET,		(CMD_DEFINE)&target_use},
-{"RESEND",	0,	2,	CMD_FUNC,		(CMD_DEFINE)&command_resend},
-{"POINT",	0,	3,	CMD_FUNC,		(CMD_DEFINE)&command_teleport},
-{"WHERE",	0,	4,	CMD_FUNC,		(CMD_DEFINE)&command_where},
-{"ADDU",	0,	5,	CMD_ITEMMENU,	(CMD_DEFINE)1}, // Opens the GM add menu.
-{"Q",		0,	6,	CMD_FUNC,		(CMD_DEFINE)&command_q},
-{"NEXT",	0,	7,	CMD_FUNC,		(CMD_DEFINE)&command_next},
-{"CLEAR",	0,	8,	CMD_FUNC,		(CMD_DEFINE)&command_clear},
-{"GOTOCUR",	0,	9,	CMD_FUNC,		(CMD_DEFINE)&command_gotocur},
-{"GMTRANSFER",	0,	10,	CMD_FUNC,		(CMD_DEFINE)&command_gmtransfer},
-{"JAIL",	0,	11,	CMD_FUNC,		(CMD_DEFINE)&command_jail},
-{"RELEASE",	0,	12,	CMD_TARGET,		(CMD_DEFINE)&target_release},
-{"STATS",	0,	13,	CMD_FUNC,		(CMD_DEFINE)&command_stats},
-{"OPTIONS",	0,	14,	CMD_FUNC,		(CMD_DEFINE)&command_options},
-{"GOPLACE",	0,	15,	CMD_FUNC,		(CMD_DEFINE)&command_goplace},
-{"GOCHAR",	0,	16,	CMD_FUNC,		(CMD_DEFINE)&command_gochar},
-{"FIX",		0,	17,	CMD_FUNC,		(CMD_DEFINE)&command_fix},
-{"XGOPLACE",	0,	18,	CMD_FUNC,		(CMD_DEFINE)&command_xgoplace},
-{"SHOWIDS",	0,	19,	CMD_FUNC,		(CMD_DEFINE)&command_showids},
-{"POLY",	0,	20,	CMD_FUNC,		(CMD_DEFINE)&command_poly},
-{"SETGMMOVEEFF",0,	21,	CMD_FUNC,		(CMD_DEFINE)&command_setGmMoveEff},
-{"SKIN",	0,	21,	CMD_FUNC,		(CMD_DEFINE)&command_skin},
-{"ACTION",	0,	22,	CMD_FUNC,		(CMD_DEFINE)&command_action},
-{"TELE",	0,	23,	CMD_TARGET,		(CMD_DEFINE)&target_tele},
-{"XTELE",	0,	24,	CMD_FUNC,		(CMD_DEFINE)&command_xtele},
-{"GO",		0,	25,	CMD_FUNC,		(CMD_DEFINE)&command_go},
-{"XGO",		0,	26,	CMD_TARGETXYZ,	(CMD_DEFINE)&target_xgo},
-{"SETMOREX",	0,	27,	CMD_TARGETX,	(CMD_DEFINE)&target_setmorex},
-{"SETMOREY",	0,	28,	CMD_TARGETX,	(CMD_DEFINE)&target_setmorey},
-{"SETMOREZ",	0,	29,	CMD_TARGETX,	(CMD_DEFINE)&target_setmorez},
-{"ZEROKILLS",	0,	30,	CMD_FUNC,		(CMD_DEFINE)&command_zerokills},
-{"SETMOREXYZ",	0,	31,	CMD_TARGETXYZ,	(CMD_DEFINE)&target_setmorexyz},
-//BYTE-1
-{"SETHEXMOREXYZ",1,	0,	CMD_TARGETHXYZ,	(CMD_DEFINE)&target_sethexmorexyz},
-{"SETNPCAI",	1,	1,	CMD_TARGETHX,	(CMD_DEFINE)&target_setnpcai},
-{"XBANK",	1,	2,	CMD_TARGET,		(CMD_DEFINE)&target_xbank},
-{"XSBANK",	1,	2,	CMD_TARGET,	(CMD_DEFINE)&target_xsbank},//AntiChrist
-{"POST",	1,	2,  CMD_FUNC,   (CMD_DEFINE)&command_post},
-{"GPOST",	1,	2,  CMD_FUNC,   (CMD_DEFINE)&command_gpost},
-{"RPOST",	1,	2,  CMD_FUNC,   (CMD_DEFINE)&command_rpost},
-{"LPOST",	1,	2,  CMD_FUNC,   (CMD_DEFINE)&command_lpost},
-{"TILE",	1,	3,	CMD_FUNC,		(CMD_DEFINE)&command_tile},
-{"WIPE",	1,	4,	CMD_FUNC,		(CMD_DEFINE)&command_wipe},
-{"IWIPE",	1,	5,	CMD_FUNC,		(CMD_DEFINE)&command_iwipe},
-{"ADD",		1,	6,	CMD_FUNC,		(CMD_DEFINE)&command_add},
-{"ADDX",	1,	7,	CMD_FUNC,		(CMD_DEFINE)&command_addx},
-{"RENAME",	1,	8,	CMD_FUNC,		(CMD_DEFINE)&command_rename},
-{"TITLE",	1,	9,	CMD_FUNC,		(CMD_DEFINE)&command_title},
-{"SAVE",	1,	10,	CMD_FUNC,		(CMD_DEFINE)&command_save},
-{"REMOVE",	1,	11,	CMD_TARGET,		(CMD_DEFINE)&target_remove},
-{"TRAINER",	1,	12,	CMD_TARGET,		(CMD_DEFINE)&target_trainer},
-{"DYE",		1,	13,	CMD_FUNC,		(CMD_DEFINE)&command_dye},
-{"NEWZ",	1,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_newz},
-{"SETTYPE",	1,	15,	CMD_TARGETID1,	(CMD_DEFINE)&target_settype},
-{"ITRIG",	1,	16,	CMD_TARGETX,	(CMD_DEFINE)&target_itrig},
-{"CTRIG",	1,	17,	CMD_TARGETX,	(CMD_DEFINE)&target_ctrig},
-{"TTRIG",	1,	18,	CMD_TARGETX,	(CMD_DEFINE)&target_ttrig},
-{"WTRIG",	1,	19,	CMD_FUNC,		(CMD_DEFINE)&command_wtrig},
-{"SETID",	1,	20,	CMD_TARGETHXY,	(CMD_DEFINE)&target_setid},
-{"SETPRIV",	1,	21,	CMD_FUNC,		(CMD_DEFINE)&command_setpriv},
-{"DECAY",	1,	22,	CMD_FUNC,		(CMD_DEFINE)&command_decay},
-{"SHOWTIME",	1,	23,	CMD_FUNC,		(CMD_DEFINE)&command_showtime},
-{"SETMORE",	1,	24,	CMD_TARGETHID4,	(CMD_DEFINE)&target_setmore},
-{"SHUTDOWN",	1,	25,	CMD_FUNC,		(CMD_DEFINE)&command_shutdown},
-{"MAKEGM",	1,	26,	CMD_TARGET,		(CMD_DEFINE)&target_makegm},
-{"MAKECNS",	1,	27,	CMD_TARGET,		(CMD_DEFINE)&target_makecns},
-{"KILLHAIR",	1,	28,	CMD_TARGET,		(CMD_DEFINE)&target_killhair},
-{"KILLBEARD",	1,	29,	CMD_TARGET,		(CMD_DEFINE)&target_killbeard},
-{"KILLPACK",	1,	30,	CMD_TARGET,		(CMD_DEFINE)&target_killpack},
-{"SETFONT",	1,	31,	CMD_TARGETHID1,	(CMD_DEFINE)&target_setfont},
-//BYTE-2
-{"WHOLIST",	2,	0,	CMD_FUNC,		(CMD_DEFINE)&command_wholist},
-{"OFFLIST",	2,	0,	CMD_FUNC,	(CMD_DEFINE)&command_wholist},
-{"PLAYERLIST",	2,	0,	CMD_FUNC,	(CMD_DEFINE)&command_playerlist},
-{"PL",		2,	0,	CMD_FUNC,	(CMD_DEFINE)&command_playerlist},
-{"KILL",	2,	1,	CMD_TARGET,	(CMD_DEFINE)&target_kill},
-{"RESURRECT",	2,	2,	CMD_TARGET,		(CMD_DEFINE)&target_resurrect},
-{"RES",		2,	2,	CMD_TARGET,	(CMD_DEFINE)&target_resurrect},
-{"BOLT",	2,	3,	CMD_TARGET,		(CMD_DEFINE)&target_bolt},
-{"SFX",		2,	4,	CMD_FUNC,		(CMD_DEFINE)&command_sfx},
-{"NPCACTION",	2,	5,	CMD_TARGETHID1,	(CMD_DEFINE)&target_npcaction},
-{"LIGHT",	2,	6,	CMD_FUNC,		(CMD_DEFINE)&command_light},
-{"SETAMOUNT",	2,	7,	CMD_TARGETX,	(CMD_DEFINE)&target_setamount},
-{"SETAMOUNT2",	2,	8,	CMD_TARGETX,	(CMD_DEFINE)&target_setamount2},
-{"DISCONNECT",	2,	9,	CMD_FUNC,		(CMD_DEFINE)&command_disconnect},
-{"KICK",	2,	10,	CMD_TARGET,		(CMD_DEFINE)&target_kick},
-{"TELL",	2,	11,	CMD_FUNC,		(CMD_DEFINE)&command_tell},
-{"DRY",		2,	12,	CMD_FUNC,		(CMD_DEFINE)&command_dry},
-{"RAIN",	2,	12,	CMD_FUNC,	(CMD_DEFINE)&command_rain},
-{"SNOW",	2,	12,	CMD_FUNC,	(CMD_DEFINE)&command_snow},
-{"SETSEASON",	2,	12,	CMD_FUNC,	(CMD_DEFINE)&command_setseason},
-{"ECLIPSE",     2,	13,	CMD_FUNC,		(CMD_DEFINE)&command_eclipse},
-{"SEND",	2,	14,	CMD_FUNC,		(CMD_DEFINE)&command_send},
-{"BLT2",	2,	14,	CMD_FUNC,		(CMD_DEFINE)&command_blt2},
-{"WEB",		2,	14,	CMD_FUNC,		(CMD_DEFINE)&command_web},
-{"TEMP",	2,	14,	CMD_FUNC,		(CMD_DEFINE)&command_temp},
-{"GMMENU",	2,	15,	CMD_FUNC,		(CMD_DEFINE)&command_gmmenu},
-{"ITEMMENU",	2,	16,	CMD_FUNC,		(CMD_DEFINE)&command_itemmenu},
-{"ADDITEM",	2,	17,	CMD_FUNC,		(CMD_DEFINE)&command_additem},
-{"DUPE",	2,	18,	CMD_FUNC,		(CMD_DEFINE)&command_dupe},
-{"MOVETOBAG",	2,	19,	CMD_TARGET,		(CMD_DEFINE)&target_movetobag},
-{"COMMAND",	2,	20,	CMD_FUNC,		(CMD_DEFINE)&command_command},
-{"GCOLLECT",	2,	21,	CMD_FUNC,		(CMD_DEFINE)&command_gcollect},
-{"ALLMOVEON",	2,	22,	CMD_FUNC,		(CMD_DEFINE)&command_allmoveon},
-{"ALLMOVEOFF",	2,	23,	CMD_FUNC,		(CMD_DEFINE)&command_allmoveoff},
-{"SHOWHS",	2,	24,	CMD_FUNC,		(CMD_DEFINE)&command_showhs},
-{"HIDEHS",	2,	25,	CMD_FUNC,		(CMD_DEFINE)&command_hidehs},
-{"SETMOVABLE",	2,	26,	CMD_TARGETX,	(CMD_DEFINE)&target_setmovable},
-{"SET",		2,	27,	CMD_FUNC,		(CMD_DEFINE)&command_set},
-{"SETVISIBLE",	2,	28,	CMD_TARGETX,	(CMD_DEFINE)&target_setvisible},
-{"SETDIR",	2,	29,	CMD_TARGETX,	(CMD_DEFINE)&target_setdir},
-{"SETSPEECH",	2,	30,	CMD_TARGETX,	(CMD_DEFINE)&target_setspeech},
-{"SETOWNER",	2,	31,	CMD_TARGETHID4,	(CMD_DEFINE)&target_setowner},
-//BYTE-3
-{"ADDNPC",	3,	0,	CMD_FUNC,		(CMD_DEFINE)&command_addnpc},
-{"FREEZE",	3,	1,	CMD_TARGET,		(CMD_DEFINE)&target_freeze},
-{"UNFREEZE",	3,	2,	CMD_TARGET,		(CMD_DEFINE)&target_unfreeze},
-{"APPETITE",	3,	3,	CMD_FUNC,		(CMD_DEFINE)&command_appetite},
-{"GUMPMENU",	3,	4,	CMD_FUNC,		(CMD_DEFINE)&command_gumpmenu},
-{"TILEDATA",	3,	5,	CMD_TARGET,		(CMD_DEFINE)&target_tiledata},
-{"RECALL",	3,	6,	CMD_TARGET,		(CMD_DEFINE)&target_recall},
-{"MARK",	3,	7,	CMD_TARGET,		(CMD_DEFINE)&target_mark},
-{"GATE",	3,	8,	CMD_TARGET,		(CMD_DEFINE)&target_gate},
-{"HEAL",	3,	9,	CMD_TARGET,		(CMD_DEFINE)&target_heal},
-{"NPCTARGET",	3,	10,	CMD_TARGET,		(CMD_DEFINE)&target_npctarget},
-{"CACHESTATS",	3,	11,	CMD_FUNC,		(CMD_DEFINE)&command_cachestats},
-{"NPCRECT",	3,	12,	CMD_FUNC,		(CMD_DEFINE)&command_npcrect},
-{"NPCCIRCLE",	3,	13,	CMD_FUNC,		(CMD_DEFINE)&command_npccircle},
-{"NPCWANDER",	3,	14,	CMD_FUNC,		(CMD_DEFINE)&command_npcwander},
-{"NPCRECTCODED",3,	12,	CMD_FUNC,		(CMD_DEFINE)&command_npcrectcoded},
-{"TWEAK",	3,	15,	CMD_TARGET,		(CMD_DEFINE)&target_tweak},
-{"SBOPEN",	3,	16,	CMD_TARGET,		(CMD_DEFINE)&target_sbopen},
-{"SECONDSPERUOMINUTE",3,17,	CMD_FUNC,	(CMD_DEFINE)&command_secondsperuominute},
-{"BRIGHTLIGHT",	3,	18,	CMD_FUNC,		(CMD_DEFINE)&command_brightlight},
-{"DARKLIGHT",	3,	19,	CMD_FUNC,		(CMD_DEFINE)&command_darklight},
-{"DUNGEONLIGHT",3,	20,	CMD_FUNC,		(CMD_DEFINE)&command_dungeonlight},
-{"TIME",	3,	21,	CMD_FUNC,		(CMD_DEFINE)&command_time},
-{"MANA",	3,	22,	CMD_TARGET,		(CMD_DEFINE)&target_mana},
-{"STAMINA",	3,	23,	CMD_TARGET,		(CMD_DEFINE)&target_stamina},
-{"GMOPEN",	3,	24,	CMD_FUNC,		(CMD_DEFINE)&command_gmopen},
-{"MAKESHOP",	3,	25,	CMD_TARGET,		(CMD_DEFINE)&target_makeshop},
-{"BUY",		3,	26,	CMD_TARGET,		(CMD_DEFINE)&target_buy},
-{"SETVALUE",	3,	27,	CMD_TARGETX,	(CMD_DEFINE)&target_setvalue},
-{"SETRESTOCK",	3,	28,	CMD_TARGETX,	(CMD_DEFINE)&target_setrestock},
-{"RESTOCK",	3,	29,	CMD_FUNC,		(CMD_DEFINE)&command_restock},
-{"RESTOCKALL",	3,	30,	CMD_FUNC,		(CMD_DEFINE)&command_restockall},
-{"SETSHOPRESTOCKRATE",	3,	31,	CMD_FUNC,	(CMD_DEFINE)&command_setshoprestockrate},
-//BYTE-4
-{"WHO",		4,	0,	CMD_FUNC,		(CMD_DEFINE)&command_who},
-{"GMS",		4,	1,	CMD_FUNC,		(CMD_DEFINE)&command_gms},
-{"SELL",	4,	2,	CMD_TARGET,		(CMD_DEFINE)&target_sell},
-{"MIDI",	4,	3,	CMD_FUNC,		(CMD_DEFINE)&command_midi},
-{"GUMPOPEN",	4,	4,	CMD_FUNC,		(CMD_DEFINE)&command_gumpopen},
-{"RESPAWN",	4,	5,	CMD_FUNC,		(CMD_DEFINE)&command_respawn},
-{"REGSPAWNALL",	4,	5,	CMD_FUNC,	(CMD_DEFINE)&command_regspawnall},
-{"REGSPAWNMAX",	4,	5,	CMD_FUNC,	(CMD_DEFINE)&command_regspawnmax},
-{"REGSPAWN",	4,	5,	CMD_FUNC,	(CMD_DEFINE)&command_regspawn},
-{"REGEDIT",	4,	5,	CMD_FUNC,	(CMD_DEFINE)&command_regedit},
-{"SETSPATTACK",	4,	6,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_setspattack},
-{"SETSPADELAY", 4,	7,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_setspadelay},
-{"SETPOISON",	4,	8,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_setpoison},
-{"SETPOISONED",	4,	9,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_setpoisoned},
-{"SETADVOBJ",	4,	10,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_setadvobj},
-{"SETWIPE",	4,	11,	CMD_TARGETID1,	(CMD_DEFINE)&target_setwipe},
-{"FULLSTATS",	4,	12,	CMD_TARGET,		(CMD_DEFINE)&target_fullstats},
-{"HIDE",	4,	13,	CMD_TARGET,		(CMD_DEFINE)&target_hide},
-{"UNHIDE",	4,	14,	CMD_TARGET,		(CMD_DEFINE)&target_unhide},
-{"RELOADSERVER",4,	15,	CMD_FUNC,		(CMD_DEFINE)&command_reloadserver},
-{"READINI",	4,	15,	CMD_FUNC,	(CMD_DEFINE)&command_readini},
-{"LOADDEFAULTS",4,	16,	CMD_FUNC,		(CMD_DEFINE)&command_loaddefaults},
-{"CQ",		4,	17,	CMD_FUNC,		(CMD_DEFINE)&command_cq},
-{"WIPENPCS",	4,	18,	CMD_FUNC,		(CMD_DEFINE)&command_wipenpcs},
-{"CNEXT",	4,	19,	CMD_FUNC,		(CMD_DEFINE)&command_cnext},
-{"CCLEAR",	4,	20,	CMD_FUNC,		(CMD_DEFINE)&command_cclear},
-{"MINECHECK",	4,	21,	CMD_FUNC,		(CMD_DEFINE)&command_minecheck},
-{"INVUL",	4,	22,	CMD_FUNC,		(CMD_DEFINE)&command_invul},
-{"NOINVUL",	4,	23,	CMD_FUNC,		(CMD_DEFINE)&command_noinvul},
-{"GUARDSON",	4,	24,	CMD_FUNC,		(CMD_DEFINE)&command_guardson},
-{"GUARDSOFF",	4,	25,	CMD_FUNC,		(CMD_DEFINE)&command_guardsoff},
-{"HOUSE",	4,	26,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_house},
-{"ANNOUNCEON",	4,	27,	CMD_FUNC,		(CMD_DEFINE)&command_announceon},
-{"ANNOUNCEOFF",	4,	28,	CMD_FUNC,		(CMD_DEFINE)&command_announceoff},
-{"WF",		4,	29,	CMD_FUNC,		(CMD_DEFINE)&command_wf},
-{"NODECAY",	4,	30,	CMD_FUNC,		(CMD_DEFINE)&command_nodecay},
-{"SPLIT",	4,	31,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_split},
-{"SPLITCHANCE",	4,	31,	CMD_TARGETHTMP,	(CMD_DEFINE)&target_splitchance},
-//BYTE-5
-{"WANIM",	5,	0,	CMD_FUNC,		(CMD_DEFINE)&command_wanim},
-{"POSSESS",	5,	1,	CMD_TARGET,		(CMD_DEFINE)&target_possess},
-{"SETTIME",	5,	2,	CMD_FUNC,		(CMD_DEFINE)&command_settime},
-{"KILLALL",	5,	3,	CMD_FUNC,		(CMD_DEFINE)&command_killall},
-{"PDUMP",	5,	4,	CMD_FUNC,		(CMD_DEFINE)&command_pdump},
-{"RENAME2",	5,	5,	CMD_FUNC,		(CMD_DEFINE)&command_rename2},
-{"READSPAWNREGIONS",5,	6,	CMD_FUNC,	(CMD_DEFINE)&command_readspawnregions},
-{"CLEANUP",	5,	7,	CMD_FUNC,		(CMD_DEFINE)&command_cleanup},
-{"GY",		5,	8,	CMD_FUNC,		(CMD_DEFINE)&command_gy},
-{"TILEW",	5,	9,	CMD_FUNC,		(CMD_DEFINE)&command_tilew},
-{"SQUELCH",	5,	10,	CMD_FUNC,		(CMD_DEFINE)&command_squelch},
-{"MUTE",	5,	10,	CMD_FUNC,		(CMD_DEFINE)&command_squelch},
-{"TELESTUFF",	5,	11,	CMD_TARGET,		(CMD_DEFINE)&target_telestuff},
-{"SPAWNKILL",	5,	12,	CMD_FUNC,		(CMD_DEFINE)&command_spawnkill},
-{"SHOWPRIV3",	5,	13,	CMD_TARGET,		(CMD_DEFINE)&target_showpriv3},
-{"NEWX",	5,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_newx},
-{"NEWY",	5,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_newy},
-{"INCX",	5,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_incx},
-{"INCY",	5,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_incy},
-{"INCZ",	5,	14,	CMD_TARGETX,	(CMD_DEFINE)&target_incz},
-{"SHOWP",	5,	15,	CMD_FUNC,		(CMD_DEFINE)&command_showp},
-{"YELL",	5,	15,	CMD_FUNC,	(CMD_DEFINE)&command_yell},
-//5.16&5.17 free
-//to find a slot
-{"CFG",		5,	18,	CMD_FUNC,		(CMD_DEFINE)&command_cfg},
-{"PASSWORD",	5,	19,	CMD_FUNC,		(CMD_DEFINE)&command_password},
-{"READACCOUNTS",5,	20, CMD_FUNC,		(CMD_DEFINE)&command_readaccounts},
-{"LETUSIN",     5,	21, CMD_FUNC,		(CMD_DEFINE)&command_letusin},
-{"SERVERSLEEP", 5,	22, CMD_FUNC,		(CMD_DEFINE)&command_serversleep},
-{"RELOADCACHEDSCRIPTS", 5,  23, CMD_FUNC, (CMD_DEFINE)&command_reloadcachedscripts},
-{"SETHOME",	5,  24, CMD_TARGETXYZ,	(CMD_DEFINE)&target_sethome},
-{"SETWORK",	5,  24, CMD_TARGETXYZ, (CMD_DEFINE)&target_setwork},
-{"SETFOOD",	5,  24, CMD_TARGETXYZ, (CMD_DEFINE)&target_setfood},
-//{"GLOW",        5,  25, CMD_TARGET,		(CMD_DEFINE)&target_glow},
-//{"UNGLOW",      5,  25, CMD_TARGET,		(CMD_DEFINE)&target_unglow},
-{"SETMURDER",	5,  26, CMD_FUNC,		(CMD_DEFINE)&command_setmurder},//taken from 6904t2(5/10/99) - AntiChrist
-{"SETMENUPRIV", 5,  27, CMD_FUNC,		(CMD_DEFINE)&command_setmenupriv},
-{"SHOWSKILLS",  5,  28, CMD_TARGETX,	(CMD_DEFINE)&target_showskills},
-{"DELID",	5,	29,	CMD_FUNC,		(CMD_DEFINE)&command_delid},
-{"DELTYPE",	5,	30,	CMD_FUNC,		(CMD_DEFINE)&command_deltype},
-{"SYSM",        5,  31, CMD_FUNC,		(CMD_DEFINE)&command_sysm},
-{NULL,		0,	0,	0,		NULL}			// Tseramed, cleaner
-};
-*/
 
 // Class cCommand implemetation
 cCommand::cCommand(char* name, int privm, int privb, int type, void command(), unsigned char targMask) {
@@ -437,18 +145,18 @@ cCommandTable::cCommandTable() {
     addGmCommand("RELOADRACE",      0, 0,  CMD_FUNC,        (CMD_DEFINE)&command_reloadracescript);
     addGmCommand("SETPRIV3",        0, 0,  CMD_FUNC,        (CMD_DEFINE)&command_setpriv3);
     addGmCommand("SPREADPRIV3",     0, 0,  CMD_FUNC,        (CMD_DEFINE)&command_spreadpriv3);
-    addGmCommand("USE",             0, 1,  CMD_TARGET,      (CMD_DEFINE)&target_use);
+//    addGmCommand("USE",             0, 1,  CMD_TARGET,      (CMD_DEFINE)&target_s_use);
     addGmCommand("RESEND",		  0, 2,	 CMD_FUNC,        (CMD_DEFINE)&command_resend);
     addGmCommand("POINT",		      0, 3,	 CMD_FUNC,        (CMD_DEFINE)&command_teleport);
     addGmCommand("WHERE",           0, 4,  CMD_FUNC,        (CMD_DEFINE)&command_where);
-    addGmCommand("ADDU",            0, 5,  CMD_ITEMMENU,    (CMD_DEFINE)1); // Opens the GM add menu.
+//    addGmCommand("ADDU",            0, 5,  CMD_ITEMMENU,    (CMD_DEFINE)1); // Opens the GM add menu.
     addGmCommand("Q",			      0, 6,  CMD_FUNC,        (CMD_DEFINE)&command_q);
     addGmCommand("NEXT",            0, 7,  CMD_FUNC,        (CMD_DEFINE)&command_next);
     addGmCommand("CLEAR",           0, 8,  CMD_FUNC,        (CMD_DEFINE)&command_clear);
     addGmCommand("GOTOCUR",         0, 9,  CMD_FUNC,        (CMD_DEFINE)&command_gotocur);
     addGmCommand("GMTRANSFER",      0, 10, CMD_FUNC,        (CMD_DEFINE)&command_gmtransfer);
     addGmCommand("JAIL",            0, 11, CMD_FUNC,        (CMD_DEFINE)&command_jail);
-    addGmCommand("RELEASE",         0, 12, CMD_TARGET,      (CMD_DEFINE)&target_release);
+    addGmCommand("RELEASE",         0, 12, CMD_TARGET,      (CMD_DEFINE)&target_s_release);
     addGmCommand("STATS",          0, 13, CMD_FUNC,      (CMD_DEFINE)&command_stats);
     addGmCommand("OPTIONS",		  0, 14, CMD_FUNC,      (CMD_DEFINE)&command_options);
     addGmCommand("GOPLACE",		  0, 15, CMD_FUNC,        (CMD_DEFINE)&command_goplace);
@@ -460,73 +168,75 @@ cCommandTable::cCommandTable() {
     addGmCommand("SETGMMOVEEFF",    0, 21, CMD_FUNC,        (CMD_DEFINE)&command_setGmMoveEff); //mmm dupe here :(
     addGmCommand("SKIN",            0, 21, CMD_FUNC,		  (CMD_DEFINE)&command_skin);
     addGmCommand("ACTION",          0, 22, CMD_FUNC,        (CMD_DEFINE)&command_action);
-    addGmCommand("TELE",            0, 23, CMD_TARGET,      (CMD_DEFINE)&target_tele);
+    addGmCommand("TELE",            0, 23, CMD_TARGETLOC,   (CMD_DEFINE)&target_s_tele);
     addGmCommand("XTELE",           0, 24, CMD_FUNC,        (CMD_DEFINE)&command_xtele);
     addGmCommand("GO",              0, 25, CMD_FUNC,        (CMD_DEFINE)&command_go);
-    addGmCommand("XGO",             0, 26, CMD_TARGETXYZ,   (CMD_DEFINE)&target_xgo);
-    addGmCommand("SETMOREX",        0, 27, CMD_TARGETX,     (CMD_DEFINE)&target_setmorex);
-    addGmCommand("SETMOREY",        0, 28, CMD_TARGETX,     (CMD_DEFINE)&target_setmorey);
-    addGmCommand("SETMOREZ",        0, 29, CMD_TARGETX,     (CMD_DEFINE)&target_setmorez);
+    addGmCommand("XGO",             0, 26, CMD_TARGETXYZ,   (CMD_DEFINE)&target_s_xgo);
+//  addGmCommand("SETMOREX",        0, 27, CMD_TARGETX,     (CMD_DEFINE)&target_s_setmorex);
+//	addGmCommand("SETMOREY",        0, 28, CMD_TARGETX,     (CMD_DEFINE)&target_s_setmorey);
+//    addGmCommand("SETMOREZ",        0, 29, CMD_TARGETX,     (CMD_DEFINE)&target_s_setmorez);
     addGmCommand("ZEROKILLS",	      0, 30, CMD_FUNC,        (CMD_DEFINE)&command_zerokills);
-    addGmCommand("SETMOREXYZ",      0, 31, CMD_TARGETXYZ,   (CMD_DEFINE)&target_setmorexyz);
+//    addGmCommand("SETMOREXYZ",      0, 31, CMD_TARGETXYZ,   (CMD_DEFINE)&target_s_setmorexyz);
 //BYTE-1
-    addGmCommand("SETHEXMOREXYZ",   1, 0,  CMD_TARGETHXYZ,  (CMD_DEFINE)&target_sethexmorexyz);
-    addGmCommand("SETNPCAI",        1, 1,  CMD_TARGETHX,    (CMD_DEFINE)&target_setnpcai);
-    addGmCommand("XBANK",           1, 2,  CMD_TARGET,      (CMD_DEFINE)&target_xbank);
-    addGmCommand("XSBANK",          1, 2,  CMD_TARGET,      (CMD_DEFINE)&target_xsbank);//AntiChrist
+//    addGmCommand("SETHEXMOREXYZ",   1, 0,  CMD_TARGETHXYZ,  (CMD_DEFINE)&target_s_sethexmorexyz);
+    //addGmCommand("SETNPCAI",        1, 1,  CMD_TARGETHX,    (CMD_DEFINE)&target_s_setnpcai);
+    addGmCommand("XBANK",           1, 2,  CMD_TARGET,      (CMD_DEFINE)&target_s_xbank);
+    addGmCommand("XSBANK",          1, 2,  CMD_TARGET,      (CMD_DEFINE)&target_s_xsbank);//AntiChrist
     addGmCommand("POST",            1, 2,  CMD_FUNC,        (CMD_DEFINE)&command_post);
     addGmCommand("GPOST",           1, 2,  CMD_FUNC,        (CMD_DEFINE)&command_gpost);
     addGmCommand("RPOST",           1, 2,  CMD_FUNC,        (CMD_DEFINE)&command_rpost);
     addGmCommand("LPOST",           1, 2,  CMD_FUNC,        (CMD_DEFINE)&command_lpost);
-    addGmCommand("TILE",            1, 3,  CMD_FUNC,        (CMD_DEFINE)&command_tile);
+//    addGmCommand("TILE",            1, 3,  CMD_FUNC,        (CMD_DEFINE)&command_tile);
 //    addGmCommand("IWIPE",           1, 5,  CMD_FUNC,        (CMD_DEFINE)&command_iwipe);
     addGmCommand("ADD",             1, 6,  CMD_FUNC,        (CMD_DEFINE)&command_add);
     addGmCommand("ADDX",            1, 7,  CMD_FUNC,        (CMD_DEFINE)&command_addx);
+    addGmCommand("RENAME",          1, 8,  CMD_FUNC,        (CMD_DEFINE)&command_rename);
+    addGmCommand("TITLE",          1, 9,  CMD_FUNC,        (CMD_DEFINE)&command_title);
     addGmCommand("SAVE",            1, 10, CMD_FUNC,        (CMD_DEFINE)&command_save);
-    addGmCommand("REMOVE",          1, 11, CMD_TARGET,      (CMD_DEFINE)&target_remove);
-    addGmCommand("TRAINER",         1, 12, CMD_TARGET,      (CMD_DEFINE)&target_trainer);
+    addGmCommand("REMOVE",          1, 11, CMD_TARGET,      (CMD_DEFINE)&target_s_remove);
+//    addGmCommand("TRAINER",         1, 12, CMD_TARGET,      (CMD_DEFINE)&target_s_trainer);
     addGmCommand("DYE",             1, 13, CMD_FUNC,        (CMD_DEFINE)&command_dye);
-    addGmCommand("NEWZ",            1, 14, CMD_TARGETX,     (CMD_DEFINE)&target_newz);
-    addGmCommand("SETTYPE",         1, 15, CMD_TARGETID1,   (CMD_DEFINE)&target_settype);
-    addGmCommand("ITRIG",           1, 16, CMD_TARGETX,     (CMD_DEFINE)&target_itrig);
-    addGmCommand("CTRIG",           1, 17, CMD_TARGETX,     (CMD_DEFINE)&target_ctrig);
-    addGmCommand("TTRIG",		      1, 18, CMD_TARGETX,     (CMD_DEFINE)&target_ttrig);
-    addGmCommand("WTRIG",           1, 19, CMD_FUNC,        (CMD_DEFINE)&command_wtrig);
-    addGmCommand("SETID",           1, 20, CMD_TARGETHXY,   (CMD_DEFINE)&target_setid);
+    addGmCommand("NEWZ",            1, 14, CMD_FUNC,	    (CMD_DEFINE)&command_newz);
+//    addGmCommand("SETTYPE",         1, 15, CMD_TARGETID1,   (CMD_DEFINE)&target_s_settype);
+//    addGmCommand("ITRIG",           1, 16, CMD_TARGETX,     (CMD_DEFINE)&target_s_itrig);
+//    addGmCommand("CTRIG",           1, 17, CMD_TARGETX,     (CMD_DEFINE)&target_s_ctrig);
+//    addGmCommand("TTRIG",		      1, 18, CMD_TARGETX,     (CMD_DEFINE)&target_s_ttrig);
+//    addGmCommand("WTRIG",           1, 19, CMD_FUNC,        (CMD_DEFINE)&command_wtrig);
+//    addGmCommand("SETID",           1, 20, CMD_TARGETHXY,   (CMD_DEFINE)&target_s_setid);
     addGmCommand("SETPRIV",         1, 21, CMD_FUNC,        (CMD_DEFINE)&command_setpriv);
     addGmCommand("DECAY",           1, 22, CMD_FUNC,        (CMD_DEFINE)&command_decay);
     addGmCommand("SHOWTIME",        1, 23, CMD_FUNC,        (CMD_DEFINE)&command_showtime);
-    addGmCommand("SETMORE",         1, 24, CMD_TARGETHID4,  (CMD_DEFINE)&target_setmore);
+//    addGmCommand("SETMORE",         1, 24, CMD_TARGETHID4,  (CMD_DEFINE)&target_s_setmore);
     addGmCommand("SHUTDOWN",        1, 25, CMD_FUNC,        (CMD_DEFINE)&command_shutdown);
-    addGmCommand("MAKEGM",          1, 26, CMD_TARGET,      (CMD_DEFINE)&target_makegm);
-    addGmCommand("MAKECNS",         1, 27, CMD_TARGET,      (CMD_DEFINE)&target_makecns);
-    addGmCommand("KILLHAIR",        1, 28, CMD_TARGET,      (CMD_DEFINE)&target_killhair);
-    addGmCommand("KILLBEARD",       1, 29, CMD_TARGET,      (CMD_DEFINE)&target_killbeard);
-    addGmCommand("KILLPACK",        1, 30, CMD_TARGET,      (CMD_DEFINE)&target_killpack);
-    addGmCommand("SETFONT",         1, 31, CMD_TARGETHID1,  (CMD_DEFINE)&target_setfont);
+    addGmCommand("MAKEGM",          1, 26, CMD_TARGET,      (CMD_DEFINE)&target_s_makegm);
+    addGmCommand("MAKECNS",         1, 27, CMD_TARGET,      (CMD_DEFINE)&target_s_makecns);
+    addGmCommand("KILLHAIR",        1, 28, CMD_TARGET,      (CMD_DEFINE)&target_s_killhair);
+    addGmCommand("KILLBEARD",       1, 29, CMD_TARGET,      (CMD_DEFINE)&target_s_killbeard);
+    addGmCommand("EMPTYPACK",        1, 30, CMD_TARGET,      (CMD_DEFINE)&target_s_emptypack);
+//    addGmCommand("SETFONT",         1, 31, CMD_TARGETHID1,  (CMD_DEFINE)&target_s_setfont);
     addGmCommand("APPETITE",        1, 6,  CMD_FUNC,        (CMD_DEFINE)&command_appetite);
 //BYTE-2
 //    addGmCommand("WHOLIST",				2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
     addGmCommand("SKILLS",          2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_skills);
     addGmCommand("PLAYERLIST",      2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_playerlist); // other dupes
     addGmCommand("PL",              2, 0,	 CMD_FUNC,        (CMD_DEFINE)&command_playerlist);
-    addGmCommand("KILL",            2, 1,	 CMD_TARGET,	  (CMD_DEFINE)&target_kill);
-    addGmCommand("RESURRECT",	      2, 2,  CMD_TARGET,      (CMD_DEFINE)&target_resurrect);
-    addGmCommand("RES",             2, 2,  CMD_TARGET,	  (CMD_DEFINE)&target_resurrect);
-    addGmCommand("BOLT",            2, 3,	 CMD_TARGET,      (CMD_DEFINE)&target_bolt);
+    addGmCommand("KILL",            2, 1,	 CMD_TARGET,	  (CMD_DEFINE)&target_s_kill);
+    addGmCommand("RESURRECT",	      2, 2,  CMD_TARGET,      (CMD_DEFINE)&target_s_resurrect);
+    addGmCommand("RES",             2, 2,  CMD_TARGET,	  (CMD_DEFINE)&target_s_resurrect);
+    addGmCommand("BOLT",            2, 3,	 CMD_TARGET,      (CMD_DEFINE)&target_s_bolt);
     addGmCommand("SFX",             2, 4,  CMD_FUNC,        (CMD_DEFINE)&command_sfx);
-    addGmCommand("NPCACTION",       2, 5,  CMD_TARGETHID1,  (CMD_DEFINE)&target_npcaction);
+    addGmCommand("NPCACTION",       2, 5,  CMD_TARGETHID1,  (CMD_DEFINE)&target_s_npcaction);
     addGmCommand("LIGHT",           2, 6,  CMD_FUNC,        (CMD_DEFINE)&command_light);
-    addGmCommand("SETAMOUNT",       2, 7,  CMD_TARGETX,     (CMD_DEFINE)&target_setamount);
-    addGmCommand("SETAMOUNT2",	  2, 8,	 CMD_TARGETX,	  (CMD_DEFINE)&target_setamount2);
+    addGmCommand("SETAMOUNT",       2, 7,  CMD_TARGETX,     (CMD_DEFINE)&target_s_setamount);
+//    addGmCommand("SETAMOUNT2",	  2, 8,	 CMD_TARGETX,	  (CMD_DEFINE)&target_s_setamount2);
     addGmCommand("DISCONNECT",      2, 9,	 CMD_FUNC,        (CMD_DEFINE)&command_disconnect);
-    addGmCommand("KICK",            2, 10, CMD_TARGET,      (CMD_DEFINE)&target_kick);
+    addGmCommand("KICK",            2, 10, CMD_TARGET,      (CMD_DEFINE)&target_s_kick);
     addGmCommand("TELL",            2, 11, CMD_FUNC,        (CMD_DEFINE)&command_tell);
     addGmCommand("DRY",             2, 12, CMD_FUNC,        (CMD_DEFINE)&command_dry);
     addGmCommand("RAIN",            2, 12, CMD_FUNC,        (CMD_DEFINE)&command_rain);
     addGmCommand("SNOW",            2, 12, CMD_FUNC,        (CMD_DEFINE)&command_snow);
     addGmCommand("SETSEASON",       2, 12, CMD_FUNC,        (CMD_DEFINE)&command_setseason);
-    addGmCommand("ECLIPSE",         2, 13, CMD_FUNC,        (CMD_DEFINE)&command_eclipse);
+//    addGmCommand("ECLIPSE",         2, 13, CMD_FUNC,        (CMD_DEFINE)&command_eclipse);
     addGmCommand("SEND",            2, 14, CMD_FUNC,        (CMD_DEFINE)&command_send);
     addGmCommand("BLT2",            2, 14, CMD_FUNC,        (CMD_DEFINE)&command_blt2);
     addGmCommand("WEB",             2, 14, CMD_FUNC,        (CMD_DEFINE)&command_web);
@@ -535,57 +245,57 @@ cCommandTable::cCommandTable() {
     addGmCommand("ITEMMENU",        2, 16, CMD_FUNC,        (CMD_DEFINE)&command_itemmenu);
     addGmCommand("ADDITEM",         2, 17, CMD_FUNC,        (CMD_DEFINE)&command_additem);
     addGmCommand("DUPE",            2, 18, CMD_FUNC,        (CMD_DEFINE)&command_dupe);
-    addGmCommand("MOVETOBAG",       2, 19, CMD_TARGET,      (CMD_DEFINE)&target_movetobag);
+//    addGmCommand("MOVETOBAG",       2, 19, CMD_TARGET,      (CMD_DEFINE)&target_s_movetobag);
     addGmCommand("COMMAND",         2, 20, CMD_FUNC,        (CMD_DEFINE)&command_command);
     addGmCommand("GCOLLECT",        2, 21, CMD_FUNC,        (CMD_DEFINE)&command_gcollect);
     addGmCommand("ALLMOVEON",       2, 22, CMD_FUNC,        (CMD_DEFINE)&command_allmoveon);
     addGmCommand("ALLMOVEOFF",      2, 23, CMD_FUNC,        (CMD_DEFINE)&command_allmoveoff);
     addGmCommand("SHOWHS",          2, 24, CMD_FUNC,        (CMD_DEFINE)&command_showhs);
     addGmCommand("HIDEHS",          2, 25, CMD_FUNC,        (CMD_DEFINE)&command_hidehs);
-    addGmCommand("SETMOVABLE",      2, 26, CMD_TARGETX,     (CMD_DEFINE)&target_setmovable);
+//    addGmCommand("SETMOVABLE",      2, 26, CMD_TARGETX,     (CMD_DEFINE)&target_s_setmovable);
     addGmCommand("SET",             2, 27, CMD_FUNC,        (CMD_DEFINE)&command_set);
-    addGmCommand("SETVISIBLE",      2, 28, CMD_TARGETX,     (CMD_DEFINE)&target_setvisible);
-    addGmCommand("SETDIR",          2, 29, CMD_TARGETX,     (CMD_DEFINE)&target_setdir);
-    addGmCommand("SETSPEECH",       2, 30, CMD_TARGETX,     (CMD_DEFINE)&target_setspeech);
-    addGmCommand("SETOWNER",        2, 31, CMD_TARGETHID4,  (CMD_DEFINE)&target_setowner);
+//    addGmCommand("SETVISIBLE",      2, 28, CMD_TARGETX,     (CMD_DEFINE)&target_s_setvisible);
+//    addGmCommand("SETDIR",          2, 29, CMD_TARGETX,     (CMD_DEFINE)&target_s_setdir);
+//    addGmCommand("SETSPEECH",       2, 30, CMD_TARGETX,     (CMD_DEFINE)&target_s_setspeech);
+//    addGmCommand("SETOWNER",        2, 31, CMD_TARGETHID4,  (CMD_DEFINE)&target_s_setowner);
 //BYTE-3
     addGmCommand("ADDNPC",          3, 0,  CMD_FUNC,        (CMD_DEFINE)&command_addnpc);
-    addGmCommand("FREEZE",          3, 1,  CMD_TARGET,      (CMD_DEFINE)&target_freeze);
-    addGmCommand("UNFREEZE",        3, 2,  CMD_TARGET,      (CMD_DEFINE)&target_unfreeze);
+    addGmCommand("FREEZE",          3, 1,  CMD_TARGET,      (CMD_DEFINE)&target_s_freeze);
+    addGmCommand("UNFREEZE",        3, 2,  CMD_TARGET,      (CMD_DEFINE)&target_s_unfreeze);
 // 3.3 free!!
 //    addGmCommand("GUMPMENU",        3, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpmenu);
-    addGmCommand("TILEDATA",        3, 5,  CMD_TARGET,      (CMD_DEFINE)&target_tiledata);
-    addGmCommand("RECALL",          3, 6,  CMD_TARGET,      (CMD_DEFINE)&target_recall);
-    addGmCommand("MARK",            3, 7,  CMD_TARGET,      (CMD_DEFINE)&target_mark);
-    addGmCommand("GATE",            3, 8,  CMD_TARGET,      (CMD_DEFINE)&target_gate);
-    addGmCommand("HEAL",            3, 9,  CMD_TARGET,      (CMD_DEFINE)&target_heal);
-    addGmCommand("NPCTARGET",       3, 10, CMD_TARGET,      (CMD_DEFINE)&target_npctarget);
-    addGmCommand("CACHESTATS",      3, 11, CMD_FUNC,        (CMD_DEFINE)&command_cachestats);
+    addGmCommand("TILEDATA",        3, 5,  CMD_TARGET,      (CMD_DEFINE)&target_s_tiledata);
+//    addGmCommand("RECALL",          3, 6,  CMD_TARGET,      (CMD_DEFINE)&target_s_recall);
+//    addGmCommand("MARK",            3, 7,  CMD_TARGET,      (CMD_DEFINE)&target_s_mark);
+//    addGmCommand("GATE",            3, 8,  CMD_TARGET,      (CMD_DEFINE)&target_s_gate);
+    addGmCommand("HEAL",            3, 9,  CMD_TARGET,      (CMD_DEFINE)&target_s_heal);
+//    addGmCommand("NPCTARGET",       3, 10, CMD_TARGET,      (CMD_DEFINE)&target_s_npctarget);
+//    addGmCommand("CACHESTATS",      3, 11, CMD_FUNC,        (CMD_DEFINE)&command_cachestats);
     addGmCommand("NPCRECT",         3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrect);
     addGmCommand("NPCCIRCLE",       3, 13, CMD_FUNC,        (CMD_DEFINE)&command_npccircle);
     addGmCommand("NPCWANDER",       3, 14, CMD_FUNC,        (CMD_DEFINE)&command_npcwander);
     addGmCommand("NPCRECTCODED",    3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrectcoded);
     addGmCommand("TWEAK",			3, 15, CMD_FUNC,		(CMD_DEFINE)&command_tweak);
-    addGmCommand("SBOPEN",          3, 16, CMD_TARGET,      (CMD_DEFINE)&target_sbopen);
+//    addGmCommand("SBOPEN",          3, 16, CMD_TARGET,      (CMD_DEFINE)&target_s_sbopen);
 	addGmCommand("SECONDSPERUOMINUTE", 3, 17, CMD_FUNC,        (CMD_DEFINE)&command_secondsperuominute);
     addGmCommand("BRIGHTLIGHT",     3, 18, CMD_FUNC,        (CMD_DEFINE)&command_brightlight);
     addGmCommand("DARKLIGHT",       3, 19, CMD_FUNC,        (CMD_DEFINE)&command_darklight);
     addGmCommand("DUNGEONLIGHT",    3, 20, CMD_FUNC,        (CMD_DEFINE)&command_dungeonlight);
     addGmCommand("TIME",            3, 21, CMD_FUNC,        (CMD_DEFINE)&command_time);
-    addGmCommand("MANA",            3, 22, CMD_TARGET,      (CMD_DEFINE)&target_mana);
-    addGmCommand("STAMINA",         3, 23, CMD_TARGET,      (CMD_DEFINE)&target_stamina);
+    addGmCommand("MANA",            3, 22, CMD_TARGET,      (CMD_DEFINE)&target_s_mana);
+    addGmCommand("STAMINA",         3, 23, CMD_TARGET,      (CMD_DEFINE)&target_s_stamina);
     addGmCommand("GMOPEN",          3, 24, CMD_FUNC,        (CMD_DEFINE)&command_gmopen);
-    addGmCommand("MAKESHOP",        3, 25, CMD_TARGET,      (CMD_DEFINE)&target_makeshop);
-    addGmCommand("BUY",             3, 26, CMD_TARGET,      (CMD_DEFINE)&target_buy);
-    addGmCommand("SETVALUE",        3, 27, CMD_TARGETX,     (CMD_DEFINE)&target_setvalue);
-    addGmCommand("SETRESTOCK",      3, 28, CMD_TARGETX,     (CMD_DEFINE)&target_setrestock);
+//    addGmCommand("MAKESHOP",        3, 25, CMD_TARGET,      (CMD_DEFINE)&target_s_makeshop);
+//    addGmCommand("BUY",             3, 26, CMD_TARGET,      (CMD_DEFINE)&target_s_buy);
+//    addGmCommand("SETVALUE",        3, 27, CMD_TARGETX,     (CMD_DEFINE)&target_s_setvalue);
+//    addGmCommand("SETRESTOCK",      3, 28, CMD_TARGETX,     (CMD_DEFINE)&target_s_setrestock);
     addGmCommand("RESTOCK",         3, 29, CMD_FUNC,        (CMD_DEFINE)&command_restock);
     addGmCommand("RESTOCKALL",      3, 30, CMD_FUNC,        (CMD_DEFINE)&command_restockall);
  addGmCommand("SETSHOPRESTOCKRATE", 3, 31, CMD_FUNC,        (CMD_DEFINE)&command_setshoprestockrate);
 //BYTE-4
     addGmCommand("WHO",             4, 0,  CMD_FUNC,        (CMD_DEFINE)&command_who);
     addGmCommand("GMS",             4, 1,  CMD_FUNC,        (CMD_DEFINE)&command_gms);
-    addGmCommand("SELL",            4, 2,  CMD_TARGET,      (CMD_DEFINE)&target_sell);
+//    addGmCommand("SELL",            4, 2,  CMD_TARGET,      (CMD_DEFINE)&target_s_sell);
     addGmCommand("MIDI",            4, 3,  CMD_FUNC,        (CMD_DEFINE)&command_midi);
 //    addGmCommand("GUMPOPEN",        4, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpopen);
     addGmCommand("RESPAWN",         4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_respawn);
@@ -593,20 +303,20 @@ cCommandTable::cCommandTable() {
     addGmCommand("REGSPAWNMAX",     4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_regspawnmax);
     addGmCommand("REGSPAWN",        4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_regspawn);
     addGmCommand("REGEDIT",         4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_regedit);
-    addGmCommand("SETSPATTACK",     4, 6,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_setspattack);
-    addGmCommand("SETSPADELAY",     4, 7,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_setspadelay);
-    addGmCommand("SETPOISON",       4, 8,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_setpoison);
-    addGmCommand("SETPOISONED",     4, 9,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_setpoisoned);
-    addGmCommand("SETADVOBJ",       4, 10, CMD_TARGETHTMP,  (CMD_DEFINE)&target_setadvobj);
-    addGmCommand("SETWIPE",         4, 11, CMD_TARGETID1,	  (CMD_DEFINE)&target_setwipe);
-    addGmCommand("FULLSTATS",       4, 12, CMD_TARGET,      (CMD_DEFINE)&target_fullstats);
-    addGmCommand("HIDE",            4, 13, CMD_TARGET,      (CMD_DEFINE)&target_hide);
-    addGmCommand("UNHIDE",          4, 14, CMD_TARGET,      (CMD_DEFINE)&target_unhide);
+//    addGmCommand("SETSPATTACK",     4, 6,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_setspattack);
+//    addGmCommand("SETSPADELAY",     4, 7,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_setspadelay);
+//    addGmCommand("SETPOISON",       4, 8,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_setpoison);
+//    addGmCommand("SETPOISONED",     4, 9,  CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_setpoisoned);
+//    addGmCommand("SETADVOBJ",       4, 10, CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_setadvobj);
+//    addGmCommand("SETWIPE",         4, 11, CMD_TARGETID1,	  (CMD_DEFINE)&target_s_setwipe);
+    addGmCommand("FULLSTATS",       4, 12, CMD_TARGET,      (CMD_DEFINE)&target_s_fullstats);
+    addGmCommand("HIDE",            4, 13, CMD_TARGET,      (CMD_DEFINE)&target_s_hide);
+    addGmCommand("UNHIDE",          4, 14, CMD_TARGET,      (CMD_DEFINE)&target_s_unhide);
     addGmCommand("RELOADSERVER",    4, 15, CMD_FUNC,        (CMD_DEFINE)&command_reloadserver);
-    addGmCommand("READINI",         4, 15, CMD_FUNC,        (CMD_DEFINE)&command_readini);
+//    addGmCommand("READINI",         4, 15, CMD_FUNC,        (CMD_DEFINE)&command_readini);
     addGmCommand("LOADDEFAULTS",    4, 16, CMD_FUNC,        (CMD_DEFINE)&command_loaddefaults);
     addGmCommand("CQ",              4, 17, CMD_FUNC,        (CMD_DEFINE)&command_cq);
-    addGmCommand("WIPENPCS",        4, 18, CMD_FUNC,        (CMD_DEFINE)&command_wipenpcs);
+//    addGmCommand("WIPENPCS",        4, 18, CMD_FUNC,        (CMD_DEFINE)&command_wipenpcs);
     addGmCommand("CNEXT",           4, 19, CMD_FUNC,        (CMD_DEFINE)&command_cnext);
     addGmCommand("CCLEAR",          4, 20, CMD_FUNC,        (CMD_DEFINE)&command_cclear);
     addGmCommand("MINECHECK",       4, 21, CMD_FUNC,        (CMD_DEFINE)&command_minecheck);
@@ -614,34 +324,34 @@ cCommandTable::cCommandTable() {
     addGmCommand("NOINVUL",         4, 23, CMD_FUNC,        (CMD_DEFINE)&command_noinvul);
     addGmCommand("GUARDSON",        4, 24, CMD_FUNC,        (CMD_DEFINE)&command_guardson);
     addGmCommand("GUARDSOFF",       4, 25, CMD_FUNC,        (CMD_DEFINE)&command_guardsoff);
-    addGmCommand("HOUSE",           4, 26, CMD_TARGETHTMP,  (CMD_DEFINE)&target_house);
-    addGmCommand("ANNOUNCEON",      4, 27, CMD_FUNC,        (CMD_DEFINE)&command_announceon);
-    addGmCommand("ANNOUNCEOFF",     4, 28, CMD_FUNC,        (CMD_DEFINE)&command_announceoff);
-    addGmCommand("WF",              4, 29, CMD_FUNC,        (CMD_DEFINE)&command_wf);
+//    addGmCommand("HOUSE",           4, 26, CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_house);
+//    addGmCommand("ANNOUNCEON",      4, 27, CMD_FUNC,        (CMD_DEFINE)&command_announceon);
+    //addGmCommand("ANNOUNCEOFF",     4, 28, CMD_FUNC,        (CMD_DEFINE)&command_announceoff);
+//    addGmCommand("WF",              4, 29, CMD_FUNC,        (CMD_DEFINE)&command_wf);  ndEndy unused so remove
     addGmCommand("NODECAY",         4, 30, CMD_FUNC,        (CMD_DEFINE)&command_nodecay);
-    addGmCommand("SPLIT",           4, 31, CMD_TARGETHTMP,  (CMD_DEFINE)&target_split);
-    addGmCommand("SPLITCHANCE",     4, 31, CMD_TARGETHTMP,  (CMD_DEFINE)&target_splitchance);
+//    addGmCommand("SPLIT",           4, 31, CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_split);
+//    addGmCommand("SPLITCHANCE",     4, 31, CMD_TARGETHTMP,  (CMD_DEFINE)&target_s_splitchance);
 //BYTE-5
-    addGmCommand("WANIM",           5, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wanim);
-    addGmCommand("POSSESS",         5, 1,  CMD_TARGET,      (CMD_DEFINE)&target_possess);
+//    addGmCommand("WANIM",           5, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wanim);
+    addGmCommand("POSSESS",         5, 1,  CMD_TARGET,      (CMD_DEFINE)&target_s_possess);
     addGmCommand("SETTIME",         5, 2,  CMD_FUNC,        (CMD_DEFINE)&command_settime);
-    addGmCommand("KILLALL",         5, 3,  CMD_FUNC,        (CMD_DEFINE)&command_killall);
+//    addGmCommand("KILLALL",         5, 3,  CMD_FUNC,        (CMD_DEFINE)&command_killall);
     addGmCommand("PDUMP",           5, 4,  CMD_FUNC,        (CMD_DEFINE)&command_pdump);
-    addGmCommand("READSPAWNREGIONS",5, 6,  CMD_FUNC,        (CMD_DEFINE)&command_readspawnregions);
-    addGmCommand("CLEANUP",         5, 7,  CMD_FUNC,        (CMD_DEFINE)&command_cleanup);
+//    addGmCommand("READSPAWNREGIONS",5, 6,  CMD_FUNC,        (CMD_DEFINE)&command_readspawnregions);
+//    addGmCommand("CLEANUP",         5, 7,  CMD_FUNC,        (CMD_DEFINE)&command_cleanup);
     addGmCommand("GY",              5, 8,  CMD_FUNC,        (CMD_DEFINE)&command_gy);
-    addGmCommand("TILEW",           5, 9,  CMD_FUNC,        (CMD_DEFINE)&command_tilew);
+//    addGmCommand("TILEW",           5, 9,  CMD_FUNC,        (CMD_DEFINE)&command_tilew);
     addGmCommand("SQUELCH",         5, 10, CMD_FUNC,        (CMD_DEFINE)&command_squelch);
     addGmCommand("MUTE",            5, 10, CMD_FUNC,        (CMD_DEFINE)&command_squelch);
-    addGmCommand("TELESTUFF",       5, 11, CMD_TARGET,      (CMD_DEFINE)&target_telestuff);
+    addGmCommand("TELESTUFF",       5, 11, CMD_TARGET,	    (CMD_DEFINE)&target_s_telestuff);
     addGmCommand("SPAWNKILL",       5, 12, CMD_FUNC,        (CMD_DEFINE)&command_spawnkill);
-    //addGmCommand("SHOWPRIV3",       5, 13, CMD_TARGET,      (CMD_DEFINE)&target_showpriv3);
-    addGmCommand("NEWX",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_newx);
-    addGmCommand("NEWY",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_newy);
-    addGmCommand("INCX",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_incx);
-    addGmCommand("INCY",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_incy);
+    //addGmCommand("SHOWPRIV3",       5, 13, CMD_TARGET,      (CMD_DEFINE)&target_s_showpriv3);
+//    addGmCommand("NEWX",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_s_newx);
+//    addGmCommand("NEWY",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_s_newy);
+//    addGmCommand("INCX",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_s_incx);
+//    addGmCommand("INCY",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_s_incy);
 
-//    addGmCommand("INCZ",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_incz);
+//    addGmCommand("INCZ",            5, 14, CMD_TARGETX,     (CMD_DEFINE)&target_s_incz);
 //CMD_MANAGEDCMD
 
     addGmCommand("SHOWP",           5, 15, CMD_FUNC,        (CMD_DEFINE)&command_showp);
@@ -651,19 +361,19 @@ cCommandTable::cCommandTable() {
     addGmCommand("CFG",             5, 18, CMD_FUNC,        (CMD_DEFINE)&command_cfg);
     addGmCommand("PASSWORD",        5, 19, CMD_FUNC,        (CMD_DEFINE)&command_password);
     addGmCommand("READACCOUNTS",    5, 20, CMD_FUNC,        (CMD_DEFINE)&command_readaccounts);
-    addGmCommand("LETUSIN",         5, 21, CMD_FUNC,        (CMD_DEFINE)&command_letusin);
+//    addGmCommand("LETUSIN",         5, 21, CMD_FUNC,        (CMD_DEFINE)&command_letusin);
     addGmCommand("SERVERSLEEP",     5, 22, CMD_FUNC,        (CMD_DEFINE)&command_serversleep);
-addGmCommand("RELOADCACHEDSCRIPTS", 5, 23, CMD_FUNC,        (CMD_DEFINE)&command_reloadcachedscripts);
-    addGmCommand("SETHOME",         5, 24, CMD_TARGETXYZ,	  (CMD_DEFINE)&target_sethome);
-    addGmCommand("SETWORK",         5, 24, CMD_TARGETXYZ,   (CMD_DEFINE)&target_setwork);
-    addGmCommand("SETFOOD",         5, 24, CMD_TARGETXYZ,   (CMD_DEFINE)&target_setfood);
-//{"GLOW",        5,  25, CMD_TARGET,		(CMD_DEFINE)&target_glow},
-//{"UNGLOW",      5,  25, CMD_TARGET,		(CMD_DEFINE)&target_unglow},
+//addGmCommand("RELOADCACHEDSCRIPTS", 5, 23, CMD_FUNC,        (CMD_DEFINE)&command_reloadcachedscripts);
+//    addGmCommand("SETHOME",         5, 24, CMD_TARGETXYZ,	  (CMD_DEFINE)&target_s_sethome);
+//    addGmCommand("SETWORK",         5, 24, CMD_TARGETXYZ,   (CMD_DEFINE)&target_s_setwork);
+//    addGmCommand("SETFOOD",         5, 24, CMD_TARGETXYZ,   (CMD_DEFINE)&target_s_setfood);
+//{"GLOW",        5,  25, CMD_TARGET,		(CMD_DEFINE)&target_s_glow},
+//{"UNGLOW",      5,  25, CMD_TARGET,		(CMD_DEFINE)&target_s_unglow},
     addGmCommand("SETMURDER",       5, 26, CMD_FUNC,        (CMD_DEFINE)&command_setmurder);//taken from 6904t2(5/10/99) - AntiChrist
     addGmCommand("SETMENUPRIV",     5, 27, CMD_FUNC,        (CMD_DEFINE)&command_setmenupriv);
-    addGmCommand("SPY",				5, 28, CMD_TARGET,      (CMD_DEFINE)&target_spy);
-    addGmCommand("DELID",           5, 29, CMD_FUNC,        (CMD_DEFINE)&command_delid);
-    addGmCommand("DELTYPE",         5, 30, CMD_FUNC,        (CMD_DEFINE)&command_deltype);
+    addGmCommand("SPY",				5, 28, CMD_TARGET,      (CMD_DEFINE)&target_s_spy);
+//    addGmCommand("DELID",           5, 29, CMD_FUNC,        (CMD_DEFINE)&command_delid);
+//    addGmCommand("DELTYPE",         5, 30, CMD_FUNC,        (CMD_DEFINE)&command_deltype);
     addGmCommand("SYSM",            5, 31, CMD_FUNC,        (CMD_DEFINE)&command_sysm);
 }
 
@@ -849,14 +559,6 @@ void command_reloadracescript(NXWSOCKET  s)
 	pc->sysmsg("Racescripts reloaded.");
 }
 
-void command_reloadcachedscripts(NXWSOCKET  s)
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	pc->sysmsg("Command disabled now :| Sorry.");
-}
-
 // Returns the current bulletin board posting mode for the player
 void command_post(NXWSOCKET  s)
 {
@@ -920,62 +622,29 @@ void command_lpost(NXWSOCKET  s)
 	pc_cs->sysmsg("Now posting LOCAL messages." );
 }
 
-// taken from 6904t2(5/10/99) - AntiChrist
-void command_setmurder(NXWSOCKET  s)
+
+
+void target_setMurderCount( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	pc->kills = t->buffer[0];
+    setcharflag(pc);
+
+}
+
+void command_setmurder( NXWCLIENT ps )
 {
 	if( tnum == 2 )
 	{
-		addmitem[s]=strtonum(1);
-		target(s, 0, 1, 0, 240, "Select the person to set the murder count of: ");
+		P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cCharTarget() );
+		targ->buffer[0]=strtonum(1);
+		targ->send( ps );
+		ps->sysmsg( "Select the person to set the murder count of: ");
 	}
 }
 
-/*
-void command_setacct(NXWSOCKET  s)
-{
-
-}
-
-void command_addacct(NXWSOCKET  s)
-{
-
-}
-
-void command_banacct(NXWSOCKET  s)
-{
-
-}
-
-void command_unbanacct(NXWSOCKET  s)
-{
-
-}
-
-void command_removeacct(NXWSOCKET  s)
-{
-
-}*/
-
-
-// bug clearing if players get account already in use for no reason.
-// that bug should be gone in 11.9 but I got a bit paranoid bout it. LB
-void command_letusin(NXWSOCKET  s)
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	int a,x;
-	for (a=0,x=0; a<MAXCLIENT; a++) // maxclient instead of now is essential here !
-	{
-		if ( acctno[a]>=0 )
-		{
-			Accounts->SetOffline(acctno[a]);
-			x++;
-		}
-	}
-
-	pc->sysmsg("command successfull, cleared %i poor souls",x);
-}
 
 void command_readaccounts(NXWSOCKET  s)
 {
@@ -1017,18 +686,64 @@ numbers.</LI>
 <A HREF="http://stud4.tuwien.ac.at/%7Ee9425109/uox3_1.htm">
 Lord Binary's UOX Site</A>.
 */
-void command_setpriv3(NXWSOCKET  s)
+
+void target_setPriv3( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
+
+    pc->priv3[0]=priv3a[s];
+    pc->priv3[1]=priv3b[s];
+    pc->priv3[2]=priv3c[s];
+    pc->priv3[3]=priv3d[s];
+    pc->priv3[4]=priv3e[s];
+    pc->priv3[5]=priv3f[s];
+    pc->priv3[6]=priv3g[s];
+}
+
+void target_setPriv3X( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF( t->getClicked() );
+	VALIDATEPC(pc);
+
+	NXWSOCKET socket = ps->toInt();
+
+	int grantcmd=1;
+	int revokecmd;
+
+	P_COMMAND cmd = commands->findCommand( (char*)t->buffer_str[0].c_str() );
+
+	if( t->buffer[0] )
+	{
+		pc->priv3[ cmd->cmd_priv_m ] |= ( grantcmd << cmd->cmd_priv_b );
+		sysmessage( socket, "%s has been granted access to the %s command.", pc->getCurrentNameC(), cmd->cmd_name );
+	}
+	else
+	{
+		revokecmd = 0xFFFFFFFF - ( grantcmd << cmd->cmd_priv_b );
+		pc->priv3[ cmd->cmd_priv_m ] &= revokecmd;
+		sysmessage( socket, "%s has been revoked access to the %s command.", pc->getCurrentNameC(), cmd->cmd_name );
+	}
+}
+
+
+void command_setpriv3( NXWCLIENT ps )
+{
+
+	P_CHAR pc_cs=ps->currChar();
 	VALIDATEPC(pc_cs);
+
+	NXWSOCKET s = ps->toInt();
 
 	UI32 i;
 	int y;
 
 	switch(tnum) {
 		case 7:
-		case 8:
+		case 8: {
 			if (SrvParms->gm_log)
 				WriteGMLog(pc_cs, "setpriv3 executed!\n");
 
@@ -1038,11 +753,15 @@ void command_setpriv3(NXWSOCKET  s)
 			priv3d[s]=strtonum(4);
 			priv3e[s]=strtonum(5);
 			priv3f[s]=strtonum(6);
-			if(tnum==8) priv3g[s]=strtonum(7);
-				else priv3g[s]=0;
-			target(s, 0, 1, 0, 250, "Select player to set command clearance");
+			priv3g[s] = (tnum==8)? strtonum(7) : 0;
+
+			P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+			targ->code_callback = target_setPriv3;
+			targ->send( ps );
+			ps->sysmsg( "Select player to set command clearance");
+			}
 			break;
-		case 2:
+		case 2: {
 			y=strtonum(1);
 			if (SrvParms->gm_log)
 				WriteGMLog(pc_cs, "setpriv3 executed!\n");
@@ -1061,7 +780,12 @@ void command_setpriv3(NXWSOCKET  s)
 			priv3e[s]=metagm[y][4];
 			priv3f[s]=metagm[y][5];
 			priv3g[s]=metagm[y][6];
-			target(s, 0, 1, 0, 250, "Select player to set command clearance");
+
+			P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+			targ->code_callback = target_setPriv3;
+			targ->send( ps );
+			ps->sysmsg( "Select player to set command clearance");
+			}
 			break;
 		case 3:	/* new code to allow + COMMAND or - COMMAND 07/24/99 */
 			if((!strcmp((char*)comm[1], "+"))||(!strcmp((char*)comm[1], "-"))) {
@@ -1072,24 +796,18 @@ void command_setpriv3(NXWSOCKET  s)
 
 				P_COMMAND cmd = commands->findCommand((char*)comm[2]);
 
-/*				i=0; z=-1;
-				loopexit=0;
-				while((command_table[i].cmd_name)&&(z==-1) && (++loopexit < MAXLOOPS)) {
-					if(!(strcmp((char*)command_table[i].cmd_name, (char*)comm[2]))) z=i;
-					i++;
-				} */
 				if(cmd==NULL) {
 					pc_cs->sysmsg("That command doesn't exist.");
 				} else if(cmd->cmd_priv_m==255) {
 					pc_cs->sysmsg("No special permissions are neccessary to use that command.");
 				} else {
-					//
-					//	Sparhawk:	Very very dirty trick to get setpriv3 cmd working again
-					//
-					addx[s]= (int)(reinterpret_cast<long>(cmd));
-					addy[s]=y;
-					sprintf(s_szCmdTableTemp, "Select player to alter %s command access.", cmd->cmd_name);
-					target(s, 0, 1, 0, 225, s_szCmdTableTemp);
+					
+					P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+					targ->code_callback = target_setPriv3X;
+					targ->buffer[0]=y;
+					targ->buffer_str[0] = cmd->cmd_name;
+					targ->send( ps );
+					ps->sysmsg( "Select player to alter %s command access.", cmd->cmd_name);
 				}
 			} else {
 				pc_cs->sysmsg("2-Argument Usage: /SETPRIV3 +/- COMMAND");
@@ -1374,20 +1092,13 @@ void command_goplace(NXWSOCKET  s)
 
 	if (tnum==2)
 	{
-		Commands::MakePlace(s, strtonum(1));
-		if (addx[s]!=0)
-		{
-			//////////////////////////////////
-			// Adding the gmmove effects..Aldur
-			pc_cs->doGmEffect();
+		pc_cs->doGmEffect();
 
-			pc_cs->MoveTo( addx[s],addy[s],addz[s] );
-			pc_cs->teleport();
+		pc_cs->goPlace( strtonum(1) );
+		pc_cs->teleport();
 
-			pc_cs->doGmEffect();
-		}
+		pc_cs->doGmEffect();
 	}
-	return;
 }
 
 // (h h h h) Teleports you to another character.
@@ -1465,18 +1176,34 @@ void command_fix(NXWSOCKET  s)
 	return;
 }
 
-void command_xgoplace(NXWSOCKET  s)
+void target_xgo( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	if(ISVALIDPC(pc)) {
+	    pc->MoveTo( t->buffer[0], t->buffer[1], t->buffer[2] );
+		pc->teleport();
+    }
+}
+
+void command_xgoplace( NXWCLIENT ps )
 // (d) Send another character to a location in your LOCATIONS.SCP file.
 {
 	if (tnum==2)
 	{
-		Commands::MakePlace(s, strtonum(1));
-		if (addx[s]!=0)
+		int x, y, z;
+		location2xyz( strtonum(1), x, y, z );
+		if( x>0 )
 		{
-			target(s, 0, 1, 0, 8, "Select char to teleport.");
+			NXWSOCKET s = ps->toInt();
+			P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+			targ->code_callback = target_xgo;
+			targ->buffer[0]=x;
+			targ->buffer[1]=y;
+			targ->buffer[2]=z;
+			targ->send( ps );
+			ps->sysmsg( "Select char to teleport.");
 		}
 	}
-	return;
 
 }
 
@@ -1594,20 +1321,24 @@ void command_setseason(NXWSOCKET  s)
 		pc->sysmsg("Setseason takes one argument.");
 }
 
-void command_xtele(NXWSOCKET  s)
-// (d / h h h h / nothing) Teleport a player to your position.
-// <UL><LI>If you specify nothing (/XTELE), you click on the player to teleport in.</LI>
-// <LI>If you specify a serial number (/XTELE .. .. .. ..), you teleport that player to you.</LI>
-// <LI>If you specify a single number (/XTELE ..), you teleport the player logged in
-// under that slot to you.</LI>
-// </UL>
+void target_xtele( NXWCLIENT ps, P_TARGET t )
 {
-			if (tnum==5 || tnum==2) Targ->XTeleport(s, tnum);
-			else
-			{
-				target(s, 0, 1, 0, 136, "Select char to teleport to your position.");
-			}
-			return;
+	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	P_CHAR curr=ps->currChar();
+
+	pc->MoveTo( curr->getPosition() );
+	pc->teleport();
+}
+
+void command_xtele( NXWCLIENT ps )
+// (nothing) Teleport a player to your position.
+{
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cCharTarget() );
+	targ->code_callback = target_xtele;
+	targ->send( ps );
+	ps->sysmsg( "Select char to teleport to your position." );
 }
 
 void command_go(NXWSOCKET  s)
@@ -1646,87 +1377,6 @@ void command_zerokills(NXWSOCKET  s)
 			sysmessage(s,"All player kills are now 0.");*/
 }
 
-void command_tile(NXWSOCKET  s)
-// (h h) Tiles the item specified over a square area.
-// To find the hexidecimal ID code for an item to tile,
-// either create the item with /add or find it in the
-// world.
-{
-	if (tnum==3) {
-		if ( server_data.always_add_hex )
-		{
-			addid1[s]=hexnumber(1);
-			addid2[s]=hexnumber(2);
-		}
-		else
-		{
-			addid1[s]=strtonum(1);//id1
-			addid2[s]=strtonum(2);//id2
-		}
-		clickx[s]=-1;
-		clicky[s]=-1;
-		target(s,0,1,0,198,"Select first corner of bounding box.");  // 198 didn't seem taken...
-	}
-}
-
-/*
-void command_wipe(NXWSOCKET  s)
-// (d d d d / nothing) Deletes ALL NPC's and items inside a specified square.
-// <UL><LI>With no arguments, /WIPE will ask you to click in opposing corners of
-// the square.</LI>
-// <LI>You may also specify coordinates - X1, Y1, X2, Y2.</LI>
-// </UL>
-{
-			addid1[s]=0; // addid1[s]==0 is used to denote a true wipe
-			if (tnum==1) {
-				clickx[s]=-1;
-				clicky[s]=-1;
-				target(s,0,1,0,199,"Select first corner of wiping box.");  // 199 didn't seem taken...
-			} else if (tnum==2) {
-				if (!strcmp("ALL",&tbuffer[Commands::cmd_offset+5])) {
-					// Really should warn that this will wipe ALL objects...
-					Commands::Wipe(s);
-			}}
-			else if (tnum==5) { // Wipe according to world coordinates
-				clickx[s]=strtonum(1);
-				clicky[s]=strtonum(2);
-				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
-				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				Targ->Wiping(s);
-			}
-
-			return;
-
-}
-
-void command_iwipe(NXWSOCKET  s)
-// (d d d d / nothing) Deletes ALL NPC's and items NOT inside a specified square.
-// <UL><LI>With no arguments, /IWIPE will ask you to click in opposing corners of
-// the square.</LI>
-// <LI>You may also specify coordinates - X1, Y1, X2, Y2.</LI>
-// </UL>
-{
-			addid1[s]=1;  // addid1[s]==1 is used to denote the INVERSE wipe
-			if (tnum==1) {
-				clickx[s]=-1;
-				clicky[s]=-1;
-				target(s,0,1,0,199,"Select first corner of inverse wiping box.");  // 199 didn't seem taken...
-			} else if (tnum==2) {
-				if (!strcmp("ALL",&tbuffer[Commands::cmd_offset+6])) {
-					sysmessage(s,"Well aren't you the funny one!");
-			}}
-			else if (tnum==5) { // Wipe according to world coordinates
-				clickx[s]=strtonum(1);
-				clicky[s]=strtonum(2);
-				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
-				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				Targ->Wiping(s);
-			}
-
-			return;
-
-}
-*/
 
 void command_appetite(NXWSOCKET socket )
 {
@@ -1751,36 +1401,70 @@ void command_appetite(NXWSOCKET socket )
 	}
 }
 
+/*!
+\brief Adds an item when using 'add # #
+*/
+void target_addTarget( NXWCLIENT ps, P_TARGET t )
+{
+    
+    P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
+    VALIDATEPI(pi);
+
+	UI16 id = DBYTE2WORD( t->buffer[0], t->buffer[1] );
+	
+	tile_st tile;
+    data::seekTile( id, tile );
+
+    pi->setId( id );
+    pi->pileable = tile.flags&TILEFLAG_STACKABLE;
+    pi->setDecay( false );
+	Location location = t->getLocation();
+	location.z+=tileHeight( t->getModel() );
+    pi->MoveTo( location );
+    pi->Refresh();
+
+}
+
 void command_add(NXWSOCKET  s)
 // (h h) Adds a new item, or opens the GM menu if no hex codes are specified.
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc );
 
-	if (tnum==2 || tnum>3)//AntiChrist
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )	return;
+
+	if (tnum!=3)//AntiChrist
 	{
-		pc->sysmsg("Syntax error. Usage: /add <id1> <id2>");
-		return;
-	} else if (tnum==3)
+		ps->sysmsg( "Syntax error. Usage: /add <id1> <id2>" );
+	} 
+	else
 	{
+		UI32 a;
+		UI32 b;
 		if ( server_data.always_add_hex ) { 
-			addid1[s]=hexnumber(1);
-			addid2[s]=hexnumber(2);
+			a=hexnumber(1);
+			a=hexnumber(2);
 		}
 		else {
-			addid1[s]=strtonum(1);
-			addid2[s]=strtonum(2);
+			b=strtonum(1);
+			b=strtonum(2);
 		}
-		if (addid1[s]<0x40)
+		clientInfo[s]->resetTarget();
+		if( a<0x40 )
 		{
-			target(s, 0, 1, 0, 0, "Select location for item.");
+			P_TARGET trg = clientInfo[s]->newTarget( new cLocationTarget() );
+			ps->sysmsg( "Select location for item..." );
+			trg->buffer[0]=a;
+			trg->buffer[1]=b;
+			trg->code_callback = target_addTarget;
+			trg->send( ps );
 		}
-	} else if (tnum==1)
-	{
-		itemmenu( s, 1 );
 	}
-	return;
 }
+
+
+
 
 // (h h) Adds a new item to your current location.
 void command_addx(NXWSOCKET  s)
@@ -1803,17 +1487,30 @@ void command_addx(NXWSOCKET  s)
 
 }
 
-/*
-void command_rename(NXWSOCKET  s)
-// (text) Renames any dynamic item in the game.
+
+void target_rename( NXWCLIENT ps, P_TARGET t )
+{
+	P_OBJECT po = objects.findObject( t->getClicked() );
+	VALIDATEPO( po );
+
+	po->setCurrentName( t->buffer_str[0] );
+}
+
+
+void command_rename( NXWCLIENT ps )
+// (text) Renames any dynamic object in the game.
 {
 	if (tnum>1)
 	{
-		strcpy(xtext[s], &tbuffer[Commands::cmd_offset+7]);
-		target(s, 0, 1, 0, 1, "Select item or character to rename.");
+		P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cObjectTarget() );
+		targ->buffer_str[0] = tbuffer[Commands::cmd_offset+7];
+		targ->code_callback = target_rename;
+		targ->send( ps );
+		ps->sysmsg( "Select object to rename..." );
+
 	}
 }
-*/
+
 
 void command_cfg(NXWSOCKET  s)
 // (text) Renames any dynamic item in the game.
@@ -1829,87 +1526,80 @@ void command_cfg(NXWSOCKET  s)
 }
 
 
-/*
-void command_title(NXWSOCKET  s)
-// (text) Changes the title of any player or NPC.
-{
-	if (tnum>1)
-	{
-		strcpy(xtext[s], &tbuffer[Commands::cmd_offset+6]);
-		target(s, 0, 1, 0, 47, "Select character to change the title of.");
-	}
-}
-*/
-
 void command_save(NXWSOCKET  s)
 // Saves the current world data into NXWITEMS.WSC and NXWCHARS.WSC.
 {
 	cwmWorldState->saveNewWorld();
 }
 
-void command_dye(NXWSOCKET  s)
-// (h h/nothing) Dyes an item a specific color, or brings up a dyeing menu if no color is specified.
+void target_setpriv( NXWCLIENT ps, P_TARGET t )
 {
-			dyeall[s]=1;
-			if (tnum==3)
-			{
-				if ( server_data.always_add_hex ) { 
-					addid1[s]=hexnumber(1);
-					addid2[s]=hexnumber(2);
-				}
-				else {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-				}
-			}
-			else
-			{
-				addid1[s]=255;
-				addid2[s]=255;
-			}
-			target(s, 0, 1, 0, 4, "Select item to dye.");
-			return;
+	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+	P_CHAR curr=ps->currChar();
+	VALIDATEPC(curr);
 
+	if (SrvParms->gm_log)   //Logging
+		WriteGMLog(curr, "%s as given %s Priv [%x][%x]\n", curr->getCurrentNameC(), pc->getCurrentNameC(), t->buffer[0], t->buffer[1] );
+
+    pc->SetPriv( t->buffer[0] );
+    pc->priv2=t->buffer[1];
 }
 
-void command_wtrig(NXWSOCKET  s)
-// (word) Sets the trigger word on an NPC.
+void target_setprivItem( NXWCLIENT ps, P_TARGET t )
 {
-	if (tnum>1)
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+	VALIDATEPI(pi);
+
+	switch( t->buffer[0] )
 	{
-		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-		if(!(pc_currchar->unicode))
-			strcpy(xtext[s], &tbuffer[15]);
-		else
-			strcpy(xtext[s], &tbuffer[20]);
-		target(s, 0, 1, 0, 203, "Select the NPC to set trigger word on.");
+        case 0	:
+			//pi->priv=pi->priv&0xFE; // lb ...
+			pi->setDecay( false );
+			pi->setNewbie();
+			pi->setDispellable();
+			break;
+        case 1	:
+			pi->setDecay();
+			break;
+        case 3	:
+			pi->priv = t->buffer[1];
+			break;
 	}
 }
 
-void command_setpriv(NXWSOCKET  s)
+
+void command_setpriv( NXWCLIENT ps )
 // (Chars/NPCs: h h, Objects: h) Sets priviliges on a Character or object.
 {
 	if (tnum==3)
 	{
-		addid1[s]=strtonum(1);
-		addid2[s]=strtonum(2);
-		target(s, 0, 1, 0, 9, "Select char to edit priv.");
+		P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cCharTarget() );
+		targ->code_callback = target_setpriv;
+		targ->buffer[0]=strtonum(1);
+		targ->buffer[1]=strtonum(2);
+		targ->send( ps );
+		ps->sysmsg( "Select char to edit priv." );
 	}
-	if (tnum==2)
+	else if (tnum==2)
 	{
-		addid1[s]=3;
-		addid2[s]=strtonum(1);
-		target(s, 0, 1, 0, 89, "Select object to edit priv.");
+		P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cItemTarget() );
+		targ->code_callback = target_setprivItem;
+		targ->buffer[0]=3;
+		targ->buffer[1]=strtonum(1);
+		targ->send( ps );
+		ps->sysmsg( "Select object to edit priv." );
 	}
-	return;
 }
 
-void command_nodecay(NXWSOCKET  s)
+void command_nodecay( NXWCLIENT ps )
 // Prevents an object from ever decaying.
 {
-			addid1[s]=0;
-			target(s, 0, 1, 0, 89, "Select object to make permenant.");
-			return;
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cItemTarget() );
+	targ->code_callback=target_setprivItem;
+	targ->buffer[0]=0;
+	targ->send( ps );
+	ps->sysmsg( "Select object to make permenant." );
 }
 
 
@@ -2165,19 +1855,31 @@ void command_additem(NXWSOCKET  s)
 	return;
 }
 
-void command_dupe(NXWSOCKET  s)
+void target_dupe( NXWCLIENT ps, P_TARGET t )
+{
+    int n = t->buffer[0];
+	if( n>=1)
+    {
+        P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+        if (ISVALIDPI(pi))
+        {
+            for (int j=0; j<n; j++ )
+            {
+                Commands::DupeItem( ps->toInt(), pi->getSerial32(), pi->amount );
+                ps->sysmsg( "DupeItem done.");
+            }
+        }
+    }
+}
+
+void command_dupe( NXWCLIENT ps )
 // (d / nothing) Duplicates an item. If a parameter is specified, it's how many copies to make.
 {
-	if (tnum==2)
-	{
-		addid1[s]=strtonum(1);
-		target(s, 0, 1, 0, 110, "Select an item to dupe.");
-	}
-	else
-	{
-		addid1[s]=1;
-		target(s, 0, 1, 0, 110, "Select an item to dupe.");
-	}
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cItemTarget() );
+	targ->buffer[0] = (tnum==2)? strtonum(1) : 1;
+	targ->code_callback=target_dupe;
+	targ->send( ps );
+	ps->sysmsg( "Select an item to dupe." );
 }
 
 
@@ -2301,16 +2003,45 @@ void command_temp(NXWSOCKET  s)
 	sysmessage(s, TRANSLATE("This command is simply no more supported. Sorry :["));
 }
 
-void command_addnpc(NXWSOCKET  s)
+
+void target_addNpc( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	if( t->buffer[0]==0 ) {
+	
+		P_CHAR pc=archive::character::New();
+
+		pc->setCurrentName("Dummy");
+		pc->SetBodyType( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
+		pc->SetOldBodyType( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
+		pc->setSkinColor(0);
+		pc->setOldSkinColor(0);
+		pc->SetPriv(0x10);
+
+		Location loc = t->getLocation();
+		loc.z+=tileHeight( t->getModel() );
+		pc->MoveTo( loc.x, loc.y, loc.z );
+		pc->npc=1;
+		pc->teleport();
+	}
+	else {
+		//PDDAFARE
+		//P_CHAR pc = npcs::
+	}
+}
+
+void command_addnpc( NXWCLIENT ps )
+{
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
+	NXWSOCKET s = ps->toInt();
+
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cLocationTarget() );
 	if (tnum==3)
 	{
-		addid1[s]=strtonum(1);
-		addid2[s]=strtonum(2);
-		target(s, 0, 1, 0, 33, "Select location for the NPC.");
+		targ->buffer[0]=0;
+		targ->buffer[1]=strtonum(1);
+		targ->buffer[2]=strtonum(2);
 	}
 	else if (tnum==2)
 	{
@@ -2319,36 +2050,22 @@ void command_addnpc(NXWSOCKET  s)
 			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+7]) ) 
 			{
 				pc->sysmsg("Char symbol %s undefined !", &tbuffer[Commands::cmd_offset+8]);
+				clientInfo[s]->resetTarget();
 				return;
 			}
-			addmitem[s] = str2num(&tbuffer[Commands::cmd_offset+7],10);
+			targ->buffer[1] = str2num(&tbuffer[Commands::cmd_offset+7],10);
 		}
 		else
 		{
-			addmitem[s]=strtonum(1);
+			targ->buffer[1]=strtonum(1);
 		}
-		target(s, 0, 1, 0, 27, "Select location for the NPC.");
+		targ->buffer[0]=1;
 	}
+	targ->code_callback=target_addNpc;
+	targ->send( ps );
+	ps->sysmsg( "Select location for the NPC.");
 }
 
-
-void command_readini(NXWSOCKET  s)
-// Re-loads the NoXWizard.INI file.
-{
-	sysmessage(s, "noxwizard.ini is no more used. Please change and reload server.scp instead.");
-}
-
-void command_cachestats(NXWSOCKET  s)
-// Display some information about the cache.
-{
-		/*	sprintf(s_szCmdTableTemp, "Hits: %d", stablockcachehit);
-			sysmessage(s, s_szCmdTableTemp);
-			sprintf(s_szCmdTableTemp, "Misses: %d", stablockcachemiss);
-			sysmessage(s, s_szCmdTableTemp);
-			sprintf(s_szCmdTableTemp, "Total: %d", (stablockcachehit+stablockcachemiss));
-			sysmessage(s, s_szCmdTableTemp);*/
-			return;
-}
 
 void command_npcrect(NXWSOCKET  s)
 // (d d d d) Set bounding box for a NPC with a NPCWANDER of 3.
@@ -2553,46 +2270,39 @@ void command_regedit(NXWSOCKET  s)
 	VALIDATEPC( pc );
 	sprintf(s_szCmdTableTemp,"Region edit command called by %s.\n", pc->getCurrentNameC());
 	LogMessage(s_szCmdTableTemp);
-	newAmxEvent("gui_rgnList")->Call( pc->getSerial32(), 0 );
+	//newAmxEvent("gui_rgnList")->Call( pc->getSerial32(), 0 );
 }
 
 void command_reloadserver(NXWSOCKET  s)
 // Reloads the SERVER.cfg file.
 {
-			loadserverscript();
-			sysmessage(s,"server.cfg reloaded.");
-			return;
+	loadserverscript();
+	sysmessage(s,"server.cfg reloaded.");
 }
 
 void command_loaddefaults(NXWSOCKET  s)
 // Loads the server defaults.
 {
-			loadserverdefaults();
-			return;
-
+	loadserverdefaults();
 }
 
 void command_cq(NXWSOCKET  s)
 // Display the counselor queue.
 {
-			Commands::ShowGMQue(s, 0); // Show the Counselor queue, not GM queue
-			return;
+	Commands::ShowGMQue(s, 0); // Show the Counselor queue, not GM queue
 }
 
 void command_cnext(NXWSOCKET  s)
 // Attend to the next call in the counselor queue.
 {
-			Commands::NextCall(s, 0); // Show the Counselor queue, not GM queue
-			return;
+	Commands::NextCall(s, 0); // Show the Counselor queue, not GM queue
 
 }
 
 void command_cclear(NXWSOCKET  s)
 // Remove the current call from the counselor queue.
 {
-			donewithcall(s, 0); // Show the Counselor queue, not GM queue
-			return;
-
+	donewithcall(s, 0); // Show the Counselor queue, not GM queue
 }
 
 void command_minecheck(NXWSOCKET  s)
@@ -2600,7 +2310,6 @@ void command_minecheck(NXWSOCKET  s)
 {
 	if (tnum==2)
 		SrvParms->minecheck=strtonum(1);
-	return;
 }
 
 void command_invul(NXWSOCKET  s)
@@ -2635,52 +2344,14 @@ void command_guardsoff(NXWSOCKET  s)
 
 }
 
-void command_announceon(NXWSOCKET  s)
-// Enable announcement of world saves.
-{
-
-}
-
-void command_announceoff(NXWSOCKET  s)
-// Disable announcement of world saves.
-{
-
-}
-
-void command_wf(NXWSOCKET  s)
-// Make the specified item worldforge compatible.
-{
-			if (tnum==2)
-			{
-				addid1[s]=255;
-				target(s, 0, 1, 0, 6, "Select item to make WorldForge compatible.");
-			}
-			return;
-
-}
-
-void command_decay(NXWSOCKET  s)
+void command_decay( NXWCLIENT ps )
 // Enables decay on an object.
 {
-			addid1[s]=1;
-			target(s, 0, 1, 0, 89, "Select object to decay.");
-			return;
-
-}
-
-void command_killall(NXWSOCKET  s)
-// (d text) Kills all of a specified item.
-{
-			if(tnum>2)
-			{
-				if(strtonum(1)<10)
-					Commands::KillAll(s, strtonum(1), &tbuffer[Commands::cmd_offset+9]);
-				else if (strtonum(1)<100)
-					Commands::KillAll(s, strtonum(1), &tbuffer[Commands::cmd_offset+10]);
-				else
-					Commands::KillAll(s, strtonum(1), &tbuffer[Commands::cmd_offset+11]);
-			}
-			return;
+	P_TARGET targ=clientInfo[ps->toInt()]->newTarget( new cItemTarget() );
+	targ->code_callback=target_setprivItem;
+	targ->buffer[0]=1;
+	targ->send( ps );
+	ps->sysmsg( "Select object to decay.");
 
 }
 
@@ -2703,30 +2374,6 @@ void command_pdump(NXWSOCKET  s)
 
 	sprintf(s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 	sysmessage(s, s_szCmdTableTemp);
-}
-
-/*
-void command_rename2(NXWSOCKET  s)
-// (text) Rename an item or character.
-{
-			 if (tnum>1)
-			 {
-				addx[s]=1;
-				strcpy(xtext[s], &tbuffer[Commands::cmd_offset+8]);
-				target(s, 0, 1, 0, 1, "Select item or character to rename.");
-			 }
-			 return;
-
-}
-*/
-
-void command_readspawnregions(NXWSOCKET  s)
-// Re-read the SPAWN.SCP file.
-{
-		/*REMOVE	  loadspawnregions();
-			  sysmessage(s,"Spawnregions reloaded.");
-			  return;
-	*/
 }
 
 void command_gy(NXWSOCKET  s)
@@ -2810,72 +2457,65 @@ void command_yell(NXWSOCKET  s)
 	}
 }
 
-void command_tilew(NXWSOCKET  s)
-// (h h d d d d d) id id x1 x2 y1 y2 z - Tile an object using specified id & coordinates.
-// <UL><LI>The first two numbers are hexidecimal, and are the ID codes for
-// the item to tile.</LI>
-// <LI>The second pair of numbers is the decimal coordinates of the upper
-// left hand corner of the box being tiled. To get this value, go to the
-// upper left hand corner and type /WHERE.</LI>
-// <LI>The third pair of numbers is the lower right hand corner of the
-// box being tiled.</LI>
-// <LI>The final number is the Z-Axis of the box being tiled.</LI></UL>
+void target_squelch( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
+	P_CHAR curr = ps->currChar();
+	VALIDATEPC(curr);
 
-	if(tnum==8)
-	{
-		if ( server_data.always_add_hex )
-		{
-			addid1[s]=hexnumber(1);
-			addid2[s]=hexnumber(2);
-		} else {
-			addid1[s]=strtonum(1);//id1
-			addid2[s]=strtonum(2);//id2
-		}
+	P_CHAR pc =pointers::findCharBySerial( t->getClicked() );
+	if(ISVALIDPC(pc))
+    {
+        if(pc->IsGM())
+        {
+            curr->sysmsg(TRANSLATE("You cannot squelch GMs."));
+            return;
+        }
 
-		int pile=0;
+        if (pc->squelched)
+        {
+            pc->squelched=0;
+            curr->sysmsg(TRANSLATE("Un-squelching..."));
+            pc->sysmsg(TRANSLATE("You have been unsquelched!"));
+            pc->mutetime=0;
+        }
+        else
+        {
+            pc->mutetime=0;
+            curr->sysmsg( TRANSLATE("Squelching...") );
+            pc->sysmsg( TRANSLATE("You have been squelched!") );
 
-		tile_st tile;
-		data::seekTile( (addid1[s]<<8) | addid2[s], tile);
-		if (tile.flags&TILEFLAG_STACKABLE) pile=1;
-		for (int x=strtonum(3);x<=strtonum(4);x++)
-		{
-			for (int y=strtonum(5);y<=strtonum(6);y++)
-			{
-				P_ITEM pa = item::CreateFromScript( "$item_hardcoded" );
-
-				if(ISVALIDPI(pa)) //AntiChrist - to preview crashes
-				{
-					pa->setId( (addid1[s]<<8) | addid2[s] );
-					pa->priv=0; //Make them not decay
-					pa->MoveTo( x, y, strtonum(7) );
-					pa->Refresh();//AntiChrist
-				}
-			}
-		}
-
-		addid1[s]=0; // lb, i was so free and placed it here so that we dont have y-1 rows of 0-id items ... hope that was not intentinal ..
-		addid2[s]=0;
-	}
-	else { pc->sysmsg("Format: /tilew ID1 ID2 X1 X2 Y1 Y2 Z"); }
+            if( t->buffer[0]!=INVALID )
+            {
+                pc->mutetime = uiCurrentTime+ t->buffer[0]*MY_CLOCKS_PER_SEC;
+                pc->squelched=2;
+            }
+			else
+				pc->squelched=1;
+        }
+    }
 }
 
-void command_squelch(NXWSOCKET  s)
+
+void command_squelch( NXWCLIENT ps )
 // (d / nothing) Squelchs specified player. (Makes them unnable to speak.)
 {
 
-                        if (tnum==2)
-                        {
-                                if (strtonum(1)!=0 || strtonum(1)!=-1)
-                                {
-                                        addid1[s]=255;
-                                        addid1[s]=strtonum(1);
-                                }
-                        }
-                        target(s,0,1,0,223,"Select character to squelch.");
-                        return;
+	P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cCharTarget() );
+
+    if (tnum==2)
+	{
+		int value = strtonum(1);
+		if( value>0 )
+		{
+			targ->buffer[0]=strtonum(1);
+		}
+		else
+			targ->buffer[0]=INVALID;
+	}
+
+	targ->code_callback = target_squelch;
+	targ->send( ps );
+	ps->sysmsg( "Select character to squelch." );
 
 }
 
@@ -2906,18 +2546,6 @@ void command_options(NXWSOCKET  s)
 	cmd->Call( s );
 }
 
-
-void command_wanim(NXWSOCKET  s)
-// (d d) Changes server lighting animation.
-{
-   if(tnum==3)
-   {
-	   w_anim[0]=(signed char) strtonum(1);
-	   w_anim[1]=(signed char) strtonum(2);
-
-	   sysmessage(s,"new lightening animation set!");
-   }
-}
 
 void command_gotocur(NXWSOCKET  s)
 // Goes to the current call in the GM/Counsellor Queue
@@ -3074,133 +2702,6 @@ void command_regspawnall(NXWSOCKET  s)
 	sysmessage(s, "[DONE] All NPCs/items spawned in regions");
 }
 
-void command_wipenpcs(NXWSOCKET  s)
-{
-        return;
-       /* int k,j,deleted=0;
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	k=charcount;
-	for(j=0;j<charcount;j++)
-	{
-		P_CHAR pNpc= MAKE_CHAR_REF(j);
-
-        if( ISVALIDPC(pNpc) && pNpc->npc && (pNpc->npcaitype!=17) && !pNpc->tamed )// Ripper
-		{
-			NxwSocketWrapper sw;
-			sw.fillOnline();
-			for( sw.rewind(); !sw.isEmpty(); sw++ )
-				SendDeleteObjectPkt(sw.getSocket(), pNpc->getSerial32());
-
-			pNpc->deleteChar();
-			deleted++;
-		}
-	}
-
-
-	if (SrvParms->gm_log) 
-		WriteGMLog(pc, "npc wipe done, %i npcs deleted\n",deleted);
-
-	gcollect();
-
-	sysbroadcast(TRANSLATE("All NPC's have been wiped."));
-        */
-}
-
-void command_cleanup(NXWSOCKET  s)
-{
-        return;
-        /*int corpses=0;
-        char s_szCmdTableTemp[100];
-
-        sysmessage(s,"Cleaning corpses and closing gates...");
-        for(int i=0;i<itemcount;i++)
-        {
-				P_ITEM pi=MAKE_ITEM_REF(i);
-				if(ISVALIDPI(pi))
-				{
-					if((pi->corpse==1)||(pi->type==51)||(pi->type==52))
-					{
-						pi->deleteItem();
-						corpses++;
-					}
-				}
-        }
-        gcollect();
-        sysmessage(s, "[DONE]");
-        sprintf(s_szCmdTableTemp, "%i corpses or gates have been cleaned.",corpses);
-        sysmessage(s, s_szCmdTableTemp);*/
-}
-
-/* new commands go just above this line. :-) */
-
-
-void command_setmenupriv(NXWSOCKET  s)
-{
-	 int i=0;
-
-	 if (tnum==2)
-     {
-       i=strtonum(1);
-	   if (menupriv[i][0]==-1)
-	   {
-		   sysmessage(s,"invalid menu priv number");
-		   return;
-	   }
-
-	   addid1[s]=i;
-       target(s,0,1,0,248,"Select character to set menu privs.");
-       return;
-
-	 } else sysmessage(s,"this command takes one arument");
-}
-
-void command_delid( NXWSOCKET  s )
-{
-        return;
-/*        if (tnum != 3)
-	{
-		sysmessage( s, "Syntax Error. Usage: /delid <id1> <id2>" );
-		return;
-	}
-
-	unsigned char id1 = strtonum(1);
-	unsigned char id2 = strtonum(2);
-	for( int i = 0; i < itemcount; i++ )
-	{
-		P_ITEM pi=MAKE_ITEM_REF(i);
-		if(ISVALIDPI(pi))
-		{
-			if( pi->id1 == id1 && pi->id2 == id2 )
-				pi->deleteItem();
-		}
-	}*/
-}
-
-void command_deltype( NXWSOCKET  s )
-{
-        return;
-        /*if (tnum != 2)
-	{
-		sysmessage( s, "Syntax Error. Usage: /deltype <type>" );
-		return;
-	}
-
-	unsigned int type = strtonum(1);
-	for( int i = 0; i < itemcount; i++ )
-	{
-		P_ITEM pi=MAKE_ITEM_REF(i);
-		if(ISVALIDPI(pi))
-		{
-			if( pi->type == type )
-				pi->deleteItem();
-		}
-	} */
-}
-
-// blackwind system message
 void command_sysm(NXWSOCKET  s)
 {
 	if (now == 1)
@@ -3212,27 +2713,32 @@ void command_sysm(NXWSOCKET  s)
 	sysbroadcast(xtext[s]);
 }
 
-void command_eclipse(NXWSOCKET  s)
+void target_jail( NXWCLIENT ps, P_TARGET t )
 {
-	SrvParms->eclipsetimer = (unsigned int)((double) uiCurrentTime +(ECLIPSETIMER*MY_CLOCKS_PER_SEC));
-	sysmessage(s, "Eclipse ! Earth fades !! ");
+	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC( pc );
+	
+	prison::jail( ps->currChar(), pc, t->buffer[0] );
 }
 
-void command_jail(NXWSOCKET  s)
+void command_jail( NXWCLIENT ps )
 // (d) Jails the target with given secs.
 {
-	if (tnum == 2)
+	P_TARGET targ=clientInfo[ ps->toInt() ]->newTarget( new cCharTarget() );
+	targ->code_callback=target_jail;
+
+	if (tnum==2 )
 	{
-		addmitem[s] = strtonum(1); // We temporary use addmitem for jail secs.
-		sprintf(s_szCmdTableTemp, "Select Character to jail. [Jailtime: %i secs]", addmitem[s]);
-		target(s, 0, 1, 0, 126, s_szCmdTableTemp);
+		targ->buffer[0]=strtonum(1);
+		ps->sysmsg( "Select Character to jail. [Jailtime: %i secs]", targ->buffer[0] );
 	}
 	else
 	{
-		addmitem[s] = DEFAULTJAILTIME;
-		strcpy(s_szCmdTableTemp, "Select Character to jail. [Jailtime: 1 day]");
-		target(s, 0, 1, 0, 126, s_szCmdTableTemp);
+		targ->buffer[0]=24*60*60;
+		ps->sysmsg( "Select Character to jail. [Jailtime: 1 day]" );
 	}
+
+	targ->send( ps );
 }
 
 // handler for the movement effect
@@ -3279,4 +2785,216 @@ void command_password(NXWSOCKET  s)
 		sysmessage(s, "You must digit 'PASSWORD <newpassword>");
 		return;
 }
+
+void target_tele( NXWCLIENT ps, P_TARGET t )
+{
+	
+	P_CHAR pc= ps->currChar();
+	VALIDATEPC(pc);
+
+	Location location = t->getLocation();
+	Location charpos= pc->getPosition();
+
+	if( line_of_sight( ps->toInt(), charpos.x, charpos.y, charpos.z, location.x, location.y, location.z, WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING ) ||
+		pc->IsGM() )
+	{
+		pc->doGmEffect();
+		location.z+=tileHeight( t->getModel() );
+		pc->MoveTo( location );
+		pc->teleport();
+		pc->doGmEffect();
+	}
+
+}
+
+void target_remove( NXWCLIENT ps, P_TARGET t )
+{
+	
+	SERIAL serial = t->getClicked();
+	
+	if( isCharSerial( serial ) )	{
+		P_CHAR pc=pointers::findCharBySerial( serial );
+		VALIDATEPC(pc);
+
+		if (pc->amxevents[EVENT_CHR_ONDISPEL]) {
+			pc->amxevents[EVENT_CHR_ONDISPEL]->Call( pc->getSerial32(), INVALID, DISPELTYPE_GMREMOVE );
+		}
+
+        if (pc->account>INVALID && !pc->npc)
+        {
+            ps->sysmsg( TRANSLATE("You cant delete players") );
+            return;
+        }
+
+        ps->sysmsg( TRANSLATE("Removing character.") );
+		pc->Delete();
+	}
+	else {
+		P_ITEM pi=pointers::findItemBySerial( serial );
+		VALIDATEPI(pi);
+
+		ps->sysmsg( TRANSLATE("Removing item.") );
+        if( pi->amxevents[EVENT_IONDECAY] )
+			pi->amxevents[EVENT_IONDECAY]->Call( pi->getSerial32(), DELTYPE_GMREMOVE );
+        ps->sysmsg( TRANSLATE("Removing item.") );
+        pi->Delete();
+	}
+
+}
+
+
+void target_dye( NXWCLIENT ps, P_TARGET t )
+{
+	
+	SERIAL serial = t->getClicked();
+	
+	UI16 color = t->buffer[0];
+
+	P_CHAR curr = ps->currChar();
+	VALIDATEPC(curr);
+
+    if( isItemSerial(serial) ) {
+		P_ITEM pi=pointers::findItemBySerial(serial);
+		if (ISVALIDPI(pi))
+		{
+			if( color==INVALID ) //open dye vat
+			{
+				SndDyevat( ps->toInt(), pi->getSerial32(), pi->id() );
+			}	
+			else {
+				if (! ((color & 0x4000) || (color & 0x8000)) )
+				{
+					pi->setColor(color);
+				}
+
+				if (color == 0x4631)
+				{
+					pi->setColor(color);
+				}
+
+				pi->Refresh();
+			}
+		}
+	}
+	else {
+		P_CHAR pc=pointers::findCharBySerial(serial);
+		if(ISVALIDPC(pc))
+		{
+			if( color==INVALID ) //open dye vat
+			{
+				SndDyevat( ps->toInt(), pc->getSerial32(), 0x2106 );
+			}
+			else {
+				
+				UI16 body = pc->GetBodyType();
+
+				if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
+
+				if ((color & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) color = 0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
+
+				if (color != 0x8000)
+				{
+					pc->setSkinColor(color);
+					pc->setOldSkinColor(color);
+					pc->teleport( TELEFLAG_NONE );
+
+				}
+			}
+		}
+    }
+
+}
+
+
+
+
+void command_dye( NXWCLIENT ps )
+// (h h/nothing) Dyes an item a specific color, or brings up a dyeing menu if no color is specified.
+{
+	
+	P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cObjectTarget() );
+	
+
+	if (tnum==3)
+	{
+		if ( server_data.always_add_hex ) { 
+			targ->buffer[0]=DBYTE2WORD( hexnumber(1), hexnumber(2) );
+		}
+		else {
+			targ->buffer[0]=DBYTE2WORD( strtonum(1), strtonum(2) );
+		}
+	}
+	else
+	{
+		targ->buffer[0]=INVALID;
+	}
+
+	targ->code_callback = target_dye;
+	targ->send( ps );
+	ps->sysmsg( "Select item to dye..." );
+
+}
+
+void target_newz( NXWCLIENT ps, P_TARGET t )
+{
+
+    SERIAL serial = t->getClicked();
+
+	if( isCharSerial( serial ) ) {
+		P_CHAR pc=pointers::findCharBySerial( serial );
+		VALIDATEPC(pc);
+
+		Location location = pc->getPosition();
+		location.z = location.dispz = t->buffer[0];
+		pc->setPosition( location );
+		pc->teleport();
+	}
+	else {
+		P_ITEM pi=pointers::findItemBySerial( serial );
+		VALIDATEPI(pi);
+
+		Location location = pi->getPosition();
+		location.z = t->buffer[0];
+		pi->setPosition( location );
+		pi->Refresh();
+	}
+
+};
+
+void command_newz( NXWCLIENT ps )
+{
+	if (tnum==2) {
+		P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cObjectTarget() );
+		targ->buffer[0] = strtonum(1);
+		targ->code_callback = target_newz;
+		targ->send( ps );
+		ps->sysmsg( "Select item to reposition..." );
+	}
+
+}
+
+
+void target_setid( NXWCLIENT ps, P_TARGET t )
+{
+
+    SERIAL serial = t->getClicked();
+	UI16 value = DBYTE2WORD( t->buffer[0], t->buffer[1] );
+
+	if( isCharSerial( serial ) ) {
+		P_CHAR pc=pointers::findCharBySerial( serial );
+		VALIDATEPC(pc);
+
+		pc->SetBodyType( value );
+		pc->SetOldBodyType( value );
+		pc->teleport();
+	}
+	else {
+		P_ITEM pi=pointers::findItemBySerial( serial );
+		VALIDATEPI(pi);
+
+		pi->setId( value );
+        pi->Refresh();
+	}
+}
+
 

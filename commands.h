@@ -39,7 +39,6 @@ namespace Commands
 	void Wipe(NXWSOCKET s);
 	void CPage(NXWSOCKET s, std::string reason);
 	void GMPage(NXWSOCKET s, std::string reason);
-	void MakePlace(NXWSOCKET s, int i);
 	void Command( NXWSOCKET , char * );
 	void MakeShop(int c);
 	void DyeItem(NXWSOCKET s);

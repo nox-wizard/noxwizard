@@ -78,27 +78,21 @@ namespace Commands
 			case CMD_FUNC:
 				(*((CMD_EXEC)cmd->cmd_extra)) (s);
 				break;
-			case CMD_ITEMMENU:
-				itemmenu( s, (SI32)(reinterpret_cast<long>(cmd->cmd_extra)));
+			case CMD_TARGET: {
+				P_TARGET target = clientInfo[s]->newTarget();
+				target->code_callback=((target_st*)cmd->cmd_extra)->func;
+				target->send( client, true );
+				client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
 				break;
-			case CMD_TARGET:
-				_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				break;
+			}
 			case CMD_TARGETX:
 				if(tnum==2) {
-					addx[s]=strtonum(1);
+					P_TARGET target = clientInfo[s]->newTarget();
+					target->buffer[0]=strtonum(1);
+					target->send( client, false );
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
 					client->sysmsg("This command takes one number as an argument.");
-				}
-				break;
-			case CMD_TARGETXY:
-				if(tnum==3) {
-					addx[s]=strtonum(1);
-					addy[s]=strtonum(2);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes two numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETXYZ:
@@ -111,72 +105,6 @@ namespace Commands
 					sysmessage(s, "This command takes three numbers as arguments.");
 				}
 				break;
-			case CMD_TARGETHX:
-				if(tnum==2) {
-					addx[s]=strtonum(1);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes one hex number as an argument.");
-				}
-				break;
-			case CMD_TARGETHXY:
-				if(tnum==3) {
-					addx[s]=strtonum(1);
-					addy[s]=strtonum(2);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes two hex numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETHXYZ:
-				if(tnum==4) {
-					addx[s]=strtonum(1);
-					addy[s]=strtonum(2);
-					addz[s]=strtonum(3);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes three hex numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETID1:
-				if(tnum==2) {
-					addid1[s]=strtonum(1);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes one number as an argument.");
-				}
-				break;
-			case CMD_TARGETID2:
-				if(tnum==3) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes two numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETID3:
-				if(tnum==4) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					addid3[s]=strtonum(3);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes three numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETID4:
-				if(tnum==5) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					addid3[s]=strtonum(3);
-					addid4[s]=strtonum(4);
-					//ConOut("1: %i 2: %i 3: %i 4: %i\n",addid1[s],addid2[s],addid2[s],addid3[s],addid4[s]);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes four numbers as arguments.");
-				}
-				break;
 			case CMD_TARGETHID1:
 				if(tnum==2) {
 					addid1[s]=strtonum(1);
@@ -185,55 +113,9 @@ namespace Commands
 					client->sysmsg("This command takes one hex number as an argument.");
 				}
 				break;
-			case CMD_TARGETHID2:
-				if(tnum==3) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes two hex numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETHID3:
-				if(tnum==4) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					addid3[s]=strtonum(3);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes three hex numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETHID4:
-				if(tnum==5) {
-					addid1[s]=strtonum(1);
-					addid2[s]=strtonum(2);
-					addid3[s]=strtonum(3);
-					addid4[s]=strtonum(4);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes four hex numbers as arguments.");
-				}
-				break;
-			case CMD_TARGETTMP:
-				if(tnum==2) {
-					tempint[s]=strtonum(1);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes a number as an argument.");
-				}
-				break;
-			case CMD_TARGETHTMP:
-				if(tnum==2) {
-					tempint[s]=strtonum(1);
-					_do_target(s, (TARGET_S *)cmd->cmd_extra);
-				} else {
-					client->sysmsg("This command takes a hex number as an argument.");
-				}
-				break;
 			case CMD_MANAGEDCMD:
-			client->startCommand(cmd, speech);
-			break;
+				client->startCommand(cmd, speech);
+				break;
 			default:
 				client->sysmsg("INTERNAL ERROR: Command has a bad command type set!");
 				break;
@@ -797,14 +679,6 @@ namespace Commands
 	}
 
 
-	void MakePlace(NXWSOCKET s, int i) // Decode a teleport location number into X/Y/Z
-	{
-		int zz;
-		location2xyz(i, addx[s], addy[s], zz);
-		addz[s] = zz;
-	}
-
-
 	void DupeItem(NXWSOCKET s, int i, int amount)
 	{
 		P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
@@ -932,84 +806,5 @@ namespace Commands
 
 		pc->possess(pcPos);
 
-	/*	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-		P_CHAR pPos = FindCharBySerPtr(buffer[s]+7);	// char to posess
-		if (!pPos) return;
-
-		if (pPos->shopkeeper)
-		{
-			sysmessage(s,"You cannot use shopkeepers.");
-			return;
-		}
-		if (!pPos->npc)
-		{
-			sysmessage( s, "You can only possess NPCs." );
-			return;
-		}
-
-		unsigned char tmp;
-		P_CHAR pc_currchar  = MAKE_CHARREF_LR(currchar[s]);
-
-		if( pPos->npc == 17 ) // Char's old body
-		{
-			tmp = pPos->GetPriv();
-			pPos->SetPriv(pc_currchar->GetPriv());
-			pc_currchar->SetPriv(tmp);
-
-			tmp = pPos->priv2;
-			pPos->priv2 = pc_currchar->priv2;
-			pc_currchar->priv2 = tmp;
-
-			tmp = pPos->commandLevel;
-			pPos->commandLevel = pc_currchar->commandLevel;
-			pc_currchar->commandLevel = tmp;
-
-			for(int i = 0; i < 7; i++)
-			{
-		int tempi = pPos->priv3[i];
-		pPos->priv3[i] = pc_currchar->priv3[i];
-		pc_currchar->priv3[i] = tempi;
-			}
-
-			pPos->npc = 0;
-			pc_currchar->npc = 1;
-			pc_currchar->account = INVALID;
-			currchar[s] = DEREF_P_CHAR(pPos);
-			//Network->startchar( s );
-			Network->enterchar( s );
-			sysmessage( s, "Welcome back to your old body." );
-		}
-		else if( pPos->npc )
-		{
-			tmp = pPos->GetPriv();
-			pPos->SetPriv(pc_currchar->GetPriv());
-			pc_currchar->SetPriv(tmp);
-
-			tmp = pPos->priv2;
-			pPos->priv2 = pc_currchar->priv2;
-			pc_currchar->priv2 = tmp;
-
-			tmp = pPos->commandLevel;
-			pPos->commandLevel = pc_currchar->commandLevel;
-			pc_currchar->commandLevel = tmp;
-
-			for(int i = 0; i < 7; i++)
-			{
-		int tempi = pPos->priv3[i];
-		pPos->priv3[i] = pc_currchar->priv3[i];
-		pc_currchar->priv3[i] = tempi;
-			}
-
-			pPos->npc = 0;
-			pPos->account = pc_currchar->account;
-			pc_currchar->npc = 17;
-			pc_currchar->npcWander = 0;
-			currchar[s] = DEREF_P_CHAR(pPos);
-			//Network->startchar( s );
-			Network->enterchar( s );
-			sprintf((char*)temp,"Welcome to %s's body!", pPos->getCurrentNameC() );
-			sysmessage(s, (char*)temp);
-		}
-		else*/
 	}
 };
