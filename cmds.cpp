@@ -226,8 +226,8 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 			if( strcmp( pch, "\0" )!=0 ){
 				
 				strcpy(param, pch);
+				
 				par=param;
-				InfoOut("PARMA %s\n",(char*)par.c_str());
 				pc_currchar->setCommandParams(n, par);
 				n++;
 			}
@@ -235,13 +235,8 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 			pch = strtok (NULL, " ");
 		}
 
-		while(n<9){
-			pc_currchar->setCommandParams(n, "_");
-			n++;
-		}
   		
 		par=pc_currchar->getCommandParams(8);
-		InfoOut("PARMA %s\n",(char*)par.c_str());
 		p_cmd->call(pc_currchar); //Let's call the Small Function
    
 		
