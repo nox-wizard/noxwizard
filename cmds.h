@@ -69,14 +69,14 @@ public:
 
 	cCallCommand(std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8);
 
-	std::string param1;
-	std::string param2;
-	std::string param3;
-	std::string param4;
-	std::string param5;
-	std::string param6;
-	std::string param7;
-	std::string param8;
+	std::string param1=NULL;
+	std::string param2=NULL;
+	std::string param3=NULL;
+	std::string param4=NULL;
+	std::string param5=NULL;
+	std::string param6=NULL;
+	std::string param7=NULL;
+	std::string param8=NULL;
 
 
 }
