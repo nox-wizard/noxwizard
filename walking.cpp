@@ -289,7 +289,8 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	SI08 z, dispz=0;
 
-	z = isWalkable( pc->getPosition() );
+	z = isWalkable( pc->getPosition(), WALKFLAG_MAP + WALKFLAG_STATIC + WALKFLAG_DYNAMIC );
+
 	//WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
 	// check if player is banned from a house - crackerjack 8/12/99
