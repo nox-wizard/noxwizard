@@ -42,7 +42,7 @@ static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
 static wstring emptyUnicodeString;
-
+static wstring *PemptyUnicodeString;
 extern int g_nStringMode;
 
 VAR_TYPE getPropertyType(int property)
@@ -1923,9 +1923,13 @@ const char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 
 wstring& getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
+	if ( property == NXW_CP_UNI_SPEECH_CURRENT )
+		if ( pc->getSpeechCurrent() != NULL )
+			return *pc->getSpeechCurrent();
+		else
+			return emptyUnicodeString;
 	switch( property )
 	{
-		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , GETPWSTRING( pc->getSpeechCurrent() ) )
 		CHECK(  NXW_CP_UNI_PROFILE, pc->profile )
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );

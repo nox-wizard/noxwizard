@@ -890,7 +890,7 @@ NATIVE(_isTrueGM)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    return pc->IsTrueGM();
+    return pc->IsGM();
 }
 
 /*
