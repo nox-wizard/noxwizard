@@ -1011,7 +1011,8 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 */
 void cChar::updateStats(SI32 stat)
 {
-	checkSafeStats();
+	if ( ! this->morphed )
+		checkSafeStats();
 
 	int a = 0, b = 0;
 
