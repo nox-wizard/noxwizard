@@ -1082,7 +1082,7 @@ void setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_B_UNICODE :							//dec value: 10;
 			pc->unicode = value;
 			break;
-		case NXW_CP_C_SHOPKEEPER :						// dec value 11;
+		case NXW_CP_B_SHOPKEEPER :						// dec value 11;
 			pc->shopkeeper = value;
 			break;
 		case NXW_CP_B_ATTACKFIRST :						//dec value: 12;
@@ -1636,7 +1636,7 @@ bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_POLYMORPH , pc->polymorph)  			//dec value: 8;
 		CHECK(  NXW_CP_B_TAMED , pc->tamed )  				//dec value: 9;
 		CHECK(  NXW_CP_B_UNICODE , pc->unicode )  			//dec value: 10;
-		CHECK(  NXW_CP_C_SHOPKEEPER , pc->shopkeeper ) 			//dec value: 11;
+		CHECK(  NXW_CP_B_SHOPKEEPER , pc->shopkeeper ) 			//dec value: 11;
 		CHECK(  NXW_CP_B_ATTACKFIRST , pc->HasAttackedFirst() )  	//dec value: 12;
 		CHECK(  NXW_CP_B_ISBEINGTRAINED, pc->isBeingTrained() )  	//dec value: 13;
 		CHECK(  NXW_CP_B_GUILDTOGGLE , pc->HasGuildTitleToggle() )  	//dec value: 14;
