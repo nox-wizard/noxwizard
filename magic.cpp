@@ -665,6 +665,8 @@ static void damage(P_CHAR pa, P_CHAR pd, SpellId spellnum, int spellflags = 0, i
 		mod = 1.0 + (evint - resist) / 500.0;
 	}
 
+	if ( mod < 0.1 ) // Luxor
+		mod = 0.1;
 	damage *= mod;
 	int amount = static_cast<int>(damage);
 
@@ -1359,11 +1361,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if ( pd != 0 ) {
 				CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
-				if ((src->in+10)>(pd->in)) damage(src, pd, spellnumber, flags, param);
-				else {
-					damage(pd, src, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
-					src->attackStuff(pd);
-				}
+				param = ( (src->in + 10) - pd->in ) / 4;
+				damage(pd, src, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
 			}
 			break;
 
