@@ -1030,7 +1030,7 @@ void doubleclick(NXWCLIENT ps)
 			return;
 		case 0x1057:
 		case 0x1058: // sextants
-			getSextantCords(charpos.x, charpos.y, (charpos.x >= 5121), temp2);
+			getSextantCoords(charpos.x, charpos.y, (charpos.x >= 5121), temp2);
 			sprintf( temp, TRANSLATE("You are at: %s"), temp2);
 			sysmessage(s, temp);
 			return;

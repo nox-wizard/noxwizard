@@ -728,14 +728,14 @@ char indungeon(P_CHAR pc)
 \brief converts x,y coords to sextant coords
 \author LB
 \param x,y coords of object
-\param sextant sextant cords as string (char *)
+\param sextant sextant coords as string (char *)
 \param t2a are in lost lands?
 \warning memory for output string sextant has to be reserved by callee !
 		 if not -> crash (has to be >=36 bytes !)
 \note thanks goes to Balxan / UOAM for the basic alogithm
 	  could be optimized a lot, but the freuqency of being called is probably very low
 */
-void getSextantCords(signed int x, signed int y, bool t2a, char *sextant)
+void getSextantCoords(signed int x, signed int y, bool t2a, char *sextant)
 {
    double Tx, Ty, Dx, Dy, Cx, Cy, Wx, Wy, Mx, My, Hx, Hy;
    signed int xH, xM, yH, yM;

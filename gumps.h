@@ -7,13 +7,22 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Gumps Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __GUMPS_H__
+#define __GUMPS_H__
+
+void whomenu(int s, int type);
+void playermenu(int s, int type);
+void gmmenu(int s, int m);
+void choice(int s);
+void who(int s);
+void itemmenu(int s, int m);
+
+void entrygump(int s, unsigned char tser1, unsigned char tser2, unsigned char tser3, unsigned char tser4, unsigned char type, char index, short int maxlength, char *text1);
+
 
 #endif

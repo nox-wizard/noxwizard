@@ -7,13 +7,20 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Script related functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __SCRIPTS_H__
+#define __SCRIPTS_H__
+
+void splitLine( char* source, char *head, char *tail );
+void gettokennum(std::string s, int num);
+void readFullLine ();
+int getRangedValue(char *stringguy);
+
+void readw2();
+void readw3();
 
 #endif

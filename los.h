@@ -20,6 +20,10 @@
 
 using namespace std;
 
+int line_of_sight(int s, Location a, Location b, int checkfor); // added by Anthalir
+int line_of_sight(int s, int x1, int y1, int z1, int x2, int y2, int z2, int checkfor);
+
+
 /*!
 \brief need for Line of Sight checking
 \author Duke ( 26/12/01 )

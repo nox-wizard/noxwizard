@@ -7,13 +7,21 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Walking Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __WALKING_H__
+#define __WALKING_H__
+
+int validNPCMove(int x, int y, signed char z, P_CHAR pc_s);
+
+void walking(P_CHAR pc, int dir, int sequence);
+void walking2(P_CHAR pc_s);
+void npcwalk( P_CHAR pc_i, int newDirection, int type);
+void npcMovement( P_CHAR pc_i );
+
 
 #endif
+

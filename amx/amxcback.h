@@ -43,6 +43,7 @@ void initAmxEvents(void);
 int addTimer (int cback, int time, int more1=-1, int more2=-1);
 int amxTarget (int s, int callback, char *phrase);
 void targetCallback (int s, TargetLocation &TL);
+bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type);
 
 
 /*!

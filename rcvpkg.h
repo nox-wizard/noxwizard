@@ -7,9 +7,15 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+/*!
+\file
+\brief Receive Packets stuff
+*/
+
 #ifndef __RCVPKG_H
 #define __RCVPKG_H
 
 void RcvAttack(NXWCLIENT ps);
+void AttackStuff (NXWSOCKET  s, P_CHAR victim);
 
 #endif

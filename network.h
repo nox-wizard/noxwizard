@@ -126,4 +126,6 @@ class cNetwork
 
 extern class cNetwork	*Network;
 
+NXWCLIENT getClientFromSocket(int s);
+
 #endif

@@ -36,6 +36,8 @@ template<typename T> inline void qswap(T& a, T& b) { T dummy; dummy = a; a = b; 
 
 inline bool chance(int percent) { return ( (rand()%100) < percent); }
 
+inline int calcserial(unsigned char a1,unsigned char a2,unsigned char a3,unsigned char a4) {return (static_cast<int>((a1<<24))|static_cast<int>((a2<<16)) | static_cast<int>((a3<<8)) | static_cast<int>(a4));}
+
 inline int calcCharFromPtr(unsigned char *p)
 {
 	int serial;

@@ -943,6 +943,6 @@ class cChar : public cObject
 		std::vector< UI32 >	lootVector;
 };
 
-
+void openspecialbank(NXWSOCKET s, int i);
 
 #endif

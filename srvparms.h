@@ -13,6 +13,8 @@
 void loadserverdefaults();
 void loadserverscript();
 void loadclientsallowed();
+void saveserverscript();
+
 void preloadSections(char *fn);
 int cfg_command (char *commandstr);
 extern void commitserverscript(); // second phase setup

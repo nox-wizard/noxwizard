@@ -10,12 +10,19 @@
 #ifndef __TRADE_H__
 #define __TRADE_H__
 
+void buyaction(int s);
+void sellaction(int s);
+P_ITEM tradestart(P_CHAR pc1, P_CHAR pc2);
+void clearalltrades();
+void trademsg(int s);
+void dotrade(P_ITEM cont1,P_ITEM cont2);
+
+
 typedef struct {
 	int layer;
 	P_ITEM item;
 	int amount;
 } buyeditem;
-
 
 #define RESTOCK_PER_TIME 20
 #define CHECK_RESTOCK_EVERY 3

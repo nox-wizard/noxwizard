@@ -140,7 +140,7 @@ HEADERS =	\
 		amx/amx.h \
 		amx/amxcback.h \
 		amx/amxscript.h \
-		aamx/mxvarserver.h \
+		amx/mxvarserver.h \
 		amx/amxwraps.h \
 		amx/amx_api.h \
 		amx/amx_comp.h \
@@ -192,7 +192,6 @@ HEADERS =	\
 		osdefs.h \
 		packets.h \
 		party.h \
-		prototypes.h \
 		range.h \
 		race.h \
 		raceability.h \

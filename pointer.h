@@ -15,6 +15,12 @@
 #ifndef __POINTERS_H__
 #define __POINTERS_H__
 
+void setptr(lookuptr_st *ptr, int item);
+void removefromptr(lookuptr_st *ptr, int nItem);// - remove item from pointer array
+int findbyserial(lookuptr_st *ptr, int nSerial, int nType);// - find item in a pointer array
+void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& it);
+
+
 /*!
 \brief Pointer related stuff
 */

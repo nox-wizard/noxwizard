@@ -7,13 +7,15 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Newbie Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __NEWBIE_H__
+#define __NEWBIE_H__
+
+void newbieitems(P_CHAR pc);
+
 
 #endif

@@ -7,13 +7,15 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief HTML Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __HTML_H__
+#define __HTML_H__
+
+void updatehtml();
+void offlinehtml();
 
 #endif

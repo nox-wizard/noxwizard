@@ -1204,7 +1204,6 @@ void cChar::attackStuff(P_CHAR pc)
 }
 
 /*!
-\brief wrapper for HelpStuff()
 \author Xanathar
 \param pc_i as default
 */
@@ -3959,15 +3958,16 @@ void cChar::openBankBox(CHARACTER cc)
 \author Endymion
 \param s socket of who see
 \param i character owner of bank
-\remark If activated, you can only put golds into normal banks
-		and there are special banks (for now we still use normal bankers,
-		but u have to say the SPECIALBANKTRIGGER word to open it)
-		where u can put all the items: one notice: the special bank
-		is caracteristic of regions....so in Britain you don't find
-		the items you leaved in Minoc!
-		All this for increasing pk-work and commerce! :)
-		(and surely the Mercenary work, so now have to pay strong
-		warriors to escort u during your travels!)
+
+If activated, you can only put golds into normal banks
+and there are special banks (for now we still use normal bankers,
+but u have to say the SPECIALBANKTRIGGER word to open it)
+where u can put all the items: one notice: the special bank
+is caracteristic of regions....so in Britain you don't find
+the items you leaved in Minoc!
+All this for increasing pk-work and commerce! :)
+(and surely the Mercenary work, so now have to pay strong
+warriors to escort u during your travels!)
 */
 void openspecialbank(NXWSOCKET s, SI32 i)
 {

@@ -59,7 +59,6 @@ void close( SERIAL iSet )
 
 bool end( SERIAL iSet )
 {
-	SERIAL ser = INVALID;
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
 		if( iter->second.p_set!=NULL ) {
@@ -70,7 +69,6 @@ bool end( SERIAL iSet )
 
 void rewind( SERIAL iSet )
 {
-	SERIAL ser = INVALID;
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
 		if( iter->second.p_set!=NULL ) {
@@ -80,7 +78,6 @@ void rewind( SERIAL iSet )
 
 void next( SERIAL iSet )
 {
-	SERIAL ser = INVALID;
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
 		if( iter->second.p_set!=NULL ) {

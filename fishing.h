@@ -7,13 +7,15 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Fishing Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __FISHING_H__
+#define __FISHING_H__
+
+int SpawnFishingMonster(P_CHAR pc, char* cScript, char* cList, char* cNpcID);
+int SpawnFishingItem(int nCharID,int nInPack, char* cScript, char* cList, char* cItemID);
 
 #endif

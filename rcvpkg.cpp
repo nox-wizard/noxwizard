@@ -9,6 +9,7 @@
 
 #include "nxwcommn.h"
 #include "sndpkg.h"
+#include "rcvpkg.h"
 #include "srvparms.h"
 #include "amx/amxcback.h"
 #include "debug.h"

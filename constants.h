@@ -56,8 +56,6 @@ enum
 	ITEMMENUOFFSET = 256,
 	CUSTOMICONLISTVALUE = 16384,
 
-	MAXARCHID = 14,	//!< for fileArchive()
-
 }; //enum
 
 #define UINVALID (UI08)INVALID

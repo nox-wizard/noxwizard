@@ -14,6 +14,7 @@
 
 
 void setCrimGrey (P_CHAR pc, int mode);
+void usehairdye(int s, P_ITEM pidye);
 
 #ifdef WIN32
     char *getHKLMRegistryString(char *key, char *subkey);

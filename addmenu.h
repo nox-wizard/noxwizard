@@ -44,9 +44,6 @@ public:
 
 MakeItem* getMakeItem(int n);
 void execMake(P_CHAR pc, int n);
-
-
-
+void showAddMenu (P_CHAR pc, int menu);
 
 #endif
-

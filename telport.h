@@ -7,13 +7,18 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Teleport related functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __TELPORT_H__
+#define __TELPORT_H__
+
+void objTeleporters(P_CHAR pc);
+int validtelepos(P_CHAR pc);
+void advancementobjects(CHARACTER s, int x, int always);
+void teleporters(P_CHAR pc);
+void read_in_teleport();
 
 #endif

@@ -7,13 +7,16 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef _SREGIONS_H
-#define _SREGIONS_H
+/*!
+\file
+\brief Double and Single Clicks Functions
+*/
 
-void loadregions();
-void checkregion(int i);
-short calcRegionFromXY(Location pos);	// added by Anthalir
-short calcRegionFromXY(int x, int y);
-void check_region_weatherchange ();
+#ifndef __DBL_SINGLE_CLICK_H__
+#define __DBL_SINGLE_CLICK_H__
+
+void doubleclick(NXWCLIENT ps);
+void dbl_click_character(NXWCLIENT ps, P_CHAR target);
+void singleclick(NXWSOCKET  s);
 
 #endif

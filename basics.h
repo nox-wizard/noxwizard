@@ -164,5 +164,7 @@ inline int hex2num ( std::string& s )
 
 int fillIntArray(char* str, int *array, int maxsize, int defval = -1, int base = BASE_AUTO);
 void readSplitted(FILE* F, char* script1, char* script2);
+int RandomNum(int nLowNum, int nHighNum);
+char *RealTime(char *time_str);
 
 #endif //__BASICS_H__
