@@ -483,7 +483,8 @@ void cSpawnDinamic::doSpawn()
 		return; //npc spawned in container? ahhah i have a gremlin in backpack :P
 
 	if( spawn->type == ITYPE_ITEM_SPAWNER ) {
-		
+		if ( spawn->morex == 0 )
+			return;
 		P_ITEM pi=item::CreateFromScript( spawn->morex );
 		if( ISVALIDPI( pi ) ) {
 			this->current++;
@@ -496,6 +497,8 @@ void cSpawnDinamic::doSpawn()
 		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
 	else if( spawn->type == ITYPE_NPC_SPAWNER ) {
+		if ( spawn->morex == 0 )
+			return;
 		P_CHAR npc=npcs::addNpc( spawn->morex, spawn->getPosition().x, spawn->getPosition().y, spawn->getPosition().z );
 		if(ISVALIDPC( npc )) {
 			this->current++;
