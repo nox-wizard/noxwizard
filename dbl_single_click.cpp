@@ -1313,6 +1313,13 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 	VALIDATEPC(target);
 	NXWSOCKET s = ps->toInt();
 
+	if (pc->amxevents[EVENT_CHR_ONDBLCLICK]!=NULL) {
+		g_bByPass = false;
+		pi->amxevents[EVENT_CHR_ONDBLCLICK]->Call( pc->getSerial32(), target->getSerial32() );
+		if (g_bByPass==true)
+			return;
+	}
+
 	if( pc->war && (pc->getSerial32()!=target->getSerial32()) )
 		AttackStuff( s, target );
 
