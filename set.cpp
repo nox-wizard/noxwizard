@@ -16,6 +16,7 @@
 #include "range.h"
 #include "network.h"
 #include "house.h"
+#include "accounts.h"
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   Purpose : define standard container for a set of objects which responds to common
@@ -415,6 +416,17 @@ void addItemsOutsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID)
 		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
 		si->fillItemsOutsideHouse( house );
 		si->rewind();
+	}
+}
+
+void addAccountChars( SERIAL iSet, ACCOUNT accnum)
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		Accounts->GetAllChars(accnum, *sc);
+		sc->rewind();
 	}
 }
 

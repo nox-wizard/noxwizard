@@ -50,6 +50,7 @@
 #include "accounts.h"
 #include "spawn.h"
 #include "resourcemap.h"
+#include "srvparms.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -3343,6 +3344,25 @@ NATIVE( _set_getCharsOutsideHouse )
 		return 1;
 	}
 	amxSet::addCharsOutsideHouse( params[1], params[2] );
+	return 0;
+}
+
+/*!
+\brief Add to given set all char serials of an account
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 onlyActive if true are added only active races
+\return 0
+*/
+NATIVE( _set_addAccountChars )
+{
+	if (( params[2] == INVALID ) || (params[2] > Accounts->Count() ) )
+	{
+		LogError("Illegal account number used" );
+		return 1;
+	}
+	amxSet::addAccountChars(params[1], params[2] );
 	return 0;
 }
 
@@ -7815,23 +7835,27 @@ NATIVE ( _account_getName )
 	return 1;
 }
 
+/*
+\brief Shows the sell gump of character 1 to character 2
+\param 1 account number to be blocked
+*/
 
 NATIVE ( _chr_showSellGump )
 {
 	P_CHAR pc=pointers::findCharBySerial(params[1]);
-	P_CHAR buyer=pointers::findCharBySerial(params[1]);
+	P_CHAR seller=pointers::findCharBySerial(params[2]);
 	if ( !ISVALIDPC(pc))
 		return 0;
-	if ( !ISVALIDPC(buyer) || !buyer->IsOnline())
+	if ( !ISVALIDPC(seller) || !seller->IsOnline())
 		return 0;
-	sellstuff(buyer->getSocket(), params[1] );
+	sellstuff(seller->getSocket(), params[1] );
 	return 1;
 }
 
 NATIVE ( _chr_showBuyGump )
 {
 	P_CHAR pc=pointers::findCharBySerial(params[1]);
-	P_CHAR buyer=pointers::findCharBySerial(params[1]);
+	P_CHAR buyer=pointers::findCharBySerial(params[2]);
 	if ( !ISVALIDPC(pc))
 		return 0;
 	if ( !ISVALIDPC(buyer) || !buyer->IsOnline())
@@ -7840,6 +7864,40 @@ NATIVE ( _chr_showBuyGump )
 	return 1;
 }
 
+NATIVE ( _loadDefaults )
+{
+	loadserverdefaults();
+	return 1;
+}
+
+NATIVE ( _pdump )
+{
+	char s_szCmdTableTemp[255];
+
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+
+	pc->sysmsg("Performance Dump:");
+
+	sprintf(s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
+	pc->sysmsg(s_szCmdTableTemp);
+
+	sprintf(s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
+	pc->sysmsg(s_szCmdTableTemp);
+
+	sprintf(s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
+	pc->sysmsg(s_szCmdTableTemp);
+
+	sprintf(s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
+	pc->sysmsg(s_szCmdTableTemp);
+
+	sprintf(s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+	pc->sysmsg(s_szCmdTableTemp);
+
+	pc->sysmsg("Characters: %i/Dynamic    Items: %i/Dynamic" , charCount, itemCount);
+	return 1;
+}
 /*!
 \file
 
@@ -8218,6 +8276,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_getCharsInHouse", _set_getCharsInHouse },
  { "set_getCharsOutsideHouse", _set_getCharsOutsideHouse },
  
+ // Account sets
+ { "set_addAccountChars", _set_addAccountChars },
+
  // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
@@ -8323,7 +8384,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "recompileSmall", _recompileSmall },
  { "isChar", _isChar },
  { "isItem", _isItem },
-
+ { "loadDefaults", _loadDefaults },
+ { "pdump", _pdump },
 
  // resource map api
  { "createResourceMap", _createResourceMap },

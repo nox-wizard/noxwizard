@@ -179,6 +179,7 @@ namespace amxSet {
 	void addCharsOutsideHouse( SERIAL iSet, SERIAL house);
 	void addItemsInsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID= INVALID);
 	void addItemsOutsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID= INVALID);
+	void addAccountChars( SERIAL iSet, ACCOUNT accnum);
 
 
 }
