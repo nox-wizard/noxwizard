@@ -274,6 +274,7 @@ void loadserverdefaults()
 
 	server_data.invisibiliytimer=INVISTIMER;
 	server_data.hungerrate=HUNGERRATE;
+	server_data.hunger_system=1;
 	server_data.hungerdamagerate=10;			// every 10 seconds
 	server_data.snoopdelay=15;
 	server_data.hungerdamage=2;
@@ -470,6 +471,7 @@ static int loadhunger(char *script1, char *script2) // by Magius(CHE)
 {
 		if(!(strcmp(script1,"HUNGERRATE"))) server_data.hungerrate=str2num(script2);
 		else if(!(strcmp(script1,"HUNGER_DAMAGE"))) server_data.hungerdamage=str2num(script2);
+		else if(!(strcmp(script1,"HUNGER_SYSTEM"))) server_data.hunger_system=str2num(script2);
 		else if(!(strcmp(script1,"HUNGER_DAMAGE_RATE"))) server_data.hungerdamagerate=str2num(script2);
 		else return -1;
 		return 0;
@@ -1444,6 +1446,8 @@ void saveserverscript()
 
 	fprintf(file, "SECTION HUNGER\n");
 	fprintf(file, "{\n");
+	fprintf(file, "// Activate internal hunger system. 1 is activated, 0 no\n");
+	fprintf(file, "HUNGER_SYSTEM %i\n",server_data.hunger_system);
 	fprintf(file, "// How often you get hungrier in seconds  \n");
 	fprintf(file, "HUNGERRATE %i\n",server_data.hungerrate);
 	fprintf(file, "// How much health is lost when you are starving  \n");

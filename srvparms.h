@@ -64,6 +64,7 @@ struct server_st
  unsigned int lootdecayswithcorpse;
 
  unsigned int invisibiliytimer;
+ unsigned int hunger_system;
  unsigned int hungerrate;
  unsigned int skilldelay;
  unsigned int snoopdelay;
