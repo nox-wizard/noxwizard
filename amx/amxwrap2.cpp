@@ -1,47 +1,20 @@
-/*
-    This file is part of NoX-Wizard
-    -----------------------------------------------------------------------------
-    Portions are copyright 2001, Marco Mastropaolo (Xanathar).
+  /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    || NoX-Wizard UO Server Emulator (NXW) [http://noxwizard.sourceforge.net]  ||
+    ||                                                                         ||
+    || This software is free software released under GPL2 license.             ||
+    || You can find detailed license information in nox-wizard.cpp file.       ||
+    ||                                                                         ||
+    || For any question post to NoX-Wizard forums.                             ||
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+/*!
+ \brief Wrapper Native Functions for AMX abstract machine
+ \author Xanathar
 
-    NoX-Wizard is a modified version of Uox (and before that of wolfpack)
-    so all previous copyright notices applies and above all
-
-	Copyright 1997, 98 by Marcus Rating (Cironian)
-
-    -----------------------------------------------------------------------------
-
-    NoX-Wizard is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    NoX-Wizard is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with NoX-Wizard; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-
-    -----------------------------------------------------------------------------
-
-    NoX-Wizard also contains portions of code from the Small toolkit.
-
-    The software toolkit "Small", the compiler, the abstract machine and the
-    documentation, are copyright (c) 1997-2001 by ITB CompuPhase.
-	See amx_vm.c and/or small_license.txt for more information about this.
-
-    ==============================================================================
-*/
-/*****************************************************************
- Wrapper Native Functions for AMX abstract machine
- by Xanathar
+ This is one of the borest files I've ever written :D - Xan
+ This file contains property stuff
  
- Comments : this is one of the borest files I've ever written :D
-
- 12-09-2002 <Luxor>: Changed to work with serials insted of old indexes :)
- *****************************************************************/
+ \date 12-09-2002 Luxor: changed to work with serials instead of old indexes
+ */
 #include "nxwcommn.h"
 #include "basics.h"
 #include "cmdtable.h"
@@ -86,9 +59,6 @@ static const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
 
 extern int g_nStringMode;
 
-//static void *getGuildPropertyPtr(int i, int property, int prop2);
-
-
 static VAR_TYPE getPropertyType(int property)
 {
 	if (property < 100) return T_BOOL;
@@ -99,22 +69,18 @@ static VAR_TYPE getPropertyType(int property)
 	return T_UNICODE;
 }
 
-/*
- Function	:	_getCalProperty
- Purpose	:	return calendar property
- Inputparms	:	params[1]	-	never
-			params[2]	-	property
-			params[3]	-	optional month or weekday number
- Outputparms:	params[4]	-	string/array reference
- Returnvalue:	value of numeric property or length of params[4]
- Creator	:	Sparhawk
- Datecreated:	2001-09-15
- Nxw version:	054b
- Version	:	1.0
- Dateupdated:	2001-09-15
- Notes	:
- History	:
-*/
+/*!
+ \author Sparhawk
+ \brief Return calendar property
+
+ Parameters:
+  \li 1 never
+  \li 2 property
+  \li 3 optional month or weekday number
+  \li 4 string/array reference (output)
+ Output:
+  value of numeric property or length of params[4]
+ */
 NATIVE2(_getCalProperty)
 {
 	int tp = getPropertyType(params[2]);

@@ -8,18 +8,6 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "amxvarserver.h"
-
-//
-// amxVariable
-//
-amxVariable::amxVariable()
-{
-}
-
-amxVariable::~amxVariable()
-{
-}
-
 AMXVARSRV_DATATYPE amxVariable::getType()
 {
 	return AMXVARSRV_UNDEFINED;

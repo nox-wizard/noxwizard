@@ -2,8 +2,6 @@
  *
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
- *
- *  Version: $Id: sc6.c,v 1.4 2003/07/17 22:21:57 sparhawksf Exp $
  */
 #include <assert.h>
 #include <stdio.h>

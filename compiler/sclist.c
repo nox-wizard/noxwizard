@@ -5,8 +5,6 @@
  *
  *  Copyright (c) ITB CompuPhase, 2001-2002
  *  This file may be freely used. No warranties of any kind.
- *
- *  Version: $Id: sclist.c,v 1.1 2003/04/26 19:59:49 luxornox Exp $
  */
 #include <assert.h>
 #include <stdlib.h>

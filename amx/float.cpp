@@ -1,11 +1,19 @@
-/*  Float arithmetic for the Small AMX engine
- *
- *  Copyright (c) Artran, Inc. 1999
- *  Written by Greg Garner (gmg@artran.com)
- *  This file may be freely used. No warranties of any kind.
- *
+  /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    || NoX-Wizard UO Server Emulator (NXW) [http://noxwizard.sourceforge.net]  ||
+    ||                                                                         ||
+    || This software is free software released under GPL2 license.             ||
+    || You can find detailed license information in nox-wizard.cpp file.       ||
+    ||                                                                         ||
+    || For any question post to NoX-Wizard forums.                             ||
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+/*!
+ \file
+ \brief Float arithmetic for the Small AMX engine
+ \author Greg Garner <gmg@artran.com>
+
+ Copyright &copy; Artran, Inc. 19999
+ This file may be freely used. No warranties of any kind.
  */
-//#include "stdafx.h"
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>      /* for NULL */
@@ -19,9 +27,10 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/******************************************************************/
-// Private function to
-// allocate and fill a C style string from a small type string.
+/*!
+ Private function to allocate and fill a C style string from a small
+ type string.
+ */
 static char *pcCreateAndFillStringFromCell(AMX *amx,cell params)
 {
     char *szDest;
@@ -183,7 +192,7 @@ static cell _floatsub(AMX *,cell *params)
 }
 
 /******************************************************************/
-// Return fractional part of float
+//! Return fractional part of float
 static cell _floatfract(AMX *,cell *params)
 {
     /*
@@ -199,7 +208,7 @@ static cell _floatfract(AMX *,cell *params)
 }
 
 /******************************************************************/
-// Return integer part of float, rounded
+//! Return integer part of float, rounded
 static cell _floatround(AMX *,cell *params)
 {
     /*
@@ -267,3 +276,4 @@ extern "C"
   { NULL, NULL }        /* terminator */
 };
 }
+

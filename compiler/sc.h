@@ -8,8 +8,6 @@
  *  Copyright R. Cain, 1980
  *  Copyright J.E. Hendrix, 1982, 1983
  *  Copyright T. Riemersma, 1997-2002
- *
- *  Version: $Id: sc.h,v 1.1 2003/04/26 19:59:21 luxornox Exp $
  */
 #ifndef __SC_H
 #define __SC_H

@@ -2,8 +2,6 @@
  *
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
- *
- *  Version: $Id: amx.c,v 1.11 2003/07/18 17:49:01 dgp85 Exp $
  */
 
 //XAN

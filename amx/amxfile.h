@@ -1,7 +1,7 @@
-#include "nxwcommn.h"
-
 #ifndef __AMXFILE_H__
 #define __AMXFILE_H__
+
+#include "nxwcommn.h"
 
 typedef map< UI32, FILE* >	mAmxFile;
 typedef mAmxFile::iterator	miAmxFile;

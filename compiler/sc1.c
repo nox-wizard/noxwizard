@@ -4,8 +4,6 @@
  *
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
- *
- *  Version: $Id: sc1.c,v 1.7 2003/07/18 17:49:01 dgp85 Exp $
  */
 #include <assert.h>
 #include <ctype.h>

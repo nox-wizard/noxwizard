@@ -40,8 +40,7 @@ typedef enum
 class amxVariable
 {
 	public:
-						amxVariable();
-		virtual				~amxVariable();
+		virtual				~amxVariable() {}
 		virtual	AMXVARSRV_DATATYPE	getType();
 		virtual SI32			getSize( const SI32 index = -1 );
 };

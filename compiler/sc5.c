@@ -3,8 +3,6 @@
  *
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
- *
- *  Version: $Id: sc5.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
  */
 #include <assert.h>
 #if defined	__WIN32__ || defined _WIN32 || defined __MSDOS__
