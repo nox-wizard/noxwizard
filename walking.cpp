@@ -369,7 +369,7 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 	}
 
 	// dont put a if s!=-1 here !!!
-	if (pc->priv2&2) // lord binary !!!
+	if(pc->IsFrozen()) // lord binary !!!
 	{
 		pc->teleport();
 		if (s>INVALID)
