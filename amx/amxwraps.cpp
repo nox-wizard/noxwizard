@@ -1618,7 +1618,9 @@ NATIVE(_isetSerial)
 \brief create a new item from the script
 \author Xanathar
 \since 0.54
-\param 1: itemtype
+\param 1 itemtype
+\param 2 cont
+\param 3 amount ( if INVALID use xss default )
 \return created item or INVALID if not valid item
 \note it's up to you to position the item in the world
 */
@@ -1628,7 +1630,7 @@ NATIVE(_itm_createFromScript)
 	if ( params[2] != INVALID )
 		po = objects.findObject( params[2] );
 
-    P_ITEM pi = item::CreateFromScript(params[1], po);
+    P_ITEM pi = item::CreateFromScript(params[1], po, params[3]);
 	VALIDATEPIR(pi, INVALID);
     pi->Refresh();
 	return pi->getSerial32();
@@ -1637,6 +1639,9 @@ NATIVE(_itm_createFromScript)
 /*
 \brief create a new item from the script
 \author Luxor
+\param 1 scriptid
+\param 2 container to put into
+\param 3 amount ( if INVALID use xss default )
 \since 0.82
 */
 NATIVE(_itm_createByDef)
@@ -1651,7 +1656,7 @@ NATIVE(_itm_createByDef)
 	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 
-	pi = item::CreateFromScript( g_cAmxPrintBuffer, po );
+	pi = item::CreateFromScript( g_cAmxPrintBuffer, po, params[3] );
 	g_nAmxPrintPtr = 0;
 	if ( ISVALIDPI( pi ) )
 		return pi->getSerial32();
