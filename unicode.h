@@ -26,6 +26,7 @@ public:
 
 public:
 	cUnicodeString();
+	cUnicodeString( cUnicodeString* u );
 	cUnicodeString( std::string& s );
 	cUnicodeString( char* c, int size=INVALID );
 	~cUnicodeString();
@@ -35,6 +36,7 @@ public:
 
 	void copy( std::string& s );
 	void copy( char* c, int size=INVALID );
+	void copy( cUnicodeString* u );
 	void append( wchar_t c );
 	cUnicodeString& operator+=( wchar_t c );
 

@@ -29,6 +29,17 @@ cUnicodeString::cUnicodeString( std::string& s )
 	this->copy(s);
 }
 
+/*!
+\brief Constructor
+\author Endymion
+\param u the unicode string to copy 
+\note id u is NULL an empty unicode string is created
+*/
+cUnicodeString::cUnicodeString( cUnicodeString* u )
+{
+	this->copy(u);
+}
+
 /*
 \brief Constructor
 \author Endymion
@@ -102,6 +113,27 @@ void cUnicodeString::copy( std::string& s )
 	}
 	addTerminator();
 }
+
+/*
+\brief Copy from another unicode string
+\author Endymion
+\param u the unicode string to copy 
+\note id u is NULL an empty unicode string is created
+*/
+void cUnicodeString::copy( cUnicodeString* u )
+{
+	this->s.clear();
+	if( u==NULL ) {
+		addTerminator();
+	}
+	else {
+		std::vector<UI08>::iterator iter( u->s.begin() ), end( u->s.end() );
+		for( ; iter!=end; iter++ ) {
+			this->s.push_back( (*iter) );
+		}
+	}
+}
+
 
 /*
 \brief Copy from another unicode string
