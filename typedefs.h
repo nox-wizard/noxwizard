@@ -35,10 +35,10 @@ typedef float				R32;	//< 32 bits floating point
 	typedef unsigned __int16	UI16;
 	typedef unsigned __int32	UI32;
 	typedef unsigned __int64	UI64;
-	typedef __int8			UI08;
-	typedef __int16			UI16;
-	typedef __int32			UI32;
-	typedef __int64			UI64;
+	typedef __int8			SI08;
+	typedef __int16			SI16;
+	typedef __int32			SI32;
+	typedef __int64			SI64;
 #else
 	#ifdef _MSC_VER
 		#if _MSC_VER<=1200
