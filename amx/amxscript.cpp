@@ -118,7 +118,7 @@ int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source )
 	while( (temp=source[i++])!=0 ) {
 	    if (!amx_getLittleEndian()) 
 			swapcell( (ucell *)&temp );
-		(*dest)+=temp;
+		(*dest)+=static_cast<wchar_t>(temp);
 	}
 
 	return AMX_ERR_NONE;
