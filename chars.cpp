@@ -4246,7 +4246,7 @@ void cChar::pc_heartbeat()
 	if( dead )	// Killed as result of generic heartbeat action
 		return;
 
-	if ( TIMEOUT( hungertime ) && SrvParms->hungerrate > 1 )
+	if ( SrvParms->hunger_system && TIMEOUT( hungertime ) && SrvParms->hungerrate > 1 )
 	{
 		if ( !IsGMorCounselor() && hunger )
 		{
@@ -4271,7 +4271,7 @@ void cChar::pc_heartbeat()
 			hungertime = uiCurrentTime+(SrvParms->hungerrate*MY_CLOCKS_PER_SEC); // Bookmark
 		}
 	}
-	if ( TIMEOUT( hungerdamagetimer ) && SrvParms->hungerdamage > 0 ) // Damage them if they are very hungry
+	if ( SrvParms->hunger_system && TIMEOUT( hungerdamagetimer ) && SrvParms->hungerdamage > 0 ) // Damage them if they are very hungry
 	{
 		hungerdamagetimer=uiCurrentTime+(SrvParms->hungerdamagerate*MY_CLOCKS_PER_SEC); /** set new hungertime **/
 		if (hp > 0 && hunger<2 && !IsCounselor() && !dead)
