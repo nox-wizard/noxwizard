@@ -212,8 +212,7 @@ void cResourceStringMap::deserialize(ifstream *myStream)
 	while (! myStream->eof() )
 	{
 		*myStream >> tempKey;
-		*myStream >> value;
-		myStream->ignore(1);
+		myStream->read((char *)&value, sizeof(value));
 		this->setValue(tempKey, value);
 	}
 	return ;
@@ -230,7 +229,7 @@ void cResourceStringMap::serialize(ofstream *myStream)
 	for ( ; iter !=  resourceMap.end();iter++)
 	{
 		*myStream << iter->first << ends;
-		*myStream << iter->second << endl;
+		myStream->write((char *)&iter->second, sizeof(iter->second));
 	}
 	return ;
 }
