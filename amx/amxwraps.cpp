@@ -2880,9 +2880,9 @@ NATIVE( _set_addOwnedNpcs )
 \param 6 only player
 \return 0
 */
-NATIVE( _set_addCharsNearXYZ ) 
+NATIVE( _set_addCharsNearXY ) 
 {
-	amxSet::addCharsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0, params[6]!=0 );
+	amxSet::addCharsNearXY( params[1], params[2], params[3], params[4], params[5]!=0, params[6]!=0 );
 	return 0;
 }
 
@@ -2914,7 +2914,7 @@ NATIVE( _set_addPartyFriend )
 \param 4 only first subcontainer
 \return 0
 */
-NATIVE( _set_addItemsInContainer ) 
+NATIVE( _set_addItemsInCont ) 
 {
 	P_ITEM pi=pointers::findItemBySerial( params[2] );
 	VALIDATEPIR( pi, INVALID )
@@ -2968,9 +2968,9 @@ NATIVE( _set_addItemsAtXY )
 \param 5 exclude not moveable
 \return 0
 */
-NATIVE( _set_addItemsNearXYZ ) 
+NATIVE( _set_addItemsNearXY ) 
 {
-	amxSet::addItemsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0 );
+	amxSet::addItemsNearXY( params[1], params[2], params[3], params[4], params[5]!=0 );
 	return 0;
 }
 
@@ -2982,7 +2982,7 @@ NATIVE( _set_addItemsNearXYZ )
 \return 0
 \note are added ONLY client chaarcter online
 */
-NATIVE( _set_addAllOnlinePlayers )
+NATIVE( _set_addAllOnlinePl )
 {
 	amxSet::addAllOnlinePlayers( params[1] );
 	return 0;
@@ -2993,38 +2993,28 @@ NATIVE( _set_addAllOnlinePlayers )
 \author Endymion
 \since 0.82
 \param 1 the set
-\param 2 character
-\param 3 exclude this
+\param 2 the object ( character or item )
+\param 3 exclude this ( only used if object is a char )
 \param 4 distance
-\return 0
-\note are added ONLY client chaarcter online
-*/
-NATIVE( _set_addOnlinePlayersNearChar )
-{
-	P_CHAR pc=pointers::findCharBySerial( params[2] );
-	VALIDATEPCR( pc, INVALID );
-	amxSet::addOnlinePlayersNearChar( params[1], pc, params[3]!=0, params[4] );
-	return 0;
-}
-
-/*!
-\brief Add to given set all online players near item
-\author Endymion
-\since 0.82
-\param 1 the set
-\param 2 the item
-\param 3 distance
 \return 0
 \note are added ONLY client chaarcter online
 \note if item is in a subcontainer, is returned the true location, the ocation of in world container
 */
-NATIVE( _set_addOnlinePlayersNearItem )
+NATIVE( _set_addOnlinePlNearObj )
 {
-	P_ITEM pi=pointers::findItemBySerial( params[2] );
-	VALIDATEPIR( pi, INVALID )
-	amxSet::addOnlinePlayersNearItem( params[1], pi, params[3] );
+	if( isCharSerial(params[2]) ) {
+		P_CHAR pc=pointers::findCharBySerial( params[2] );
+		VALIDATEPCR( pc, INVALID );
+		amxSet::addOnlinePlayersNearChar( params[1], pc, params[3]!=0, params[4] );
+	}
+	else {
+		P_ITEM pi=pointers::findItemBySerial( params[2] );
+		VALIDATEPIR( pi, INVALID );
+		amxSet::addOnlinePlayersNearItem( params[1], pi, params[4] );
+	}
 	return 0;
 }
+
 
 /*!
 \brief Add to given set all online players near location
@@ -3037,7 +3027,7 @@ NATIVE( _set_addOnlinePlayersNearItem )
 \return 0
 \note are added ONLY client chaarcter online
 */
-NATIVE( _set_addOnlinePlayersNearXY )
+NATIVE( _set_addOnlinePlNearXY )
 {
 	amxSet::addOnlinePlayersNearXY( params[1], params[2], params[3], params[4] );
 	return 0;
@@ -5647,16 +5637,15 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_add", _set_add },
  
  { "set_addOwnedNpcs", _set_addOwnedNpcs },
- { "set_addCharsNearXYZ", _set_addCharsNearXYZ },
+ { "set_addCharsNearXY", _set_addCharsNearXY },
  { "set_addPartyFriend", _set_addPartyFriend },
- { "set_addItemsInContainer", _set_addItemsInContainer },
+ { "set_addItemsInCont", _set_addItemsInCont },
  { "set_addItemWeared", _set_addItemWeared },
  { "set_addItemsAtXY", _set_addItemsAtXY },
- { "set_addItemsNearXYZ", _set_addItemsNearXYZ },
- { "set_addAllOnlinePlayers", _set_addAllOnlinePlayers },
- { "set_addOnlinePlayersNearChar", _set_addOnlinePlayersNearChar },
- { "set_addOnlinePlayersNearItem", _set_addOnlinePlayersNearItem },
- { "set_addOnlinePlayersNearXY", _set_addOnlinePlayersNearXY },
+ { "set_addItemsNearXY", _set_addItemsNearXY },
+ { "set_addAllOnlinePl", _set_addAllOnlinePl },
+ { "set_addOnlinePlNearObj", _set_addOnlinePlNearObj },
+ { "set_addOnlinePlNearXY", _set_addOnlinePlNearXY },
 // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk

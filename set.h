@@ -132,12 +132,12 @@ namespace amxSet {
 	void add( SERIAL iSet, SERIAL nVal );
 
 	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
- 	void addCharsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer );
+ 	void addCharsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer );
  	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
  	void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont );
  	void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer );
  	void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type );
- 	void addItemsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable );
+ 	void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable );
  	void addAllOnlinePlayers( SERIAL iSet );
 	void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance );
 	void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance );

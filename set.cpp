@@ -128,7 +128,7 @@ void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowi
 	sc->rewind();
 }
 
-void addCharsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer )
+void addCharsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -188,7 +188,7 @@ void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type )
 	si->rewind();
 }
 
-void addItemsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable )
+void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
