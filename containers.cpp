@@ -249,7 +249,7 @@ void cItem::putInto( P_ITEM pi )
 	pi->AddItem( this );
 }
 
-
+#if 0
 // author: LB purpose: returns the type of pack
 // to handle its x,y coord system corretly.
 // interpretation of the result:
@@ -262,9 +262,9 @@ void cItem::putInto( P_ITEM pi )
 // x-range 18 .. 118 for 1,2,3
 //         40 .. 140 for 4
 //
-/*short cItem::GetContGumpType()
+short cItem::GetContGumpType()
 {
-*//*	switch (id())
+	switch (id())
 	{
 	case 0x09a8: return 1;
 	case 0x09a9: return 2;
@@ -301,23 +301,22 @@ void cItem::putInto( P_ITEM pi )
 	case 0x2006: return 5;	// a corpse/coffin
 	default: return -1;
 	}
-}*/
+}
+#endif
 
 void cItem::SetRandPosInCont(P_ITEM pCont)
 {
-
-	setPosition("z", 9);
 	CONTINFOMAP::iterator iter( contInfo.find( pCont->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end()) {
-		setPosition("x", RandomNum(18, 118));
-		setPosition("y", RandomNum(50, 100));
+		setPosition(RandomNum(18, 118), RandomNum(50, 100), 9);
 		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->id());
 	}
 	else {
-		setPosition("x", RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x));
-		setPosition("y", RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y));
-		
+		setPosition(
+				RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x),
+				RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y),
+				9
+			);
 	}
-	
 }
 

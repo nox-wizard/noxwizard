@@ -245,11 +245,6 @@ void setserial(int nChild, int nParent, int nType)
 }
 */
 
-cItem::~cItem()
-{
-
-}
-
 void cItem::setCont(P_OBJECT obj)
 {
 	setContSerial(obj->getSerial32());
@@ -598,10 +593,10 @@ void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
 */
 void cItem::MoveTo(Location newloc)
 {
-	mapRegions->remove(this);
+	regions::remove(this);
 	pointers::delItemFromLocationMap(this);
 	setPosition( newloc );
-	mapRegions->add(this);
+	regions::add(this);
 	pointers::addItemToLocationMap(this);
 }
 
@@ -1299,7 +1294,7 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 
 		if (amount+pItem->amount>65535)
 		{
-			pItem->setPosition( getPosition("x"), getPosition("y"), 9);
+			pItem->setPosition( getPosition().x, getPosition().y, 9);
 			pItem->amount=(amount+pItem->amount)-65535;
 			amount=65535;
 			pItem->Refresh();
@@ -1318,40 +1313,40 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 
 void cContainerItem::setRandPos(P_ITEM pItem)
 {
-	pItem->setPosition("x", RandomNum(18, 118));
-	pItem->setPosition("z", 9);
+	pItem->setPosition(X, RandomNum(18, 118));
+	pItem->setPosition(Y, 9);
 
 	switch( getGumpType() )
 	{
 	case 1: 
-		pItem->setPosition("y", RandomNum(50, 100));		
+		pItem->setPosition(Y, RandomNum(50, 100));		
 		break;
 
 	case 2: 
-		pItem->setPosition("y", RandomNum(30, 80));		
+		pItem->setPosition(Y, RandomNum(30, 80));		
 		break;
 
 	case 3: 
-		pItem->setPosition("y", RandomNum(100, 140));		
+		pItem->setPosition(Y, RandomNum(100, 140));		
 		break;
 
 	case 4: 
-		pItem->setPosition("y", RandomNum(60, 140));	
-		pItem->setPosition("x", RandomNum(60, 140));			
+		pItem->setPosition(Y, RandomNum(60, 140));	
+		pItem->setPosition(X, RandomNum(60, 140));			
 		break;
 
 	case 5: 
-		pItem->setPosition("y", RandomNum(85, 160));
-		pItem->setPosition("x", RandomNum(20, 70));		
+		pItem->setPosition(Y, RandomNum(85, 160));
+		pItem->setPosition(X, RandomNum(20, 70));		
 		break;
 
 	default: 
-		pItem->setPosition("y", RandomNum(30, 80));
+		pItem->setPosition(Y, RandomNum(30, 80));
 		break;
 	}
 }
 
-UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts/*= false*/)
+UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts)
 {
 	UI32 count= 0;
 	vector<SI32>::iterator it= ItemList.begin();

@@ -92,12 +92,12 @@ void deleteItem( P_ITEM pi )
 
 	if (pi->spawnregion!=INVALID )
 	{
-		Spawns->removeObject( pi->spawnregion, pi );
+		spawns::removeObject( pi->spawnregion, pi );
 	}
 
 	if( pi->isSpawner() || pi->spawnserial!=INVALID )
 	{
-		Spawns->removeSpawnDynamic( pi );
+		spawns::removeSpawnDynamic( pi );
 	}
 
 	NxwSocketWrapper sw;
@@ -113,15 +113,19 @@ void deleteItem( P_ITEM pi )
 	pointers::delItem(pi);	//Luxor
 
 	pi->setOwnerSerial32(-1);
-	// - remove from mapRegions if a world item
+	// - remove from regions if a world item
 	if (pi->isInWorld())
 	{
-	   	mapRegions->remove(pi);
+		regions::remove(pi);
 		pointers::delItemFromLocationMap(pi);
 	}
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
-		Books::books.erase( Books::books.find(pi->morez) );
+	{
+		std::map<UI32, Books::cBook>::iterator b = Books::books.find(pi->morez);
+		if ( b != Books::books.end() )
+			Books::books.erase( b );
+	}
         // if a new book gets deleted also delete the corresponding map element
 
 	safedelete(pi);
@@ -156,10 +160,10 @@ namespace character
 		UI32 pc_serial = pc->getSerial32();
 
 		if( pc->spawnregion!=INVALID )
-			Spawns->removeObject( pc->spawnregion, pc );
+			spawns::removeObject( pc->spawnregion, pc );
 
 		if( pc->spawnserial!=INVALID )
-			Spawns->removeSpawnDynamic( pc );
+			spawns::removeSpawnDynamic( pc );
 
 		pointers::delChar(pc);	//Luxor
 

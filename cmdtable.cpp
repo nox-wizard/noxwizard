@@ -961,7 +961,7 @@ void command_letusin(NXWSOCKET  s)
 	{
 		if ( acctno[a]>=0 )
 		{
-			Accounts->SetOffline(acctno[a]);
+			accounts::SetOffline(acctno[a]);
 			x++;
 		}
 	}
@@ -974,7 +974,7 @@ void command_readaccounts(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	Accounts->LoadAccounts();
+	accounts::LoadAccounts();
 	pc->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 
@@ -1782,14 +1782,14 @@ void command_addx(NXWSOCKET  s)
 
 	if (tnum==3)
 	{
-		addid1[s] = (unsigned char) strtonum(1);
-		addid2[s] = (unsigned char) strtonum(2);
-		Commands::AddHere(s, pc->getPosition("z"));
+		addid1[s] = (UI08)strtonum(1);
+		addid2[s] = (UI08)strtonum(2);
+		Commands::AddHere(s, pc->getPosition().z);
 	}
 	if (tnum==4)
 	{
-		addid1[s] = (unsigned char) strtonum(1);
-		addid2[s] = (unsigned char) strtonum(2);
+		addid1[s] = (UI08)strtonum(1);
+		addid2[s] = (UI08)strtonum(2);
 		Commands::AddHere(s, strtonum(3));
 	}
 
@@ -3044,7 +3044,7 @@ void command_regspawnall(NXWSOCKET  s)
 {
 	sysbroadcast(TRANSLATE("ALL Regions Spawning to MAX, this will cause some lag."));
 
-	Spawns->doSpawnAll();
+	spawns::doSpawnAll();
 	
 	sysmessage(s, "[DONE] All NPCs/items spawned in regions");
 }
@@ -3240,7 +3240,7 @@ void command_password(NXWSOCKET  s)
 			return;
 		}
 
-		ret = Accounts->ChangePassword(pc->account, pwd);
+		ret = accounts::ChangePassword(pc->account, pwd);
 
 		if (ret==0) 
 			sprintf(pwd, "Password changed to %s", &tbuffer[Commands::cmd_offset+9]);

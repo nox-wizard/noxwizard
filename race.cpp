@@ -27,7 +27,7 @@ using namespace std;
 bool	Race::activeRaceSystem	= false;
 string*	Race::globalWebRoot	= new string( "" );
 string* Race::globalWebLink	= new string( "" );
-short	Race::startLocation[3]	= { 0, 0, 0 };
+UI16	Race::startLocation[3]	= { 0, 0, 0 };
 bool	Race::teleportOnEnlist	= false;
 bool	Race::withWebInterface	= false;
 std::map<UI32, class Race*> Race::raceMap;
@@ -150,7 +150,7 @@ void Race::parseGlobalSection( void )
 				{
 					// quick and dirty for now
 					// this will be fixed using a special class location
-					UI32 x, y, z;
+					UI16 x, y, z;
 					sscanf( rha.c_str(), "%u %u %u", &x, &y, &z);
 					startLocation[0] = x;
 					startLocation[1] = y;
@@ -2231,7 +2231,7 @@ R32 Race::getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )
 	return pr;
 }
 
-Race::Race( void )
+Race::Race()
 {
 	activeRace = false;
 	skinColor.clear();
@@ -2244,10 +2244,6 @@ Race::Race( void )
 	webLink = "";
 	startItems.clear();
 	skillCap = SrvParms->skillcap;
-}
-
-Race::~Race( void )
-{
 }
 
 bool Race::isRaceActive( void )

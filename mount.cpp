@@ -218,7 +218,7 @@ void cChar::mounthorse( P_CHAR mount )
 
 
 		mount->mounted=true;
-		mapRegions->remove( mount );
+		regions::remove( mount );
 		pointers::delCharFromLocationMap( mount );
 		pointers::pMounted.insert( make_pair( getSerial32(), mount ) );
 

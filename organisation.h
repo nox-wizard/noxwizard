@@ -99,12 +99,6 @@ namespace Organisation
 			static	cScpScript*	wsc			;
 			static	std::string	wscName			;
 		//
-		//	Object creators and destructors
-		//
-		public:
-						Guild()			;
-						~Guild()		;
-		//
 		//	Public object methods
 		//
 		public:

@@ -270,7 +270,7 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-			mapRegions->add(pHouse);
+			regions::add(pHouse);
 			pointers::addItemToLocationMap(pHouse);
 		}
 		if (!hitem[0] && !boat)
@@ -423,9 +423,9 @@ void buildhouse(int s, int i)
 						if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(X, rand()%90+31);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Y, rand()%90+31);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Z, 9);
 						}
 						if (!(strcmp(script1,"MOVEABLE")))
 						{
@@ -442,15 +442,15 @@ void buildhouse(int s, int i)
 						}
 						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(X, x+str2num(script2));
 						}
 						if (!(strcmp(script1,"Y")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Y, y+str2num(script2));
 						}
 						if (!(strcmp(script1,"Z")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Z, z+str2num(script2));
 						}
 					}
 				}
@@ -459,7 +459,7 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-						mapRegions->add(pi_l);
+						regions::add(pi_l);
 						pointers::addItemToLocationMap(pi_l);
 					}
 				safedelete(iter);
@@ -567,8 +567,8 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
 		pc->setPosition( charpos );
 		*/
-		pc->setPosition("z", Map->MapElevation(charpos.x, charpos.y));
-		pc->setPosition("dz", Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition(Z, Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition(DISPZ, Map->MapElevation(charpos.x, charpos.y));
 		pc->teleport();
 		return;
 	}
@@ -610,10 +610,10 @@ void killhouse(ITEM i)
 	for (a = 0; a < itemcount; a++) // deleting itmes inside house
 	{
 		pi = MAKE_ITEM_REF(a);
-		if ((pi->getPosition("x") >= x1) && 
-			(pi->getPosition("y") >= y1) && 
-			(pi->getPosition("x") <= x2) && 
-			(pi->getPosition("y") <= y2) && 
+		if ((pi->getPosition().x >= x1) && 
+			(pi->getPosition().y >= y1) && 
+			(pi->getPosition().x <= x2) && 
+			(pi->getPosition().y <= y2) && 
 			(!pi->free))
 		{
 			if (pi->type != ITYPE_GUILDSTONE) // dont delete guild stones !
@@ -702,7 +702,7 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-		mapRegions->add(pi);
+		regions::add(pi);
 		pointers::addItemToLocationMap(pi);
 	}
 
@@ -786,11 +786,11 @@ int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsign
 	int cl=-1;
 	int ci=-1;
 
-	cc=mapRegions->GetCell(items[h].x,items[h].y);
+	cc=regions::GetCell(items[h].x,items[h].y);
 	do {
-		cl=mapRegions->GetNextItem(cc, cl);
+		cl=regions::GetNextItem(cc, cl);
 		if(cl==-1) break;
-		ci=mapRegions->GetItem(cc, cl);
+		ci=regions::GetItem(cc, cl);
 		if(ci<1000000) {
 			if((items[ci].contserial==items[h].serial)&&
 				(items[ci].more1==s1)&&(items[ci].more2==s2)&&
@@ -852,7 +852,7 @@ int add_hlist(int c, int h, int t)
 
 		pi->setPosition( pi_h->getPosition() );
 
-		mapRegions->add(pi);
+		regions::add(pi);
 		pointers::addItemToLocationMap(pi);
 		return 1;
 	}
@@ -880,7 +880,7 @@ int del_hlist(int c, int h)
 	if(hl) {
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
-			mapRegions->remove(pli);
+			regions::remove(pli);
 			pointers::delItemFromLocationMap(pli);
 			pli->Delete();
 		}

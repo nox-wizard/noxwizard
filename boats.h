@@ -60,22 +60,22 @@ P_ITEM search_boat_by_plank(P_ITEM pl);
 
 namespace boats
 {
-	LOGICAL boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2);
-	LOGICAL collision(P_ITEM pi, Location where,int dir);
-	LOGICAL good_position(P_ITEM pBoat, Location where, int dir);
-	LOGICAL tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);
+	LOGICAL boat_collision(P_ITEM pBoat1,UI16 x1, UI16 y1,SI08 dir,P_ITEM pBoat2);
+	LOGICAL collision(P_ITEM pi, Location where,SI08 dir);
+	LOGICAL good_position(P_ITEM pBoat, Location where, SI08 dir);
+	LOGICAL tile_check(st_multi multi,P_ITEM pBoat,map_st map,UI16 x, UI16 y ,SI08 dir);
 	void LeaveBoat(P_CHAR pc, P_ITEM pi);
-	void TurnStuff_i(P_ITEM, P_ITEM, int, int);
+	void TurnStuff_i(P_ITEM, P_ITEM, SI08, int);
 
-	void TurnStuff_c(P_ITEM, P_CHAR, int, int);
-	void iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced = true);
+	void TurnStuff_c(P_ITEM, P_CHAR, SI08, int);
+	void iMove(NXWSOCKET s, SI08 dir, P_ITEM pBoat, LOGICAL forced = true);
 
 	P_ITEM GetBoat(Location pos);
 	LOGICAL Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk );
 	void OpenPlank(P_ITEM pi);
 	void PlankStuff(P_CHAR pc, P_ITEM pi);
 	LOGICAL Build(NXWSOCKET s, P_ITEM pBoat, char);
-	void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
+	void Move(NXWSOCKET  s, SI08 dir, P_ITEM pBoat);
 	void Turn(P_ITEM, int);
 	void TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold );
 }

@@ -282,7 +282,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 			continue;
 		if (pi->id1<0x40) // Not a Multi
 		{
-			if ((pi->getPosition("x")== pc->getPosition("x")) && (pi->getPosition("y")==pc->getPosition("y")))
+			if ((pi->getPosition().x== pc->getPosition().x) && (pi->getPosition().y==pc->getPosition().y))
 			{
 				if (pi->trigger!=0)
 				{
@@ -310,7 +310,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				tile_st tile;
 				Map->SeekTile(pi->id(), &tile);
 				xyblock[blockers_count].type=1;
-				xyblock[blockers_count].basez= pi->getPosition("z");
+				xyblock[blockers_count].basez= pi->getPosition().z;
 				xyblock[blockers_count].id=pi->id();
 				xyblock[blockers_count].flag1=tile.flag1;
 				xyblock[blockers_count].flag2=tile.flag2;
@@ -323,8 +323,8 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 		else	// Multi Tile
 		{
-			if ( (abs(pi->getPosition("x") - (int)pc->getPosition("x"))<=BUILDRANGE) &&
-				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
+			if ( (abs(pi->getPosition().x - (SI32)pc->getPosition().x)<=BUILDRANGE) &&
+				 (abs(pi->getPosition().y - (SI32)pc->getPosition().y)<=BUILDRANGE) )
 			{
 				MULFile *mfile = NULL;
 				SI32 length = 0;
@@ -341,12 +341,12 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				{
 					st_multi multi;
 					mfile->get_st_multi(&multi);
-					if (multi.visible && (pi->getPosition("x")+multi.x == pc->getPosition("x")) && (pi->getPosition("y")+multi.y == pc->getPosition("y")))
+					if (multi.visible && (pi->getPosition().x+multi.x == pc->getPosition().x) && (pi->getPosition().y+multi.y == pc->getPosition().y))
 					{
 						tile_st tile;
 						Map->SeekTile(multi.tile, &tile);
 						xyblock[blockers_count].type=2;
-						xyblock[blockers_count].basez= multi.z+pi->getPosition("z");
+						xyblock[blockers_count].basez= multi.z+pi->getPosition().z;
 						xyblock[blockers_count].id= multi.tile;
 						xyblock[blockers_count].flag1= tile.flag1;
 						xyblock[blockers_count].flag2= tile.flag2;
@@ -361,7 +361,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 	}
 
-    MapStaticIterator msi( pc->getPosition("x"), pc->getPosition("y") );
+    MapStaticIterator msi( pc->getPosition().x, pc->getPosition().y );
 	staticrecord *stat;
 	int loopexit=0;
 	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
@@ -606,21 +606,21 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	switch(dir&0x0F)
 	{
-		case 0: pc->setPosition("y", pcpos.y-1);
+		case 0: pc->setPosition(Y, pcpos.y-1);
 			break;
-		case 1: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
+		case 1: pc->setPosition(pcpos.x+1, pcpos.y-1);
 			break;
-		case 2: pc->setPosition("x", pcpos.x+1);
+		case 2: pc->setPosition(X, pcpos.x+1);
 			break;
-		case 3: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
+		case 3: pc->setPosition(pcpos.x+1, pcpos.y+1);
 			break;
-		case 4: pc->setPosition("y", pcpos.y+1);
+		case 4: pc->setPosition(Y, pcpos.y+1);
 			break;
-		case 5: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
+		case 5: pc->setPosition(pcpos.x-1, pcpos.y+1);
 			break;
-		case 6: pc->setPosition("x", pcpos.x-1);
+		case 6: pc->setPosition(X, pcpos.x-1);
 			break;
-		case 7: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
+		case 7: pc->setPosition(pcpos.x-1, pcpos.y-1);
 			break;
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
@@ -666,7 +666,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					   
 						P_CHAR pc_b=pets.getChar();
 						if(ISVALIDPC(pc_b)) {
-							pc->MoveTo( boat->getPosition("x")+1, boat->getPosition("y")+1, boat->getPosition("z")+2 );
+							pc->MoveTo( boat->getPosition().x+1, boat->getPosition().y+1, boat->getPosition().z+2 );
 							pc->setMultiSerial( boat->getSerial32() );
 							pc_b->teleport();
 						}
@@ -723,8 +723,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	pc->y= oldy; // we have to remove it with OLD x,y ... LB, very important
 	pc->MoveTo(nowx2,nowy2,z);
 	*/
-	pc->setPosition("x", oldx);
-	pc->setPosition("y", oldy);
+	pc->setPosition(oldx, oldy);
 	pc->MoveTo( nowx2, nowy2, z );
 	return true;
 }

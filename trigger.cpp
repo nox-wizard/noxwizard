@@ -1106,9 +1106,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			y1 = charpos.y;
 					if (m_pi==0) return;
 
-			x2 = m_pi->getPosition("x");
-			y2 = m_pi->getPosition("y");
-			z2 = m_pi->getPosition("z");
+			x2 = m_pi->getPosition().x;
+			y2 = m_pi->getPosition().y;
+			z2 = m_pi->getPosition().z;
 			p = currchar[m_socket];
 			pack = (MAKE_CHAR_REF(currchar[m_socket]))->getBackpack();
 

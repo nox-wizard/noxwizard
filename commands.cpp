@@ -403,7 +403,7 @@ namespace Commands
 
 		sysbroadcast(TRANSLATE("Spawn %d is spawning all items/NPCs, this will cause some lag."), r);
 
-		Spawns->doSpawnAll( r );
+		spawns::doSpawnAll( r );
 
 		pc->sysmsg("[DONE] All NPCs/items spawned in spawn %d.", r );
 	}

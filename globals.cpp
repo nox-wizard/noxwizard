@@ -14,7 +14,7 @@ server_st server_data;
 #if defined(__unix__)
 termios termstate ;
 #endif
-unsigned int uiCurrentTime;
+UI32 uiCurrentTime;
 
 UI32 VersionRecordSize = 20L;
 UI32 MultiRecordSize = 12L;
@@ -25,7 +25,7 @@ UI32 MultiIndexRecordSize = 12L;
 UI32 StaticRecordSize = 7L;
 //  Should characters have expiration before delete
 
-unsigned short int doorbase[DOORTYPES]={
+UI16 doorbase[DOORTYPES]={
 0x0675, 0x0685, 0x0695, 0x06A5, 0x06B5, 0x06C5, 0x06D5, 0x06E5, 0x0839, 0x084C,
 0x0866, 0x00E8, 0x0314, 0x0324, 0x0334, 0x0344, 0x0354};
 
@@ -54,40 +54,18 @@ char spellname[71][25]={
         "Summon Daemon","Summon Earth Elemental","Summon Fire Elemental","Summon Water Elemental",
         "Random", "Necro1", "Necro2", "Necro3", "Necro4", "Necro5"
 };
-//unsigned char login04a[6]="\xA9\x09\x24\x02";
-//unsigned char login04b[61]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-//unsigned char login04c[18]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-//unsigned char login04d[64]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-//unsigned char login03[12]="\x8C\x00\x00\x00\x00\x13\x88\x7B\x7B\x7B\x01";
-//unsigned char goxyz[20]="\x20\x00\x05\xA8\x90\x01\x90\x00\x83\xFF\x00\x06\x08\x06\x49\x00\x00\x02\x00";
-//unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-//unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-//unsigned char gmprefix[10]="\x7C\x00\x00\x01\x02\x03\x04\x00\x64";
-//unsigned char gmmiddle[5]="\x00\x00\x00\x00";
-//unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
-//unsigned char doact[15]="\x6E\x01\x02\x03\x04\x01\x02\x00\x05\x00\x01\x00\x00\x01";
-//unsigned char bpitem[20]="\x40\x0D\x98\xF7\x0F\x4F\x00\x00\x09\x00\x30\x00\x52\x40\x0B\x00\x1A\x00\x00";
-//unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
-//unsigned char gump2[4]="\x00\x00\x00";
-//unsigned char gump3[3]="\x00\x00";
-//unsigned char dyevat[10]="\x95\x40\x01\x02\x03\x00\x00\x0F\xAB";
-//unsigned char updscroll[11]="\xA6\x01\x02\x02\x00\x00\x00\x00\x01\x02";
-//unsigned char spc[2]="\x20";
-//unsigned char bounce[3]="\x27\x00";
-//unsigned char extmove[18]="\x77\x01\x02\x03\x04\x01\x90\x01\x02\x01\x02\x0A\x00\xED\x00\x00\x00";
-//unsigned char particleSystem[49];
 
 #ifndef __unix__
 	WSADATA wsaData;
 	WORD wVersionRequested;
-	long int oldtime, newtime;
+	SI32 oldtime, newtime;
 #else
-	unsigned long int oldtime, newtime;
+	UI32 oldtime, newtime;
 #endif
 
-unsigned long int updatepctime=0;
+UI32 updatepctime=0;
 
-unsigned int polyduration=90;
+UI32 polyduration=90;
 
 int gatecount=0;
 //Time variables
@@ -98,22 +76,22 @@ int moon1update=0;
 int moon2update=0;
 
 int openings=0;
-unsigned long initialserversec ;
-unsigned long initialservermill ;
-unsigned char moon1=0;
-unsigned char moon2=0;
-unsigned char dungeonlightlevel=0x15;
-unsigned char worldfixedlevel=255;
-unsigned char worldcurlevel=0;
-unsigned char worldbrightlevel=0x00; //used to be 0x05
-unsigned char worlddarklevel=0x017; //used to be 0x1a - too dark
+UI32 initialserversec ;
+UI32 initialservermill ;
+UI08 moon1=0;
+UI08 moon2=0;
+UI08 dungeonlightlevel=0x15;
+UI08 worldfixedlevel=255;
+UI08 worldcurlevel=0;
+UI08 worldbrightlevel=0x00; //used to be 0x05
+UI08 worlddarklevel=0x017; //used to be 0x1a - too dark
 int goldamount;
 int defaultpriv1;
 int defaultpriv2;
-unsigned int teffectcount=0; // No temp effects to start with
-unsigned int nextfieldeffecttime=0;
-unsigned int nextnpcaitime=0;
-unsigned int nextdecaytime=0;
+UI32 teffectcount=0; // No temp effects to start with
+UI32 nextfieldeffecttime=0;
+UI32 nextnpcaitime=0;
+UI32 nextdecaytime=0;
 
 
 bool heartbeat;
@@ -137,11 +115,11 @@ int now;
 
 FILE *infile, *scpfile, *lstfile, *wscfile, *mapfile, *sidxfile, *statfile, *verfile, *tilefile, *multifile, *midxfile;
 
-unsigned int servcount;
-unsigned int startcount;
+UI32 servcount;
+UI32 startcount;
 
-unsigned char xcounter;
-unsigned char ycounter;
+UI08 xcounter;
+UI08 ycounter;
 int secure; // Secure mode
 
 
@@ -150,7 +128,7 @@ resource_st resource;
 
 //int xycount;
 
-unsigned char w_anim[3]={0x1d,0x95,0}; // flying blood instead of lightnings, LB in a real bad mood
+UI08 w_anim[3]={0x1d,0x95,0}; // flying blood instead of lightnings, LB in a real bad mood
 
 int save_counter;//LB, world backup rate
 int gDecayItem=0; //Last item that was checked for decay Tauriel 3/7/99
@@ -160,28 +138,28 @@ int gRespawnItem=0; //Last item that was checked for respawn Tauriel 3/7/99
 teffect_st *teffects;
 
 int locationcount;
-unsigned int logoutcount;//Instalog
+UI32 logoutcount;//Instalog
 
 char *cline;
 int tnum;
 
-unsigned int starttime, endtime, lclock;
+UI32 starttime, endtime, lclock;
 bool overflow;
-unsigned char wtype;
+UI08 wtype;
 int executebatch;
 bool g_nShowLayers;
 
-unsigned int fly_p=18; // flying probability = 1/fly_p each step (if it doesnt fly)
-unsigned char fly_steps_max=27;
+UI32 fly_p=18; // flying probability = 1/fly_p each step (if it doesnt fly)
+UI08 fly_steps_max=27;
 
-unsigned int respawntime=0;
-unsigned int gatedesttime=0;
+UI32 respawntime=0;
+UI32 gatedesttime=0;
 
 int stablockcachei;
 int stablockcachehit;
 int stablockcachemiss;
 
-unsigned char season=0;
+UI08 season=0;
 int networkTime = 0;
 int timerTime = 0;
 int autoTime = 0;
@@ -195,7 +173,7 @@ int global_lis=1;
 
 int donpcupdate;
 
-unsigned long int serverstarttime;
+UI32 serverstarttime;
 
 tracking_st tracking_data = {TRACKINGRANGE,MAXTRACKINGTARGETS,TRACKINGTIMER,TRACKINGDISPLAYTIME};
 begging_st begging_data; // was = {BEGGINGRANGE,"Could thou spare a few coins?","Hey buddy can you spare some gold?","I have a family to feed, think of the children."};
@@ -222,7 +200,7 @@ char n_scripts[NUM_SCRIPTS][512] =
 int escortRegions = 0;
 
 
-unsigned int hungerdamagetimer=0; // For hunger damage
+UI32 hungerdamagetimer=0; // For hunger damage
 
 
 //@{
@@ -230,12 +208,9 @@ unsigned int hungerdamagetimer=0; // For hunger damage
 \name Classes definitions
 */
 CWorldMain	*cwmWorldState;
-cRegion		*mapRegions;
 cGuilds		*Guilds;
 cMapStuff	*Map;
 cTargets	*Targ;
-cAccounts	*Accounts;
-cPartys		*Partys;
 //@}
 
 
@@ -247,9 +222,9 @@ cPartys		*Partys;
 // maximum too cause maxclient = maximum +1
 
 char noweather[MAXCLIENT+1]; //LB
-unsigned char LSD[MAXCLIENT];
-unsigned char DRAGGED[MAXCLIENT];
-unsigned char EVILDRAGG[MAXCLIENT]; //!< we need this for UO3D clients to save dragging history , LB
+UI08 LSD[MAXCLIENT];
+UI08 DRAGGED[MAXCLIENT];
+UI08 EVILDRAGG[MAXCLIENT]; //!< we need this for UO3D clients to save dragging history , LB
 
 char firstpacket[MAXCLIENT+1];
 
@@ -261,14 +236,14 @@ int client[MAXCLIENT];
 short int walksequence[MAXCLIENT];
 signed char addid5[MAXCLIENT];
 int acctno[MAXCLIENT];
-unsigned char clientip[MAXCLIENT][4];
+UI08 clientip[MAXCLIENT][4];
 make_st itemmake[MAXCLIENT];
 int tempint[MAXCLIENT];
-unsigned char addid1[MAXCLIENT];
-unsigned char addid2[MAXCLIENT];
-unsigned char addid3[MAXCLIENT];
-unsigned char addid4[MAXCLIENT];
-unsigned char dyeall[MAXCLIENT];
+UI08 addid1[MAXCLIENT];
+UI08 addid2[MAXCLIENT];
+UI08 addid3[MAXCLIENT];
+UI08 addid4[MAXCLIENT];
+UI08 dyeall[MAXCLIENT];
 int addx[MAXCLIENT];
 int addy[MAXCLIENT];
 int addx2[MAXCLIENT];
@@ -276,17 +251,17 @@ int addy2[MAXCLIENT];
 signed char addz[MAXCLIENT];
 int addmitem[MAXCLIENT];
 char xtext[MAXCLIENT][31];
-unsigned char perm[MAXCLIENT];
-unsigned char cryptclient[MAXCLIENT];
-unsigned char usedfree[MAXCLIENT];
+UI08 perm[MAXCLIENT];
+UI08 cryptclient[MAXCLIENT];
+UI08 usedfree[MAXCLIENT];
 int binlength[MAXIMUM+1];
 int boutlength[MAXIMUM+1];
 
 int clickx[MAXCLIENT];
 int clicky[MAXCLIENT];
 int currentSpellType[MAXCLIENT]; //!< 0=spellcast, 1=scrollcast, 2=wand cast
-unsigned char targetok[MAXCLIENT];
-unsigned char clientDimension[MAXCLIENT];
+UI08 targetok[MAXCLIENT];
+UI08 clientDimension[MAXCLIENT];
 //int spattackValue[MAXCLIENT];
 
 //////////////////////////////////////////////
@@ -312,14 +287,14 @@ unsigned char clientDimension[MAXCLIENT];
  char saveip[30]; //!< Servers list
  char start[MAXSTART][5][30]; //!< Startpoints list
  title_st title[ALLSKILLS+1];
- unsigned char *comm[CMAX];
+ UI08 *comm[CMAX];
  int layers[MAXLAYERS];
 
  location_st location[4000];
  logout_st logout[1024];//!< Instalog
- region_st region[256];
+ regions::region_st region[256];
  advance_st wpadvance[1000];
- unsigned int metagm[256][7]; //!< for meta gm script
+ UI32 metagm[256][7]; //!< for meta gm script
  signed short int menupriv[64][256]; //!< for menu priv script
  int validEscortRegion[256];
  creat_st creatures[2048];

@@ -376,7 +376,7 @@ void MULFile::get_st_multiidx(struct st_multiidx *buff, unsigned int number)
   for(unsigned int i = 0; i < number; i++)
   {
     getLong(&buff[i].start);
-    getLong(&buff[i].length);
+    getULong(&buff[i].length);
     getLong(&buff[i].unknown);
   }
 }

@@ -517,8 +517,8 @@ public:
     void CharSpecific()
     {
 	if (!ISVALIDPC(pc)) return; //Luxor
-		pc->setPosition("z", addx[s]);
-        pc->setPosition("dz", addx[s]);
+		pc->setPosition(Z, addx[s]);
+        pc->setPosition(DISPZ, addx[s]);
 		P_CHAR pc_s=MAKE_CHAR_REF(inx);
 	if (!ISVALIDPC(pc_s)) return; //Luxor
         pc_s->teleport();
@@ -526,7 +526,7 @@ public:
     void ItemSpecific()
     {
 	if (!ISVALIDPI(pi)) return; //Luxor
-        pi->setPosition("z", addx[s]);
+        pi->setPosition(Z, addx[s]);
 		P_ITEM pi_c= MAKE_ITEM_REF(inx);
 	if (!ISVALIDPI(pi_c)) return; //Luxor
         pi_c->Refresh();
@@ -979,7 +979,7 @@ public:
         }
         else
         {
-            for (int j=0;j<=333;j++) bolteffect2(inx,w_anim[0],w_anim[1]);
+            for (int j=0;j<=333;j++) bolteffect2(MAKE_CHAR_REF(inx),w_anim[0],w_anim[1]);
         }
     }
 };
@@ -1428,7 +1428,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
             pi->setDecay( false );
 		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
             pi->Refresh();
-            mapRegions->add(pi); // lord Binary, xan, God Rah
+	    regions::add(pi); // lord Binary, xan, God Rah
 	    pointers::addItemToLocationMap( pi );
         }
 
@@ -1436,7 +1436,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
     addid2[s]=0;
 }
 
-/*
+#if 0
 void targets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this function - Crwth 01/11/1999
 {
     if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF) return;
@@ -1487,7 +1487,7 @@ void targets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this f
         }
     }
 }
-*/
+#endif
 
 static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and places it (unmovable) at that spot
 {
@@ -1633,13 +1633,13 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
 	VALIDATEPI(pi2);
 
-	mapRegions->remove(pi1);
+	regions::remove(pi1);
 	pointers::delItemFromLocationMap( pi1 );
 
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
 
-	mapRegions->add(pi1); // lord Binary
+	regions::add(pi1); // lord Binary
 	pointers::addItemToLocationMap(pi1);
 
 	pi1->setDecayTime();
@@ -1715,12 +1715,12 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	VALIDATEPI(pi2);
 	P_ITEM pi3=MAKE_ITEMREF_LR(i);
 	VALIDATEPI(pi3);
-	mapRegions->remove(pi1);
+	regions::remove(pi1);
 	pointers::delItemFromLocationMap(pi1);
 
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
-	mapRegions->add(pi1); // lord Binary
+	regions::add(pi1); // lord Binary
 	pointers::addItemToLocationMap(pi1);
 
 	pi1->setDecayTime();
@@ -2082,7 +2082,7 @@ void targets::SwordTarget(const NXWCLIENT pC)
 		VALIDATEPI(pi);
 
 		pi->setPosition( pcpos );
-		mapRegions->add(pi);
+		regions::add(pi);
 		pointers::addItemToLocationMap(pi);
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
@@ -2715,7 +2715,7 @@ void targets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th function
     if (i!=-1)
     {
         //item::MoveTo(i,addx[s],pi->y,pi->z);
-		pi->MoveTo( addx[s], pi->getPosition("y"), pi->getPosition("z"));
+		pi->MoveTo( addx[s], pi->getPosition().y, pi->getPosition().z);
         pi->Refresh();
     }
 
@@ -2739,7 +2739,7 @@ void targets::NewYTarget(NXWSOCKET s)
     if (i!=-1)
     {
         //item::MoveTo(i,pi->x,addx[s],pi->z);
-		pi->MoveTo( pi->getPosition("x"), addx[s], pi->getPosition("z"));
+		pi->MoveTo( pi->getPosition().x, addx[s], pi->getPosition().z);
         pi->Refresh();
     }
 
@@ -3337,19 +3337,17 @@ void targets::SetMurderCount( NXWSOCKET s )
 
     pi2->magic=3;
 
-    mapRegions->RemoveItem(c); // remove if add in spawnitem
+    regions::RemoveItem(c); // remove if add in spawnitem
     pi2->layer=pi1->layer;
     if (pi2->layer==0) // if not equipped -> coords of the light-object = coords of the
     {
 		pi2->setPosition( pi1->getPosition() );
     } else // if equipped -> place lightsource at player ( height= approx hand level )
     {
-        pi2->setPosition("x", charpos.x);
-        pi2->setPosition("y", charpos.y);
-        pi2->setPosition("z", charpos.z + 4);
+        pi2->setPosition(charpos.x, charpos.y, charpos.z + 4);
     }
 
-    //mapRegions->AddItem(c);
+    //regions::AddItem(c);
     pi2->priv=0; // doesnt decay
 
     pi1->glow= pi2->getSerial32(); // set glow-identifier
@@ -4009,7 +4007,7 @@ void targets::MultiTarget(NXWCLIENT ps) // If player clicks on something with th
             targetCallback(s, TL);
             break;
         } //</Luxor>
-        case 192: PartySystem::targetParty(ps); break;   // Xan Party System
+        case 192: partySystem::targetParty(ps); break;   // Xan Party System
         case 193: targets::AllAttackTarget(s); break;      // Luxor All Attack
 		case 194:
 		{
@@ -4115,9 +4113,9 @@ void TargetLocation::init(P_ITEM pi)
 {
 	m_pc = NULL;
 	if (pi->isInWorld()) {
-		m_x = pi->getPosition("x");
-		m_y = pi->getPosition("y");
-		m_z = pi->getPosition("z");
+		m_x = pi->getPosition().x;
+		m_y = pi->getPosition().y;
+		m_z = pi->getPosition().z;
 	} else {
 		m_x = m_y = m_z = 0;
 	}
@@ -4178,9 +4176,9 @@ void TargetLocation::extendItemTarget()
 	if (m_pi==NULL)
 		return;
 	if (m_pi->isInWorld()) {
-		m_x = m_pi->getPosition("x");
-		m_y = m_pi->getPosition("y");
-		m_z = m_pi->getPosition("z");
+		m_x = m_pi->getPosition().x;
+		m_y = m_pi->getPosition().y;
+		m_z = m_pi->getPosition().z;
 	}
 	else {
 		int it, ch;
@@ -4225,16 +4223,6 @@ TargetLocation::TargetLocation(PKGx6C* pp)
 	m_x=0;
 	m_y=0;
 	m_z=0;
-}
-
-
-
-cPacketTargeting::cPacketTargeting()
-{
-}
-
-cPacketTargeting::~cPacketTargeting()
-{
 }
 
 UI08 cPacketTargeting::getTargetType( NXWSOCKET socket )

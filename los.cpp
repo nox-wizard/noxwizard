@@ -226,15 +226,15 @@ bool cLoS::isBlockedByItem(P_ITEM pi)
 	VALIDATEPIR(pi,true);
 	if (pi->id1 < 0x40)	// unbelievable, but this significantly helps performance (Duke)
 	{
-		if (!crossesTile(pi->getPosition("x"), pi->getPosition("y")))
+		if (!crossesTile(pi->getPosition().x, pi->getPosition().y))
 			return false;
 		if (isBlockedByTile(pi))
 			return true;
 	}
 	else
 	{
-		cRectangle maxRect( pi->getPosition("x") - BUILDRANGE,pi->getPosition("y") - BUILDRANGE,
-							pi->getPosition("x") + BUILDRANGE,pi->getPosition("y") + BUILDRANGE);
+		cRectangle maxRect( pi->getPosition().x - BUILDRANGE,pi->getPosition().y - BUILDRANGE,
+							pi->getPosition().x + BUILDRANGE,pi->getPosition().y + BUILDRANGE);
 		if (!maxRect.overlaps(lineRect))
 			return false;
 		if (isBlockedByMulti(pi))
@@ -267,10 +267,10 @@ bool cLoS::isBlockedByMulti(P_ITEM pi)
 	{
 		st_multi multi;
 		mfile->get_st_multi(&multi);
-		if ((multi.visible) && crossesTile(pi->getPosition("x")+multi.x, pi->getPosition("y")+multi.y))
+		if ((multi.visible) && crossesTile(pi->getPosition().x+multi.x, pi->getPosition().y+multi.y))
 		{
-			short zLine=getZatXY(pi->getPosition("x")+multi.x, pi->getPosition("y")+multi.y);
-			if (isBlockedByHeight(multi.tile, pi->getPosition("z")+multi.z, zLine))
+			short zLine=getZatXY(pi->getPosition().x+multi.x, pi->getPosition().y+multi.y);
+			if (isBlockedByHeight(multi.tile, pi->getPosition().z+multi.z, zLine))
 				return true;
 		}
 	}
@@ -288,9 +288,9 @@ bool cLoS::isBlockedByTile(P_ITEM pi)
 	VALIDATEPIR(pi,true);	
 	if (pi->visible==0)	// normally visible (!)
 	{
-		short zLine=getZatXY(pi->getPosition("x"), pi->getPosition("y"));
+		short zLine=getZatXY(pi->getPosition().x, pi->getPosition().y);
 		
-		if (isBlockedByHeight(pi->id(), pi->getPosition("z"), zLine))
+		if (isBlockedByHeight(pi->id(), pi->getPosition().z, zLine))
 			return true;
 	}
 	return false;

@@ -30,7 +30,7 @@ class nxwString
 											nxwString( char const *arg );
 											nxwString( std::string const &arg );
 											nxwString( nxwString const &arg );
-		virtual						~nxwString();
+		virtual	~nxwString() {}
 
 		std::string				getValue();
 		LOGICAL						empty();

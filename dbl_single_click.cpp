@@ -373,7 +373,7 @@ void doubleclick(NXWCLIENT ps)
 	case ITYPE_CONTAINER: // bugfix for snooping not working, lb
 	case ITYPE_UNLOCKED_CONTAINER:
 		if (pi->moreb1 > 0) {
-			magic::castAreaAttackSpell(pi->getPosition("x"), pi->getPosition("y"), magic::SPELL_EXPLOSION);
+			magic::castAreaAttackSpell(pi->getPosition().x, pi->getPosition().y, magic::SPELL_EXPLOSION);
 			pi->moreb1--;
 		}
 		//Magic->MagicTrap(currchar[s], pi); // added by AntiChrist
@@ -419,7 +419,7 @@ void doubleclick(NXWCLIENT ps)
 
 		// Added traps effects by AntiChrist
 		if (pi->moreb1 > 0) {
-			magic::castAreaAttackSpell(pi->getPosition("x"), pi->getPosition("y"), magic::SPELL_EXPLOSION);
+			magic::castAreaAttackSpell(pi->getPosition().x, pi->getPosition().y, magic::SPELL_EXPLOSION);
 			pi->moreb1--;
 		}
 

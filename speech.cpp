@@ -1467,7 +1467,7 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 					pc_pet->attackerserial= INVALID;
 					pc->war  	= 0;
 					pc->targserial	= INVALID;
-					mapRegions->remove( pc_pet );
+					regions::remove( pc_pet );
 					pointers::delCharFromLocationMap( pc_pet );
 					pc_pet->stable( pc_stablemaster );
 					// set timer for fee calculation
@@ -1614,7 +1614,7 @@ stabledPets.rewind();	// GH!
 					
 					pc_pet->timeused_last = getclock();
 					pc_pet->time_unused=0;
-					mapRegions->add( pc_pet );
+					regions::add( pc_pet );
 					pointers::addCharToLocationMap( pc_pet );
 					pc_pet->teleport();
 				}
@@ -2249,7 +2249,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	if ( ISVALIDPC(pc_found) &&(pc_found->speech) )
 	{
 
-		if(abs(pc_found->getPosition("z")-pc->getPosition("z")) >3 ) return;
+		if(abs(pc_found->getPosition().z-pc->getPosition().z) >3 ) return;
 
 		responsevendor(socket, DEREF_P_CHAR(pc_found));
 

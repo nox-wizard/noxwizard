@@ -86,19 +86,15 @@ public:
 	void remove( SERIAL serial );
 };
 
-typedef std::map< SERIAL, cSpawnScripted > SPAWN_SCRIPTED_DB;
-typedef std::map< SERIAL, cSpawnDynamic  > SPAWN_DYNAMIC_DB;
+namespace spawns {
+	typedef std::map< SERIAL, cSpawnScripted > SPAWN_SCRIPTED_DB;
+	typedef std::map< SERIAL, cSpawnDynamic  > SPAWN_DYNAMIC_DB;
 
-class cSpawns {
-private:
+	extern SPAWN_SCRIPTED_DB scripted; //!< list of scripted spawn
+	extern SPAWN_DYNAMIC_DB dynamic; //!< list of dynamic spawn
+	extern TIMERVAL check; //!< check respawn
 
-	SPAWN_SCRIPTED_DB scripted; //!< list of scripted spawn
-	SPAWN_DYNAMIC_DB dynamic; //!< list of dynamic spawn
-
-public:
-	cSpawns();
-
-	TIMERVAL check; //!< check respawn
+	void initialize();
 
 	void loadFromScript();
 	void loadFromItem( P_ITEM pi );
@@ -114,6 +110,6 @@ public:
 	void removeSpawnDynamic( P_ITEM pi );
 	void removeSpawnDynamic( P_CHAR pc );
 
-};
+}
 
 #endif

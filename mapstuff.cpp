@@ -8,7 +8,7 @@ UI32 MapTileHeight = 512;
 //#define DEBUG_MAP_STUFF	1
 
 #ifdef DEBUG_MAP_STUFF
-void bitprint(FILE *fp, unsigned char x)
+void bitprint(FILE *fp, UI08 x)
 {
 	for (int i = 7; i >= 0; --i)
 	{
@@ -62,8 +62,6 @@ cMapStuff::~cMapStuff()
 
 void cMapStuff::Load()
 {
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
 	keeprun = false;
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 	mapfile= new MULFile(mapname,"rb");
@@ -149,7 +147,7 @@ void cMapStuff::Load()
 // oh yah, well that's encouraging.. NOT! at least LB was kind enough to
 // move this out into a separate file. he gets kudos for that!
 //int cMapStuff::TileHeight(int tilenum)
-signed char cMapStuff::TileHeight(int tilenum)
+SI08 cMapStuff::TileHeight(int tilenum)
 {
 
 	tile_st tile;
@@ -158,7 +156,7 @@ signed char cMapStuff::TileHeight(int tilenum)
 
 	// For Stairs+Ladders
 	if (tile.flag2 & 0x400)
-		return (signed char)(tile.height/2);	// hey, lets just RETURN half!
+		return (SI08)(tile.height/2);	// hey, lets just RETURN half!
 	return (tile.height);
 
 }
@@ -174,33 +172,26 @@ bool CanUseOldZ(int oldz, int newz)
 */
 
 //<Anthalir>
-signed char cMapStuff::StaticTop(Location where)
+SI08 cMapStuff::StaticTop(Location where)
 {
 	return StaticTop(where.x, where.y, where.z);
 }
 //</Anthalir>
 
-//o-------------------------------------------------------------o
-//|   Function    :  char StaticTop(int x,int y,int oldz);
-//|   Date        :  Unknown     Touched: Dec 21, 1998
-//|   Programmer  :  Unknown
-//o-------------------------------------------------------------o
-//|   Purpose     :  Top of statics at/above given coordinates
-//o-------------------------------------------------------------o
-//int cMapStuff::StaticTop(int x, int y, int oldz)
-signed char cMapStuff::StaticTop( UI32 x, UI32 y, signed char oldz)
+/*
+ \brief Top of statics at/above given coordinates
+ */
+SI08 cMapStuff::StaticTop( UI16 x, UI16 y, SI08 oldz)
 {
-//	int top = illegal_z;
 
-	signed char top = illegal_z;
+	SI08 top = illegal_z;
 	int loopexit=0;
 
 	MapStaticIterator msi(x, y);
 	staticrecord *stat;
 	while ( ((stat = msi.Next())!=0) && (++loopexit < MAXLOOPS) )
 	{
-//		int tempTop = stat->zoff + TileHeight(stat->itemid);
-		signed char tempTop = stat->zoff + TileHeight(stat->itemid);
+		SI08 tempTop = stat->zoff + TileHeight(stat->itemid);
 		if ((tempTop <= oldz + MaxZstep) && (tempTop > top))
 		{
 			top = tempTop;
@@ -222,8 +213,7 @@ signed char cMapStuff::StaticTop( UI32 x, UI32 y, signed char oldz)
 //           he/she is really in a building. though idunno yet how to check the later one (underpassing checks)
 //           probably with the floor-bit
 
-//bool cMapStuff::IsUnderRoof(int x, int y, int z)
-bool cMapStuff::IsUnderRoof(UI32 x, UI32 y, signed char z)
+bool cMapStuff::IsUnderRoof(UI16 x, UI16 y, SI08 z)
 {
 	MapStaticIterator msi(x, y);
 	staticrecord *stat;
@@ -313,9 +303,8 @@ void cMapStuff::MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2)
 
 }
 
-// return the height of a multi item at the given x,y. this seems to actually return a height
-//int cMapStuff::MultiHeight(int i, int x, int y, int oldz)
-signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
+//! return the height of a multi item at the given x,y. this seems to actually return a height
+SI08 cMapStuff::MultiHeight(P_ITEM pi, UI16 x, UI16 y, SI08 oldz)
 {                                                                                                                                  	st_multi multi;
 
 	MULFile *mfile = 0;
@@ -332,9 +321,9 @@ signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 	for (int j=0;j<length;j++)
 	{
 		mfile->get_st_multi(&multi);
-		if (/*(multi.visible) &&*/ (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y))
+		if ((pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y))
 		{
-			int tmpTop = pi->getPosition("z") + multi.z;
+			int tmpTop = pi->getPosition().z + multi.z;
 			if ((tmpTop<=oldz+MaxZstep)&& (tmpTop>=oldz-1))
 			{
 				//ConOut("At or above=%i\n",multi.z);
@@ -352,20 +341,19 @@ signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 }
 
 //<Anthalir>
-signed char cMapStuff::DynamicElevation(Location where)
+SI08 cMapStuff::DynamicElevation(Location where)
 {
 	return DynamicElevation(where.x, where.y, where.z);
 }
 //</Anthalir>
 
 // This was fixed to actually return the *elevation* of dynamic items at/above given coordinates
-//int cMapStuff::DynamicElevation(int x, int y, int oldz)
-signed char cMapStuff::DynamicElevation( UI32 x, UI32 y, signed char oldz)
+SI08 cMapStuff::DynamicElevation( UI16 x, UI16 y, SI08 oldz)
 {
 
 	//int z = illegal_z;
-	signed char z = illegal_z;
-	signed char tempVal = illegal_z;
+	SI08 z = illegal_z;
+	SI08 tempVal = illegal_z;
 
 
 	NxwItemWrapper si;
@@ -380,14 +368,14 @@ signed char cMapStuff::DynamicElevation( UI32 x, UI32 y, signed char oldz)
 				z = MultiHeight(pi, x ,y, oldz);
 				// this used to do a z++, but that doesn't take into account the fact that
 				// the itemp[] the multi was based on has its own elevation
-				tempVal = z + pi->getPosition("z") + 1;
+				tempVal = z + pi->getPosition().z + 1;
 	//			z = z + pi->z + 1;
 				z = tempVal;
 				//z += pi->z + 1;
 			}
 			else if ((pi->getPosition().x == x) && (pi->getPosition().y == y))
 			{
-				signed char ztemp = pi->getPosition("z") + TileHeight( pi->id() );
+				SI08 ztemp = pi->getPosition().z + TileHeight( pi->id() );
 				if ((ztemp <= oldz + MaxZstep) && (ztemp > z))
 				{
 					z=ztemp;
@@ -400,7 +388,7 @@ signed char cMapStuff::DynamicElevation( UI32 x, UI32 y, signed char oldz)
 }
 
 
-int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
+int cMapStuff::MultiTile(P_ITEM pi, UI16 x, UI16 y, SI08 oldz)
 {
 
 	SI32 length = 0;
@@ -418,7 +406,7 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 	{
 		mfile->get_st_multi(&multi);
 		if ((multi.visible && (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y)
-			&& (abs(pi->getPosition("z")+multi.z-oldz)<=1)))
+			&& (abs(pi->getPosition().z+multi.z-oldz)<=1)))
 		{
 			int mt=multi.tile;
 			/*if (DoesTileBlock(mt)) return mt;
@@ -431,13 +419,14 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 
 }
 
+#if 0
 // returns which dynamic tile is present at (x,y) or INVALID if no tile exists
 // originally by LB & just michael
 //int cMapStuff::DynTile(int x, int y, int oldz)
 /*
 	Sparhawk:	Due to an obscure internal compiler error of gcc 3.3 this has been integrated into canmonstermmoveher()
-	
-int cMapStuff::DynTile(UI32 x, UI32 y, signed char oldz)
+*/	
+int cMapStuff::DynTile(UI16 x, UI16 y, SI08 oldz)
 {
 
 	NxwItemWrapper si;
@@ -463,8 +452,10 @@ int cMapStuff::DynTile(UI32 x, UI32 y, signed char oldz)
 
 }
 */
+#endif
 
-/* returns object type, 0=map, 1=static, 2=dynamic
+#if 0
+// returns object type, 0=map, 1=static, 2=dynamic
 // an enum type would have been better, but at least they documented the values!
 // This was unused, so I removed it for now! - fur 12/8/1999
 char cMapStuff::o_Type(int x, int y, int oldz)
@@ -480,14 +471,13 @@ char cMapStuff::o_Type(int x, int y, int oldz)
 		z=2;
 	return z;
 }
-*/
+#endif
 
 // return the elevation of MAP0.MUL at given coordinates, we'll assume since its land
 // the height is inherently 0
-//int cMapStuff::MapElevation(int x, int y)
-signed char cMapStuff::MapElevation(UI32 x, UI32 y)
+SI08 cMapStuff::MapElevation(UI16 x, UI16 y)
 {
-	signed char z;
+	SI08 z;
 	map_st map = SeekMap0( x, y );
 	// make sure nothing can move into black areas
 	switch( map.id )
@@ -514,15 +504,14 @@ signed char cMapStuff::MapElevation(UI32 x, UI32 y)
 }
 
 //<Anthalir>
-signed char cMapStuff::AverageMapElevation(Location where, int &id)
+SI08 cMapStuff::AverageMapElevation(Location where, int &id)
 {
 	return AverageMapElevation(where.x, where.y, id);
 }
 //</Anthalir>
 
 // compute the 'average' map height by looking at three adjacent cells
-//int cMapStuff::AverageMapElevation(int x, int y, int &id)
-signed char cMapStuff::AverageMapElevation(UI32 x, UI32 y, int &id)
+SI08 cMapStuff::AverageMapElevation(UI16 x, UI16 y, int &id)
 {
 	// first thing is to get the map where we are standing
 
@@ -532,18 +521,18 @@ signed char cMapStuff::AverageMapElevation(UI32 x, UI32 y, int &id)
 	if (map1.id > 2 && illegal_z != MapElevation(x, y))
 	{
 		// get three other nearby maps to decide on an average z?
-		signed char map2z = Map->MapElevation( x + 1, y );
-		signed char map3z = Map->MapElevation( x, y + 1);
-		signed char map4z = Map->MapElevation( x + 1, y + 1);
+		SI08 map2z = Map->MapElevation( x + 1, y );
+		SI08 map3z = Map->MapElevation( x, y + 1);
+		SI08 map4z = Map->MapElevation( x + 1, y + 1);
 
-		signed char testz = 0;
+		SI08 testz = 0;
 		if (abs(map1.z - map4z) <= abs(map2z - map3z))
 		{
 			if (illegal_z == map4z)
 				testz = map1.z;
 			else
 			{
-				testz = (signed char)((map1.z + map4z) >> 1);
+				testz = (SI08)((map1.z + map4z) >> 1);
 				if (testz%2<0) --testz;
 				// ^^^ Fix to make it round DOWN, not just in the direction of zero
 			}
@@ -552,7 +541,7 @@ signed char cMapStuff::AverageMapElevation(UI32 x, UI32 y, int &id)
 				testz = map1.z;
 			else
 			{
-				testz = (signed char)((map2z + map3z) >> 1);
+				testz = (SI08)((map2z + map3z) >> 1);
 				if (testz%2<0) --testz;
 				// ^^^ Fix to make it round DOWN, not just in the direction of zero
 			}
@@ -918,7 +907,7 @@ MapStaticIterator::MapStaticIterator(Location where, bool exact /*= true*/)
 **  		    ... your code here...
 **	  	}
 */
-MapStaticIterator::MapStaticIterator( UI32 x, UI32 y, bool exact) :
+MapStaticIterator::MapStaticIterator( UI16 x, UI16 y, bool exact) :
 baseX((x) / 8), baseY((y) / 8), remainX((x) % 8), remainY((y) % 8), length(0), index(0),
 pos(0), exactCoords(exact), tileid(0)
 {
@@ -1074,7 +1063,7 @@ void cMapStuff::CacheStatics( void )
 
 	const UI32 tenPercent = StaticBlocks / 9;
 	UI32 currentBlock = 0;
-	for( UI32 x = 0; x < MapTileWidth; x++ )
+	for( UI16 x = 0; x < MapTileWidth; x++ )
     {
 		for( unsigned int y = 0; y < MapTileHeight; y++ )
 		{
@@ -1147,8 +1136,8 @@ map_st cMapStuff::SeekMap0( unsigned short x, unsigned short y )
 
 	Map0Cache[CurCachePos].xb=x1;
 	Map0Cache[CurCachePos].yb=y1;
-	Map0Cache[CurCachePos].xo=static_cast<unsigned char>(x2);
-	Map0Cache[CurCachePos].yo=static_cast<unsigned char>(y2);
+	Map0Cache[CurCachePos].xo=static_cast<UI08>(x2);
+	Map0Cache[CurCachePos].yo=static_cast<UI08>(y2);
 
 	// don't increment this until AFTER we have loaded everything, i had to fix what zippy did
 	CurCachePos++;
@@ -1180,8 +1169,7 @@ bool cMapStuff::TileWalk(int tilenum)
 }
 
 // Blocking statics at/above given coordinates?
-//bool cMapStuff::DoesStaticBlock( int x, int y, int oldz )
-bool cMapStuff::DoesStaticBlock( UI32 x, UI32 y, signed char oldz )
+bool cMapStuff::DoesStaticBlock( UI16 x, UI16 y, SI08 oldz )
 {
 
 	MapStaticIterator msi(x, y);
@@ -1208,22 +1196,21 @@ bool cMapStuff::DoesStaticBlock( UI32 x, UI32 y, signed char oldz )
 }
 
 //<Anthalir>
-signed char cMapStuff::Height(Location where)
+SI08 cMapStuff::Height(Location where)
 {
 	return Height(where.x, where.y, where.z);
 }
 //</Anthalir>
 
 // Return new height of player who walked to X/Y but from OLDZ
-//int cMapStuff::Height(int x, int y, int oldz)
-signed char cMapStuff::Height( UI32 x, UI32 y, signed char oldz )
+SI08 cMapStuff::Height( UI16 x, UI16 y, SI08 oldz )
 {
 	// let's check in this order.. dynamic, static, then the map
-	signed char dynz = DynamicElevation(x, y, oldz);
+	SI08 dynz = DynamicElevation(x, y, oldz);
 	if (illegal_z != dynz)
 		return dynz;
 
-	signed char staticz = StaticTop(x, y, oldz);
+	SI08 staticz = StaticTop(x, y, oldz);
 	if (illegal_z != staticz)
 		return staticz;
 
@@ -1233,19 +1220,18 @@ signed char cMapStuff::Height( UI32 x, UI32 y, signed char oldz )
 
 // can the monster move here from an adjacent cell at elevation 'oldz'
 // use illegal_z if they are teleporting from an unknown z
-//bool cMapStuff::CanMonsterMoveHere(int x, int y, int oldz)
 /*!
 \author Unknown
 \todo remove it
 */
-bool cMapStuff::CanMonsterMoveHere(UI32 x, UI32 y, signed char oldz)
+bool cMapStuff::CanMonsterMoveHere(UI16 x, UI16 y, SI08 oldz)
 {
 	Location pos = Loc( x, y, oldz );
 	return ( isWalkable( pos ) != illegal_z );
 /*	if( x >= ( MapTileWidth * 8 ) || y >= ( MapTileHeight * 8 ) )
 		return false;
 
-	const signed char elev = Height(x, y, oldz);
+	const SI08 elev = Height(x, y, oldz);
 	if (illegal_z == elev)
 		return false;
 

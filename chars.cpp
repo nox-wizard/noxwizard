@@ -1103,8 +1103,8 @@ void cChar::showContainer(P_ITEM pCont)
 			continue;
 
 		//fix location of items if they mess up. (needs tweaked for container types)
-		if (pi->getPosition("x") > 150) pi->setPosition("x", 150);
-		if (pi->getPosition("y") > 140) pi->setPosition("y", 140);
+		if (pi->getPosition().x > 150) pi->setPosition(X, 150);
+		if (pi->getPosition().y > 140) pi->setPosition(Y, 140);
 		//end fix
 		LongToCharPtr(pi->getSerial32(), bpitem);
 		ShortToCharPtr(pi->animid(), bpitem +4);
@@ -1205,10 +1205,10 @@ void cChar::MoveTo(Location newloc)
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
 
-	mapRegions->remove(this);
+	regions::remove(this);
 	pointers::delCharFromLocationMap( this );
 	setPosition( newloc );
-	mapRegions->add(this);
+	regions::add(this);
 	pointers::addCharToLocationMap( this );
 }
 
@@ -1547,7 +1547,7 @@ LOGICAL const cChar::IsOnline() const
 
 	if (npc) return false;
 	
-	if(Accounts->GetInWorld(account) == getSerial32())
+	if(accounts::GetInWorld(account) == getSerial32())
 		return true;
 
 	return false;
@@ -1793,8 +1793,8 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
-		setPosition("z",boatpos.z+3 );
-		setPosition("dz",boatpos.z+3 );
+		setPosition( Z, boatpos.z+3 );
+		setPosition( DISPZ, boatpos.z+3 );
 	} else
 		setMultiSerial(-1);
 
@@ -2393,7 +2393,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 */
 void cChar::circleFX(short id)
 {
-	bolteffect2(DEREF_P_CHAR(this),id >> 8,id & 0xFF);
+	bolteffect2(this,id >> 8,id & 0xFF);
 }
 
 /*!
@@ -2776,12 +2776,12 @@ void cChar::possess(P_CHAR pc)
 	
 	//Set offline the old body, and online the new one
 	if ( bSwitchBack ) {
-		Accounts->SetOffline( pc->account );
-		Accounts->SetOnline( pc->account, pc );
+		accounts::SetOffline( pc->account );
+		accounts::SetOnline( pc->account, pc );
 
 	} else {
-		Accounts->SetOffline( account );
-		Accounts->SetOnline( account, pc );
+		accounts::SetOffline( account );
+		accounts::SetOnline( account, pc );
 	}
 	
 	//Let's go! :)
@@ -4278,9 +4278,9 @@ void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
 
 void cChar::pc_heartbeat()
 {
-	if ( Accounts->GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
+	if ( accounts::GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
 	{
-		Accounts->SetOffline( account);
+		accounts::SetOffline(account);
 		logout = INVALID;
 		teleport( TELEFLAG_NONE );
 		return;

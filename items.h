@@ -72,8 +72,6 @@ public:
 
 public:
 	cItem(SERIAL serial);
-	~cItem();
-
 
 //@{
 /*!

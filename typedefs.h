@@ -135,8 +135,8 @@ struct lookuptr_st //Tauriel  used to create pointers to the items dynamically a
 };
 
 struct path_st {
-	UI32 x;
-	UI32 y;
+	UI16 x;
+	UI16 y;
 };
 
 
@@ -203,7 +203,7 @@ struct unitile_st
 struct st_multiidx
 {
  SI32 start;
- SI32 length;
+ UI32 length;
  SI32 unknown;
 } PACK_NEEDED;
 
@@ -249,10 +249,10 @@ struct location_st
 
 struct logout_st//Instalog
 {
-	UI32 x1;
-	UI32 y1;
-	UI32 x2;
-	UI32 y2;
+	UI16 x1;
+	UI16 y1;
+	UI16 x2;
+	UI16 y2;
 };
 
 struct skill_st
@@ -421,10 +421,11 @@ struct title_st
 \brief Represent a point on the map
 \author Anthalir
 \since 0.82a
+\todo change x and y to UI16, they are not longs
 */
 struct Location{
-	UI32			x, y;
-	signed char		z, dispz;		// dispz is used for the char location
+	UI16 x, y;
+	SI08 z, dispz;		// dispz is used for the char location
 };
 
 

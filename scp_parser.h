@@ -27,7 +27,6 @@ protected:
 public:
 	explicit cScpIterator(cScpSection* section);
 	explicit cScpIterator(cScpSection& section);
-	~cScpIterator();
 	void parseLine(std::string& strParam1, std::string& strParam2);
 	void parseLine(char* szParam1, char* szParam2);
 	class cScpEntry* getEntry();
@@ -55,11 +54,9 @@ class cScpSection
 {
 private:
 	std::vector<class cScpEntry> m_vLines;
-protected:
 public:
+	cScpSection () {}
 	cScpSection (FILE *file, class cScpScript* parent);
-	cScpSection (){};
-	~cScpSection();
 	void parseLine(int nIdx, std::string& strParam1, std::string& strParam2);
 	void parseLine(int nIdx, char* szParam1, char* szParam2);
 	cScpEntry* getEntry(int nPosition);
@@ -78,7 +75,6 @@ protected:
 public:
 	cScpScript(char* szFileName);
 	void load(char* szFileName);
-	~cScpScript();
 	class cScpSection*	getSection(std::string& strIdentifier);
 	class cScpSection*	getSection(char* szIdentifier);
 	class cScpSection*	getSectionInStr(char* szIdentifier);

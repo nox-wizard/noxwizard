@@ -37,12 +37,6 @@ cPrisonCell::cPrisonCell()
 	free=true;
 };
 
-/*!
-\brief Destructor of cJailed
-\author Endymion
-*/
-cPrisonCell::~cPrisonCell() { };
-
 namespace prison {
 /*!
 \brief archive a jail worldfile
@@ -224,7 +218,7 @@ void prison::freePrisonCell( SERIAL cell )
 }
 
 
-void prison::addCell( SERIAL serial, UI32 x, UI32 y, UI32 z )
+void prison::addCell( SERIAL serial, UI16 x, UI16 y, SI08 z )
 {
 	for( PRISONCELLVECTOR::iterator j = prison::cells.begin(); j!=prison::cells.end(); j++ )
 		if( (*j).serial == serial )

@@ -9,14 +9,6 @@
 
 #include "nxwcommn.h"
 
-cPoll::cPoll()
-{
-}
-
-cPoll::~cPoll()
-{
-}
-
 SERIAL cPoll::getSerial()
 {
 	return serial;

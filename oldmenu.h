@@ -36,7 +36,7 @@ protected:
 
 public:
 	cOldMenu();
-	virtual ~cOldMenu();
+	virtual ~cOldMenu() {}
 
 	void setParameters( int numPerPage, int numpages );
 	void	setCallBack( int fn );
@@ -61,7 +61,7 @@ private:
 
 public:
 	cOldMenuClassic();
-	virtual ~cOldMenuClassic();
+	virtual ~cOldMenuClassic() {}
 
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
 	virtual void show( P_CHAR pc );
@@ -77,7 +77,7 @@ class cOldMenuIconList : public cBasicMenu, public cOldMenu
 
 public:
 	cOldMenuIconList();
-	virtual ~cOldMenuIconList();
+	virtual ~cOldMenuIconList() {}
 
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
 	virtual void show( P_CHAR pc );

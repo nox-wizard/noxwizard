@@ -33,7 +33,6 @@ class cGameDate
 	public:
 					cGameDate();
 					cGameDate( const cGameDate &copy );
-					~cGameDate();
 	private:
 		UI16			year;
 		UI08			month;

@@ -356,8 +356,8 @@ void objTeleporters(P_CHAR pc)
 		if(!ISVALIDPI(pmi))
 			continue;
 
-		if (((UI32)pmi->getPosition("x") == charpos.x) && ((UI32)pmi->getPosition("y") == charpos.y) &&
-			((abs(pmi->getPosition("z")) + 10) >= abs(charpos.z)) &&((abs(pmi->getPosition("z")) - 10) <= abs(charpos.z)))
+		if ((pmi->getPosition().x == charpos.x) && (pmi->getPosition().y == charpos.y) &&
+			((abs(pmi->getPosition().z) + 10) >= abs(charpos.z)) &&((abs(pmi->getPosition().z) - 10) <= abs(charpos.z)))
 			{
 				if ((pmi->type == 60) && (pmi->morex + pmi->morey + pmi->morez >0))
 				{

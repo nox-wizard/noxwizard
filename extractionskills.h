@@ -59,7 +59,6 @@ public:
 	UI32		area_height; //!< resource area height
 
 	cResources( UI32 areawidth = 10, UI32 areaheight = 10 );
-	~cResources();
 
 	void setDimArea( UI32 areawidth, UI32 areaheight );
 	

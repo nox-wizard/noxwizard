@@ -10,9 +10,6 @@
 #include "nxwcommn.h"
 #include "spawn.h"
 
-cSpawns*	Spawns;
-
-
 cSpawnArea::cSpawnArea( areas::AREA_ITER area )
 {
 	nextspawn=uiCurrentTime;
@@ -213,12 +210,16 @@ void cSpawnScripted::removeObject( P_CHAR pc )
 	}
 }
 
-cSpawns::cSpawns()
+spawns::SPAWN_SCRIPTED_DB spawns::scripted; //!< list of scripted spawn
+spawns::SPAWN_DYNAMIC_DB spawns::dynamic; //!< list of dynamic spawn
+TIMERVAL spawns::check; //!< check respawn
+
+void spawns::initialize()
 {
 	check=uiCurrentTime;
 }
 
-void cSpawns::loadFromScript()
+void spawns::loadFromScript()
 {
 
 	cScpIterator*	iter = NULL;
@@ -299,7 +300,7 @@ void cSpawns::loadFromScript()
 			continue;
 		}
 
-		Spawns->scripted.insert( make_pair( current, (*dummy) ) );
+		spawns::scripted.insert( make_pair( current, (*dummy) ) );
 
     }
 	while ( (strcmp("EOF", script1.c_str())) && (++loopexit < MAXLOOPS) );
@@ -313,7 +314,7 @@ void cSpawns::loadFromScript()
 \author Luxor
 \brief Clears the dynamic spawners map.
 */
-void cSpawns::clearDynamic()
+void spawns::clearDynamic()
 {
 	dynamic.clear();
 }
@@ -322,7 +323,7 @@ void cSpawns::clearDynamic()
 \author Luxor
 \brief Creates a new dynamic spawner getting data from an item.
 */
-void cSpawns::loadFromItem( P_ITEM pi )
+void spawns::loadFromItem( P_ITEM pi )
 {
 	VALIDATEPI(pi);
 
@@ -335,10 +336,10 @@ void cSpawns::loadFromItem( P_ITEM pi )
 	//
 	// Insert the spawner in the map.
 	//
-	Spawns->dynamic.insert( make_pair( pi->getSerial32(), cSpawnDynamic(pi) ) );
+	spawns::dynamic.insert( make_pair( pi->getSerial32(), cSpawnDynamic(pi) ) );
 }
 
-void cSpawns::doSpawn()
+void spawns::doSpawn()
 {
 	SPAWN_SCRIPTED_DB::iterator iter_scr( scripted.begin() );
 	for( ; iter_scr!=scripted.end(); iter_scr++ ) {
@@ -357,7 +358,7 @@ void cSpawns::doSpawn()
 		check = uiCurrentTime+ 30*MY_CLOCKS_PER_SEC;
 }
 
-void cSpawns::doSpawnAll()
+void spawns::doSpawnAll()
 {
 	SPAWN_SCRIPTED_DB::iterator iter( scripted.begin() ), end( scripted.end() );
 	for( ; iter!=end; iter++ ) {
@@ -375,7 +376,7 @@ void cSpawns::doSpawnAll()
 		check = uiCurrentTime+ 30*MY_CLOCKS_PER_SEC;
 }
 
-void cSpawns::doSpawnAll( SERIAL spawn )
+void spawns::doSpawnAll( SERIAL spawn )
 {
 	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
 	if( iter!= scripted.end() )
@@ -384,21 +385,21 @@ void cSpawns::doSpawnAll( SERIAL spawn )
 }
 
 
-void cSpawns::removeObject( SERIAL spawn, P_ITEM pi )
+void spawns::removeObject( SERIAL spawn, P_ITEM pi )
 {
 	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
 	if( iter!= scripted.end() )
 		iter->second.removeObject( pi );
 }
 
-void cSpawns::removeObject( SERIAL spawn, P_CHAR pc )
+void spawns::removeObject( SERIAL spawn, P_CHAR pc )
 {
 	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
 	if( iter!= scripted.end() )
 		iter->second.removeObject( pc );
 }
 
-void cSpawns::removeSpawnDynamic( P_ITEM pi )
+void spawns::removeSpawnDynamic( P_ITEM pi )
 {
 	VALIDATEPI(pi);
 	SPAWN_DYNAMIC_DB::iterator iter( dynamic.find( pi->getSerial32() ) );
@@ -416,7 +417,7 @@ void cSpawns::removeSpawnDynamic( P_ITEM pi )
 
 }
 
-void cSpawns::removeSpawnDynamic( P_CHAR pc )
+void spawns::removeSpawnDynamic( P_CHAR pc )
 {
 	VALIDATEPC(pc);
 	if( pc->spawnserial!=INVALID ) {

@@ -201,7 +201,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					//
 					hasInvalidAccount = true;
 				else
-					Accounts->AddCharToAccount( str2num(script2), pc );
+					accounts::AddCharToAccount( str2num(script2), pc );
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
 				pc->priv2=str2num(script2);
@@ -238,7 +238,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'D':
 		case 'd':
-			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition("dZ", str2num(script2));}
+			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition(DISPZ, str2num(script2));}
 			else if (!strcmp(script1, "DAMAGETYPE"))		{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
 			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
@@ -388,9 +388,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'O':
 		case 'o':
 			if (!strcmp(script1, "OLDNPCWANDER"))		{ pc->oldnpcWander=str2num(script2);}
-			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition("x", str2num(script2)); }
-			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition("y", str2num(script2)); }
-			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition("z", str2num(script2)); }
+			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition(X, str2num(script2)); }
+			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition(Y, str2num(script2)); }
+			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition(Z, str2num(script2)); }
 			else if (!strcmp(script1, "OWN"))			{ pc->setOwnerSerial32Only(str2num(script2)); }
 		break;
 
@@ -503,7 +503,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'X':
 		case 'x':
-			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
+			if (!strcmp(script1, "X"))					{ pc->setPosition(Z, str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
 				pc->SetOldBodyType( str2num(script2) );
@@ -524,15 +524,15 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'Y':
 		case 'y':
-			if (!strcmp(script1, "Y"))					{ pc->setPosition("y", str2num(script2)); }
+			if (!strcmp(script1, "Y"))					{ pc->setPosition(Y, str2num(script2)); }
 		break;
 
 		case 'Z':
 		case 'z':
 			if (!strcmp(script1, "Z"))
 			{
-				pc->setPosition("z", str2num(script2));
-				pc->setPosition("dZ", str2num(script2));
+				pc->setPosition(Z, str2num(script2));
+				pc->setPosition(DISPZ, str2num(script2));
 
 			}
 		break;
@@ -566,7 +566,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 	pc->region=static_cast<unsigned char>(calcRegionFromXY( pc->getPosition() )); //LB bugfix
 
  // lord binarys body/skin autocorrection code
-	mapRegions->add(pc);
+	regions::add(pc);
 	pointers::addCharToLocationMap(pc);
  // begin of meta gm stuff
 
@@ -594,11 +594,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 	}
 
-	UI32 max_x = MapTileWidth  * 8;
-	UI32 max_y = MapTileHeight * 8;
 	Location pcpos= pc->getPosition();
 
-	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y) || (pcpos.x<0) || (pcpos.y<0)))
+	if( ((pcpos.x<100) && (pcpos.y<100)) || !regions::isValidCoord(pcpos) )
 	{
 		if( !pc->npc )
 			pc->MoveTo( 900,300,30 ); //player in an invalid location
@@ -620,7 +618,7 @@ void loaditem()
 	if( pi == 0 )
 		return;
 
-	unsigned long int i;
+	UI32 i;
 	int loops=0;
 	char bad=0;
 
@@ -979,14 +977,14 @@ void loaditem()
 		case 'x':
 		case 'X':
 			if (!(strcmp(script1, "X")))
-				pi->setPosition("x", str2num(script2));
+				pi->setPosition(X, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
 		case 'y':
 		case 'Y':
 			if (!(strcmp(script1, "Y")))
-				pi->setPosition("y", str2num(script2));
+				pi->setPosition(Y, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -1002,7 +1000,7 @@ void loaditem()
 		case 'z':
 		case 'Z':
 			if (!(strcmp(script1, "Z")))
-				pi->setPosition("z", str2num(script2));
+				pi->setPosition(Z, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 		}
@@ -1028,9 +1026,7 @@ void loaditem()
 
 	if (pi->isInWorld())
 	{
-		int max_x = MapTileWidth  * 8;
-		int max_y = MapTileHeight * 8;
-		mapRegions->add(pi);
+		regions::add(pi);
 		pointers::addItemToLocationMap(pi);
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
@@ -1038,7 +1034,7 @@ void loaditem()
 			insert_boat(pi);
 		}
 
-		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
+		if (regions::isValidCoord(pi->getPosition())) // lord binary - moved to regions::isValidCoord by Akron
 			pi->Delete();
 	}
 
@@ -1131,7 +1127,7 @@ void CWorldMain::loadNewWorld()
 
 
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	spawns::clearDynamic();
 	cAllObjectsIter objs;
 	P_CHAR pc = NULL;
 	P_ITEM pi = NULL;
@@ -1142,7 +1138,7 @@ void CWorldMain::loadNewWorld()
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->isSpawner() )
-				Spawns->loadFromItem(pi);
+				spawns::loadFromItem(pi);
 		}
 	}
 	return;
@@ -1171,7 +1167,7 @@ void CWorldMain::saveNewWorld()
 	if (SrvParms->server_log)
 		ServerLog.Write("Server data save\n");
 
-	Accounts->SaveAccounts();
+	accounts::SaveAccounts();
 
 	sysbroadcast(TRANSLATE("World data saving..."));
 
@@ -1387,12 +1383,12 @@ void CWorldMain::SaveChar( P_CHAR pc )
 //			if (pcpos.dispz)
 				fprintf(cWsc, "DISPZ %i\n", pcpos.dispz);
 
-			if (pc->getOldPosition("x")!=dummy.getOldPosition("x"))
-				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition("x"));
-			if (pc->getOldPosition("y")!=dummy.getOldPosition("y"))
-				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition("y"));
-			if (pc->getOldPosition("z")!=dummy.getOldPosition("z"))
-				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition("z"));
+			if (pc->getOldPosition().x!=dummy.getOldPosition().x)
+				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition().x);
+			if (pc->getOldPosition().y!=dummy.getOldPosition().y)
+				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition().y);
+			if (pc->getOldPosition().z!=dummy.getOldPosition().z)
+				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition().z);
 
 			if (pc->dir!=dummy.dir)
 				fprintf(cWsc, "DIR %i\n", pc->dir);
@@ -1777,7 +1773,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	}
 
-	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
+	if ( ( !pi->isInWorld() || ((pi->getPosition().x > 1) && regions::isValidCoord(pi->getPosition())) ))
 	{
 		fprintf(iWsc, "SECTION WORLDITEM %i\n", itm_curr++);
 		fprintf(iWsc, "{\n");
@@ -2106,7 +2102,7 @@ void CWorldMain::loadPrison()
 void CWorldMain::realworldsave ()
 {
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	spawns::clearDynamic();
 	cAllObjectsIter objs;
 	chr_curr=0;
 	itm_curr=0;
@@ -2118,7 +2114,7 @@ void CWorldMain::realworldsave ()
 		else {
 			pi = static_cast<P_ITEM>(objs.getObject());
 			if ( pi->isSpawner() )
-				Spawns->loadFromItem(pi);
+				spawns::loadFromItem(pi);
 			SaveItem( pi );
 		}
 	}

@@ -369,13 +369,6 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 	}
 }
 
-
-cScpSection::~cScpSection()
-{
-	m_vLines.clear();
-}
-
-
 /*!
 \brief Gets a pointer to an cScpEntry object
 \author Xanathar
@@ -495,13 +488,6 @@ void cScpScript::load(char *szFileName)
 	}
 	fclose(file);
 }
-
-cScpScript::~cScpScript()
-{
-	m_mapSections.erase(m_mapSections.begin(), m_mapSections.end() );
-	m_mapSections.clear();
-}
-
 
 /*!
 \brief Get Section for a given search id
@@ -716,13 +702,6 @@ cScpIterator::cScpIterator(cScpSection& section)
 	m_section = &section;
 	m_nPosition = 0;
 }
-
-
-cScpIterator::~cScpIterator()
-{
-	// Nothing to do here!
-}
-
 
 /*!
 \brief Parses a splitted script line in two strings

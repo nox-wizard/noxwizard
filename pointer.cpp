@@ -236,8 +236,8 @@ void setserial(int nChild, int nParent, int nType)
 */
 void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& it)
 {
-    int serial = sr;
-    int loop = 0;
+    SERIAL serial = sr;
+    UI16 loop = 0;
     it = ch = INVALID;
 
 	P_CHAR pc=NULL;
@@ -260,23 +260,19 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
     }
 
     if (ISVALIDPC(pc)) {
-		Location charpos= pc->getPosition();
-        px = charpos.x;
-        py = charpos.y;
-        pz = charpos.z;
+        px = pc->getPosition().x;
+        py = pc->getPosition().y;
+        pz = pc->getPosition().z;
     } else if ( ISVALIDPI(pi) && (pi->getContSerial()==INVALID)) {
-        px = pi->getPosition("x");
-        py = pi->getPosition("y");
-        pz = pi->getPosition("z");
+        px = pi->getPosition().x;
+        py = pi->getPosition().y;
+        pz = pi->getPosition().z;
     } else {
         px = 0;
         py = 0;
         pz = 0;
     }
 }
-
-
-
 
 namespace pointers {
 

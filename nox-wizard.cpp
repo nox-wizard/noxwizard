@@ -143,7 +143,7 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-					mapRegions->add(p_pet);
+					regions::add(p_pet);
 					pointers::addCharToLocationMap( p_pet );
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
@@ -215,7 +215,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	int totalstats,totalskills;
 
 	NxwCharWrapper sc;
-	Accounts->GetAllChars( acctno[s], sc );
+	accounts::GetAllChars( acctno[s], sc );
 
 
 	if ( sc.size() >= ServerScp::g_nLimitRoleNumbers) {
@@ -226,7 +226,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	P_CHAR pc = archive::character::New();
 
 	pc->setCurrentName( (const char*)&buffer[s][10] );
-	Accounts->AddCharToAccount( acctno[s], pc );
+	accounts::AddCharToAccount( acctno[s], pc );
 
 	/*SERIAL currserial = pc->getSerial32();
 	vector<SERIAL>::iterator currCharIt( currchar.begin()), currCharEnd(currchar.end());
@@ -721,7 +721,7 @@ void checkkey ()
 			case 'A': //reload the accounts file
 			case 'a':
 				InfoOut("Reloading accounts file...");
-				Accounts->LoadAccounts();
+				accounts::LoadAccounts();
 				ConOut("[DONE]\n");
 				break;
 			case 'x':
@@ -845,7 +845,7 @@ void signal_handler(int signal)
 		break ;
 
 	case SIGUSR1:
-		Accounts->LoadAccounts();
+		accounts::LoadAccounts();
 		break ;
 	case SIGUSR2:
 		cwmWorldState->saveNewWorld();
@@ -1029,7 +1029,7 @@ void angelMode();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading accounts...");
-		Accounts->LoadAccounts();
+		accounts::LoadAccounts();
 		ConOut("[DONE]\n");
 
 		keeprun=(Network->kr); //LB. for some technical reasons global varaibles CANT be changed in constructors in c++.
@@ -1044,7 +1044,7 @@ void angelMode();
 
 
 		ConOut("Loading spawn regions...");
-		Spawns->loadFromScript();
+		spawns::loadFromScript();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading regions...");
@@ -1319,7 +1319,7 @@ void angelMode();
 
 	InfoOut("Server started\n");
 
-	Spawns->doSpawnAll();
+	spawns::doSpawnAll();
 
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
@@ -3057,15 +3057,13 @@ void StartClasses()
 
 	// Classes nulled now, lets get them set up :)
 	cwmWorldState=new CWorldMain;
-	mapRegions=new cRegion;
-	Accounts = new cAccounts;
 	Guilds=new cGuilds;
 	Map=new cMapStuff;
 	Network=new cNetwork;
-	Partys=new cPartys;
-	Spawns=new cSpawns;
 
+	spawns::initialize();
 	restocks::initialize();
+	regions::initialize();
 
 	ConOut(" [ OK ]\n");
 }
@@ -3073,14 +3071,13 @@ void StartClasses()
 void DeleteClasses()
 {
 	delete cwmWorldState;
-	delete mapRegions;
-	delete Accounts;
 	delete Guilds;
 	delete Map;
 	delete Network;
-	delete Partys;
-	delete Spawns;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
+
+	accounts::finalize();
+	
 	//objects.clear();
 }
 ////////////////////////////

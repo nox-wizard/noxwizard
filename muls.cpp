@@ -18,7 +18,7 @@ std::string path; //!< path
 /*!
 \brief Constructor
 \author Endymion
-\param path the path of tiledata.mul
+\param newPath the path of tiledata.mul
 \param cache true cache the tiledata
 \param verdata if valid pointer are added verdata infos to tiledata
 */
@@ -180,10 +180,11 @@ cMap* mappa=NULL;
 /*!
 \brief Constructor
 \author Endymion
-\param path the path of tiledata.mul
-\param width the width of the map
-\param height the height of the map
-\param cache if true are cached
+\param newPath the path of tiledata.mul
+\param newWidth the width of the map
+\param newHeight the height of the map
+\param newCache if true are cached (never used)
+\todo parameter newCache is never used
 */
 cMap::cMap( const char* newPath, UI16 newWidth, UI16 newHeight, bool newCache )
 {
@@ -247,7 +248,7 @@ cVerdata* verdata=NULL;
 /*!
 \brief Constructor
 \author Endymion
-\param path the path of tiledata.mul
+\param newPath the path of tiledata.mul
 \param cache true cache the tiledata
 */
 cVerdata::cVerdata( const char* newPath, bool cache )

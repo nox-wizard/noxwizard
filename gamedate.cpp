@@ -59,10 +59,6 @@ cGameDate::cGameDate( const cGameDate &copy )
 	minute	= copy.minute;
 }
 
-cGameDate::~cGameDate()
-{
-}
-
 void	cGameDate::setDefaultDate()
 {
 	setDefaultYear()	;
