@@ -3112,7 +3112,7 @@ void cChar::checkEquipement()
 	Location charpos = getPosition();
 
 	NxwItemWrapper si;
-	si.fillItemWeared( this, true, true, false );
+	si.fillItemWeared( this, false, false, true );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		pi=si.getItem();
