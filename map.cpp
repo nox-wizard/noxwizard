@@ -17,6 +17,7 @@
 #include "chars.h"
 #include "classes.h"
 #include "inlines.h"
+#include "coord.h"
 
 
 // Luxor: If we've got a bridge flagged tile or we're moving in map0 (stairs or whatever) we can elevate our Z by 14.
@@ -233,6 +234,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 \brief Tells if the line of sight between two locations is not interrupted
 \return True if the line of sight is clean, false if not
 */
+/*
 LOGICAL lineOfSight( Location A, Location B ,SI32 checkfor)
 {
 	cLine line( A, B );
@@ -245,10 +247,16 @@ LOGICAL lineOfSight( Location A, Location B ,SI32 checkfor)
 	Location pos;
 	for ( i++; i < max_i; i++ ) {
 		pos = ( max_i == max_x ) ? line.getPosAtX( i ) : line.getPosAtY( i );
-		if ( isWalkable( pos, WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC ) == illegal_z )
+		if ( isWalkable( pos, checkfor) == illegal_z )
 			return false;
 	}
 	return true;
+}
+*/
+LOGICAL lineOfSight( Location A, Location B ,SI32 checkfor)
+{
+	cCoord sourcePos(A.x,A.y,A.z,0,0), targetPos(B.x,B.y,B.z,0,0);
+	return sourcePos.lineOfSight(targetPos, 0, 0);
 }
 
 /*!
