@@ -115,9 +115,6 @@ UI32 size( SERIAL iSet)
 	return 0;
 }
 
-void add( SERIAL iSet, SERIAL nVal ) // Dumb FiX 
-{
-}
 
 void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing )
 {

@@ -2817,7 +2817,8 @@ NATIVE( _set_get )
 NATIVE( _set_add )
 {
 //	amxSet::add( params[1], params[2] ); 
-#warning Missing in Action .... ehm .. missing function !!! -_-'
+#warning Missing in Action .... ehm .. missing function !!!
+
 	return 0;
 }
 
