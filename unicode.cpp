@@ -28,10 +28,10 @@ cUnicodeString::cUnicodeString( char* c )
 	do
 	{
 		if( i%2==0 ) {
-			t=c[i]<<8;
+			t=c[i];
 		}
 		else {
-			t+=c[i];
+			t+=c[i]<<8;
 			this->operator +=( c[i] );
 		}
 		++i;

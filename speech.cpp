@@ -2093,7 +2093,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}		
 
 		talk.msg=pc->speechCurrent;
-		talk.send( ps );
+		talk.send( a_pc->getClient() );
 	}
 
 
