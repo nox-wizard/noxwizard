@@ -1216,6 +1216,16 @@ void cChar::MoveTo(Location newloc)
 	// Avoid crash if go to 0,0
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
+
+	// <Luxor>
+	if ( newloc != getPosition() && casting ) {
+		sysmsg( "You stop casting the spell." );
+		casting = 0;
+		spell = magic::SPELL_INVALID;
+		spelltime = 0;
+	}
+	// </Luxor>
+
 #ifdef SPAR_C_LOCATION_MAP
 	setPosition( newloc );
 	pointers::updateLocationMap( this );
@@ -2122,8 +2132,6 @@ LOGICAL const cChar::CanDoGestures() const
 {
 	if (!IsGM())
 	{
-		if (hidden == HIDDEN_BYSPELL) return false;	//Luxor: cannot do magic gestures if under invisible spell
-
 		NxwItemWrapper si;
 		si.fillItemWeared( (P_CHAR)this, false, false, true );
 		for( si.rewind(); !si.isEmpty(); si++ ) {

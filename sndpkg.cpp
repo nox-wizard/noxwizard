@@ -614,7 +614,7 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	weights::NewCalc(pc);	// Ison 2-20-99
 }
 
-void MakeGraphicalEffectPkt_PDPDPD(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
+void MakeGraphicalEffectPkt_(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
 {
 	pkt[1]=type;
 	LongToCharPtr(src_serial, pkt +2);
@@ -641,7 +641,7 @@ void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop
 
 Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
 
 pos1.z=0;
 	
@@ -1427,7 +1427,7 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 	 {
 Location pos2;
 pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
 	 }
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1509,7 +1509,7 @@ void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
 	}
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1572,13 +1572,13 @@ void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 	{
 Location pos2;
 pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0);
 	}
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
 	 {
 		 NxwSocketWrapper sw;
-		 sw.fillOnline( pc );
+		 sw.fillOnline( pc, false );
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
 		 {
 			 NXWSOCKET j=sw.getSocket();
@@ -1593,7 +1593,7 @@ MakeGraphicalEffectPkt_PDPDPD(effect, 0x01, pc->getSerial32(), 0, 0, charpos, po
 	else
 	{
 		 NxwSocketWrapper sw;
-		 sw.fillOnline( pc );
+		 sw.fillOnline( pc, false );
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
 		 {
 			 NXWSOCKET j=sw.getSocket();
@@ -1632,7 +1632,7 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt_(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
 	}
 
 	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1704,7 +1704,7 @@ void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
 	if (pos2.y>4096) pos2.y=4096;
 
 charpos.z = 0; pos2.z = 127;
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+MakeGraphicalEffectPkt_(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
 
 	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
 
@@ -1734,7 +1734,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 
 	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -1758,7 +1758,7 @@ void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff
 
 Location pos = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt_(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
 
 pos.z = 0;
 
@@ -1790,7 +1790,7 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
-MakeGraphicalEffectPkt_PDPDPD(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
+MakeGraphicalEffectPkt_(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1823,7 +1823,7 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 
 	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );

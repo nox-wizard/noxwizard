@@ -438,7 +438,9 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		case SPELL_SUMMON:
 			pcfrom->staticFX(0x3735, 0, 10, &spfx);
 			break;
-		case SPELL_EARTHQUAKE:
+		case SPELL_EARTHQUAKE: // Luxor
+			if ( pcto->HasHumanBody() && !pcto->isMounting() )
+				pcto->playAction( (rand()%2 == 1) ? 0x15 : 0x16 );
 			break;
 		case SPELL_CREATEFOOD:
 			pcfrom->playSFX(0x1E2);
@@ -691,6 +693,10 @@ void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pd = sc.getChar();
 		if (ISVALIDPC(pd)) {
+			//<Luxor>
+			if ( spellnum == SPELL_EARTHQUAKE && pd->isMounting() )
+				pd->unmountHorse();
+			//</Luxor>
 			spellFX(spellnum, pcaster, pd);
 			damage(pcaster, pd, spellnum, SPELLFLAG_PARAMISDAMAGE, damagetobedone);
 		}
@@ -1391,7 +1397,9 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 10 );
 			break;
 		case SPELL_POLYMORPH:{ // Luxor
-			Menus.insertMenu( new cPolymorphMenu( src ) );
+			P_MENU menu = Menus.insertMenu( new cPolymorphMenu( src ) );
+			VALIDATEPM( menu );
+			menu->show( src );
 			}
 			break;
 
@@ -1506,8 +1514,12 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 		case SPELL_INVISIBILITY:
 			spellFX(spellnumber, src, pd);
-			if (nTime==INVALID) nTime = 90;
-			src->hideBySpell(nTime);
+			if ( src->hidden == HIDDEN_BYSPELL ) {
+				src->delTempfx( tempfx::SPELL_INVISIBILITY );
+			} else {
+				if (nTime==INVALID) nTime = 90;
+				src->hideBySpell(nTime);
+			}
 			break;
 
 		case SPELL_HEAL:
@@ -1793,13 +1805,15 @@ void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags,
 
 	// initial checks and unhide/unfreeze/disturbmed
 	if (src->dead) return;
-	src->unfreeze();
 	src->unHide();
 	src->disturbMed();
 	src->spell=spellnumber;
 	if ( src->spelltype !=CASTINGTYPE_ITEM && src->spelltype !=CASTINGTYPE_NOMANAITEM )
 	{
-		src->talkAll((char*)g_Spells[src->spell].mantra.c_str());
+		if ( src->skill[MAGERY] < 900 ) //Luxor
+			src->talkAll((char*)g_Spells[src->spell].mantra.c_str());
+		else
+			src->talkAllRunic((char*)g_Spells[src->spell].mantra.c_str());
 		if (src->isMounting()) { //Luxor
 			src->playAction(0x1B); // General Lee
 		} else {
@@ -1807,12 +1821,13 @@ void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags,
 		}
 	}
 	// do the event :]
-	
+
 	if (src->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		src->amxevents[EVENT_CHR_ONCASTSPELL]->Call(src->getSerial32(), spellnumber, src->spelltype, INVALID);
 		if (g_bByPass==true) return;
 	}
+
 	/*
 	src->runAmxEvent( EVENT_CHR_ONCASTSPELL, src->getSerial32(), spellnumber, src->spelltype, INVALID );
 	if (g_bByPass==true)
@@ -1894,6 +1909,10 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 		return false;
 	}
 
+	if (hidden == HIDDEN_BYSPELL) {	//Luxor: cannot do magic gestures if under invisible spell
+		pc->sysmsg(TRANSLATE("You cannot cast by invisible."));
+		return false;
+	}
 	if ((type!=CASTINGTYPE_ITEM)&&(type!=CASTINGTYPE_NOMANAITEM)&&(!pc->CanDoGestures())) {
 		pc->sysmsg(TRANSLATE("You cannot cast with a weapon equipped."));
 		return false;
@@ -1924,12 +1943,10 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 	pc->nextact = 75;
 	pc->spellaction = g_Spells[num].action;
 
-	if ((type==CASTINGTYPE_SPELL)&&(!pc->IsGM())) {
+	if ((type==CASTINGTYPE_SPELL)&&(!pc->IsGM()))
 		pc->spelltime = ((g_Spells[num].delay/10)*MY_CLOCKS_PER_SEC)+uiCurrentTime;
-		pc->freeze();
-	} else {
+	else
 		pc->spelltime = 0;
-	}
 
 	return true;
 }
@@ -1944,6 +1961,8 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 {
 	VALIDATEPC( pc );
+	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL )
+		addIcon( 0x2106, 0, pc->GetOldBodyType(), string("Undo polymorph") );
 	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
 	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
 	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
@@ -1962,7 +1981,8 @@ cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 	addIcon( 0x2100, 0, 0x3a, string("Wisp") );
 	addIcon( 0x211F, 0, 0xc8, string("Horse") );
 	addIcon( 0x210B, 0, 0x10, string("Water Elemental") );
-	show( pc );
+
+	question = string( "Choose a creature" );
 }
 
 /*!
@@ -1974,34 +1994,42 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	VALIDATEPC( pc );
 
 	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
-	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get() ) );
-	SERIAL data = ( iter!=iconData.end() )? iter->second : INVALID;
+	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get()-1 ) );
+	UI16 data = ( iter!=iconData.end() )? iter->second : INVALID;
 
-	pc->delTempfx( SPELL_POLYMORPH );
-	pc->delTempfx( SPELL_STRENGHT );
-	pc->delTempfx( SPELL_CUNNING );
-	pc->delTempfx( SPELL_AGILITY );
-	pc->delTempfx( SPELL_FEEBLEMIND );
-	pc->delTempfx( SPELL_CLUMSY );
-	pc->delTempfx( SPELL_CURSE );
-	pc->delTempfx( SPELL_BLESS);
-	pc->delTempfx( SPELL_WEAKEN );
-	pc->addTempfx( *pc, SPELL_POLYMORPH, data >> 8, data % 256 );
+	pc->delTempfx( tempfx::SPELL_STRENGHT );
+	pc->delTempfx( tempfx::SPELL_CUNNING );
+	pc->delTempfx( tempfx::SPELL_AGILITY );
+	pc->delTempfx( tempfx::SPELL_FEEBLEMIND );
+	pc->delTempfx( tempfx::SPELL_CLUMSY );
+	pc->delTempfx( tempfx::SPELL_CURSE );
+	pc->delTempfx( tempfx::SPELL_BLESS);
+	pc->delTempfx( tempfx::SPELL_WEAKEN );
+
+
+	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->GetOldBodyType() ) {
+		pc->delTempfx( tempfx::SPELL_POLYMORPH );
+		return;
+	}
+
+	pc->delTempfx( tempfx::SPELL_POLYMORPH );
+	pc->addTempfx( *pc, tempfx::SPELL_POLYMORPH, data );
+
 	switch( data )
 	{
 		case 0xd3:
 		case 0xd4:
 		case 0xd5:
-			pc->addTempfx( *pc, SPELL_STRENGHT, 40, 0, 0, polyduration );
-			pc->addTempfx( *pc, SPELL_CURSE, 0, 15, 20, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_STRENGHT, 40, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_CURSE, 0, 15, 20, polyduration );
 			break;
 		case 0xd0:
-			pc->delTempfx( SPELL_WEAKEN );
-			pc->addTempfx( *pc, SPELL_WEAKEN, 20, 0, 0, polyduration );
+			pc->delTempfx( tempfx::SPELL_WEAKEN );
+			pc->addTempfx( *pc, tempfx::SPELL_WEAKEN, 20, 0, 0, polyduration );
 			break;
 		case 0x9:
-			pc->addTempfx( *pc, SPELL_BLESS, 10, 10, 10, polyduration );
-			pc->addTempfx( *pc, SPELL_TELEKINESYS, 0, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_BLESS, 10, 10, 10, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_TELEKINESYS, 0, 0, 0, polyduration );
 			break;
 		case 0x2:
 		case 0x4:
@@ -2009,20 +2037,20 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 		case 0x23:
 		case 0x1:
 		case 0x10:
-			pc->addTempfx( *pc, SPELL_STRENGHT, 30, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_STRENGHT, 30, 0, 0, polyduration );
 			break;
 		case 0xe:
-			pc->addTempfx( *pc, SPELL_STRENGHT, 50, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_STRENGHT, 50, 0, 0, polyduration );
 			break;
 		case 0xc8:
-			pc->addTempfx( *pc, SPELL_AGILITY, 50, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_AGILITY, 50, 0, 0, polyduration );
 			break;
 		case 0x3a:
-			pc->addTempfx( *pc, SPELL_CUNNING, 40, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_CUNNING, 40, 0, 0, polyduration );
 			break;
 		case 0x32:
-			pc->addTempfx( *pc, SPELL_STRENGHT, 10, 0, 0, polyduration );
-			pc->addTempfx( *pc, SPELL_FEEBLEMIND, 20, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_STRENGHT, 10, 0, 0, polyduration );
+			pc->addTempfx( *pc, tempfx::SPELL_FEEBLEMIND, 20, 0, 0, polyduration );
 			break;
 	}
 }

@@ -79,7 +79,7 @@ public:
 	cScpScript(char* szFileName);
 	void load(char* szFileName);
 	~cScpScript();
-	class cScpSection*	getSection(std::string& strIdentifier);
+	class cScpSection*	getSection(std::string strIdentifier);
 	class cScpSection*	getSection(char* szIdentifier);
 	class cScpSection*	getSectionInStr(char* szIdentifier);
 	class cScpIterator* getNewIterator(std::string& strIdentifier);

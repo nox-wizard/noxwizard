@@ -381,18 +381,21 @@ void cTempfx::start()
 
 		case SPELL_AGILITY:
 			dest->dx += m_nMore1;
+			dest->stm += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
 
 		case SPELL_STRENGHT:
 			dest->modifyStrength(m_nMore1);
+			dest->hp += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
 
 		case SPELL_CUNNING:
 			dest->in += m_nMore1;
+			dest->mn += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
@@ -454,7 +457,7 @@ void cTempfx::start()
 			if (dest->morphed)
 				dest->morph();  //if the char is morphed, unmorph him
 			setCrimGrey(dest, ServerScp::g_nPolymorphWillCriminal);
-			dest->morph((m_nMore1<<8)+m_nMore2, -1, -1, -1, -1, -1, NULL, true);
+			dest->morph( m_nMore1, -1, -1, -1, -1, -1, NULL, true );
 			dest->polymorph = true;
 			break;
 

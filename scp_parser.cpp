@@ -511,7 +511,7 @@ cScpScript::~cScpScript()
 \param strIdentifier the section id to be searched
 \return the ptr to a cScpSection object or NULL if not found
 */
-cScpSection* cScpScript::getSection(std::string& strIdentifier)
+cScpSection* cScpScript::getSection(std::string strIdentifier)
 {
 	std::map<std::string, class cScpSection>::iterator iter;
 
