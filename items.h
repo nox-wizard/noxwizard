@@ -79,7 +79,7 @@ public:
 /*!
 \name Who is
 */
-	//AmxEvent	*amxevents[ALLITEMEVENTS];
+	AmxEvent	*amxevents[ALLITEMEVENTS];
 
 	SI32		hp;	//!< Number of hit points an item has.
 	SI32		maxhp;	//!< Max number of hit points an item can have.

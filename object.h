@@ -146,7 +146,7 @@ public:
 
 //@{
 /*!
-\name Others
+\name Temp - Fx
 */
 private:
 	UI32			ScriptID;
@@ -163,6 +163,9 @@ public:
 	UI32			getScriptID();
 	void			setScriptID(UI32 sid);
 
+//@}
+
+/*
 private:
 	AmxEventMap		*amxEvents;
 public:
@@ -171,7 +174,7 @@ public:
 	AmxEvent*		setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamic = false );
 	cell			runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI32 param3 = INVALID, SI32 param4 = INVALID );
 	void 			delAmxEvent( UI32 eventID );
-//@}
+*/
 } PACK_NEEDED;
 
 /*!
