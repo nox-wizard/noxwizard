@@ -76,11 +76,11 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 					script1 = iter->getEntry()->getFullLine();
 					if ( script1[0]!='}' && script1[0]!='{' )
 					{
-						++j;
 						if(j==i)
 						{
 							value = script1;
 						}
+						++j;
 					}
 				}
 				while ( script1[0]!='}' && ++loopexit < MAXLOOPS );
