@@ -67,7 +67,7 @@ namespace Commands
 				(*((CMD_EXEC)cmd->cmd_extra)) (s);
 				break;
 			case CMD_ITEMMENU:
-				itemmenu(s, (int)cmd->cmd_extra);
+				itemmenu(s, static_cast<int>(cmd->cmd_extra));
 				break;
 			case CMD_TARGET:
 				_do_target(s, (TARGET_S *)cmd->cmd_extra);

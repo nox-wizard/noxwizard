@@ -226,7 +226,7 @@ void swap32(uint32_t *v)
   s[2]=t;
 }
 
-#ifdef __alpha__
+#if defined __alpha__ || defined __x86_64__
 void swap64(uint64_t *v)
 {
   unsigned char *s = (unsigned char *)v;
@@ -270,7 +270,7 @@ uint32_t *amx_Align32(uint32_t *v)
   return v;
 }
 
-#ifdef __alpha__
+#if defined __alpha__ || defined __x86_64__
 uint64_t *amx_Align64(uint64_t *v)
 {
   assert(sizeof(cell)==8);
@@ -284,7 +284,7 @@ uint64_t *amx_Align64(uint64_t *v)
 #if defined BIT16
   #define swapcell	swap16
   #define Align_Address	amx_Align16
-#elif defined(__alpha__)
+#elif defined __alpha__ || defined __x86_64__
   #define swapcell  	swap64
   #define Align_Address	amx_Align64
 #else
@@ -2299,7 +2299,7 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
   assert(OP_SYMBOL==126);
   #if defined(BIT16)
     assert(sizeof(cell)==2);
-  #elif defined(__alpha__)
+  #elif defined __alpha__ || defined __x86_64__
     assert(sizeof(cell)==8);
   #else
     assert(sizeof(cell)==4);
@@ -3197,7 +3197,7 @@ int AMXAPI amx_Release(AMX *amx,cell amx_addr)
 #define CHARBITS        (8*sizeof(char))
 #if defined BIT16
   #define CHARMASK      (0xffffu << 8*(2-sizeof(char)))
-#elif defined(__alpha__)
+#elif defined __alpha__ || defined __x86_64__
   #define CHARMASK	(0xffffffffffffffffuLL << 8*(6-sizeof(char)))
 #else
   #define CHARMASK      (0xffffffffuL << 8*(4-sizeof(char)))

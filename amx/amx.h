@@ -81,7 +81,7 @@ extern  "C" {
   #if defined(BIT16)
     typedef uint16_t  ucell;    /* only for type casting */
     typedef int16_t   cell;
-  #elif defined(__alpha__)
+  #elif defined __alpha__ || defined __x86_64__
     typedef uint64_t  ucell;
     typedef int64_t   cell;
   #else

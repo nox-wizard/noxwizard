@@ -82,7 +82,7 @@ int printstring(AMX *amx,cell *cstr,cell *params,int num);
 extern int amx_getLittleEndian();
 extern void swap16(uint16_t *v);
 extern void swap32(uint32_t *v);
-#ifdef __alpha__
+#if defined __alpha__ || defined __x86_64__
 extern void swap64(uint64_t *v);
 #endif
 
@@ -96,7 +96,7 @@ int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source );
 #if defined BIT16
   #define swapcell	swap16
   #define Align_Address	amx_Align16
-#elif defined(__alpha__)
+#elif defined __alpha__ || defined __x86_64__
   #define swapcell  	swap64
   #define Align_Address	amx_Align64
 #else
