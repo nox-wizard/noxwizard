@@ -198,7 +198,12 @@ cPath::cPath( Location startPos, Location finalPos )
 	path_node *currNode, *nextNode;
 
         // Create the start node and put it in the open list
-	path_node startNode = { 0, startPos, NULL };
+	// path_node startNode = { 0, startPos, NULL }; --> does not compile on win vc++
+
+	path_node startNode;
+	startNode.cost= 0;
+	startNode.pos= startPos;
+	startNode.parentNode=NULL;
 
 	startNode.parentNode = &startNode;
 	
