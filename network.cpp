@@ -281,9 +281,13 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 	wstring::iterator point( p.begin() ), end( p.end() );
 	wchar_t* b = (wchar_t*)&outbuffer[ socket ][ boutlength[ socket ] ];
 
-	for( int i=0; point!=end; point++, ++i )
+	int i=0;
+	for( ; point!=end; point++, ++i )
 		b[i]=ntohs(*point);
-		
+	
+	if( alsoTermination )
+		b[i]=0x0000;
+	
 	boutlength[ socket ] += length;
 }
 
