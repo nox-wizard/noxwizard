@@ -1684,6 +1684,7 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 		VALIDATEPI(pi);
 		pi->setId( 0x09B9 );
 		pi->setCurrentName( "raw bird" );
+		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You carve away some raw bird."));
 	}
 
