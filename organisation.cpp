@@ -1,6 +1,5 @@
 
 
-
 #include "organisation.h"
 #include "gamedate.h"
 

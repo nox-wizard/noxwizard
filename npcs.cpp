@@ -21,7 +21,6 @@
 namespace npcs {	//Luxor
 
 
-
 //<Anthalir>
 void SpawnGuard(P_CHAR pc, P_CHAR pc_i, Location where)
 {

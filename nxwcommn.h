@@ -11,6 +11,7 @@
 \file
 \brief Inclusion of all the main stuff
 */
+
 #ifndef __NXWCOMMON_H
 #define __NXWCOMMON_H
 

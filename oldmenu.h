@@ -59,4 +59,5 @@ public:
 typedef cOldMenu*	P_OLDMENU;
 
 
+
 #endif
