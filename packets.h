@@ -65,8 +65,8 @@ public:
 */
 class cServerPacket : public cPacket {
 
-	virtual void send( NXWCLIENT ps );
-	virtual void send( P_CHAR pc );
+	void send( NXWCLIENT ps );
+	void send( P_CHAR pc );
 
 };
 

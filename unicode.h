@@ -38,40 +38,35 @@ public:
 };
 
 /*
-\brief endian buster 16bit
+\brief endian buster
 \author Endymion
 */
 
-template< class T >
 class endian {
-protected:
-	T a;
-	T b;
-public:
-	endian() { a=0; b=0; }
-	virtual ~endian( ) { };
+	endian() {}
+	virtual ~endian() {}
 };
 
 typedef UI08 eUI08;
 
 
-class eUI16 : endian<UI08> {
+class eUI16  {
+private:
+	UI08 a, b;
 public:
-	eUI16() : endian<UI08>() { };
-	virtual ~eUI16() { };
+	eUI16() { a=0; b=0; };
+	~eUI16() { };
 	void operator =( UI32 v );
 };
 
 typedef eUI16 eCOLOR;
 
-/*
-\brief endian buster 16bit
-\author Endymion
-*/
-class eUI32 : endian<eUI16> {
+class eUI32  {
+private:
+	eUI16 a, b;
 public:
-	eUI32() : endian<eUI16>() { };
-	virtual ~eUI32() { };
+	eUI32() { a=0; b=0; };
+	~eUI32() { };
 	void operator =( UI32 v );
 };
 

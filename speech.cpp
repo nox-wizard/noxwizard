@@ -19,6 +19,7 @@
 #include "network.h"
 #include "commands.h"
 #include "unicode.h"
+#include "packets.h"
 
 #define MAXBUFFER_REAL MAXBUFFER
 
@@ -2027,21 +2028,13 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	// Echo speech to self and pcs in visual range
 	//
-	UI08 talk2[19];
-	talk2[ 0] = (char)0xAE;
-	talk2[ 1] = tl >> 8;
-	talk2[ 2] = tl&0xFF;
-	talk2[ 3] = pc->getSerial().ser1;
-	talk2[ 4] = pc->getSerial().ser2;
-	talk2[ 5] = pc->getSerial().ser3;
-	talk2[ 6] = pc->getSerial().ser4;
-	talk2[ 7] = pc->id1;
-	talk2[ 8] = pc->id2;
-	talk2[ 9] = buffer[socket][3]; 		// speech type
-	talk2[10] = buffer[socket][4];		// speech color
-	talk2[11] = buffer[socket][5];		// speech color
-	talk2[12] = buffer[socket][6];		// speech font
-	talk2[13] = buffer[socket][7];		// speech font
+	cPacketUnicodeSpeech talk;
+	talk.obj=pc->getSerial32();
+	talk.model=DBYTE2WORD( pc->id1, pc->id2 );
+	talk.type= buffer[socket][3];
+	talk.color= DBYTE2WORD( buffer[socket][4], buffer[socket][5] );
+	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
+	talk.name+=pc->getCurrentName();
 
 	cUnicodeString* speechUni=new cUnicodeString();
 	speechUni->copy( speech );
@@ -2075,33 +2068,27 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 		if( a_pc->unicode )			// language
 		{
-			talk2[14] = buffer[socket][ 8];
-			talk2[15] = buffer[socket][ 9];
-			talk2[16] = buffer[socket][10];
-			talk2[17] = buffer[socket][11];
+			talk.language = (DBYTE2WORD( buffer[socket][8], buffer[socket][ 9] ) << 16 ) +
+							 DBYTE2WORD( buffer[socket][10], buffer[socket][11] );
 		}
 		else
 		{
-			talk2[14] = 'E';
+			/*talk2[14] = 'E';
 			talk2[15] = 'N';
 			talk2[16] = 'U';
-			talk2[17] = 0;
+			talk2[17] = 0;*/
 		}
 
-//		CHARACTER a_character = DEREF_P_CHAR( a_pc );
-
-		
-		Xsend( a_socket, talk2, 18);
-		Xsend( a_socket, name, 30);
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
 				speechGhostUni=new cUnicodeString();
 				makeGhost( speechUni, speechGhostUni );
 			}
-			Xsend( a_socket, speechGhostUni->s.begin(), speechGhostUni->s.end() );
+			talk.msg=speechGhostUni;
 		}
 		else
-			Xsend( a_socket, speechUni->s.begin(), speechUni->s.end() );
+			talk.msg=speechUni;
+		talk.send( ps );
 	}
 
 

@@ -17,7 +17,7 @@
 \since 0.83
 */
 char* cPacket::getBeginValid() {
-	return (char*)(this +sizeof( headerSize ) );
+	return (char*)((char*)this +sizeof( headerSize ));
 }
 
 /*!
@@ -319,8 +319,12 @@ CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
 	if( ps == NULL ) return; //after error here
 	this->size=this->headerSize +30 + (msg->length() +1)*2; 
+	//std::ofstream f( "d:/logs.log", std::ios::out|std::ios::trunc );
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	//f.write( this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
+	//f.write( this->name.c_str(), 30 );
 	Xsend( ps->toInt(), this->msg->s.begin(), this->msg->s.end() );
+	//f.close();
 };
