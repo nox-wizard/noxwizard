@@ -676,6 +676,12 @@ public:
 		void unStable();
 	
 	public:
+		SI32		npcaitype; //!< NPC ai
+		AmxEvent*	npcai_func; //!< function to call for amx npc ai 
+
+	public:
+
+
 
 		SI32			stat3crc; // xan : future use to keep safe stats
 		//class			AmxEvent *amxevents[ALLCHAREVENTS];
@@ -713,7 +719,6 @@ public:
 		TIMERVAL		invistimeout;
 		SI32			hunger;  // Level of hungerness, 6 = full, 0 = "empty"
 		TIMERVAL		hungertime; // Timer used for hunger, one point is dropped every 20 min
-		SI32			npcaitype; // NPC ai
 		SI32			callnum; //GM Paging
 		SI32			playercallnum; //GM Paging
 		SI32			pagegm; //GM Paging

@@ -329,6 +329,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 	vendorItemsSell = NULL;
 	vendorItemsBuy = NULL;
+
+	npcai_func=NULL;
 }
 
 /*
@@ -342,6 +344,8 @@ cChar::~cChar()
 		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
+	if( npcai_func!=NULL )
+		safedelete( npcai_func );
 }
 
 
