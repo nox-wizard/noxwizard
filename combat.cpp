@@ -394,19 +394,20 @@ void cChar::doCombat()
 
 	if (dist>15)
 	{
-		
-			targserial = INVALID;
-			timeout = 0;
-			P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
-			if (ISVALIDPC(pc_att))
-			{
-				pc_att->ResetAttackFirst();
-				pc_att->attackerserial=INVALID;
-			}
-			attackerserial=INVALID;
-			ResetAttackFirst();
-			if (npc && npcaitype!=NPCAI_PLAYERVENDOR && !dead && war)
-				toggleCombat();
+		targserial = INVALID;
+		timeout = 0;
+
+		P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
+		if (ISVALIDPC(pc_att))
+		{
+			pc_att->ResetAttackFirst();
+			pc_att->attackerserial=INVALID;
+		}
+
+		attackerserial=INVALID;
+		ResetAttackFirst();
+		if (npc && npcaitype!=NPCAI_PLAYERVENDOR && !dead && war)
+			toggleCombat();
 
 	} else if (dist<=15 && combatTimerOk()) {
 
@@ -516,8 +517,7 @@ void cChar::doCombat()
 		if (!npc && !pc_def->npc) {	//Player vs Player
 			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 ) {
 				 kills++;
-				 sprintf(temp, TRANSLATE("You have killed %i innocent people."), kills);
-				 sysmsg(temp);
+				 sysmsg(TRANSLATE("You have killed %i innocent people."), kills);
 				 if (kills == repsys.maxkills+1)
 					sysmsg(TRANSLATE("You are now a murderer!"));
 			}
@@ -666,8 +666,7 @@ int cChar::combatHitMessage(SI32 damage)
 	}
 	P_CHAR pc_attacker = pointers::findCharBySerial(attackerserial);
 	if (ISVALIDPC(pc_attacker)) {
-		sprintf(temp2,"%s %s",pc_attacker->getCurrentNameC(), temp);
-		this->sysmsg(temp2);
+		sysmsg("%s %s",pc_attacker->getCurrentNameC(), temp);
 	}
 	
 	return x;
