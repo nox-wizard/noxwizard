@@ -728,20 +728,20 @@ void command_bounty(NXWSOCKET  s)
 
 	if( !SrvParms->bountysactive )
 	{
-		sysmessage(s, TRANSLATE("The bounty system is not active."));
+		pc_cs->sysmsg(TRANSLATE("The bounty system is not active."));
 		return;
 	}
 
 	if( !pc_cs->dead )
 	{
-		sysmessage(s, TRANSLATE("You can only place a bounty while you are a ghost."));
+		pc_cs->sysmsg(TRANSLATE("You can only place a bounty while you are a ghost."));
 		pc_cs->murdererSer = 0;
 		return;
 	}
 
 	if( pc_cs->murdererSer == 0 )
 	{
-		sysmessage(s, TRANSLATE("You can only place a bounty once after someone has murdered you."));
+		pc_cs->sysmsg(TRANSLATE("You can only place a bounty once after someone has murdered you."));
 		return;
 	}
 
@@ -750,17 +750,16 @@ void command_bounty(NXWSOCKET  s)
 		int nAmount = strtonum(1);
 		if( BountyWithdrawGold( pc_cs, nAmount ) )
 		{
-			int char_murderer  = calcCharFromSer( pc_cs->murdererSer );
-			if( BountyCreate( MAKE_CHAR_REF(char_murderer), nAmount ) )
+			P_CHAR pchar_murderer = pointers::findCharBySerial(pc_cs->murdererSer);
+			if( BountyCreate( pchar_murderer, nAmount ) )
 			{
-				P_CHAR pc_i=pointers::findCharBySerial(pc_cs->murdererSer);
-				if(ISVALIDPC(pc_i)) 
-					sysmessage( s, TRANSLATE("You have placed a bounty of %d gold coins on %s."), 
-						nAmount, pc_i->getCurrentNameC() );
+				if(ISVALIDPC(pchar_murderer)) 
+				pc_cs->sysmsg(TRANSLATE("You have placed a bounty of %d gold coins on %s."), 
+						nAmount, pchar_murderer->getCurrentNameC() );
 			}
 			else
 			{
-				sysmessage( s, TRANSLATE("You were not able to place a bounty (System Error)") );
+				pc_cs->sysmsg(TRANSLATE("You were not able to place a bounty (System Error)") );
 			}
 
 			// Set murdererSer to 0 after a bounty has been
@@ -769,13 +768,12 @@ void command_bounty(NXWSOCKET  s)
 		}
 		else
 		{
-			sysmessage( s, TRANSLATE("You do not have enough gold to cover the bounty."));
+			pc_cs->sysmsg(TRANSLATE("You do not have enough gold to cover the bounty."));
 		}
-
 	}
 	else
 	{
-		sysmessage(s, TRANSLATE("To place a bounty on a murderer, use BOUNTY <amount>"));
+		pc_cs->sysmsg(TRANSLATE("To place a bounty on a murderer, use BOUNTY <amount>"));
 	}
 
 	return;
@@ -784,9 +782,12 @@ void command_bounty(NXWSOCKET  s)
 
 void command_serversleep(NXWSOCKET  s)
 {
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 	int seconds;
+
 #ifdef __BEOS__
-	sysmessage(s,"Command not supported under BeOS");
+	pc->sysmsg("Command not supported under BeOS");
 #else
 
 	if (tnum==2)
@@ -815,11 +816,10 @@ void command_serversleep(NXWSOCKET  s)
 			if( ps!=NULL )
 				Network->FlushBuffer(ps->toInt());
 		}
-
 	}
 	else 
 	{
-		sysmessage(s,"invalid number of arguments");
+		pc->sysmsg("Invalid number of arguments");
 	}
 #endif
 }
@@ -829,16 +829,20 @@ void command_serversleep(NXWSOCKET  s)
 //
 void command_reloadracescript(NXWSOCKET  s)
 {
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
 	Race::reload( "scripts/race.xss" );
 	Race::parse();
-	sysmessage(s,"Racescripts reloaded.");
-	return;
+	pc->sysmsg("Racescripts reloaded.");
 }
 
 void command_reloadcachedscripts(NXWSOCKET  s)
 {
-	sysmessage(s,"Command disabled now :| Sorry.");
-	return;
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
+	pc->sysmsg("Command disabled now :| Sorry.");
 }
 
 // Returns the current bulletin board posting mode for the player
@@ -866,6 +870,7 @@ void command_post(NXWSOCKET  s)
 
 	}
 
+	pc_cs->sysmsg( s_szCmdTableTemp );
 	sysmessage( s, s_szCmdTableTemp );
 	return;
 }
@@ -879,8 +884,7 @@ void command_gpost(NXWSOCKET  s)
 	if (err) return;
 
 	pc_cs->postType = MsgBoards::GLOBALPOST;
-	sysmessage( s,"Now posting GLOBAL messages." );
-	return;
+	pc_cs->sysmsg("Now posting GLOBAL messages." );
 }
 
 // Sets the current bulletin board posting mode for the player to REGIONAL
@@ -893,8 +897,7 @@ void command_rpost(NXWSOCKET  s)
 	if (err) return;
 
 	pc_cs->postType = MsgBoards::REGIONALPOST;
-	sysmessage( s,"Now posting REGIONAL messages." );
-	return;
+	pc_cs->sysmsg("Now posting REGIONAL messages." );
 }
 
 // Sets the current bulletin board posting mode for the player to LOCAL
@@ -906,8 +909,7 @@ void command_lpost(NXWSOCKET  s)
 	if (err) return;
 
 	pc_cs->postType = MsgBoards::REGIONALPOST;
-	sysmessage( s,"Now posting LOCAL messages." );
-	return;
+	pc_cs->sysmsg("Now posting LOCAL messages." );
 }
 
 // taken from 6904t2(5/10/99) - AntiChrist
@@ -951,25 +953,29 @@ void command_removeacct(NXWSOCKET  s)
 // that bug should be gone in 11.9 but I got a bit paranoid bout it. LB
 void command_letusin(NXWSOCKET  s)
 {
-  int a,x;
-  for (a=0,x=0; a<MAXCLIENT; a++) // maxclient instead of now is essential here !
-  {
-	  if ( acctno[a]>=0 )
-	  {
-		  Accounts->SetOffline(acctno[a]);
-		  x++;
-	  }
-  }
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 
-  sprintf(s_szCmdTableTemp,"command successfull, cleared %i poor souls",x);
-  sysmessage(s, s_szCmdTableTemp);
+	int a,x;
+	for (a=0,x=0; a<MAXCLIENT; a++) // maxclient instead of now is essential here !
+	{
+		if ( acctno[a]>=0 )
+		{
+			Accounts->SetOffline(acctno[a]);
+			x++;
+		}
+	}
 
+	pc->sysmsg("command successfull, cleared %i poor souls",x);
 }
 
 void command_readaccounts(NXWSOCKET  s)
 {
-  Accounts->LoadAccounts();
-  sysmessage(s,"Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
+	Accounts->LoadAccounts();
+	pc->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 
 void command_showp(NXWSOCKET  s)
@@ -977,14 +983,11 @@ void command_showp(NXWSOCKET  s)
 {
 	int i,err;
 
-    PC_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
+    P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
     if (err) return;
 
 	for (i=0;i<7;i++)
-	{
-		sprintf(s_szCmdTableTemp,"priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
-		sysmessage(s,s_szCmdTableTemp);
-	}
+		pcc_cs->sysmsg("priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
 }
 
 /*!
@@ -1007,7 +1010,7 @@ Lord Binary's UOX Site</A>.
 void command_setpriv3(NXWSOCKET  s)
 {
 	UI32 i;
-	int y,err;
+	int y, err;
 
 	P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
 	if (err) return;
@@ -1037,7 +1040,7 @@ void command_setpriv3(NXWSOCKET  s)
 			if ((y>255)||(y<0)) //was (y<255), Ummon
 			{
 				LogError("setpriv3-command: avoiding crash. argument was out of range [0-255]!\n");
-				sysmessage(s,"Setpriv3-command argument has to be between 0 and 255.");
+				pcc_cs->sysmsg("Setpriv3-command argument has to be between 0 and 255.");
 				return;
 			}
 			priv3a[s]=metagm[y][0];
@@ -1065,9 +1068,9 @@ void command_setpriv3(NXWSOCKET  s)
 					i++;
 				} */
 				if(cmd==NULL) {
-					sysmessage(s, "That command doesn't exist.");
+					pcc_cs->sysmsg("That command doesn't exist.");
 				} else if(cmd->cmd_priv_m==255) {
-					sysmessage(s, "No special permissions are neccessary to use that command.");
+					pcc_cs->sysmsg("No special permissions are neccessary to use that command.");
 				} else {
 					//
 					//	Sparhawk:	Very very dirty trick to get setpriv3 cmd working again
@@ -1078,14 +1081,13 @@ void command_setpriv3(NXWSOCKET  s)
 					target(s, 0, 1, 0, 225, s_szCmdTableTemp);
 				}
 			} else {
-				sysmessage(s, "2-Argument Usage: /SETPRIV3 +/- COMMAND");
+				pcc_cs->sysmsg("2-Argument Usage: /SETPRIV3 +/- COMMAND");
 			}
 			break;
 		default:
-			sysmessage(s, "This command takes 1, 2, 6, or 7 arguments.");
+			pcc_cs->sysmsg("This command takes 1, 2, 6, or 7 arguments.");
 			break;
 	}
-	return;
 }
 
 /*!
@@ -1305,18 +1307,16 @@ void command_teleport(NXWSOCKET s)
 void command_where(NXWSOCKET  s)
 {
 	int err;
-	PC_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
+	P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
 	Location charpos= pcc_cs->getPosition();
     if (err) return;
 
 	if (strlen(region[pcc_cs->region].name)>0)
-		sprintf(s_szCmdTableTemp, "You are at: %s",region[pcc_cs->region].name);
-	else strcpy(s_szCmdTableTemp,"You are at: unknown area");
-	sysmessage(s,s_szCmdTableTemp);
+		pcc_cs->sysmsg("You are at: %s",region[pcc_cs->region].name);
+	else 
+		pcc_cs->sysmsg("You are at: unknown area");
 
-	sprintf(s_szCmdTableTemp, "%i %i (%i)", charpos.x, charpos.y, charpos.z);
-	sysmessage(s,s_szCmdTableTemp);
-	return;
+	pcc_cs->sysmsg("%i %i (%i)", charpos.x, charpos.y, charpos.z);
 }
 
 // Shows the GM or Counsellor queue.
@@ -1327,12 +1327,9 @@ void command_q(NXWSOCKET  s)
     if (err) return;
 
 	if (!pc_cs->IsGM()) //They are not a GM
-	{
 		Commands::ShowGMQue(s, 0);
-	} else {
+	else
 		Commands::ShowGMQue(s, 1); // They are a GM
-	}
-	return;
 }
 
 // For Counselors or GM's, goes to next call in queue.
@@ -1343,14 +1340,9 @@ void command_next(NXWSOCKET  s)
     if (err) return;
 
 	if (!pc_cs->IsGM()) //They are not a GM
-	{
 	   Commands::NextCall(s, 0);
-	}
 	else
-	{
 	   Commands::NextCall(s, 1); // They are a GM
-	}
-	return;
 }
 
 void command_clear(NXWSOCKET  s)
@@ -1361,15 +1353,9 @@ void command_clear(NXWSOCKET  s)
     if (err) return;
 
 	if (!pc_cs->IsGM()) //They are not a GM
-	{
 	   donewithcall(s, 0);
-	}
 	else
-	{
 	   donewithcall(s, 1); // They are a GM
-	}
-	return;
-
 }
 
 void command_goplace(NXWSOCKET  s)
@@ -1505,36 +1491,33 @@ void command_poly(NXWSOCKET  s)
 // (h h) Polymorph yourself into any other creature.
 {
 	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-			if (tnum==3)
+
+	if (tnum==3)
+	{
+		int k,c1;
+
+                k = (strtonum(1)<<8) | strtonum(2);
+                if (k>=0x000 && k<=0x3E1) // lord binary, body-values >0x3e crash the client
+		{
+			pc_currchar->SetBodyType(k);
+			pc_currchar->SetOldBodyType(k);
+
+			c1= pc_currchar->getSkinColor()					// transparency for mosnters allowed, not for players,
+											// if polymorphing from monster to player we have to switch from transparent to semi-transparent
+											// or we have that sit-down-client crash
+
+			if ((c1 & 0x4000) && (k >= BODY_MALE && k<= 0x03E1))
 			{
-				int k,c1,b;
-
-                k=(strtonum(1)<<8)+strtonum(2);
-                if (k>=0x000 && k<=0x3e1) // lord binary, body-values >0x3e crash the client
-
+				if (c1!=0x8000)
 				{
-		           pc_currchar->xid1=pc_currchar->id1=k>>8; // allow only non crashing ones
-		           pc_currchar->xid2=pc_currchar->id2=k%256;
-
-		           c1=(pc_currchar->skin1<<8)+pc_currchar->skin2; // transparency for mosnters allowed, not for players,
-		                                                                     // if polymorphing from monster to player we have to switch from transparent to semi-transparent
-		                                                                     // or we have that sit-down-client crash
-                   b=c1&0x4000;
-			       if (b==16384 && (k >=0x0190 && k<=0x03e1))
-				   {
-				     if (c1!=0x8000)
-					 {
-                        pc_currchar->skin1=pc_currchar->xskin1=0xF0;
-			            pc_currchar->skin2=pc_currchar->xskin2=0;
-					 }
-				   }
-
+					pc_currchar->SetSkinColor(0xF000);
+					pc_currchar->SetOldSkinColor(0xF000);
 				}
 			}
+		}
+	}
 
-			pc_currchar->teleport();
-			return;
-
+	pc_currchar->teleport();
 }
 
 void command_skin(NXWSOCKET  s)
@@ -1547,21 +1530,17 @@ void command_skin(NXWSOCKET  s)
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 
 		body = pc_currchar->GetBodyType();
-		k = (strtonum(1,16) << 8) + strtonum(2,16);
-		b = k&0x4000;
-		if (b == 16384 &&(body >= BODY_MALE && body <= 0x03e1))
-			k = 0xf000;
+		k = (strtonum(1,16) << 8) | strtonum(2,16);
+		if ((k & 0x4000) && (body >= BODY_MALE && body <= 0x03E1))
+			k = 0xF000;
 
 		if (k != 0x8000)
 		{
-			pc_currchar->skin1 = k >> 8;
-			pc_currchar->skin2 = k%256;
-			pc_currchar->xskin1 = k >> 8;
-			pc_currchar->xskin2 = k%256;
+			pc_currchar->SetSkinColor(k);
+			pc_currchar->SetOldSkinColor(k);
 			pc_currchar->teleport();
 		}
 	}
-	return;
 }
 
 void command_action(NXWSOCKET  s)
@@ -1582,9 +1561,11 @@ void command_setseason(NXWSOCKET  s)
 // BYTE season	(0 spring, 1 summer, 2 fall, 3 winter, 4 dead, 5 unknown (rotating?))
 // BYTE unknown	If 0, cannot change from undead, so 1 is the default
 {
-	char setseason[4]="\xBC\x00\x01";
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+	UI08 setseason[3]={ 0xBC, 0x00, 0x01 };
 
-	sysmessage(s, "Plz, notice that setseason may or may not work correctly depending on current calendar status");
+	pc->sysmsg("Plz, notice that setseason may or may not work correctly depending on current calendar status");
 
 	if(tnum==2)
 	{
@@ -1594,10 +1575,11 @@ void command_setseason(NXWSOCKET  s)
 		sw.fillOnline();
 		for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			Xsend( sw.getSocket(), setseason, 3);
+//AoS/			Network->FlushBuffer(sw.getSocket());
 		}
 	}
 	else
-		sysmessage(s, "Setseason takes one argument.");
+		pc->sysmsg("Setseason takes one argument.");
 }
 
 void command_xtele(NXWSOCKET  s)
@@ -1659,22 +1641,21 @@ void command_tile(NXWSOCKET  s)
 // world, and get /ISTATS on the object to get it's ID
 // code.
 {
-			if (tnum==3) {
-                          if ( server_data.always_add_hex )
-                          {
-                              addid1[s]=hexnumber(1);
-                              addid2[s]=hexnumber(2);
-                          }
-                          else
-                          {
-                              addid1[s]=strtonum(1);//id1
-                              addid2[s]=strtonum(2);//id2
-                          }
-				clickx[s]=-1;
-				clicky[s]=-1;
-				target(s,0,1,0,198,"Select first corner of bounding box.");  // 198 didn't seem taken...
-			}
-			return;
+	if (tnum==3) {
+		if ( server_data.always_add_hex )
+		{
+			addid1[s]=hexnumber(1);
+			addid2[s]=hexnumber(2);
+		}
+		else
+		{
+			addid1[s]=strtonum(1);//id1
+			addid2[s]=strtonum(2);//id2
+		}
+		clickx[s]=-1;
+		clicky[s]=-1;
+		target(s,0,1,0,198,"Select first corner of bounding box.");  // 198 didn't seem taken...
+	}
 }
 
 /*
@@ -1744,17 +1725,17 @@ void command_appetite(NXWSOCKET socket )
 	switch( (pc->IsGMorCounselor()	? 6 : pc->hunger) )
 	{
 		case 6: 
-		case 5: sysmessage(socket,TRANSLATE("You are still stuffed from your last meal"));
+		case 5: pc->sysmsg(TRANSLATE("You are still stuffed from your last meal"));
 						break;
-		case 4: sysmessage(socket,TRANSLATE("You are not very hungry but could eat more"));
+		case 4: pc->sysmsg(TRANSLATE("You are not very hungry but could eat more"));
 						break;
-		case 3: sysmessage(socket,TRANSLATE("You are feeling fairly hungry"));
+		case 3: pc->sysmsg(TRANSLATE("You are feeling fairly hungry"));
 						break;
-		case 2: sysmessage(socket,TRANSLATE("You are extremely hungry"));
+		case 2: pc->sysmsg(TRANSLATE("You are extremely hungry"));
 						break;
-		case 1: sysmessage(socket,TRANSLATE("You are very weak from starvation"));
+		case 1: pc->sysmsg(TRANSLATE("You are very weak from starvation"));
 						break;
-		case 0:	sysmessage(socket,TRANSLATE("You must eat very soon or you will die!"));
+		case 0:	pc->sysmsg(TRANSLATE("You must eat very soon or you will die!"));
 						break;
 	}
 }
@@ -1762,9 +1743,12 @@ void command_appetite(NXWSOCKET socket )
 void command_add(NXWSOCKET  s)
 // (h h) Adds a new item, or opens the GM menu if no hex codes are specified.
 {
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	VALIDATEPC( pc );
+
 	if (tnum==2 || tnum>3)//AntiChrist
 	{
-		sysmessage(s,"Syntax error. Usage: /add <id1> <id2>");
+		pc->sysmsg("Syntax error. Usage: /add <id1> <id2>");
 		return;
 	} else if (tnum==3)
 	{
@@ -1823,6 +1807,9 @@ void command_rename(NXWSOCKET  s)
 void command_cfg(NXWSOCKET  s)
 // (text) Renames any dynamic item in the game.
 {
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
 	if (tnum>1)
 	{
 		int n=cfg_command(&tbuffer[Commands::cmd_offset+4]);
@@ -1922,24 +1909,26 @@ void command_send(NXWSOCKET  s)
 	for (i=1;i<tnum;i++) s_szCmdTableTemp[i-1]=strtonum(i);
 	//ConOut("Sending to client %i.\n",s);
 	Xsend(s, s_szCmdTableTemp, tnum-1);
-	return;
+//AoS/	Network->FlushBuffer(s);
 }
 
 void command_showtime(NXWSOCKET  s)
 // Displays the current UO time.
 {
-			int hour = Calendar::g_nHour % 12;
-			if (hour==0) hour = 12;
-			int ampm = (Calendar::g_nHour>=12) ? 1 : 0;
-			int minute = Calendar::g_nMinute;
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 
-			if (ampm || (!ampm && hour==12))
-				sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":", minute, "PM");
-			else
-				sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":",minute, "AM");
-			sysmessage(s,s_szCmdTableTemp);
-			return;
+	int hour = Calendar::g_nHour % 12;
+	if (hour==0) hour = 12;
+	int ampm = (Calendar::g_nHour>=12) ? 1 : 0;
+	int minute = Calendar::g_nMinute;
 
+	if (ampm || (!ampm && hour==12))
+		sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":", minute, "PM");
+	else
+		sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":",minute, "AM");
+
+	pc->sysmsg(s_szCmdTableTemp);
 }
 
 void command_settime(NXWSOCKET  s)
@@ -1992,29 +1981,29 @@ void command_playerlist(NXWSOCKET  s)
 void command_blt2(NXWSOCKET  s)
 // Debugging command.
 {
-	sysmessage(s, "This command is intended for DEBUG and now it's disabled.");
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+	pc->sysmsg("This command is intended for DEBUG and now it's disabled.");
 }
 
 void command_sfx(NXWSOCKET  s)
 // (h h) Plays the specified sound effect.
 {
-			if (tnum==3)
-			{
-				soundeffect(s, strtonum(1), strtonum(2));
-			}
-			return;
+	if (tnum==3)
+	{
+		soundeffect(s, strtonum(1), strtonum(2));
+	}
 }
 
 void command_light(NXWSOCKET  s)
 // (h) Sets the light level. 0=brightest, 15=darkest, -1=enable day/night cycles.
 {
-			if (tnum==2)
-			{
-				worldfixedlevel=strtonum(1);
-				if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
-				else setabovelight(worldcurlevel);
-			}
-			return;
+	if (tnum==2)
+	{
+		worldfixedlevel=strtonum(1);
+		if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
+		else setabovelight(worldcurlevel);
+	}
 }
 
 void command_web(NXWSOCKET  s)
@@ -2032,21 +2021,19 @@ void command_web(NXWSOCKET  s)
 void command_disconnect(NXWSOCKET  s)
 // (d) Disconnects the user logged in under the specified slot.
 {
-			if (tnum==2) Network->Disconnect(strtonum(1));
-			return;
+	if (tnum==2) Network->Disconnect(strtonum(1));
+	return;
 }
 
 void command_tell(NXWSOCKET  s)
 // (d text) Sends an anonymous message to the user logged in under the specified slot.
 {
-			if (tnum>2)
-			{
-				int m=strtonum(1);
-				if (m<0) sysbroadcast(&tbuffer[Commands::cmd_offset+6]); else
-				tellmessage(s, strtonum(1), &tbuffer[Commands::cmd_offset+6]);
-			}
-
-			return;
+	if (tnum>2)
+	{
+		int m=strtonum(1);
+		if (m<0) sysbroadcast(&tbuffer[Commands::cmd_offset+6]); else
+		tellmessage(s, strtonum(1), &tbuffer[Commands::cmd_offset+6]);
+	}
 }
 
 void command_dry(NXWSOCKET  s)
@@ -2089,7 +2076,6 @@ void command_rain(NXWSOCKET  s)
 		if( ps!=NULL )
 			weather( ps->toInt(), 0 );
 	}
-
 }
 
 void command_snow(NXWSOCKET  s)
@@ -2116,7 +2102,6 @@ void command_snow(NXWSOCKET  s)
 		if( ps!=NULL )
 			weather( ps->toInt(), 0 );
 	}
-
 }
 
 void command_gmmenu(NXWSOCKET  s)
@@ -2166,18 +2151,16 @@ void command_additem(NXWSOCKET  s)
 void command_dupe(NXWSOCKET  s)
 // (d / nothing) Duplicates an item. If a parameter is specified, it's how many copies to make.
 {
-			if (tnum==2)
-			{
-				addid1[s]=strtonum(1);
-				target(s, 0, 1, 0, 110, "Select an item to dupe.");
-			}
-			else
-			{
-				addid1[s]=1;
-				target(s, 0, 1, 0, 110, "Select an item to dupe.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		addid1[s]=strtonum(1);
+		target(s, 0, 1, 0, 110, "Select an item to dupe.");
+	}
+	else
+	{
+		addid1[s]=1;
+		target(s, 0, 1, 0, 110, "Select an item to dupe.");
+	}
 }
 
 
@@ -2213,43 +2196,44 @@ void command_allmoveon(NXWSOCKET  s)
 // Enables GM ability to pick up all objects.
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-			pc->priv2=pc->priv2|0x01;
-			pc->teleport();
-			sysmessage(s, "ALLMOVE enabled."); // Crackerjack 07/25/99
-			return;
+	VALIDATEPC(pc);
 
+	pc->priv2 |= CHRPRIV2_ALLMOVE;
+	pc->teleport();
+	pc->sysmsg("ALLMOVE enabled.");
 }
 
 void command_allmoveoff(NXWSOCKET  s)
 // Disables GM ability to pick up all objects.
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-			pc->priv2=pc->priv2&(0xFF-0x01);
-			pc->teleport();
-			sysmessage(s, "ALLMOVE disabled."); // Crackerjack 07/25/99
-			return;
+	VALIDATEPC(pc);
 
+	pc->priv2 &= ~CHRPRIV2_ALLMOVE;
+	pc->teleport();
+	pc->sysmsg("ALLMOVE disabled.");
 }
 
 void command_showhs(NXWSOCKET  s)
 // Makes houses appear as deeds. (The walls disappear and there's a deed on the ground in their place.)
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-			pc->priv2=pc->priv2|0x04;
-			pc->teleport();
-			sysmessage(s, "House icons visible. (Houses invisible)");
-			return;
+	VALIDATEPC(pc);
 
+	pc->priv2 |= CHRPRIV2_VIEWHOUSEASICON;
+	pc->teleport();
+	pc->sysmsg("House icons visible. (Houses invisible)");
 }
 
 void command_hidehs(NXWSOCKET  s)
 // Makes houses appear as houses (opposite of /SHOWHS).
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-			pc->priv2=pc->priv2&(0xFF-0x04);
-			pc->teleport();
-			sysmessage(s, "House icons hidden. (Houses visible)");
-			return;
+	VALIDATEPC(pc);
+
+	pc->priv2 &= ~CHRPRIV2_VIEWHOUSEASICON;
+	pc->teleport();
+	pc->sysmsg("House icons hidden. (Houses visible)");
 }
 
 
@@ -2276,7 +2260,7 @@ void command_set(NXWSOCKET  s)
 			if (!(strcmp(skillname[i], script1))) { /*ConOut("%s\n",skillname[i]);*/
 				if (i == I_ACCOUNT) {
 					if (pc->account!=0) {
-						sysmessage(s, "Only Admin can do this!!!");
+						pc->sysmsg("Only Admin can do this!!!");
 						return;
 					}
 				}
@@ -2291,7 +2275,6 @@ void command_set(NXWSOCKET  s)
 			target(s, 0, 1, 0, 36, "Select character to modify.");
 		}
 	}
-	return;
 }
 
 
@@ -2299,8 +2282,6 @@ void command_temp(NXWSOCKET  s)
 // Debugging command.
 {
 	sysmessage(s, TRANSLATE("This command is simply no more supported. Sorry :["));
-	return;
-
 }
 
 void command_addnpc(NXWSOCKET  s)
@@ -2331,7 +2312,6 @@ void command_addnpc(NXWSOCKET  s)
 		}
 		target(s, 0, 1, 0, 27, "Select location for the NPC.");
 	}
-	return;
 }
 
 
@@ -2365,30 +2345,26 @@ void command_cachestats(NXWSOCKET  s)
 void command_npcrect(NXWSOCKET  s)
 // (d d d d) Set bounding box for a NPC with a NPCWANDER of 3.
 {
-			if (tnum==5)
-			{
-				addx[s]=strtonum(1); // bugfix, LB, old npcshape worked only if its only excuted by ONE player at the same time
-				addy[s]=strtonum(2);
-				addx2[s]=strtonum(3);
-				addy2[s]=strtonum(4);
-				target(s, 0, 1, 0, 67, "Select the NPC to set the bounding rectangle for."); // lb bugfix, was 58 ...
-			}
-			return;
-
+	if (tnum==5)
+	{
+		addx[s]=strtonum(1); // bugfix, LB, old npcshape worked only if its only excuted by ONE player at the same time
+		addy[s]=strtonum(2);
+		addx2[s]=strtonum(3);
+		addy2[s]=strtonum(4);
+		target(s, 0, 1, 0, 67, "Select the NPC to set the bounding rectangle for."); // lb bugfix, was 58 ...
+	}
 }
 
 void command_npccircle(NXWSOCKET  s)
 // (d d d) Set bounding circle for a NPC with a NPCWANDER of 2.
 {
-			if (tnum==4)
-			{
-				addx[s]=strtonum(1);
-				addy[s]=strtonum(2);
-				addx2[s]=strtonum(3);
-				target(s, 0, 1, 0, 59, "Select the NPC to set the bounding circle for.");
-			}
-			return;
-
+	if (tnum==4)
+	{
+		addx[s]=strtonum(1);
+		addy[s]=strtonum(2);
+		addx2[s]=strtonum(3);
+		target(s, 0, 1, 0, 59, "Select the NPC to set the bounding circle for.");
+	}
 }
 
 void command_npcwander(NXWSOCKET  s)
@@ -2400,13 +2376,11 @@ void command_npcwander(NXWSOCKET  s)
 // <LI>3 = NPC stays in box specified by <A HREF="npcrect.html">NPCRECT</A>.</LI>
 // <LI>4 = NPC stays in circle specified by <A HREF="npccircle.html">NPCCIRCLE</A>.</LI></UL>
 {
-			if (tnum==2)
-			{
-				npcshape[0]=strtonum(1);
-				target(s, 0, 1, 0, 60, "Select the NPC to set the wander method for.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		npcshape[0]=strtonum(1);
+		target(s, 0, 1, 0, 60, "Select the NPC to set the wander method for.");
+	}
 }
 
 //
@@ -2414,58 +2388,49 @@ void command_npcwander(NXWSOCKET  s)
 //
 void command_npcrectcoded(NXWSOCKET  s)
 {
-			clickx[s]=-1;
-			clicky[s]=-1;
-			target(s,0,1,0,73,"Select first corner of bounding box.");
-			return;
+	clickx[s]=-1;
+	clicky[s]=-1;
+	target(s,0,1,0,73,"Select first corner of bounding box.");
 }
 
 void command_secondsperuominute(NXWSOCKET  s)
 // (d) Sets the number of real-world seconds that pass for each UO minute.
 {
-			if (tnum==2)
-			{
-				secondsperuominute=strtonum(1);
-				sysmessage(s, "Seconds per UO minute set.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		secondsperuominute=strtonum(1);
+		sysmessage(s, "Seconds per UO minute set.");
+	}
 }
 
 void command_brightlight(NXWSOCKET  s)
 // (h) Sets default daylight level.
 {
-			if (tnum==2)
-			{
-				worldbrightlevel=strtonum(1);
-				sysmessage(s, "World bright light level set.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		worldbrightlevel=strtonum(1);
+		sysmessage(s, "World bright light level set.");
+	}
 }
 
 void command_darklight(NXWSOCKET  s)
 // (h) Sets default nighttime light level.
 {
-			if (tnum==2)
-			{
-				worlddarklevel=strtonum(1);
-				sysmessage(s, "World dark light level set.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		worlddarklevel=strtonum(1);
+		sysmessage(s, "World dark light level set.");
+	}
 }
 
 void command_dungeonlight(NXWSOCKET  s)
 // (h) Sets default dungeon light level.
 {
-			if (tnum==2)
-			{
-				dungeonlightlevel=qmin(strtonum(1), 27);
-				sysmessage(s, "Dungeon light level set.");
-			}
-			return;
-
+	if (tnum==2)
+	{
+		dungeonlightlevel=qmin(strtonum(1), 27);
+		sysmessage(s, "Dungeon light level set.");
+	}
 }
 
 void command_gmopen(NXWSOCKET  s)
@@ -2479,11 +2444,9 @@ void command_gmopen(NXWSOCKET  s)
 // <TR><TD><B>1D</B></TD><TD>Bank Box</TD></TR>
 // </TABLE>
 {
-			if (tnum==2) addmitem[s]=strtonum(1);
-			else addmitem[s]=0x15;
-			target(s, 0, 1, 0, 115, "Select the character to open the container on.");
-			return;
-
+	if (tnum==2) addmitem[s]=strtonum(1);
+	else addmitem[s]=0x15;
+	target(s, 0, 1, 0, 115, "Select the character to open the container on.");
 }
 
 void command_restock(NXWSOCKET  s)
@@ -2712,23 +2675,22 @@ void command_killall(NXWSOCKET  s)
 void command_pdump(NXWSOCKET  s)
 // Display some performance information.
 {
-			sysmessage(s, "Performace Dump:");
+	sysmessage(s, "Performace Dump:");
 
-			sprintf(s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
-			sysmessage(s, s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
+	sysmessage(s, s_szCmdTableTemp);
 
-			sprintf(s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
-			sysmessage(s, s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
+	sysmessage(s, s_szCmdTableTemp);
 
-			sprintf(s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
-			sysmessage(s, s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
+	sysmessage(s, s_szCmdTableTemp);
 
-			sprintf(s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
-			sysmessage(s, s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
+	sysmessage(s, s_szCmdTableTemp);
 
-			sprintf(s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
-			sysmessage(s, s_szCmdTableTemp);
-			return;
+	sprintf(s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+	sysmessage(s, s_szCmdTableTemp);
 }
 
 /*
@@ -2758,29 +2720,22 @@ void command_readspawnregions(NXWSOCKET  s)
 void command_gy(NXWSOCKET  s)
 // (text) GM Yell - Announce a message to all online GMs.
 {
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
 	if(now==1) {
-		sysmessage(s,"There are no other users connected.");
+		pc->sysmsg("There are no other users connected.");
 		return;
 	}
 
-	NXWCLIENT ps = getClientFromSocket(s); 
-	if (ps==NULL) return;
-	P_CHAR pc = ps->currChar();
-	VALIDATEPC(pc);
-	
 	int tl;
 	sprintf(xtext[s], "(GM ONLY): %s", &tbuffer[Commands::cmd_offset+3]);//AntiChrist bugfix - cms_offset+4, not +7
 	tl=44+strlen(&xtext[s][0])+1;
 
-	unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-	talk[1]= tl>>8;
-	talk[2]= tl%256;
-	talk[3]= pc->getSerial().ser1;
-	talk[4]= pc->getSerial().ser2;
-	talk[5]= pc->getSerial().ser3;
-	talk[6]= pc->getSerial().ser4;
-	talk[7]= pc->id1;
-	talk[8]= pc->id2;
+	UI08 talk[14]={ 0x1C, 0x00, };
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(pc->getSerial32(), talk +3);
+	ShortToCharPtr(pc->GetBodyType(), talk +7);
 	talk[9]= 1;
 	talk[10]= buffer[s][4];
 	talk[11]= buffer[s][5];
@@ -2797,9 +2752,11 @@ void command_gy(NXWSOCKET  s)
 		P_CHAR pc_i = ps_i->currChar();
 		if (ISVALIDPC(pc_i) && pc_i->IsGM())
 		{
-			Xsend(ps_i->toInt(), talk, 14);
-			Xsend(ps_i->toInt(), pc->getCurrentNameC(), 30);
-			Xsend(ps_i->toInt(), &xtext[s][0], strlen(&xtext[s][0])+1);
+			NXWSOCKET s = ps_i->toInt();
+			Xsend(s, talk, 14);
+			Xsend(s, pc->getCurrentNameC(), 30);
+			Xsend(s, &xtext[s][0], strlen(&xtext[s][0])+1);
+//AoS/			Network->FlushBuffer(s);
 		}
 	}
 }
@@ -2807,27 +2764,22 @@ void command_gy(NXWSOCKET  s)
 void command_yell(NXWSOCKET  s)
 // (text) GM Yell - Announce a message to all online players.
 {
-	if(now==1) {
-		sysmessage(s,"There are no other users connected.");
-		return;
-	}
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
+
+	if(now==1) {
+		pc->sysmsg("There are no other users connected.");
+		return;
+	}
 
 	int tl;
 	sprintf(xtext[s], "(GM MSG): %s", &tbuffer[Commands::cmd_offset+3]);
 	tl=44+strlen(&xtext[s][0])+1;
 
-	unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-	talk[1]= tl>>8;
-	talk[2]= tl%256;
-	talk[3]= pc->getSerial().ser1;
-	talk[4]= pc->getSerial().ser2;
-	talk[5]= pc->getSerial().ser3;
-	talk[6]= pc->getSerial().ser4;
-	talk[7]= pc->id1;
-	talk[8]= pc->id2;
+	UI08 talk[14]={ 0x1C, 0x00, };
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(pc->getSerial32(), talk +3);
+	ShortToCharPtr(pc->GetBodyType(), talk +7);
 	talk[9]= 1;
 	talk[10]= buffer[s][4];
 	talk[11]= buffer[s][5];
@@ -2844,9 +2796,11 @@ void command_yell(NXWSOCKET  s)
 		P_CHAR pc_i = ps_i->currChar();
 		if (ISVALIDPC(pc_i) )
 		{
-			Xsend(ps_i->toInt(), talk, 14);
-			Xsend(ps_i->toInt(), pc->getCurrentNameC(), 30);
-			Xsend(ps_i->toInt(), &xtext[s][0], strlen(&xtext[s][0])+1);
+			NXWSOCKET s = ps_i->toInt();
+			Xsend(s, talk, 14);
+			Xsend(s, pc->getCurrentNameC(), 30);
+			Xsend(s, &xtext[s][0], strlen(&xtext[s][0])+1);
+//AoS/			Network->FlushBuffer(s);
 		}
 	}
 }
@@ -2862,42 +2816,45 @@ void command_tilew(NXWSOCKET  s)
 // box being tiled.</LI>
 // <LI>The final number is the Z-Axis of the box being tiled.</LI></UL>
 {
-                 if(tnum==8)
-				 {
-                          if ( server_data.always_add_hex )
-                          {
-                              addid1[s]=hexnumber(1);
-                              addid2[s]=hexnumber(2);
-                          }
-                          else
-                          {
-                              addid1[s]=strtonum(1);//id1
-                              addid2[s]=strtonum(2);//id2
-                          }
-                    int pile=0;
-                    tile_st tile;
-                    Map->SeekTile((addid1[s]<<8)+addid2[s], &tile);
-                    if (tile.flag2&0x08) pile=1;
-                    for (int x=strtonum(3);x<=strtonum(4);x++)
-					{
-						for (int y=strtonum(5);y<=strtonum(6);y++)
-						{
-							P_ITEM pa=item::SpawnItem(-1,s, 1, "#", pile, (addid1[s]<<8) + addid2[s], 0, 0,0);
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 
-							if(ISVALIDPI(pa)) //AntiChrist - to preview crashes
-							{
-								pa->priv=0; //Make them not decay
-								pa->MoveTo( x, y, strtonum(7) );
-								pa->Refresh();//AntiChrist
-							}
-						}
-					}
-					addid1[s]=0; // lb, i was so free and placed it here so that we dont have y-1 rows of 0-id items ... hope that was not intentinal ..
-                    addid2[s]=0;
-				 }
-				 else { sysmessage(s, "Format: /tilew ID1 ID2 X1 X2 Y1 Y2 Z"); }
-                 return;
+	if(tnum==8)
+	{
+		if ( server_data.always_add_hex )
+		{
+			addid1[s]=hexnumber(1);
+			addid2[s]=hexnumber(2);
+		} else {
+			addid1[s]=strtonum(1);//id1
+			addid2[s]=strtonum(2);//id2
+		}
 
+		int pile=0;
+
+		tile_st tile;
+		Map->SeekTile( (addid1[s]<<8) | addid2[s], &tile);
+		if (tile.flag2&0x08) pile=1;
+		for (int x=strtonum(3);x<=strtonum(4);x++)
+		{
+			for (int y=strtonum(5);y<=strtonum(6);y++)
+			{
+				P_ITEM pa=item::SpawnItem(-1,s, 1, "#", pile, (addid1[s]<<8) | addid2[s], 0, 0,0);
+
+
+				if(ISVALIDPI(pa)) //AntiChrist - to preview crashes
+				{
+					pa->priv=0; //Make them not decay
+					pa->MoveTo( x, y, strtonum(7) );
+					pa->Refresh();//AntiChrist
+				}
+			}
+		}
+
+		addid1[s]=0; // lb, i was so free and placed it here so that we dont have y-1 rows of 0-id items ... hope that was not intentinal ..
+		addid2[s]=0;
+	}
+	else { pc->sysmsg("Format: /tilew ID1 ID2 X1 X2 Y1 Y2 Z"); }
 }
 
 void command_squelch(NXWSOCKET  s)
@@ -2946,11 +2903,10 @@ void command_gotocur(NXWSOCKET  s)
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	int x=0;
 
 	if(pc->callnum==0)
 	{
-		sysmessage(s,"You are not currently on a call.");
+		pc->sysmsg("You are not currently on a call.");
 	}
 	else
 	{
@@ -2960,21 +2916,19 @@ void command_gotocur(NXWSOCKET  s)
 			Location charpos= pc_i->getPosition();
 
 			pc->MoveTo( charpos );
+			pc->sysmsg("Transporting to your current call.");
+			pc->teleport();
+			return;
+		}
+
+		pc_i = pointers::findCharBySerial( counspages[pc->callnum].serial.serial32 );
+		if(ISVALIDPC(pc_i))
+		{
+			Location charpos= pc_i->getPosition();
+
+			pc->MoveTo( charpos );
 			sysmessage(s,"Transporting to your current call.");
 			pc->teleport();
-			x++;
-		}
-		if(x==0)
-		{
-			pc_i = pointers::findCharBySerial( gmpages[pc->callnum].serial.serial32 );
-			if(ISVALIDPC(pc_i))
-			{
-				Location charpos= pc_i->getPosition();
-
-				pc->MoveTo( charpos );
-				sysmessage(s,"Transporting to your current call.");
-				pc->teleport();
-			}
 		}
 	}
 }
@@ -2982,11 +2936,11 @@ void command_gotocur(NXWSOCKET  s)
 void command_gmtransfer(NXWSOCKET  s)
 // Escilate a Counsellor Page into the GM Queue
 {
-	int i;
-	int x2=0;
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
+
+	int i;
+	int x2=0;
 
 	if(pc->callnum!=0)
 	{
@@ -3010,40 +2964,39 @@ void command_gmtransfer(NXWSOCKET  s)
 			}
 			if (x2==0)
 			{
-				sysmessage(s,"The GM Queue is currently full. Contact the shard operator");
-				sysmessage(s,"and ask them to increase the size of the queue.");
+				pc->sysmsg("The GM Queue is currently full. Contact the shard operator");
+				pc->sysmsg("and ask them to increase the size of the queue.");
 			}
 			else
 			{
-				sysmessage(s,"Call successfully transferred to the GM queue.");
+				pc->sysmsg("Call successfully transferred to the GM queue.");
 				donewithcall(s,1);
 			}
 		}
 		else
 		{
-			sysmessage(s,"Only Counselors may use this command.");
+			pc->sysmsg("Only Counselors may use this command.");
 		}
 	}
 	else
 	{
-		sysmessage(s,"You are not currently on a call");
+		pc->sysmsg("You are not currently on a call");
 	}
 }
 
 void command_who(NXWSOCKET  s)
 // Displays a list of users currently online.
 {
-
-	if(now==1) {
-		sysmessage(s,"There are no other users connected.");
-		return;
-	}
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
+	if(now==1) {
+		pc->sysmsg("There are no other users connected.");
+		return;
+	}
+
 	int j=0;
-	sysmessage(s,"Current Users in the World:");
+	pc->sysmsg("Current Users in the World:");
 	
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -3055,13 +3008,13 @@ void command_who(NXWSOCKET  s)
 			if(ISVALIDPC(pc_i)) {
 				j++;
 				sprintf(s_szCmdTableTemp, "%i) %s [%x]", (j-1), pc_i->getCurrentNameC(), pc_i->getSerial32());
-				sysmessage(s, s_szCmdTableTemp);
+				pc->sysmsg(s_szCmdTableTemp);
 			}
 		}
 	}
 	sprintf(s_szCmdTableTemp,"Total Users Online: %d\n", j);
-	sysmessage(s,s_szCmdTableTemp);
-	sysmessage(s,"End of userlist");
+	pc->sysmsg(s_szCmdTableTemp);
+	pc->sysmsg("End of userlist");
 }
 
 void command_gms(NXWSOCKET  s)
@@ -3071,7 +3024,7 @@ void command_gms(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	sysmessage(s,"Current GMs and Counselors in the world:");
+	pc->sysmsg("Current GMs and Counselors in the world:");
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -3082,13 +3035,13 @@ void command_gms(NXWSOCKET  s)
 			P_CHAR pc_i=ps_i->currChar();
 			if(ISVALIDPC(pc_i) && pc_i->IsGMorCounselor() ) {
 				j++;
-				sysmessage(s, "%s", pc_i->getCurrentNameC());
+				pc->sysmsg("%s", pc_i->getCurrentNameC());
 			}
 		}
 	}
 	sprintf(s_szCmdTableTemp, "Total Staff Online: %d\n", j);
-	sysmessage(s, s_szCmdTableTemp);
-	sysmessage(s,"End of stafflist");
+	pc->sysmsg(s_szCmdTableTemp);
+	pc->sysmsg("End of stafflist");
 }
 
 void command_regspawnall(NXWSOCKET  s)
@@ -3266,7 +3219,6 @@ void command_jail(NXWSOCKET  s)
 		strcpy(s_szCmdTableTemp, "Select Character to jail. [Jailtime: 1 day]");
 		target(s, 0, 1, 0, 126, s_szCmdTableTemp);
 	}
-	return;
 }
 
 // handler for the movement effect

@@ -121,7 +121,7 @@ void DeleItem( P_ITEM pi )
 		if (j!=INVALID)
 		{
 			Xsend(j, removeitem, 5);
-///			Network->FlushBuffer(j);
+//AoS/			Network->FlushBuffer(j);
 		}
 	}
 
@@ -191,7 +191,7 @@ void DeleteChar( P_CHAR pc )
 		if( j!=INVALID )
 		{
 			Xsend(j, removeitem, 5);
-///			Network->FlushBuffer(j);
+//AoS/			Network->FlushBuffer(j);
 		}
 	}
 

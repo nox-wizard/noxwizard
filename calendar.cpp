@@ -109,7 +109,7 @@ void commitSeason(P_CHAR pc)
 		}
 	}
 	Xsend(s,setseason,3);
-///	Network->FlushBuffer(s);
+//AoS/	Network->FlushBuffer(s);
 }
 
 

@@ -1081,7 +1081,7 @@ void cChar::showContainer(P_ITEM pCont)
 	ShortToCharPtr(gump, bpopen+5);
 
 	Xsend(s, bpopen, 7);
-///	Network->FlushBuffer(s);
+//AoS/	Network->FlushBuffer(s);
 
 	UI08 bpopen2[5]= { 0x3C, 0x00, 0x05, 0x00, 0x00 };
 	
@@ -1114,7 +1114,7 @@ void cChar::showContainer(P_ITEM pCont)
 		bpitem[19]= 0;
 		Xsend(s, bpitem, 19);
 	}
-/// Network->FlushBuffer(s);
+//AoS/ Network->FlushBuffer(s);
 }
 
 P_ITEM cChar::getBackpack()
@@ -1620,7 +1620,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		Xsend(s, talk, 14);
 		Xsend(s, getCurrentNameC(), 30);
 		Xsend(s, txt, strlen(txt)+1);
-///		Network->FlushBuffer(s);
+//AoS/		Network->FlushBuffer(s);
 	}
 }
 
@@ -1668,7 +1668,7 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		Xsend(socket,talk, 14);
 		Xsend(socket,getCurrentNameC(), 30);
 		Xsend(socket, msg, strlen( msg ) + 1 );
-///		Network->FlushBuffer(socket);
+//AoS/		Network->FlushBuffer(socket);
 	}
 }
 
