@@ -56,7 +56,7 @@ std::string cAccount::getLastIp()
 {
 	std::string temp;
 	char buf [16];
-	sprintf(buf, "%d.%d.%d.%d", (lastIp>>24)&0xFF, (lastIp>>16)&0xFF, (lastIp>>8)&0xFF, lastIp&0xFF);
+	sprintf(buf, "%d.%d.%d.%d", lastIp&0xFF, (lastIp>>8)&0xFF, (lastIp>>16)&0xFF, (lastIp>>24)&0xFF);
 	temp=std::string(buf);
 	return temp;
 }

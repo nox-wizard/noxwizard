@@ -260,7 +260,7 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 	if ( boutlength[ socket ] > 0 )
 	{
 		/*
-		FILE *debugout=fopen("d:\\packets.log", "a");
+		FILE *debugout=fopen("packets.log", "a");
 		for ( int i = 0; i < boutlength[socket];++i)
 		{
 			if ( i % 32 == 0 )
@@ -1004,6 +1004,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	AMXEXECSV( pc->getSerial32(),AMXT_SPECIALS, 4, AMX_BEFORE);
+	Accounts->GetAccount(acctno[s])->setLastIp(clientInfo[s]->getClientIp());
 
 	enterchar( s );
 // #ifdef ENCRYPTION
@@ -1197,7 +1198,7 @@ int cNetwork::Receive(int s, int x, int a )
 {
 	if ( (x+a) >= MAXBUFFER) return 0;
 	/*
-	FILE *debugout=fopen("d:\\packetsin.log", "a");
+	FILE *debugout=fopen("packetsin.log", "a");
 	fprintf(debugout, "\nStart------------------------------------------\n");
 	*/
 	int count,loopexit=0;

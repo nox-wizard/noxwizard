@@ -164,6 +164,11 @@ void updatehtml()//HTML
 						{
 							fprintf(html,"%i", pc->getPrivLevel()); 
 						}
+						else if ( str_keyword == "IP" )
+						{
+							UI32 ip=clientInfo[pc->getSocket()]->getClientIp();
+							fprintf(html,"%d.%d.%d.%d", ip&0xFF, (ip>>8)&0xFF, (ip>>16)&0xFF, (ip>>24)&0xFF); 
+						}
 						strKeyList=str_remains;
 						fprintf(html,"</TD>\n");
 						
