@@ -410,13 +410,10 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	P_ITEM pi;
 
 // - create the backpack
-//	n= item::CreateScriptItem(s, 327, 0);
 	pi= item::CreateFromScript(s, "$item_backpack");
 	VALIDATEPI(pi);
 	pc->packitemserial= pi->getSerial32();
 	pi->setCont(pc);
-//	setserial(n, c, 4);
-
 
 // - create pants
 	if( RandomNum(0, 1)==0 )
@@ -435,11 +432,10 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	}
 
 	VALIDATEPI(pi);
-	
+
 	// pant/skirt color -> old client code, random color
 	pi->color1=buffer[s][102];
 	pi->color2=buffer[s][103];
-//	setserial(n, c, 4);
 	pi->setCont(pc);
 
 	if( !(rand()%2) )
@@ -450,17 +446,6 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	VALIDATEPI(pi);
 	pi->color1=buffer[s][100];
 	pi->color2=buffer[s][101];
-//	setserial(n, c, 4);
-	pi->setCont(pc);
-
-	// Create shoes
-	pi= item::CreateFromScript(s, "$item_shoes");
-	VALIDATEPI(pi);
-	pi->setCont(pc);
-
-	// Create dagger
-	pi= item::CreateFromScript(s, "$item_dagger");
-	VALIDATEPI(pi);
 	pi->setCont(pc);
 
 // what is this ??? (Anthalir)
