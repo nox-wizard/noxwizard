@@ -517,9 +517,7 @@ cScpSection* cScpScript::getSection(std::string& strIdentifier)
 
 	iter = m_mapSections.find(strIdentifier);
 
-	if (iter!=m_mapSections.end()) {
-		return &iter->second;
-	} else return NULL;
+	return (iter!=m_mapSections.end())? &iter->second : NULL;
 }
 
 
@@ -531,8 +529,7 @@ cScpSection* cScpScript::getSection(std::string& strIdentifier)
 */
 cScpSection* cScpScript::getSection(char* szIdentifier)
 {
-	std::string str = szIdentifier;
-	return getSection(str);
+	return getSection( std::string( szIdentifier ) );
 }
 
 
@@ -587,8 +584,7 @@ cScpIterator* cScpScript::getNewIterator(char *format, ...)
 	va_end(vargs);
 
 	cScpSection* section = getSection(tmp);
-	if (section==NULL) return NULL;
-	return new cScpIterator(section);
+	return (section!=NULL)? new cScpIterator(section) : NULL;
 }
 
 

@@ -1237,14 +1237,13 @@ void cAllCreatures::load()
 {
 	cScpIterator*	iter = 0;
 	std::string	rha, lha;
-	int idxarea=0;
+	int id=0;
 
 	int loopexit=0;
 	do
 	{
 		safedelete(iter);
-		SERIAL current=idxarea;
-		iter = Scripts::Creatures->getNewIterator("SECTION CREATURE %i", idxarea++);
+		iter = Scripts::Creatures->getNewIterator("SECTION CREATURE %i", id++);
 		if( iter )
 		{
 
@@ -1293,9 +1292,11 @@ void cAllCreatures::load()
 			}
 			while ( lha[0] !='}' && ++loopexit < MAXLOOPS );
 
+			this->allCreatures[id-1] = cinfo;
+
 		}
     }
-	while (  lha != "EOF" && ++loopexit < MAXLOOPS );
+	while (  lha != "EOF" && ++loopexit < CREATURE_COUNT );
 
     safedelete(iter);
 
