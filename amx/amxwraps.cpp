@@ -43,6 +43,7 @@
 #include "jail.h"
 #include "party.h"
 #include "gmpages.h"
+#include "house.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -6015,6 +6016,777 @@ NATIVE ( _chr_solveGmPage )
 }
 
 /*!
+\brief returns the given property and subpropoerty value for the house
+\author Wintermute
+\since 0.82
+\fn house_getProperty
+\param 1 the house serial to get the property from
+\param 2 the house property to get
+\param 3 the subproperty to get
+*/
+
+NATIVE ( _house_getProperty )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+		case T_INT: {
+			int p = house_getIntProperty( house, params[2], params[3]);
+			cell i = p;
+			return i;
+		}
+		case T_BOOL: {
+			bool p = house_getBoolProperty( house, params[2], params[3]);
+			cell i = p;
+			return i;
+		}
+		case T_SHORT: {
+			short p = house_getShortProperty( house, params[2], params[3]);
+			cell i = p;
+			return i;
+		}
+		case T_CHAR: {
+			char p = house_getCharProperty( house, params[2], params[3]);
+			cell i = p;
+			return i;
+		}
+		case T_STRING: {
+
+			char str[100];
+	  		strcpy(str, house_getStrProperty( house, params[2], params[3]));
+
+  			cell *cptr;
+  			amx_GetAddr(amx,params[4],&cptr);
+	  		amx_SetString(cptr,str, g_nStringMode);
+
+  			return strlen(str);
+
+		}
+	}
+  	return INVALID;
+}
+
+/*!
+\brief sets the given property and subpropoerty value for the house
+\author Wintermute
+\since 0.82
+\fn house_setProperty
+\param 1 the house serial to get the property from
+\param 2 the house property to set
+\param 3 the subproperty to set
+*/
+
+NATIVE ( _house_setProperty )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+		case T_INT: {
+			house_setIntProperty( house, params[2], params[3], params[4]);
+		}
+		case T_BOOL: {
+			house_setBoolProperty( house, params[2], params[3], params[4]);
+		}
+		case T_SHORT: {
+			house_setShortProperty( house, params[2], params[3], params[4]);
+		}
+		case T_CHAR: {
+			house_setCharProperty( house, params[2], params[3], params[4]);
+		}
+		case T_STRING: {
+			cell *cstr;
+  			amx_GetAddr(amx,params[2],&cstr);
+  			printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+  			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+			house_setStrProperty( house, params[2], params[3], g_cAmxPrintBuffer);
+  			g_nAmxPrintPtr=0;
+
+		}
+	}
+	return true;
+}
+
+/*!
+\brief locks the given item, making it unmovable and increase the number of locked items by one in the house, fails if maximum amount of lockable items is exceeded
+\author Wintermute
+\since 0.82
+\fn house_lockItem
+\param house, the house serial to get the property from
+\param item, the serial of the item to lock
+
+*/
+NATIVE ( _house_lockItem )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const item);
+    P_ITEM pi=pointers::findItemBySerial( params[2]);
+    if(ISVALIDPI(pi))
+	{
+		if( house != NULL)
+		{
+			if( pi->isFieldSpellItem() )
+			{
+				return false;
+			}
+			if (pi->type==12 || pi->type==13 || pi->type==203)
+			{
+				return false;
+			}
+			if ( pi->IsAnvil() )
+			{
+				return false;
+			}
+			if ( pi->IsForge() )
+			{
+				return false;
+			}
+			house->increaseLockedItems();
+			pi->magic = 4;  // Default as stored by the client, perhaps we should keep a backup?
+			pi->setOwnerSerial32Only(house->getOwner());
+			pi->SetMultiSerial(house->getSerial());
+			pi->Refresh();
+			return true;
+		}
+	}
+	else
+		LogWarning("Illegal item serial %d used in _house_lockItem\n", params[1]);
+	return false;
+}
+
+/*!
+\brief unlocks the given item, making it movable and decrease the number of locked items by one in the house
+\author Wintermute
+\since 0.82
+\fn house_unlockItem
+\param house, the house serial
+\param item, the serial of the item to unlock
+*/
+
+NATIVE ( _house_unlockItem )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const item);
+    P_ITEM pi=pointers::findItemBySerial( params[2]);
+    if(ISVALIDPI(pi))
+	{
+		if( house != NULL)
+		{
+			if ( pi->magic != 4 )
+			{
+				return false;
+			}
+			if( pi->isFieldSpellItem() )
+			{
+				return false;
+			}
+			if (pi->type==12 || pi->type==13 || pi->type==203)
+			{
+				return false;
+			}
+			if ( pi->IsAnvil() )
+			{
+				return false;
+			}
+			if ( pi->IsForge() )
+			{
+				return false;
+			}
+			house->decreaseLockedItems();
+			pi->magic = 1;  // Default as stored by the client, perhaps we should keep a backup?
+			pi->setOwnerSerial32Only(INVALID);
+			pi->SetMultiSerial(INVALID);
+			pi->Refresh();
+			return true;
+		}
+	}
+	else
+		LogWarning("Illegal item serial %d used in _house_lockItem\n", params[1]);
+	return false;
+}
+
+/*!
+\brief secures the given container, making it openable only by owner and coowner and increase the number of secured items by one in the house, fails if maximum amount of secured items is exceeded
+\author Wintermute
+\since 0.82
+\fn house_secureContainer
+\param house, the house serial to get the property from
+\param item, the serial of the container to secure
+*/
+
+NATIVE ( _house_secureContainer )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const container);
+    P_ITEM pi=pointers::findItemBySerial( params[2]);
+    if(ISVALIDPI(pi))
+	{
+		if( pi->isFieldSpellItem() )
+		{
+			return false;
+		}
+		if (pi->type==12 || pi->type==13 || pi->type==203)
+		{
+			return false;
+		}
+		if(pi->magic==4)
+		{
+			return false;
+		}
+
+		if( house != NULL && house->inHouse(pi) && pi->type==1)
+		{
+			if ( house->getSecuredItems() < house->getMaxSecuredItems() )
+			{
+				pi->magic = 4;  // LOCKED DOWN!
+				pi->secureIt = 1;
+				pi->setOwnerSerial32Only(house->getOwner());
+				pi->SetMultiSerial(house->getSerial());
+				pi->Refresh();
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/*!
+\brief unsecures the given container, making it openable only by everyone and decrease the number of secured items by one in the house
+\author Wintermute
+\since 0.82
+\fn house_unsecureContainer
+\param house, the house serial
+\param item, the serial of the container to secure
+*/
+
+NATIVE ( _house_unsecureContainer )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const container);
+    P_ITEM pi=pointers::findItemBySerial( params[2]);
+    if(ISVALIDPI(pi))
+	{
+        if( pi->isFieldSpellItem() )
+        {
+            return false;
+        }
+        if (pi->type==12 || pi->type==13 || pi->type==203)
+        {
+            return false;
+        }
+        if( house != NULL && pi->getMultiSerial32() == house->getSerial() )
+        {
+			if ( pi->secureIt == 1 )
+				house->decreaseSecuredItems();
+            pi->magic = 1;  // Default as stored by the client, perhaps we should keep a backup?
+            pi->secureIt = 0;
+            pi->Refresh();
+            return true;
+        }
+	}
+ 	return false;
+}
+
+/*!
+\brief place a trace barrel at the given location
+\author Wintermute
+\since 0.82
+\fn house_placeTrashBarrel
+\param house, the house serial
+\param x,y,z position of the trashbarrel
+*/
+
+NATIVE ( _house_placeTrashBarrel )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const x, const y, const z);
+	return false;
+}
+
+/*!
+\brief returns a boolean if the given obj is inside a house (meaning it is below a roof)
+\author Wintermute
+\since 0.82
+\fn house_isInsideHouse
+\param house, the house serial
+\param obj, the item or char serial
+\return boolean
+*/
+
+NATIVE ( _house_isInsideHouse )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const obj);
+	P_OBJECT obj = objects.findObject(params[2]);
+	if ( obj != NULL )
+		return house->isInsideHouse(obj->getPosition());
+	else
+		LogWarning("Illegal object serial %d used in _house_isInHouse\n", params[2]);
+	return false;
+}
+
+/*!
+\brief returns a boolean if the given obj is inside a house area (meaning it is within the limits of spacex and spacey from the center of the house)
+\author Wintermute
+\since 0.82
+\fn house_isInHouse
+\param 1 the house serial
+\param 2 the item or char serial
+\return boolean
+*/
+
+NATIVE ( _house_isInHouse )
+{
+	//(const house, const obj);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_OBJECT obj = objects.findObject(params[2]);
+	if ( obj != NULL )
+		return house->inHouse(obj->getPosition());
+	else
+		LogWarning("Illegal object serial %d used in _house_isInHouse\n", params[2]);
+	return false;
+}
+
+/*!
+\brief adds a friend to the list of house friends
+\author Wintermute
+\since 0.82
+\fn house_addFriend
+\param house, the house serial
+\param the char serial of the new friend
+\return boolean
+*/
+
+NATIVE ( _house_addFriend )
+{
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	//(const house, const chr);
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->addFriend(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_addFriend\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief removes a friend from the list of house friends
+\author Wintermute
+\since 0.82
+\fn house_removeFriend
+\param house, the house serial
+\param the char serial of the new friend
+\return boolean
+*/
+
+NATIVE ( _house_removeFriend )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->removeFriend(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_removeFriend\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief tells if a char is friend of the house
+\author Wintermute
+\since 0.82
+\fn house_isFriend
+\param house, the house serial
+\param the char serial of the character
+\return boolean
+*/
+
+NATIVE ( _house_isFriend )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		return house->isFriend(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_isFriend\n", params[2]);
+		return false;
+	}
+	return false;
+}
+
+/*!
+\brief adds a co owner  to the list of house owners
+\author Wintermute
+\since 0.82
+\fn house_addCoOwner
+\param house, the house serial
+\param the char serial of the new co owner
+\return boolean
+*/
+
+NATIVE ( _house_addCoOwner )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->addCoOwner(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_addCoOwner\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief removes a co owner from the list of house owners
+\author Wintermute
+\since 0.82
+\fn house_removeCoOwner
+\param house, the house serial
+\param the char serial of the new co owner
+\return boolean
+*/
+
+NATIVE ( _house_removeCoOwner )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in _house_removeCoOwner\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->removeCoOwner(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_removeCoOwner\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief tells if a char is co owner of the house
+\author Wintermute
+\since 0.82
+\fn house_isCoOwner
+\param house, the house serial
+\param the char serial of the character
+\return boolean
+*/
+
+NATIVE ( _house_isCoOwner )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in _house_isCoOwner\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		return house->isCoOwner(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_isCoOwner\n", params[2]);
+		return false;
+	}
+	return false;
+}
+
+/*!
+\brief adds a character to the list of banned people
+\author Wintermute
+\since 0.82
+\fn house_addBan
+\param house, the house serial
+\param the char serial of the banned character
+\return boolean
+*/
+
+NATIVE ( _house_addBan )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in _house_addBan\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->addBan(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_addBan\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief removes  a character from the list of banned people
+\author Wintermute
+\since 0.82
+\fn house_removeBan
+\param house, the house serial
+\param the char serial of the banned character
+\return boolean
+*/
+NATIVE ( _house_removeBan )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in _house_removeBan\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->removeBan(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_removeBan\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief tells if  a character is on the list of banned people
+\author Wintermute
+\since 0.82
+\fn house_isBanned
+\param house, the house serial
+\param the char serial of the banned character
+\return boolean
+*/
+
+NATIVE ( _house_isBanned )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in _house_isBanned\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		return house->isBanned(pc);
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_isBanned\n", params[2]);
+		return false;
+	}
+	return false;
+}
+
+/*!
+\brief transfers the house to a new owner, removing all people from the friend, coowner and banned list, removing all keys to the house and making a new pair for the new owner
+\author Wintermute
+\since 0.82
+\fn house_addBan
+\param house, the house serial
+\param the char serial of the new owner
+\return boolean
+*/
+
+NATIVE ( _house_transfer )
+{
+	//(const house, const newOwner);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		house->transfer(params[2]);
+		return true;
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_transfer\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief changes the locks on the house, making a new keycode, therefore rendering all previous keys useless
+\author Wintermute
+\since 0.82
+\fn house_changeLocks
+\param house, the house serial
+*/
+
+NATIVE ( _house_changeLocks )
+{
+	//(const house);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	house->changeLocks();
+	return true;
+}
+
+/*!
+\brief creates a new pair of keys for the current keycode
+\author Wintermute
+\since 0.82
+\fn house_makeKeys
+\param house, the house serial
+*/
+
+NATIVE ( _house_makeKeys )
+{
+	//(const house, const chr);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	P_CHAR pc = pointers::findCharBySerial(params[2]);
+	if (ISVALIDPC(pc) )
+	{
+		cHouses::makeKeys(house,pc);
+		return true;
+	}
+	else
+	{
+		LogWarning("Illegal char serial %d used in _house_makeKeys\n", params[2]);
+		return false;
+	}
+	return true;
+}
+
+/*!
+\brief remove all keys currently in the worldsave for this house
+\author Wintermute
+\since 0.82
+\fn house_deleteKeys
+\param house, the house serial
+*/
+
+NATIVE ( _house_deleteKeys )
+{
+	//(const house);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	cHouses::killkeys(house->getSerial());
+	return true;
+}
+
+/*!
 \file
 
 <h2>API standard syntax :</h2>
@@ -6435,6 +7207,29 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "getGmPageList", _getGmPageList },
  { "chr_getGmPage", _chr_getGmPage },
  { "chr_solveGmPage",  _chr_solveGmPage },
+// house system
+ { "house_getProperty",  _house_getProperty },
+ { "house_setProperty",  _house_setProperty},
+ { "house_lockItem",  _house_lockItem },
+ { "house_unlockItem",  _house_unlockItem },
+ { "house_secureContainer",  _house_secureContainer },
+ { "house_unsecureContainer",  _house_unsecureContainer },
+ { "house_placeTrashBarrel",  _house_placeTrashBarrel },
+ { "house_isInsideHouse",  _house_isInsideHouse },
+ { "house_isInHouse",  _house_isInHouse },
+ { "house_addFriend",  _house_addFriend },
+ { "house_removeFriend",  _house_removeFriend },
+ { "house_isFriend",  _house_isFriend },
+ { "house_addCoOwner",  _house_addCoOwner },
+ { "house_removeCoOwner",  _house_removeCoOwner },
+ { "house_isCoOwner",  _house_isCoOwner },
+ { "house_addBan",  _house_addBan },
+ { "house_removeBan",  _house_removeBan },
+ { "house_isBanned",  _house_isBanned },
+ { "house_transfer",_house_transfer  },
+ { "house_changeLocks",  _house_changeLocks },
+ { "house_makeKeys",  _house_makeKeys },
+ { "house_deleteKeys",  _house_deleteKeys },
 // Terminator :
  { NULL, NULL }
 };

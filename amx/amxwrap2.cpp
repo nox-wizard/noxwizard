@@ -38,6 +38,7 @@
 #include "party.h"
 #include "accounts.h"
 #include "weight.h"
+#include "house.h"
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
@@ -4095,3 +4096,251 @@ NATIVE2( _region_getProperty )
 }
 
 
+int	house_getIntProperty( P_HOUSE house, UI32 property, UI32 subProperty)
+{
+// Integer properties
+	int retVal=INVALID;
+	switch( property )
+	{
+		case NXW_HP_SERIAL :		   //dec value :  200;
+			retVal = house->getSerial();
+			break;
+		case NXW_HP_OWNER :		   //dec value :  201;
+			retVal = house->getOwner();
+			break;
+		case NXW_HP_KEYCODE :		   //dec value :  202;
+			retVal = house->getKeycode();
+			break;
+		case NXW_HP_HOUSEDEED :		   //dec value :  203;
+			retVal = house->getHouseDeed();
+			break;
+		case NXW_HP_CHARPOSITION :		   //dec value :  204;
+		{
+			int x,y,z;
+			house->getCharPos(x,y,z);
+			if ( subProperty == 0 )
+				retVal = x;
+			else if ( subProperty == 1 )
+				retVal = y;
+			else if ( subProperty == 2 )
+				retVal = z;
+			else
+				ErrOut("house_getProperty called with invalid property %d and subproperty %d!\n", property, subProperty );
+		}
+		break;
+		case NXW_HP_LOCKEDITEMS :		   //dec value :  205;
+			retVal = house->getLockedItems();
+			break;
+		case NXW_HP_MAXLOCKEDITEMS :		   //dec value :  206;
+			retVal = house->getMaxLockedItems();
+			break;
+		case NXW_HP_SECUREDITEMS :		   //dec value :  207;
+			retVal = house->getSecuredItems();
+			break;
+		case NXW_HP_MAXSECUREDITEMS :		   //dec value :  208;
+			retVal = house->getMaxSecuredItems();
+			break;
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return retVal;
+}
+
+bool house_getBoolProperty( P_HOUSE house, UI32 property, UI32 subProperty)
+{
+	bool retVal=false;
+	switch( property )
+	{
+		case NXW_HP_PUBLICHOUSE:
+			return house->isPublicHouse();
+		case NXW_HP_NOREALMULTI:
+			return !house->isRealMulti();
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return false;
+}
+
+short house_getShortProperty( P_HOUSE house, UI32 property, UI32 subProperty)
+{
+// Short properties
+	return INVALID;
+}
+
+char house_getCharProperty( P_HOUSE house, UI32 property, UI32 subProperty)
+{
+// Byte properties
+
+	char retVal=INVALID;
+	switch( property )
+	{
+
+		case NXW_HP_DIMENSION :		   //dec value :  204;
+			if ( subProperty == 0 ) // Left X
+				retVal = house->getLeftXRange();
+			else if ( subProperty == 1 ) // Right X
+				retVal = house->getUpperYRange();
+			else if ( subProperty == 2 )
+				retVal = house->getRightXRange();
+			else if ( subProperty == 3 )
+				retVal = house->getLowerYRange();
+			else
+				ErrOut("house_getProperty called with invalid property %d and subproperty %d!\n", property, subProperty );
+			break;
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return INVALID;
+}
+
+const char* house_getStrProperty( P_HOUSE house, UI32 property, UI32 subProperty)
+{
+// String properties
+	std::string retVal;
+	switch( property )
+	{
+		case NXW_HP_STR_HOUSENAME: 
+		{
+			P_ITEM houseItem = pointers::findItemBySerial(house->getSerial());
+			return houseItem->getCurrentName().c_str();
+		}
+		break;
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return emptyString;
+}
+
+void house_setIntProperty( P_HOUSE house, UI32 property, UI32 subProperty, int value)
+{
+	switch( property )
+	{
+		case NXW_HP_SERIAL :		   //dec value :  200;
+		{
+			P_ITEM houseItem = pointers::findItemBySerial(value);
+			if ( ISVALIDPI(houseItem))
+				house->setSerial(value);
+			else
+				ErrOut("house_getProperty called with invalid property %d and subproperty %d, value %d!\n", property, subProperty , value);
+		}
+			break;
+
+		case NXW_HP_OWNER :		   //dec value :  201;
+		{
+			P_CHAR houseOwner = pointers::findCharBySerial(value);
+			if ( ISVALIDPC(houseOwner))
+				house->setOwner(value);
+			else
+				ErrOut("house_getProperty called with invalid property %d and subproperty %d, value %d!\n", property, subProperty , value);
+		}
+			break;
+		case NXW_HP_KEYCODE :		   //dec value :  202;
+			house->setKeycode(value);
+			break;
+		case NXW_HP_HOUSEDEED :		   //dec value :  203;
+			house->setHouseDeed(value);
+			break;
+		case NXW_HP_CHARPOSITION :		   //dec value :  204;
+		{
+			int x,y,z;
+			house->getCharPos(x,y,z);
+			if ( subProperty == 0 )
+				house->getCharPos(value,y,z);
+			else if ( subProperty == 1 )
+				house->getCharPos(x,value,z);
+			else if ( subProperty == 2 )
+				house->getCharPos(x,y,value);
+			else
+				ErrOut("house_setProperty called with invalid property %d and subproperty %d!\n", property, subProperty );
+		}
+		break;
+		case NXW_HP_LOCKEDITEMS :		   //dec value :  205;
+			house->setLockedItems(value);
+			break;
+		case NXW_HP_MAXLOCKEDITEMS :		   //dec value :  206;
+			house->setMaxLockedItems(value);
+			break;
+		case NXW_HP_SECUREDITEMS :		   //dec value :  207;
+			house->setSecuredItems(value);
+			break;
+		case NXW_HP_MAXSECUREDITEMS :		   //dec value :  208;
+			house->setMaxSecuredItems(value);
+			break;
+		case INVALID:
+		default :
+			ErrOut("house_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+	
+}
+
+void house_setBoolProperty( P_HOUSE house, UI32 property, UI32 subProperty, bool value)
+{
+	switch( property )
+	{
+		case NXW_HP_PUBLICHOUSE:
+			house->setPublicState(value);
+		case INVALID:
+		default :
+			ErrOut("house_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+void house_setShortProperty( P_HOUSE house, UI32 property, UI32 subProperty, short value)
+{
+
+}
+
+void house_setCharProperty( P_HOUSE house, UI32 property, UI32 subProperty, char value)
+{
+	switch( property )
+	{
+
+		case NXW_HP_DIMENSION :		   //dec value :  204;
+		{
+			SI32 x1,y1,x2,y2;
+			house->getCorners(x1,y1,x2,y2);
+			if ( subProperty == 0 ) // Left X
+				house->setCorners(value,y1,x2,y2);
+			else if ( subProperty == 1 ) // Right X
+				house->setCorners(x1,value,x2,y2);
+			else if ( subProperty == 2 )
+				house->setCorners(x1,y1,value,y2);
+			else if ( subProperty == 3 )
+				house->setCorners(x1,y1,x2,value);
+			else
+				ErrOut("house_getProperty called with invalid property %d and subproperty %d!\n", property, subProperty );
+		}
+			break;
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+void house_setStrProperty( P_HOUSE house, UI32 property, UI32 subProperty, char *value)
+{
+	switch( property )
+	{
+		case NXW_HP_STR_HOUSENAME: 
+		{
+			P_ITEM houseItem = pointers::findItemBySerial(house->getSerial());
+			houseItem->setCurrentName(value);
+		}
+		break;
+		case INVALID:
+		default :
+			ErrOut("house_getProperty called with invalid property %d!\n", property );
+			break;
+	}
+}

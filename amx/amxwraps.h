@@ -414,6 +414,17 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value );
 void setItemStrProperty(P_ITEM pi, int property, int prop2, char* value );
 void setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value );
 
+int	house_getIntProperty( P_HOUSE house, UI32 property, UI32 subProperty);
+bool house_getBoolProperty( P_HOUSE house, UI32 property, UI32 subProperty);
+short house_getShortProperty( P_HOUSE house, UI32 property, UI32 subProperty);
+char house_getCharProperty( P_HOUSE house, UI32 property, UI32 subProperty);
+const char *house_getStrProperty( P_HOUSE house, UI32 property, UI32 subProperty);
+
+void house_setIntProperty( P_HOUSE house, UI32 property, UI32 subProperty, int value);
+void house_setBoolProperty( P_HOUSE house, UI32 property, UI32 subProperty, bool value);
+void house_setShortProperty( P_HOUSE house, UI32 property, UI32 subProperty, short value);
+void house_setCharProperty( P_HOUSE house, UI32 property, UI32 subProperty, char value);
+void house_setStrProperty( P_HOUSE house, UI32 property, UI32 subProperty, char *value);
 
 // calendar properties added by Sparhawk
 const int NXW_CALP_I_YEAR = 200;
@@ -537,5 +548,29 @@ const int PP_I_LEADER = 200;
 ///
 
 const int RG_I_BOUNDARY = 200;
+
+const int NXW_HP_PUBLICHOUSE = 1;
+const int NXW_HP_NOREALMULTI = 2;
+
+// Byte properties
+
+const int NXW_HP_DIMENSION = 100; // 4 subproperties
+
+// Integer properties
+const int NXW_HP_SERIAL = 200;
+const int NXW_HP_OWNER = 201;
+const int NXW_HP_KEYCODE = 202;
+const int NXW_HP_HOUSEDEED=203;
+const int NXW_HP_CHARPOSITION=204; // x,y,z as supproperties
+const int NXW_HP_LOCKEDITEMS=205;
+const int NXW_HP_MAXLOCKEDITEMS=206;
+const int NXW_HP_SECUREDITEMS=207;
+const int NXW_HP_MAXSECUREDITEMS=208;
+
+// Short properties
+
+// String properties
+
+const int NXW_HP_STR_HOUSENAME=450;
 
 #endif //__AMXWRAPS_H__
