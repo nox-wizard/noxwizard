@@ -18,8 +18,8 @@
 
 #include "nxwcommn.h"
 #include "basics.h"
-//#include "cmdtable.h"
-#include "cmds.h"
+#include "cmdtable.h"
+//#include "cmds.h"
 #include "speech.h"
 #include "sndpkg.h"
 #include "sregions.h"
@@ -3701,13 +3701,13 @@ const int CP_N_PARAMS=2;
 	// params[2] = property
 	// params[3] = number of the param 
 
-/*
 
+/*
 
 NATIVE2(_getCmdProperty) {		
 
-	*cCallCommand cmd=cCallCommand::findCallCommand(params[1]);
-
+	P_CALLCOMMAND cmd=cCallCommand::findCallCommand(params[1]);
+	
 	if (cmd==NULL)
 		return NULL;
 	  
@@ -3726,10 +3726,10 @@ NATIVE2(_getCmdProperty) {
 
  	}
   	
-	ErrOut("itm_getProperty called without a valid property !\n");
+	ErrOut("cmd_getProperty called without a valid property !\n");
 	return '\0';
 	
 }
 
-*/
- 
+
+*/ 

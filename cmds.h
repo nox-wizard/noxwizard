@@ -31,6 +31,7 @@ enum PrivLevel
 
 
 typedef class cCommand* P_COMMAND;
+//typedef class cCallCommand* P_CALLCOMMAND;
 
 
 void Command( NXWSOCKET , char * );
@@ -67,28 +68,28 @@ class cCommand {
  it is destroyed when the command has finished
  All parameters given by the char who call the command goes in this obj.
 */
-
+/*
 class cCallCommand 
 {
 
 private:
 
 	static SERIAL current_serial;
-	std::map< SERIAL, cCallCommand* > callcommand_map;
+	static std::map< SERIAL, cCallCommand* > callcommand_map;
 
 public:
 
 	cCallCommand(std::string all_params);
 	~cCallCommand();
 	std::string all_params;
-	cCallCommand* findCallCommand(SERIAL cmd);
+	static cCallCommand* findCallCommand(SERIAL cmd);
 	SERIAL addCallCommand(cCallCommand* called_command);	
 	void delCommand(SERIAL cmd);
 	//std::vector< string >* single_param;
 
 };
  
-
+*/
 
 
 /*

@@ -17,7 +17,7 @@
 #include "house.h"
 #include "npcai.h"
 #include "network.h"
-//#include "commands.h"
+#include "commands.h"
 #include "cmds.h"
 #include "packets.h"
 #include "boats.h"

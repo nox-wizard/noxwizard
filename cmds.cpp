@@ -74,6 +74,11 @@ AmxFunction* cCommand::getCommandCallback(P_COMMAND cmd) {
 	return cmd->cmd_callback;
 }
 
+
+/*
+
+
+
 //Implementation of cCallCommand Class
 
 SERIAL cCallCommand::current_serial = 0;
@@ -91,7 +96,7 @@ cCallCommand::~cCallCommand() {
 }
 
 
-
+*/
 
 //Implementation of cCommandMap Class
 
@@ -136,7 +141,7 @@ P_COMMAND cCommandMap::findCommand(std::string name){
 }
 
 
-
+/*
 
 
 //Implementation of cCallCommandMap Class
@@ -170,7 +175,7 @@ void cCallCommand::delCommand(SERIAL cmd){
 }
 
 
-
+*/
 cCommandMap* commands = new cCommandMap();
 
 
@@ -179,10 +184,9 @@ cCommandMap* commands = new cCommandMap();
 
 /*///////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
-//Todo's
+//Main Function
 ////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////*/
-
 
 
 
@@ -191,7 +195,11 @@ cCommandMap* commands = new cCommandMap();
 
 void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 	{
-		unsigned char *comm;
+	
+	NXWCLIENT client= getClientFromSocket(s);
+	client->sysmsg("No Commands Avaible. Works in Progress, sorry :( !");
+	
+	/*	unsigned char *comm;
 		unsigned char nonuni[512];
 		//cCallCommand* command; 
 
@@ -232,20 +240,21 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		}
 
 		
-		cCallCommand* called= new cCallCommand(speech);
-
+		/* cCallCommand* called= new cCallCommand(speech);
+    
 
 		SERIAL cmd_serial=called->addCallCommand(called);
 
 	
 		AmxFunction* CommandFunction = NULL;      
-		if(CommandFunction == NULL ) CommandFunction = new AmxFunction("p_cmd->getCommandCallback"); 
-		CommandFunction->Call(pc_currchar->getSerial32(), cmd_serial);
+		if(CommandFunction == NULL ) 
+			CommandFunction = new AmxFunction("p_cmd->getCommandCallback"); 
+		CommandFunction->Call(pc_currchar->getSerial32(), cmd_serial); */
 		
 		
 		//Let's delete the temp object		
 			  
-		called->delCommand(cmd_serial);
+		//called->delCommand(cmd_serial);     */
 		
 
 	}
