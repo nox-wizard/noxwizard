@@ -56,23 +56,14 @@
 
 
 
-/********************************************************************************
- * **************************************************************************** *
- * *																		  * *
- * * GLOBALS																  * *
- * *																		  * *
- * **************************************************************************** *
- ********************************************************************************/
-
 static std::map<std::string, std::string> s_mapDefines;
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : void parseDefineCommand
-// Description		 : parses a #define command
-// Return type		 : static
-// Author			 : Xanathar
-// Argument 		 : char *line -> the line containing the #define command
-// Changes			 : none yet
+
+/*!
+\brief Parses a #define command
+\author Xanathar
+\param line the line containing the #define command
+*/
 static void parseDefineCommand(char *line)
 {
 	//syntax is #define $name=value
@@ -113,6 +104,7 @@ static void parseDefineCommand(char *line)
 	str2 = val;
 	s_mapDefines.insert(std::make_pair(str1, str2));
 }
+
 
 /*!
 \brief Evalutates the first $symbol in the line
@@ -174,13 +166,13 @@ bool evaluateOneDefine (char *szLine)
 
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : char* evaluateAllDefines
-// Description		 : Evaluates ALL the defines
-// Return type		 : static
-// Author			 : Xanathar
-// Argument 		 : char *szLine -> the line which *MUST* have some free bytes at its end
-// Changes			 : none yet
+/*!
+\brief Evaluates ALL the defines
+\return the line evaluated
+\author Xanathar
+\param szLine the line with *MUST* have some free bytes at its end
+\todo fix the MUST, maybe?
+*/
 static char* evaluateAllDefines (char *szLine)
 {
 	//this is an XSS builder metacommand, internal use
@@ -193,13 +185,13 @@ static char* evaluateAllDefines (char *szLine)
 
 
 namespace xss {
-///////////////////////////////////////////////////////////////////
-// Function name	 : char* getIntFromDefine
-// Description		 : Evaluates ALL the defines into an integer
-// Return type		 : int
-// Author			 : Xanathar
-// Argument 		 : char *szLine -> the line which *MUST* have some free bytes at its end
-// Changes			 : none yet
+/*!
+\brief Evaluates ALL the defines into an integer
+\return the integer value of a define 
+\author Xanathar
+\param szLine the line with *MUST* have some free bytes at its end
+\todo fix the MUST, maybe?
+*/
 int getIntFromDefine (char *szLine)
 {
 	char buffer[2000];
@@ -207,13 +199,13 @@ int getIntFromDefine (char *szLine)
 	return atoi(evaluateAllDefines(buffer));
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : char* evaluateAllDefines
-// Description		 : Evaluates ALL the defines, public and size safe
-// Return type		 : char*
-// Author			 : Xanathar
-// Argument 		 : char *szLine -> the line which *MUST* have some free bytes at its end
-// Changes			 : none yet
+/*!
+\brief Evaluates ALL the defines, public and size safe
+\return the line with all defines evaluated
+\author Xanathar
+\param szLine the line with *MUST* have some free bytes at its end
+\todo fix the MUST, maybe?
+*/
 char* evalDefines (char *szLine)
 {
 	char buffer[2000];
@@ -227,16 +219,14 @@ char* evalDefines (char *szLine)
 
 } //namespace xss
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : char* getSzFromFile
-// Description		 : enhanced version of fgets which trims leading spaces,
-//					   trailing new lines and parses $symbols
-// Return type		 : static
-// Author			 : Xanathar
-// Argument 		 : char* buffer -> the buffer in which the sz should be stored
-// Argument 		 : int len -> maximum lenght of the buffer
-// Argument 		 : FILE* FILEHANDLE -> the file handle
-// Changes			 : none yet
+/*!
+\brief enhanced version of fgets which trims leading spaces, trailing new lines and parses $symbols
+\return line cleaned with defines evaluated
+\author Xanathar
+\param buffer the buffer in which the sz should be stored
+\param len maximum lenght of the buffer
+\param fileHandle the file handle
+*/
 static char* getSzFromFile(char* buffer, int len, FILE* fileHandle)
 {
 	int i, idx;
@@ -266,26 +256,12 @@ static char* getSzFromFile(char* buffer, int len, FILE* fileHandle)
 }
 
 
-
-
-
-/********************************************************************************
- * **************************************************************************** *
- * *																		  * *
- * * CLASS cScpEntry														  * *
- * *																		  * *
- * **************************************************************************** *
- ********************************************************************************/
-
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpEntry::cScpEntry
-// Description		 : Constructs a new cScpEntry object parsing a string
-// Return type		 : <constructor>
-// Author			 : Xanathar
-// Argument 		 : char* szStringToParse -> the string to be parsed
-// Changes			 : none yet
-// TO DO			 : change it to use dynamic constants!!
+/*!
+\brief Constructs a new cScpEntry object parsing a string
+\author Xanathar
+\param szStringToParse the string to be parsed
+\todo change it to use dynamic constants!!
+*/
 cScpEntry::cScpEntry(char* szStringToParse)
 {
 	//store the full line
@@ -308,62 +284,42 @@ cScpEntry::cScpEntry(char* szStringToParse)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpEntry::getFullLine
-// Description		 : gets a full line
-// Return type		 : std::string
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\brief Gets a full line
+\author Xanathar
+*/
 std::string cScpEntry::getFullLine ()
 {
 	return m_strFullLine;
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpEntry::getParam1
-// Description		 : gets the prefix of a splitted line
-// Return type		 : std::string
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\brief Gets the prefix of a splitted line
+\author Xanathar
+*/
 std::string cScpEntry::getParam1 ()
 {
 	return m_strParam1;
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpEntry::getParam2
-// Description		 : get the rest of a splitted string
-// Return type		 : std::string
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\brief Gets the rest of a splitted string
+\author Xanathar
+*/
 std::string cScpEntry::getParam2 ()
 {
 	return m_strParam2;
 }
 
 
-//=========================================================================================
-
-
-/********************************************************************************
- * **************************************************************************** *
- * *																		  * *
- * * CLASS cScpSection														  * *
- * *																		  * *
- * **************************************************************************** *
- ********************************************************************************/
-
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpSection::cScpSection
-// Description		 : Creates a cScpSection object loading it from a file
-// Return type		 : <constructor>
-// Author			 : Xanathar
-// Argument 		 : FILE *file -> the opened file to be loaded
-// Argument 		 : cScpScript* parent -> the cScpScript loading this section
-// Changes			 : none yet
+/*!
+\brief Creates a cScpSection object loading it from a file
+\author Xanathar
+\param file the opened file to be loaded
+\param parent the cScpScript loading this section
+*/
 cScpSection::cScpSection (FILE *file, cScpScript* parent)
 {
 	char realbuffer[MAXLINELENGHT];
@@ -410,40 +366,31 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpSection::~cScpSection
-// Description		 : -- as default --
-// Return type		 : <destructor>
-// Author			 : Xanathar
-// Changes			 : none yet
 cScpSection::~cScpSection()
 {
 	m_vLines.clear();
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpSection::getEntry
-// Description		 : gets a pointer to an cScpEntry object
-// Return type		 : cScpEntry*
-// Author			 : Xanathar
-// Argument 		 : int nIdx -> the index of the entry we want
-// Changes			 : none yet
+/*!
+\brief Gets a pointer to an cScpEntry object
+\author Xanathar
+\param nIdx the index of the entry we want
+\return the entry
+*/
 cScpEntry* cScpSection::getEntry(int nIdx)
 {
 	return &m_vLines[nIdx];
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpSection::parseLine
-// Description		 : parses a line into two std::string parameters
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : int nIdx -> the index of the entry we want
-// Argument 		 : std::string& strParam1 -> the 1st parameter
-// Argument 		 : std::string& strParam2 -> the 2nd parameter
-// Changes			 : none yet
+/*!
+\brief Parses a line into two std::string parameters
+\author Xanathar
+\param nIdx the index of the entry we want
+\param strParam1 the 1st parameter
+\param strParam2 the 2nd parameter
+*/
 void cScpSection::parseLine(int nIdx, std::string& strParam1, std::string& strParam2)
 {
 	class cScpEntry entry = m_vLines[nIdx];
@@ -452,15 +399,13 @@ void cScpSection::parseLine(int nIdx, std::string& strParam1, std::string& strPa
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpSection::parseLine
-// Description		 : parses a line into two char* parameters
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : int nIdx -> the index of the entry we want
-// Argument 		 : char* szParam1 -> the 1st parameter
-// Argument 		 : char* szParam2 -> the 2nd parameter
-// Changes			 : none yet
+/*!
+\brief Parses a line into two char* parameters
+\author Xanathar
+\param nIdx the index of the entry we want
+\param szParam1 the 1st parameter
+\param szParam2 the 2nd parameter
+*/
 void cScpSection::parseLine(int nIdx, char* szParam1, char* szParam2)
 {
 	class cScpEntry entry = m_vLines[nIdx];
@@ -469,31 +414,16 @@ void cScpSection::parseLine(int nIdx, char* szParam1, char* szParam2)
 }
 
 
-//=========================================================================================
-
-
-/********************************************************************************
- * **************************************************************************** *
- * *																		  * *
- * * CLASS cScpScript														  * *
- * *																		  * *
- * **************************************************************************** *
- ********************************************************************************/
-
-
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::cScpScript
-// Description		 : constructs a cScpScript object reading it from a file
-// Return type		 : <constructor>
-// Author			 : Xanathar
-// Argument 		 : char *szFileName -> name of file to be read
-// Changes			 : none yet
+/*!
+\brief Constructs a cScpScript object reading it from a file
+\author Xanathar
+\param szFileName name of file to be read
+*/
 cScpScript::cScpScript(char *szFileName)
 {
 	m_nErrors = 0;
 	FILE *file = fopen(szFileName, "rt");
-	ConOut("\tLoading script : %s... ", szFileName);
+	ConOut("\tLoading script : %s ... ", szFileName);
 
 	if (file==NULL) {
 		ConOut("[FAIL] - Can't open file\n");
@@ -509,13 +439,12 @@ cScpScript::cScpScript(char *szFileName)
 	}
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::load
-// Description		 : Loads a section from a file (eventually recursing)
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : char *szFileName -> filename to be loaded
-// Changes			 : none yet
+
+/*!
+\brief Loads a section from a file (eventually recursing)
+\author Xanathar
+\param szFileName name of file to be loaded
+*/
 void cScpScript::load(char *szFileName)
 {
 	char realbuffer[MAXLINELENGHT];
@@ -563,25 +492,19 @@ void cScpScript::load(char *szFileName)
 	fclose(file);
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::~cScpScript
-// Description		 : -- as default --
-// Return type		 : <destructor>
-// Author			 : Xanathar
-// Changes			 : none yet
 cScpScript::~cScpScript()
 {
 	m_mapSections.erase(m_mapSections.begin(), m_mapSections.end() );
 	m_mapSections.clear();
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::getSection
-// Description		 : returns the ptr to a cScpSection object for a given search id
-// Return type		 : cScpSection*
-// Author			 : Xanathar
-// Argument 		 : std::string& strIdentifier -> the section id to be searched
-// Changes			 : none yet
+
+/*!
+\brief Get Section for a given search id
+\author Xanathar
+\param strIdentifier the section id to be searched
+\return the ptr to a cScpSection object or NULL if not found
+*/
 cScpSection* cScpScript::getSection(std::string& strIdentifier)
 {
 	std::map<std::string, class cScpSection>::iterator iter;
@@ -594,24 +517,25 @@ cScpSection* cScpScript::getSection(std::string& strIdentifier)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::getSection
-// Description		 : returns the ptr to a cScpSection object for a given search id
-// Return type		 : cScpSection*
-// Author			 : Xanathar
-// Argument 		 : char* szIdentifier -> the section id to be searched
-// Changes			 : none yet
+/*!
+\brief Get Section for a given search id
+\author Xanathar
+\param strIdentifier the section id to be searched
+\return the ptr to a cScpSection object or NULL if not found
+*/
 cScpSection* cScpScript::getSection(char* szIdentifier)
 {
 	std::string str = szIdentifier;
 	return getSection(str);
 }
 
+
 /*!
+\brief Get Section for a given search id
 \author Xanathar
-\brief Returns the ptr to a cScpSection object containing given search id
-\param szIdentifier the section id to be searched
-\return the pointer to the object or NULL if not found
+\param strIdentifier the section id to be searched
+\return the ptr to a cScpSection object or NULL if not found
+\note search as sub-string
 */
 cScpSection* cScpScript::getSectionInStr(char* szIdentifier)
 {
@@ -624,11 +548,12 @@ cScpSection* cScpScript::getSectionInStr(char* szIdentifier)
 	return NULL;
 }
 
+
 /*!
 \author Xanathar
 \brief Gets a new iterator object for a section identifier
 \param strIdentifier the section identifier
-\return the iterator
+\return the iterator or NULL if not found
 */
 cScpIterator* cScpScript::getNewIterator(std::string& strIdentifier)
 {
@@ -637,12 +562,13 @@ cScpIterator* cScpScript::getNewIterator(std::string& strIdentifier)
 	return new cScpIterator(section);
 }
 
+
 /*!
-\brief gets a new iterator object for a section identifier
+\brief Gets a new iterator object for a section identifier
 \author Xanathar
 \since 0.82a
 \param format the format string to create the section identifier
-\return the iterator
+\return the iterator or NULL if not found
 \remarks \remark rewritten by Anthalir
 */
 cScpIterator* cScpScript::getNewIterator(char *format, ...)
@@ -659,13 +585,14 @@ cScpIterator* cScpScript::getNewIterator(char *format, ...)
 	return new cScpIterator(section);
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::getNewIteratorInStr
-// Description		 : gets a new iterator object for section containing the identifier
-// Return type		 : cScpIterator*
-// Author			 : Xanathar
-// Argument 		 : char* szIdentifier -> the identifier
-// Changes			 : none yet
+
+/*!
+\brief Gets a new iterator object for section containing the identifier
+\author Xanathar
+\param szIdentifier the identifier
+\return the iterator or NULL if not found
+\note search as sub-string
+*/
 cScpIterator* cScpScript::getNewIteratorInStr(char* szIdentifier)
 {
 	cScpSection* section = getSectionInStr(szIdentifier);
@@ -673,14 +600,13 @@ cScpIterator* cScpScript::getNewIteratorInStr(char* szIdentifier)
 	return new cScpIterator(section);
 }
 
-//Begin Change	1
-///////////////////////////////////////////////////////////////////
-// Function name     : cScpScript::getFirstSectionParmsInStr
-// Description       : returns the first section id given search id
-// Return type       : string*
-// Author            : Sparhawk 2002-02-01
-// Argument          : strIdentifier the section id to be searched
-// Changes           : none yet
+
+/*!
+\brief Returns the first section id given search id
+\author Xanathar, Sparhawk
+\param strIdentifier the section id to be searched
+\return ptr to the first section
+*/
 string* cScpScript::getFirstSectionParmsInStr(std::string& strIdentifier)
 {
   std::string::size_type index;
@@ -699,13 +625,13 @@ string* cScpScript::getFirstSectionParmsInStr(std::string& strIdentifier)
 	return NULL;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cScpScript::getNextSectionParmsInStr
-// Description       : returns the next section id given search id
-// Return type       : string
-// Author            : Sparhawk 2002-02-01
-// Argument          : strIdentifier the section id to be searched
-// Changes           : none yet
+
+/*!
+\brief Returns the next section id given search id
+\author Sparhawk
+\param strIdentifier the section id to be searched
+\return ptr to the first section
+*/
 string* cScpScript::getNextSectionParmsInStr(std::string& strIdentifier)
 {
   std::string::size_type index;
@@ -727,13 +653,13 @@ string* cScpScript::getNextSectionParmsInStr(std::string& strIdentifier)
 	return NULL;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cScpScript::countSectionInStr
-// Description       : returns the number of cScpSection objects with given search id
-// Return type       : UI32
-// Author            : Sparhawk 2001-01-30
-// Argument          : string& strIdentifier -> the section id to be searched
-// Changes           : none yet
+
+/*!
+\brief Returns the number of cScpSection objects with given search id
+\author Sparhawk
+\param strIdentifier the section id to be searched
+\return the number of objects
+*/
 UI32 cScpScript::countSectionInStr(std::string& strIdentifier)
 {
 	std::map<std::string, class cScpSection>::iterator iter( m_mapSections.begin() ), end( m_mapSections.end() );
@@ -749,38 +675,26 @@ UI32 cScpScript::countSectionInStr(std::string& strIdentifier)
 	return count;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cScpScript::countSectionInStr
-// Description       : returns the number of cScpSection objects with given search id
-// Return type       : UI32
-// Author            : Sparhawk 2001-01-30
-// Argument          : char* szIdentifier -> the section id to be searched
-// Changes           : none yet
+
+/*!
+\brief Returns the number of cScpSection objects with given search id
+\author Sparhawk
+\param szIdentifier the section id to be searched
+\return the number of objects
+\note search as sub-string
+*/
 UI32 cScpScript::countSectionInStr(char* szIdentifier)
 {
 	std::string str = szIdentifier;
 	return countSectionInStr(str);
 }
-//End	Change	1
-//=========================================================================================
 
 
-/********************************************************************************
- * **************************************************************************** *
- * *																		  * *
- * * CLASS cScpIterator 													  * *
- * *																		  * *
- * **************************************************************************** *
- ********************************************************************************/
-
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::cScpIterator
-// Description		 : constructor which creates an iterator for a given section
-// Return type		 : <constructor>
-// Author			 : Xanathar
-// Argument 		 : cScpSection* section -> -- as default --
-// Changes			 : none yet
+/*!
+\brief Creates a new iterator for a given section
+\author Xanathar
+\param section the section to be created
+*/
 cScpIterator::cScpIterator(cScpSection* section)
 {
 	m_section = section;
@@ -788,13 +702,11 @@ cScpIterator::cScpIterator(cScpSection* section)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::cScpIterator
-// Description		 : constructor which creates an iterator for a given section
-// Return type		 : <constructor>
-// Author			 : Xanathar
-// Argument 		 : cScpSection& section -> -- as default --
-// Changes			 : none yet
+/*!
+\brief Creates a new iterator for a given section
+\author Xanathar
+\param section the section to be created
+*/
 cScpIterator::cScpIterator(cScpSection& section)
 {
 	m_section = &section;
@@ -802,64 +714,53 @@ cScpIterator::cScpIterator(cScpSection& section)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::~cScpIterator
-// Description		 : -- as default --
-// Return type		 : <destructor>
-// Author			 : Xanathar
-// Changes			 : none yet
 cScpIterator::~cScpIterator()
 {
 	// Nothing to do here!
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::parseLine
-// Description		 : parses a splitted script line in two strings
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : std::string& strParam1 -> the 1st string to be filled
-// Argument 		 : std::string& strParam2 -> the 2nd string to be filled
-// Changes			 : none yet
+/*!
+\brief Parses a splitted script line in two strings
+\author Xanathar
+\param strParam1 the 1st string to be filled
+\param strParam2 the 2nd string to be filled
+*/
 void cScpIterator::parseLine(std::string& strParam1, std::string& strParam2)
 {
 	m_section->parseLine(m_nPosition++, strParam1, strParam2);
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::parseLine
-// Description		 : parses a splitted script line in two char*s
-// Return type		 : void
-// Author			 : Xanathar
-// Argument 		 : char* szParam1 -> the 1st string to be filled
-// Argument 		 : char* szParam2 -> the 2nd string to be filled
-// Changes			 : none yet
+
+/*!
+\brief Parses a splitted script line in two char*s
+\author Xanathar
+\param szParam1 the 1st string to be filled
+\param szParam2 the 2nd string to be filled
+*/
 void cScpIterator::parseLine(char* szParam1, char* szParam2)
 {
 	m_section->parseLine(m_nPosition++, szParam1, szParam2);
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::getEntry
-// Description		 : gets a cScpEntry object from the section
-// Return type		 : cScpEntry*
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\brief Gets a cScpEntry object from the section
+\author Xanathar
+\return pointer to section entry
+*/
 cScpEntry* cScpIterator::getEntry()
 {
 	return m_section->getEntry(m_nPosition++);
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpIterator::rewind
-// Description		 : rewinds the iterator to its first position
-// Return type		 : void
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\brief Rewinds the iterator to its first position
+\author Xanathar
+*/
 void cScpIterator::rewind()
 {
 	m_nPosition = 0;
 }
+
