@@ -902,7 +902,11 @@ void loaditem()
 				}
 			}
 			else if (!(strcmp(script1, "CONT")))
+			{
 				pi->setContSerial(str2num(script2), false, false);
+				if ( (isCharSerial(pi->getContSerial())) && (! ISVALIDPC(pointers::findCharBySerial(pi->getContSerial())) ) )
+					bad=true;
+			}
 			else if (!(strcmp(script1, "CORPSE")))
 				pi->corpse=str2num(script2);
 			else if (!(strcmp(script1, "CARVE")))
@@ -1185,7 +1189,10 @@ void loaditem()
 	} while (strcmp(script1, "}") && loops<=200);
 
 	if (bad)
+	{
 		pi->Delete();
+		return;
+	}
 
 	amxVS.setUserMode();
 	//StoreItemRandomValue(pi,-1); // Magius(CHE) (2)
@@ -1317,6 +1324,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 			{
 				if (!strcmp(script2, "WORLDITEM"))
 				{
+					// ConOut ("Loading item No %s\n", script3);
 					loaditem();
 				}
 				iitem++;
