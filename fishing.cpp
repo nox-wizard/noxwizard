@@ -181,7 +181,7 @@ void cFishing::FishTarget(NXWCLIENT ps)
 	else
 		pPlayer->fishingtimer=fishing_data.basetime;
 	soundeffect(s,0x02,0x3F);
-//	pPlayer->hidden=0;
+//	pPlayer->hidden=UNHIDDEN;
 	pPlayer->unHide();
 	Fish(currchar[s]);		
 }
@@ -196,10 +196,9 @@ void cFishing::Fish(CHARACTER i)
 	int ii,b;
 	int idnum;
 	int s=calcSocketFromChar(i);
-	int color,c1,c2;
+	SI16 color;
 
-
-    P_CHAR pc = MAKE_CHAR_REF(i);
+	P_CHAR pc = MAKE_CHAR_REF(i);
 	VALIDATEPC(pc);
 	P_ITEM pc_bp = pc->getBackpack();
         
@@ -325,20 +324,13 @@ void cFishing::Fish(CHARACTER i)
 				color=(charpos.x + charpos.y);
 				color+= rand()%10;
 				color= color%0x03E9; 
-				c1= color >> 8;
-				c2= color % 256;		
-				if ((DBYTE2WORD(c1,c2)<0x0002) || (DBYTE2WORD(c1,c2)>0x03E9) )
+				if((color <0x0002) || (color > 0x03E9)) color = 0x03E9;
+
+				if( ((color&0x4000)>>14) + ((color&0x8000)>>15) )
 				{
-					c1=0x03;
-					c2=0xE9;
+					color = DBYTE2WORD(0x01, rand()%255);
 				}
-				b=((DBYTE2WORD(c1,c2)&0x4000)>>14)+((DBYTE2WORD(c1,c2)&0x8000)>>15);
-				if (b)
-				{
-					c1=0x1;
-					c2=rand()%255;
-				}
-			} else c1=c2=0;
+			} else color=0;
 		
 			/**** end of exotic fish stuff stuff */
 		
@@ -354,32 +346,26 @@ void cFishing::Fish(CHARACTER i)
 			P_ITEM fish = item::CreateFromScript(-1, 8108);
 			VALIDATEPI(fish);
 		
-			fish->color1= c1;
-			fish->color2= c2;
+			fish->color1= color >> 8;
+			fish->color2= color % 256;
 			fish->id2= idnum;
 		
-			
 			if (ISVALIDPI(pc_bp))
 				pc_bp->putInto( fish );
 			else {
 				fish->MoveTo( charpos ); //Luxor bug fix
 				fish->Refresh();
 			}
-
 		}
-			
 	}
 
-
-
-	if(c2>0)
+	if(color>0)
 	{
-		sysmessage(s,TRANSLATE("You pull out an exotic fish!"));
+		pc->sysmsg(TRANSLATE("You pull out an exotic fish!"));
 	}
 	else
 	{
-	    sysmessage(s,TRANSLATE("You pull out a fish!"));
+		pc->sysmsg(TRANSLATE("You pull out a fish!"));
 	}
-
 }
 
