@@ -86,15 +86,21 @@ enum AmxCharEvents
 	ALLCHAREVENTS			= 38
 };
 
-#define DISPELTYPE_UNKNOWN		0
-#define DISPELTYPE_DISPEL		1
-#define DISPELTYPE_TIMEOUT		2
-#define DISPELTYPE_GMREMOVE		3
+enum DispelType
+{
+	DISPELTYPE_UNKNOWN		= 0,
+	DISPELTYPE_DISPEL,
+	DISPELTYPE_TIMEOUT,
+	DISPELTYPE_GMREMOVE
+};
 
-#define STATCAP_CAP			0
-#define STATCAP_STR			1
-#define STATCAP_DEX			2
-#define STATCAP_INT			3
+enum StatCap
+{
+	STATCAP_CAP			= 0,
+	STATCAP_STR,
+	STATCAP_DEX,
+	STATCAP_INT
+};
 
 #define REPUTATION_KARMA		1
 #define REPUTATION_FAME			2
@@ -119,9 +125,10 @@ class cChar : public cObject
 		static void		safeoldsave();
 	public:
 		void			MoveTo(Location newloc);
-		void			MoveTo(SI32 x, SI32 y, SI08 z);
 		void 			loadEventFromScript(TEXT *script1, TEXT *script2);
 
+		inline void		MoveTo(SI32 x, SI32 y, SI08 z)
+		{ MoveTo( Loc(x, y, z) ); }
 	public:
 //@{
 /*!
@@ -304,8 +311,10 @@ class cChar : public cObject
 		{ return (hidden & HIDDEN_BYSKILL); }
 
 		LOGICAL const		IsOverWeight();
-		LOGICAL const		InGuardedArea() const;
 		LOGICAL const		IsOnline() const;
+
+		inline const LOGICAL	InGuardedArea() const
+		{ return ::region[region].priv & RGNPRIV_GUARDED; }
 
 		LOGICAL const		CanDoGestures() const;
 
@@ -316,15 +325,28 @@ class cChar : public cObject
 		inline void 		SetPermaGrey()
 		{ nxwflags[0] |= flagGrey|flagPermaGrey; }
 
-		void 			SetGrey();
+		//! Makes a character temporary grey
+		void 			SetGrey()
+		{ if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0, 0x7FFF); }
+
 		void 			unHide();
 
-		const SI32		GetKarma() const;
-		void			SetKarma(SI32 newkarma);
-		void			IncreaseKarma(SI32 value, P_CHAR pKilled = 0 );
+		//! Return the karma of the char
+		inline const SI32	GetKarma() const;
+		{ return karma; }
 
-		const SI32		GetFame() const;
-		void			SetFame(SI32 newfame);
+		//! Set the karma of the char
+		inline void		SetKarma(SI32 newkarma)
+		{ karma = newkarma; }
+
+		//! Return the fame of the char
+		inline const SI32	GetFame() const
+		{ return fame; }
+
+		inline void		SetFame(SI32 newfame)
+		{ fame=newfame; }
+
+		void			IncreaseKarma(SI32 value, P_CHAR pKilled = 0 );
 		void			modifyFame( SI32 value );
 //@}
 
@@ -345,8 +367,13 @@ class cChar : public cObject
 	private:
 		TIMERVAL		creationday;			//!< Day since EPOCH this character was created on
 	public:
-		void			SetCreationDay(TIMERVAL day);	//!< Set the creation day of a character
-		TIMERVAL		GetCreationDay();		//!< Get the creation day of a character
+		//! Set the creation day of a character
+		inline void		SetCreationDay(TIMERVAL day)
+		{ creationday = CreateDay; }
+
+		//! Get the creation day of a character
+		inline const TIMERVAL	GetCreationDay() const
+		{ return creationday; }
 //@}
 
 //@{
@@ -368,11 +395,24 @@ class cChar : public cObject
 		SI32			in3;				//!< Luxor: safe intelligence value
 		SI32			statGainedToday;		//!< xan :-> for stat-gain cap
 
-		SI32			getStrength();			//!< Get the strength-value
-
 		void			setStrength(UI32 val, bool check= true);
-		void			modifyStrength(SI32 mod, bool check= true);
 		void			checkSafeStats();
+
+		//! Get the strength-value
+		inline const SI32	getStrength() const
+		{ return str.value; }
+
+		/*!
+		\brief modify the strength
+		\author Anthalir
+		\since 0.82
+		\param mod signed value representing the value to add to curent strength:
+				\li negative: lower the str
+				\li positive: rise the str
+		\todo document check parameter
+		*/
+		inline void		modifyStrength(SI32 mod, bool check= true)
+		{ setStrength( str.value + mod, check ); }
 //@}
 
 	public:
@@ -394,10 +434,9 @@ class cChar : public cObject
 		UI16			oldbeardstyle;
 		UI16			oldhaircolor;
 		UI16			oldbeardcolor;
-	//
-	//	Body Type
-	//
-		const LOGICAL		HasHumanBody();
+
+		inline const LOGICAL	HasHumanBody() const
+		{ return (getId()==BODY_MALE) || (getId()==BODY_FEMALE); }
 
 		void 			showLongName( P_CHAR showToWho, LOGICAL showSerials );
 //@}
@@ -431,7 +470,6 @@ class cChar : public cObject
 	public:
 		void			checkPoisoning();
 		void 			fight(P_CHAR pOpponent);
-		void			castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags = 0, SI32 param = 0);
 		void			combatHit( P_CHAR pc_def, SI32 nTimeOut = 0 );
 		void			doCombat();
 		void			combatOnHorse();
@@ -443,6 +481,16 @@ class cChar : public cObject
 		SI32			calcResist(DamageType typeofdamage);
 		void			toggleCombat();
 		SI32			getCombatSkill();
+
+		/*!
+		\author Luxor
+		\brief Makes the char casting a spell
+		\param spellnumber Spell identifier
+		\param dest target location of the spell
+		\todo Document parameters
+		*/
+		inline void		castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags = 0, SI32 param = 0)
+		{ magic::castSpell(spellnumber, dest, this, flags, param); }
 //@}
 
 //@{
@@ -632,22 +680,29 @@ public:
 
 public:
 	TIMERVAL skilldelay;
-public:
-	void setSkillDelay( UI32 seconds = server_data.skilldelay );
-	bool canDoSkillAction();
-
-public:
 	TIMERVAL objectdelay;
 public:
-	void setObjectDelay( UI32 seconds = server_data.objectdelay );
-	bool canDoObjectAction();
+	inline void setSkillDelay( UI32 seconds = server_data.skilldelay )
+	{ skilldelay =  uiCurrentTime + seconds * MY_CLOCKS_PER_SEC; }
+
+	inline const LOGICAL canDoSkillAction() const
+	{ return TIMEOUT( skilldelay ); }
+
+	inline void setObjectDelay( UI32 seconds = server_data.objectdelay )
+	{ objectdelay = uiCurrentTime + seconds * MY_CLOCKS_PER_SEC; }
+
+	inline const LOGICAL canDoObjectAction() const
+	{ return TIMEOUT( objectdelay ); }
+
 
 	/********************************/
 	/*     TO REMOVE/REPLACE        */
 	/********************************/
 	public:
 		void 			setMultiSerial(long mulser);
-		const LOGICAL		isOwnerOf(const cObject *obj) const;
+
+		inline const LOGICAL	isOwnerOf(const cObject *obj) const
+		{ return getSerial32() == obj->getOwnerSerial32(); }
 
 	/********************************/
 
@@ -664,30 +719,37 @@ public:
 
 
 
-	private:
-		void		resetBaseSkill();
-		void		resetSkill();
-		void		resetNxwFlags();
-		void		resetAmxEvents();
-		void		resetResists();
-		void		resetLockSkills();
-
 	public:
 		wstring profile; //!< player profile
 
 	private:
 		wstring* speechCurrent;
 	public:
-		wstring* getSpeechCurrent();
-		void setSpeechCurrent( wstring* speech );
-		void resetSpeechCurrent();
+		//! Return current speech
+		inline const wstring* getSpeechCurrent() const
+		{ return speechCurrent; }
+
+		//! Set current speech
+		inline void setSpeechCurrent( wstring* speech )
+		{ speechCurrent=speech; }
+
+		//! Reset current speech
+		inline void resetSpeechCurrent()
+		{ setSpeechCurrent(NULL); }
+
 		void deleteSpeechCurrent();
 
 	private:
 		SERIAL	stablemaster_serial; //!< the stablemaster serial
 	public:
-		bool isStabled();
-		SERIAL getStablemaster();
+		//! Check if char is stabled
+		inline const LOGICAL isStabled() const
+		{ return getStablemaster()!=INVALID; }
+
+		//! Get the character's stablemaster
+		inline const SERIAL getStablemaster() const
+		{ return stablemaster_serial; }
+
 		void stable( P_CHAR stablemaster );
 		void unStable();
 
@@ -705,8 +767,8 @@ public:
 		SI32			stm; // Stamina
 		SI32			mn;  // Mana
 		SI32			mn2; // Reserved for calculation
-		unsigned short		baseskill[ALLSKILLS+1]; // Base skills without stat modifiers
-		unsigned short		skill[ALLSKILLS+1]; // List of skills (with stat modifiers)
+		UI16			baseskill[ALLSKILLS+1]; // Base skills without stat modifiers
+		UI16			skill[ALLSKILLS+1]; // List of skills (with stat modifiers)
 
 
 		SERIAL			robe; // Serial number of generated death robe (If char is a ghost)
@@ -867,14 +929,37 @@ public:
 		void			onSingleClick( P_CHAR clickedBy );
 
 	private:
+		inline void	resetBaseSkill()
+		{ memset(baseskill, 0, sizeof(baseskill)); }
+
+		inline void	resetSkill()
+		{ memset(skill, 0, sizeof(skill)); }
+
+		inline void	resetNxwFlags()
+		{ memset(nxwflags, 0, sizeof(nxwflags)); }
+
+		inline void	resetAmxEvents()
+		{ memset(amxevents, 0, sizeof(amxevents)); }
+
+		inline void	resetResists()
+		{ memset(resists, 0, sizeof(resists)); }
+
+		inline void	resetLockSkills()
+		{ memset(lockSkill, 0, sizeof(lockSkill)); }
+
+	private:
 
 		void 			doSingleClickOnCharacter( SERIAL serial );	// will become private function
 		void 			doSingleClickOnItem( SERIAL serial );		// will become private function
 
 	public:
+		//! tells if a character is running
+		inline const LOGICAL	isRunning() const
+		{ return ( (uiCurrentTime - lastRunning) <= 100 ); }
 
-		LOGICAL			isRunning();
-		void			setRunning();
+		inline void		setRunning()
+		{ lastRunning = uiCurrentTime; }
+
 		void 			updateStats(SI32 stat);
 
 		void 			setNextMoveTime(short tamediv=1);
@@ -900,9 +985,11 @@ public:
 		P_ITEM 			getShield();
 		void			showContainer( P_ITEM pCont );
 		P_ITEM 			getBackpack();
-		void			showBackpack();
 		LOGICAL			isInBackpack( P_ITEM pi );
 
+		//! Show Backpack to player
+		inline void		showBackpack()
+		{ showContainer( getBackpack() ); }
 
 		// The bit for setting what effect gm movement
 		// commands shows
@@ -918,7 +1005,10 @@ public:
 		LOGICAL			isSameAs(P_CHAR pc) {if (pc && (pc->getSerial32() == getSerial32())) return true; else return false;}
 		LOGICAL			resist(SI32 n)		 { return ((nxwflags[0]&n)!=0); }    // <-- what is this ?, xan
 
-		NXWCLIENT		getClient() const;
+		//! get the client
+		inline NXWCLIENT	getClient() const
+		{ return m_client; }
+
 		NXWSOCKET		getSocket() const;
 		void			sysmsg(const TEXT *txt, ...);
 		void			attackStuff(P_CHAR pc);
@@ -961,9 +1051,20 @@ public:
 		{ priv2 |= flagPriv2Frozen; }
 
 		LOGICAL			checkSkill(Skill sk, SI32 low, SI32 high, LOGICAL bRaise = true);
-		LOGICAL			checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd);
 		SI32			delItems(short id, SI32 amount = 1, short color = INVALID);
 
+		/*!
+		\author Luxor
+		\brief checks a skill for success (with sparring check)
+		\return true if success
+		\param sk skill
+		\param low low bound
+		\param high high bound
+		\todo document pcd parameter
+		\todo backport from Skills::
+		*/
+		inline const LOGICAL	checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
+		{ return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd); }
 
 
 		UI32			getAmount(short id, short col=INVALID, bool onlyPrimaryBackpack=false );
@@ -1014,10 +1115,21 @@ public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
 	*/
 #ifdef ENCRYPTION
-	// Encryption per client
-	void setCrypter(ClientCrypt * crypt);
-	ClientCrypt * getCrypter();
-	ClientCrypt * crypter;
+//@{
+/*!
+\name crypt
+\brief  Encryption per client
+*/
+	public:
+		inline void setCrypter(ClientCrypt * crypt)
+		{ crypter=crypt; }
+
+		inline ClientCrypt * getCrypter() const
+		{ return crypter; }
+
+	private:
+		ClientCrypt * crypter;
+//@}
 #endif
 } PACK_NEEDED;
 

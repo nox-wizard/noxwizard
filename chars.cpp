@@ -546,46 +546,6 @@ void cChar::checkSafeStats()
 	mn = qmin( in, nMN );
 }
 
-
-void cChar::resetBaseSkill()
-{
-	for (register SI32 i=0; i < TRUESKILLS; i++)
-		baseskill[i]=0;
-}
-
-void cChar::resetSkill()
-{
-	for (register SI32 i=0; i < TRUESKILLS; i++)
-		skill[i]=0;
-}
-
-void cChar::resetNxwFlags()
-{
-	for (register SI32 i=0; i<4; i++)
-		nxwflags[i] = 0;
-}
-
-
-void cChar::resetAmxEvents()
-{
-	for (register SI32 i=0; i<ALLCHAREVENTS; i++)
-		amxevents[i] = NULL;
-}
-
-
-void cChar::resetResists()
-{
-	for (register SI32 i=0;i<MAX_RESISTANCE_INDEX;i++)
-		resists[i]=0;
-}
-
-void cChar::resetLockSkills()
-{
-	for (register SI32 i=0;i<ALLSKILLS;i++)
-		lockSkill[i]=0;
-}
-
-
 /*!
 \brief return the guild type
 \author Sparhawk
@@ -757,55 +717,11 @@ void cChar::SetGuildTitle(TEXT* newGuildTitle)
 	}
 }
 
-SI32 cChar::getStrength()
-{
-	return str.value;
-}
-
 void cChar::setStrength(UI32 val, bool check/*= true*/)
 {
 	str.value= val;
 	if( check )
 		checkEquipement();
-}
-
-/*!
-\brief modify the strength
-\author Anthalir
-\since 0.82
-\param mod signed value representing the value to add to curent strength:
-		\li negative: lower the str
-		\li positive: rise the str
-\todo document check parameter
-*/
-void cChar::modifyStrength(SI32 mod, bool check)
-{
-	setStrength( str.value + mod, check );
-}
-
-
-
-/*!
-\brief return the day this was created
-\author punt
-\date 15/04/2001
-\return unsigned long: creation day in seconds since EPOCH time
-*/
-TIMERVAL cChar::GetCreationDay()
-{
-	return creationday;
-}
-
-
-/*!
-\brief set the day the char was created
-\author punt
-\date 15/04/2001
-\param CreateDay creation day in seconds since EPOCH time
-*/
-void cChar::SetCreationDay(TIMERVAL CreateDay)
-{
-	creationday = CreateDay ;
 }
 
 /*!
@@ -996,16 +912,6 @@ void cChar::fight(P_CHAR other)
 	}
 }
 
-
-/*!
-\author Duke
-\brief makes a character temporary grey
-*/
-void cChar::SetGrey()
-{
-	if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0, 0x7FFF);
-}
-
 /*!
 \brief count items of given id and color
 \author Duke
@@ -1064,15 +970,6 @@ P_ITEM cChar::getShield()
 		return pi;
 	else
 		return NULL;
-}
-
-/*!
-\brief Show Backpack to player
-\author GHisha
-*/
-void cChar::showBackpack()
-{
-	showContainer( getBackpack() );
 }
 
 /*!
@@ -1183,36 +1080,6 @@ void cChar::setMultiSerial(long mulser)
 		pointers::addToMultiMap(this);
 }
 
-/*
-bool cChar::incDecDex(short val)
-{
-	dx2 += val;
-	if (dx2>1000)
-	{
-		dx2-= 1000;
-		dx += val;
-		if(dx<1)	dx=1;
-		if(dx>100)	dx=100;
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-*/
-
-/*!
-\author Anthalir
-*/
-void cChar::MoveTo(SI32 x, SI32 y, SI08 z)
-{
-	MoveTo( Loc(x, y, z) );
-}
-
-/*!
-\author Anthalir
-*/
 void cChar::MoveTo(Location newloc)
 {
 	// Avoid crash if go to 0,0
@@ -1241,9 +1108,7 @@ UI32 cChar::getSkillSum()
 {
 	UI32 sum=0,a;
 	for (a=0;a<ALLSKILLS;a++)
-	{
 		sum+=baseskill[a];
-	}
 	return sum; 	// this *includes* the decimal digit ie. xxx.y
 }
 
@@ -1285,16 +1150,6 @@ void cChar::sysmsg(const TEXT *txt, ...)
 }
 
 /*!
-\author Xanathar, rewritten by Luxor
-\brief get the client
-\return the client
-*/
-NXWCLIENT cChar::getClient() const
-{
-	return m_client;
-}
-
-/*!
 \author Luxor
 \brief gets the character current socket
 \return the socket
@@ -1332,7 +1187,6 @@ void cChar::attackStuff(P_CHAR pc)
 */
 void cChar::helpStuff(P_CHAR pc_i)
 {
-
 	VALIDATEPC(pc_i);
 
 	if (this==pc_i) return;
@@ -2264,34 +2118,6 @@ SI32 cChar::delItems(short id, SI32 amount, short color)
 }
 
 /*!
-\author Luxor
-\brief Makes the char casting a spell
-\param spellnumber Spell identifier
-\param dest target location of the spell
-\todo Document parameters
-*/
-void cChar::castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags, SI32 param)
-{
-	magic::castSpell(spellnumber, dest, this, flags, param);
-}
-
-/*!
-\author Luxor
-\brief checks a skill for success (with sparring check)
-\return true if success
-\param sk skill
-\param low low bound
-\param high high bound
-\todo document pcd parameter
-*/
-LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
-{
-	return (0!=Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd));
-}
-
-
-
-/*!
 \brief Get the amount of the given id, color
 \author Luxor, modified by Endymion for color and pack check
 \return amount
@@ -2436,6 +2262,7 @@ void cChar::staticFX(short id, SI32 speed, SI32 loop, ParticleFx* part)
 \brief Bolts a char
 \author Xanathar
 \param bNoParticles true if NOT to use particles
+\todo backport
 */
 void cChar::boltFX(LOGICAL bNoParticles)
 {
@@ -2446,6 +2273,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 \brief Plays <i>circle of blood</i> or similar effect
 \author Xanathar
 \param id effect id
+\todo backport
 */
 void cChar::circleFX(short id)
 {
@@ -2841,6 +2669,7 @@ void cChar::possess(P_CHAR pc)
 \brief Jails a char
 \author Xanathar
 \param seconds second to jail the character for
+\todo backport
 */
 void cChar::jail (SI32 seconds)
 {
@@ -3520,11 +3349,6 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	return 0;
 }
 
-const LOGICAL cChar::HasHumanBody()
-{
-	return ((getId()==BODY_MALE) || (getId()==BODY_FEMALE));
-}
-
 const LOGICAL cChar::IsGrey() const
 {
 	if ( npc || IsMurderer() || IsCriminal() )
@@ -3534,11 +3358,6 @@ const LOGICAL cChar::IsGrey() const
 			return true;
 		else
 			return false;
-}
-
-const LOGICAL cChar::InGuardedArea() const
-{
-	return ::region[region].priv & RGNPRIV_GUARDED;
 }
 
 void cChar::SetMurderer()
@@ -3970,57 +3789,6 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 }
 
 /*!
-\brief return the karma of the char
-\author Anthalir
-\since 0.82a
-\return the karma of the char
-*/
-const SI32 cChar::GetKarma() const
-{
-	return karma;
-}
-
-/*!
-\brief set the karma of the char
-\author Anthalir
-\since 0.82a
-\param newkarma the new karma value
-*/
-void cChar::SetKarma(SI32 newkarma)
-{
-	karma= newkarma;
-}
-
-
-/*!
-\brief return the fame of the char
-\author Endymion
-\since 0.82a
-\return fame of the char
-*/
-const SI32 cChar::GetFame() const
-{
-	return fame;
-}
-
-/*!
-\brief set the fame of the char
-\author Anthalir
-\since 0.82a
-\param newfame the new fame value
-*/
-void cChar::SetFame(SI32 newfame)
-{
-	fame=newfame;
-}
-
-
-const LOGICAL cChar::isOwnerOf(const cObject *obj) const
-{
-	return (getSerial32() == obj->getOwnerSerial32());
-}
-
-/*!
 \brief makes the character drinking something
 \author Luxor
 \since 0.82a
@@ -4123,25 +3891,6 @@ void cChar::openSpecialBank(P_CHAR pc)
 	showContainer(bank);
 }
 
-
-
-/*!
-\author Luxor
-\brief tells if a character is running
-*/
-LOGICAL cChar::isRunning()
-{
-	return ( (uiCurrentTime - lastRunning) <= 100 );
-}
-
-/*!
-\author Luxor
-*/
-void cChar::setRunning()
-{
-	lastRunning = uiCurrentTime;
-}
-
 void cChar::heartbeat()
 {
 	if ( dead )
@@ -4234,7 +3983,6 @@ void cChar::generic_heartbeat()
 }
 
 void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
-
 
 void target_castSpell( NXWCLIENT ps, P_TARGET t )
 {
@@ -4843,39 +4591,6 @@ void cChar::do_lsd()
 
 }
 
-
-
-/*
-\brief Return current speech
-\author Endymion
-\return current speech
-*/
-wstring* cChar::getSpeechCurrent()
-{
-	return this->speechCurrent;
-}
-
-/*
-\brief Set current speech
-\author Endymion
-\param speech the current speech
-\note NOT delete older speech
-*/
-void cChar::setSpeechCurrent( wstring* speech )
-{
-	this->speechCurrent=speech;
-}
-
-/*
-\brief Reset current speech
-\author Endymion
-\note only set NULL, NOT delete older speech
-*/
-void cChar::resetSpeechCurrent()
-{
-	speechCurrent = NULL;
-}
-
 /*
 \brief Delete current speech
 \author Endymion
@@ -4933,15 +4648,6 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 		return false;
 }
 */
-/*
-\brief Check if char is stabled
-\author Endymion
-\return true if stabled
-*/
-bool cChar::isStabled()
-{
-	return (getStablemaster()!=INVALID);
-}
 
 /*
 \brief Stable the character
@@ -4965,16 +4671,6 @@ void cChar::unStable()
 	if( !isStabled() ) return;
 	pointers::delFromStableMap( this );
 	this->stablemaster_serial=INVALID;
-}
-
-/*
-\brief Get the character's stablemaster
-\author Endymion
-\return the stable master
-*/
-SERIAL cChar::getStablemaster()
-{
-	return stablemaster_serial;
 }
 
 /*!
@@ -5164,37 +4860,3 @@ void cChar::modifyFame( SI32 value )
 		}
 	}
 }
-#ifdef ENCRYPTION
-
-void cChar::setCrypter(ClientCrypt * crypt)
-{
-	crypter=crypt;
-}
-
-ClientCrypt * cChar::getCrypter()
-{
-	return crypter;
-}
-
-#endif
-void cChar::setSkillDelay( UI32 seconds )
-{
-	skilldelay =  uiCurrentTime + seconds * MY_CLOCKS_PER_SEC;
-}
-
-bool cChar::canDoSkillAction()
-{
-	return TIMEOUT( skilldelay );
-}
-
-void cChar::setObjectDelay( UI32 seconds )
-{
-	objectdelay = uiCurrentTime + seconds * MY_CLOCKS_PER_SEC;
-}
-
-bool cChar::canDoObjectAction()
-{
-	return TIMEOUT( objectdelay );
-}
-
-
