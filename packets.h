@@ -1505,5 +1505,75 @@ public:
 };
 
 
+//@{
+/*!
+\name map packets
+\brief map relatede packets
+*/
+
+#define PKG_MAP 0x56;
+/*!
+\brief Map related
+\author Endymion
+\since 0.83
+\note 0x56
+\note
+command:
+	1 = add map point, 
+	2 = add new pin with pin number. (insertion. other pins after the number are pushed back.) 
+	3 = change pin
+	4 = remove pin
+	5 = remove all pins on the map 
+	6 = toggle the 'editable' state of the map. 
+	7 = return msg from the server to the request 6 of the client. 
+*/
+class cPacketMap : public cServerPacket {
+
+public:
+	eSERIAL	obj;		//!< the map
+	eUI08	command;	//!< command see note
+	eUI08	plotting;	//!< plotting state ( 1=on, 0=off only valid if command 7)
+	eUI16	x;		//!< x location (relative to upper left corner of the map, in pixels)
+	eUI16	y;		//!< y location (relative to upper left corner of the map, in pixels)
+
+	cPacketMap();
+	void send( NXWCLIENT ps );
+
+};
+
+#define PKG_MAP_MESSAGE 0x90;
+/*!
+\brief Map Message
+\author Endymion
+\since 0.83
+\note 0x90
+*/
+class cPacketMapMessage : public cServerPacket {
+
+public:
+	eSERIAL	key;	//!< the key used
+	eUI16	id;		//!< gump art id (0x139D)
+	eUI16	xa;		//!< x location (relative to upper left corner of the map, in pixels)
+	eUI16	ya;		//!< y location (relative to upper left corner of the map, in pixels)
+	eUI16	xb;		//!< x location (relative to upper left corner of the map, in pixels)
+	eUI16	yb;		//!< y location (relative to upper left corner of the map, in pixels)
+	eUI16   width;	//!< gump width in pixels
+	eUI16   height;	//!< gump height in pixels
+
+	cPacketMapMessage();
+	void send( NXWCLIENT ps );
+
+};
+
+
+
+
+
+//@}
+
+
+
+
+
 
 #endif
