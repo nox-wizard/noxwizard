@@ -17,14 +17,14 @@ PROJECT = noxwizard.exe
 OBJFILES = nox-wizard.obj worldmain.obj addmenu.obj amx\amxcback.obj \
     amx\amxfile.obj amx\amxscript.obj amx\amxvarserver.obj amx\amxwrap2.obj \
     amx\amxwraps.obj area.obj \
-    basics.obj boats.obj books.obj bounty.obj cache.obj calendar.obj \
+    basics.obj boats.obj books.obj bounty.obj calendar.obj \
     char_array.obj chars.obj client.obj cmdtable.obj combat.obj \
     commands.obj common_libs.obj console.obj containers.obj crontab.obj \
     custmenu.obj dbl_single_click.obj debug.obj dragdrop.obj \
     encryption.obj fishing.obj amx\float.obj gamedate.obj globals.obj guild.obj \
     guildstones.obj gumps.obj house.obj html.obj item_array.obj itemid.obj \
-    items.obj jail.obj logsystem.obj los.obj magic.obj \
-    mapstuff.obj mount.obj msgboard.obj muls.obj network.obj \
+    items.obj jail.obj logsystem.obj magic.obj map.obj data.obj \
+    mapstuff.obj mount.obj msgboard.obj network.obj \
     newbie.obj npcai.obj npcs.obj ntservice.obj nxw_utils.obj nxwgui.obj \
     nxwGump.obj nxwString.obj nxwStringList.obj object.obj packets.obj \
     particles.obj party.obj pointer.obj poll.obj race.obj raceability.obj \
