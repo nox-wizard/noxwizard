@@ -48,15 +48,19 @@ public:
 
 template <typename T> class cMULFile {
 
-private:
+protected:
 
 	friend class cVerdata;
 
 	cFile* idx;	//!< index file
 	cFile* data;	//!< data file
 
-	std::map< UI32, std::vector< T > > cache;
 	void loadCache();
+
+	std::map< UI32, std::vector< T > > cache;
+
+	virtual bool checkValidity( UI32 id, T b ) {	return true; }
+	virtual UI32 getIndex( UI32 id ) {	return id;	}
 
 public:
 
@@ -68,7 +72,7 @@ public:
 
 	bool isReady() { return idx->file.is_open() && data->file.is_open(); }
 	std::string getPath() { return idx->path; }
-	bool getData( UI32 id, std::vector< T >* data )	{
+	virtual bool getData( UI32 id, std::vector< T >*& data )	{
 
 		//ndEndy need because can be into verdata
 		std::map< UI32, std::vector<T> >::iterator iter( cache.find( id ) );
@@ -77,13 +81,14 @@ public:
 			return false;
 		}
 
-		if( (id==INVALID) || ( isCached ) ) {
+		UI32 i = getIndex( id );
+		if( (i==INVALID) || ( isCached ) ) {
 			data=NULL;
 			return false;
 		}
 
 		mul_index_st index;
-		idx->file.seekg( id*sizeof(mul_index_st) );
+		idx->file.seekg( i*sizeof(mul_index_st) );
 		idx->file.read( (char*)&index, sizeof(mul_index_st) );
 		if( index.start==INVALID || index.size==INVALID ) {
 			data=NULL;
@@ -91,7 +96,7 @@ public:
 		}
 
 		if( ( index.size % sizeof(T) ) != 0  ) {
-			ErrOut( "data corrupted ( index=%i ) in %s ", id, idx->path.c_str() );
+			ErrOut( "data corrupted ( index=%i ) in %s ", i, idx->path.c_str() );
 			data=NULL;
 			return false;
 		}
@@ -99,9 +104,12 @@ public:
 		data = new std::vector<T>;
 		this->data->file.seekg( index.start );
 		T buffer;
-		for( int s=0; s< (index.size % sizeof(T)); ++s ) {
+	
+		int count = index.size / sizeof(T);
+		for( int s=0; s< count; ++s ) {
 			this->data->file.read( (char*)&buffer, sizeof(T));
-			data->push_back( buffer );
+			if( checkValidity( id, buffer ) )
+				data->push_back( buffer );
 		}
 
 		return true;
@@ -112,7 +120,7 @@ public:
 
 template <class T> class NxwMulWrapper {
 
-private:
+protected:
 	std::vector< T >* data; 
 	std::vector< T >::iterator current;
 	bool needFree;
@@ -124,7 +132,7 @@ public:
 	NxwMulWrapper( cMULFile<T>* mul, UI32 id );
 	~NxwMulWrapper()	{	if( needFree )	delete data;	}
 
-	void rewind()	{ 	needFree = mul->getData( idx, data );	}
+	virtual void rewind()	{ 	if( data==NULL)	needFree = mul->getData( idx, data ); if( data!=NULL )	current=data->begin();	}
 	UI32 size()	{	return (data!=NULL)? data->size() : 0;	}
 	bool end() { 	return (data==NULL) || (current==data->end()); }
 	bool isEmpty()	{	return size()<=0;	}
@@ -361,16 +369,22 @@ class cStatics : public cMULFile< statics_st >{
 
 private:
 
+	friend class NxwMulWrapperStatics;
+
 	UI16 width;	//!< width of map
 	UI16 height; //!< height of map
+
+protected:
+	
+	virtual bool checkValidity( UI32 id, statics_st b ) {	return (((id>>16)%8)==b.x) && (((id&0xFFFF)%8)==b.y); }
+	virtual UI32 getIndex( UI32 id ) {	return blockFromXY( id>>16, id&0xFFFF );	}
+	UI32 getHash( UI32 x, UI32 y )	{	return (x<<16) +y;	}
+	SERIAL blockFromXY( UI16 x, UI16 y ); 
 
 public:
 
 	cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache );
 	~cStatics();
-
-	SERIAL idFromXY( UI16 x, UI16 y ); 
-	virtual bool getData( UI16 x, UI16 y, std::vector<statics_st>* stats );
 
 };
 
@@ -470,6 +484,7 @@ LOGICAL seekTile( UI16 id, tile_st& tile );
 class NxwMulWrapperStatics : public NxwMulWrapper<statics_st> {
 public:
 	NxwMulWrapperStatics( UI32 x, UI32 y );
+
 };
 
 class NxwMulWrapperMulti : public NxwMulWrapper<multi_st> {

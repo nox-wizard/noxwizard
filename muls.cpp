@@ -265,7 +265,7 @@ T NxwMulWrapper<T>::get() {
 
 
 
-NxwMulWrapperStatics::NxwMulWrapperStatics( UI32 x, UI32 y ) : NxwMulWrapper<statics_st>( data::statics, data::statics->idFromXY(x,y) ) {
+NxwMulWrapperStatics::NxwMulWrapperStatics( UI32 x, UI32 y ) : NxwMulWrapper<statics_st>( data::statics, data::statics->getHash(x,y) ) {
 
 };
 
@@ -597,29 +597,7 @@ cStatics::~cStatics()
 {
 }
 
-/*!
-\brief Get the Statics at given location
-\author Endymion
-\return true if valid statics
-\param x the x location
-\param y the y location
-\param stats the statics vector
-*/
-bool cStatics::getData( UI16 x, UI16 y, std::vector<statics_st>* stats )
-{ 
-
-	SERIAL id=idFromXY( x, y );
-	if( id==INVALID ) {
-		stats = NULL;
-		return false;
-	}
-
-	return cMULFile<statics_st>::getData( id, stats );
-
-}
-
-
-SERIAL cStatics::idFromXY( UI16 x, UI16 y ) {
+SERIAL cStatics::blockFromXY( UI16 x, UI16 y ) {
 
 	UI16 blockX = x/8, blockY = y/8;
 	if( (blockX>=width) || (blockY>=height) ) {
