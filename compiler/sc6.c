@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc6.c,v 1.1 2003/04/26 19:59:47 luxornox Exp $
+ *  Version: $Id: sc6.c,v 1.2 2003/04/30 13:08:42 dgp85 Exp $
  */
 #include <assert.h>
 #include <stdio.h>
@@ -836,7 +836,7 @@ SC_FUNC void assemble(FILE *fout,FILE *fin)
       instr=skipwhitespace(line);
       /* ignore empty lines and labels (labels have a special syntax, so these
        * must be parsed separately) */
-      if (*instr=='\0' || tolower(*instr)=='l' && *(instr+1)=='.')
+      if (*instr=='\0' || (tolower(*instr)=='l' && *(instr+1)=='.') )
         continue;
       /* get to the end of the instruction (make use of the '\n' that fgets()
        * added at the end of the line; this way we will *always* drop on a

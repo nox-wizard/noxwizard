@@ -44,7 +44,6 @@ namespace Books
 	/*!
 	\brief Item class for books
 	\author Akron (complete rewrite)
-	\todo write it....
 	\todo create xss-based books
 
 	There are two types of books, read only books, defined by scripters, in this case they are loaded
@@ -115,12 +114,18 @@ namespace Books
 			void ChangeTitle(char *titl);
 			void ChangePages(char *packet, UI16 p, UI16 l, UI16 s);
 
-			UI32 GetIndex() const;				//!< gets the book index
-			LOGICAL IsReadOnly() const;			//!< return true if books is readonly
-			void GetPages(tpages &pags) const;		//!< return the pages of the book
-			std::string GetAuthor() const;			//!< return the author of the book
-			std::string GetTitle() const;			//!< return the title of the book
-			UI32 GetNumPages() const;			//!< return the number of pages of the book
+			UI32 GetIndex() const				//!< gets the book index
+				{ return index; }
+			inline LOGICAL IsReadOnly() const		//!< return true if books is readonly
+				{ return readonly; }
+			inline void GetPages(tpages &pags) const	//!< return the pages of the book
+				{ pags = pages; }
+			std::string GetAuthor() const			//!< return the author of the book
+				{ return author; }
+			inline std::string GetTitle() const		//!< return the title of the book
+				{ return title; }
+			inline UI32 GetNumPages() const			//!< return the number of pages of the book
+				{ return pages.size(); }
 
 		private:
 			LOGICAL readonly;				//!< if the book is loaded from script it must be true

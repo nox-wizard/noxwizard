@@ -780,7 +780,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 		{
 			pc_k->setClient(NULL);
 			SI32 nSer = pc_k->getSerial32();
-			for ( UI32 idx = 0; idx < now; idx++ ) {
+			for ( SI32 idx = 0; idx < now; idx++ ) {
 				if ( nSer == currchar[idx] ) {
 					UI08 msg2[2]={ 0x53, 0x05 };
 					Xsend(s, msg2, 2);

@@ -918,7 +918,7 @@ void init_deamon()
 		close(i) ;
 
 	// Ok, we are a true deamon now, so we should setup our signal handler
-	// We can use SIGHUP, SIGINT, and SIGWINCH as we should never recive them
+	// We can use SIGHUP, SIGINT, and SIGWINCH as we should never receive them
 	// So we will use SIGHUP to reload our scripts (kinda a standard for sighup to be reload)
 	// We will use a SIGUSR2 to be world save
 	// and SIGUSR1 for an Account reload

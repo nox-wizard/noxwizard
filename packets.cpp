@@ -12,7 +12,7 @@
 #include "network.h"
 
 /*!
-\brief get pointer at first valid position in packet ( headerSize is usad internal )
+\brief get pointer at first valid position in packet ( headerSize is used internal )
 \author Endymion
 \since 0.83
 */
@@ -25,7 +25,7 @@ char* cPacket::getBeginValid() {
 \author Endymion
 \since 0.83
 */
-char* cPacket::getBeginValidForRecive() {
+char* cPacket::getBeginValidForReceive() {
 	return ( getBeginValid() +sizeof( cmd ) );
 }
 
@@ -35,13 +35,13 @@ char* cPacket::getBeginValidForRecive() {
 \author Endymion
 \since 0.83a
 \param s the socket
-\param baffer the data
+\param buffer the data
 \param size the number of byte to read
 */
-void cClientPacket::getFromSocket( NXWSOCKET s, char* baffer, int size ) {
+void cClientPacket::getFromSocket( NXWSOCKET s, char* buffer, int size ) {
 
 	int count;
-	if( ( count = recv( s, baffer, size, MSG_NOSIGNAL) ) == SOCKET_ERROR )
+	if( ( count = recv( s, buffer, size, MSG_NOSIGNAL) ) == SOCKET_ERROR )
 	{
 		LogSocketError("Socket Recv Error %s\n", errno) ;
 	}
@@ -49,7 +49,7 @@ void cClientPacket::getFromSocket( NXWSOCKET s, char* baffer, int size ) {
 };
 
 /*!
-\brief read a UI32 from socket baffer
+\brief read a UI32 from socket buffer
 \author Endymion
 \since 0.83a
 \param s the socket
@@ -60,7 +60,7 @@ void cClientPacket::getUI32FromSocket( NXWSOCKET s, UI32& i ) {
 }
 
 /*!
-\brief read a string from socket baffer
+\brief read a string from socket buffer
 \author Endymion
 \since 0.83a
 \param s the socket
@@ -68,21 +68,21 @@ void cClientPacket::getUI32FromSocket( NXWSOCKET s, UI32& i ) {
 \param lenght the length of need to read
 */
 void cClientPacket::getStringFromSocket( NXWSOCKET s, string& i, int lenght ) {
-	char* baffer = NULL;
-	this->getFromSocket( s, baffer, lenght );
-	i = baffer;	
+	char* buffer = NULL;
+	this->getFromSocket( s, buffer, lenght );
+	i = buffer;	
 }
 
 /*!
-\brief Recive packet from client
+\brief Receive packet from client
 \author Endymion
 \since 0.83a
 \param ps the client who send this packet
 \attention NOT WRITE THE CMD, it's read before
 */
-void cClientPacket::recive( NXWCLIENT ps ) {
+void cClientPacket::receive( NXWCLIENT ps ) {
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), this->getBeginValidForRecive(), this->headerSize -1 );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 );
 };
 
 /*!
@@ -93,7 +93,7 @@ void cClientPacket::recive( NXWCLIENT ps ) {
 */
 void cServerPacket::send( NXWCLIENT ps ) {
 	if( ps != NULL )
-		Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+		Xsend( ps->toInt(), getBeginValid(), headerSize );
 };
 
 
@@ -110,21 +110,21 @@ void cServerPacket::send( P_CHAR pc ) {
 
 
 
-
+//@{
 /*!
 \brief constructors create macro
 \author Endymion
 \since 0.83a
 */
-#define CREATE( NOME, CMD, SIZE )  cPacket##NOME::cPacket##NOME() { cmd = CMD; headerSize = SIZE; };
-#define SEND( NOME ) void cPacket##NOME::send( NXWCLIENT ps )
-#define RECIVE( NOME ) void cPacket##NOME::recive( NXWCLIENT ps )
-
+#define CREATE( NAME, CMD, SIZE )  cPacket##NAME::cPacket##NAME() { cmd = CMD; headerSize = SIZE; };
+#define SEND( NAME ) void cPacket##NAME::send( NXWCLIENT ps )
+#define RECEIVE( NAME ) void cPacket##NAME::receive( NXWCLIENT ps )
+//@}
 
 CREATE( CreateCharacter, PKG_CREATE_CHARACTER, 0x0A )
-RECIVE( CreateCharacter ) {
+RECEIVE( CreateCharacter ) {
 	if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), this->getBeginValidForRecive(), this->headerSize -1 );
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
 	getStringFromSocket( ps->toInt(), this->passwd, 30 );
 	getFromSocket( ps->toInt(), (char*)(&this->sex), 30 );
@@ -133,9 +133,9 @@ RECIVE( CreateCharacter ) {
 CREATE( DisconnectNotification, PKG_DISCONNECT_NOTIFY, 0x05 )
 
 CREATE( TalkRequest, PKG_TALK_REQUEST, 0x08 )
-RECIVE( TalkRequest ) {
+RECEIVE( TalkRequest ) {
 	if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), this->getBeginValidForRecive(), this->headerSize -1 );
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->msg, this->size-0x08 ); 	
 };
 
@@ -260,9 +260,9 @@ CREATE( PlotCourse, PKG_PLOT_COURSE, 0x0B )
 CREATE( Time, PKG_TIME, 0x04 )
 
 CREATE( Login, PKG_LOGIN, 0x05 )
-RECIVE( Login ) {
+RECEIVE( Login ) {
 	if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), this->getBeginValidForRecive(), this->headerSize -1 );
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
 	getStringFromSocket( ps->toInt(), this->passwd, 30 );
 	getFromSocket( ps->toInt(), (char*)(&this->slot), 8 );
@@ -308,9 +308,9 @@ CREATE( ResponseToDialog, PKG_RESPONSE_TO_DIALOG, 0x0D )
 CREATE( LoginDenied, PKG_LOGIN_DENIED, 0x02 )
 
 CREATE( DeleteCharacter, PKG_DELETE_CHARACHTER, 0x01 )
-RECIVE( DeleteCharacter ) {
+RECEIVE( DeleteCharacter ) {
 	if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), this->getBeginValidForRecive(), this->headerSize -1 ); // nothing.. remove?
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 ); // nothing.. remove?
 	getStringFromSocket( ps->toInt(), this->passwd, 30 ); 	
 	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );
 }

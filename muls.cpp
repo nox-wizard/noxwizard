@@ -412,7 +412,7 @@ void cStatics::loadForCaching() {
 	if(!isReady() || isCached )
 		return;
 
-	verdata::TINDEX index; TSTATICS baffer;
+	verdata::TINDEX index; TSTATICS buffer;
 	for( int x=0; x<width; x++ ) {
 		for( int y=0; y<height; y++ ) {
 			idx.read( (char*)&index, sizeof(verdata::TINDEX) );
@@ -428,8 +428,8 @@ void cStatics::loadForCaching() {
 					this->staticsCached[x*this->height+y].clear();
 					for( UI32 s=0; s< (index.size % sizeof(TSTATICS)); s++ ) {
 						
-						data.read( (char*)&baffer, sizeof(TSTATICS));
-						this->staticsCached[x*this->height+y].push_back( baffer );
+						data.read( (char*)&buffer, sizeof(TSTATICS));
+						this->staticsCached[x*this->height+y].push_back( buffer );
 						
 					}
 				}				
@@ -481,10 +481,10 @@ bool cStatics::getStatics( UI16 x, UI16 y, STATICSVET& stats )
 			}
 			else {
 				data.seekg( index.start );
-				TSTATICS baffer;
+				TSTATICS buffer;
 				for( UI32 s=0; s< (index.size % sizeof(TSTATICS)); s++ ) {
-					data.read( (char*)&baffer, sizeof(TSTATICS));
-					stats.push_back( baffer );
+					data.read( (char*)&buffer, sizeof(TSTATICS));
+					stats.push_back( buffer );
 				}
 				return true;
 			}				
@@ -554,7 +554,7 @@ void cMulti::loadForCaching() {
 	if(!isReady() || isCached )
 		return;
 
-	verdata::TINDEX index; TMULTI baffer; int id=0;
+	verdata::TINDEX index; TMULTI buffer; int id=0;
 	while( !idx.eof() ) {
 		idx.read( (char*)&index, sizeof(verdata::TINDEX) );
 		if( index.start==INVALID || index.size==INVALID )
@@ -569,8 +569,8 @@ void cMulti::loadForCaching() {
 				this->multisCached[id].clear();
 				for( UI32 s=0; s< (index.size % sizeof(TMULTI)); s++ ) {
 				
-					data.read( (char*)&baffer, sizeof(TMULTI));
-					this->multisCached[id].push_back( baffer );
+					data.read( (char*)&buffer, sizeof(TMULTI));
+					this->multisCached[id].push_back( buffer );
 					
 				}
 			}				
@@ -631,10 +631,10 @@ bool cMulti::getMulti( UI32 id, MULTISVEC& multi )
 				}
 				else {
 					data.seekg( index.start );
-					TMULTI baffer;
+					TMULTI buffer;
 					for( UI32 s=0; s< (index.size % sizeof(TMULTI)); s++ ) {
-						data.read( (char*)&baffer, sizeof(TMULTI));
-						multi.push_back( baffer );
+						data.read( (char*)&buffer, sizeof(TMULTI));
+						multi.push_back( buffer );
 					}
 					return true;
 				}				

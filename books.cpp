@@ -237,36 +237,6 @@ namespace Books
 		return *this;
 	}
 
-	UI32 cBook::GetIndex() const
-	{
-		return index;
-	}
-
-	LOGICAL cBook::IsReadOnly() const
-	{
-		return readonly;
-	}
-
-	std::string cBook::GetAuthor() const
-	{
-		return author;
-	}
-
-	std::string cBook::GetTitle() const
-	{
-		return title;
-	}
-
-	void cBook::GetPages(tpages &pags) const
-	{
-		pags = pages;
-	}
-
-	UI32 cBook::GetNumPages() const
-	{
-		return pages.size();
-	}
-
 	/*!
 	\todo complete reading
 	\param s reference to the istream to read the book from

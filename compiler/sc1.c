@@ -5,7 +5,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc1.c,v 1.1 2003/04/26 19:59:34 luxornox Exp $
+ *  Version: $Id: sc1.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
  */
 #include <assert.h>
 #include <ctype.h>
@@ -1299,7 +1299,7 @@ static int declloc(int fstatic)
      * of a global variable or to that of a local variable at a lower
      * level might indicate a bug.
      */
-    if ((sym=findloc(name))!=NULL && sym->compound!=nestlevel || findglb(name)!=NULL)
+    if ((sym=findloc(name)) && (sym->compound!=nestlevel || findglb(name)))
       error(219,name);                  /* variable shadows another symbol */
     while (matchtoken('[')){
       ident=iARRAY;
@@ -1981,7 +1981,7 @@ static void funcstub(int native)
   tag=sc_addtag(NULL);
   tok=lex(&val,&str);
   if (native) {
-    if (tok==tPUBLIC || tok==tSTOCK || tok==tSTATIC || tok==tSYMBOL && *str==PUBLIC_CHAR)
+    if (tok==tPUBLIC || tok==tSTOCK || tok==tSTATIC || (tok==tSYMBOL && *str==PUBLIC_CHAR))
       error(42);                /* invalid combination of class specifiers */
   } else {
     if (tok==tPUBLIC || tok==tSTATIC)
@@ -2088,7 +2088,7 @@ static int newfunc(char *firstname,int firsttag,int fpublic,int fstatic,int stoc
     tag= (firsttag>=0) ? firsttag : sc_addtag(NULL);
     tok=lex(&val,&str);
     assert(!fpublic);
-    if (tok==tNATIVE || tok==tPUBLIC && stock)
+    if (tok==tNATIVE || (tok==tPUBLIC && stock))
       error(42);                /* invalid combination of class specifiers */
     if (tok==tOPERATOR) {
       opertok=operatorname(symbolname);
@@ -2383,7 +2383,7 @@ static int declargs(symbol *sym)
         error(10);                      /* illegal function or declaration */
       } /* switch */
     } while (tok=='&' || tok==tLABEL || tok==tCONST
-             || tok!=tELLIPS && matchtoken(',')); /* more? */
+             || (tok!=tELLIPS && matchtoken(','))); /* more? */
     /* if the next token is not ",", it should be ")" */
     needtoken(')');
   } /* if */
@@ -3316,8 +3316,10 @@ static void dofor(void)
   stgset(TRUE);                     /* start staging */
   assert(stgidx==0);
   index=stgidx;
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4305)
+#endif
   stgmark(sSTARTREORDER);
   stgmark(sEXPRSTART+(char)0);      /* mark start of 2nd expression in stage */
   setlabel(skiplab);                /* jump to this point after 1st expression */
@@ -3326,7 +3328,9 @@ static void dofor(void)
     needtoken(';');
   } /* if */
   stgmark(sEXPRSTART+(char)1);      /* mark start of 3th expression in stage */
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
   if (matchtoken(')')==0) {
     doexpr(TRUE,TRUE,TRUE,TRUE,NULL,FALSE);    /* expression 3 */
     needtoken(')');

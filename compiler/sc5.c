@@ -4,7 +4,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc5.c,v 1.1 2003/04/26 19:59:45 luxornox Exp $
+ *  Version: $Id: sc5.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
  */
 #include <assert.h>
 #if defined	__WIN32__ || defined _WIN32 || defined __MSDOS__
@@ -89,7 +89,7 @@ static char *prefix[3]={ "error", "fatal error", "warning" };
   } /* if */
   va_end(argptr);
 
-  if (number>=100 && number<200 || errnum>25){
+  if (number>=100 && (number<200 || errnum>25)){
     if (strlen(errfname)==0) {
       va_start(argptr,number);
       sc_error(0,"\nCompilation aborted.",NULL,0,0,argptr);

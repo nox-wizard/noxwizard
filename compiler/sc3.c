@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc3.c,v 1.1 2003/04/26 19:59:43 luxornox Exp $
+ *  Version: $Id: sc3.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
  */
 #include <assert.h>
 #include <stdio.h>
@@ -795,7 +795,7 @@ SC_FUNC int hier14(value *lval1)
     if (lval3.sym->dim.array.level!=level)
       return error(48); /* array dimensions must match */
     else if (lval3.sym->dim.array.length<val
-             || exactmatch && lval3.sym->dim.array.length>val)
+             || (exactmatch && lval3.sym->dim.array.length>val) )
       return error(47); /* array sizes must match */
     if (level>0) {
       /* check the sizes of all sublevels too */
@@ -1650,7 +1650,7 @@ static void callfunction(symbol *sym)
                  * the function argument.
                  */
                 if (lval.constval>0 && arg[argidx].dim[0]!=lval.constval
-                    || lval.constval<0 && arg[argidx].dim[0] < -lval.constval)
+                    || (lval.constval<0 && arg[argidx].dim[0] < -lval.constval) )
                   error(47);    /* array sizes must match */
               } /* if */
             } /* if */

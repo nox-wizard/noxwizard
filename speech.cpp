@@ -1800,6 +1800,9 @@ static LOGICAL requestHelp( P_CHAR pc, NXWSOCKET socket, std::string &speech, Nx
 
 static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCharWrapper &nearbyVendors );
 
+/*!
+\todo this function is not used, should be removed?
+*/
 static LOGICAL speakToVendor( P_CHAR pc, NXWSOCKET socket, string &speech )
 {
 	LOGICAL success = false;
@@ -1814,7 +1817,7 @@ static LOGICAL speakToVendor( P_CHAR pc, NXWSOCKET socket, string &speech )
 				nearbyVendors.insertChar( pc_a_npc );
 	}
 	
-nearbyVendors.rewind();		// GH!
+	nearbyVendors.rewind();		// GH!
 
 	if( !nearbyVendors.isEmpty() )
 	{
@@ -1937,9 +1940,6 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	// len+font+color+type = same postion for non unicode and unicode speech packets
 	// but 8 ... x DIFFER a lot for unicode and non unicode packets !!!
 
-	UI32 ucl = speech.size() * 2 + 2;
-	int tl  = ucl + 48 ;
-
 	if ( buffer[socket][3] == '\x09' && pc->CanBroadcast() )
 	{
 		broadcast(socket);
@@ -2046,7 +2046,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		case 0x09 : //yell
 			range=(int)(VISRANGE*1.5);
 			break;
-		case 0x08 : //wisper 
+		case 0x08 : //wisper
 			range=2;
 			break;
 		default:
@@ -2063,9 +2063,6 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		P_CHAR a_pc= ps->currChar();
 		if(!ISVALIDPC(a_pc))
 			continue;
-
-		NXWSOCKET a_socket = ps->toInt();
-		
 
 		if( a_pc->unicode )			// language
 		{

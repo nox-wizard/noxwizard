@@ -34,10 +34,10 @@ using namespace std;
 class cPacket
 {
 protected:
-	UI16 headerSize;	//!< size of the header, not all the packet if size are variable ( NOT SENDED OR RECIVED. USE INTERNAL )
+	UI16 headerSize;	//!< size of the header, not all the packet if size are variable ( NOT SENDED OR RECEIVED. USE INTERNAL )
 	UI08 cmd;		//!< packet id
 	char* getBeginValid();
-	char* getBeginValidForRecive();
+	char* getBeginValidForReceive();
 
 
 };
@@ -49,13 +49,13 @@ protected:
 */
 class cClientPacket : public cPacket {
 protected:
-	void getFromSocket( NXWSOCKET s, char* baffer, int size );
+	void getFromSocket( NXWSOCKET s, char* buffer, int size );
 	void getUI32FromSocket( NXWSOCKET s, UI32& i );
 	void getStringFromSocket( NXWSOCKET s, string& i, int lenght );
 
 public:
-
-	virtual void recive( NXWCLIENT ps );
+	virtual ~cClientPacket() {}
+	virtual void receive( NXWCLIENT ps );
 };
 
 /*!
@@ -138,7 +138,7 @@ public:
 	Color	pants; //!< pants color
 
 	cPacketCreateCharacter();
-	void recive( NXWCLIENT ps  );
+	void receive( NXWCLIENT ps  );
 
 };
 
@@ -182,7 +182,7 @@ public:
 	string	msg; //!< Message ( Null Terminated String )
 
 	cPacketTalkRequest();
-	void recive( NXWCLIENT ps );
+	void receive( NXWCLIENT ps );
 
 };
 
@@ -995,7 +995,7 @@ class cPacketLogin : public cClientPacket {
 	UI32	ip;			//!< client ip
 	
 	cPacketLogin();	
-	void recive( NXWCLIENT ps );
+	void receive( NXWCLIENT ps );
 
 };
 
@@ -1352,7 +1352,7 @@ public:
 
 
 } ;
-/*! 
+*//*!
 \brief Open dialog box
 \author Endymion
 \since 0.83
@@ -1446,7 +1446,7 @@ public:
 	UI32	ip;			//!< the client ip
 
 	cPacketDeleteCharacter();
-	void recive( NXWCLIENT ps );
+	void receive( NXWCLIENT ps );
 
 };
 
@@ -1456,7 +1456,7 @@ typedef struct resaftdel_st {
 	string	passwd;		//!< the password
 }
 
-/*! 
+*//*!
 \brief Resend Character After delete
 \author Endymion
 \since 0.83

@@ -986,6 +986,7 @@ void command_showp(NXWSOCKET  s)
 		sysmessage(s,(char*)s_szCmdTableTemp);
 	}
 }
+
 /*!
 \brief Alter GM Command Privs
 
@@ -1006,7 +1007,7 @@ Lord Binary's UOX Site</A>.
 void command_setpriv3(NXWSOCKET  s)
 {
 	UI32 i;
-	int y, z,err;
+	int y,err;
 
 	P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
 	if (err) return;
@@ -1087,14 +1088,16 @@ void command_setpriv3(NXWSOCKET  s)
 	return;
 }
 
+/*!
+\brief To spread priv3 among a class of characters
+\param s the socket
+\todo Script-defined ALL-types. Maybe only with NxW :)
+\todo the function is empty, need to be write maybe?
+
+See definitions of ALL-types below to have a list of possible class. Feel free to definite more yourself.
+<b>Usage:</b> 'spreadpriv3 [ALL|ALLPG|ALLGM|ALLCNS|ALLGMCNS\ALLADMIN] [+/- COMMAND|SECTION-NUMBER]
+*/
 void command_spreadpriv3(NXWSOCKET  s)
-/////////////
-//Name: spreadpriv3
-//To spread priv3 among a class of characters.
-//See definition of ALL-types below to have a list of possible class. Feel free to definite more yourself.
-//Usage: /SPREADPRIV3 [ALL,ALLPG,ALLGM,ALLCNS,ALLGMCNS,ALLADMIN] [+/- COMMAND,SECTION-NUMBER]
-//History: by Ummon, 10/10/2001
-//ToDoNextVersion: Script-defined ALL-types. Maybe only with NxW :)
 {
         return;
         /*int ichar, icmd, imeta;
@@ -1277,24 +1280,28 @@ void command_spreadpriv3(NXWSOCKET  s)
 	} */
 }
 
-void command_resend(NXWSOCKET  s)
-// Resends server data to client.
+/*!
+\brief Resends server data to client
+\param s the socket
+*/
+void command_resend(NXWSOCKET s)
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	pc->teleport();
 }
 
-void command_teleport(NXWSOCKET  s)
+void command_teleport(NXWSOCKET s)
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	pc->teleport();
 }
 
-
-// Prints your current coordinates+region.
-// added region-name too, LB
+/*!
+\brief Prints your current coordinates + region
+\param s the socket
+*/
 void command_where(NXWSOCKET  s)
 {
 	int err;

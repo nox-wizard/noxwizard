@@ -481,7 +481,7 @@ void buildhouse(int s, int i)
 \param s socket of player
 \param pi pointer to the house item
 */
-void deedhouse(NXWSOCKET s, P_ITEM pi) // Ripper & AB
+void deedhouse(NXWSOCKET s, P_ITEM pi)
 {
 	SI32 x1, y1, x2, y2;
 	VALIDATEPI(pi);
@@ -537,10 +537,10 @@ void deedhouse(NXWSOCKET s, P_ITEM pi) // Ripper & AB
 		{
 			P_ITEM p_item=si.getItem();
 			if(ISVALIDPI(p_item)) {
-				if( (p_item->getPosition().x >= x1) && 
-					(p_item->getPosition().x <= x2) &&
-					(p_item->getPosition().y >= y1) &&
-					(p_item->getPosition().y <= y2) )
+				if( (p_item->getPosition().x >= (UI32)x1) &&
+					(p_item->getPosition().x <= (UI32)x2) &&
+					(p_item->getPosition().y >= (UI32)y1) &&
+					(p_item->getPosition().y <= (UI32)y2) )
 					{
 							p_item->deleteItem();
 					}

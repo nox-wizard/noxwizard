@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc2.c,v 1.1 2003/04/26 19:59:38 luxornox Exp $
+ *  Version: $Id: sc2.c,v 1.2 2003/04/30 13:08:41 dgp85 Exp $
  */
 #include <assert.h>
 #include <stdio.h>
@@ -839,7 +839,7 @@ static int command(void)
         sym=findloc(str);
         if (sym==NULL)
           sym=findglb(str);
-        if (sym==NULL || sym->ident!=iFUNCTN && sym->ident!=iREFFUNC && (sym->usage & uDEFINE)==0) {
+        if (sym==NULL || (sym->ident!=iFUNCTN && sym->ident!=iREFFUNC && (sym->usage & uDEFINE)==0 )) {
           error(17,str);        /* undefined symbol */
         } else {
           outval(sym->addr,FALSE);
@@ -1186,7 +1186,7 @@ SC_FUNC int matchtoken(int token)
   int tok;
 
   tok=lex(&val,&str);
-  if (tok==token || token==tTERM && (tok==';' || tok==tENDEXPR)) {
+  if (tok==token || (token==tTERM && (tok==';' || tok==tENDEXPR)) ) {
     return 1;
   } else if (!sc_needsemicolon && token==tTERM && (_lexnewline || !freading)) {
     lexpush();  /* push "tok" back, we use the "hidden" newline token */
