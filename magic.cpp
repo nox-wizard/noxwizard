@@ -148,12 +148,12 @@ bool checkGateCollision( P_CHAR pc )
 {
 	VALIDATEPCR( pc, false );
 
-        if ( pc->npc )
+	if ( pc->npc )
 		return false;
 
 	P_ITEM pgate = NULL;
 
-        Location charpos = pc->getPosition();
+	Location charpos = pc->getPosition();
 
 	NxwItemWrapper si;
 	// WIntermute: Only check items beneath the feet or neighbouring items may be triggered first
@@ -163,11 +163,11 @@ bool checkGateCollision( P_CHAR pc )
 		if ( !ISVALIDPI( pgate ) )
 			return false;
 
-		if ( pgate->type != 51 )
+		if ( pgate->type != ITYPE_MOONGATE )
 			pgate = NULL;
 	}
 
-        if ( !ISVALIDPI( pgate ) )
+	if ( !ISVALIDPI( pgate ) )
 		return false;
 
 	Location gatepos = pgate->getPosition();
@@ -1795,13 +1795,22 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 		case SPELL_MARK:
 			if ((src!=NULL)&&(pi!=NULL)) {
-				if (pi->type==ITYPE_RUNE) {
+				if (pi->type==ITYPE_RUNE)  // GMs can use mark to set gate destinations
+				{
 					pi->morex = srcpos.x;
 					pi->morey = srcpos.y;
 					pi->morez = srcpos.z;
 					src->sysmsg(TRANSLATE("Recall rune marked."));
 					spellFX(spellnumber, src, pd);
-				} else {
+				} 
+				else if ( src->IsGM() && pi->type == ITYPE_MOONGATE )
+				{
+					pi->morex = srcpos.x;
+					pi->morey = srcpos.y;
+					pi->morez = srcpos.z;
+					spellFX(spellnumber, src, pd);
+				}
+				else {
 					src->sysmsg("That is not a rune!!");
 				}// if a rune
 			}
