@@ -3008,28 +3008,30 @@ void cChar::Kill()
 			pk_att->attackerserial = INVALID;
 		}
 
-		pk->attackerserial = INVALID;
-		pk->ResetAttackFirst();
+		pKiller->attackerserial = INVALID;
+		pKiller->ResetAttackFirst();
 
 		if( pKiller->attackerserial == getSerial32() )
 		{
-			pk->attackerserial = INVALID;
-			pk->ResetAttackFirst();
+			pKiller->attackerserial = INVALID;
+			pKiller->ResetAttackFirst();
 		}
 
 		if( !pKiller->npc )
 		{
-			strncpy(murderername, pk->getCurrentNameC(), 48);
+			strncpy(murderername, pKiller->getCurrentNameC(), 48);
 
-			NxwCharWrapper party;
-			party.fillPartyFriend( pk, VISRANGE, true );
-			for( party.rewind(); !party.isEmpty(); party++ )
+			if( pKiller->party != INVALID )
 			{
-				P_CHAR fr=party.getChar();
-				if( ISVALIDPC(fr) )
+				PCHAR_VECTOR *pcvParty = pointers::getNearbyChars( pKiller, VISRANGE, pointers::PARTYMEMBER );
+				PCHAR_VECTOR partyIt( pcvParty->begin() ), partyEnd( pcvParty->end() );
+				P_CHAR pMember = 0;
+				while( partyIt != partyEnd )
 				{
-					fr->IncreaseKarma( (0-(karma)), this  );
-					fr->modifyFame( fame );
+					pMember = (*partyIt);
+					pMember->IncreaseKarma( (0-(karma)), this  );
+					pMember->modifyFame( fame );
+					++partyIt;
 				}
 			}
 
@@ -3039,35 +3041,35 @@ void cChar::Kill()
 			//murder count \/
 			if (!npc)
 			{ // PvP
-				if ( (!IsGrey()) && IsInnocent() && Guilds->Compare(pk,this)==0)
+				if ( !IsGrey() && IsInnocent() && Guilds->Compare(pKiller,this) == 0 )
 				{
-					murdererSer = pk->getSerial32();
-					pk->kills++;
-					pk->sysmsg(TRANSLATE("You have killed %i innocent people."), pk->kills);
+					murdererSer = pKiller->getSerial32();
+					++pKiller->kills;
+					pKiller->sysmsg(TRANSLATE("You have killed %i innocent people."), pKiller->kills);
 
-					if (pk->kills==(unsigned)repsys.maxkills)
-						pk->sysmsg(TRANSLATE("You are now a murderer!"));
-					setcharflag(pk);
+					if (pKiller->kills==(unsigned)repsys.maxkills)
+						pKiller->sysmsg(TRANSLATE("You are now a murderer!"));
+					setcharflag(pKiller);
 
 				if (SrvParms->pvp_log)
 				{
 						LogFile pvplog("PvP.log");
-						pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pk->getCurrentNameC());
+						pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pKiller->getCurrentNameC());
 				}
 			}   // was innocent
 
-			if (pk->amxevents[EVENT_CHR_ONKILL])
-				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+			if (pKiller->amxevents[EVENT_CHR_ONKILL])
+				pKiller->amxevents[EVENT_CHR_ONKILL]->Call(pKiller->getSerial32(), pKiller->getClient()->toInt(), getSerial32(), s);
 
 				//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
 			} //PvP
 		}//if !npc
 		else
 		{
-			if (pk->amxevents[EVENT_CHR_ONKILL])
-				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), INVALID, getSerial32(), s);
-			if (pk->war)
-				pk->toggleCombat(); // ripper
+			if (pKiller->amxevents[EVENT_CHR_ONKILL])
+				pKiller->amxevents[EVENT_CHR_ONKILL]->Call(pKiller->getSerial32(), INVALID, getSerial32(), s);
+			if (pKiller->war)
+				pKiller->toggleCombat(); // ripper
 		}
 		++it;
 	}
