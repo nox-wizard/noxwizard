@@ -1169,33 +1169,40 @@ void Skills::PotionToBottle( SERIAL s, SERIAL mortar)
 
     P_ITEM pi=NULL;
 
-	item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( "" ), pc->getBackpack() );
+//	item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( "" ), pc->getBackpack() );
 
     int potionType= (10*pi_mortar->more1)+pi_mortar->more2;
 	switch( potionType )    {
- 	case 11: CREATEINBACKPACK( "$normal_agility_potion" )	break;
-    case 12: CREATEINBACKPACK( "$greater_agility_potion" )	break;
-    case 21: CREATEINBACKPACK( "$lesser_cure_potion" )	break;
-    case 22: CREATEINBACKPACK( "$normal_cure_potion" )	break;
-    case 23: CREATEINBACKPACK( "$greater_cure_potion" )	break;
-    case 31: CREATEINBACKPACK( "$lesser_explosion_potion" )	break;
-    case 32: CREATEINBACKPACK( "$normal_explosion_potion" )	break;
-    case 33: CREATEINBACKPACK( "$greater_explosion_potion" )	break;
-    case 41: CREATEINBACKPACK( "$lesser_heal_potion" )	break;
-    case 42: CREATEINBACKPACK( "$normal_heal_potion" )	break;
-    case 43: CREATEINBACKPACK( "$greater_heal_potion" )	break;
-    case 51: CREATEINBACKPACK( "$normal_nightsight_potion" )	break;
-    case 61: CREATEINBACKPACK( "$lesser_poison_potion" )	break;
-    case 62: CREATEINBACKPACK( "$normal_poison_potion" )	break;
-    case 63: CREATEINBACKPACK( "$greater_poison_potion" )	break;
-    case 64: CREATEINBACKPACK( "$deadly_poison_potion" )	break;
-    case 71: CREATEINBACKPACK( "$normal_energy_potion" )	break;
-    case 72: CREATEINBACKPACK( "$greater_energy_potion" )	break;
-    case 81: CREATEINBACKPACK( "$normal_strength_potion" )	break;
-    case 82: CREATEINBACKPACK( "$greater_strength_potion" )	break;
-    default: 
-        LogError("switch reached default into PotionToBottle");
-        return;
+		case 11: CREATEINBACKPACK( "$normal_agility_potion" )		break;
+		case 12: CREATEINBACKPACK( "$greater_agility_potion" )		break;
+
+		case 21: CREATEINBACKPACK( "$lesser_cure_potion" )		break;
+		case 22: CREATEINBACKPACK( "$normal_cure_potion" )		break;
+		case 23: CREATEINBACKPACK( "$greater_cure_potion" )		break;
+
+		case 31: CREATEINBACKPACK( "$lesser_explosion_potion" )		break;
+		case 32: CREATEINBACKPACK( "$normal_explosion_potion" )		break;
+		case 33: CREATEINBACKPACK( "$greater_explosion_potion" )	break;
+
+		case 41: CREATEINBACKPACK( "$lesser_healing_potion" )		break;
+		case 42: CREATEINBACKPACK( "$normal_healing_potion" )		break;
+		case 43: CREATEINBACKPACK( "$greater_healing_potion" )		break;
+
+		case 51: CREATEINBACKPACK( "$normal_nightsight_potion" )	break;
+
+		case 61: CREATEINBACKPACK( "$lesser_poison_potion" )		break;
+		case 62: CREATEINBACKPACK( "$normal_poison_potion" )		break;
+		case 63: CREATEINBACKPACK( "$greater_poison_potion" )		break;
+		case 64: CREATEINBACKPACK( "$deadly_poison_potion" )		break;
+
+		case 71: CREATEINBACKPACK( "$normal_energy_potion" )		break;
+		case 72: CREATEINBACKPACK( "$greater_energy_potion" )		break;
+
+		case 81: CREATEINBACKPACK( "$normal_strength_potion" )		break;
+		case 82: CREATEINBACKPACK( "$greater_strength_potion" )		break;
+		default: 
+			LogError("switch reached default into PotionToBottle");
+	return;
     }
 
 	VALIDATEPI(pi);
