@@ -32,6 +32,14 @@ cMULFile< tile_st >* verTile; // verdata.mul
 
 static SI32 verdataEntries;
 
+static std::string map_path;
+static std::string staIdx_path;
+static std::string statics_path;
+static std::string tiledata_path;
+static std::string verdata_path;
+static std::string multi_path;
+static std::string multiIdx_path;
+
 /*!
 \author Luxor
 \brief Caches map mul files, trying to maintain a sequential reading to get the best speed.
@@ -167,6 +175,10 @@ static void cacheTileData()
 	tdTile->setCache( tile_cache );
 }
 
+/*!
+\author Luxor
+\brief Caches the verdata index, trying to maintain a sequential reading to get the best speed.
+*/
 static void cacheVerdataIndex()
 {
 	if ( !verIdx->isReady() )
@@ -176,6 +188,7 @@ static void cacheVerdataIndex()
 	verIdx->getData( 0, (BYTE*)(&verdataEntries), 4 );
 
 	verdata_st v;
+	UI32 i, pos;
 
 	ConOut( "\nCaching verdata index ( verdata.mul ) \t\t" );
 	for ( i = 0; i < verdataEntries; i++ ) {
@@ -187,6 +200,10 @@ static void cacheVerdataIndex()
 	verIdx->setCache( verIdx_cache );
 }
 
+/*!
+\author Luxor
+\brief Caches the verdata info, trying to maintain a sequential reading to get the best speed.
+*/
 static void cacheVerdata()
 {
 	if ( !verIdx->isReady() && !verTile->isReady() && !verLand->isReady() )
@@ -199,6 +216,7 @@ static void cacheVerdata()
 	land_st l;
 	UI32 block;
 	UI08 index;
+	UI32 i, pos;
 
 	ConOut( "\nCaching verdata tiledata info ( verdata.mul ) \t\t" );
 	for ( i = 0; i < verdataEntries; i++ ) {
@@ -235,7 +253,7 @@ static void cacheVerdata()
 /*!
 \author Luxor
 */
-void init( LOGICAL cache )
+void init()
 {
 	//
 	// If MULs loading fails, stop the server!
@@ -243,22 +261,30 @@ void init( LOGICAL cache )
 	keeprun = false;
 
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
-	
-	maps.push_back( new cMULFile< map_st > ( "./mul/map0.mul", "rb" ) );
-	staticIdx = new cMULFile< staticIdx_st > ( "./mul/staidx0.mul", "rb" );
-	statics = new cMULFile< static_st > ( "./mul/statics0.mul", "rb" );
-	tdLand = new cMULFile< land_st > ( "./mul/tiledata.mul", "rb" );
-	tdTile = new cMULFile< tile_st > ( "./mul/tiledata.mul", "rb" );
-	multiIdx = new cMULFile< multiIdx_st > ( "./mul/multi.idx", "rb" );
-	multi = new cMULFile< multi_st > ( "./mul/multi.mul", "rb" );
-	verIdx = new cMULFile< verdata_st > ( "./mul/verdata.mul", "rb" );
-	verLand = new cMULFile< land_st > ( "./mul/verdata.mul", "rb" );
-	verTile = new cMULFile< tile_st > ( "./mul/verdata.mul", "rb" );
+
+	maps.push_back( new cMULFile< map_st > ( map_path, "rb" ) );
+	staticIdx = new cMULFile< staticIdx_st > ( staIdx_path, "rb" );
+	statics = new cMULFile< static_st > ( statics_path, "rb" );
+	tdLand = new cMULFile< land_st > ( tiledata_path, "rb" );
+	tdTile = new cMULFile< tile_st > ( tiledata_path, "rb" );
+	multiIdx = new cMULFile< multiIdx_st > ( multiIdx_path, "rb" );
+	multi = new cMULFile< multi_st > ( multi_path, "rb" );
+	verIdx = new cMULFile< verdata_st > ( verdata_path, "rb" );
+	verLand = new cMULFile< land_st > ( verdata_path, "rb" );
+	verTile = new cMULFile< tile_st > ( verdata_path, "rb" );
 
 	//
 	// We cache always the verdata index, it's very small and it really improves performances.
 	//
 	cacheVerdataIndex();
+
+	if ( ServerScp::g_nMapCache )
+		cacheStatics();
+
+	if( server_data.cache_tiledata ) {
+		cacheTileData();
+		cacheVerdata();
+	}
 
 	//
 	// MULs loaded, let's keep the server running
@@ -273,19 +299,61 @@ void shutdown()
 {
 	UI32 i;
 	for ( i = 0; i < maps.size(); i++ )
-		safedelete( maps[i] );
+		if ( maps[i] != NULL )
+			safedelete( maps[i] );
 
-	safedelete( staticIdx );
-	safedelete( statics );
-	safedelete( tdLand );
-	safedelete( tdTile );
-	safedelete( multiIdx );
-	safedelete( multi );
-	safedelete( verIdx );
-	safedelete( verLand );
-	safedelete( verTile );
+	if ( staticIdx != NULL )
+		safedelete( staticIdx );
+	if ( statics != NULL )
+		safedelete( statics );
+	if ( tdLand != NULL )
+		safedelete( tdLand );
+	if ( tdTile != NULL )
+		safedelete( tdTile );
+	if ( multiIdx != NULL )
+		safedelete( multiIdx );
+	if ( multi != NULL )
+		safedelete( multi );
+	if ( verIdx != NULL )
+		safedelete( verIdx );
+	if ( verLand!= NULL )
+		safedelete( verLand );
+	if ( verTile != NULL )
+		safedelete( verTile );
 }
 
+/*!
+\author Luxor
+*/
+void setPath( MulFileId id, std::string path )
+{
+	switch ( id )
+	{
+		case Map_File:
+			map_path = path;
+			break;
+		case StaIdx_File:
+			staIdx_path = path;
+			break;
+		case Statics_File:
+			statics_path = path;
+			break;
+		case Multi_File:
+			multi_path = path;
+			break;
+		case MultiIdx_File:
+			multiIdx_path = path;
+			break;
+		case TileData_File:
+			tiledata_path = path;
+			break;
+		case VerData_File:
+			verdata_path = path;
+			break;
+		default:
+			break;
+	}
+}
 
 
 /*!
@@ -478,6 +546,28 @@ cMULFile<T>::cMULFile( std::string path, std::string mode )
 {
 	m_cache = NULL;
 	m_file = fopen( path.c_str(), mode.c_str() );
+
+	// <Xanathar>: MULs path autodetecting
+#ifdef WIN32
+	if ( !isReady() && ServerScp::g_nAutoDetectMuls ) {
+		char *s;
+		char fn[800], fn2[800];
+		char *f;
+		strcpy( fn2, fileName );
+		f = splitPath( fn2 );
+		s = getHKLMRegistryString( "SOFTWARE\\Origin Worlds Online\\Ultima Online\\1.0", "ExePath" );
+		if ( s != NULL ) {
+			splitPath( s );
+			strcpy( fn, s );
+			safedelete( s );
+			strcat( fn, "\\" );
+			strcat( fn, f );
+			ConOut( "*** Can't open %s, trying %s ***\n", fileName, fn );
+			m_file = fopen( fn, mode.c_str() );
+		}
+	}
+#endif
+	// </Xanathar>
 }
 
 /*!

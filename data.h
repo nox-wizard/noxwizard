@@ -46,6 +46,10 @@ enum VerFile {
 	VerAnimData
 };
 
+enum MulFileId {
+	Map_File = 0, StaIdx_File, Statics_File, Multi_File, MultiIdx_File, TileData_File, VerData_File
+};
+
 /*struct map_st {
 	UI16 id;
 	SI08 z;
@@ -132,8 +136,9 @@ const UI08 map_st_size = sizeof( map_st );
 */
 namespace data {
 
-void init( LOGICAL cache );
+void init();
 void shutdown();
+void setPath( MulFileId id, std::string path );
 
 LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap = 0 ); //<! Luxor: nMap will be used for future multiple maps support.
 LOGICAL collectStatics( UI32 x, UI32 y, staticVector& s_vec );
