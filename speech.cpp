@@ -1746,7 +1746,7 @@ static LOGICAL requestChaosShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 						P_ITEM pi =  pc->GetItemOnLayer( 2 );
 						if( ISVALIDPI( pi ) )
 						{
-							if( pi->id != 0x1BC3 )
+							if( pi->getId() != 0x1BC3 )
 								success = true;
 						}
 						else
@@ -1801,7 +1801,7 @@ static LOGICAL requestOrderShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 						P_ITEM pi =  pc->GetItemOnLayer( 2 );
 						if( ISVALIDPI( pi ) )
 						{
-							if( pi->id != 0x1BC4 )
+							if( pi->getId() != 0x1BC4 )
 								success = true;
 						}
 						else

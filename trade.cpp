@@ -231,9 +231,9 @@ static bool items_match(P_ITEM pi1,P_ITEM pi2)
 	VALIDATEPIR(pi1,false);
 	VALIDATEPIR(pi2,false);
 
-	if (pi1->id==pi2->id &&
+	if (pi1->getId()==pi2->getId() &&
 		pi1->type==pi2->type &&
-		!(pi1->id==0x14F0 && (pi1->morex!=pi2->morex)) &&	// house deeds only differ by morex
+		!(pi1->getId()==0x14F0 && (pi1->morex!=pi2->morex)) &&	// house deeds only differ by morex
 		!(pi1->IsShield() && strcmp(pi1->getSecondaryNameC(),pi2->getSecondaryNameC())) &&	// magic shields only differ by secondary name
 		pi1->color==pi2->color)		// this enables color checking for armour, but disables dyed clothes :)
 		return true;

@@ -48,7 +48,7 @@ void cGuilds::StonePlacement(int s)
 	P_ITEM pi_fx1=MAKE_ITEM_REF(pc->fx1);
 	if(ISVALIDPI(pi_fx1))
 	{
-		if (pi_fx1->id==0x14F0)
+		if (pi_fx1->getId()==0x14F0)
 		{
 			if (pc->GetGuildNumber() !=0)
 			{
@@ -68,7 +68,7 @@ void cGuilds::StonePlacement(int s)
 				pc->sysmsg(TRANSLATE("Cannot create guildstone"));
 				return;
 			}
-			pStone->id = 0x0ED5;
+			pStone->setId( 0x0ED5 );
 			pStone->setCurrentName( "Guildstone for a unnamed guild" );
 			if ( pc->GetBodyType() == BODY_FEMALE )
 				pc->SetGuildTitle("Guildmistress");
@@ -111,7 +111,7 @@ void cGuilds::StonePlacement(int s)
 					pc->sysmsg(TRANSLATE("Cannot create guildstone"));
 					return;
 				}
-                pStone->id = 0xED5;
+                pStone->setId( 0xED5 );
 				pStone->setCurrentName( stonename );
 				pStone->setPosition( charpos );
 				pStone->type= ITYPE_GUILDSTONE;
@@ -791,7 +791,7 @@ void cGuilds::StoneMove(int s)
 
 	if (!ISVALIDPI(pNewstone)) return; //AntiChrist
 	pNewstone->setCurrentName( stonename );
-	pNewstone->id = 0x1869;
+	pNewstone->setId( 0x1869 );
 
 	pNewstone->type = ITYPE_GUILDSTONE;			// Set Guildstone to Type 'Guild Related'
 	guilds[guildnumber].stone=pNewstone->getSerial32();	// Remember its serial number

@@ -923,7 +923,7 @@ int cChar::calcDef(SI32 x)
 					sprintf(temp,TRANSLATE("Your %s has been destroyed"),pj->getCurrentNameC());
 				} else {
 					tile_st tile;
-					data::seekTile(pj->id, tile);
+					data::seekTile(pj->getId(), tile);
 					sprintf(temp,TRANSLATE("Your %s has been destroyed"),tile.name);
 				}
 				//LB bugfix !!! -- remove BONUS STATS given by equipped special items
@@ -1133,7 +1133,7 @@ void cChar::combatOnHorse()
 {
 	P_ITEM pWeapon = getWeapon();
 	if (ISVALIDPI(pWeapon)) {
-		short weapId = pWeapon->id;
+		short weapId = pWeapon->getId();
 
 		if (pWeapon->IsBow()) {
 			playAction(0x1B);

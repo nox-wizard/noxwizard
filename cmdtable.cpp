@@ -1481,7 +1481,7 @@ void target_addTarget( NXWCLIENT ps, P_TARGET t )
 	tile_st tile;
     data::seekTile( id, tile );
 
-    pi->id = id;
+    pi->setId( id );
     pi->pileable = tile.flags&TILEFLAG_STACKABLE;
     pi->setDecay( false );
 	Location location = t->getLocation();
@@ -3133,7 +3133,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 		{
 			if( color==UINVALID16 ) //open dye vat
 			{
-				SndDyevat( ps->toInt(), pi->getSerial32(), pi->id );
+				SndDyevat( ps->toInt(), pi->getSerial32(), pi->getId() );
 			}	
 			else {
 				if (! ((color & 0x4000) || (color & 0x8000)) )
@@ -3266,7 +3266,7 @@ void target_setid( NXWCLIENT ps, P_TARGET t )
 		P_ITEM pi=pointers::findItemBySerial( serial );
 		VALIDATEPI(pi);
 
-		pi->id = value;
+		pi->setId( value );
         pi->Refresh();
 	}
 }

@@ -94,7 +94,7 @@ public:
 \name Look
 */
 	inline SI16 animid()
-	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : id; }
+	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : getId(); }
 
 	SI08	isFieldSpellItem();
 

@@ -236,7 +236,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'b':
 			if (!(strcmp(script1, "BODY")))
 			{
-				pc->SetBodyType( str2num(script2) );
+				UI16 body = str2num(script2);
+				pc->SetBodyType( body );
+				pc->SetOldBodyType( body );
 			}
 		break;
 
@@ -839,7 +841,7 @@ void loaditem()
 				if( (i==0x1071) || (i==0x1075))
 					i--;
 				// elcabesa bugfigx end
-				pi->id = static_cast<short>(i);
+				pi->setId( i );
 
 				if (i>=0x4000)
 				{
@@ -1038,7 +1040,7 @@ void loaditem()
 
 	pi->timeused_last=getclock();
 
-	if(pi->animid()==pi->id) //elcabesa animation bugfix..if we have not defined a animid use the id of object
+	if(pi->animid()==pi->getId()) //elcabesa animation bugfix..if we have not defined a animid use the id of object
 		pi->animSetId(0);
 
 	pi->weight=(UI32)pi->getWeight();
@@ -1818,17 +1820,17 @@ void CWorldMain::SaveItem( P_ITEM pi )
 						fprintf(iWsc, "COLOR %i\n", pc_morphed->oldhaircolor);
 					}
 				} else {
-					fprintf(iWsc, "ID %i\n", pi->id);
+					fprintf(iWsc, "ID %i\n", pi->getId());
 					if (pi->color!=dummy.color)
 						fprintf(iWsc, "COLOR %i\n", pi->color);
 				}
 			} else {
-				fprintf(iWsc, "ID %i\n", pi->id);
+				fprintf(iWsc, "ID %i\n", pi->getId());
 				if (pi->color!=dummy.color)
 					fprintf(iWsc, "COLOR %i\n", pi->color);
 			}
 		} else {
-			fprintf(iWsc, "ID %i\n", pi->id);
+			fprintf(iWsc, "ID %i\n", pi->getId());
 			if (pi->color!=dummy.color)
 				fprintf(iWsc, "COLOR %i\n", pi->color);
 		}
@@ -1836,7 +1838,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		if( pi->getScriptID()!=dummy.getScriptID() )
 			fprintf(iWsc, "SCRIPTID %u\n", pi->getScriptID());
 
-		if ((pi->animid()!=pi->id )&&(pi->animid()!=dummy.animid()))
+		if ((pi->animid()!=pi->getId() )&&(pi->animid()!=dummy.animid()))
 			fprintf(iWsc, "ANIMID %i\n", pi->animid());
 
 		fprintf(iWsc, "NAME2 %s\n", pi->getSecondaryNameC());

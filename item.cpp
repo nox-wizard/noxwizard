@@ -67,7 +67,7 @@ namespace item
 		}
 
 		pi->animSetId(0);
-		pi->id =0x0915;
+		pi->setId( 0x0915 );
 		amxVS.setServerMode();
 
 		do
@@ -236,7 +236,7 @@ namespace item
 					if ( lha == "ID" )
 					{
 						tmp = hex2num(rha);
-						pi->id =tmp;
+						pi->setId( tmp );
 					}
 					else if ( lha == "ITEMLIST" )
 					{
@@ -390,7 +390,7 @@ namespace item
 		pi->useAnimId=(pi->animid()!=0);
 
 		tile_st tile;
-		data::seekTile(pi->id, tile);
+		data::seekTile(pi->getId(), tile);
 
 		if (tile.flags&TILEFLAG_STACKABLE)
 			pi->pileable = 1;
@@ -470,7 +470,7 @@ namespace item
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
    		VALIDATEPIR( pi, NULL );
-    	pi->id = id;
+    	pi->setId( id );
 		pi->color= color ;
     		pi->pileable = pile;
 
@@ -613,7 +613,7 @@ namespace item
 			strcpy(itemname, pi->getCurrentNameC());
 			return strlen(itemname)+1;
 		}
-		data::seekTile(pi->id, tile);
+		data::seekTile(pi->getId(), tile);
 		if (tile.flags&TILEFLAG_PREFIX_AN) strcpy(itemname, "an ");
 		else if (tile.flags&TILEFLAG_PREFIX_A) strcpy(itemname, "a ");
 		else itemname[0]=0;
@@ -721,7 +721,7 @@ namespace item
 
 		if(pi == NULL) return;
 
-		sprintf(buff,"x%x",pi->id);
+		sprintf(buff,"x%x",pi->getId());
 
 
 		pi->animSetId(0);

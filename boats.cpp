@@ -110,7 +110,7 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 
 	multiVector m;
 
-	data::seekMulti( pi->id-0x4000, m );
+	data::seekMulti( pi->getId()-0x4000, m );
 	Location itmpos= pi->getPosition();
 	for( UI32 i = 0; i < m.size(); i++ ) {
 		if(/*(multi.visible)&&*/((itmpos.x+m[i].x) == where.x) && ((itmpos.y+m[i].y) == where.y))
@@ -328,7 +328,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 			p2,
 			hold;
 
-	WORD2DBYTE( pi->id, id1, id2 );
+	WORD2DBYTE( pi->getId(), id1, id2 );
 
 	//Of course we need the boat items!
 	serial=calcserial(pi->moreb1,pi->moreb2,pi->moreb3,pi->moreb4);
@@ -387,7 +387,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	if(id2>pi->more2)
 		id2-=4;//Now you know what the min/max id is for :-)
 
-	pi->id=DBYTE2WORD( id1, id2 );//set the id
+	pi->setId( DBYTE2WORD( id1, id2 ) );//set the id
 
 	if(id2==pi->more1)
 		pi->dir=0;//extra DIR error checking
@@ -403,16 +403,16 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	Location bpos= pi->getPosition();
 
 	p1->MoveTo( bpos.x, bpos.y, p1->getPosition().z );
-	p1->id= p1->id | pShipItems[PORT_P_C];//change the ID
+	p1->setId( p1->getId() | pShipItems[PORT_P_C] );//change the ID
 
 	p2->MoveTo( bpos.x, bpos.y, p2->getPosition().z );
-	p2->id= p2->id | pShipItems[STAR_P_C];
+	p2->setId( p2->getId() | pShipItems[STAR_P_C] );
 
 	tiller->MoveTo( bpos.x, bpos.y, tiller->getPosition().z );
-	tiller->id = tiller->id | pShipItems[TILLERID];
+	tiller->setId( tiller->getId() | pShipItems[TILLERID] );
 
 	hold->MoveTo(bpos.x, bpos.y, hold->getPosition().z );
-	hold->id = hold->id | pShipItems[HOLDID];
+	hold->setId( hold->getId() | pShipItems[HOLDID] );
 
 	TurnShip( pi->more1, dir, p1, p2, tiller, hold );
 
@@ -874,7 +874,7 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 	LOGICAL good_pos=false;
 
 	multiVector m;
-	data::seekMulti( pBoat->id-0x4000, m );
+	data::seekMulti( pBoat->getId()-0x4000, m );
 
 	for( i = 0; i < m.size(); i++ ) {
 
@@ -1137,8 +1137,8 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 	int x,y;
 
 	multiVector m1, m2;
-	data::seekMulti( pBoat1->id-0x4000, m1 );
-	data::seekMulti( pBoat2->id-0x4000, m2 );
+	data::seekMulti( pBoat1->getId()-0x4000, m1 );
+	data::seekMulti( pBoat2->getId()-0x4000, m2 );
 
 	for( i1 = 0; i1 < m1.size(); i1++ )
 	{
@@ -1191,20 +1191,20 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 void cBoat::OpenPlank(P_ITEM pi)
 {
-	switch(pi->id&0xFF)
+	switch(pi->getId()&0xFF)
 	{
 		//Open plank->
-		case (unsigned char)0xE9: pi->id= pi->id | (unsigned char)0x84; break;
-		case (unsigned char)0xB1: pi->id= pi->id | (unsigned char)0xD5; break;
-		case (unsigned char)0xB2: pi->id= pi->id | (unsigned char)0xD4; break;
-		case (unsigned char)0x8A: pi->id= pi->id | (unsigned char)0x89; break;
-		case (unsigned char)0x85: pi->id= pi->id | (unsigned char)0x84; break;
+		case 0xE9: pi->setId( 0xE984 ); break;
+		case 0xB1: pi->setId( 0xB1D5 ); break;
+		case 0xB2: pi->setId( 0xB2D4 ); break;
+		case 0x8A: pi->setId( 0x8A89 ); break;
+		case 0x85: pi->setId( 0x8584 ); break;
 		//Close Plank->
-		case (unsigned char)0x84: pi->id= pi->id | (unsigned char)0xE9; break;
-		case (unsigned char)0xD5: pi->id= pi->id | (unsigned char)0xB1; break;
-		case (unsigned char)0xD4: pi->id= pi->id | (unsigned char)0xB2; break;
-		case (unsigned char)0x89: pi->id= pi->id | (unsigned char)0x8A; break;
-		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id); break;
+		case 0x84: pi->setId( 0x84E9 ); break;
+		case 0xD5: pi->setId( 0xD5B1 ); break;
+		case 0xD4: pi->setId( 0xD4B2 ); break;
+		case 0x89: pi->setId( 0x898A ); break;
+		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->getId()); break;
 	}
 }
 
@@ -1226,7 +1226,7 @@ P_ITEM cBoat::GetBoat(Location pos)
 		if( dist( pos, pBoat->getPosition() ) < 10.0 )
 		{
 			multiVector m;
-			data::seekMulti( pBoat->id-0x4000, m );
+			data::seekMulti( pBoat->getId()-0x4000, m );
 
 			for( i = 0; i < m.size(); i++ ) {
 				if( ((m[i].x + pBoat->getPosition().x) == pos.x) && ((m[i].y + pBoat->getPosition().y) == pos.y) )

@@ -276,11 +276,11 @@ class cChar : public cObject
 	private:
 		UI16			xid;				//!< Backup of body type for ghosts
 	public:
-		BODYTYPE		GetBodyType() const;
-		void			SetBodyType(BODYTYPE newBody);
-		BODYTYPE		GetOldBodyType() const;
-		void			SetOldBodyType(BODYTYPE newBody);
-		const LOGICAL		HasHumanBody() const;
+		UI16		GetBodyType();
+		void			SetBodyType(UI16 newBody);
+		UI16		GetOldBodyType();
+		void			SetOldBodyType(UI16 newBody);
+		const LOGICAL		HasHumanBody();
 	//
 	//	Skin Color
 	//

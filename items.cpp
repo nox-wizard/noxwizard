@@ -60,7 +60,7 @@ cItem& cItem::operator=(cItem& b)
         good = b.good;
         rndvaluerate = b.rndvaluerate;
         //setMultiSerial32(b.getMultiSerial32());
-        id = b.id;
+        setId( b.getId() );
         //setPosition(b.getPosition());
         //setOldPosition(b.getOldPosition());
         color = b.color;
@@ -657,7 +657,7 @@ inline bool operator ==( cItem& a, cItem& b ) {
 	return  ( a.pileable && b.pileable ) &&
 			( a.getSerial32() != b.getSerial32() ) &&
 			( a.getScriptID() == b.getScriptID() ) &&
-			( a.id == b.id ) &&
+			( a.getId() == b.getId() ) &&
 			( a.color == b.color ) &&
 			( a.poisoned == b.poisoned );
 }
@@ -762,7 +762,7 @@ int cItem::DeleteAmount(int amount, short id, short color)
 		P_ITEM pi=si.getItem();
 		if(ISVALIDPI(pi) && (rest > 0) )
 		{
-			if (pi->id==id && (color==INVALID || (pi->color==color)))
+			if (pi->getId()==id && (color==INVALID || (pi->color==color)))
 				rest=pi->ReduceAmount(rest);
 		}
 	}
@@ -822,7 +822,7 @@ int cItem::getName(char* itemname)
 R32 cItem::getWeight()
 {
 
-	if (id == ITEMID_GOLD)
+	if (getId() == ITEMID_GOLD)
 		return (R32)SrvParms->goldweight;
 
 	R32 itemweight=0.0;
@@ -832,7 +832,7 @@ R32 cItem::getWeight()
 	else
 	{
 		tile_st tile;
-		data::seekTile(id, tile);
+		data::seekTile(getId(), tile);
 		if (tile.weight==0) // can't find weight
 		{
 			if(type != ITYPE_FOOD)
@@ -880,7 +880,7 @@ cItem::cItem( SERIAL ser )
 	rank=0; // Magius(CHE)
 	good=-1; // Magius(CHE)
 	rndvaluerate=0; // Magius(CHE) (2)
-	id = 0x0001; // Item visuals as stored in the client
+	setId( 0x0001 ); // Item visuals as stored in the client
 	setPosition(100, 100, 0);
 	setOldPosition( getPosition() );
 	color = 0x0000; // Hue
@@ -1018,7 +1018,7 @@ const char* cItem::getRealItemName()
     else
 	{
 		tile_st tile;
-		data::seekTile(id, tile);
+		data::seekTile(getId(), tile);
         return reinterpret_cast<char*>(tile.name);
     }
 }
@@ -1083,7 +1083,7 @@ int cItem::countSpellsInSpellBook()
         
 		P_ITEM pj=si.getItem();
 		if(!ISVALIDPI(pj)) continue;
-		if (pj->id == 0x1F6D)
+		if (pj->getId() == 0x1F6D)
             spellcount = 64;
         else
             spellcount++;
@@ -1115,7 +1115,7 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 		P_ITEM pj=si.getItem();
 		if(!ISVALIDPI(pj)) continue;
 
-        if((pj->id==(0x1F2D+spellnum) || pj->id==0x1F6D) || pj->id == 0x1F6D)
+        if((pj->getId()==(0x1F2D+spellnum) || pj->getId()==0x1F6D) || pj->getId() == 0x1F6D)
         {
             return true;
         }
@@ -1222,7 +1222,7 @@ x-range 18 .. 118 for 1,2,3; 40 for 4
 */
 SI16 cContainerItem::getGumpType()
 {
-	switch( id )
+	switch( getId() )
 	{
 	case 0x09b0:
 	case 0x09aa:
@@ -1298,7 +1298,7 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 		if(!ISVALIDPI(pi)) continue;
 
 		if (!(pileable && pItem->pileable &&
-			id==pItem->id &&
+			getId()==pItem->getId() &&
 			color==pItem->color ))
 			return false;	//cannot stack.
 

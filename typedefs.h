@@ -70,7 +70,6 @@ typedef float				R32;	//< 32 bits floating point
 typedef bool				LOGICAL;	//!< boolean type
 typedef char				TEXT;		//!< character type
 typedef UI08				ARMORCLASS;
-typedef UI16				BODYTYPE;
 typedef SI32				CHARACTER;
 typedef UI16				COLOR;
 typedef SI32				SOUND;

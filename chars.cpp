@@ -956,7 +956,7 @@ void cChar::unHide()
 					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					SendDrawGamePlayerPkt(i, my_serial, id, 0x00, color, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
+					SendDrawGamePlayerPkt(i, my_serial, getId(), 0x00, color, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
 				}
 			}
 		}
@@ -1632,7 +1632,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 			saycolor=0x005B;
 		}
 
-		SendSpeechMessagePkt(s, getSerial32(), id, 0, saycolor, fonttype, name, txt);
+		SendSpeechMessagePkt(s, getSerial32(), getId(), 0, saycolor, fonttype, name, txt);
 	}
 }
 
@@ -1668,7 +1668,7 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(socket, getSerial32(), id, 2, emotecolor, fonttype, name, msg);
+		SendSpeechMessagePkt(socket, getSerial32(), getId(), 2, emotecolor, fonttype, name, msg);
 	}
 }
 
@@ -1741,7 +1741,7 @@ void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(s, getSerial32(), id, 0, 0x0001, 0x0008, name, txt);
+		SendSpeechMessagePkt(s, getSerial32(), getId(), 0, 0x0001, 0x0008, name, txt);
 	}
 }
 
@@ -1864,7 +1864,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		if ( IsHidden() )
 			flag |= 0x80;
 
-		SendDrawGamePlayerPkt(socket, getSerial32(), id, 0x00, color, flag, pos, 0x0000, dir | 0x80, true);
+		SendDrawGamePlayerPkt(socket, getSerial32(), getId(), 0x00, color, flag, pos, 0x0000, dir | 0x80, true);
 
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -2112,7 +2112,7 @@ void cChar::playSFX(SI16 sound, LOGICAL onlyToMe)
 void cChar::playMonsterSound(MonsterSound sfx)
 {
 
-	P_CREATURE_INFO creature = creatures.getCreature( id );
+	P_CREATURE_INFO creature = creatures.getCreature( getId() );
 	if( creature==NULL )
 		return;
 
@@ -2139,7 +2139,7 @@ LOGICAL const cChar::CanDoGestures() const
 			{
 				if ( pj->layer == LAYER_2HANDWEAPON || ( pj->layer == LAYER_1HANDWEAPON && pj->type!=ITYPE_SPELLBOOK ) )
 				{
-					if (!(pj->id==0x13F9 || pj->id==0x0E8A || pj->id==0x0DF0 || pj->id==0x0DF2
+					if (!(pj->getId()==0x13F9 || pj->getId()==0x0E8A || pj->getId()==0x0DF0 || pj->getId()==0x0DF2
 						|| pj->IsChaosOrOrderShield() ))
 					{
 						return false;
@@ -2536,7 +2536,7 @@ void cChar::resurrect( NXWCLIENT healer )
 		*/
 		modifyFame(0);
 		playSFX( 0x0214);
-		id = xid;
+		setId( xid );
 		color = xskin;
 		attackerserial=INVALID;
 		ResetAttackFirst();
@@ -2684,24 +2684,24 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 
 	if (bBackup)
 	{
-		xid = id;
+		xid = getId();
 		xskin = color;
 
 		setRealName( getCurrentNameC() );
 		if(ISVALIDPI(pbeard))
 		{
-			oldbeardstyle = pbeard->id;
+			oldbeardstyle = pbeard->getId();
 			oldbeardcolor = pbeard->color;
 		}
 		if(ISVALIDPI(phair))
 		{
-			oldhairstyle = phair->id;
+			oldhairstyle = phair->getId();
 			oldhaircolor = phair->color;
 		}
 	}
 
 	if(bodyid!=INVALID)
-		id = (BODYTYPE) bodyid;
+		setId( bodyid );
 
 	if(skincolor!=INVALID)
 		color = (UI16) skincolor;
@@ -2712,7 +2712,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	if(ISVALIDPI(pbeard))
 	{
 		if (beardstyle!=INVALID)
-			pbeard->id = beardstyle;
+			pbeard->setId( beardstyle );
 		if (beardcolor!=INVALID)
 			pbeard->color = beardcolor;
 	}
@@ -2720,7 +2720,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	if(ISVALIDPI(phair))
 	{
 		if (hairstyle!=INVALID)
-			phair->id = hairstyle;
+			phair->setId( hairstyle );
 		if (haircolor!=INVALID)
 			phair->color = haircolor;
 	}
@@ -2952,7 +2952,7 @@ void cChar::Kill()
 
 	if( polymorph )
 	{ // legacy code : should be cut when polymorph will be translated to morph
-		id = xid;
+		setId( xid );
 		polymorph=false;
 		teleport( TELEFLAG_SENDWORNITEMS );
 	}
@@ -3150,7 +3150,7 @@ void cChar::Kill()
 			continue;
 
 		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition().x==26) && (pi_j->getPosition().y==0) &&
-			(pi_j->getPosition().z==0) && (pi_j->id==0x1E5E) )
+			(pi_j->getPosition().z==0) && (pi_j->getId()==0x1E5E) )
 		{
 			endtrade(pi_j->getSerial32());
 		}
@@ -3159,7 +3159,7 @@ void cChar::Kill()
 	//--------------------- corpse & ghost stuff
 
 	bool hadHumanBody=HasHumanBody();
-	SI32 corpseid = (id == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
+	SI32 corpseid = (getId() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
@@ -3353,7 +3353,7 @@ void cChar::checkEquipement()
 				strcpy(temp2,pi->getCurrentNameC());
 
 			if( pi->st > getStrength()) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
-			playSFX( itemsfx(pi->id) );
+			playSFX( itemsfx(pi->getId()) );
 
 			//Subtract stats bonus and poison
 			modifyStrength(-pi->st2,false);
@@ -3424,7 +3424,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 	if (drag)
 		return 0;
 
-	data::seekTile( pi->id, item );
+	data::seekTile( pi->getId(), item );
 	
 	NxwItemWrapper si;
 	si.fillItemWeared( this, true, true, false );
@@ -3503,29 +3503,29 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	return 0;
 }
 
-BODYTYPE cChar::GetBodyType() const
+UI16 cChar::GetBodyType()
 {
-	return (BODYTYPE) id;
+	return getId();
 }
 
-void cChar::SetBodyType(BODYTYPE newBody)
+void cChar::SetBodyType(UI16 newBody)
 {
-	id = newBody;
+	setId( newBody );
 }
 
-BODYTYPE cChar::GetOldBodyType() const
+UI16 cChar::GetOldBodyType()
 {
-	return (BODYTYPE) xid;
+	return xid;
 }
 
-void cChar::SetOldBodyType(BODYTYPE newBody)
+void cChar::SetOldBodyType(UI16 newBody)
 {
 	xid = newBody;
 }
 
-const LOGICAL cChar::HasHumanBody() const
+const LOGICAL cChar::HasHumanBody()
 {
-	return ((id==BODY_MALE) || (id==BODY_FEMALE));
+	return ((getId()==BODY_MALE) || (getId()==BODY_FEMALE));
 }
 
 const LOGICAL cChar::IsTrueGM() const
@@ -3979,7 +3979,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 
 	if( fame >= 10000 )
 	{ // adding Lord/Lady to title overhead
-		switch ( id )
+		switch ( getId() )
 		{
 			case BODY_FEMALE :
 				if ( strcmp(::title[9].other,"") )

@@ -940,7 +940,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 			continue;
 		// </Luxor>
 		if ( type == INVALID || pi->type==(UI32)type )
-			if ( id == INVALID || pi->id == id )
+			if ( id == INVALID || pi->getId() == id )
 				insertItem(pi);
 	}
 }

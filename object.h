@@ -179,7 +179,13 @@ public:
 public:
 	virtual	void		Delete();
 
+private:
 	UI16 id;
+public:
+	void setId( UI16 newId );
+	UI16 getId();
+
+public:
 	COLOR color;
 
 } PACK_NEEDED;

@@ -293,7 +293,7 @@ void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, UI16 id)
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigtype)
 {
 	if (trigtype==TRIGMODE_ENVOKED) {
-		init(number, s, trigtype, itm->id);
+		init(number, s, trigtype, itm->getId());
 		m_pi = itm;
 	} else if (trigtype==TRIGMODE_STATIC) {
 		init(number, s, trigtype, ShortFromCharPtr(buffer[s] +17) );
@@ -756,7 +756,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
-				pc->id = DBYTE2WORD( array[0], array[1] );
+				pc->setId( DBYTE2WORD( array[0], array[1] ) );
 				if( m_nColor1 != 0xFF)
 					pc->color = DBYTE2WORD( m_nColor1, m_nColor2 );
 
@@ -987,7 +987,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				for( si.rewind(); !si.isEmpty(); si++ ) {
 					m_piNeededItem=si.getItem();
 					if (ISVALIDPI(m_piNeededItem)) {
-						sprintf(sect, "x%x", m_piNeededItem->id );
+						sprintf(sect, "x%x", m_piNeededItem->getId() );
 						if (strstr(par, sect))
 						{
 							break;
@@ -1248,7 +1248,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				m_pcNpc->teleport();
 			}
 			if ((ISNOTNPC(m_nTriggerType))&&(m_pi!=0)) {
-				m_pi->id = DBYTE2WORD( array[0], array[1] );
+				m_pi->setId( DBYTE2WORD( array[0], array[1] ) );
 				m_pi->Refresh();
 			}
 		}
@@ -1258,7 +1258,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			fillIntArray(par, array, 2, 0, 16);
 			if (m_piEnvoked != 0)
 			{
-				m_piEnvoked->id = DBYTE2WORD( array[0], array[1] );
+				m_piEnvoked->setId( DBYTE2WORD( array[0], array[1] ) );
 				m_piEnvoked->Refresh();
 			}
 		}

@@ -359,7 +359,7 @@ void Fishing::Fish(CHARACTER i)
 			VALIDATEPI(fish);
 		
 			fish->color=color;
-			fish->id |= idnum;
+			fish->setId( fish->getId() | idnum );
 		
 			if (ISVALIDPI(pc_bp))
 				pc_bp->AddItem( fish );

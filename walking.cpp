@@ -1130,7 +1130,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 		P_ITEM pi=si.getItem();
 		if(!ISVALIDPI(pi))
 			continue;
-			if( pi->id>=0x407C && pi->id<=0x407E )
+			if( pi->getId()>=0x407C && pi->getId()<=0x407E )
 			{
 				int di= item_dist(pc, pi);
 

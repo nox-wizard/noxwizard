@@ -411,7 +411,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	{
 		P_ITEM pi = item::CreateFromScript( "$item_short_hair" );
 		VALIDATEPI(pi);
-		pi->id = ShortFromCharPtr(buffer[s] + 0x52);
+		pi->setId( ShortFromCharPtr(buffer[s] + 0x52) );
 		pi->color = ShortFromCharPtr(buffer[s] + 0x54);
 		if ((pi->color<0x044E) || (pi->color>0x04AD) )
 		{
@@ -425,7 +425,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	{
 		P_ITEM pi = item::CreateFromScript( "$item_short_beard" );
 		VALIDATEPI(pi);
-		pi->id = ShortFromCharPtr(buffer[s] + 0x56) ;
+		pi->setId( ShortFromCharPtr(buffer[s] + 0x56) );
 		pi->color = ShortFromCharPtr(buffer[s] + 0x58);
 		if ( (pi->color<0x044E) || (pi->color>0x04AD) )
 		{
@@ -2018,7 +2018,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		break;
 
 	case 10: //LB's LSD potion, 5'th november 1999
-		if (pi->id!=0x1841) return; // only works with an special flask
+		if (pi->getId()!=0x1841) return; // only works with an special flask
 		if (s==INVALID) return;
 		if (LSD[s]==1)
 		{
@@ -2047,11 +2047,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 		pi = archive::item::New();
 
-		pi->id =0x0F0E;
+		pi->setId( 0x0F0E ); 
 
 		if (lsd==10) // empty Lsd potions
 		{
-			pi->id =0x183d;
+			pi->setId( 0x183d );
 		}
 
 		pi->pileable=1;

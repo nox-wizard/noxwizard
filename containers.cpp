@@ -233,7 +233,7 @@ SI16 cItem::getContGump()
 	}
 	return 0x47;
 */
-	CONTINFOMAP::iterator iter( contInfo.find( this->id ) );
+	CONTINFOMAP::iterator iter( contInfo.find( getId() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end() )
 		return 0x47;
 	else 
@@ -312,11 +312,11 @@ void cItem::SetRandPosInCont(P_ITEM pCont)
 {
 
 	setPosition("z", 9);
-	CONTINFOMAP::iterator iter( contInfo.find( pCont->id ) );
+	CONTINFOMAP::iterator iter( contInfo.find( pCont->getId() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end()) {
 		setPosition("x", RandomNum(18, 118));
 		setPosition("y", RandomNum(50, 100));
-		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->id );
+		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->getId() );
 	}
 	else {
 		setPosition("x", RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x));

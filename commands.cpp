@@ -605,7 +605,7 @@ namespace Commands
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI( pi );
-		pi->id =id;
+		pi->setId( id );
 		pi->pileable = pileable;
 
 		if(ISVALIDPI(pi))//AntiChrist - to preview crashes

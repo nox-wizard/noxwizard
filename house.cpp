@@ -276,7 +276,7 @@ void buildhouse( NXWCLIENT ps, P_TARGET t )
 
 		P_ITEM pHouse = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI(pHouse);
-		pHouse->id = id;
+		pHouse->setId( id );
 		pHouse->setCurrentName( temp );
 
 		pc->making=0;

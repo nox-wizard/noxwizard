@@ -956,7 +956,7 @@ namespace pointers {
 		int loopexit=0;
 		while ( ((pi = containerSearch(serial,index)) != 0) && (++loopexit < MAXLOOPS) )
 		{
-			if (pi->id==id  &&
+			if (pi->getId()==id  &&
 				(color==-1 || pi->color==color) && ISVALIDPI(pi))
 			return pi;
 		}
@@ -991,7 +991,7 @@ namespace pointers {
 				total += containerCountItems(pi->getSerial32(), id, color, bAddAmounts, true);
 				continue;
 			}
-			if ((pi->id==id && (color==-1 || pi->color==color))||(id==-1)) {
+			if ((pi->getId()==id && (color==-1 || pi->color==color))||(id==-1)) {
 				if (bAddAmounts) total += pi->amount;
 				else total++;
 			}

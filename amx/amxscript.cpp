@@ -225,7 +225,7 @@ void AmxProgram::Load(const char *filename)
 	  m_nSize = hdr.stp;
 	  m_ptrCode = program;
 
-#define FIND_NATIVE_NOT_FOUND
+//#define FIND_NATIVE_NOT_FOUND
 #ifdef FIND_NATIVE_NOT_FOUND
 	  if( !findNativeNotFound(program) ) { //native not found
 		  ConOut("[FAIL]\n");
