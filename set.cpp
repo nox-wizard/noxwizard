@@ -1443,8 +1443,15 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, LOGICAL bIncludeLikeHair, LOGICA
 		}
 
 		//race protected
+		bool prot_lay;
+
+		if( (pc->getRace())>0  &&  Race::isRaceSystemActive())
+			prot_lay=Race::isProtectedLayer( (UI32) pc->getRace(), pi_j->layer );
+		else
+			prot_lay=false;
+		
 		if( Race::isRaceSystemActive() )
-			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->getRace(), pi_j->layer ) ) ) 
+			if (!bIncludeProtectedLayer && prot_lay ) 
 				continue;
 
 		this->insertSerial( pi_j->getSerial32() );
