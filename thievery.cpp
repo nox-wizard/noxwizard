@@ -99,17 +99,18 @@ void Skills::StealingTarget(NXWCLIENT ps)
 	NXWSOCKET s = ps->toInt();
 	P_CHAR thief = ps->currChar();
 	VALIDATEPC(thief);
+	SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
 
 	AMXEXECSV(s,AMXT_SKITARGS,STEALING,AMX_BEFORE);
 
 	//steal a char
-	if ( buffer[s][7] < 0x40 )
+	if ( isCharSerial(target_serial) )
 	{
 		Skills::RandomSteal(ps);
         	return;
 	}
 
-	const P_ITEM pi = pointers::findItemBySerPtr( buffer[s]+7 );
+	const P_ITEM pi = pointers::findItemBySerial( target_serial );
 	VALIDATEPI(pi);
 
 	//steal a pickpocket, a steal training dummy
@@ -244,7 +245,7 @@ void Skills::StealingTarget(NXWCLIENT ps)
 				P_CHAR pc_i=ps_i->currChar();
 				if ( ISVALIDPC(pc_i) )
 					if( (rand()%10+10==17) || ( (rand()%2==1) && (pc_i->in>=thief->in)))
-						sysmessage(ps_i->toInt(),temp2);
+						pc_i->sysmsg(temp2);
 			}
 		}
 	}
@@ -264,20 +265,19 @@ void Skills::StealingTarget(NXWCLIENT ps)
 void Skills::PickPocketTarget(NXWCLIENT ps)
 {
 	if( ps == 0 ) return;
-	P_CHAR pc_currchar = ps->currChar();
-	VALIDATEPC(pc_currchar);
-	NXWSOCKET s = ps->toInt();
+	P_CHAR Me = ps->currChar();
+	VALIDATEPC(Me);
 
-	if (pc_currchar->skill[STEALING] < 300)
+	if (Me->skill[STEALING] < 300)
 	// check if under 30 in stealing
 	{
-		pc_currchar->checkSkill( STEALING, 0, 1000);
+		Me->checkSkill( STEALING, 0, 1000);
 		// check their skill
-		pc_currchar->playSFX(0x0249);
+		Me->playSFX(0x0249);
 		// rustling sound..dont know if right but it works :)
 	}
 	else
-        	pc_currchar->sysmsg(TRANSLATE("You learn nothing from practicing here"));
+        	Me->sysmsg(TRANSLATE("You learn nothing from practicing here"));
         	// if over 30 Stealing..dont learn.
 }
 
