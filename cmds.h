@@ -18,6 +18,16 @@
 #include "common_libs.h"
 #include "nxwcommn.h"		//for std classes
 
+enum PrivLevel
+{
+	PRIVLEVEL_ADMIN = 255,
+	PRIVLEVEL_GM	= 200,
+	PRIVLEVEL_SEER	= 150,
+	PRIVLEVEL_CNS	= 100,
+	PRIVLEVEL_PLAYER = 50,
+	PRIVLEVEL_GUEST = 0,
+}
+
 
 
 typedef class cCommand* P_COMMAND;

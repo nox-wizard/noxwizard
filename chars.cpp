@@ -42,6 +42,7 @@
 #include "utils.h"
 #include "nox-wizard.h"
 #include "targeting.h"
+#include "cmds.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -125,6 +126,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	
 
 	party=INVALID;
+	privlevel = PRIVLEVEL_GUEST;
 
 	setId( BODY_MALE );
 	race=INVALID;
@@ -546,12 +548,6 @@ void cChar::checkSafeStats()
 	mn = qmin( in, nMN );
 }
 
-
-void cChar::resetPriv3()
-{
-	for (register SI32 i=0;i<7;i++)
-		priv3[i]=0;
-}
 
 void cChar::resetBaseSkill()
 {

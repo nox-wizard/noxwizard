@@ -289,26 +289,25 @@ class cChar : public cObject
 \name Priviledges
 */
 	protected:
-		UI08			priv;		/*!<	- 0x01: GM clearance
+		UI08 priv;			/*!<
+								- 0x01: GM clearance
 								- 0x02: Broadcast
 								- 0x04: Invulnerable
-							        - 0x08: single click serial numbers
-							        - 0x10: Don't show skill titles
+						        - 0x08: single click serial numbers
+						        - 0x10: Don't show skill titles
 								- 0x20: GM Pagable
 								- 0x40: Can snoop others packs
 								- 0x80: Counselor clearance
 							*/
-	private:
-		void		resetPriv3();
-
 	public: // this will become private and i don't think 3 variables are needed to store privs...
 		SI08			priv2;	            /*!< 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
 										10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
 										100: allshow toggle
 						*/
-		SI32 			priv3[7];           //!< needed for Lord binarys meta-gm stuff
 		SI08			priv4;	            /*!< 1: allshow toggle
 						*/
+
+		UI08 privLevel; //!< privilege level
 
 	public:
 		const LOGICAL		IsTrueGM() const;
