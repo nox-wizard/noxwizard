@@ -15,16 +15,16 @@ CONTINFOMAP contInfo;
 void loadcontainers()
 {
 
-	cScpIterator* iter = NULL;
-	char script1[1024];
-	char script2[1024];
-	SI32 gump=INVALID;
-	BasicPosition uprleft={INVALID,INVALID};
-	BasicPosition dwnrght={INVALID,INVALID};
-	UI32VECTOR *vet = new UI32VECTOR;
+	cScpIterator*	iter = NULL;
+	std::string	script1,
+			script2;
+	SI32 		gump = INVALID;
+	BasicPosition	uprleft = {INVALID,INVALID};
+	BasicPosition	dwnrght = {INVALID,INVALID};
+	UI32VECTOR	*vet = new UI32VECTOR;
 
 	int cont=0;
-	
+
 	int loopexit=0;
 	do
 	{
@@ -32,57 +32,61 @@ void loadcontainers()
 		iter = Scripts::Containers->getNewIterator("SECTION CONTAINER %i", cont++);
 		if( iter==NULL ) continue;
 
-		gump=INVALID;
-		uprleft.x=INVALID; uprleft.y=INVALID;
-		dwnrght.x=INVALID; dwnrght.y=INVALID;
+		gump = INVALID;
+		uprleft.x = INVALID;
+		uprleft.y = INVALID;
+		dwnrght.x = INVALID;
+		dwnrght.y = INVALID;
 		vet->clear();
 
 		do
 		{
 
 			iter->parseLine(script1, script2);
-			if ((script1[0]!='}')&&(script1[0]!='{'))
+			if ( script1[0]!='}' && script1[0]!='{' )
 			{
-				if (!strcmp("ID", script1))
-					vet->push_back( str2num(script2) );
-				else if (!strcmp("GUMP", script1))
-					gump = str2num(script2);
-				else if (!strcmp("X1", script1))
-					uprleft.x= str2num(script2);
-				else if (!strcmp("Y1", script1))
-					uprleft.y= str2num(script2);
-				else if (!strcmp("X2", script1))
-					dwnrght.x= str2num(script2);
-				else if (!strcmp("Y2", script1))
-					dwnrght.y= str2num(script2);
+				if	( "ID" == script1 )
+					vet->push_back( str2num( script2 ) );
+				else if ( "GUMP" == script1 )
+					gump = str2num( script2 );
+				else if ( "X1" == script1 )
+					uprleft.x= str2num( script2 );
+				else if ( "Y1" == script1 )
+					uprleft.y= str2num( script2 );
+				else if ( "X2" == script1 )
+					dwnrght.x= str2num( script2 );
+				else if ( "Y2" == script1 )
+					dwnrght.y= str2num( script2 );
 				else
-					ConOut("[ERROR] wrong line ( %s ) parsed on containers.xss", script1 );
+					WarnOut("[ERROR] wrong line ( %s ) parsed on containers.xss", script1.c_str() );
 			}
 		}
-		while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		while ( script1[0] !='}' && ++loopexit < MAXLOOPS );
 
 		if( (gump!=INVALID) && (uprleft.x!=INVALID) && (dwnrght.x!=INVALID) && (uprleft.y!=INVALID) && (dwnrght.y!=INVALID) )
 		{
 			cont_gump_st dummy;
-			dummy.downright=dwnrght;
-			dummy.upperleft=uprleft;
-			dummy.gump=gump;
-			contInfoGump[gump]=dummy;
+
+			dummy.downright = dwnrght;
+			dummy.upperleft = uprleft;
+			dummy.gump	= gump;
+
+			contInfoGump[gump] = dummy;
 
 			CONTINFOGUMPMAP::iterator iter( contInfoGump.find(gump) );
 			if( iter != contInfoGump.end() )
 			{
 				UI32VECTOR::iterator ids( vet->begin() ), end( vet->end() );
-				for(; ids != end; ids++ )
-					contInfo[(*ids)]=iter;
+				for(; ids != end; ++ids )
+					contInfo[(*ids)] = iter;
 			}
 			else
 				ConOut("[ERROR] on parse of containers.xss" );
 		}
-		else 
+		else
 			ConOut("[ERROR] on parse of containers.xss" );
 	}
-	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
+	while ( script1 != "EOF" && ++loopexit < MAXLOOPS );
 
 	safedelete(iter);
 
