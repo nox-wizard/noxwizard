@@ -174,6 +174,11 @@ LOGICAL cMenus::handleMenu( NXWCLIENT ps )
 
 
 
+cBasicMenu::cBasicMenu( )
+{
+	serial=INVALID;
+	id=INVALID;
+}
 
 
 cBasicMenu::cBasicMenu( SERIAL menu, UI32 id )
