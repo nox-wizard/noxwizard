@@ -470,6 +470,10 @@ SOURCE=.\remadmin.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\resourcemap.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\scp_parser.cpp
 # End Source File
 # Begin Source File
@@ -923,6 +927,10 @@ SOURCE=.\remadmin.h
 # Begin Source File
 
 SOURCE=.\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\resourcemap.h
 # End Source File
 # Begin Source File
 
