@@ -381,7 +381,6 @@ namespace pointers {
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
 		{
 			pvCharsInRange = new pCharVector();
-
 			struct XY
 			{
 				UI32	x;
@@ -417,6 +416,8 @@ namespace pointers {
 			PCHARLOCATIONMAPIT it(  pCharLocationMap.lower_bound( ( upperLeft.x << 16 ) + upperLeft.y ) ),
 					   end( pCharLocationMap.upper_bound( ( lowerRight.x << 16 ) + lowerRight.y ));
 
+			LOGICAL select = false;
+
 			for( ; it != end; ++it )
 			{
 				if( ISVALIDPC( it->second ) )
@@ -425,24 +426,26 @@ namespace pointers {
 					{
 						if ( it->second->npc )
 						{ //Pc is an npc
-							if ( !(flags & NPC) )
-								continue;
+							if ( (flags & NPC) )
+								select = true;
 						}
 						else
 						{  //Pc is a player
-							if ( (flags & ONLINE) && !it->second->IsOnline() )
-								continue;
-							if ( (flags & OFFLINE) && it->second->IsOnline() )
-								continue;
+							if ( (flags & ONLINE) && it->second->IsOnline() )
+								select = true;
+							if ( (flags & OFFLINE) && !it->second->IsOnline() )
+								select = true;
 							//if ( (flags & DEAD) && !pc->dead ) continue;
 						}
 					}
-					pvCharsInRange->push_back( it->second );
+					if( select )
+						pvCharsInRange->push_back( it->second );
 				}
 				else	// cleanup
 				{
 					WarnOut( "getCharFromLocationMap removed invalid entry\n" );
 				}
+				select = false;
 			}
 		}
 		return pvCharsInRange;
@@ -867,7 +870,7 @@ namespace pointers {
 
 		delFromStableMap(pc);
 		delFromOwnerMap(pc);
-
+		delCharFromLocationMap(pc);
 		objects.eraseObject( pc );
 
 		eraseContainerInfo( pc->getSerial32() );
