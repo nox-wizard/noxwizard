@@ -479,7 +479,21 @@ static void exec_save(char *dummy)
 {
    if (server_data.announceworldsaves==1)//ANNOUNCE_SAVES in server.cfg
    	sysbroadcast(TRANSLATE("World will be saved in 30 seconds..."));
-
+   else
+   {
+		NxwSocketWrapper sw;
+		sw.fillOnline();
+		for( sw.rewind(); !sw.isEmpty(); sw++ ) 
+		{
+			NXWCLIENT ps = sw.getClient();
+			if( ps != 0 ) 
+			{
+				P_CHAR pc=ps->currChar();
+				if(ISVALIDPC(pc) && pc->IsGMorCounselor()) 
+					pc->sysmsg(TRANSLATE("World will be saved in 30 seconds..."));
+			}
+		}
+   }
    s_nSaveTime = uiCurrentTime+30*MY_CLOCKS_PER_SEC;
    if (s_nSaveTime==0) s_nSaveTime++; //just in case...
 }

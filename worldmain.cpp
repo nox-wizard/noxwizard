@@ -1389,7 +1389,24 @@ void CWorldMain::binarySaveWorld()
 
 	if (SrvParms->server_log)
 		ServerLog.Write("Server data save\n");
+   if (server_data.announceworldsaves==1)//ANNOUNCE_SAVES in server.cfg
 		sysbroadcast(TRANSLATE("World data saving...%d"), server_data.announceworldsaves);
+   else
+   {
+		NxwSocketWrapper sw;
+		sw.fillOnline();
+		for( sw.rewind(); !sw.isEmpty(); sw++ ) 
+		{
+			NXWCLIENT ps = sw.getClient();
+			if( ps != 0 ) 
+			{
+				P_CHAR pc=ps->currChar();
+				if(ISVALIDPC(pc) && pc->IsGMorCounselor()) 
+					pc->sysmsg(TRANSLATE("World will be saved in 30 seconds..."));
+			}
+		}
+   }
+
 	InfoOut("World data saving..." );
 ////CHARS SAVE
 	std::string oldFileName( SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileBinaryExtension );
