@@ -435,71 +435,26 @@ public:
 
 void DyeTarget(NXWSOCKET s)
 {
-    int body,c1,c2,b,k;
+    SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
 
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if ((addid1[s]==255)&&(addid2[s]==255))
     {
-        P_ITEM pi=pointers::findItemBySerial(serial);
-        if (pi!=NULL)
+        P_ITEM pi=pointers::findItemBySerial(target_serial);
+        if (ISVALIDPI(pi))
         {
             SndDyevat(s,pi->getSerial32(), pi->id());
-            pi->Refresh();
+//            pi->Refresh();
         }
-        int i=calcCharFromSer(serial);
-        if (i!=-1)
-        {
-            P_CHAR pc = MAKE_CHARREF_LR(i);
+
+        P_CHAR pc=pointers::findItemBySerial(target_serial);
+        if(ISVALIDPC(pc))
+	{
             SndDyevat(s,pc->getSerial32(),0x2106);
         }
     }
     else
     {
-        P_ITEM pi=pointers::findItemBySerial(serial);
-        if (pi!=NULL)
-        {
-            c1=addid1[s]; // lord binary, dying crash bugfix
-            c2=addid2[s];
-
-            if (!dyeall[s])
-            {
-                if ((((c1<<8)+c2)<0x0002) ||
-                    (((c1<<8)+c2)>0x03E9) )
-                {
-                    c1=0x03;
-                    c2=0xE9;
-                }
-            }
-
-            b=((((c1<<8)+c2)&0x4000)>>14)+((((c1<<8)+c2)&0x8000)>>15);
-            if (!b)
-            {
-                pi->color1=c1;
-                pi->color2=c2;
-            }
-            pi->Refresh();
-        }
-
-        int i=calcCharFromSer(serial);
-        if (i!=-1)
-        {
-            P_CHAR pc = MAKE_CHARREF_LR(i);
-            body = pc->GetBodyType();
-            k=(addid1[s]<<8)|addid2[s];
-            if( ( k < 0x8000 ) && body >= BODY_MALE && body <= BODY_DEADFEMALE )
-                k |= 0x8000;
-
-            b=k&0x4000;
-            if (b==16384 && (body >= BODY_MALE && body<=0x03e1))
-                k=0xf000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
-
-            if (k!=0x8000) // 0x8000 also crashes client ...
-            {
-		pc->setSkinColor(k);
-		pc->setOldSkinColor(k);
-		pc->teleport();
-            }
-        }
+	Commands::DyeItem(s);
     }
 }
 
@@ -3714,11 +3669,6 @@ void cTargets::MoveToBagTarget(NXWSOCKET s)
 
 void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with the targetting cursor
 {
-//  if(buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF)
-//      return; // do nothing if user cancels, avoids CRASH! - Morrolan
-// Duke: Nonsens !! this also happens when you target the backpack on the paperdoll !
-
-
 	if (ps == NULL)
 		return;
 	NXWSOCKET  s=ps->toInt();
