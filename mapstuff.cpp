@@ -434,6 +434,9 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 // returns which dynamic tile is present at (x,y) or INVALID if no tile exists
 // originally by LB & just michael
 //int cMapStuff::DynTile(int x, int y, int oldz)
+/*
+	Sparhawk:	Due to an obscure internal compiler error of gcc 3.3 this has been integrated into canmonstermmoveher()
+	
 int cMapStuff::DynTile(UI32 x, UI32 y, signed char oldz)
 {
 
@@ -459,7 +462,7 @@ int cMapStuff::DynTile(UI32 x, UI32 y, signed char oldz)
 	return INVALID;
 
 }
-
+*/
 
 /* returns object type, 0=map, 1=static, 2=dynamic
 // an enum type would have been better, but at least they documented the values!
@@ -1239,7 +1242,28 @@ bool cMapStuff::CanMonsterMoveHere(UI32 x, UI32 y, signed char oldz)
 	}
 
 	// get the tile id of any dynamic tiles at this spot
-	const int dt= DynTile(x,y,elev);
+
+	int dt = INVALID;
+	NxwItemWrapper si;
+	si.fillItemsAtXY( x, y );
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+
+		P_ITEM pi=si.getItem();
+		if(ISVALIDPI(pi)) {
+
+			if ( pi->id()>0x4000 )
+			{
+				dt = MultiTile(pi, x ,y, oldz);
+			}
+			else if ((pi->getPosition().x == x) && (pi->getPosition().y == y))
+			{
+				dt = pi->id();
+			}
+		}
+	}
+
+
+	//const int dt= DynTile(x,y,elev);
 
 	// if there is a dynamic tile at this spot, check to see if its a blocker
 	// if it does block, might as well short-circuit and return right away
