@@ -2171,6 +2171,7 @@ NATIVE(_chr_setEventHandler)
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	//pc->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	pc->delAmxEvent( params[2] );
 	pc->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] !=0 );
 	g_nAmxPrintPtr=0;
 	return 0;
@@ -2230,6 +2231,7 @@ NATIVE(_itm_setEventHandler)
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	//pi->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	pi->delAmxEvent( params[2] );
 	pi->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] != 0 );
 	g_nAmxPrintPtr=0;
 	return 0;
