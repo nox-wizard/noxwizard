@@ -129,7 +129,7 @@ cCallCommand* cCallCommand::findCallCommand(SERIAL cmd)
 	std::map< SERIAL, cCallCommand* >::iterator iter( callcommand_map.find( cmd ) );
 
 	if ( iter != callcommand_map.end() )	//command exists
-		return iter->second.callback;
+		return iter->second;
 	else
 		return NULL;					//command doesnt exist
 }
