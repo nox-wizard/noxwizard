@@ -164,6 +164,7 @@ bool g_bEnableInternalCompiler = true;
 int g_nStealthOnHorse = 0;
 int g_nStealthArLimit = 1;
 int g_nLoadDebugger = 0;
+int g_nCheckBySmall = 0;
 int g_nStopOnAnyCall = 0; //<-- XAN : UNUSED! :D
 
 int g_nRedirectOutput = 0;
@@ -748,8 +749,9 @@ static int loadnxwoptions (char *script1, char *script2)
 	if(!(strcmp(script1,"ENABLEAMX"))) ServerScp::g_nEnableAMXScripts=str2num(script2);
 /*#ifndef _WINDOWS
 	else if(!(strcmp(script1,"DEBUGAMX"))) ServerScp::g_nLoadDebugger=str2num(script2);
-#endif
-*/	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
+#endif*/
+	else if(!(strcmp(script1,"CHECKBYSMALL"))) ServerScp::g_nCheckBySmall=(str2num(script2)!=0);
+	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
 	else if(!(strcmp(script1,"MAPHEIGHT"))) ServerScp::g_nMapHeight=str2num(script2);
 	else if(!(strcmp(script1,"MAPWIDTH"))) ServerScp::g_nMapWidth=str2num(script2);
 	else if(!(strcmp(script1,"EXCHANLDING"))) ServerScp::g_nExceptionHandling=str2num(script2);
@@ -1607,9 +1609,11 @@ void saveserverscript()
 	fprintf(file, "// Set to 1 to enable the internal debugger for amx programs. If you use \n");
 	fprintf(file, "// an external compiler, remember to include debug symbols.\n");
 	fprintf(file, "DEBUGAMX %i\n", ServerScp::g_nLoadDebugger);
-#endif //_WINDOWS
-*/	fprintf(file, "// Set to 0 to disable the integrated Small compiler \n");
+#endif //_WINDOWS*/
+	fprintf(file, "// Set to 0 to disable the integrated Small compiler \n");
 	fprintf(file, "USEINTERNALCOMPILER %i\n", (ServerScp::g_bEnableInternalCompiler ? 1 : 0)); // lb
+	fprintf(file, "// Set to 1 to enable check of all object with scripted small function ( checkItem, checkNpc, checkPl in checks.sma )\n");
+	fprintf(file, "CHECKBYSMALL 0\n" ); //ndEndy executed ONLY A TIME
 	fprintf(file, "// Set to 1 enables Salted DES 56bit account encryption \n");
 	fprintf(file, "USEACCOUNTENCRYPTION %i\n", ServerScp::g_nUseAccountEncryption); // lb
 	fprintf(file, "// Set to 1 enables verbose comments on crontab tasks execution \n");

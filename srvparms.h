@@ -262,6 +262,7 @@ extern int g_nStealthArLimit;
 
 extern int g_nLoadDebugger;
 extern int g_nStopOnAnyCall;
+extern int g_nCheckBySmall; //!< check all object with scripted small function
 
 extern int g_nRedirectOutput;
 extern char g_szOutput[2048];
