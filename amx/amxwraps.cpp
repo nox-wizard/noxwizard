@@ -5228,23 +5228,6 @@ NATIVE ( _menu_show )
 }
 
 /*!
-\brief Clear a menu
-\author Endymion
-\since 0.82
-\param 1 the menu serial
-\return true if is show or false if error
-*/
-NATIVE ( _menu_clear )
-{
-
-	cMenu* menu = (cMenu*)Menus.getMenu( params[1] );
-	VALIDATEPMR( menu, 0 );
-
-	menu->clear();
-	return 1;
-}
-
-/*!
 \brief Add background at given menu
 \author Endymion
 \since 0.82
@@ -6049,7 +6032,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "menu_create", _menu_create },
  { "menu_delete", _menu_delete },
  { "menu_show", _menu_show },
- { "menu_clear", _menu_clear },
  { "menu_getProperty", _getMenuProperty },
  { "menu_setProperty", _setMenuProperty },
  { "menu_addBackground", _menu_addBackground },

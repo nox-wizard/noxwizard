@@ -95,32 +95,39 @@ typedef cBasicMenu* P_MENU;
 class cMenu : public cBasicMenu
 {
 
+	friend class cAddMenu;
+	friend class cOldMenu;
+
 	private:
 
 		bool closeable;
 		bool moveable;
 		bool disposeable;
 		
-		SERIAL buttonCurrent;	//!< current button serial
+		SERIAL rc_serialCurrent;	//!< current code serial current
+		std::map< SERIAL, SI32 > rc_button;	//!< return code for for button
+		std::map< SERIAL, SI32 > rc_radio;	//!< return code for for radio
+		std::map< SERIAL, SI32 > rc_checkbox;	//!< return code for for checkbox
 
-		typedef struct { FUNCIDX fn; SI32 returnCode; } buttonCallbacks_st;
-		map< SERIAL, buttonCallbacks_st > buttonCallbacks;	//!< all callback for button
+		std::map< SERIAL, FUNCIDX > buttonCallbacks;	//!< all callback for button
+		std::map< SERIAL, SI32 > editProps;	//!< all edit property
 
-		std::vector<SERIAL>* switchs; //!< switch ids on after menu selection
+		std::vector< SERIAL >* switchs; //!< switch ids on after menu selection
 		std::map< SERIAL, std::wstring >* textResp; //!< edit field response
-
-		std::map< SERIAL, SERIAL > propEditInfo; //!< sub props for property edit
 
 		UI32 addString( wstring s );
 
 		void removeCommand( std::string command );
 		void removeCommand( char* s, ... );
 
-		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, bool data );
-		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring data );
+		void setPropertyField( SERIAL type, SERIAL obj, int prop, int subProp, int subProp2, bool data );
+		void setPropertyField( SERIAL type, SERIAL obj, int prop, int subProp, int subProp2, std::wstring data );
 		
-		bool getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
-		std::wstring getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
+		bool getPropertyFieldBool( SERIAL type, SERIAL obj, int prop, int subProp, int subProp2 );
+		std::wstring getPropertyField( SERIAL type, SERIAL obj, int prop, int subProp, int subProp2 );
+
+		SI32 getIntFromProps( int prop, int prop2, int prop3 );
+		void getPropsFromInt( SI32 returnCode, int& prop, int& prop2, int& prop3 );
 
 	protected:
 		std::vector< std::string >	commands; //!< all commands
@@ -152,19 +159,17 @@ class cMenu : public cBasicMenu
 		void addCommand( std::string command );
 		void addCommand( char* s, ... );
 
-		void clear();
- 
 		void addBackground( UI32 gumpId, UI32 width, UI32 height );
-		void addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode, bool pressable );
+		void addButton( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable );
 		void addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable, FUNCIDX fn );
-		void addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result );
+		void addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 result );
 		void addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height );
 		void addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring text, UI32 hue );
 		void addGump( UI32 x, UI32 y, UI32 gump, UI32 hue );
 		void addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring html, UI32 hasBack, UI32 canScroll );
-		void addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring data, UI32 hue = 0 );
+		void addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI16 textId, wstring data, UI32 hue = 0 );
 		void addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue = 0, UI32 subProperty2 = 0 );
-		void addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  );
+		void addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 result  );
 		void addResizeGump( UI32 x, UI32 y, UI32 gumpId, UI32 width, UI32 height );
 		void addText( UI32 x, UI32 y, wstring data, UI32 hue = 0 );
 		void addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
@@ -174,8 +179,8 @@ class cMenu : public cBasicMenu
 		void addPage( UI32 page );
 		void addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page );
 
-		bool getCheckBox( SERIAL checkbox );
-		bool getRadio( SERIAL radio );
+		bool getCheckBox( SERIAL checkbox, bool raw=false );
+		bool getRadio( SERIAL radio, bool raw=false );
 		std::wstring* getText( SERIAL text );
 };
 

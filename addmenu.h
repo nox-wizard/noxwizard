@@ -60,7 +60,7 @@ public:
 
 cMakeItem* getcMakeItem( SERIAL n );
 
-class cNewAddMenu : public cBasicMenu 
+class cAddMenu : public cBasicMenu 
 {
 
 	private:
@@ -77,10 +77,10 @@ class cNewAddMenu : public cBasicMenu
 		virtual cServerPacket* build();
 
 	public:
-		cNewAddMenu( SERIAL section, P_CHAR pc );
-		~cNewAddMenu();
+		cAddMenu( SERIAL section, P_CHAR pc );
+		~cAddMenu();
 
-		virtual void cNewAddMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
 
 };
 

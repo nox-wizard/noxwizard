@@ -27,7 +27,7 @@
 class cOldMenu : public cBasicMenu
 {
 
-	friend class cNewAddMenu;
+	friend class cAddMenu;
 
 protected:
 

@@ -64,7 +64,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 		Skills::MakeMenu(s, str2num(param), pc->making);
 		return;
 	} else if ( (SI32)command.find("MENU") != -1 ) {
-		ConOut("execute command itemmenu\n");
 		itemmenu( s, str2num(param) );
 		return;
 	} else if ( command == "WEBLINK" ) {

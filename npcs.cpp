@@ -1239,7 +1239,6 @@ void cAllCreatures::load()
 	std::string	rha, lha;
 	int id=0;
 
-	int loopexit=0;
 	do
 	{
 		safedelete(iter);
@@ -1248,6 +1247,7 @@ void cAllCreatures::load()
 		{
 
 			P_CREATURE_INFO cinfo = new cCreatureInfo;
+			int loopexit=0;
 
 			do
 			{
@@ -1296,7 +1296,7 @@ void cAllCreatures::load()
 
 		}
     }
-	while (  lha != "EOF" && ++loopexit < CREATURE_COUNT );
+	while( id< CREATURE_COUNT );
 
     safedelete(iter);
 

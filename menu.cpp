@@ -240,9 +240,9 @@ cMenu::cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool ca
 	setCloseable( canClose );
 	setDisposeable( canDispose );
 
-	buttonCurrent = 1;
+	rc_serialCurrent = 1;
 	pageCount=1;
-	pageCurrent=1;
+	pageCurrent=0;
 
 	for( int i=0; i<4; ++i ) {
 		buffer[i] = INVALID;
@@ -289,46 +289,17 @@ UI32 cMenu::addString( wstring u )
 	return texts.size()-1;
 }
 
-void cMenu::clear()
+void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable )
 {
-	setCloseable( true );
-	setMoveable( true );
-	setDisposeable( true );
-
-	buttonCurrent = 1;
-	buttonCallbacks.clear();
-
-	switchs = NULL;
-	propEditInfo.clear();
-	commands.clear();
-	texts.clear();
-
-	x = y = 0;
-
-	pageCurrent=0;
-	pageCount=1;
-
-	for( int i=0; i<4; ++i ) {
-		buffer[i] = INVALID;
-		buffer_str[i].erase();
-	}
-
+	rc_button.insert( make_pair( rc_serialCurrent, returnCode ) );
+	addCommand( "{button %d %d %d %d %d %d %d}", x, y, up, down, pressable, pageCurrent, rc_serialCurrent++ );
 }
-
-void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode, bool pressable )
-{
-	addCommand( "{button %d %d %d %d %d %d %d}", x, y, up, down, pressable, pageCurrent, returnCode );
-	buttonCurrent++;
-}
-
- //needed for remove possibility of two return code equal
-#define AUTO_BUTTONID_OFFSET 0xFFFFF000
 
 void cMenu::addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable, FUNCIDX fn )
 {
-	buttonCallbacks_st info = { fn, returnCode };
-	buttonCallbacks.insert( make_pair(  AUTO_BUTTONID_OFFSET + buttonCurrent, info ) );
-	addButton( x, y, up, down, AUTO_BUTTONID_OFFSET + buttonCurrent, pressable );
+	addButton( x, y, up, down, returnCode, pressable );
+	buttonCallbacks.insert( make_pair( rc_serialCurrent-1, fn ) );
+
 }
 
 void cMenu::addGump( UI32 x, UI32 y, UI32 gump, UI32 hue )
@@ -381,7 +352,7 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 	addCommand( "{tilepic %d %d %d %d}", x, y, tile, hue );
 }
 
-void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring data, UI32 hue )
+void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI16 textId, wstring data, UI32 hue )
 {
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
 }
@@ -390,27 +361,32 @@ void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 prop
 {
 	
 	VAR_TYPE t = getPropertyType( property );
+	SI32 props = getIntFromProps( property, subProperty, subProperty2 );
+
 	if( t==T_BOOL ) 
 	{
-		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), property );
-		propEditInfo.insert( make_pair( property, subProperty ) );
+		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), props );
+		editProps.insert( make_pair( props, rc_serialCurrent-1 ) );
 	}
 	else
 	{
-		addInputField( x, y, width, height, property, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
-		propEditInfo.insert( make_pair( property, subProperty ) );
+		addInputField( x, y, width, height, (props>>16)&0xFFFF, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
+		editProps.insert( make_pair( props, (props>>16)&0xFFFF ) );
 	}
+	
 	
 }
 
-void cMenu::addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result )
+void cMenu::addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 result )
 {
-	addCommand( "{checkbox %d %d %d %d %d %d}", x, y, off, on, checked, result );
+	rc_checkbox.insert( make_pair( result, rc_serialCurrent ) );
+	addCommand( "{checkbox %d %d %d %d %d %d}", x, y, off, on, checked, rc_serialCurrent++ );
 }
 
-void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  )
+void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 result  )
 {
-	addCommand( "{radio %d %d %d %d %d %d}", x, y, off, on, checked, result );
+	rc_radio.insert( make_pair( rc_serialCurrent, result ) );
+	addCommand( "{radio %d %d %d %d %d %d}", x, y, off, on, checked, rc_serialCurrent++ );
 }
 
 
@@ -449,38 +425,50 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 	cPacketMenuSelection* p = (cPacketMenuSelection*)pkg;
 
-	SERIAL button = p->buttonId.get();
-	switchs = &p->switchs;
+	UI32 button = p->buttonId.get();
+
+	this->switchs = &p->switchs;
 	
+	UI32 buttonReturnCode;
 	if( button!=MENU_CLOSE ) { 
 
-		std::map< SERIAL, buttonCallbacks_st >::iterator iter( buttonCallbacks.find( button ) );
+		buttonReturnCode = rc_button[ button ];
+
+		std::map< SERIAL, FUNCIDX >::iterator iter( buttonCallbacks.find( button ) );
 		if( iter!=buttonCallbacks.end() ) {
 
-			AmxFunction func( iter->second.fn );
-			func.Call( ps->toInt(), serial, iter->second.returnCode );
+			AmxFunction func( iter->second );
+			func.Call( ps->toInt(), serial, buttonReturnCode );
 			return;
 
 		}
+	}
+	else {
+		buttonReturnCode = 0;
 	}
 
 	//set property if there are
 	textResp = &p->text_entries;
 
-	if( button==buffer[3] ) {
-		std::map< SERIAL, SERIAL >::iterator propIter( propEditInfo.begin() ), lastProp( propEditInfo.end() );
+	if( ( buttonReturnCode!=MENU_CLOSE ) && ( buttonReturnCode==buffer[3] ) ) { 
+		std::map< SERIAL, SI32 >::iterator propIter( editProps.begin() ), lastProp( editProps.end() );
 		for( ; propIter!=lastProp; ++propIter ) {
-			if( getPropertyType( propIter->first )!=T_BOOL ) {
-				std::wstring* data = getText( propIter->first );
+
+			int prop, prop2, prop3;
+			getPropsFromInt( propIter->first, prop, prop2, prop3 );  
+
+			if( getPropertyType( prop )!=T_BOOL ) {
+				std::wstring* data = getText( propIter->second );
 				if( data!=NULL )
-					setPropertyField( buffer[0], buffer[1], propIter->first, propIter->second, 0, *data );
+					setPropertyField( buffer[0], buffer[1], prop, prop2, prop3, *data );
 			}
-			else 
-				setPropertyField( buffer[0], buffer[1], propIter->first, propIter->second, 0, getCheckBox( propIter->first ) );
+			else {
+				setPropertyField( buffer[0], buffer[1], prop, prop2, prop3, getCheckBox( propIter->second, true ) );
+			}
 		}
 	}
 	
-	callback->Call( ps->toInt(), serial, button );
+	callback->Call( ps->toInt(), serial, buttonReturnCode );
 }
 
 
@@ -744,25 +732,39 @@ bool cMenu::getDisposeable()
 	return disposeable;
 }
 
-bool cMenu::getCheckBox( SERIAL checkbox )
+bool cMenu::getCheckBox( SERIAL checkbox, bool raw )
 {
-	return find( switchs->begin(), switchs->end(), checkbox )!=switchs->end();
+	if( raw )
+		return find( switchs->begin(), switchs->end(), checkbox )!=switchs->end();
+	else
+		return find( switchs->begin(), switchs->end(), rc_checkbox[checkbox] )!=switchs->end();
 }
 
-bool cMenu::getRadio( SERIAL radio )
+bool cMenu::getRadio( SERIAL radio, bool raw )
 {
-	return find( switchs->begin(), switchs->end(), radio )!=switchs->end();
+	if( raw )
+		return find( switchs->begin(), switchs->end(), radio )!=switchs->end();
+	else
+		return find( switchs->begin(), switchs->end(), rc_radio[radio] )!=switchs->end();
 }
 
 std::wstring* cMenu::getText( SERIAL text )
 {
 	std::map< SERIAL, std::wstring >::iterator iter( textResp->find( text ) );
-	if( iter!=textResp->end() )
-		return &iter->second;
-	else
-		return NULL;
+	return ( iter!=textResp->end() )? &iter->second : NULL;
 }
 
+SI32 cMenu::getIntFromProps( int prop, int prop2, int prop3 )
+{
+	return 0xF0000000 + ( (prop&0xFFF)<<16 ) + ( (prop2&0xFF)<<8 ) + ( prop3&0xFF );
+}
+
+void cMenu::getPropsFromInt( SI32 returnCode, int& prop, int& prop2, int& prop3 )
+{
+	prop =  (returnCode>>16)&0xFFF;
+	prop2 = (returnCode>>8)&0xFF;
+	prop3 = returnCode&0xFF;
+}
 
 
 cServerPacket* cMenu::createPacket()
@@ -817,8 +819,8 @@ void cIconListMenu::addIcon( UI16 model, COLOR color, std::string response )
 
 void cIconListMenu::addIcon( UI16 model, COLOR color, SI32 data, std::string response )
 {
-	addIcon( model, color, response );
 	iconData.insert( make_pair( icons.size(), data ) );
+	addIcon( model, color, response );
 }
 
 
@@ -826,10 +828,9 @@ void cIconListMenu::handleButton( NXWCLIENT ps,  cClientPacket* pkg  )
 {
 	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
 
-	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get() ) );
-	SERIAL data = ( iter!=iconData.end() )? iter->second : INVALID;
+	SERIAL index = p->index.get();
 	
-	callback->Call( ps->toInt(), serial, p->index.get(), p->model.get(), p->color.get(), data );
+	callback->Call( ps->toInt(), serial, index, icons[index-1].model.get(), icons[index-1].color.get(), iconData[index-1] );
 
 }
 

@@ -102,8 +102,11 @@ void cOldMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	UI32 button;
 	if( isIconList( pkg->cmd ) )
 		button = ((cPacketResponseToDialog*)pkg)->index.get()-1;
-	else
+	else {
 		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
+		if( button!=MENU_CLOSE )
+			button = ((cMenu*)type)->rc_button[ button-1 ];
+	}
 
 	callback->Call( ps->toInt(), ps->currChar()->getSerial32(), button );
 
