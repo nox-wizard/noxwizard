@@ -53,6 +53,30 @@ CWorldMain::~CWorldMain()
 }
 
 
+/*
+\brief read from a file an unicode string
+\author Endymion
+\note intput is like 00AE001232120000, hex 
+\param f the file
+\param name the variable name
+\param c the string
+*/
+void HexVector2UnicodeString( cUnicodeString* c, char* s )
+{
+	c->clear();
+	int i=0;
+	int size= strlen( s );
+	char temp[6] = { '0','x', };
+	while( i<size ) {
+		memcpy( &s[i], &temp[2], 4 );
+		char* dummy; 
+		wchar_t v= (wchar_t)strtol( temp, &dummy, 0 );
+		if( v==0 ) return; // terminator
+		c->append( v );
+		i+=4;
+	}
+}
+
 void CWorldMain::loadChar() // Load a character from WSC
 {
 	P_CHAR pc=archive::getCharForCopy();
@@ -387,6 +411,11 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp( script1, "PC_FTARG" ) )   { P_CHAR temp=MAKE_CHAR_REF(str2num(script2)); pc->ftargserial = ISVALIDPC(temp)? temp->getSerial32() : INVALID;} //legacy code
 			else if (!strcmp( script1, "PC_FTARGSER" ) )   {pc->ftargserial=str2num(script2); }
 			else if (!strcmp( script1, "POSSESSEDSERIAL" ) )   {pc->possessedSerial=str2num(script2); }
+			else if (!(strcmp(script1, "PROFILE"))) {
+				if( pc->getProfile()==NULL )
+					pc->setProfile( new cUnicodeString() );
+				HexVector2UnicodeString( pc->getProfile(), script2 );
+			}
 		break;
 
 		case 'Q':
@@ -1269,6 +1298,28 @@ bool CWorldMain::Saving()
 }
 
 
+/*
+\brief save on file a vector 
+\author Endymion
+\note save output is like 0x000xAE0x000x120x320x15, hex output
+\param f the file
+\param name the variable name
+\param c the vector of UI08
+*/
+void fprintVector( FILE* f, char* name, std::vector<UI08>* c )
+{
+	if( c==NULL ) return;
+	fprintf( f, "%s ", name );
+	char temp[5];
+	std::vector<UI08>::iterator iter( c->begin() ), end( c->end() );
+	for( ; iter!=end; iter++ ) {
+		sprintf( (char*)&temp, "%x", (*iter) );
+		temp[4]=0x00;
+		fprintf( f, "%s", &temp[2] );
+	}
+	fprintf( f, "\n" );
+}
+
 // xan : this is an internal option -> with it enabled, player names etc will not be saved
 //       to ease masking of private data in worldsaves :)
 //#define DESTROY_REFERENCES
@@ -1631,7 +1682,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "MOVESPEED %f\n", pc->npcMoveSpeed );
 			if( pc->npc && pc->npcFollowSpeed != NPCFOLLOWSPEED )
 				fprintf(cWsc, "FOLLOWSPEED %f\n", pc->npcFollowSpeed );
-
+			if( pc->getProfile()!=dummy.getProfile() )
+				fprintVector( cWsc, "PROFILE", &pc->getProfile()->s );
 			if( !pc->lootVector.empty() )
 			{
 				int last = pc->lootVector.size();
