@@ -1789,7 +1789,7 @@ void addgold(int s, int totgold)
 		return;
 
 	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
-	P_ITEM pi = item::CreateFromScript( "$item_gold_coin_1", pc->getBackpack() );
+	P_ITEM pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack() );
 	if ( ISVALIDPI( pi ) ) {
 		pi->setAmount( totgold );
 		pi->Refresh();
