@@ -5458,7 +5458,9 @@ NATIVE( _gui_addInputField )
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 	std::wstring s;
-	string2wstring( std::string( g_cAmxPrintBuffer ), s );
+	std::string s1( g_cAmxPrintBuffer );
+	string2wstring( s1, s );
+	//string2wstring( std::string( g_cAmxPrintBuffer ), s );
 /* move to unicode when exist printstring unicode
 	wstring s;
 	amx_GetStringUnicode( s, cstr );
