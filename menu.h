@@ -85,7 +85,7 @@ class cBasicMenu {
 #define VALIDATEPM( M )	if( !ISVALIDPM(M) )	return;
 #define VALIDATEPMR( M, R )	if( !ISVALIDPM(M) )	return R;
 
-#define MENU_BUFF_COUNT 4
+#define MENU_BUFF_COUNT 5
 #define ISVALIDMENUBUFFER( I ) ( (I>INVALID) && (I<MENU_BUFF_COUNT) )
 
 /*!

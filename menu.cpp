@@ -246,7 +246,7 @@ cMenu::cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool ca
 	pageCurrent=0;
 	groupCurrent=0;
 	groupCount=1;
-	for( int i=0; i<4; ++i ) {
+	for( int i=0; i<5; ++i ) {
 		buffer[i] = INVALID;
 	}
 
