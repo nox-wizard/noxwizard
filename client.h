@@ -17,6 +17,7 @@
 
 #include "cmdtable.h"
 #include "targeting.h"
+#include "target.h"
 
 typedef std::vector< std::string > td_cmdparams;
 typedef std::vector< TargetLocation > td_targets;
@@ -122,6 +123,15 @@ class cClient {
 public:
 
 	SERIAL spyTo;
+
+private:
+	P_TARGET target;
+public:
+	void resetTarget();
+	P_TARGET newTarget( P_TARGET newTarget );
+	P_TARGET getTarget();
+
+public:
 
 	cClient();
 	~cClient();

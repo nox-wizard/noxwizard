@@ -19,6 +19,7 @@
 #include "chars.h"
 #include "items.h"
 #include "basics.h"
+#include "inlines.h"
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 	this->m_sck=s;
@@ -431,11 +432,34 @@ SERIAL currchar[MAXCLIENT];
 cClient::cClient()
 {
 	spyTo=INVALID;
+	target=NULL;
+
 }
 
 cClient::~cClient()
 {
+	resetTarget();
 }
+
+
+void cClient::resetTarget()
+{
+	if( target!=NULL )
+		safedelete( target );
+}
+
+P_TARGET cClient::newTarget( P_TARGET newTarget )
+{
+	resetTarget();
+	target=newTarget;
+	return newTarget;
+}
+
+P_TARGET cClient::getTarget()
+{
+	return target;
+}
+
 
 P_CLIENT clientInfo[MAXCLIENT];
 

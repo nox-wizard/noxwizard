@@ -18,7 +18,7 @@
 
 OBJECT_MAP cAllObjects::all;
 SERIAL cAllObjects::current_item_serial=0x40000000;
-SERIAL cAllObjects::current_char_serial=0;
+SERIAL cAllObjects::current_char_serial=1; // ndEndy not 0 because target return 0 if invalid target, so OSI think 0 like INVALID
 
 
 cAllObjects objects; //All objects
