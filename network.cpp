@@ -1848,7 +1848,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				case PACKET_RENAMECHARACTER: ///Lag Fix -- Zippy //Bug Fix -- Zippy
 					{
 						P_CHAR pc_t=pointers::findCharBySerPtr(buffer[s]+1);
-						if(ISVALIDPC(pc_t) && pc_currchar->IsGMorCounselor() )
+						if(ISVALIDPC(pc_t) && ( pc_currchar->IsGMorCounselor() || pc_currchar->isOwnerOf( pc_t ) ) )
 							pc_t->setCurrentName( (char*)&buffer[s][5] );
 
 					break;
