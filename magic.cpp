@@ -238,7 +238,7 @@ static inline void subtractMana(P_CHAR pc, SpellId spellnumber)
 // Argument 		 : P_CHAR pa -> attacker
 // Argument 		 : P_CHAR pd -> defender
 // Changes			 : none yet
-static bool checkReflection(P_CHAR pa, P_CHAR pd)
+static bool checkReflection(P_CHAR &pa, P_CHAR &pd)
 {
 	VALIDATEPCR(pa, false);
 	VALIDATEPCR(pd, false);
@@ -527,7 +527,8 @@ static void damage(P_CHAR pa, P_CHAR pd, SpellId spellnum, int spellflags = 0, i
 
 	// check resistances :)
 	if ((ISVALIDPC(pa))&&(!(spellflags&SPELLFLAG_DONTREFLECT)))
-		if (g_Spells[spellnum].reflect) checkReflection(pa, pd);
+		if (g_Spells[spellnum].reflect)
+			checkReflection(pa, pd);
 
 	// early return for invulz
 	if (pd->IsInvul()) return;

@@ -1168,7 +1168,7 @@ void cChar::walk()
 	if ( war && npcWander != 5 && ( pc_att->IsOnline() || pc_att->npc ) ) { //We are following a combat target
                 follow( pc_att );
                 return;
-        }        
+        }
 
 	switch( npcWander )
 	{
@@ -1443,10 +1443,10 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 				}
 
 			}
-			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
+			else if ( pc->seeForFirstTime( *pi ) ) // Luxor
 				senditem( ps->toInt(), pi );
 			else
-				pc->seeForLastTime(P_OBJECT(pi));
+				pc->seeForLastTime( *pi );
 	}
 	return true;
 }
@@ -1469,11 +1469,11 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 		if( !ISVALIDPC(pc_curr) )
 			continue;
 
-		if ( pc->seeForLastTime( pc_curr ) ) {
+		if ( pc->seeForLastTime( *pc_curr ) ) {
 			if ( cli != NULL )
 				cli->sendRemoveObject( P_OBJECT(pc_curr) );
 		}
-		if ( pc->seeForFirstTime( pc_curr ) ) {
+		if ( pc->seeForFirstTime( *pc_curr ) ) {
 			if ( cli != NULL )
 				SendDrawObjectPkt( cli->toInt(), pc_curr, 1);
 		}
@@ -1483,23 +1483,19 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 			continue;
 
 		// pc has just walked out pc_curr's vis circle
-		if ( pc_curr->seeForLastTime( pc ) ) {
+		if ( pc_curr->seeForLastTime( *pc ) ) {
 			ps->sendRemoveObject( P_OBJECT(pc) );
 			continue;
 		}
 
 		// It's seen for the first time, send a draw packet
-		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) {
+		if ( pc_curr->seeForFirstTime( *pc ) ) {
 			SendDrawObjectPkt( ps->toInt(), pc, 1 );
 			continue;
 		}
 
-                if ( !pc_curr->IsGM() ) { // Players only
-			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
-				continue;
-			if ( pc->dead && !pc->war && !pc_curr->dead ) // Non-persecuting ghosts can be seen only by other ghosts
-				continue;
-		}
+                if ( !pc_curr->canSee( *pc ) )
+			continue;
 
 		NXWSOCKET socket = ps->toInt();
 		UI08 flag, hi_color;

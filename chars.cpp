@@ -1784,6 +1784,36 @@ UI32 cChar::distFrom(P_ITEM pi)
 
 /*!
 \author Luxor
+\brief Tells if the char can see the given object
+*/
+LOGICAL cChar::canSee( cObject &obj )
+{
+	//
+	// Check if the object is in visRange
+	//
+	R64 distance = dist( obj.getPosition(), getPosition(), false );
+	if ( distance > VISRANGE ) // We cannot see it!
+		return false;
+
+	SERIAL ser = obj.getSerial32();
+	if ( isCharSerial( ser ) ) {
+		P_CHAR pc = P_CHAR( &obj );
+		if ( !IsGM() ) { // Players only
+			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
+				return false;
+			if ( pc->dead && !pc->war && !dead ) // Non-persecuting ghosts can be seen only by other ghosts
+				return false;
+		}
+	}
+
+	/*if ( isItemSerial( ser ) ) { //Future use
+	}*/
+	return true;
+}
+
+
+/*!
+\author Luxor
 \brief Teleports character to its current set coordinates.
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
@@ -1833,9 +1863,10 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 			NXWCLIENT ps_w = sw.getClient();
 			if ( ps_w == NULL )
 				continue;
-                        if ( !ISVALIDPC( ps_w->currChar() ) )
+			P_CHAR pc = ps_w->currChar();
+                        if ( !ISVALIDPC( pc ) )
 				continue;
-                        if ( distFrom( ps_w->currChar() ) > VISRANGE )
+                        if ( distFrom( pc ) > VISRANGE || !canSee( *pc ) )
 				ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
 		}
 		sw.clear();
@@ -2284,37 +2315,33 @@ void cChar::Delete()
 \author Luxor
 \brief Tells if a char sees an object for the first time
 */
-LOGICAL cChar::seeForFirstTime( P_OBJECT po )
+LOGICAL cChar::seeForFirstTime( cObject &obj )
 {
-	SERIAL objser = po->getSerial32();
-        //
+	SERIAL objser = obj.getSerial32();
+
+	//
         // The char cannot see itself for the first time ;)
         //
 	if ( objser == getSerial32() )
 		return false;
 
 	//
-	// Check if the object is in visRange
+	// Check if we can see it
 	//
-	R64 distance = dist( po->getPosition(), getPosition(), false );
-	if ( distance > VISRANGE ) // We cannot see it!
+	if ( !canSee( obj ) )
 		return false;
 
-	if ( isCharSerial( po->getSerial32() ) ) {
-		P_CHAR pc = P_CHAR( po );
-		if ( !IsGM() ) { // Players only
-			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
-				return false;
-			if ( pc->dead && !pc->war && !dead ) // Non-persecuting ghosts can be seen only by other ghosts
-				return false;
-		}
-	}
-
+	//
+	// Check if the object was sent before
+	//
 	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
 
 	if ( it != sentObjects.end() ) // Already sent before
 		return false;
 
+	//
+	// Seen for the first time, push it in the list and return true
+	//
 	sentObjects.push_front( objser );
 
 	return true;
@@ -2325,9 +2352,9 @@ LOGICAL cChar::seeForFirstTime( P_OBJECT po )
 \author Luxor
 \brief Tells if a char sees an object for the last time
 */
-LOGICAL cChar::seeForLastTime( P_OBJECT po )
+LOGICAL cChar::seeForLastTime( cObject &obj )
 {
-	SERIAL objser = po->getSerial32();
+	SERIAL objser = obj.getSerial32();
 
         //
         // The char cannot see itself for the last time ;)
@@ -2336,17 +2363,22 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 		return false;
 
 	//
-	// Check if the object is in visRange
+	// Check if we can see it
 	//
-	R64 distance = dist( po->getPosition(), getPosition(), false );
-	if ( distance <= VISRANGE ) // We should see it
+	if ( canSee( obj ) )
 		return false;
 
+	//
+	// Check if the object was sent before
+	//
 	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
 
 	if ( it == sentObjects.end() ) // Never sent before, so why remove it from the display?
 		return false;
 
+	//
+	// Seen for the last time, remove it from the list and return true
+	//
 	sentObjects.erase( it );
 
 	return true;

@@ -461,8 +461,9 @@ class cChar : public cObject
 		void			walkNextStep();		//!< walk next path step <Luxor>
 		SERIAL_SLIST		sentObjects;
 	public:
-		LOGICAL			seeForFirstTime( P_OBJECT po );	//!< does it see the object for the first time? <Luxor>
-		LOGICAL			seeForLastTime( P_OBJECT po ); //!< does it see the object for the first time? <Luxor>
+		LOGICAL			canSee( cObject &obj );	//!< can it see the object? <Luxor>
+		LOGICAL			seeForFirstTime( cObject &obj );	//!< does it see the object for the first time? <Luxor>
+		LOGICAL			seeForLastTime( cObject &obj ); //!< does it see the object for the first time? <Luxor>
 		void			walk();			//!< execute walk code <Luxor>
 		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set? <Luxor>
 		void			follow( P_CHAR pc ); //!< follow pc <Luxor>
