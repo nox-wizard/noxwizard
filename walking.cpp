@@ -828,32 +828,37 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	if (pc->npc)
 		pc->setNpcMoveTime(); //reset move timer
 
+	
 	Location pcpos= pc->getPosition();
+	Location oldpos = pcpos;
 
 	switch(dir&0x0F)
 	{
-		case 0: pc->setPosition("y", pcpos.y-1);
+		case 0: pcpos.y -= 1;
 			break;
-		case 1: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
+		case 1: pcpos.x += 1; pcpos.y -= 1;
 			break;
-		case 2: pc->setPosition("x", pcpos.x+1);
+		case 2: pcpos.x += 1;
 			break;
-		case 3: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
+		case 3: pcpos.x += 1; pcpos.y += 1;
 			break;
-		case 4: pc->setPosition("y", pcpos.y+1);
+		case 4: pcpos.y +=1;
 			break;
-		case 5: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
+		case 5: pcpos.x -= 1; pcpos.y += 1;
 			break;
-		case 6: pc->setPosition("x", pcpos.x-1);
+		case 6: pcpos.x -= 1;
 			break;
-		case 7: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
+		case 7: pcpos.x -=1; pcpos.y -=1;
 			break;
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
 			ErrOut("\tcaused by chr %s. dir: %i dir&0x0f: %i dir-passed : %i dp&0x0f : %i\n", pc->getCurrentNameC(), pc->dir, pc->dir&0x0f, dir, dir&0x0f);
-			if (pc->getSocket() != INVALID) deny(pc->getSocket(), pc, sequence); // lb, crashfix
+			if (pc->getSocket() != INVALID) 
+				deny(pc->getSocket(), pc, sequence); // lb, crashfix
 			return false;
 	}
+
+	pc->setPosition( pcpos );
 
 	UI32 blockers = WalkCollectBlockers(pc);
 
@@ -862,7 +867,6 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
 	// check if player is banned from a house - crackerjack 8/12/99
-	int j;
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
@@ -873,7 +877,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			//xan : probably the plr has exited the boat walking!
 			//pc->multi1 = pc->multi2 = pc->multi3 = pc->multi4 = 0xFF;
-			pc->setMultiSerial32Only(-1);
+			pc->setMultiSerial32Only(INVALID);
 		}
 
 		if(ISVALIDPI(pi_multi))
@@ -892,7 +896,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					   
 						P_CHAR pc_b=pets.getChar();
 						if(ISVALIDPC(pc_b)) {
-							pc->MoveTo( boat->getPosition("x")+1, boat->getPosition("y")+1, boat->getPosition("z")+2 );
+							pc->MoveTo( boat->getPosition().x+1, boat->getPosition().y+1, boat->getPosition().z+2 );
 							pc->setMultiSerial( boat->getSerial32() );
 							pc_b->teleport();
 						}
@@ -903,7 +907,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
 				int sx, sy, ex, ey;
-				j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
+				int j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
 
 				if(j==H_BAN)
 				{
@@ -937,21 +941,11 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		return false;
 	}
 
-	int nowx2,nowy2;
-
 	//Char mapRegions
 	pcpos= pc->getPosition();
+	pc->setPosition( oldpos ); //ndEndy set old position for have current value in oldposition
+	pc->MoveTo( pcpos.x, pcpos.y, z );
 
-	nowx2= pcpos.x;
-	nowy2= pcpos.y;
-	/*
-	pc->x= oldx;
-	pc->y= oldy; // we have to remove it with OLD x,y ... LB, very important
-	pc->MoveTo(nowx2,nowy2,z);
-	*/
-	pc->setPosition("x", oldx);
-	pc->setPosition("y", oldy);
-	pc->MoveTo( nowx2, nowy2, z );
 	return true;
 }
 
