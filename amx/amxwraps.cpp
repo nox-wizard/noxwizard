@@ -3712,8 +3712,8 @@ NATIVE( _chr_setCreationDay )
 \param  5: new hair color
 \param  6: new beard style
 \param  7: new beard color
-\param  8: backup??
-\param  9: ??
+\param  8: backup
+\param  9: new name
 \return 0 or INVALID if not valid character
 */
 NATIVE(_chr_morph)
@@ -3721,16 +3721,14 @@ NATIVE(_chr_morph)
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
 
-    bool bBackup;
     cell *cstr;
-    if (params[9] < 0) return 0;
-    amx_GetAddr(amx,params[8],&cstr);
+    amx_GetAddr(amx,params[9],&cstr);
     printstring(amx,cstr,params+10,(int)(params[0]/sizeof(cell))-1);
     g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-
-    (params[8] > 0) ? bBackup = true : bBackup = false;
-    pc->morph(params[2], params[3], params[4], params[5], params[6], params[7], g_cAmxPrintBuffer, bBackup);
     g_nAmxPrintPtr=0;
+
+    pc->morph( params[2], params[3], params[4], params[5], params[6], params[7], (g_cAmxPrintBuffer[0]!=0)? g_cAmxPrintBuffer : NULL, (params[8] > 0));
+
     return 0;
 }
 
