@@ -128,6 +128,7 @@ class cGuild
 	private:
 		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
 		std::string	abbreviation;	//!< abbreviation ( es KCS )
+		SERIAL guildMaster;
 	
 	public:
 
@@ -142,6 +143,11 @@ class cGuild
 		std::string getName();
 		void setAbbreviation( std::string &newAbbr );
 		std::string getAbbreviation();
+
+		// Helper functions for 
+		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };
+		inline void		cGuild::setGuildMaster(SERIAL newGuildMaster)  
+		{ guildMaster=newGuildMaster; };
 
 	public:
 

@@ -281,7 +281,6 @@ P_GUILD_RECRUIT cGuild::getRecruit( SERIAL recruit )
 
 
 
-
 /*!
 \brief Contructor of cGuilded
 */
