@@ -1243,6 +1243,7 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			break;
 		case NXW_CP_I_GUILDFEALTY :				  		//dec value: 225;
 			pc->SetGuildFealty( value );
+			pc->getGuild()->calculateFealty();
 			break;
 		case NXW_CP_I_GUILDNUMBER :				  		//dec value: 226;
 			pc->SetGuildNumber( value );

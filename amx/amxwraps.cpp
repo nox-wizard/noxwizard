@@ -4590,6 +4590,22 @@ NATIVE(_guild_getMemberIdx)
 }
 
 /*
+\brief Find the member at the given the index within the guild
+\author Wintermute
+\since 0.82
+\param 1 the guild
+\param 2 the index of the member
+\return serial, serial of member, invalid if none
+*/
+NATIVE(_guild_memberAtIndex)
+{
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
+	return guild->getMemberByIndex( params[2] );
+}
+
+/*
 \brief Add a recuit to a guild
 \author Endymion
 \since 0.82
@@ -6121,6 +6137,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_create", _guild_create },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
+ { "guild_memberAtIndex", _guild_memberAtIndex },
  { "guild_getMemberIdx", _guild_getMemberIdx },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
