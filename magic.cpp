@@ -17,7 +17,7 @@
 #include "particles.h"
 #include "sndpkg.h"
 #include "npcai.h"
-#include "muls.h"
+#include "data.h"
 #include "scp_parser.h"
 #include "rcvpkg.h"
 #include "map.h"

@@ -9,7 +9,7 @@
 
 #include "nxwcommn.h"
 #include "extractionskills.h"
-#include "muls.h"
+#include "data.h"
 #include "items.h"
 #include "chars.h"
 #include "skills.h"

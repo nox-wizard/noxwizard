@@ -25,7 +25,7 @@
 #include "layer.h"
 #include "jail.h"
 #include "accounts.h"
-#include "muls.h"
+#include "data.h"
 #include "boats.h"
 #include "books.h"
 #include "spawn.h"
@@ -847,8 +847,9 @@ void loaditem()
 
 				if (i>=0x4000)
 				{
-					NxwMulWrapperMulti sm( i-0x4000 );
-					if( sm.isEmpty() )
+					multiVector m_vec;
+					data::seekMulti( i-0x4000, m_vec );
+					if( m_vec.empty() )
 					{
 						LogWarning("bad item, serial: %i name: %s\n",pi->getSerial32(), pi->getCurrentNameC());
 						bad=1;
@@ -1319,7 +1320,7 @@ bool CWorldMain::Saving()
 \param name the variable name
 \param c the wstring
 */
-void fprintWstring( FILE* f, char* name, wstring& c )
+void fprintWstring( FILE* f, char* name, wstring c )
 {
 	fprintf( f, "%s ", name );
 	wstring::iterator iter( c.begin() ), end( c.end() );

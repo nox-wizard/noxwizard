@@ -735,7 +735,7 @@ public:
 		TIMERVAL		npcmovetime; // Next time npc will walk
 		char			npcWander; // NPC Wander Mode
 		char			oldnpcWander; // Used for fleeing npcs
-		TIMERVAL		fleeTimer;
+		SI32			fleeTimer;
 		R32			npcMoveSpeed; // Used to controll npc walking speed
 		R32			npcFollowSpeed; // Used to controll npc walking speed when following a target (npcwander = 1)
 		SI32			fx1; //NPC Wander PoSI32 1 x

@@ -68,12 +68,12 @@ bool cMenus::showMenu( SERIAL menu, P_CHAR pc )
 	return false;	
 }
 
-inline bool isIconList( NXWSOCKET s ) 
+bool isIconList( NXWSOCKET s )
 {
 	return isIconList( buffer[s][0] );
 }
 
-inline bool isIconList( UI08 cmd )
+bool isIconList( UI08 cmd )
 {
 	return cmd==PKG_RESPONSE_TO_DIALOG;
 }
@@ -176,7 +176,7 @@ cBasicMenu::~cBasicMenu()
 }
 
 
-void cBasicMenu::setCallBack( std::string& arg )
+void cBasicMenu::setCallBack( std::string arg )
 {
 	if( callback!=NULL )
 		safedelete( callback );
@@ -254,7 +254,7 @@ cMenu::~cMenu()
 {
 }
 
-void cMenu::addCommand( std::string& command )
+void cMenu::addCommand( std::string command )
 {
 	commands.push_back( command );
 }
@@ -271,7 +271,7 @@ void cMenu::addCommand( char* formatStr, ... )
 	addCommand( std::string( temp ) );
 }
 
-void cMenu::removeCommand( std::string& command )
+void cMenu::removeCommand( std::string command )
 {
 	std::vector< std::string >::iterator iter( commands.begin() ), end( commands.end() );
 	for( ; iter!=end; iter++ ) {
@@ -283,7 +283,7 @@ void cMenu::removeCommand( std::string& command )
 }
 
 
-UI32 cMenu::addString( wstring& u )
+UI32 cMenu::addString( wstring u )
 {
 	texts.push_back( u );
 	return texts.size()-1;
@@ -341,12 +341,12 @@ void cMenu::addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI
 	addCommand( "{gumppictiled %d %d %d %d %d %d}", x, y, width, height, gump, hue );
 }
 
-void cMenu::addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& html, UI32 hasBack, UI32 canScroll )
+void cMenu::addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring html, UI32 hasBack, UI32 canScroll )
 {
 	addCommand( "{htmlgump %d %d %d %d %d %d %d}", x, y, width, height, addString(html), hasBack, canScroll );
 }
 
-void cMenu::addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& clilocid, UI32 hasBack , UI32 canScroll )
+void cMenu::addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring clilocid, UI32 hasBack , UI32 canScroll )
 {
 	addCommand( "{xmfhtmlgump %d %d %d %d %s %d %d}", x, y, width, height, addString(clilocid), hasBack, canScroll );
 }
@@ -356,12 +356,12 @@ void cMenu::addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height )
 	addCommand( "{checkertrans %d %d %d %d}", x, y, width, height );
 }
 
-void cMenu::addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& text, UI32 hue )
+void cMenu::addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring text, UI32 hue )
 {
 	addCommand( "{croppedtext %d %d %d %d %d %d}", x, y, width, height, hue, addString(text) );
 }
 
-void cMenu::addText( UI32 x, UI32 y, wstring& data, UI32 hue )
+void cMenu::addText( UI32 x, UI32 y, wstring data, UI32 hue )
 {
 	addCommand( "{text %d %d %d %d}", x, y, hue, addString(data) ); //text <Spaces from Left> <Space from top> <Length, Color?> <# in order>
 }
@@ -381,7 +381,7 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 	addCommand( "{tilepic %d %d %d %d}", x, y, tile, hue );
 }
 
-void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue )
+void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring data, UI32 hue )
 {
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
 }
@@ -536,9 +536,9 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 		
 }
 
-void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring& data )
+void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring data )
 {
-	VARTYPE t = getPropertyType( prop );
+	VAR_TYPE t = getPropertyType( prop );
 	switch( type ) {
 	
 		case PROP_CHARACTER: {
@@ -629,7 +629,7 @@ template< typename T >
 std::wstring toWstr( T num )
 {
 	wchar_t buffer[TEMP_STR_SIZE];
-	swprintf( buffer, L"%i", num );
+	swprintf( buffer, TEMP_STR_SIZE, L"%i", (const wchar_t*)(&num) );
 	return std::wstring( buffer );
 }
 
@@ -644,7 +644,7 @@ std::wstring toWstr( const char* s )
 std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 )
 {
 	
-	VARTYPE t = getPropertyType( prop );
+	VAR_TYPE t = getPropertyType( prop );
 	switch( type ) {
 	
 		case PROP_CHARACTER: {

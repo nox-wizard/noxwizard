@@ -73,7 +73,7 @@ enum
 
 //! List of monster sounds (see cChar::playMonsterSound())
 typedef enum { SND_STARTATTACK = 0, SND_IDLE, SND_ATTACK, SND_DEFEND, SND_DIE } MonsterSound;
-const ALL_MONSTER_SOUND = 5;
+#define ALL_MONSTER_SOUND 5
 
 //! Skills
 enum Skill {

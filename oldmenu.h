@@ -50,7 +50,7 @@ public:
 	~cOldMenu();
 
 	void setParameters( int numPerPage, int numpages );
-	virtual void addMenuItem( int page, int idx, std::wstring& desc );
+	virtual void addMenuItem( int page, int idx, std::wstring desc );
 
 	virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
 

@@ -21,7 +21,7 @@
 #include "set.h"
 #include "house.h"
 #include "npcai.h"
-#include "muls.h"
+#include "data.h"
 #include "boats.h"
 #include "scp_parser.h"
 #include "archive.h"

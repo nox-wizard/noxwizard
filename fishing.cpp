@@ -17,7 +17,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
-#include "muls.h"
+#include "data.h"
 #include "scp_parser.h"
 #include "fishing.h"
 #include "globals.h"

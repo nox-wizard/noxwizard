@@ -36,7 +36,6 @@ SOURCES =	\
 		bounty.cpp \
 		calendar.cpp \
 		chars.cpp \
-		char_array.cpp \
 		client.cpp \
 		cmdtable.cpp \
 		combat.cpp \
@@ -45,7 +44,6 @@ SOURCES =	\
 		console.cpp \
 		containers.cpp \
 		crontab.cpp \
-		custmenu.cpp \
 		data.cpp \
 		dbl_single_click.cpp \
 		debug.cpp \
@@ -58,13 +56,11 @@ SOURCES =	\
 		globals.cpp \
 		guild.cpp \
 		guildstones.cpp \
-		gumps.cpp \
 		house.cpp \
 		html.cpp \
 		itemid.cpp \
 		items.cpp \
 		item.cpp \
-		item_array.cpp \
 		jail.cpp \
 		logsystem.cpp \
 		magic.cpp \
@@ -80,10 +76,8 @@ SOURCES =	\
 		ntservice.cpp \
 		nxwgui.cpp \
 		nxw_utils.cpp \
-		nxwGump.cpp \
-		nxwString.cpp \
-		nxwStringList.cpp \
 		object.cpp \
+		oldmenu.cpp \
 		organisation.cpp \
 		packets.cpp \
 		particles.cpp \
@@ -155,7 +149,6 @@ HEADERS =	\
 		bounty.h \
 		calendar.h \
 		chars.h \
-		char_array.h \
 		classes.h \
 		client.h \
 		cmdtable.h \
@@ -163,7 +156,6 @@ HEADERS =	\
 		console.h \
 		constants.h \
 		crontab.h \
-		custmenu.h \
 		data.h \
 		debug.h \
 		dragdrop.h \
@@ -175,7 +167,6 @@ HEADERS =	\
 		itemid.h \
 		items.h \
 		item.h \
-		item_array.h \
 		jail.h \
 		logsystem.h \
 		map.h \
@@ -187,9 +178,6 @@ HEADERS =	\
 		nxwcommn.h \
 		nxwgui.h \
 		nxw_utils.h \
-		nxwGump.h \
-		nxwString.h \
-		nxwStringList.h \
 		object.h \
 		organisation.h \
 		osdefs.h \

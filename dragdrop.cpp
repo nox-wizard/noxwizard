@@ -39,7 +39,7 @@
 #include "npcai.h"
 #include "nxw_utils.h"
 #include "weight.h"
-#include "muls.h"
+#include "data.h"
 #include "books.h"
 #include "boats.h"
 #include "archive.h"

@@ -88,7 +88,7 @@ void cOldMenu::setParameters( int numPerPage, int numpages )
 \param idx the index number
 \param desc the text
 */
-void cOldMenu::addMenuItem( int page, int idx, std::wstring& desc )
+void cOldMenu::addMenuItem( int page, int idx, std::wstring desc )
 {
 //	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
 	std::map<UI32, wstring >& p= allPages[ page ];

@@ -27,7 +27,7 @@
 #include "oldmenu.h"
 #include "itemid.h"
 #include "timers.h"
-#include "muls.h"
+#include "data.h"
 #include "scp_parser.h"
 #include "fishing.h"
 #include "archive.h"
@@ -4545,14 +4545,13 @@ NATIVE(_map_distance)
 NATIVE(_map_getTileName)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
-    
-	NxwMulWrapperStatics sm( params[1], params[2] );
-    for( sm.rewind(); !sm.end(); sm++ ) {
 
-		statics_st s = sm.get();
-		
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
+
 		tile_st tile;
-        if( data::seekTile( s.id, tile ) ) {
+        if( data::seekTile( s[i].id, tile ) ) {
 
 			char str[100];
   			cell *cptr;
@@ -4568,27 +4567,26 @@ NATIVE(_map_getTileName)
     return INVALID;
 }
 
-/* 
-\brief return true if position is located under a static item 
-\author Keldan 
-\since 0.82 
-\param 1: x first location 
-\param 2: y first location 
-\param 2: z first location 
-\return INVALID or true if under a "roof" (any static item in fact) or false 
-*/ 
-NATIVE(_map_isUnderStatic) 
-{ 
+/*
+\brief return true if position is located under a static item
+\author Keldan
+\since 0.82
+\param 1: x first location
+\param 2: y first location
+\param 2: z first location
+\return INVALID or true if under a "roof" (any static item in fact) or false
+*/
+NATIVE(_map_isUnderStatic)
+{
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 
-	NxwMulWrapperStatics sm( params[1], params[2] );
-	for( sm.rewind(); !sm.end(); sm++ ) {
-
-		statics_st s = sm.get();
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
 
 		tile_st tile;
-		if( data::seekTile( s.id, tile ) ) 
-			if( ( tile.height + s.z ) >params[3] ) // a roof  must be higher than player's z !
+		if( data::seekTile( s[i].id, tile ) )
+			if( ( tile.height + s[i].z ) >params[3] ) // a roof  must be higher than player's z !
 				return true;
 	}
 	return false;
@@ -4606,13 +4604,12 @@ NATIVE(_map_isUnderStatic)
 NATIVE(_map_getTileID)
 {
 	if (params[1] < 0 || params[2] < 0) return INVALID;
-	
-	NxwMulWrapperStatics sm( params[1], params[2] );
-	for( sm.rewind(); !sm.end(); sm++ ) {
 
-		statics_st s = sm.get();
-		if( s.z == params[3])
-			return s.id;
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
+		if( s[i].z == params[3])
+			return s[i].id;
 	}
 	return INVALID;
 }

@@ -43,7 +43,9 @@ void cNewAddMenu::loadFromScript( P_CHAR pc )
 		oldmenu->setParameters(1, 1);
 		oldmenu->title = L"Menu Error, section not found";
 		oldmenu->style = MENUTYPE_PAPER;
-		oldmenu->addMenuItem( 0, 0, std::wstring( L"Close this one here" ) );
+		std::wstring ws;
+		string2wstring( std::string("Close this one here"), ws );
+		oldmenu->addMenuItem( 0, 0, ws );
 
 		commands.push_back( cScriptCommand( std::string("NOP"), std::string(" ") ) );
 		return;

@@ -69,7 +69,7 @@ class cBasicMenu {
 
 		SERIAL	serial; //!< serial
 
-		void setCallBack( std::string& arg );
+		void setCallBack( std::string arg );
 		void setCallBack( FUNCIDX fn );
 
 		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
@@ -111,13 +111,13 @@ class cMenu : public cBasicMenu
 
 		std::map< SERIAL, SERIAL > propEditInfo; //!< sub props for property edit
 
-		UI32 addString( wstring& s );
+		UI32 addString( wstring s );
 
-		void removeCommand( std::string& command );
+		void removeCommand( std::string command );
 		void removeCommand( char* s, ... );
 
 		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, bool data );
-		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring& data );
+		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring data );
 		
 		bool getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
 		std::wstring getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
@@ -149,7 +149,7 @@ class cMenu : public cBasicMenu
 
 		virtual void handleButton( NXWCLIENT ps,  cClientPacket* pkg  );
 
-		void addCommand( std::string& command );
+		void addCommand( std::string command );
 		void addCommand( char* s, ... );
 
 		void clear();
@@ -159,17 +159,17 @@ class cMenu : public cBasicMenu
 		void addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable, FUNCIDX fn );
 		void addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result );
 		void addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height );
-		void addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& text, UI32 hue );
+		void addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring text, UI32 hue );
 		void addGump( UI32 x, UI32 y, UI32 gump, UI32 hue );
-		void addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& html, UI32 hasBack, UI32 canScroll );
-		void addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue = 0 );
-		void addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue = 0, UI32 subProperty2 = INVALID );
+		void addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring html, UI32 hasBack, UI32 canScroll );
+		void addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring data, UI32 hue = 0 );
+		void addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue = 0, UI32 subProperty2 = 0 );
 		void addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  );
 		void addResizeGump( UI32 x, UI32 y, UI32 gumpId, UI32 width, UI32 height );
-		void addText( UI32 x, UI32 y, wstring& data, UI32 hue = 0 );
+		void addText( UI32 x, UI32 y, wstring data, UI32 hue = 0 );
 		void addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
 		void addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI32 hue );
-		void addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& clilocid, UI32 hasBack , UI32 canScroll );
+		void addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring clilocid, UI32 hasBack , UI32 canScroll );
 		//void 	addGroup( UI32 group = 0 );
 		void addPage( UI32 page );
 		void addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page );
@@ -206,8 +206,8 @@ class cIconListMenu : public cBasicMenu
 };
 
 
-inline bool isIconList( NXWSOCKET s );
-inline bool isIconList( UI08 cmd );
+bool isIconList( NXWSOCKET s );
+bool isIconList( UI08 cmd );
 
 typedef std::map< UI32, P_MENU > MENU_MAP;
 

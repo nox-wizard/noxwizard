@@ -20,7 +20,7 @@
 #include "layer.h"
 #include "tmpeff.h"
 #include "npcai.h"
-#include "muls.h"
+#include "data.h"
 #include "set.h"
 #include "chars.h"
 #include "items.h"
