@@ -22,6 +22,7 @@
 #define IDB_BITMAP2                     148
 #define IDR_TOOLBAR                     149
 #define IDR_MENU1                       151
+#define IDB_BITMAP3                     156
 #define ID_FILE_SAVEWORLD               32771
 #define ID_FILE_RESTART                 32773
 #define ID_ADMIN_WHOISONLINE            32774
@@ -155,7 +156,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        155
+#define _APS_NEXT_RESOURCE_VALUE        157
 #define _APS_NEXT_COMMAND_VALUE         32933
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           110
