@@ -10,9 +10,6 @@
 #include "nxwcommn.h"
 #include "unicode.h"
 
-#define FIRSTBYTE( C ) C & 0xFF00
-#define SECONDBYTE( C ) C >> 8
-
 cUnicodeString::cUnicodeString()
 {
 	s.push_back(0); // 0 0 termination
