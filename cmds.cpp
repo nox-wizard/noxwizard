@@ -126,9 +126,9 @@ bool cCommandMap::Check( string& text )
 cCallCommand* cCallCommand::findCallCommand(SERIAL cmd)
 {
 
-	std::map< SERIAL, cCallCommand* >::iterator iter( command_map.find( cmd ) );
+	std::map< SERIAL, cCallCommand* >::iterator iter( callcommand_map.find( cmd ) );
 
-	if ( iter != command_map.end() )	//command exists
+	if ( iter != callcommand_map.end() )	//command exists
 		return iter->second.callback;
 	else
 		return NULL;					//command doesnt exist
@@ -138,7 +138,7 @@ cCallCommand* cCallCommand::findCallCommand(SERIAL cmd)
 
 void cCallCommand::delCommand(SERIAL cmd){
 
-	callCommand_map.erase(cmd);
+	callcommand_map.erase(cmd);
 }
 
 
