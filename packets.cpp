@@ -616,8 +616,12 @@ cPacketGeneralInfo<T>::cPacketGeneralInfo() {
 	headerSize = 0x05;
 }
 
-template< class T >
-cSubPacketParty<T>::cSubPacketParty() : cPacketGeneralInfo<T>() {
+cSubPacketParty<cServerPacket>::cSubPacketParty() : cPacketGeneralInfo<cServerPacket>() {
+	this->subcmd = 6;
+	headerSize += sizeof( eUI08 );
+}
+
+cSubPacketParty<cClientPacket>::cSubPacketParty() : cPacketGeneralInfo<cClientPacket>() {
 	this->subcmd = 6;
 	headerSize += sizeof( eUI08 );
 }
