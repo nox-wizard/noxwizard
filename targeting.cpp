@@ -1742,6 +1742,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		//if we want to know the owner we can do it
 		pi->setSameOwnerAs(pi3);
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Heart
@@ -1755,6 +1756,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Body
@@ -1768,6 +1770,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Left Arm
@@ -1781,6 +1784,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Right Arm
@@ -1794,6 +1798,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Left Leg
@@ -1807,6 +1812,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//create the Rigth Leg
@@ -1820,6 +1826,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->att=5;
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->setCurrentName( temp ); //Luxor
+		pi->setDecay();
 		pi->Refresh();
 
 		//human: always delete corpse!
