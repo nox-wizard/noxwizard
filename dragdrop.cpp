@@ -1258,7 +1258,6 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 //	bool abort=false;
 	NXWSOCKET  s=ps->toInt();
 
-	P_CHAR pj;
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
@@ -1286,10 +1285,12 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		ps->sysmsg(TRANSLATE("Hey, putting houses in your pack crashes your back and client!"));
 	}
 
-	pj=pCont->getPackOwner();
+	//ndEndy recurse only a time
+	P_ITEM contOutMost = pCont->getOutMostCont();
+	P_CHAR contOwner = ( !contOutMost->isInWorld() )? pointers::findCharBySerial( contOutMost->getContSerial() ) : NULL;
 
-	if( ISVALIDPC(pj) )
-		if ((pj->npcaitype==NPCAI_PLAYERVENDOR) && (pj->npc) && (pj->getOwnerSerial32()!=pc->getSerial32()) )
+	if( ISVALIDPC(contOwner) )
+		if ((contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()!=pc->getSerial32()) )
 		{
 //		   abort=true;
 		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
@@ -1352,51 +1353,28 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		}
 	}
 
-	/****************************************************************
-	 --begin-- XANATHAR'S BANK LIMIT CODE :]
-	 ****************************************************************/
+	// Xanathars's Bank Limit Code
 	if (ServerScp::g_nBankLimit != 0) {
 
-		P_ITEM pBank = NULL;
+		if( ISVALIDPI( contOutMost ) && contOutMost->morex==MOREX_BANK ) {
 
-		if(pCont->morex==MOREX_BANK) pBank = pCont;
-		else {
-			P_ITEM pi = pCont;
-			while( ISVALIDPI(pi) ) {
-				pi = pointers::findItemBySerial( pi->getContSerial());
-				if( !ISVALIDPI(pi) ) break; //in world
-				if ( (pi->type == ITYPE_CONTAINER) && (pi->morex==MOREX_BANK)) {
-					pBank = pi;
-					break;
-				}
+			int n = contOutMost->CountItems( INVALID, INVALID, false);
+			n -= contOutMost->CountItems( ITEMID_GOLD, INVALID, false);
+			if( pItem->type == ITYPE_CONTAINER )
+				n += pItem->CountItems( INVALID, INVALID, false);
+			else 
+				++n;
+			if( n > ServerScp::g_nBankLimit ) {
+				ps->sysmsg(TRANSLATE("You exceeded the number of maximimum items in bank of %d"), ServerScp::g_nBankLimit);
+				item_bounce6(ps,pItem);
+				return;
 			}
-		}
-
-
-		if (pBank != NULL) {
-			if(pBank->morex==MOREX_BANK)
-			{
-				int n;
-				n = pBank->CountItems(-1, -1, false);
-				n -= pBank->CountItems(ITEMID_GOLD, -1 , false);
-				if (pItem->type == ITYPE_CONTAINER) {
-					n += pItem->CountItems(-1, -1, false);
-				} else n++;
-				if (n > ServerScp::g_nBankLimit) {
-					ps->sysmsg(TRANSLATE("You exceeded the number of maximimum items in bank of %d"), ServerScp::g_nBankLimit);
-					item_bounce6(ps,pItem);
-					return;
-				}
-			}
+			
 		}
 	}
 
 
-	/****************************************************************
-	 -- end -- XANATHAR'S BANK LIMIT CODE :]
-	 ****************************************************************/
-
-
+	//ndEndy this not needed because when is dragging cont serial is INVALID
 	//testing UOP Blocking Tauriel 1-12-99
 	if (!pItem->isInWorld())
 
@@ -1420,7 +1398,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		return;
 	}
 	// - Trash container
-	if (pCont->type==ITYPE_TRASH)
+	if( pCont->type==ITYPE_TRASH)
 	{
 		archive::DeleItem(pItem);
 		ps->sysmsg(TRANSLATE("As you let go of the item it disappears."));
@@ -1443,7 +1421,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			return;
 		}
 		pack= pc->getBackpack();
-		if (pack!=NULL) // lb
+		if(ISVALIDPI(pack))
 		{
 			if ((!(pCont->getContSerial()==pc->getSerial32())) &&
 				(!(pCont->getContSerial()==pack->getSerial32())) && (!(pc->CanSnoop())))
@@ -1488,17 +1466,14 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				}
 			}
 		}
+		ps->sendSpellBook(pCont);
 	}
 
-	// player run vendors
-	/*if (!(pCont->pileable && pItem->pileable && pCont->id()==pItem->id()
-		|| (pCont->type!=ITYPE_CONTAINER && pCont->type!=ITYPE_SPELLBOOK)))*/
 	if (pCont->type == ITYPE_CONTAINER) {
-		pj= pCont->getPackOwner();
 
-		if ( ISVALIDPC(pj) )
+		if ( ISVALIDPC(contOwner) )
 		{
-			if ( (pj->npcaitype==NPCAI_PLAYERVENDOR) && (pj->npc) && (pj->getOwnerSerial32()==pc->getSerial32()) )
+			if ( (contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()==pc->getSerial32()) )
 			{
 				pc->fx1= DEREF_P_ITEM(pItem);
 				pc->fx2=17;
@@ -1536,33 +1511,16 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			else
 			{
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
-//				pItem->setContSerial(-1);
-				pItem->setContSerial(pp->Tserial);
+				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
+					mapRegions->remove(pItem);
 
-				mapRegions->add(pItem);
+				pItem->setContSerial( pCont->getContSerial() );
 
 				SndRemoveitem( pItem->getSerial32() );
-				pCont->Refresh();//AntiChrist
+				pItem->Refresh();
 			}
 
-			// - Spell Book
 
-			if (pCont->type==ITYPE_SPELLBOOK)
-				ps->sendSpellBook(pCont);
-				// LB, bugfix for showing(!) the wrong spell (clumsy) when a new spell is put into opened spellbook
-
-//			if (pItem->glow>0) // LB's glowing items stuff
-//			{
-//				P_CHAR pp= pCont->getPackOwner();
-//				chars[cc].removeHalo(pItem); // if gm put glowing object in another pack, handle glowsp correctly !
-//				//removefromptr(&glowsp[chars[cc].serial%HASHMAX],nItem);
-//				if ( ISVALIDPC(pp) )
-//				{
-//					pp->addHalo(pItem);
-//					pp->glowHalo(pItem);
-//				}
-//
-//			}
 }
 
 void drop_item(NXWCLIENT ps) // Item is dropped
