@@ -5150,7 +5150,7 @@ NATIVE ( _menu_addButton )
 	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-			menu->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
+			((cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
 			return 1;
 	}
 	return 0;
@@ -5169,7 +5169,7 @@ NATIVE ( _menu_addPage )
 	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		menu->addPage( params[2] );
+		((cMenu*)menu)->addPage( params[2] );
 		return 1;
 	}
 	return 0;
@@ -5192,7 +5192,7 @@ NATIVE (  _menu_addResizeGump )
 	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		menu->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5215,7 +5215,7 @@ NATIVE ( _menu_addPageButton )
 	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		menu->addPageButton( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5241,7 +5241,7 @@ NATIVE ( _menu_addText )
 		amx_GetAddr(amx,params[4],&cstr);
 		wstring s;
 		amx_GetStringUnicode( &s, cstr );
-		menu->addText( params[2], params[3], s, params[5] );
+		((cMenu*)menu)->addText( params[2], params[3], s, params[5] );
 		return 1;
 	}
 	return 0;
