@@ -1937,7 +1937,7 @@ void cHouse::load(cStringFile& input)
 void cHouses::addHouseItem(int housenumber, int itemNumber)
 {
 	UI32VECTOR *itemVec;
-	std::map<int, UI32VECTOR>>::iterator itemVecIt = houseitems.find(housenumber);
+	std::map<int, UI32VECTOR>::iterator itemVecIt = houseitems.find(housenumber);
 	if ( itemVecIt != houseitems.end())
 	{
 		itemVec=&itemVecIt->second;
@@ -1956,7 +1956,7 @@ void cHouses::addHouseItem(int housenumber, int itemNumber)
 
 UI32VECTOR cHouses::getHouseItems(int housenumber)
 {
-	std::map<int, UI32VECTOR>>::iterator itemVec = houseitems.find(housenumber);
+	std::map<int, UI32VECTOR>::iterator itemVec = houseitems.find(housenumber);
 	if (itemVec != houseitems.end() )
 		return itemVec->second;
 	return NULL;
