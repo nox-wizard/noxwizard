@@ -57,7 +57,7 @@
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) 
+cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) 
 {
 
 	cmd_name=name;
@@ -120,9 +120,9 @@ else
 //Implementation of cCallCommandMap Class
 
 
-cCallCommand::findCallCommand(SERIAL cmd){
+cCallCommand* cCallCommand::findCallCommand(SERIAL cmd){
 
-std::map<SERIAL, callCommand*>::iterator iter( command_map.find( cmd ) );
+std::map< SERIAL, callCommand* >::iterator iter( command_map.find( cmd ) );
 
 if ( iter != command_map.end() )	//command exists
     return iter->second.callback;
@@ -153,20 +153,22 @@ void cCallCommand::delCommand(SERIAL cmd){
 ///////////////////////////////////////////////////////////////////////////////////*/
 
 
-/*
-*******
+
+/*******
 A function that controls if the char can do the specified command and
 prepare a cCallCommand object to be given at Small function.
 This function is called after the control in speech.cpp
-*******
-
-*/
+*******/
 
 
-/*
+
+
+
 
 //The function that is called after the control done in speech.cpp
 //This should be put in another file or in a namespace (?)
+
+/*
 
 void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /ADD
 	{
@@ -224,26 +226,25 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 
 
 
+*/
 
-/*
-
-*******
+/*******
 Must complete a native function for AMX to get command property
 for use it in small scripting.
 
-*******
+*******/
 
 
-*/
 
 /*
+
 
 static CP_PARAM=0;
 static CP_ALLPARAMS=1;
 
 
-/* Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
-			{ "getCmdProperty", _getCmdProperty } */
+//Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
+//			{ "getCmdProperty", _getCmdProperty } 
 	
 // params[1] = char serial
 	// params[2] = cCallCommand Serial
@@ -253,7 +254,7 @@ static CP_ALLPARAMS=1;
 	// params[6] = 3rd param given
 	// params[7] = 4th param given
 
-/*
+
 
 NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
 
@@ -269,6 +270,4 @@ NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting fo
 
   	}
   	return INVALID;
-}
-
 */
