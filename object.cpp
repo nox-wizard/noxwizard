@@ -20,6 +20,8 @@ cScpIterator* cObject::getScriptIterator( std::string section, std::string& sect
 		iter = Scripts::Npc->getNewIterator( "SECTION %s %s", section.c_str(), sectionId.c_str() );
 	else if ( section == "LOOTLIST" )
 		iter = Scripts::Npc->getNewIterator( "SECTION %s %s", section.c_str(), sectionId.c_str() );
+	else if ( section == "NPCLIST" )
+		iter = Scripts::Npc->getNewIterator( "SECTION %s %s", section.c_str(), sectionId.c_str() );
 	return iter;
 }
 

@@ -71,8 +71,8 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 {
 	VALIDATEPIR(pack, NULL);
 	std::string	value( lootlist );
-	std::string 	loot	= cObject::getRandomScriptValue( "LOOTLIST", value );
-	P_ITEM 		pi	= item::CreateFromScript( (SCRIPTID) str2num( loot ), pack );
+	std::string 	loot( cObject::getRandomScriptValue( "LOOTLIST", value ) );
+	P_ITEM 		pi = item::CreateFromScript( (SCRIPTID) str2num( loot ), pack );
 	return pi;
 }
 
@@ -80,52 +80,23 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 //Xan : upgraded to new scripts
 int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
 {
-	//This function gets the random npc number from the list and recalls
-	//addrespawnnpc passing the new number
-	char sect[512];
-	char script1[1024];
-	cScpIterator* iter = NULL;
-	unsigned int uiTempList[100];
-	int i=0,k=0;
-	sprintf(sect, "SECTION NPCLIST %s", npclist);
+	std::string	value(npclist);
+	std::string 	strnpc( cObject::getRandomScriptValue( "NPCLIST", value ) );
+	int		npc = str2num( strnpc );
 
-	iter = Scripts::Npc->getNewIterator(sect);
-	if (iter==NULL) return -1;
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			uiTempList[i]=str2num(script1);
-			i++;
-		}
-	}
-	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS));
-
-	safedelete(iter);
-
-	if(i>0)
-	{
-		i=rand()%(i);
-		k=uiTempList[i];
-	}
-	if(k!=0)
+	if( npc != 0 )
 	{
 		if (spawnpoint==-1)
 		{
-			addmitem[s]=k;
-			return Targ->NpcMenuTarget(s);
-			//return -1;
-		}
-		else
-		{
-			return k; //addrespawnnpc(spawnpoint,k,1);
+			addmitem[s] = npc;
+			npc = Targ->NpcMenuTarget(s);
 		}
 	}
-	return -1;
-
+	else
+	{
+		npc = INVALID;
+	}
+	return npc;
 }
 
 //o---------------------------------------------------------------------------o
