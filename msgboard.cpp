@@ -112,6 +112,8 @@ void MsgBoardSetPostType( NXWSOCKET s, PostType nPostType )
 		case GLOBALPOST: // GLOBAL POST
 			sysmessage( s, TRANSLATE("Post type set to GLOBAL") );
 			break;
+		default :
+			sysmessage(s, TRANSLATE("Invalid Post Type")); 
 	}
 	return;
 

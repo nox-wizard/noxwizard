@@ -44,6 +44,7 @@
 #include "party.h"
 #include "gmpages.h"
 #include "house.h"
+#include "msgboard.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -6842,6 +6843,52 @@ NATIVE ( _house_deleteKeys )
 	return true;
 }
 
+
+/*!
+\brief perform a worldsave
+\author stonedz
+\since 0.82
+\fn world_save
+\return false if the save does not succed, true if the save succeds
+*/
+
+NATIVE ( _world_save )
+{
+	//timer and message to be added
+	if ( cwmWorldState->Saving() )
+		return false;
+	else
+	{
+		cwmWorldState->saveNewWorld();
+		return true;
+	}
+
+}
+
+
+/*!
+\brief
+\author stonedz
+\since 0.82
+\fn set_msgboard_posttype
+\param 1 character
+\param 2 Post type (0=local post, 1=regional post, 2= global post)
+\return true if the operation succedes, false elsewhere
+*/
+
+NATIVE ( _set_msgboard_posttype)
+{
+	
+	if (ISVALIDPC( pointers::findCharBySerial(params[1])))
+	{
+		MsgBoards::MsgBoardSetPostType(params[1], (MsgBoards::PostType) params[2] );
+		return true;	
+	}
+	return false;
+	
+}
+
+
 /*!
 \file
 
@@ -7287,6 +7334,12 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "house_changeLocks",  _house_changeLocks },
  { "house_makeKeys",  _house_makeKeys },
  { "house_deleteKeys",  _house_deleteKeys },
+ 
+// misc APIs need to be renamed
+ { "world_save", _world_save },
+ { "set_msgboard_posttype", _set_msgboard_posttype },
+
+
 // Terminator :
  { NULL, NULL }
 };
