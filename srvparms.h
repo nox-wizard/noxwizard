@@ -130,7 +130,7 @@ struct server_st
  int html;//HTML
  float boatspeed;
 
- unsigned int savespawns;
+ unsigned int showTitle;
 
 
  float stablingfee;
@@ -223,7 +223,6 @@ extern int g_nShowPoisonResistanceInTitle; //default :1;
 extern int g_nShowParalisysResistanceInTitle; //default :1;
 extern int g_nDisableFieldResistanceRaise;
 
-
 //[Remote_Administration]
 extern int g_nRacTCPPort; //default :2594;
 extern int g_nUseCharByCharMode; //default :1;
@@ -269,6 +268,8 @@ extern int g_nBankLimit;
 
 extern int g_nStatDailyLimit;
 extern int g_nAdventureMode;
+
+extern int g_showTitle;
 
 //[Restock]
 extern unsigned int g_nRestockTimeRate;

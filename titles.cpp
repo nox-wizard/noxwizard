@@ -312,41 +312,61 @@ char *complete_title(P_CHAR pc) // generates the ENTIRE title plus criminal stuf
 	// ripper ..rep stuff
 	else if ((pc->IsCriminal()) && (!(pc->dead) && (pc->kills<4)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[0].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[0].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=5) && (!(pc->dead) && (pc->kills<10)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[1].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[1].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=10) && (!(pc->dead) && (pc->kills<20)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[2].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[2].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=20) && (!(pc->dead) && (pc->kills<50)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[3].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[3].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=50) && (!(pc->dead) && (pc->kills<100)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[4].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[4].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=100) && (!(pc->dead)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[5].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s", title[5].other, pc->getCurrentNameC());
+		if ( pc->title != "" )
+			sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
+		else
+			sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 	} // end of rep stuff
 	else
 	{//Player.
 		sprintf(tempstr, "%s%s", title3(pc), pc->getCurrentNameC());		//Repuation + Name
 		{//NoTownTitle
 			strcpy(temp,tempstr);
-			if (pc->title.length()>0)
-			{//Titled & Skill
-				sprintf(tempstr, "%s %s, %s %s", temp, pc->title.c_str(), title1(pc), title2(pc));
-			}
+			if ( pc->title != "" )
+				sprintf(tempstr, "%s, %s,", tempstr, pc->title.c_str());
 			else
-			{//Just skilled
-				sprintf(tempstr, "%s, %s %s", temp, title1(pc), title2(pc));
-			}
+				sprintf(tempstr, "%s, %s %s,", tempstr, title1(pc), title2(pc));
 		}
 	}
 

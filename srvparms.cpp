@@ -178,6 +178,7 @@ int g_nLimitPlayerSparring = 0;
 int g_nStatsAdvanceSystem = 0;
 int g_nBankLimit = 0;
 
+int g_showTitle = 2;
 // important: loaddefault has to be called before.
 // currently it is. makes no sense to change that too.
 TIMERVAL g_nRestockTimeRate = 15;
@@ -308,7 +309,7 @@ void loadserverdefaults()
 	server_data.joinmsg=1;
 	server_data.partmsg=1;
 	server_data.stablingfee=0.25;
-	server_data.savespawns=1;
+	server_data.showTitle=2;
 
 	server_data.gm_log=0;
 	server_data.pvp_log=0;
@@ -582,6 +583,7 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"STATCAP"))			server_data.statcap=str2num(script2);
 		else if(!strcmp(script1,"ENABLEFEATURE"))		server_data.feature=str2num(script2);
 		else if(!strcmp(script1,"POPUPHELP"))			ServerScp::g_nPopUpHelp=str2num(script2);
+		else if(!strcmp(script1,"SHOWTITLE"))			ServerScp::g_showTitle=str2num(script2);
 		else if(!strcmp(script1,"SKILLADVANCEMODIFIER"))
 		{
 			int mod=str2num(script2);
@@ -650,7 +652,6 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"PVP_LOG"))			server_data.pvp_log=(char)str2num(script2);
 		else if(!strcmp(script1,"GM_LOG"))			server_data.gm_log=(char)str2num(script2);
 		else if(!strcmp(script1,"LOG_PATH"))			strcpy(server_data.log_path, script2);
-		else if(!strcmp(script1,"SAVESPAWNREGIONS"))		server_data.savespawns=str2num(script2);
 		else if(!strcmp(script1,"ROGUE"))			server_data.rogue=str2num(script2);
 		else if(!strcmp(script1,"CHAR_TIME_OUT"))		server_data.quittime=(unsigned short)str2num(script2);//Instalog
 		else if(!strcmp(script1,"MAXSTEALTHSTEPS"))		server_data.maxstealthsteps=str2num(script2);//AntiChrist
@@ -1309,8 +1310,6 @@ void saveserverscript()
 	fprintf(file, "GUARDSACTIVE %i\n",server_data.guardsactive);
 	fprintf(file, "// Must be 1 - 10, Higher the number, less chance of background sounds  \n");
 	fprintf(file, "BG_SOUNDS %i\n",server_data.bg_sounds);
-	fprintf(file, "// 1=spawned npcs will be saved to the worldfile, 0=spawned npcs will not be saved \n");
- 	fprintf(file, "SAVESPAWNREGIONS %i\n",server_data.savespawns);
 	fprintf(file, "// 1=Broadcasts a message to all players that a worldsave is being done,\n");
 	fprintf(file, "// 0=don't broadcast worldsaves \n");
 	fprintf(file, "ANNOUNCE_WORLDSAVES %i\n",server_data.announceworldsaves);
@@ -1342,6 +1341,8 @@ void saveserverscript()
 	fprintf(file, "CSSOVERRIDES %d\n",ServerScp::g_css_override_case_sensitive);		//Endymion
 	fprintf(file, "// 1 = Disable Z checking ( cool for worldbuilder but not for gamplay ) \n");	//Endymion
 	fprintf(file, "DISABLEZCHECKING %d\n",server_data.disable_z_checking);		//Endymion
+	fprintf(file, "// 2 show title for players also, 1 = Show title for npcs only in ingame Paperdoll, 0 don't show, \n");	//Endymion
+	fprintf(file, "SHOWTITLE %d\n",server_data.showTitle);		//Endymion
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION BILLBOARDS\n");
