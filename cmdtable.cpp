@@ -209,8 +209,8 @@ void command_post( NXWCLIENT ps )
 
 	}
 
-	pc_cs->sysmsg( t );
-	sysmessage( s, t );
+	pc_cs->sysmsg( t.c_str() );
+	sysmessage( s, t.c_str() );
 	return;
 }
 
@@ -287,42 +287,26 @@ void command_readaccounts( NXWCLIENT ps )
 	ps->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 
-
-
-/*!
-\brief Resends server data to client
-\param s the socket
-*/
-void command_resend(NXWCLIENT ps )
+//! Resends server data to client
+void command_resend(NXWCLIENT ps)
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 	pc->teleport();
 }
 
-void command_teleport(NXWCLIENT ps )
+//! Teleport a client
+void command_teleport(NXWCLIENT ps)
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 	pc->teleport();
 }
 
-/*!
-\brief Prints your current coordinates + region
-\param s the socket
-*/
+//! Prints your current coordinates + region
 void command_where(NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_cs = ps->currChar();
 	VALIDATEPC(pc_cs);
 
 	Location charpos= pc_cs->getPosition();
@@ -335,7 +319,7 @@ void command_where(NXWCLIENT ps )
 	pc_cs->sysmsg("%i %i (%i)", charpos.x, charpos.y, charpos.z);
 }
 
-// Shows the GM or Counsellor queue.
+//! Shows the GM or Counsellor queue.
 void command_q(NXWCLIENT ps )
 {
  
@@ -350,7 +334,7 @@ void command_q(NXWCLIENT ps )
 		Commands::ShowGMQue(s, 1); // They are a GM
 }
 
-// For Counselors or GM's, goes to next call in queue.
+//! For Counselors or GM's, goes to next call in queue.
 void command_next(NXWCLIENT ps )
 {
  
@@ -365,7 +349,7 @@ void command_next(NXWCLIENT ps )
 	   Commands::NextCall(s, 1); // They are a GM
 }
 
-// For Counselor's and GM's, removes current call from queue.
+//! For Counselor's and GM's, removes current call from queue.
 void command_clear(NXWCLIENT ps )
 {
  
@@ -380,34 +364,29 @@ void command_clear(NXWCLIENT ps )
 	   donewithcall(s, 1); // They are a GM
 }
 
-// (d) Teleports you to a location from the LOCATIONS.SCP file.
+//! (d) Teleports you to a location from the LOCATIONS.SCP file.
 void command_goplace(NXWCLIENT ps )
 {
  
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc_cs);
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC(pc);
 
 	if (tnum==2)
 	{
-		pc_cs->doGmEffect();
+		pc->doGmEffect();
 
-		pc_cs->goPlace( strtonum(1) );
-		pc_cs->teleport();
+		pc->goPlace( strtonum(1) );
+		pc->teleport();
 
-		pc_cs->doGmEffect();
+		pc->doGmEffect();
 	}
 }
 
-// (h h h h) Teleports you to another character.
+//! (h h h h) Teleports you to another character.
 void command_gochar(NXWCLIENT ps )
 {
  
-	NXWSOCKET s = ps->toInt();
-
-
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_cs = ps->currChar();
 	VALIDATEPC(pc_cs);
 
 	PC_CHAR pc_i=NULL;
@@ -426,11 +405,11 @@ void command_gochar(NXWCLIENT ps )
 		}
 		case 2: {
 		
-			NXWCLIENT ps=getClientFromSocket( strtonum(1) );
-			if( ps==NULL )
+			NXWCLIENT ps_target = getClientFromSocket( strtonum(1) );
+			if( ps_target == NULL )
 				return;
 
-			pc_i = ps->currChar();
+			pc_i = ps_target->currChar();
 			break;
 		}
 		default:
@@ -449,14 +428,10 @@ void command_gochar(NXWCLIENT ps )
 	}
 }
 
-// Try to compensate for messed up Z coordinates. Use this if you find yourself half-embedded in the ground.
+//! Try to compensate for messed up Z coordinates. Use this if you find yourself half-embedded in the ground.
 void command_fix( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc_cs);
+	P_CHAR pc_cs = ps->currChar();
 
 	Location charpos= pc_cs->getPosition();
 
@@ -466,14 +441,10 @@ void command_fix( NXWCLIENT ps )
 	if (tnum == 2)
 	{
 		if (validtelepos(pc_cs)==-1)
-		{
 			charpos.dispz= charpos.z= strtonum(1);
-
-		}
 		else
-		{
 			charpos.dispz= charpos.z= validtelepos(pc_cs);
-		}
+
 		pc_cs->teleport();
 	}
 
@@ -484,14 +455,15 @@ void command_fix( NXWCLIENT ps )
 void target_xgo( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
-	if(ISVALIDPC(pc)) {
-	    pc->MoveTo( t->buffer[0], t->buffer[1], t->buffer[2] );
+	if(ISVALIDPC(pc))
+	{
+		pc->MoveTo( t->buffer[0], t->buffer[1], t->buffer[2] );
 		pc->teleport();
-    }
+	}
 }
 
+//! (d) Send another character to a location in your LOCATIONS.SCP file.
 void command_xgoplace( NXWCLIENT ps )
-// (d) Send another character to a location in your LOCATIONS.SCP file.
 {
 	if (tnum==2)
 	{
@@ -512,14 +484,10 @@ void command_xgoplace( NXWCLIENT ps )
 
 }
 
-// Display the serial number of every item on your screen.
+//! Display the serial number of every item on your screen.
 void command_showids( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	
-	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_cs = ps->currChar();
 	VALIDATEPC(pc_cs);
 
 	NxwCharWrapper sc;
@@ -533,13 +501,10 @@ void command_showids( NXWCLIENT ps )
 
 }
 
-// (h h) Polymorph yourself into any other creature.
+//! (h h) Polymorph yourself into any other creature.
 void command_poly( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
 
 	if (tnum==3)
@@ -573,14 +538,11 @@ void command_poly( NXWCLIENT ps )
 // (h h) Change the hue of your skin.
 void command_skin( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	if (tnum == 3)
 	{
 		int k, body;
 
-		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+		P_CHAR pc_currchar = ps->currChar();
 
 		body = pc_currchar->getId();
 		k = (strtonum(1,16) << 8) | strtonum(2,16);
@@ -596,15 +558,12 @@ void command_skin( NXWCLIENT ps )
 	}
 }
 
-// (h) Preform an animated action sequence.
+//! (h) Preform an animated action sequence.
 void command_action( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	if (tnum==2)
 	{
-		P_CHAR pc= MAKE_CHAR_REF(currchar[s]);
+		P_CHAR pc = ps->currChar();
 		pc->playAction(strtonum(1));
 	}
 	return;
@@ -616,11 +575,8 @@ void command_action( NXWCLIENT ps )
 // BYTE season	(0 spring, 1 summer, 2 fall, 3 winter, 4 dead, 5 unknown (rotating?))
 // BYTE unknown	If 0, cannot change from undead, so 1 is the default
 void command_setseason( NXWCLIENT ps )
-{
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+{ 
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 	UI08 setseason[3]={ 0xBC, 0x00, 0x01 };
 
@@ -652,8 +608,8 @@ void target_xtele( NXWCLIENT ps, P_TARGET t )
 	pc->teleport();
 }
 
+//! Teleport a player to your position.
 void command_xtele( NXWCLIENT ps )
-// (nothing) Teleport a player to your position.
 {
 	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cCharTarget() );
 	targ->code_callback = target_xtele;
@@ -661,7 +617,7 @@ void command_xtele( NXWCLIENT ps )
 	ps->sysmsg( "Select char to teleport to your position." );
 }
 
-// (d d d) Go to the specified X/Y/Z coordinates
+//! (d d d) Go to the specified X/Y/Z coordinates
 void command_go( NXWCLIENT ps )
 {
  
@@ -686,7 +642,10 @@ void command_go( NXWCLIENT ps )
 	return;
 }
 
-// Sets all PK counters to 0.
+/*!
+\brief Sets all PK counters to 0.
+\todo This function is commented out. Should be wrote or deleted.
+*/
 void command_zerokills( NXWCLIENT ps )
 {
                         return;
@@ -700,13 +659,10 @@ void command_zerokills( NXWCLIENT ps )
 			sysmessage(s,"All player kills are now 0.");*/
 }
 
-
+//! Shows character appetite
 void command_appetite( NXWCLIENT ps )
 {
- 
-	NXWSOCKET socket = ps->toInt();
-
-	P_CHAR pc = MAKE_CHAR_REF( currchar[socket] );
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC( pc );
 
 	switch( (pc->IsGMorCounselor()	? 6 : pc->hunger) )
@@ -727,9 +683,7 @@ void command_appetite( NXWCLIENT ps )
 	}
 }
 
-/*!
-\brief Adds an item when using 'add # #
-*/
+//! Adds an item when using 'add # #
 void target_addTarget( NXWCLIENT ps, P_TARGET t )
 {
     
@@ -751,12 +705,9 @@ void target_addTarget( NXWCLIENT ps, P_TARGET t )
 
 }
 
-// (h h) Adds a new item, or opens the GM menu if no hex codes are specified.
+//! (h h) Adds a new item, or opens the GM menu if no hex codes are specified.
 void command_add( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	P_CHAR pc = ps->currChar();
 
 	if( tnum==1 )
@@ -775,9 +726,9 @@ void command_add( NXWCLIENT ps )
 			a=strtonum(1);
 			b=strtonum(2);
 		}
-		clientInfo[s]->resetTarget();
+		clientInfo[ps->toInt()]->resetTarget();
 
-		P_TARGET trg = clientInfo[s]->newTarget( new cLocationTarget() );
+		P_TARGET trg = clientInfo[ps->toInt()]->newTarget( new cLocationTarget() );
 		ps->sysmsg( "Select location for item..." );
 		trg->buffer[0]=a;
 		trg->buffer[1]=b;
@@ -789,16 +740,13 @@ void command_add( NXWCLIENT ps )
 		ps->sysmsg( "Syntax error. Usage: /add <id1> <id2>" );
 }
 
-
-
-
-// (h h) Adds a new item to your current location.
+//! (h h) Adds a new item to your current location.
 void command_addx( NXWCLIENT ps )
 {
  
 	NXWSOCKET s = ps->toInt();
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
 	if (tnum==3)
@@ -822,8 +770,8 @@ void target_rename( NXWCLIENT ps, P_TARGET t )
 }
 
 
+//! (text) Renames any dynamic object in the game.
 void command_rename( NXWCLIENT ps )
-// (text) Renames any dynamic object in the game.
 {
 	if (tnum>1)
 	{
@@ -837,7 +785,7 @@ void command_rename( NXWCLIENT ps )
 }
 
 
-// (text) Renames any dynamic item in the game.
+//! (text) Renames any dynamic item in the game.
 void command_cfg( NXWCLIENT ps )
 {
  
@@ -854,7 +802,7 @@ void command_cfg( NXWCLIENT ps )
 }
 
 
-// Saves the current world data into NXWITEMS.WSC and NXWCHARS.WSC.
+//! Saves the current world data into NXWITEMS.WSC and NXWCHARS.WSC.
 void command_save( NXWCLIENT ps )
 {
 	cwmWorldState->saveNewWorld();

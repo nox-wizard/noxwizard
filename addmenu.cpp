@@ -50,17 +50,14 @@ cMakeMenu::~cMakeMenu()
 
 }
 
-
-
 /*!
 \brief Clean a String
 \author Xanathar
-\return char*
 \param s itemmenu number to be loaded
 */
 std::string cMakeMenu::cleanString( std::string s )
 {
-	char *p = strstr(s.c_str(), " ");
+	const char *p = strstr(s.c_str(), " ");
 	if (p!=NULL) 
 		return std::string( p+1 );
 	return s;

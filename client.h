@@ -26,9 +26,17 @@ public:
 	NXWSOCKET m_sck;
 public:
 	cNxwClientObj( NXWSOCKET s );
-	int toInt();
-	NXWSOCKET toLegacySocket();
 	void setLegacySocket(NXWSOCKET s);
+
+	inline NXWSOCKET toLegacySocket() const
+	{
+		return m_sck;
+	}
+
+	inline int toInt() const
+	{
+		return m_sck;
+	}
 
 	//@{
 	/*!

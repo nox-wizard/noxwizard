@@ -600,16 +600,6 @@ cPacketTargetingCursor<T>::cPacketTargetingCursor() {
 	headerSize = 0x13;
 }
 
-cPacketTargetingCursor<cServerPacket>::cPacketTargetingCursor() {
-	cmd = PKG_TARGETING;
-	headerSize = 0x13;
-}
-
-cPacketTargetingCursor<cClientPacket>::cPacketTargetingCursor() {
-	cmd = PKG_TARGETING;
-	headerSize = 0x13;
-}
-
 template< class T >
 cPacketGeneralInfo<T>::cPacketGeneralInfo() {
 	cmd = PKG_GENERAL_INFO;

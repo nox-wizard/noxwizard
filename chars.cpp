@@ -1273,13 +1273,13 @@ SI32 cChar::getTeachingDelta(P_CHAR pPlayer, SI32 skill, SI32 sum)
 \param txt as default
 \param ... as default
 */
-void cChar::sysmsg(TEXT *txt, ...)
+void cChar::sysmsg(const TEXT *txt, ...)
 {
 	va_list argptr;
 	char msg[512];
 	va_start( argptr, txt );
 
-	vsnprintf( msg, sizeof(msg)-1,(char *)txt, argptr );
+	vsnprintf( msg, sizeof(msg)-1,(const char *)txt, argptr );
 	va_end( argptr );
 	if (getClient() != NULL)
 		getClient()->sysmsg(msg);

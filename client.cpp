@@ -22,7 +22,7 @@
 #include "inlines.h"
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
-	this->m_sck=s;
+	m_sck=s;
 }
 
 void cNxwClientObj::sysmsg(short color, char* txt, ...)
@@ -157,11 +157,6 @@ BYTE *cNxwClientObj::getRcvBuffer()
 void cNxwClientObj::send(const void *point, int length)
 { 
 	if (m_sck>-1 && m_sck < now) Xsend(m_sck,point,length);
-}
-
-int cNxwClientObj::toInt()
-{
-	return m_sck;
 }
 
 void cNxwClientObj::sendSpellBook(P_ITEM pi)

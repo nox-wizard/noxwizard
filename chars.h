@@ -840,7 +840,7 @@ public:
 
 		NXWCLIENT		getClient() const;
 		NXWSOCKET		getSocket() const;
-		void			sysmsg(TEXT *txt, ...);
+		void			sysmsg(const TEXT *txt, ...);
 		void			attackStuff(P_CHAR pc);
 		void			helpStuff(P_CHAR pc_i);
 		void			applyPoison(PoisonType poisontype, SI32 secs = INVALID);
