@@ -157,7 +157,7 @@ void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET socket, wstring& c, in
 void cClientPacket::receive( NXWCLIENT ps ) {
 	offset=1;
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize-1 );
 };
 
 /*!
@@ -194,7 +194,7 @@ void cServerPacket::send( P_CHAR pc ) {
 */
 char* cServerClientPacket::getBeginValidForReceive()
 {
-	return ( cServerPacket::getBeginValid() +sizeof(cServerPacket::cmd) );
+	return ( (char*)( &(cServerPacket::cmd) )  +sizeof(cServerPacket::cmd) );
 }
 
 /*!
@@ -207,7 +207,7 @@ char* cServerClientPacket::getBeginValidForReceive()
 void cServerClientPacket::receive( NXWCLIENT ps ) {
 	cClientPacket::offset=1;
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), cServerPacket::headerSize );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), cServerPacket::headerSize-1 );
 };
 
 

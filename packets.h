@@ -83,7 +83,7 @@ protected:
 	char* getBeginValidForReceive();
 public:
 	virtual void receive( NXWCLIENT ps );
-};
+} PACK_NEEDED;
 
 typedef cPacket* P_PACKET;	//!< pointer to cPacket
 typedef cClientPacket* P_CLIENT_PACKET;	//!< pointer to cClientPacket

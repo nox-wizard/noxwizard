@@ -60,7 +60,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 	if ( command == "GMMENU" ) {
 		gmmenu(s, str2num(param));
 		return;
-	//Luxor: Makemenu MUST be before Menu, or a serious bug occurs!
 	} else if ( command == "MAKEMENU" ) {
 		//ndEndy PDFARE
 		//Skills::MakeMenu(s, str2num(param), pc->making );

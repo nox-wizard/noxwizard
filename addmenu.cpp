@@ -23,18 +23,18 @@ cMakeMenu::cMakeMenu( SERIAL section ) : cBasicMenu( MENUTYPE_CUSTOM )
 	this->section=section;
 }
 
-cMakeMenu::cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second ) : cBasicMenu( MENUTYPE_CUSTOM )
+cMakeMenu::cMakeMenu( SERIAL section, P_CHAR pc, int skill, UI16 firstId, COLOR firstColor, UI16 secondId, COLOR secondColor ) : cBasicMenu( MENUTYPE_CUSTOM )
 {
 	oldmenu = new cOldMenu();
 	this->section=section;
 	this->skill=skill;
 
-	mat[0].id = ISVALIDPI(first)? first->id() : 0;
-	mat[0].color= ISVALIDPI(first)? first->color() : 0;
+	mat[0].id = firstId;
+	mat[0].color= firstColor;
 
 
-	mat[1].id = ISVALIDPI(second)? second->id() : 0;
-	mat[1].color =  ISVALIDPI(second)? second->color() : 0;
+	mat[1].id = secondId;
+	mat[1].color = secondColor;
 
 	loadFromScript( pc );
 }
@@ -43,6 +43,10 @@ cMakeMenu::~cMakeMenu()
 {
 	if( oldmenu!=NULL )
 		delete oldmenu;
+	std::vector<cMakeItem*>::iterator iter( makeItems.begin() ), end( makeItems.end() );
+	for( ; iter!=end; iter++ )
+		if( (*iter)!=NULL )
+			delete (*iter);
 
 }
 
@@ -215,7 +219,7 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 						models.pop_back();
 					}
 					else {
-						makeItems.push_back( *imk );
+						makeItems.push_back( imk );
 						
 						std::wstring w;
 						char b[TEMP_STR_SIZE];
@@ -234,8 +238,7 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 				break;
 			case MAKE_NEED_MENUORITEM: //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 				if( ( lha=="MAKEMENU" ) || ( lha=="ADDITEM" ) ) {
-					imk->command.command = lha;
-					imk->command.param   = rha;
+					imk->command = new cScriptCommand( lha, rha );
 					type = MAKE_NEED_INFO;
 				}
 				else {
@@ -257,25 +260,6 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 		ConOut( "[ERROR] on cration of makemenu %d\n", section );
         return;
 	}
-
-}
-
-
-void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second )
-{
-
-	if( ( skill < 0 ) || ( skill >= TRUESKILLS ) )	//Luxor
-		return;
-	
-	VALIDATEPC(pc);
-
-	if( pc->custmenu!=INVALID )
-		Menus.removeMenu( pc->custmenu, pc );
-
-	P_MENU pm = Menus.insertMenu( new cMakeMenu( m, pc, skill, first, second ) );
-	pc->custmenu = pm->serial;
-	pm->show( pc );
-
 
 }
 
@@ -322,14 +306,17 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
         return;
     }
 
-	cMakeItem& mi = makeItems[item];
+	cMakeItem* mi = makeItems[item];
 
-	if( mi.command.command=="MAKEMENU" ) {
-		mi.command.execute( ps->toInt() );
+	if( ( mi==NULL ) || ( mi->command==NULL ) )
+		return;
+
+	if( mi->command->command=="MAKEMENU" ) {
+		Skills::MakeMenu( pc, str2num( mi->command->param ), skill, mat[0].id, mat[0].color, mat[1].id, mat[1].color );
 		return;
 	}
 
-	if( !mi.checkReq( pc ) )
+	if( !mi->checkReq( pc ) )
 		return;
 
     
@@ -342,17 +329,17 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
     //  - do what should be done
 
 	for( int j=0; j<2; ++j ) {
-		cRawItem& raw = mi.reqitems[j];
+		cRawItem& raw = mi->reqitems[j];
 		if( raw.id!=0 )
 	        pc->delItems( raw.id, raw.number, raw.color );
     }
 
-    if( !pc->checkSkill((Skill)mi.skillToCheck, mi.minskill, mi.maxskill) ) {
+    if( !pc->IsGM() && !pc->checkSkill((Skill)mi->skillToCheck, mi->minskill, mi->maxskill) ) {
         pc->sysmsg(TRANSLATE("You failed"));
         return;
     }
 
-	mi.command.execute( ps->toInt() );
+	mi->command->execute( ps->toInt() );
 
 }
 
@@ -389,6 +376,35 @@ bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cRawItem* def )
 
 
     return true;
+}
+
+
+void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second )
+{
+
+	Skills::MakeMenu( 
+		pc, m, skill, ISVALIDPI(first)? first->id() : 0, ISVALIDPI(first)? first->color() : 0,
+		ISVALIDPI(second)? second->id() : 0, ISVALIDPI(second)? second->color() : 0 
+	);
+	
+}
+
+void Skills::MakeMenu( P_CHAR pc, int m, int skill, UI16 firstId, COLOR firstColor, UI16 secondId, COLOR secondColor )
+{
+
+	if( ( skill < 0 ) || ( skill >= TRUESKILLS ) )	//Luxor
+		return;
+	
+	VALIDATEPC(pc);
+
+	if( pc->custmenu!=INVALID )
+		Menus.removeMenu( pc->custmenu, pc );
+
+	P_MENU pm = Menus.insertMenu( new cMakeMenu( m, pc, skill, firstId, firstColor, secondId, secondColor ) );
+	pc->custmenu = pm->serial;
+	pm->show( pc );
+
+
 }
 
 
@@ -538,11 +554,13 @@ cMakeItem::cMakeItem()
 {
     skillToCheck = INVALID;
     minskill = 0; maxskill = 1000;
-    reqspell = INVALID;
+	command=NULL;
 }
 
 cMakeItem::~cMakeItem()
 {
+	if( command!=NULL )
+		delete command;
 }
 
 

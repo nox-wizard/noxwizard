@@ -122,8 +122,8 @@ namespace Skills {
 	
 	void target_carpentry( NXWCLIENT ps, P_TARGET t );
 
-	P_ITEM MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount = INVALID);
 	void MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second = NULL );
+	void MakeMenu( P_CHAR pc, int m, int skill, UI16 firstId=0, COLOR firstColor=0, UI16 secondId=0, COLOR secondColor=0 );
 
 	//@{
 	/*!

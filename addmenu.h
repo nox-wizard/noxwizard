@@ -46,11 +46,10 @@ class cMakeItem {
 
 public:
 
-    class cScriptCommand command;
+    cScriptCommand* command;
     SI32 skillToCheck;
     SI32 minskill;
     SI32 maxskill;
-    SI32 reqspell;
 	cRawItem reqitems[2];
 
     
@@ -63,13 +62,12 @@ class cMakeMenu : public cBasicMenu
 {
 
 	private:
-		std::vector<cMakeItem>	makeItems;
+		std::vector<cMakeItem*>	makeItems;
 
 	protected:
 
 		SERIAL section;
 		P_OLDMENU oldmenu;
-		std::vector< cScriptCommand > commands;
 
 		virtual void loadFromScript( P_CHAR pc );
 		std::string cleanString( std::string s );
@@ -84,7 +82,8 @@ class cMakeMenu : public cBasicMenu
 		cRawItem mat[2];
 		
 		cMakeMenu( SERIAL section );
-		cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second=NULL );
+		cMakeMenu( SERIAL section, P_CHAR pc, int skill, UI16 firstId=0, COLOR firstColor=0, UI16 secondId=0, COLOR secondColor=0 );
+
 		~cMakeMenu();
 
 		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
@@ -95,6 +94,7 @@ class cAddMenu : public cMakeMenu
 {
 
 	private:
+		std::vector< cScriptCommand > commands;
 		virtual void loadFromScript( P_CHAR pc );
 
 	public:
