@@ -2126,6 +2126,16 @@ NATIVE2(_guild_setProperty)
 
 		switch( params[2] )
 		{
+			case NXW_GP_C_TYPE:	
+				if ( p == GUILD_TYPE_NORMAL )
+					pGuild->setGuildType(GUILD_TYPE_NORMAL);	
+				if ( p == GUILD_TYPE_CHAOS )
+					pGuild->setGuildType(GUILD_TYPE_CHAOS);	
+				
+				if ( p == GUILD_TYPE_ORDER )
+					pGuild->setGuildType(GUILD_TYPE_ORDER);	
+				
+				return 0;
 			case  INVALID :				  		//dec value: 100;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
