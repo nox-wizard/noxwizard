@@ -118,7 +118,7 @@ static void callCustomTempFx(P_OBJECT poSrc, P_OBJECT poDest, int mode, int amxc
 	if (amxcallback <= -2) return;
 
 	int more = (more3<<16) + (more2<<8) + more1;
-	g_prgOverride->CallFn(amxcallback, poSrc->getSerial32(), poDest->getSerial32(), more, mode);
+	AmxFunction::g_prgOverride->CallFn(amxcallback, poSrc->getSerial32(), poDest->getSerial32(), more, mode);
 }
 
 /*!

@@ -536,7 +536,7 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		pi->SetRandPosInCont(pb);
 		pi->Refresh();
 	} else if ( script1 == "@CALL" ) {
-		g_prgOverride->CallFn(script2.c_str());
+		AmxFunction::g_prgOverride->CallFn(script2.c_str());
 	} else if ( script1 == "@RUN" ) {
 		AmxProgram *prg = new AmxProgram(script2.c_str());
 		prg->CallFn(INVALID);

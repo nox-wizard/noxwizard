@@ -2298,7 +2298,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 				}
 
 				if ( !strcmp("@CALL", script1) )	// Courtesy of Flamegod - Revelation emu
-					g_prgOverride->CallFn( g_prgOverride->getFnOrdinal( script2 ), static_cast<int>(pc_found->getSerial32()), static_cast<int>(socket) );
+					AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal( script2 ), static_cast<int>(pc_found->getSerial32()), static_cast<int>(socket) );
 
 			}
 		}

@@ -124,7 +124,7 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
                 itemmake[s].newcolor1 = pi->color() >>8;
                 itemmake[s].newcolor2 = pi->color() %256;
                 if ( pi->IsCutLeather() || pi->IsHide() )
-					g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXTAILORING), s, pi->getSerial32()); //Luxor
+					AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXTAILORING), s, pi->getSerial32()); //Luxor
                 else
 					Skills::MakeMenu(s,30,TAILORING);
             }
@@ -332,7 +332,7 @@ void Skills::Smith(NXWSOCKET s)
         if (pi->id()==0x1BEF || pi->id()==0x1BF2)   // is it an ingot ?
         {
 
-			AnvilTarget(s, pi, 1, g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
+			AnvilTarget(s, pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
 			return;
         }
         itemmake[s].Mat1id = 0;
@@ -636,7 +636,7 @@ void Skills::TreeTarget(NXWSOCKET s)
         //28/11/01
         //
         //Luxor - new implementation of AMX controlled lumberjacking.
-        g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
+        AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
 
         lumber=1;
     }
@@ -865,7 +865,7 @@ void Skills::SmeltOre(NXWSOCKET s)
                 //
                 //Luxor - new implementation of AMX controlled ores smelting.
 
-                g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color() >> 8), (pix->color() % 256), pix->getSerial32());
+                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color() >> 8), (pix->color() % 256), pix->getSerial32());
             }
         }
     }
