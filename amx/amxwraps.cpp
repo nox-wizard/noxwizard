@@ -1330,14 +1330,13 @@ NATIVE(_getCharFromSocket)
 \param 3: x location
 \param 4: y location
 \return true or false
-\bug return INVALID insted of false in VALIDATEPIR, i think it's an error
 */
 NATIVE(_contAddItem)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
-	VALIDATEPIR( pi, INVALID );
+	VALIDATEPIR( pi, false );
 	P_ITEM pi1 = pointers::findItemBySerial(params[2]);
-	VALIDATEPIR( pi1, INVALID );
+	VALIDATEPIR( pi1, false );
 	return pi->AddItem(pi1, params[3],params[4]); 
 }
 
@@ -1363,14 +1362,13 @@ NATIVE(_color)
 \param 1: container
 \param 2: item
 \return true or false
-\bug return INVALID insted of false in VALIDATEPIR, i think it's an error
 */
 NATIVE(_contPileItem)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
-	VALIDATEPIR( pi, INVALID );
+	VALIDATEPIR( pi, false );
 	P_ITEM pi1 = pointers::findItemBySerial(params[2]);
-	VALIDATEPIR( pi1, INVALID );
+	VALIDATEPIR( pi1, false );
 	return pi->AddItem(pi1);
 }
 
@@ -1462,19 +1460,20 @@ NATIVE(_imoveto)
 }
 
 /*!
-\brief pile an item into a container
+\brief pile an item into another
 \author Xanathar
 \since 0.10
-\param 1: container
-\param 2: item
-\return INVALID if error or not piled, or piled Into item
+\param 1: first item
+\param 2: second item
+\return false if not piled, true else
+\note if piled can be first item is deleted
 */
 NATIVE(_pileitem)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
-	VALIDATEPIR( pi, INVALID );
+	VALIDATEPIR( pi, false );
 	P_ITEM pi1 = pointers::findItemBySerial(params[2]);
-	VALIDATEPIR( pi1, INVALID );
+	VALIDATEPIR( pi1, false );
 	return pi->PileItem(pi1);
 }
 
