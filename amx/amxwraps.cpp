@@ -1728,7 +1728,7 @@ NATIVE(_chr_guildCompare)
     VALIDATEPCR(pc1, INVALID);
     P_CHAR pc2 = pointers::findCharBySerial(params[2]);
     VALIDATEPCR(pc2, INVALID);
-    return Guilds->Compare (pc1,pc2);
+    return Guildz.compareGuilds (pc1->getGuild(),pc2->getGuild());
 }
 
 
