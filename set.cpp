@@ -1122,34 +1122,12 @@ void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 
 
 /*!
 \brief Fills with a list of socket
-\author Endymion, rewritten by Luxor
-\param location only socket near given location are added
-\param nDistance the distance requested
-\warning this function ADD new char to current list
-*/
-void NxwSocketWrapper::fillOnline( Location location, int nDistance )
-{
-	P_CHAR pc;
-	for (SI32 i = 0; i < now; ++i )
-	{
-		pc = pointers::findCharBySerial( currchar[i] );
-		//
-		//	Sparhawk ISVALIDPC(pc) checking unnecessary here, is done by findCharBySerial
-		//
-		if ( pc != 0 )
-			if (dist(location, pc->getPosition()) <= nDistance)
-				insertSocket(i);
-	}
-}
-
-/*!
-\brief Fills with a list of socket
 \author Endymion
 \param onlyNearThis only socket near given item are added
 \param nDistance the distance requested
 \warning this function ADD new char to current list
 */
-void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, int nDistance )
+void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, UI32 nDistance )
 {
 	VALIDATEPI(onlyNearThis);
 
@@ -1165,6 +1143,45 @@ void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, int nDistance )
 			fillOnline( );
 	}
 
+}
+
+/*!
+\brief Fills with a list of socket
+\author Akron
+\param onlyNearThis only socket near given item are added
+\param nDistance the distance requested
+\warning this function ADD new char to current list
+*/
+void NxwSocketWrapper::fillOnline( P_OBJECT onlyNearThis, UI32 nDistance )
+{
+	VALIDATEPO(onlyNearThis);
+
+	if ( isItemSerial( onlyNearThis->getSerial32() ) )
+		fillOnline((P_ITEM)onlyNearThis, nDistance);
+	else
+		fillOnline((P_CHAR)onlyNearThis, true, nDistance);
+}
+
+/*!
+\brief Fills with a list of socket
+\author Endymion, rewritten by Luxor
+\param location only socket near given location are added
+\param nDistance the distance requested
+\warning this function ADD new char to current list
+*/
+void NxwSocketWrapper::fillOnline( Location location, UI32 nDistance )
+{
+	P_CHAR pc;
+	for (SI32 i = 0; i < now; ++i )
+	{
+		pc = pointers::findCharBySerial( currchar[i] );
+		//
+		//	Sparhawk ISVALIDPC(pc) checking unnecessary here, is done by findCharBySerial
+		//
+		if ( pc != 0 )
+			if (dist(location, pc->getPosition()) <= nDistance)
+				insertSocket(i);
+	}
 }
 
 /*!

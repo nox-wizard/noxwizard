@@ -117,16 +117,16 @@ namespace particles
 	 \param eff effect
 	 \param particleSystem the package to write
 	 */
-	void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem)
+	void movingeffectUO3D(P_CHAR pc_cs, P_OBJECT po_cd, ParticleFx *eff, UI08 *particleSystem)
 	{
 		VALIDATEPC(pc_cs);
-		VALIDATEPC(pc_cs);
+		VALIDATEPO(po_cd);
 
 		particleSystem[0]=0xc7;
 		particleSystem[1]=0x0;
 
 		LongToCharPtr(pc_cs->getSerial32(), particleSystem+2);
-		LongToCharPtr(pc_cd->getSerial32(), particleSystem+6);
+		LongToCharPtr(po_cd->getSerial32(), particleSystem+6);
 
 		particleSystem[10]=eff->effect[5]; // tileid1
 		particleSystem[11]=eff->effect[6]; // tileid2
@@ -135,9 +135,9 @@ namespace particles
 		ShortToCharPtr(pc_cs->getPosition().y, particleSystem+14);
 		particleSystem[16] = (UI08)pc_cs->getPosition().z;
 		
-		ShortToCharPtr(pc_cs->getPosition().x, particleSystem+17);
-		ShortToCharPtr(pc_cs->getPosition().y, particleSystem+19);
-		particleSystem[21] = (UI08)pc_cs->getPosition().z;
+		ShortToCharPtr(po_cd->getPosition().x, particleSystem+17);
+		ShortToCharPtr(po_cd->getPosition().y, particleSystem+19);
+		particleSystem[21] = (UI08)po_cd->getPosition().z;
 
 		particleSystem[22]= eff->effect[7]; // speed1
 		particleSystem[23]= eff->effect[8]; // speed2

@@ -2189,30 +2189,30 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 
 /*!
 \author Xanathar & Akron
-\brief Plays a moving effect from this to target char
-\param destination the target char
+\brief Plays a moving effect from this to target
+\param destination the target
 \param id id of the effect
 \param speed speed of the effect
 \param loop loops
 \param explode true if should do a final explosion
 \param part particle effects structure
 */
-void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, particles::ParticleFx* part)
+void cChar::movingFX(P_OBJECT dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, particles::ParticleFx* part, UI08 dir)
 {
-	VALIDATEPC(dst);
+	VALIDATEPO(dst);
 
 	UI08 effect[28]={ 0x70, 0x00, };
 
-	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
+	MakeGraphicalEffectPkt(effect, dir, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
 
 	if (!part) // no UO3D effect ? lets send old effect to all clients
 	{
 		NxwSocketWrapper sw;
-		sw.fillOnline( );
+		sw.fillOnline( dst );
 		for( sw.rewind(); !sw.isEmpty(); sw++ )
 		{
 			NXWSOCKET j=sw.getSocket();
-			if ( (char_inVisRange(this,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			if ( char_inVisRange(this,MAKE_CHAR_REF(currchar[j])) )
 			{
 				Xsend(j, effect, 28);
 			}
@@ -2223,10 +2223,11 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 	{
 		// UO3D effect -> let's check which client can see it
 		NxwSocketWrapper sw;
+		sw.fillOnline( dst );
 		for( sw.rewind(); !sw.isEmpty(); sw++ )
 		{
 			NXWSOCKET j=sw.getSocket();
-			if ( (char_inVisRange(this,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			if ( char_inVisRange(this,MAKE_CHAR_REF(currchar[j])) )
 			{
 				if (clientDimension[j]==2 ) // 2D client, send old style'd
 				{
@@ -2240,34 +2241,6 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 				else
 					LogError("Invalid Client Dimension: %i\n", clientDimension[j]);
 			}
-		}
-	}
-}
-
-/*!
- \brief send an item from a char to another item
- \author Akron
- \note replaces the old movingeffect2()
- */
-void cChar::movingFX2(P_ITEM pi, UI16 eff, UI08 speed, UI08 loop, UI08 explode)
-{
-	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
-
-	VALIDATEPI(pi);
-
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), pi->getSerial32(), eff, getPosition(), pi->getPosition(), speed, loop, 0, explode); 
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-		{
-			Xsend(j, effect, 28);
-//AoS/			Network->FlushBuffer(j);
 		}
 	}
 }

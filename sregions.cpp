@@ -26,7 +26,6 @@ void loadregions()
 			l=0,
 			a=0,
 			loopexit=0;
-	char 		sect[512];
 	int 		actgood=INVALID; // Magius(CHE)
 	cScpIterator*	iter = NULL;
 	std::string 	script1,

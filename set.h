@@ -110,9 +110,10 @@ public:
 	void insertClient( NXWCLIENT ps );
 
 	void fillOnline( P_CHAR onlyNearThis, bool bExcludeThis = true, UI32 nDistance = VISRANGE );
-	void fillOnline( Location location, int nDistance = VISRANGE );
-	void fillOnline( P_ITEM onlyNearThis,int nDistance = VISRANGE );
-	void fillOnline( );
+	void fillOnline( Location location, UI32 nDistance = VISRANGE );
+	void fillOnline( P_ITEM onlyNearThis, UI32 nDistance = VISRANGE );
+	void fillOnline( P_OBJECT onlyNearThis, UI32 nDistance = VISRANGE );	
+	void fillOnline();
 
 };
 

@@ -2435,12 +2435,23 @@ NATIVE(_itm_delEventHandler)
 */
 NATIVE (_send_movingfx)
 {
-	P_CHAR pc1 = pointers::findCharBySerial(params[1]);
-	VALIDATEPCR(pc1, INVALID);
-	P_CHAR pc2 = pointers::findCharBySerial(params[2]);
-	VALIDATEPCR(pc2, INVALID);
+	P_CHAR pc; P_OBJECT po;
+	UI08 dir = 0x00;
+	if ( isItemSerial(params[1]) && isItemSerial(params[2]) )
+		return INVALID;
+	if ( isCharSerial(params[1]) )
+	{
+		pc = pointers::findCharBySerial(params[1]);
+		po = objects.findObject(params[2]);
+	} else {
+		pc = pointers::findCharBySerial(params[2]);
+		po = objects.findObject(params[1]);
+		dir = 0x01;
+	}
 
-	pc1->movingFX(pc2, params[3]&0xFFFF, params[4], params[5], params[6]);
+	VALIDATEPCR(pc, INVALID); VALIDATEPOR(po, INVALID);
+
+	pc->movingFX(po, params[3]&0xFFFF, params[4], params[5], params[6], NULL, dir);
 	return 0;
 }
 

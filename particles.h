@@ -39,7 +39,7 @@ namespace particles
 	};
 
 	void staticeffectUO3D(P_CHAR pc_cs, ParticleFx *sta, UI08 *particleSystem);
-	void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem);
+	void movingeffectUO3D(P_CHAR pc_cs, P_OBJECT po_cd, ParticleFx *eff, UI08 *particleSystem);
 	void bolteffectUO3D(P_CHAR pc_cs, UI08 *particleSystem);
 	void itemeffectUO3D(P_ITEM pi, ParticleFx *sta, UI08 *particleSystem);
 
