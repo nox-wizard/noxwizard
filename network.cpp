@@ -1558,11 +1558,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_CHARACTERSELECT:
 					charplay(s);
-/*					{   // this to enable the chat btn
-						char bf[3] = {0xB9, 0x00, 0x01};
-						Xsend(s, bf, 3);
-					}
-*/					break;
+					break;
 
 				case PACKET_MOVE_REQUEST:
 					if( pc_currchar!=NULL ) {
