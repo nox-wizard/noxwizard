@@ -45,7 +45,7 @@
 				OutputFile=".\Debug/NoxWizard.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				IgnoreAllDefaultLibraries="TRUE"
+				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/NoxWizard.pdb"
@@ -83,6 +83,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
+				AdditionalIncludeDirectories=".\;..\"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -104,7 +105,7 @@
 				OutputFile=".\Release/NoxWizard.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				IgnoreAllDefaultLibraries="TRUE"
+				IgnoreAllDefaultLibraries="FALSE"
 				IgnoreDefaultLibraryNames=""
 				ProgramDatabaseFile=".\Release/NoxWizard.pdb"
 				SubSystem="2"/>
@@ -205,6 +206,9 @@
 				RelativePath="..\client.cpp">
 			</File>
 			<File
+				RelativePath="..\cmds.cpp">
+			</File>
+			<File
 				RelativePath="..\cmdtable.cpp">
 			</File>
 			<File
@@ -257,6 +261,9 @@
 			</File>
 			<File
 				RelativePath="..\globals.cpp">
+			</File>
+			<File
+				RelativePath="..\gmpages.cpp">
 			</File>
 			<File
 				RelativePath="..\guild.cpp">
@@ -540,6 +547,9 @@
 				RelativePath="..\client.h">
 			</File>
 			<File
+				RelativePath="..\cmds.h">
+			</File>
+			<File
 				RelativePath="..\cmdtable.h">
 			</File>
 			<File
@@ -589,6 +599,9 @@
 			</File>
 			<File
 				RelativePath="..\globals.h">
+			</File>
+			<File
+				RelativePath="..\gmpages.h">
 			</File>
 			<File
 				RelativePath="..\guild.h">
