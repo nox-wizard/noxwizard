@@ -367,7 +367,6 @@ char temp2[TEMP_STR_SIZE];
 }
 //char temp3[TEMP_STR_SIZE];
 //char temp4[TEMP_STR_SIZE];
-char schei___[512];
 
 char mapname[512], sidxname[512], statname[512], vername[512], tilename[512], multiname[512], midxname[512];
 char saveintervalstr[4];

@@ -273,7 +273,6 @@ extern char temp2[TEMP_STR_SIZE];
 
 extern char temp3[1024];
 extern char temp4[1024];
-extern char schei___[512];
 
 extern char mapname[512], sidxname[512], statname[512], vername[512], tilename[512], multiname[512], midxname[512];
 extern char saveintervalstr[4];

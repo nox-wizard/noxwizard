@@ -15,13 +15,13 @@
 #ifndef __CHAR_ARRAY
 #define __CHAR_ARRAY
 
-#include "nxwcommn.h" // needs global var schei___ and item_st *TYPE*
-#include "debug.h"    // for logg macro
+#include "nxwcommn.h"
+#include "debug.h"
 
 // macros
 
 #define MAKE_CHAR_REF(i) pointers::findCharBySerial(i)
-#define LOG_INVALID_C_REF(err,meSSage) if(err=CharArray::GetError()) { strcpy(schei___, meSSage); strcat(schei___," errorcode:%i\n"); LogCritical(schei___ _ err); } // strcpy stuff to prevent const string crashes
+#define LOG_INVALID_C_REF(err,meSSage) if(err=CharArray::GetError()) { LogCritical("%s errorcode: %d\n", meSSage, err); }
 #define GET_C_ERROR(err) err=CharArray::GetError()
 
 #define MAKE_CHARREF_LOGGED(i,err)  CharArray::MakeCharref(i); if (err = CharArray::GetError()) { BREAKPOINT; LogCritical("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); }

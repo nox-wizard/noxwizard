@@ -15,13 +15,13 @@
 #ifndef __ITEM_ARRAY
 #define __ITEM_ARRAY
 
-#include "nxwcommn.h" // needs global var schei___ and item_st *TYPE*
-#include "debug.h"    // for logg macro
+#include "nxwcommn.h"
+#include "debug.h"
 
 // macros
 
 #define MAKE_ITEM_REF(i) pointers::findItemBySerial(i)
-#define LOG_INVALID_I_REF(err,meSSage) if(err=ItemArray::GetError()) { strcpy(schei___, meSSage); strcat(schei___," errorcode:%i\n"); LogCritical(schei___ _ err); } // strcpy stuff to prevent const string crashes
+#define LOG_INVALID_I_REF(err,meSSage) if(err=ItemArray::GetError()) { LogCritical("%s errorcode: %d\n", meSSage, err); }
 #define GET_I_ERROR(err) err=ItemArray::GetError()
 
 #define MAKE_ITEMREF_LOGGED(i,err) ItemArray::MakeItemref(i); err=ItemArray::GetError(); if (err) { BREAKPOINT; LogCritical( "Warning: a non-valid P_ITEM pointer was used in %s:%d\n", basename(__FILE__), __LINE__);  } 
