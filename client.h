@@ -12,8 +12,8 @@
 \brief cNxwClientObj class
 \author Luxor & Xanathar
 */
-#ifndef __CLIENT_DEF__
-#define __CLIENT_DEF__
+#ifndef __CLIENT_H__
+#define __CLIENT_H__
 
 #include "cmdtable.h"
 
