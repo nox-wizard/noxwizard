@@ -218,7 +218,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		///// check_houses
 		/////////////////////
 		if( SrvParms->housedecay_secs != UINVALID )
-			check_house_decay();
+			cHouses::check_house_decay();
 		housedecaytimer = uiCurrentTime+MY_CLOCKS_PER_SEC*60*60; // check only each hour
 	}
 	//

@@ -579,7 +579,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 			}
 		}
 
-		killkeys( pi->getSerial32() );
+		cHouses::killkeys( pi->getSerial32() );
 		sysmessage(s,TRANSLATE("All house items and keys removed."));
 		/*
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
@@ -652,7 +652,7 @@ void killhouse(ITEM i)
 checks all items if they are houses. if so, check its time stamp. if its too old remove it
 \todo need rewrite, now is commented out...
 */
-int check_house_decay()
+int cHouses::check_house_decay()
 {
 /*	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	P_ITEM pi;
@@ -704,7 +704,7 @@ int check_house_decay()
 \author Luxor
 \note This function use a BAD method based on cAllObjects, will be substituted with a map system.
 */
-void killkeys(SERIAL serial) // Crackerjack 8/11/99
+void cHouses::killkeys(SERIAL serial) // Crackerjack 8/11/99
 {
 	if ( serial <= INVALID )
 		return;
@@ -878,7 +878,7 @@ int del_hlist(int c, int h)
 	return(hl);
 }
 
-LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
+LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 {
 	//
 	// NOTE: Socket and pc checking allready done in talking()
@@ -903,7 +903,7 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	if( talk.find("I BAN THEE") != std::string::npos )
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
-		targ->code_callback=target_houseBan;
+		targ->code_callback=cHouses::target_houseBan;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select person to ban from house."));
@@ -915,7 +915,7 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	if( talk.find("REMOVE THYSELF") != std::string::npos )
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
-		targ->code_callback=target_houseEject;
+		targ->code_callback=cHouses::target_houseEject;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select person to eject from house."));
@@ -927,7 +927,7 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	if ( talk.find("I WISH TO LOCK THIS DOWN") != std::string::npos )
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
-		targ->code_callback=target_houseLockdown;
+		targ->code_callback=cHouses::target_houseLockdown;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to lock down"));
@@ -939,7 +939,7 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	if ( talk.find("I WISH TO RELEASE THIS") != std::string::npos )
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
-		targ->code_callback=target_houseRelease;
+		targ->code_callback=cHouses::target_houseRelease;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to release"));
@@ -951,7 +951,7 @@ LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	if ( talk.find("I WISH TO SECURE THIS") != std::string::npos )
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
-		targ->code_callback=target_houseSecureDown;
+		targ->code_callback=cHouses::target_houseSecureDown;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to secure"));
@@ -1017,7 +1017,7 @@ void target_houseOwner( NXWCLIENT ps, P_TARGET t )
 
 	pHouse->setOwnerSerial32(pc->getSerial32());
 
-	killkeys( pHouse->getSerial32() );
+	cHouses::killkeys( pHouse->getSerial32() );
 
 
 	NXWCLIENT osc=pc->getClient();
@@ -1056,7 +1056,7 @@ void target_houseOwner( NXWCLIENT ps, P_TARGET t )
 }
 
 // buffer[0] house
-void target_houseEject( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseEject( NXWCLIENT ps, P_TARGET t )
 {
     P_CHAR pc = MAKE_CHAR_REF(t->getClicked());
 	VALIDATEPC(pc);
@@ -1081,7 +1081,7 @@ void target_houseEject( NXWCLIENT ps, P_TARGET t )
 }
 
 //buffer[0] house
-void target_houseBan( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseBan( NXWCLIENT ps, P_TARGET t )
 {
 	target_houseEject(ps, t);	// first, eject the player
 
@@ -1162,7 +1162,7 @@ void target_houseUnlist( NXWCLIENT ps, P_TARGET t )
             sysmessage(s, TRANSLATE("That player is not on the house registry."));
     }
 }
-void target_houseLockdown( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseLockdown( NXWCLIENT ps, P_TARGET t )
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house
 // POST:    either locks down the item, or puts a message to the owner saying he's a moron
 // CODER:   Abaddon
@@ -1228,7 +1228,7 @@ void target_houseLockdown( NXWCLIENT ps, P_TARGET t )
     }
 }
 
-void target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
 // For locked down and secure chests
 {
 	P_CHAR pc=ps->currChar();
@@ -1285,7 +1285,7 @@ void target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
     }
 }
 
-void target_houseRelease( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseRelease( NXWCLIENT ps, P_TARGET t )
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house, the item is locked down
 // POST:    either releases the item from lockdown, or puts a message to the owner saying he's a moron
 // CODER:   Abaddon
@@ -1337,5 +1337,72 @@ void target_houseRelease( NXWCLIENT ps, P_TARGET t )
     }
 }
 
+cHouse::cHouse() : cItem(objects.getNextItemSerial())
+{
+	owner=INVALID;
+	;
+}
+
+void cHouse::getCorners(unsigned int &x1, unsigned int &x2, unsigned int &y1, unsigned int &y2 )
+{
+	getMultiCorners( this, x1, y1, x2, y2 );
+	return;
+}
+
+int cHouse::getUpperYRange()
+{
+	return INVALID;
+}
+
+int cHouse::getLowerYRange()
+{
+	return INVALID;
+}
+int cHouse::getLeftXRange()
+{
+	return INVALID;
+}
+int cHouse::getRightXRange()
+{
+	return INVALID;
+}
+SERIAL cHouse::getOwner()
+{
+	return owner;
+}
+
+void cHouse::setOwner(SERIAL newOwner)
+{
+	owner=newOwner;
+	// delete all previous keys to the house
+}
+
+void cHouse::deedhouse(NXWSOCKET  s, P_ITEM pi)
+{
+}
+
+bool cHouse::inHouse(P_ITEM pi)
+{
+	return false;
+}
+
+bool cHouse::inHouse(Location where)
+{
+	return false;
+}
+
+
+static cHouse *findHouse(Location loc)
+{
+	return NULL;
+}
+static cHouse *findHouse(int x, int y, int z)
+{
+	return NULL;
+}
+static std::map< SERIAL, P_CHAR >::iterator findHouses(SERIAL owner)
+{
+	return NULL;
+}
 
 

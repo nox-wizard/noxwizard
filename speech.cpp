@@ -2162,7 +2162,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	if( Boats->Speech( pc, socket, speech ) )
 		return;
 
-	if( house_speech( pc, socket, speech ) )
+	if( cHouses::house_speech( pc, socket, speech ) )
 		return;
 	//
 	// Collect all npcs in visual range
