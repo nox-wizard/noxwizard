@@ -44,6 +44,7 @@
 #include "nox-wizard.h"
 #include "house.h"
 #include "race.h"
+#include "resourcemap.h"
 
 #ifdef _WIN32
 	using namespace std;
@@ -1366,6 +1367,8 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		}
 
 	}
+	cResourceMap::load();
+
 	return;
 }
 
@@ -1533,6 +1536,7 @@ void CWorldMain::saveNewWorld()
 	Books::SaveBooks();
 	cHouses::safeoldsave();
 	cHouses::save();
+	cResourceMap::save();
 	sysbroadcast(TRANSLATE("Worldsave Done!\n"));
 
 	ConOut(" [DONE]\n");

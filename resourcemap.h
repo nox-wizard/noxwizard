@@ -18,8 +18,8 @@ public:
 	cResourceMap(LOGICAL keepInMemory=true);
 	cResourceMap(std::string filename, LOGICAL keepInMemory=true);
 	~cResourceMap();
-	virtual void deserialize(istream *myStream);
-	virtual void serialize(ostream *myStream);
+	virtual void deserialize(ifstream *myStream);
+	virtual void serialize(ofstream *myStream);
 	
 	inline void setFile(std::string filename)
 	{ this->filename = filename; };
@@ -31,12 +31,15 @@ public:
 	{ return this->type ; };
 	inline LOGICAL isInMemory()
 	{ return keepInMemory; };
+	inline void setInMemory(LOGICAL keepInMemory)
+	{ this->keepInMemory=keepInMemory; };
 	virtual void setValue(SI32 value);
 	virtual SI32 getValue();
 	static cResourceMap * getMap(UI32 index);
 	static UI32 addMap(cResourceMap *map);
 	static void deleteMap(UI32 index);
-
+	static void save();
+	static void load();
 
 };
 
@@ -49,8 +52,8 @@ class cResourceStringMap : public cResourceMap
 	std::map<std::string, SI32> resourceMap;
 
 	public:
-	void deserialize(istream *myStream);
-	void serialize(ostream *myStream);
+	void deserialize(ifstream *myStream);
+	void serialize(ofstream *myStream);
 	void setValue(std::string key, SI32 value);
 	SI32 getValue(std::string key);
 	
@@ -64,8 +67,8 @@ class cResourceLocationMap : public cResourceMap
 	std::map<cCoord, SI32> resourceMap;
 
 	public:
-	void deserialize(istream *myStream);
-	void serialize(ostream *myStream);
+	void deserialize(ifstream *myStream);
+	void serialize(ofstream *myStream);
 	void setValue(cCoord key, SI32 value);
 	SI32 getValue(cCoord key);
 

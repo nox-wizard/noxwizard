@@ -1,5 +1,7 @@
 #include "resourcemap.h"
 #include "basics.h"
+#include "srvparms.h"
+#include "globals.h"
 
 std::map<UI32, cResourceMap *> resourceMaps;
 UI32 resourcemapSerial =0;
@@ -35,6 +37,57 @@ SI32 cResourceMap::getValue()
 	return 0;
 }
 
+void cResourceMap::save()
+{
+	std::map<UI32, cResourceMap *>::iterator iter = resourceMaps.begin();
+	for ( ; iter !=  resourceMaps.end();iter++)
+	{
+		cResourceMap *map=iter->second;
+		if (map ->isInMemory() && map->getFile() != "" )
+		{
+
+			std::string filename=SrvParms->savePath + map->getFile() + ".res.nxw.bin";
+			ofstream datafile(filename.c_str());
+			map->serialize(&datafile);
+		}
+	}
+}
+
+void cResourceMap::load()
+{
+    struct _finddata_t c_file;
+    long hFile;
+	std::string currentFile=SrvParms->savePath+"*.res.nxw.bin";
+    /* Find first ..res.nxw.bin file in current directory */
+    if( (hFile = _findfirst( currentFile.c_str(), &c_file )) != -1L )
+	{
+		do
+		{
+			currentFile=c_file.name;
+			ifstream datafile(c_file.name);
+			ResourceMapType tempType=(ResourceMapType)datafile.peek();
+			cResourceMap *map;
+			if ( tempType == RESOURCEMAP_LOCATION )
+			{
+				cResourceLocationMap *newmap = new cResourceLocationMap();
+				map=newmap;
+			}
+			else
+			{
+				cResourceStringMap *newmap = new cResourceStringMap();
+				map=newmap;
+			}
+			map->setType(tempType);
+			map->deserialize(&datafile);
+		}
+		while( _findnext( hFile, &c_file ) == 0 );
+
+		_findclose( hFile );
+	}
+
+}
+
+
 cResourceMap *cResourceMap::getMap(UI32 index)
 {
 	std::map<UI32, cResourceMap *>::iterator iter = resourceMaps.find(index);
@@ -63,20 +116,26 @@ void cResourceMap::deleteMap(UI32 index)
 		resourceMaps.erase(iter);
 }
 
-void cResourceMap::serialize(ostream *myStream)
+void cResourceMap::serialize(ofstream *myStream)
 {
 }
 
-void cResourceMap::deserialize(istream *myStream)
+void cResourceMap::deserialize(ifstream *myStream)
 {
 }
 
 // now for the real maps
 
-void cResourceStringMap::deserialize(istream *myStream)
+void cResourceStringMap::deserialize(ifstream *myStream)
 {
 	std::string tempKey;
 	UI32 value;
+	ResourceMapType tempType;
+	LOGICAL tempKeepInMemory;
+	tempType=(ResourceMapType )myStream->get();
+	tempKeepInMemory=(LOGICAL)myStream->get();
+	this->setType(tempType);
+	this->setInMemory(tempKeepInMemory);
 	while (! myStream->eof() )
 	{
 		*myStream >> tempKey;
@@ -87,9 +146,11 @@ void cResourceStringMap::deserialize(istream *myStream)
 	return ;
 }
 
-void cResourceStringMap::serialize(ostream *myStream)
+void cResourceStringMap::serialize(ofstream *myStream)
 {
 	std::map<std::string, SI32>::iterator iter = resourceMap.begin();
+	*myStream << getType();
+	*myStream << isInMemory();
 	for ( ; iter !=  resourceMap.end();iter++)
 	{
 		*myStream << iter->first << ends;
@@ -106,10 +167,13 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
-		fstream datafile(getFile().c_str(), ios::in|ios::out );
+		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
+			datafile << getType();
+			datafile << isInMemory();
 			datafile << key << ends << value << endl;
 		}
 		else
@@ -117,6 +181,8 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 // now the complicated part begins
 // search for the key linear
 			std::string tempKey;
+			// read over the first two header bytes
+			datafile.ignore(2);
 			do
 			{
 				datafile >> tempKey;
@@ -138,7 +204,7 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 				// i suppose it is faster to copy the file up to the current position to a backup file
 				// then insert the new key and append the rest of the file
 				
-				std::string backupFilename=getFile()+".new";
+				std::string backupFilename=resourceFilename+".new";
 				ofstream backupFile(backupFilename.c_str(), ios::out);
 				datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
 				UI32 currOffset=datafile.tellg();
@@ -177,7 +243,7 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 				backupFile.close();
 				datafile.close();
 				remove( getFile().c_str() );
-				rename( backupFilename.c_str(), getFile().c_str() );
+				rename( backupFilename.c_str(), resourceFilename.c_str() );
 
 
 			}
@@ -192,7 +258,8 @@ SI32 cResourceStringMap::getValue(std::string key)
 		SI32 value;
 		// since we have a sorted file get Operations should be much faster using a binary sort
 		// but we have to find the correct offset first
-		fstream datafile(getFile().c_str(), ios::in|ios::out );
+		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
@@ -200,6 +267,7 @@ SI32 cResourceStringMap::getValue(std::string key)
 			return -1;
 		}
 		std::string tempKey;
+		datafile.ignore(2);
 		do
 		{
 			datafile >> tempKey;
@@ -226,11 +294,17 @@ SI32 cResourceStringMap::getValue(std::string key)
 	}
 }
 
-void cResourceLocationMap::deserialize(istream *myStream)
+void cResourceLocationMap::deserialize(ifstream *myStream)
 {
 	UI16 x,y;
 	SI08 z;
 	UI32 value;
+	ResourceMapType tempType;
+	LOGICAL tempKeepInMemory;
+	tempType=(ResourceMapType )myStream->get();
+	tempKeepInMemory=(LOGICAL)myStream->get();
+	this->setType(tempType);
+	this->setInMemory(tempKeepInMemory);
 	while (! myStream->eof() )
 	{
 		*myStream >> x;
@@ -244,9 +318,12 @@ void cResourceLocationMap::deserialize(istream *myStream)
 	return ;
 }
 
-void cResourceLocationMap::serialize(ostream *myStream)
+void cResourceLocationMap::serialize(ofstream *myStream)
 {
 	std::map<cCoord, SI32>::iterator iter = resourceMap.begin();
+	*myStream << getType();
+	*myStream << isInMemory();
+
 	for ( ; iter !=  resourceMap.end();iter++)
 	{
 		*myStream << iter->first.x;
@@ -268,7 +345,8 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
-		fstream datafile(getFile().c_str(), ios::in|ios::out );
+		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
@@ -289,10 +367,14 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 			// put pointer to end of file
 			datafile.seekg(0, ios::end);
 			// seek first in the mid of the file
-			numberOfRecordsToSeek=(datafile.tellg() / recordSize / 2);
+			numberOfRecordsToSeek=datafile.tellg();
+			numberOfRecordsToSeek-=2;
+			numberOfRecordsToSeek/= (recordSize * 2);
 			// rewind to the beginning
 			datafile.seekg(0, ios::beg);
-			
+			// read over the first two header bytes
+			datafile.ignore(2);
+
 			// now read the key at the position, if lower than new key, than go forward in file, else go backward
 			while (!datafile.eof())
 			{
@@ -342,7 +424,7 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 				}
 			}
 			// now we are at the correct position
-			std::string backupFilename=getFile()+".new";
+			std::string backupFilename=resourceFilename+".new";
 			ofstream backupFile(backupFilename.c_str(), ios::out);
 			UI32 currOffset=datafile.tellg();
 			datafile.seekg(0, ios::beg);
@@ -382,7 +464,7 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 			backupFile.close();
 			datafile.close();
 			remove( getFile().c_str() );
-			rename( backupFilename.c_str(), getFile().c_str() );
+			rename( backupFilename.c_str(), resourceFilename.c_str() );
 		}
 	}
 
@@ -392,7 +474,8 @@ SI32 cResourceLocationMap::getValue(cCoord key)
 {
 	if ( getFile() != "" )
 	{
-		fstream datafile(getFile().c_str(), ios::in|ios::out );
+		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
 			return -1;
@@ -406,10 +489,12 @@ SI32 cResourceLocationMap::getValue(cCoord key)
 		// put pointer to end of file
 		datafile.seekg(0, ios::end);
 		// seek first in the mid of the file
-		numberOfRecordsToSeek=(datafile.tellg() / recordSize / 2);
+		numberOfRecordsToSeek=datafile.tellg();
+		numberOfRecordsToSeek-=2;
+		numberOfRecordsToSeek/= (recordSize * 2);
 		// rewind to the beginning
 		datafile.seekg(0, ios::beg);
-		
+		datafile.ignore(2);
 		// now read the key at the position, if lower than new key, than go forward in file, else go backward
 		while (!datafile.eof())
 		{
