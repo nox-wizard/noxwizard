@@ -4092,7 +4092,8 @@ NATIVE(_chr_setRandomName)
 	amx_GetAddr(amx,params[2],&cstr);
 	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	setrandomname(pc, g_cAmxPrintBuffer);
+	std::string value( g_cAmxPrintBuffer );
+	pc->setCurrentName( std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) ) );
 	g_nAmxPrintPtr=0;
 	return 1;
 }

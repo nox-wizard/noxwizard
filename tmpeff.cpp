@@ -455,7 +455,6 @@ void cTempfx::start()
 				dest->morph();	//if the char is morphed, unmorph him
 			dest->incognito = true;
 			UI16 body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, x;
-			char *newname;
 
 			//--Sex--
 			(chance(50) == true)? body = BODY_MALE : body = BODY_FEMALE;
@@ -527,8 +526,18 @@ void cTempfx::start()
 				case 5:	beardcolor = 0x83FB; break;
 				default: beardcolor = 0x83FB;break;
 			}
-			(body == BODY_MALE)? newname = getRandomName("1") : newname = getRandomName("2");
-			dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname, true);
+			std::string* newname;
+			if( body == BODY_MALE )
+			{
+				std::string value("1");
+				newname = new std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) );
+			}
+			else
+			{
+				std::string value("2");
+				newname = new std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) );
+			}
+			dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname->c_str(), true);
 			break;
 
 		case LSD:
