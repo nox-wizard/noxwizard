@@ -279,6 +279,7 @@ const int CP_N_PARAMS=2;
 	// params[3] = number of the param 
 
 
+/*
 
 NATIVE2(_getCmdProperty) {		
 
@@ -288,7 +289,7 @@ NATIVE2(_getCmdProperty) {
 		return NULL;
 	  
 		
-/*	if ( !params[2] )
+	if ( !params[2] )
 	{
 		switch( params[2] ) {
 			
@@ -300,12 +301,12 @@ NATIVE2(_getCmdProperty) {
 				}
 		}
 
-*/ 	//}
+ 	//}
   	
 	ErrOut("itm_getProperty called without a valid property !\n");
 	return '\0';
 	
 }
 
-	
+*/	
 
