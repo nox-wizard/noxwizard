@@ -7155,7 +7155,7 @@ NATIVE ( _setLightLevel )
 \return true if the operation succedes, false elsewhere
 */
 
-NATIVE ( _chr_getSpeech )
+NATIVE ( _chr_getCmdSpeech )
 {
     
 	char str[256];
@@ -7660,7 +7660,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setLightLevel", _setLightLevel },
 
 // speech APIs
- { "chr_getSpeech", _chr_getSpeech },
+ { "chr_getSpeech", _chr_getCmdSpeech },
 
 // Terminator :
  { NULL, NULL }

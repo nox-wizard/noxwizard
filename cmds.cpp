@@ -210,6 +210,8 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		return;	
 		}
 		
+		pc_currchar->setCommandSpeech(speech);
+
 		pc_currchar->resetCommandParams();
 		
 		strcpy(command_line, speech);

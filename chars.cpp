@@ -348,6 +348,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 	speechCurrent = NULL; //Luxor
 
+	
 	//Commands Params
 	param1="";
 	param2="";
@@ -357,6 +358,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	param6="";
 	param7="";
 	param8="";
+
+	commandSpeech=NULL;
 	
 
 	lastRunning = 0; //Luxor

@@ -897,6 +897,8 @@ public:
 
 	private:
 		wstring* speechCurrent;
+
+		char* commandSpeech;
 		
 		//Commands Params
 		std::string param1;
@@ -913,6 +915,13 @@ public:
 
 	public:
 		
+		
+		inline char* getCommandSpeech()
+		{ return commandSpeech; }
+
+		inline void setCommandSpeech(char* curr_speech)
+		{ commandSpeech=curr_speech; }
+
 		//! Reset all the Params strings
 		void resetCommandParams();
 		//! Set a Param
