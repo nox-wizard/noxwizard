@@ -631,6 +631,13 @@ class cChar : public cObject
 		void		resetResists();
 		void		resetLockSkills();
 
+	private:
+		cUnicodeString* profile; //!< player profile
+	public:
+		cUnicodeString* getProfile();
+		void setProfile( cUnicodeString* profile );
+	
+	
 	public:
 
 		SI32			stat3crc; // xan : future use to keep safe stats
@@ -726,8 +733,6 @@ class cChar : public cObject
 		TIMERVAL		tempflagtime;
 		// End of Guild Related Character information
 
-
-		cUnicodeString* profile; //!< player profile
 		cUnicodeString* staticProfile; //!< player static profile
 
 

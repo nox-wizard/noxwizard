@@ -4711,3 +4711,15 @@ void cChar::doTarget()
 		safedelete(current_target);
 	}
 }
+
+cUnicodeString* cChar::getProfile()
+{
+	return this->profile;
+}
+
+void cChar::setProfile( cUnicodeString* profile )
+{
+	if( this->profile!=NULL )
+		delete this->profile;
+	this->profile=profile;
+}
