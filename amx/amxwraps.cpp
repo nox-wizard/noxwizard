@@ -7345,6 +7345,24 @@ NATIVE ( _shutdown )
 	return true;
 }
 
+/*!
+\brief sets the real seconds per one UO minute (default is 5)
+\author stonedz
+\since 0.82
+\param 1 seconds to set an UO minute.
+\return none
+*/
+
+NATIVE ( _setSecondsPerUoMinute )
+{
+
+	if ((int)params[1]>0)
+		secondsperuominute=(int)params[1];
+	else
+		secondsperuominute=5; // standard value
+	InfoOut("Real seconds per UO minute are now set to %d.\n",secondsperuominute);
+
+}
 
 
 /*!
@@ -7875,6 +7893,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "reload_scripts", _reload_scripts },
  { "reload_commands", _reload_commands },
  { "shutdown", _shutdown },
+ { "setSecondsPerUoMinute", _setSecondsPerUoMinute },
  { "recompileSmall", _recompileSmall },
 
 // speech APIs
