@@ -355,7 +355,7 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 
 void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI16 textId, wstring data, UI32 hue )
 {
-	rc_edit.insert( make_pair( rc_serialCurrent, textId ) );
+	rc_edit.insert( make_pair( textId, rc_serialCurrent ) );
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, rc_serialCurrent++, addString(data) );
 }
 
@@ -385,7 +385,7 @@ void cMenu::addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 r
 
 void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, SI32 result  )
 {
-	rc_radio.insert( make_pair( rc_serialCurrent, result ) );
+	rc_radio.insert( make_pair( result, rc_serialCurrent ) );
 	addCommand( "{radio %d %d %d %d %d %d}", x, y, off, on, checked, rc_serialCurrent++ );
 }
 
@@ -763,8 +763,9 @@ std::wstring* cMenu::getText( SERIAL text, bool raw )
 	std::map< SERIAL, std::wstring >::iterator iter;
 	if( raw )
 		iter= textResp->find( text );
-	else
+	else {
 		iter= textResp->find( rc_edit[text] );
+	}
 	return ( iter!=textResp->end() )? &iter->second : NULL;
 }
 

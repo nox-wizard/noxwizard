@@ -4774,7 +4774,7 @@ NATIVE(_guild_addMember)
 	VALIDATEPCR( pc, INVALID );
 
 
-	P_GUILD_MEMBER member = guild->addMember( pc );
+	/*P_GUILD_MEMBER member = guild->addMember( pc );
 	if ( member==NULL)	return INVALID;
 	
 	member->rank = params[3];
@@ -4790,7 +4790,7 @@ NATIVE(_guild_addMember)
 
 	member->title = g_cAmxPrintBuffer;
 
-	return member->serial;
+	return member->serial;*/
 
 }
 
