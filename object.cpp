@@ -28,6 +28,18 @@ cObject::cObject()
 	amxEvents = 0;
 }
 
+cObject::~cObject()
+{
+	if( amxEvents )
+	{
+		AmxEventMap::iterator it( amxEvents->begin() ), end( amxEvents->end() );
+		while( it != end )
+		{
+			delete it->second;
+		}
+		delete amxEvents;
+	}
+}
 /*
 			Operators definitions
 */

@@ -57,6 +57,7 @@ public:
 //@}
 
 	cObject();
+	virtual ~cObject();
 //@{
 /*!
 \name Serials

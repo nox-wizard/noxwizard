@@ -4815,3 +4815,10 @@ void cChar::updateRegenTimer( StatType stat )
 	regens[stat].timer= uiCurrentTime+ regens[stat].rate_eff*MY_CLOCKS_PER_SEC;
 }
 
+LOGICAL cChar::isValidAmxEvent( UI32 eventId )
+{
+	if( eventId < ALLCHARSEVENTS )
+		return true;
+	else
+		return false;
+}
