@@ -461,24 +461,24 @@ void gumps::Input(int s)
 			k = hex2num( text );
 			if (k>=0x000 && k<=0x3e1) // lord binary, body-values >0x3e crash the client
 			{
-		       pc_j->xid1=pc_j->id1=k>>8; // allow only non crashing ones
-		       pc_j->xid2=pc_j->id2=k%256;
-		       c1=(pc_j->skin1<<8)+pc_j->skin2; // transparency for mosnters allowed, not for palyers,
+			pc_j->SetBodyType(k);
+			pc_j->SetOldBodyType(k);
+		       c1 = pc_j->getSkinColor(); // transparency for mosnters allowed, not for palyers,
 		                                              // if polymorphing from monster to player we have to switch from transparent to semi-transparent
 		                                              // or we have that sit-down-client crash
                b=c1&0x4000;
 			   if (b==16384 && (k >=0x0190 && k<=0x03e1))
 			   {
-				  if (c1!=0x8000)
-				  {
-                     pc_j->skin1=pc_j->xskin1=0xf0;
-			         pc_j->skin2=pc_j->xskin2=0;
-				  }
+				if (c1!=0x8000)
+				{
+					pc_j->setSkinColor(0xF000);
+					pc_j->setOldSkinColor(0xF000);	
+				}
 			   }
 			}
 			break;
 		case 9:		k = hex2num( text );		// Skin
-					body=(pc_j->id1<<8)+pc_j->id2;
+					body = pc_j->GetBodyType();
 
                     b=k&0x4000; // Lord binary --> that touchy transparency bit !
 		                        // fixes a client crash with transparently dyed skin.
@@ -490,8 +490,8 @@ void gumps::Input(int s)
 
                    if (k!=0x8000) // 0x8000 also crashes client ...
 				   {
-		              pc_j->xskin1=pc_j->skin1=k>>8;
-		              pc_j->xskin2=pc_j->skin2=k%256;
+					pc_j->setSkinColor(k);
+					pc_j->setOldSkinColor(k);
 				   }
 					break;
 
@@ -1315,9 +1315,9 @@ void ttext(int line, SERIAL serial)
 		if( --line == 0 ) strcpy( script1, "Direction" );
 		if( --line == 0 ) sprintf( script1,"%i", pc_j->dir );
 		if( --line == 0 ) strcpy( script1, "Body" );
-		if( --line == 0 ) sprintf( script1,"(0x%x) %i", (pc_j->id1<<8)+pc_j->id2, (pc_j->id1<<8)+pc_j->id2 );
+		if( --line == 0 ) sprintf( script1,"(0x%x) %i", pc_j->GetBodyType(), pc_j->GetBodyType() );
 		if( --line == 0 ) strcpy( script1, "Skin" );
-		if( --line == 0 ) sprintf( script1, "(0x%x) %i", (pc_j->skin1<<8)+pc_j->skin2, (pc_j->skin1<<8)+pc_j->skin2 );
+		if( --line == 0 ) sprintf( script1, "(0x%x) %i", pc_j->getSkinColor(), pc_j->getSkinColor() );
 		if( --line == 0 ) strcpy( script1, "Defence" );
 		if( --line == 0 ) sprintf( script1,"%i", pc_j->def );
 		if( --line == 0 ) strcpy( script1, "Hunger" );

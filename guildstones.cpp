@@ -1617,7 +1617,7 @@ void cGuilds::Title(int s,int player2)
 		UI08 sysname[30]={ 0x00, };
 		strcpy((char *)sysname, "System");
 
-		SendSpeechMessagePkt(s, pc2->getSerial32(), 0x0101, 0, (pc2->emotecolor1<<8)|(pc2->emotecolor2%256), 0x0003, sysname, (UI08 *)title);
+		SendSpeechMessagePkt(s, pc2->getSerial32(), 0x0101, 0, pc2->emotecolor, 0x0003, sysname, (UI08 *)title);
 	}
 }
 

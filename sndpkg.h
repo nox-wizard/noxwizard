@@ -64,7 +64,7 @@ void statwindow(P_CHAR pc_to, P_CHAR pc);
 	//!< Opens the status window
 void updates(NXWSOCKET  s);
 	//!< Update Window
-void tips(NXWSOCKET s, UI16 i);
+void tips(NXWSOCKET s, UI16 i, UI08 flag);
 	//!< Tip of the day window
 void deny(NXWSOCKET  k,P_CHAR pc, int sequence);
 void weblaunch(int s, const char *txt);
@@ -104,6 +104,7 @@ void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3
 void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI08 sysname[30], UI08 *text);
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen);
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color);
+void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false); 
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send
 void sendshopinfo(int s, int c, P_ITEM pi);

@@ -63,7 +63,7 @@ void newbieitems(P_CHAR pc)
 			// first of all the general section with the backpack, else where we put items?
 			case 1: strcpy(whichsect, "SECTION ALLNEWBIES");		break;
 			case 2:
-				if ( (pc->id2==0x90) && (pc->xid2==0x90) )
+				if ( (pc->GetBodyType() == BODY_MALE) && (pc->GetOldBodyType() == BODY_MALE) )
 					strcpy(whichsect, "SECTION MALENEWBIES");
 				else
 					strcpy(whichsect, "SECTION FEMALENEWBIES");

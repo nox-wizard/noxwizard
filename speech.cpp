@@ -2122,8 +2122,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
 	{
-		pc->saycolor1 = buffer[socket][4];
-		pc->saycolor2 = buffer[socket][5];
+		pc->saycolor = ShortFromCharPtr(buffer[socket] +4);
 	}
 	//
 	// Advanced speech logging by elcabesa

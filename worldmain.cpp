@@ -214,9 +214,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'b':
 			if (!(strcmp(script1, "BODY")))
 			{
-				i=str2num(script2);
-				pc->id1=i>>8;
-				pc->id2=i%256;
+				pc->SetBodyType( str2num(script2) );
 			}
 		break;
 
@@ -256,9 +254,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'e':
 			if (!strcmp(script1, "EMOTE"))
 			{
-				i=str2num(script2);
-				pc->emotecolor1=i>>8;
-				pc->emotecolor2=i%256;
+				pc->emotecolor = str2num(script2);
 			}
 		break;
 
@@ -456,9 +452,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "SAY"))
 			{
-				i=str2num(script2);
-				pc->saycolor1=i>>8;
-				pc->saycolor2=i%256;
+				pc->saycolor = str2num(script2);
 			}
 			else if (!strcmp(script1, "STRENGTH"))		{ pc->setStrength(str2num(script2), false);pc->st3=pc->getStrength();}
 			else if (!strcmp(script1, "STRENGTH2"))		{ pc->st2=str2num(script2);}
@@ -480,9 +474,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "SKIN"))
 			{
-				i=str2num(script2);
-				pc->skin1=i>>8;
-				pc->skin2=i%256;
+				pc->setSkinColor(str2num(script2));
 
 			}
 			else if (!strcmp(script1, "SPATTACK"))		{ pc->spattack=str2num(script2);}
@@ -513,15 +505,11 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
-				i=str2num(script2);
-				pc->xid1=i>>8;
-				pc->xid2=i%256;
+				pc->SetOldBodyType( str2num(script2) );
 			}
 			else if (!strcmp(script1, "XSKIN"))
 			{
-				i=str2num(script2);
-				pc->xskin1=i>>8;
-				pc->xskin2=i%256;
+				pc->setOldSkinColor( str2num(script2) );
 			}
 		break;
 
@@ -1155,7 +1143,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
 		if ( isCharSerial( objs.getSerial() ) && ISVALIDPC( (pc=static_cast<P_CHAR>(objs.getObject())) ) ) {
 			if( pc->dead && pc->HasHumanBody() )
-				pc->morph( ((pc->id2 == 0x91) ? BODY_DEADFEMALE : BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
+				pc->morph( ((pc->GetBodyType() == BODY_FEMALE) ? BODY_DEADFEMALE : BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->isSpawner() )
@@ -1419,27 +1407,27 @@ void CWorldMain::SaveChar( P_CHAR pc )
 
 			//Luxor: if the char is morphed, we have to save the original values.
 			if(pc->morphed) {
-				if (DBYTE2WORD(pc->xid1,pc->xid2)!=DBYTE2WORD(dummy.xid1,dummy.xid2))
-					fprintf(cWsc, "BODY %i\n", DBYTE2WORD(pc->xid1,pc->xid2));
+				if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
+					fprintf(cWsc, "BODY %i\n", pc->GetOldBodyType());
 			} 
 			else {
-				if (DBYTE2WORD(pc->id1,pc->id2)!=DBYTE2WORD(dummy.id1,dummy.id2))
-						fprintf(cWsc, "BODY %i\n", DBYTE2WORD(pc->id1,pc->id2));
+				if ( pc->GetBodyType() != dummy.GetBodyType() )
+						fprintf(cWsc, "BODY %i\n", pc->GetBodyType());
 			}
-			if (DBYTE2WORD(pc->xid1,pc->xid2)!=DBYTE2WORD(dummy.xid1,dummy.xid2))
-				fprintf(cWsc, "XBODY %i\n", DBYTE2WORD(pc->xid1,pc->xid2));
+			if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
+				fprintf(cWsc, "XBODY %i\n", pc->GetOldBodyType());
 			
 			//Luxor: if the char is morphed, we have to save the original values.
 			if(pc->morphed) {
-				if (DBYTE2WORD(pc->xskin1,pc->xskin2)!=DBYTE2WORD(dummy.xskin1,dummy.xskin2))
-					fprintf(cWsc, "SKIN %i\n", DBYTE2WORD(pc->xskin1,pc->xskin2));
+				if ( pc->getOldSkinColor() != dummy.getOldSkinColor() )
+					fprintf(cWsc, "SKIN %i\n", pc->getOldSkinColor());
 			} else {
-				if (DBYTE2WORD(pc->skin1,pc->skin2)!=DBYTE2WORD(dummy.skin1,dummy.skin2))
-					fprintf(cWsc, "SKIN %i\n", DBYTE2WORD(pc->skin1,pc->skin2));
+				if ( pc->getSkinColor() != dummy.getSkinColor() )
+					fprintf(cWsc, "SKIN %i\n", pc->getSkinColor());
 			}
 
-			if (DBYTE2WORD(pc->xskin1,pc->xskin2)!=DBYTE2WORD(dummy.xskin1,dummy.xskin2))
-				fprintf(cWsc, "XSKIN %i\n", DBYTE2WORD(pc->xskin1,pc->xskin2));
+			if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
+				fprintf(cWsc, "XSKIN %i\n", pc->getOldSkinColor());
 			if (pc->GetPriv()!=dummy.GetPriv())
 				fprintf(cWsc, "PRIV %i\n", pc->GetPriv());
 
@@ -1474,10 +1462,10 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "ALLMOVE %i\n", pc->priv2);
 			if (pc->fonttype!=dummy.fonttype)
 				fprintf(cWsc, "FONT %i\n", pc->fonttype);
-			if (DBYTE2WORD(pc->saycolor1,pc->saycolor2)!=DBYTE2WORD(dummy.saycolor1,dummy.saycolor2))
-				fprintf(cWsc, "SAY %i\n", DBYTE2WORD(pc->saycolor1,pc->saycolor2));
-			if (DBYTE2WORD(pc->emotecolor1,pc->emotecolor2)!=DBYTE2WORD(dummy.emotecolor1,dummy.emotecolor2))
-				fprintf(cWsc, "EMOTE %i\n", DBYTE2WORD(pc->emotecolor1,pc->emotecolor2));
+			if ( pc->saycolor != dummy.saycolor )
+				fprintf(cWsc, "SAY %i\n", pc->saycolor);
+			if ( pc->emotecolor != dummy.emotecolor );
+				fprintf(cWsc, "EMOTE %i\n", pc->emotecolor);
 
 			fprintf(cWsc, "STRENGTH %i\n", pc->st3);
 			fprintf(cWsc, "STRENGTH2 %i\n", qmax(0, pc->st2) );

@@ -484,21 +484,19 @@ void DyeTarget(NXWSOCKET s)
         if (i!=-1)
         {
             P_CHAR pc = MAKE_CHARREF_LR(i);
-            body=(pc->id1<<8)+pc->id2;
-            k=(addid1[s]<<8)+addid2[s];
-            if( ( (k>>8) < 0x80 ) && body >= 0x0190 && body <= 0x0193 )
-                k += 0x8000;
+            body = pc->GetBodyType();
+            k=(addid1[s]<<8)|addid2[s];
+            if( ( k < 0x8000 ) && body >= BODY_MALE && body <= BODY_DEADFEMALE )
+                k |= 0x8000;
 
             b=k&0x4000;
-            if (b==16384 && (body >=0x0190 && body<=0x03e1))
+            if (b==16384 && (body >= BODY_MALE && body<=0x03e1))
                 k=0xf000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
 
             if (k!=0x8000) // 0x8000 also crashes client ...
             {
-                pc->skin1=k>>8;
-                pc->skin2=k%256;
-                pc->xskin1=k>>8;
-                pc->xskin2=k%256;
+		pc->setSkinColor(k);
+		pc->setOldSkinColor(k);
 		pc->teleport();
             }
         }
@@ -545,10 +543,8 @@ void cTargets::IDtarget(NXWSOCKET s)
     if (i!=-1)
     {
 	P_CHAR pc = MAKE_CHARREF_LR(i);
-	pc->id1=addx[s];
-	pc->id2=addy[s];
-	pc->xid1=addx[s];
-	pc->xid2=addy[s];
+	pc->SetBodyType((addx[s]<<8)|(addy[s]%256));
+	pc->SetOldBodyType((addx[s]<<8)|(addy[s]%256));
 	pc->teleport();
     }
 }
@@ -875,14 +871,10 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
  
     pc->unmountHorse();    //AntiChrist bugfix
     pc->gmrestrict = 0;
-    pc->id1=0x03;
-    pc->id2='\xDB';
-    pc->skin1='\x80';
-    pc->skin2=0x21;
-    pc->xid1=0x03;
-    pc->xid2='\xDB';
-    pc->xskin1='\x80';
-    pc->xskin2=0x21;
+    pc->SetBodyType(0x03DB);
+    pc->setSkinColor(0x8021);
+    pc->SetOldBodyType(0x03DB);
+    pc->setOldSkinColor(0x8021);
     pc->SetPriv(0xF7);
     pc->priv2 = (unsigned char) (0xD9);
 
@@ -938,16 +930,12 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
     if (SrvParms->gm_log)
 		WriteGMLog(curr, "%s as made %s a Counselor.\n", curr->getCurrentNameC(), pc->getCurrentNameC());
 
-    pc->id1=0x03;
-    pc->id2='\xDB';
-    pc->skin1='\x80';
-    pc->skin2=0x03;
-    pc->xid1=0x03;
-    pc->xid2='\xDB';
-    pc->xskin1='\x80';
-    pc->xskin2=0x02;
+    pc->SetBodyType(0x03DB);
+    pc->setSkinColor(0x8003);
+    pc->SetOldBodyType(0x03DB);
+    pc->setOldSkinColor(0x8002);
     pc->SetPriv(0xB6);
-    pc->priv2='\x8D';
+    pc->SetPriv2(0x8D);
     pc->gmrestrict = 0;
     if (strncmp(pc->getCurrentNameC(), "Counselor", 9))
     {
@@ -1200,14 +1188,10 @@ static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
 
     //strcpy(pc->name, "Dummy");
 	pc->setCurrentName("Dummy");
-	pc->id1=addid1[s];
-	pc->id2=addid2[s];
-	pc->xid1=addid1[s];
-	pc->xid2=addid2[s];
-	pc->skin1=0;
-	pc->skin2=0;
-	pc->xskin1=0;
-	pc->xskin2=0;
+	pc->SetBodyType((addid1[s]<<8)|(addid2[s]%256));
+	pc->SetOldBodyType((addid1[s]<<8)|(addid2[s]%256));
+	pc->setSkinColor(0);
+	pc->setOldSkinColor(0);
 	pc->SetPriv(0x10);
 	/*
     pc->x= pp->TxLoc;

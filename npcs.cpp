@@ -724,8 +724,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 			case 'E':
 				if	( !strcmp( "EMOTECOLOR", script1 ) )
 				{
-					pc->emotecolor1=(hex2num(script2))>>8;
-					pc->emotecolor2=(hex2num(script2))%256;
+					pc->emotecolor = hex2num(script2);
 				}
 				else if ( !strcmp("ENTICEMENT",script1 ) )		pc->baseskill[ENTICEMENT] = getRangedValue(script2);
 				else if ( !strcmp("EVALUATINGINTEL",script1 ) )		pc->baseskill[EVALUATINGINTEL] = getRangedValue(script2);
@@ -804,10 +803,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				if	( !strcmp( "ID", script1 ) )
 				{
 					tmp=hex2num(script2);
-					pc->id1=tmp>>8;
-					pc->id2=tmp%256;
-					pc->xid1=pc->id1;
-					pc->xid2=pc->id2;
+					pc->SetBodyType(tmp);
+					pc->SetOldBodyType(tmp);
 				}
 				else if ( !strcmp( "INSCRIPTION", script1 ) )		pc->baseskill[INSCRIPTION] = getRangedValue(script2);
 				else if ( !strcmp( "INT", script1 ) || !strcmp( "INTELLIGENCE", script1 ) )
@@ -964,8 +961,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 			case 'S':
 				if	( !strcmp( "SAYCOLOR", script1 ) )
 				{
-					pc->saycolor1=(hex2num(script2))>>8;
-					pc->saycolor2=(hex2num(script2))%256;
+					pc->saycolor = hex2num(script2);
 				}
 				else if ( !strcmp( "SELLITEM", script1 ) )
 				{
@@ -1031,18 +1027,14 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				else if ( !strcmp( "SKIN", script1 ) )
 				{
 					tmp=hex2num(script2);
-					pc->skin1=tmp>>8;
-					pc->skin2=tmp%256;
-					pc->xskin1=pc->skin1;
-					pc->xskin2=pc->skin2;
+					pc->setSkinColor(tmp);
+					pc->setOldSkinColor(tmp);
 				}
 				else if ( !strcmp( "SKINLIST",script1 ) )
 				{
 					storeval=addrandomcolor(pc,script2);
-					pc->skin1=(storeval)>>8;
-					pc->skin2=(storeval)%256;
-					pc->xskin1=pc->skin1;
-					pc->xskin2=pc->skin2;
+					pc->setSkinColor(storeval);
+					pc->setOldSkinColor(storeval);
 					strcpy(script1, "DUMMY"); // To prevent accidental exit of loop.
 				}
 				else if ( !strcmp( "SNOOPING",script1 ) )		pc->baseskill[SNOOPING] = getRangedValue(script2);

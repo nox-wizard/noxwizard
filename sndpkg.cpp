@@ -791,7 +791,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 	{
 		Location pos = pi->getPosition(); 
 
-		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput +3);
+		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
 
 		//if player is a gm, this item
 		//is shown like a candle (so that he can move it),
@@ -899,11 +899,11 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 	{
 		Location pos = pi->getPosition(); 
 
-		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput +3);
+		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
 		ShortToCharPtr(pi->id(), itmput +7);
 		ShortToCharPtr(pi->amount, itmput +9);
 		ShortToCharPtr(pos.x, itmput +11);
-		ShortToCharPtr(pos.y +0xC000, itmput +13);
+		ShortToCharPtr(pos.y | 0xC000, itmput +13);
 		itmput[15]=z;
 		ShortToCharPtr(color, itmput +16);
 		itmput[18]=0;
@@ -1300,17 +1300,22 @@ void updates(NXWSOCKET  s) // Update Window
 //AoS/	Network->FlushBuffer(s);
 }
 
-void tips(NXWSOCKET s, UI16 i) // Tip of the day window
+void tips(NXWSOCKET s, UI16 i, UI08 want_next) // Tip of the day window
 {
 	int x, y, j;
 	char temp[512];
-    cScpIterator* iter = NULL;
-    char script1[1024];
-    char script2[1024];
+    
+	cScpIterator* iter = NULL;
+	char script1[1024];
+	char script2[1024];
+	
+	if(want_next) i = i+1;
+	else i = i-1;
 
 	if (i==0) i=1;
-    iter = Scripts::Misc->getNewIterator("SECTION TIPS");
-    if (iter==NULL) return;
+
+	iter = Scripts::Misc->getNewIterator("SECTION TIPS");
+	if (iter==NULL) return;
 
 	x=i;
 	int loopexit=0;
@@ -1325,7 +1330,7 @@ void tips(NXWSOCKET s, UI16 i) // Tip of the day window
 
 	if (!(strcmp("}", script1)))
 	{
-		tips(s, 1);
+		tips(s, 1, want_next);
 		return;
 	}
 
@@ -2026,6 +2031,24 @@ void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial)
 //AoS/	Network->FlushBuffer(s);
 }
 
+void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ)
+{
+	UI08 goxyz[19]={ 0x20, 0x00, };
+
+	LongToCharPtr(player_id, goxyz +1);
+	ShortToCharPtr(model, goxyz +5);
+	goxyz[7] = unk1;
+	ShortToCharPtr(color, goxyz +8);
+	goxyz[10] = flag;
+	ShortToCharPtr(pos.x, goxyz +11);
+	ShortToCharPtr(pos.y, goxyz +13);
+	ShortToCharPtr(unk2, goxyz +15);
+	goxyz[17]= dir;
+	goxyz[18]= (useDispZ)? pos.dispz : pos.z;
+	Xsend(s, goxyz, 19);
+//AoS/	Network->FlushBuffer(s);
+}
+ 
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color)
 {
 	UI08 extmove[17]={ 0x77, 0x00 }; 

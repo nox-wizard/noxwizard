@@ -1541,7 +1541,7 @@ void impaction(int s, int act)
 		pc->playAction(0x1b);
 		return;
 	}
-	if ( pc->isMounting() || ( pc->id1 < 1 && pc->id2<90 ) && act == 0x22 )
+	if ( pc->isMounting() || ( pc->GetBodyType() < 0x190 ) && act == 0x22 )
 		return;
 	pc->playAction(act);
 }

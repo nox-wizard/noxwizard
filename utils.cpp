@@ -471,18 +471,14 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 	    return;
 	} else if ( script1 == "POLY" ) {
 		tmp=hex2num(script2);
-		pc->id1=tmp>>8;
-		pc->xid1=tmp>>8;
-		pc->id2=tmp%256;
-		pc->xid2=tmp%256;
+		pc->SetBodyType(tmp);
+		pc->SetOldBodyType(tmp);
 		pc->teleport();
 		return;
 	} else if ( script1 == "SKIN" ) {
 		tmp=hex2num(script2);
-		pc->skin1=tmp>>8;
-		pc->xskin1=tmp>>8;
-		pc->skin2=tmp%256;
-		pc->xskin2=tmp%256;
+		pc->setSkinColor(tmp);
+		pc->setOldSkinColor(tmp);
 		pc->teleport();
 		return;
 	} else if ( script1 == "LIGHT" ) {

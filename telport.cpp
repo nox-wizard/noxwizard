@@ -368,20 +368,16 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					if (!(strcmp(script1,"SKIN")))
 					{
 						i=hex2num(script2);
-						pc->skin1=i>>8;
-						pc->skin2=i%256;
-						pc->xskin1=i>>8;
-						pc->xskin2=i%256;
+						pc->setSkinColor(i);
+						pc->setOldSkinColor(i);
 						pc->teleport();
 					}
 
 					if (!(strcmp("POLY",script1)))
 					{
 						x=hex2num(script2);
-						pc->id1=x>>8;
-						pc->xid1=x>>8;
-						pc->id2=x%256;
-						pc->xid2=x%256;
+						pc->SetBodyType(x);
+						pc->SetOldBodyType(x);
 						pc->teleport();
 					}
 

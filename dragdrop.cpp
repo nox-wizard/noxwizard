@@ -697,8 +697,6 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	P_CHAR pc = ps->currChar();
 	VALIDATEPCR(pc, false);
 
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
 	if((pet->hunger<6) && (pi->type==ITYPE_FOOD))//AntiChrist new hunger code for npcs
 	{
 		pc->playSFX( 0x3A+(rand()%3) );	//0x3A - 0x3C three different sounds
@@ -716,11 +714,9 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 			itmname = temp2;
 		}
 		else itmname = pi->getCurrentName();
-		sprintf(temp,TRANSLATE("* You see %s eating %s *"), pet->getCurrentNameC(), itmname.c_str() );
 
-		pet->emotecolor1=0x00;
-		pet->emotecolor2=0x26;
-		pet->emoteall(temp,1);
+		pet->emotecolor = 0x0026;
+		pet->emoteall(TRANSLATE("* You see %s eating %s *"), 1, pet->getCurrentNameC(), itmname.c_str() );
 		pet->hunger++;
 	} else
 	{

@@ -115,10 +115,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	setPosition( 100, 100, 0 );
 	setOldPosition( 0, 0, 0, 0 );
 	dir=0; //&0F=Direction
-	id1=xid1=0x01; // Character body type
-	id2=xid2=0x90; // Character body type
-	skin1=xskin1=0x00; // Skin color
-	skin2=xskin2=0x00; // Skin color
+	id=xid=0x0190; // Character body type
+	skin=xskin=0x0000; // Skin color
 	keyserial=INVALID;  // for renaming keys
 	SetPriv(0); // 1:GM clearance, 2:Broadcast, 4:Invulnerable, 8: single click serial numbers
 	// 10: Don't show skill titles, 20: GM Pagable, 40: Can snoop others packs, 80: Counselor clearance
@@ -126,10 +124,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	// 10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
 	resetPriv3();
 	fonttype=3; // Speech font to use
-	saycolor1=0x17; // Color for say messages
-	saycolor2=0x00; // Color for say messages
-	emotecolor1=0x00; // Color for emote messages
-	emotecolor2=0x23; // Color for emote messages
+	saycolor=0x1700; // Color for say messages
+	emotecolor=0x0023; // Color for emote messages
 	setStrength(50, ( ser == INVALID ? false : true ) ); // Strength
 	st2=0; // Reserved for calculation
 	dx=50; // Dexterity
@@ -916,33 +912,26 @@ void cChar::unHide()
 
 		// unhidesendchar port by Akron
 		setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-		UI08 goxyz[20]="\x20\x00\x05\xA8\x90\x01\x90\x00\x83\xFF\x00\x06\x08\x06\x49\x00\x00\x02\x00";
+
+		SERIAL my_serial = getSerial32();
+		Location my_pos = getPosition();
 
 		NxwSocketWrapper sw;
 		sw.fillOnline( this, false );
 		for( sw.rewind(); !sw.isEmpty(); sw++ )
 		{
-			NXWSOCKET i=sw.getSocket();
-			NXWCLIENT ps_i=sw.getClient();
+			NXWSOCKET i = sw.getSocket();
+			NXWCLIENT ps_i = sw.getClient();
 			if( ps_i==NULL ) continue;
 
 			P_CHAR pj=ps_i->currChar();
 			if (ISVALIDPC(pj))
 			{
-				if (pj->getSerial32() != getSerial32()) { //to other players : recreate player object
-					SendDeleteObjectPkt(i, getSerial32());
+				if (pj->getSerial32() != my_serial) { //to other players : recreate player object
+					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					LongToCharPtr(getSerial32(), goxyz +1);
-					ShortToCharPtr(GetBodyType(), goxyz +5);
-					ShortToCharPtr(getSkinColor(), goxyz +8);
-					goxyz[10] = poisoned ? 0x04 : 0x00;
-					ShortToCharPtr(getPosition().x, goxyz +11);
-					ShortToCharPtr(getPosition().y, goxyz +13);
-					goxyz[17]= dir|0x80;
-					goxyz[18]= getPosition().z;
-					Xsend(i, goxyz, 19);
-//AoS/					Network->FlushBuffer(i);
+					SendDrawGamePlayerPkt(i, my_serial, id, 0x00, skin, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
 				}
 			}
 		}
@@ -1590,21 +1579,18 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		saycolor1=0x04;
-		saycolor2=0x81;
+		saycolor=0x0481;
 
 		if( npcaitype==NPCAI_EVIL )
 		{
-			saycolor1=0x00;
-			saycolor2=0x26;
+			saycolor=0x0026;
 		}
 		else if( npc && !tamed && !guarded && !war )
 		{
-			saycolor1=0x00;
-			saycolor2=0x5B;
+			saycolor=0x005B;
 		}
 
-		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, (saycolor1<<8)|(saycolor2%256), fonttype, name, (UI08 *)txt);
+		SendSpeechMessagePkt(s, getSerial32(), id, 0, saycolor, fonttype, name, (UI08 *)txt);
 	}
 }
 
@@ -1640,7 +1626,7 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(socket, getSerial32(), GetBodyType(), 2, (emotecolor1<<8)|(emotecolor2%256), fonttype, name, (UI08 *)msg);
+		SendSpeechMessagePkt(socket, getSerial32(), id, 2, emotecolor, fonttype, name, (UI08 *)msg);
 	}
 }
 
@@ -1713,7 +1699,7 @@ void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, 0x0001, 0x0008, name, (UI08 *)txt);
+		SendSpeechMessagePkt(s, getSerial32(), id, 0, 0x0001, 0x0008, name, (UI08 *)txt);
 	}
 }
 
@@ -1797,27 +1783,16 @@ void cChar::teleport()
 
 	if ( socket!=INVALID )
 	{
-		UI08 goxyz[19]={0x20, 0x00, 0x05, 0xA8, 0x90, 0x01, 0x90, 0x00, 0x83, 0xFF, 0x00, 0x06, 0x08, 0x06, 0x49, 0x00, 0x00, 0x02, 0x00};
+		UI08 flag = 0x00;
 		Location pos = getPosition();
 
-		LongToCharPtr(getSerial32(), goxyz +1);
-		ShortToCharPtr(GetBodyType(), goxyz +5);
-		ShortToCharPtr(getSkinColor(), goxyz +8);
-
 		if(poisoned)
-			goxyz[10] |= 0x04;
-		else
-			goxyz[10] = 0x00;
+			flag |= 0x04;
+
 		if (IsHidden())
-			goxyz[10] |= 0x80;
+			flag |= 0x80;
 
-		ShortToCharPtr(pos.x, goxyz +11);
-		ShortToCharPtr(pos.y, goxyz +13);
-		goxyz[17]= dir | 0x80;
-		goxyz[18]= pos.dispz;
-
-		Xsend(socket, goxyz, 19);
-//AoS/		Network->FlushBuffer(socket);
+		SendDrawGamePlayerPkt(socket, getSerial32(), id, 0x00, skin, flag, pos, 0x0000, dir | 0x80, true);
 
 
 		weights::NewCalc(this);
@@ -2034,7 +2009,7 @@ void cChar::playMonsterSound(MonsterSound sfx)
 	SI32 basesound=0;
 	SI16 offset, x;
 
-	x=(id1<<8)+id2;
+	x = id;
 	if ((x < 0)||(x>2047)) x = 0;
 	basesound=creatures[x].basesound;
 	offset=sfx;
@@ -2399,10 +2374,8 @@ void cChar::resurrect( NXWCLIENT healer )
 			return;
 		modifyFame(0);
 		playSFX( 0x0214);
-		id1=xid1;
-		id2=xid2;
-		skin1=xskin1;
-		skin2=xskin2;
+		id = xid;
+		skin = xskin;
 		attackerserial=INVALID;
 		ResetAttackFirst();
 		war=0;
@@ -2547,7 +2520,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 			return;
 		}
 		morphed = false; //otherwise it will inf-loop
-		morph( GetOldBodyType(), getOldSkinColor(),oldhairstyle, oldhaircolor, oldbeardstyle, oldbeardcolor,getRealNameC(), false);
+		morph( xid, xskin, oldhairstyle, oldhaircolor, oldbeardstyle, oldbeardcolor,getRealNameC(), false);
 		return;
 	}
 
@@ -2560,12 +2533,9 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 
 	if (bBackup)
 	{
-		SetOldBodyType( GetBodyType() );
-		//xid1 = id1;
-		//xid2 = id2;
-		setOldSkinColor( getSkinColor() );
-		//xskin1 = skin1;
-		//xskin2 = skin2;
+		xid = id;
+		xskin = skin;
+
 		setRealName( getCurrentNameC() );
 		if(ISVALIDPI(pbeard))
 		{
@@ -2580,10 +2550,10 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	}
 
 	if(bodyid!=INVALID)
-		SetBodyType( (BODYTYPE) bodyid );
+		id = (BODYTYPE) bodyid;
 
 	if(skincolor!=INVALID)
-		setSkinColor( (UI32) skincolor );
+		skin = (UI16) skincolor;
 
 	if (newname!=NULL)
 		setCurrentName(newname);
@@ -2799,7 +2769,7 @@ void cChar::Kill()
 	poisoned = POISON_NONE;
 	poison = hp = 0;
 
-	if (GetOldBodyType() == BODY_FEMALE)
+	if ( xid == BODY_FEMALE)
 	{
 		switch(RandomNum(0, 3)) // AntiChrist - uses all the sound effects
 		{
@@ -2809,7 +2779,7 @@ void cChar::Kill()
 			case 3:	playSFX( 0x0153 ); break;// Female Death
 		}
 	}
-	else if (GetOldBodyType() == BODY_MALE)
+	else if ( xid  == BODY_MALE)
 	{
 		switch( RandomNum(0, 3) ) // AntiChrist - uses all the sound effects
 		{
@@ -2824,9 +2794,7 @@ void cChar::Kill()
 
 	if( polymorph )
 	{ // legacy code : should be cut when polymorph will be translated to morph
-/*		id1=xid1;
-		id2=xid2;   */
-		SetBodyType( GetOldBodyType());
+		id = xid;
 		polymorph=false;
 		teleport();
 	}
@@ -2936,7 +2904,7 @@ void cChar::Kill()
 	//--------------------- corpse & ghost stuff
 
 	bool hadHumanBody=HasHumanBody();
-	SI32 corpseid = (GetBodyType() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
+	SI32 corpseid = (id == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
@@ -2961,7 +2929,7 @@ void cChar::Kill()
 	char szCorpseName[128];
 	sprintf(szCorpseName, "corpse of %s", getCurrentNameC());
 
-	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, getOldSkinColor(), getPosition());
+	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, xskin, getPosition());
 	if (!ISVALIDPI(pCorpse))
 	{
 	    // panic
@@ -2984,7 +2952,7 @@ void cChar::Kill()
 		pCorpse->more4 = char( SrvParms->playercorpsedecaymultiplier&0xff ); // how many times longer for the player's corpse to decay
 	}
 
-	pCorpse->amount = GetOldBodyType(); // Amount == corpse type
+	pCorpse->amount = xid; // Amount == corpse type
 	pCorpse->morey = hadHumanBody;
 
 	pCorpse->carve=carve;               //store carve section - AntiChrist
@@ -3269,29 +3237,27 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 
 BODYTYPE cChar::GetBodyType() const
 {
-	return (BODYTYPE)((id1<<8)|id2);
+	return (BODYTYPE) id;
 }
 
 void cChar::SetBodyType(BODYTYPE newBody)
 {
-	id1 = newBody >> 8;
-	id2 = newBody % 256;
+	id = newBody;
 }
 
 BODYTYPE cChar::GetOldBodyType() const
 {
-	return (BODYTYPE)((xid1<<8)|xid2);
+	return (BODYTYPE) xid;
 }
 
 void cChar::SetOldBodyType(BODYTYPE newBody)
 {
-	xid1 = newBody >> 8;
-	xid2 = newBody % 256;
+	xid = newBody;
 }
 
 const LOGICAL cChar::HasHumanBody() const
 {
-	return ((GetBodyType()==BODY_MALE) || (GetBodyType()==BODY_FEMALE));
+	return ((id==BODY_MALE) || (id==BODY_FEMALE));
 }
 
 const LOGICAL cChar::IsTrueGM() const
@@ -3743,7 +3709,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 
 	if( fame >= 10000 )
 	{ // adding Lord/Lady to title overhead
-		switch (GetBodyType() )
+		switch ( id )
 		{
 			case BODY_FEMALE :
 				if ( strcmp(::title[9].other,"") )
@@ -4044,24 +4010,22 @@ void cChar::openSpecialBank(P_CHAR pc)
 
 UI16 cChar::getSkinColor()
 {
-	return (UI16)((skin1<<8)|skin2);
+	return (UI16) skin;
 }
 
 void cChar::setSkinColor( UI16 newColor )
 {
-	skin1 = newColor >> 8;
-	skin2 = newColor % 256;
+	skin = newColor;
 }
 
 UI16 cChar::getOldSkinColor()
 {
-	return (UI16)((xskin1<<8)|xskin2);
+	return (UI16) xskin;
 }
 
 void cChar::setOldSkinColor( UI16 newColor )
 {
-	xskin1 = newColor >> 8;
-	xskin2 = newColor % 256;
+	xskin = newColor;
 }
 
 void cChar::heartbeat()
@@ -4467,8 +4431,7 @@ void cChar::npc_heartbeat()
 
 		if( tamed && npcaitype != NPCAI_PLAYERVENDOR )
 		{
-			emotecolor1 = 0x00;
-			emotecolor2 = 0x26;
+			emotecolor = 0x0026;
 			switch( hunger )
 			{
 				case 6: break;
@@ -4612,25 +4575,22 @@ void cChar::checkPoisoning()
 					updateStats( STAT_HP );
 					if ( poisontxt <= uiCurrentTime  )
 					{
-						char temp[TEMP_STR_SIZE];
+						emotecolor = 0x0026;
 						switch ( poisoned )
 						{
 						case POISON_WEAK:
-							sprintf( temp, TRANSLATE("* %s looks a bit nauseous *"), getCurrentNameC());
+							emoteall( TRANSLATE("* %s looks a bit nauseous *"), 1, getCurrentNameC() );
 							break;
 						case POISON_NORMAL:
-							sprintf( temp, TRANSLATE("* %s looks disoriented and nauseous! *"), getCurrentNameC());
+							emoteall( TRANSLATE("* %s looks disoriented and nauseous! *"), 1, getCurrentNameC());
 							break;
 						case POISON_GREATER:
-							sprintf( temp, TRANSLATE("* %s is in severe pain! *"), getCurrentNameC());
+							emoteall( TRANSLATE("* %s is in severe pain! *"), 1, getCurrentNameC());
 							break;
 						case POISON_DEADLY:
-							sprintf( temp, TRANSLATE("* %s looks extremely weak and is wrecked in pain! *"), getCurrentNameC());
+							emoteall( TRANSLATE("* %s looks extremely weak and is wrecked in pain! *"), 1, getCurrentNameC());
 							break;
 						}
-						emotecolor1 = 0x00;
-						emotecolor2 = 0x26;
-						emoteall( temp, 1 );
 						poisontxt = uiCurrentTime + ( 10 * MY_CLOCKS_PER_SEC );
 					}
 				}

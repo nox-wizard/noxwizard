@@ -2006,8 +2006,8 @@ void Skills::CreateTrackingMenu(NXWSOCKET s,int m)
                     break;
 			}//switch
             
-			short skid = DBYTE2WORD(pcm->id1, pcm->id2);
-			if ((skid < 0)||(skid>2047)) 
+			UI16 skid = pcm->GetBodyType();
+			if (/*(skid < 0)||*/(skid>2047)) 
 				skid = 0;
 			if (pc->skill[TRACKING] < 800) {	//Luxor
 				if (skid == BODY_MALE)

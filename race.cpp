@@ -862,8 +862,8 @@ void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 but
 					if( !race->skinColor.empty() )
 					{
 						UI32 skinColor = RandomNum( 0, race->skinColor.size() -1 );
-						pc->skin1  = pc->xskin1 = race->skinColor[skinColor] >>8;
-						pc->skin2  = pc->xskin2 = race->skinColor[skinColor] % 256;
+						pc->setSkinColor(race->skinColor[skinColor]);
+						pc->setOldSkinColor(race->skinColor[skinColor]);
 					}
 					if ( RT_PROHIBITED == getBeardPerm( pc->race ) )
 						KillTarget( pc, 0x10 );
@@ -919,8 +919,8 @@ void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 but
 									{
 										if( iter->skinColor )
 										{
-											pi->color1 = pc->skin1;
-											pi->color2 = pc->skin2;
+											pi->color1 = pc->getSkinColor() >> 8;
+											pi->color2 = pc->getSkinColor() % 256;
 										}
 										pi->setContSerial( pc->getSerial32() );
 									}

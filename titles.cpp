@@ -269,10 +269,10 @@ char *title3(P_CHAR pc) // Paperdoll title for character p (3)
 	{
 		if (pc->kills >= (unsigned)repsys.maxkills)
 		{
-			if (pc->id2==0x91) strcpy(fametitle,TRANSLATE("The Murderous Lady "));//Morrolan rep
+			if (pc->GetBodyType()==BODY_FEMALE) strcpy(fametitle,TRANSLATE("The Murderous Lady "));//Morrolan rep
 			else strcpy(fametitle,TRANSLATE("The Murderer Lord "));
 		}
-		else if (pc->id2==0x91) sprintf(fametitle,TRANSLATE("The %sLady "),thetitle);
+		else if (pc->GetBodyType()==BODY_FEMALE) sprintf(fametitle,TRANSLATE("The %sLady "),thetitle);
 		else sprintf(fametitle,TRANSLATE("The %sLord "),thetitle);
 	}
 	else

@@ -605,7 +605,6 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	WarnOut("relaying client to NoX-Sniffer!!!\n");
 #endif
 
-//	unsigned char login03[12]="\x8C\x00\x00\x00\x00\x13\x88\x7B\x7B\x7B\x01";
 	UI08 login03[11]={ 0x8C, 0x00, };
 	ip = htonl(ip);			// host order -> network order !!!!
 	LongToCharPtr(ip, login03 +1);
@@ -941,7 +940,6 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	}
 
 	sprintf(zbuf,"%s Logged in the game",pc->getCurrentNameC()); //for logging to UOXmon
-	//Accounts->SetOnline(acctno[s], currchar[s]); // Elcabesa it's already done in charplay
 
 	// very stupid stuff
 	//pc->murderrate=uiCurrentTime+repsys.murderdecay*MY_CLOCKS_PER_SEC; // LB, bugfix for murder-count getting --'ed each start
@@ -1918,7 +1916,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_REQUEST_TIP:
-					tips(s, ShortFromCharPtr(buffer[s] +1) +1);
+					tips(s, ShortFromCharPtr(buffer[s] +1), 1/*buffer[s][3]*/); // flag:  1 = Next, 0 = Prev
 					break;
 
 				case PACKET_ATTACK_REQUEST:

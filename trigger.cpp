@@ -309,7 +309,7 @@ cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigt
 */
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_CHAR pc, int trigtype)
 {
-	init(number, s, trigtype, pc->id1, pc->id2);
+	init(number, s, trigtype, (pc->GetBodyType()<<8), (pc->GetBodyType()%256));
 	m_pcNpc = pc;
 	if (trigtype==TRIGMODE_NPCENVOKE) {
 		int evti = calcItemFromSer(m_pcCurrChar->envokeitem);
@@ -1210,10 +1210,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 					fillIntArray(par, array, 2, 0, 16);
 
 			if ((ISNPC(m_nTriggerType))&&(m_pcNpc!=0)) {
-			m_pcNpc->id1 = array[0];
-			m_pcNpc->id2 = array[1];
-			m_pcNpc->xid1 = array[0];
-			m_pcNpc->xid2 = array[1];
+			m_pcNpc->SetBodyType((array[0]<<8)|(array[1]%256));
+			m_pcNpc->SetOldBodyType((array[0]<<8)|(array[1]%256));
 			for (int j = 0; j < now; j++)
 				if (perm[j] && char_inVisRange(m_pcNpc,MAKE_CHAR_REF(currchar[j])))
 				m_pcNpc->teleport();

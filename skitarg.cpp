@@ -1517,7 +1517,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 		return;
 	}
         
-	if((pp->id1!=0x01 && (pp->id2!=0x90 || pp->id2!=0x91))&& pp->tamed==false) //Used on non-human and controls if tamed
+	if( ((pp->GetBodyType() != BODY_MALE) || (pp->GetBodyType() != BODY_FEMALE)) && pp->tamed==false) //Used on non-human and controls if tamed
 
         if ((ph->IsInnocent()) &&(ph->getSerial32() != pp->getSerial32()))
         {

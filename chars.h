@@ -280,11 +280,9 @@ class cChar : public cObject
 	//
 	//	Body Type
 	//
-	public:
-		UI08			id1;				//!< Character body type
-		UI08			id2;				//!< Character body type
-		UI08			xid1;				//!< Backup of body type for ghosts
-		UI08			xid2;				//!< Backup of body type for ghosts
+	private:
+		UI16			id;				//!< Character body type
+		UI16			xid;				//!< Backup of body type for ghosts
 	public:
 		BODYTYPE		GetBodyType() const;
 		void			SetBodyType(BODYTYPE newBody);
@@ -294,11 +292,9 @@ class cChar : public cObject
 	//
 	//	Skin Color
 	//
-	public:
-		UI08			skin1;				//!< Skin color
-		UI08			skin2;				//!< Skin color
-		UI08			xskin1;				//!< Backup of skin color
-		UI08			xskin2;				//!< Backup of skin color
+	private:
+		UI16			skin;				//!< Skin color
+		UI16			xskin;				//!< Backup of skin color
 	public:
 		UI16			getSkinColor();
 		void			setSkinColor( UI16 newColor );
@@ -917,11 +913,13 @@ public:
 /*!
 \name Talk and Emote stuff
 */
-		UI08			emotecolor1;		//!< Color for emote messages
-		UI08			emotecolor2;		//!< Color for emote messages
+//		UI08			emotecolor1;		//!< Color for emote messages
+//		UI08			emotecolor2;		//!< Color for emote messages
+		UI16			emotecolor;		//!< Color for emote messages
 		UI08			fonttype;		//!< Speech font to use
-		UI08			saycolor1;		//!< Color for say messages
-		UI08			saycolor2;		//!< Color for say messages
+//		UI08			saycolor1;		//!< Color for say messages
+//		UI08			saycolor1;		//!< Color for say messages
+		UI16			saycolor;		//!< Color for say messages
 		LOGICAL			unicode;		//!< This is set to 1 if the player uses unicode speech, 0 if not
 
 		void			talkAll(TEXT *txt, LOGICAL antispam = 1);

@@ -817,10 +817,13 @@ NATIVE2(_setCharProperty)
 				pc->hidden = p;
 				break;
 			case NXW_CP_C_ID :							//dec value: 111;
+				{
+				  UI16 id = pc->GetBodyType();
 				if ( params[3] > 1 )
-					pc->id1 = p;
+					pc->SetBodyType((id & 0x00FF) | ( p << 8));
 				else
-					pc->id2 = p;
+					pc->SetBodyType((id & 0xFF00) | ( p %256));
+				}
 				break;
 			case NXW_CP_C_LOCKSKILL : 						//dec value: 112;
 				pc->lockSkill[params[3]] = p;
@@ -863,10 +866,13 @@ NATIVE2(_setCharProperty)
 				pc->shopkeeper = p;
 				break;
 			case NXW_CP_C_SKIN : 							//dec value: 126;
+				{
+				  UI16 color = pc->getSkinColor();
 				if ( params[3] > 1 )
-					pc->skin1 = p;
+					pc->setSkinColor((color & 0x00FF) | (p << 8));
 				else
-					pc->skin2 = p;
+					pc->setSkinColor((color & 0xFF00) | (p %256));
+				}
 				break;
 			case NXW_CP_C_SPEECH : 				  			//dec value: 127;
 				pc->speech = p;
@@ -875,16 +881,22 @@ NATIVE2(_setCharProperty)
 				pc->war = p;
 				break;
 			case NXW_CP_C_XID :							//dec value: 129;
-				if ( params[3] > 1)
-					pc->xid1 = p;
+				{
+				  UI16 oldbody = pc->GetOldBodyType();
+				if ( params[3] > 1 )
+					pc->SetOldBodyType((oldbody & 0x00FF) | ( p << 8));
 				else
-					pc->xid2 = p;
+					pc->SetOldBodyType((oldbody & 0xFF00) | ( p %256));
+				}
 				break;
 			case NXW_CP_C_XSKIN : 							//dec value: 130;
+				{
+				  UI16 oldcolor = pc->getOldSkinColor();
 				if ( params[3] > 1 )
-					pc->xskin1 = p;
+					pc->setOldSkinColor((oldcolor & 0x00FF) | (p << 8));
 				else
-					pc->xskin2 = p;
+					pc->setOldSkinColor((oldcolor & 0xFF00) | (p %256));
+				}
 				break;
 			case NXW_CP_C_NXWFLAGS :						//dec value: 131;
 				pc->nxwflags[params[3]] = p;
@@ -1915,7 +1927,7 @@ static char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_C_FLY_STEPS , pc->fly_steps )  			//dec value: 108;
 		CHECK(  NXW_CP_C_GMRESTRICT , pc->gmrestrict )  		//dec value: 109;
 		CHECK(  NXW_CP_C_HIDDEN , pc->hidden )  			//dec value: 110;
-		CHECK(  NXW_CP_C_ID , (prop2>1) ? pc->id1 : pc->id2 )  		//dec value: 111;
+		CHECK(  NXW_CP_C_ID , (prop2>1) ? (pc->GetBodyType()>>8) : (pc->GetBodyType()%256) )  		//dec value: 111;
 		CHECK(  NXW_CP_C_LOCKSKILL , pc->lockSkill[prop2] )  		//dec value: 112;
 		case NXW_CP_C_MULTISERIAL2 :					//dec value: 113;
 			switch(prop2) {
@@ -1947,11 +1959,11 @@ static char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 				default :	return pc->getSerial().ser4;
 			}
 		CHECK(  NXW_CP_C_SHOP , pc->shopkeeper )  			//dec value: 125; Sparhawk: DEPRECIATED, use CHECK(  NXW_CP_B_SHOPKEEPER , pc->shopkeeper )
-		CHECK(  NXW_CP_C_SKIN , (prop2>1) ? pc->skin1 : pc->skin2 )  	//dec value: 126;
+		CHECK(  NXW_CP_C_SKIN , (prop2>1) ? (pc->getSkinColor()>>8) : (pc->getSkinColor()%256) )  	//dec value: 126;
 		CHECK(  NXW_CP_C_SPEECH , pc->speech )  			//dec value: 127;
 		CHECK(  NXW_CP_C_WAR , pc->war )  				//dec value: 128;
-		CHECK(  NXW_CP_C_XID , (prop2>1) ? pc->xid1 : pc->xid2 )  	//dec value: 129;
-		CHECK(  NXW_CP_C_XSKIN , (prop2>1) ? pc->xskin1 : pc->xskin2 )  //dec value: 130;
+		CHECK(  NXW_CP_C_XID , (prop2>1) ? (pc->GetOldBodyType()>>8) : (pc->GetOldBodyType()%256) )  	//dec value: 129;
+		CHECK(  NXW_CP_C_XSKIN , (prop2>1) ? (pc->getOldSkinColor()>>8) : (pc->getOldSkinColor()%256) )  //dec value: 130;
 		CHECK(  NXW_CP_C_NXWFLAGS, pc->nxwflags[prop2])			//dec value: 131;
 		CHECK(  NXW_CP_I_RESISTS, pc->resists[prop2])			//dec value: 132;
 		CHECK(  NXW_CP_C_TRAININGPLAYERIN , pc->getSkillTaught() )  	//dec value: 133;
