@@ -308,7 +308,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	this->oldhaircolor=0;
 	this->oldhairstyle=0;
 
-        possessorSerial = INVALID; //Luxor
+    possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
 	
 	mounted=false;
@@ -322,6 +322,18 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetProfile();
 	staticProfile=NULL;
 }
+
+/*
+\brief Destructor
+*/
+cChar::~cChar()
+{
+	if( profile!=NULL )
+		delete profile;
+	if( speechCurrent!=NULL )
+		delete speechCurrent;
+}
+
 
 /*!
 \note Don't add onstart events in npc scripts, because then they'll also be executed when character is created

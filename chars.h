@@ -163,6 +163,7 @@ class cChar : public cObject
 {
 	public:
 		cChar( SERIAL ser );
+		~cChar();
 		void setClient(NXWCLIENT client);
 	private:
 		cNxwClientObj* m_client;
