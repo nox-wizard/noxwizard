@@ -376,16 +376,25 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	if (buffer[s][0x4b]>50) buffer[s][0x4b]=50; // fixes for hack exploit
 	totalskills=buffer[s][0x4b];
 	if (buffer[s][0x4d]>50) buffer[s][0x4d]=50;
-	if (buffer[s][0x4d]+totalskills>100) buffer[s][0x4d]=100-totalskills;
+	if (buffer[s][0x4d]+totalskills>100)
+		if ( 100-totalskills < 0 )
+			buffer[s][0x4d]= 0;
+		else
+			buffer[s][0x4d]=(unsigned char) (100-totalskills);
 	totalskills+=buffer[s][0x4d];
 	if (buffer[s][0x4f]>50) buffer[s][0x4f]=50;
-	if (buffer[s][0x4f]+totalskills>100) buffer[s][0x4f]=100-totalskills;
+	if (buffer[s][0x4f]+totalskills>100)
+		if ( 100-totalskills < 0 )
+			buffer[s][0x4f]= 0;
+		else
+			buffer[s][0x4f]=(unsigned char)(100-totalskills);
 
 	for (ii=0;ii<TRUESKILLS;ii++)
 	{
 		pc->baseskill[ii]=0;
-		if (ii==buffer[s][0x4a]) pc->baseskill[buffer[s][0x4a]]=buffer[s][0x4b]*10;
-		if (ii==buffer[s][0x4c]) pc->baseskill[buffer[s][0x4c]]=buffer[s][0x4d]*10;
+		if (ii==buffer[s][0x4a])
+			pc->baseskill[buffer[s][0x4a]]=buffer[s][0x4b]*10;
+		if (ii==buffer[s][0x4c]) pc->baseskill[buffer[s][0x4c]]= buffer[s][0x4d]*10;
 		if (ii==buffer[s][0x4e]) pc->baseskill[buffer[s][0x4e]]=buffer[s][0x4f]*10;
 		Skills::updateSkillLevel(pc, ii);
 	}
@@ -597,7 +606,7 @@ void checkkey ()
 #endif
 	{
 		if (INKEY!='\0') {
-			c = toupper(INKEY);
+			c = (char) toupper(INKEY);
 			INKEY = '\0';
 			secure = 0;
 		}
@@ -945,7 +954,6 @@ void updateMenus();
 
 
 
-	int i;
 	unsigned long tempSecs;
 	unsigned long tempMilli;
 	unsigned long loopSecs;
@@ -1013,7 +1021,6 @@ void updateMenus();
 
 
 		//Now lets load the custom scripts, if they have them defined...
-		i=0;
 
 		CIAO_IF_ERROR; // errors here crashes further startup process. so stop insted of crash
 
@@ -1819,11 +1826,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		switch(pi->morez)
 		{
 		case 1:
-			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, 5+RandomNum(1,10), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (5+RandomNum(1,10)), 0, 0, 120);
 			pc->sysmsg(TRANSLATE("You feel more agile!"));
 			break;
 		case 2:
-			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, 10+RandomNum(1,20), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (10+RandomNum(1,20)), 0, 0, 120);
 			pc->sysmsg(TRANSLATE("You feel much more agile!"));
 			break;
 		default:
@@ -1928,7 +1935,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 	case 5: // Night Sight Potion
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
-		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,(720*secondsperuominute*MY_CLOCKS_PER_SEC));
+		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,(short) (720*secondsperuominute*MY_CLOCKS_PER_SEC));
 		pc->playSFX(0x01E3);
 		break;
 
@@ -1971,11 +1978,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		switch(pi->morez)
 		{
 		case 1:
-			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, 5+RandomNum(1,10), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (5+RandomNum(1,10)), 0, 0, 120);
 			pc->sysmsg(TRANSLATE("You feel more strong!"));
 			break;
 		case 2:
-			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, 10+RandomNum(1,20), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (10+RandomNum(1,20)), 0, 0, 120);
 			pc->sysmsg(TRANSLATE("You feel much more strong!"));
 			break;
 		default:
@@ -2014,7 +2021,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			pc->sysmsg(TRANSLATE("no,no,no,cant you get enough ?"));
 			return;
 		}
-		tempfx::add(pc, pc, tempfx::LSD, 60+RandomNum(1,120), 0, 0); // trigger effect
+		tempfx::add(pc, pc, tempfx::LSD, (char) (60+RandomNum(1,120)), 0, 0); // trigger effect
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x00F8, true); // lsd sound :)
 		break;
@@ -2135,7 +2142,7 @@ void enlist(int s, int listnum) // listnum is stored in items morex
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	int x,j;
+	int x;
 //	char sect[512];
     cScpIterator* iter = NULL;
     char script1[1024];
@@ -2143,7 +2150,7 @@ void enlist(int s, int listnum) // listnum is stored in items morex
 	//sprintf(sect, "SECTION ITEMLIST %i", listnum);
 
 	iter = Scripts::Items->getNewIterator("SECTION ITEMLIST %i", listnum);
-    if (iter==NULL) return;
+	if (iter==NULL) return;
 
 	int loopexit=0;
 	do
@@ -2154,7 +2161,7 @@ void enlist(int s, int listnum) // listnum is stored in items morex
 			x=str2num(script1);
 			P_ITEM pj=item::CreateFromScript( x, pc->getBackpack() );
 			VALIDATEPI(pj);
-			j= DEREF_P_ITEM(pj);
+//			j= DEREF_P_ITEM(pj);
 			pj->Refresh();
 		}
 	}
@@ -2551,5 +2558,6 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 		WarnOut("Gargbage Collector corrected %i char\n",corrected);
 	}
 }
+
 
 
