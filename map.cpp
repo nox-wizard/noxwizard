@@ -94,7 +94,7 @@ Location cLine::getPosAtY( UI32 y )
 */
 SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 {
-	SI08 zRes = 0;
+	SI08 zRes = getHeight(pos);
 	SI32 height = 0;
 
 	//

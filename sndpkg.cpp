@@ -2175,13 +2175,13 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 	P_ITEM pp=pc->GetItemOnLayer(LAYER_TRADE_BOUGHT);
 	VALIDATEPIR(pp,0);
 
-	SendPauseResumePkt(s, 0x01);
 
 	P_ITEM pack= pcs->getBackpack();
 	VALIDATEPIR(pack, 0);
 
 	UI08 m1[2048]={ 0x9E, 0x00, };
 
+	SendPauseResumePkt(s, 0x01);
 	LongToCharPtr(pc->getSerial32(), m1 +3);
 	ShortToCharPtr(0, m1 +7);	// Num items  m1[7],m1[8]
 

@@ -2070,7 +2070,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 							if (pc_currchar->amxevents[EVENT_CHR_ONOPENSKILLS]!=NULL) 
 							{
 								g_bByPass = false;
-								pc_currchar->amxevents[EVENT_CHR_ONOPENSKILLS]->Call( pc_currchar->getSerial32(), pc->getSerial32() );
+								pc_currchar->amxevents[EVENT_CHR_ONOPENSKILLS]->Call( pc_currchar->getSerial32() );
 								if (g_bByPass) 
 								{
 									break;
