@@ -284,7 +284,7 @@ void cAccounts::LoadAccount( ACCOUNT acctnumb, FILE* F )
 	static bool bWarned = false; //this makes the warning appear one time only
 	if ( ServerScp::g_nDeamonMode == 0 &&
 	     ServerScp::g_nLoadDebugger ==0 &&
-	     bWarned) && 
+	     bWarned && 
 	     account.number == ADMIN_ACCOUNT && 
 	     account.name == "admin" && 
 	     account.pass == "admin")
