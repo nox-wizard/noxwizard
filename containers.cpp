@@ -302,18 +302,19 @@ void cItem::putInto( P_ITEM pi )
 void cItem::SetRandPosInCont(P_ITEM pCont)
 {
 
-	setPosition("z", 9);
+	Location l;
+	l.z = l.dispz = 9;
 	CONTINFOMAP::iterator iter( contInfo.find( pCont->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end()) {
-		setPosition("x", RandomNum(18, 118));
-		setPosition("y", RandomNum(50, 100));
+		l.x = RandomNum(18, 118);
+		l.y = RandomNum(50, 100);
 		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->id());
 	}
 	else {
-		setPosition("x", RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x));
-		setPosition("y", RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y));
-		
+		l.x = RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x);
+		l.y = RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y);
 	}
+	setPosition( l );
 	
 }
 
