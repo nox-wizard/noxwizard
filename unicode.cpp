@@ -18,11 +18,6 @@ cUnicodeString::cUnicodeString()
 
 cUnicodeString::~cUnicodeString() { }
 
-char* cUnicodeString::c_str()
-{
-	return (char*)s.begin();
-}
-
 UI32 cUnicodeString::size()
 {
 	return (s.size()-2)/2;

@@ -322,5 +322,5 @@ SEND( UnicodeSpeech ) {
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
-	Xsend( ps->toInt(), this->msg->c_str(), (this->msg->length()+1)*2 );
+	Xsend( ps->toInt(), this->msg->s.begin(), this->msg->s.end() );
 };

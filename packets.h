@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "typedefs.h"
 #include <string>
+#include "unicode.h"
 
 using namespace std;
 
@@ -1496,7 +1497,7 @@ public:
 	UI16	font;		//!< text font
 	Serial	language;   //!< language
 	string	name;		//!< name of who speech ( 30 character )
-	wstring*	msg;	//!< message  Null-Terminated Message (? = blockSize - 44)
+	cUnicodeString*	msg;	//!< message
 
 	cPacketUnicodeSpeech();
 	void send( NXWCLIENT ps );

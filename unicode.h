@@ -17,7 +17,7 @@ typedef UI16 UNI_TEXT;
 \author Endymion
 */
 class cUnicodeString {
-private:
+public:
 	std::vector<UI08> s;
 public:
 	cUnicodeString();
@@ -27,7 +27,6 @@ public:
 	UI32 length();
 
 	void copy( std::string& s );
-	char* c_str();
 
 	void clear();
 };
