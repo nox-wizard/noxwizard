@@ -189,7 +189,7 @@ void Race::parseGlobalSection( void )
 						withWebInterface = false;
 					}
 				}
-				else if ( rha == "WEBLINK" )
+				else if ( lha == "WEBLINK" )
 				{
 					globalWebLink = rha;
 				}
