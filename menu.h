@@ -56,6 +56,7 @@ class cMenu
 				
 		cMenu();
 		cMenu( UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial );
+		cMenu( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial );
 		virtual ~cMenu();
 
 		void	addCommand( const std::string& command = "" );

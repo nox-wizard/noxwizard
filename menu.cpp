@@ -135,6 +135,14 @@ cMenu::cMenu()
 	cMenu( 0, 0, 0, MOVEABLE|CLOSEABLE|DISPOSEABLE, 0 );
 }
 
+cMenu::cMenu( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
+{
+	cMenu( gump, x, y, 0, serial );
+	setOptions( MOVEABLE, canMove );
+	setOptions( CLOSEABLE, canClose );
+	setOptions( DISPOSEABLE, canDispose );
+}
+
 cMenu::cMenu( UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial )
 {
 	setGumpId( gump );
