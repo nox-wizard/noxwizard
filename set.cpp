@@ -314,12 +314,16 @@ void addGuildRecruits( SERIAL iSet, SERIAL guild )
 	sc->rewind();
 }
 
-void addGuilds( SERIAL iSet, int options )
+void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter==g_oSet.end() )
 		return;
+
+	NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
+	si->fillGuilds( guild, options );
+	si->rewind();
 
 }
 
