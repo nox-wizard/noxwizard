@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.h,v 1.1 2003/04/26 19:58:53 luxornox Exp $
+ *  Version: $Id: amx.h,v 1.1.1.1 2003/04/26 19:58:53 luxornox Exp $
  *
  *  Changed by Luxor for FreeBSD Compatibility
  */

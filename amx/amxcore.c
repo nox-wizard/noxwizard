@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2001
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amxcore.c,v 1.1 2003/04/26 19:58:59 luxornox Exp $
+ *  Version: $Id: amxcore.c,v 1.1.1.1 2003/04/26 19:58:59 luxornox Exp $
  */
 #include <ctype.h>
 #include <stdlib.h>

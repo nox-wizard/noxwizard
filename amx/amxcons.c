@@ -5,7 +5,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2001
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amxcons.c,v 1.1 2003/04/26 19:58:58 luxornox Exp $
+ *  Version: $Id: amxcons.c,v 1.1.1.1 2003/04/26 19:58:58 luxornox Exp $
  */
 #if defined __WIN32__ || defined _WIN32 || defined __MSDOS__
   #include <conio.h>

@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc4.c,v 1.1 2003/04/26 19:59:45 luxornox Exp $
+ *  Version: $Id: sc4.c,v 1.1.1.1 2003/04/26 19:59:45 luxornox Exp $
  */
 #include <assert.h>
 #include <ctype.h>

@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 2000-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc5.scp,v 1.1 2003/04/26 19:59:22 luxornox Exp $
+ *  Version: $Id: sc5.scp,v 1.1.1.1 2003/04/26 19:59:22 luxornox Exp $
  */
 
 SC_FUNC int strexpand(char *dest, unsigned char *source, int maxlen, unsigned char pairtable[128][2]);
