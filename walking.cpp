@@ -289,7 +289,10 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	SI08 z, dispz=0;
 
-	z = isWalkable( pc->getPosition(), WALKFLAG_MAP + WALKFLAG_STATIC + WALKFLAG_DYNAMIC );
+	if ( pc->npc )
+		z = isWalkable( pc->getPosition(), WALKFLAG_MAP + WALKFLAG_STATIC + WALKFLAG_DYNAMIC );
+	else
+		z = getHeight( pc->getPosition() );
 
 	//WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 

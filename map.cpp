@@ -99,7 +99,7 @@ SI08 isWalkable( Location pos, UI08 flags )
 				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
-				if ( (pi->getPosition().z + height) <= (pos.z + 2) ) { // We can walk on it
+				if ( (pi->getPosition().z + height) <= (pos.z + 3) ) { // We can walk on it
 	                                if ( (pi->getPosition().z + height) > zRes )
 						zRes = pi->getPosition().z + height;
 				} else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
@@ -118,7 +118,7 @@ SI08 isWalkable( Location pos, UI08 flags )
 		mapid = map1.id;
 
 		// Z elevation
-		if ( map1.z == illegal_z || map1.z > (pos.z + 2) )
+		if ( map1.z == illegal_z || map1.z > (pos.z + 3) )
 			return illegal_z;
 		else if ( map1.z > zRes )
 			zRes = map1.z;
@@ -165,11 +165,11 @@ SI08 isWalkable( Location pos, UI08 flags )
 			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
 				height = tile.height / 2;
 
-			if ( (s_vec[i].z + height) < (pos.z + MaxZstep) ) { // We cannot walk under it
+			if ( s_vec[i].z < (pos.z + MaxZstep) ) { // We cannot walk under it
 				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
-				if ( (s_vec[i].z + height) <= (pos.z + 2) ) { // We can walk on it
+				if ( (s_vec[i].z + height) <= (pos.z + 3) ) { // We can walk on it
 	                                if ( (s_vec[i].z + tile.height) > zRes )
 						zRes = s_vec[i].z + tile.height;
 				} else
@@ -239,11 +239,11 @@ LOGICAL canNpcWalkHere( Location pos )
 */
 SI08 staticTop( Location pos )
 {
-	staticVector s;
-	if ( !data::collectStatics( pos.x, pos.y, s ) )
-		return illegal_z;
+	SI08 max_z = illegal_z, temp_z;
 
-	SI08 max_z = pos.z, temp_z;
+	staticVector s;
+	data::collectStatics( pos.x, pos.y, s );
+
 	for ( UI32 i = 0; i < s.size(); i++ ) {
 		temp_z = s[i].z + tileHeight( s[i].id );
 		if ( temp_z < ( MaxZstep + pos.z ) && temp_z > max_z )
@@ -283,7 +283,7 @@ SI08 mapElevation( UI32 x, UI32 y )
 */
 SI08 dynamicElevation( Location pos )
 {
-	SI08 max_z = pos.z, temp_z;
+	SI08 max_z = illegal_z, temp_z;
 	NxwItemWrapper si;
 	si.fillItemsAtXY( pos.x, pos.y );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
@@ -301,7 +301,7 @@ SI08 dynamicElevation( Location pos )
 */
 SI08 getHeight( Location pos )
 {
-	SI08 max_z;
+	SI08 max_z = illegal_z;
 
 	max_z = max( dynamicElevation( pos ), max_z );
 	max_z = max( staticTop( pos ), max_z );
