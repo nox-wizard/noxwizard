@@ -1275,32 +1275,19 @@ void cTargets::AllSetTarget(NXWSOCKET s)
 
 static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with map-tiles, not only static ones by LB
 {
-    int tilenum,x1,y1,x2,y2,x,y;
-    signed char z;
-    unsigned long int pos;
-    tile_st tile;
-    struct map_st
-    {
-        short int id;
-        signed char z;
-    };
-    map_st map1;
-    land_st land;
 
     if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-    x=pp->TxLoc;
-    y=pp->TyLoc;
-    z=pp->TzLoc;
+    int x=pp->TxLoc;
+    int y=pp->TyLoc;
+    signed char z=pp->TzLoc;
 
     if (pp->model==0)   // damn osi not me why the tilenum is only send for static tiles, LB
     {   // manually calculating the ID's if it's a maptype
-        x1=x/8;
-        y1=y/8;
-        x2=(x-(x1*8));
-        y2=(y-(y1*8));
-        pos=(x1*512*196)+(y1*196)+(y2*24)+(x2*3)+4;
-        fseek(mapfile, pos, SEEK_SET);
-        fread(&map1, 3, 1, mapfile);
+        
+		map_st map1;
+	    land_st land;
+
+		data::seekMap( x, y, map1 );
         data::seekLand(map1.id, land);
         ConOut("type: map-tile\n");
         ConOut("tilenum: %i\n",map1.id);
@@ -1309,7 +1296,8 @@ static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with m
     }
     else
     {
-        tilenum=pp->model; // lb, bugfix
+        int tilenum=pp->model; // lb, bugfix
+		tile_st tile;
         data::seekTile(tilenum, tile);
         ConOut("type: static-tile\n");
         ConOut("tilenum: %i\n",tilenum);

@@ -348,8 +348,8 @@ bool cTiledata::getLand( SERIAL id, TLANDINFO& land )
 */
 bool cTiledata::getStatic( SERIAL id, TSTATICINFO& stat )
 {
-	if( !( (id>(INVALID +FIRSTSTATICSINFO)) && (id<FIRSTSTATICSINFO+STATICSINFOCOUNT))) 
-		return false;
+	//if( !( (id>(INVALID +FIRSTSTATICSINFO)) && (id<FIRSTSTATICSINFO+STATICSINFOCOUNT))) 
+	//	return false;
 
 	//need because can be verdata info
 	STATICINFOMAP::iterator iter = staticsCached.find(id);
@@ -454,6 +454,16 @@ bool cMap::getMap( UI16 x, UI16 y, TCELLA& cella )
 	file.seekg( x*height +y );
 	file.read( (char*)&cella, sizeof(TCELLA) );
 	return true;
+
+	/*		int x1=x/8;
+        int y1=y/8;
+        int x2=(x-(x1*8));
+        int y2=(y-(y1*8));
+        int pos=(x1*512*196)+(y1*196)+(y2*24)+(x2*3)+4;
+
+        fseek(mapfile, pos, SEEK_SET);
+        fread(&map1, 3, 1, mapfile);
+*/
 }
 
 
