@@ -205,12 +205,14 @@ public:
 
 	//! return the real name of object
 	inline const char*		getRealNameC() const
-	{ return secondary_name.c_str(); }
+	{ 
+		return secondary_name.c_str(); 
+	}
 
 	//! Set the real name of object
 	inline void		setRealName(string s)
 	{ 
-		if ( s != NULL )
+		if ( s != "" )
 			secondary_name = s; 
 		else
 			secondary_name = "";
