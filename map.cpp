@@ -10,6 +10,18 @@
 
 #include "nxwcommn.h"
 
+// Luxor: If we've got a bridge flagged tile or we're moving in map0 (stairs or whatever) we can elevate our Z by 14.
+#define MAX_Z_CLIMB_BRIDGE 14
+
+// Luxor: If we are simply climbing to get on a new surface, the client tolerates only a Z step of 2.
+#define MAX_Z_CLIMB 2
+
+// Luxor: If our Z is lowering more than 6 tiles, we're falling.
+#define MIN_Z_FALL 6
+
+// Luxor: A char cannot fall more than 20 tiles in altitude.
+#define MAX_Z_FALL 20
+
 /*!
 \file
 \author Luxor
@@ -242,7 +254,8 @@ SI08 staticTop( Location pos )
 	SI08 max_z = illegal_z, temp_z;
 
 	staticVector s;
-	data::collectStatics( pos.x, pos.y, s );
+	if ( !data::collectStatics( pos.x, pos.y, s ) )
+		return max_z;
 
 	for ( UI32 i = 0; i < s.size(); i++ ) {
 		temp_z = s[i].z + tileHeight( s[i].id );
@@ -281,6 +294,39 @@ SI08 mapElevation( UI32 x, UI32 y )
 /*!
 \author Luxor
 */
+SI08 mapAverageElevation( UI32 x, UI32 y )
+{
+	SI08 map1_z = mapElevation( x, y );
+	if ( map1_z == illegal_z )
+		return illegal_z;
+
+	SI08 map2_z = mapElevation( x + 1, y );
+	SI08 map3_z = mapElevation( x, y + 1 );
+	SI08 map4_z = mapElevation( x + 1, y + 1 );
+	SI08 z;
+
+	if ( abs( map1_z - map4_z ) <= abs( map2_z - map3_z ) ) {
+		if ( map4_z == illegal_z )
+			return map1_z;
+		z = (SI08)( ( map1_z + map4_z ) >> 1 );
+		if ( z % 2 < 0 )
+			z--;
+		return z;
+	} else {
+		if ( map2_z == illegal_z || map3_z == illegal_z )
+			return map1_z;
+		z = (SI08)( ( map2_z + map3_z ) >> 1 );
+		if ( z % 2 < 0 )
+			z--;
+		return z;
+	}
+
+	return illegal_z;
+}
+
+/*!
+\author Luxor
+*/
 SI08 dynamicElevation( Location pos )
 {
 	SI08 max_z = illegal_z, temp_z;
@@ -298,16 +344,107 @@ SI08 dynamicElevation( Location pos )
 
 /*!
 \author Luxor
+\brief Returns the estimated height of walker's position.
 */
 SI08 getHeight( Location pos )
 {
-	SI08 max_z = illegal_z;
+	SI08 final_z = illegal_z, item_z = illegal_z, temp_z, base_z, z_off;
+	UI32 item_flags;
+	tile_st tile;
 
-	max_z = qmax( dynamicElevation( pos ), max_z );
-	max_z = qmax( staticTop( pos ), max_z );
-	max_z = qmax( mapElevation( pos.x, pos.y ), max_z );
+	NxwItemWrapper si;
+	si.fillItemsAtXY( pos.x, pos.y );
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+		P_ITEM pi = si.getItem();
 
-	return max_z;
+		data::seekTile( pi->id(), tile );
+
+		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? pi->getPosition().z : pi->getPosition().z + tile.height;
+		temp_z = pi->getPosition().z + tile.height;
+
+		// Check if the tile is reachable.
+		if ( base_z <= pos.z + MAX_Z_CLIMB && temp_z >= pos.z - MAX_Z_FALL ) {
+			if (
+				// Nothing has been chosen until now: pick up this as the first valid Z value.
+				( item_z == illegal_z ) ||
+				// We're choosing between two bridges: choose the highest one
+				( item_flags & TILEFLAG_BRIDGE && tile.flags & TILEFLAG_BRIDGE && temp_z > item_z ) ||
+				// We're choosing between two non-bridges: choose the highest one
+				( !(item_flags & TILEFLAG_BRIDGE) && !(tile.flags & TILEFLAG_BRIDGE) && temp_z > item_z )
+
+			) {
+				item_z = temp_z;
+				item_flags = tile.flags;
+			}
+
+			// We're choosing between a bridge and a non bridge: choose the highest one if the bridge is reachable only by falling down. Otherwise choose the bridge.
+			if ( !(item_flags & TILEFLAG_BRIDGE) && tile.flags & TILEFLAG_BRIDGE ) {
+				if ( temp_z >= pos.z - MIN_Z_FALL ) {
+					item_z = temp_z;
+					item_flags = tile.flags;
+				}
+			} else if ( item_flags & TILEFLAG_BRIDGE && !(tile.flags & TILEFLAG_BRIDGE) ) {
+				if ( item_z < pos.z - MIN_Z_FALL && temp_z > item_z ) {
+					item_z = temp_z;
+					item_flags = tile.flags;
+				}
+			}
+		}
+	}
+
+	staticVector s;
+	data::collectStatics( pos.x, pos.y, s );
+
+	for ( UI32 i = 0; i < s.size(); i++ ) {
+		data::seekTile( s[i].id, tile );
+
+		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? s[i].z : s[i].z + tile.height;
+		temp_z = s[i].z + tile.height;
+
+		// Check if the tile is reachable.
+		if ( base_z <= pos.z + MAX_Z_CLIMB && temp_z >= pos.z - MAX_Z_FALL ) {
+			if (
+				// Nothing has been chosen until now: pick up this as the first valid Z value.
+				( item_z == illegal_z ) ||
+				// We're choosing between two bridges: choose the highest one
+				( item_flags & TILEFLAG_BRIDGE && tile.flags & TILEFLAG_BRIDGE && temp_z > item_z ) ||
+				// We're choosing between two non-bridges: choose the highest one
+				( !(item_flags & TILEFLAG_BRIDGE) && !(tile.flags & TILEFLAG_BRIDGE) && temp_z > item_z )
+
+			) {
+				item_z = temp_z;
+				item_flags = tile.flags;
+			}
+
+			// We're choosing between a bridge and a non bridge: choose the highest one if the bridge is reachable only by falling down. Otherwise choose the bridge.
+			if ( !(item_flags & TILEFLAG_BRIDGE) && tile.flags & TILEFLAG_BRIDGE ) {
+				if ( temp_z >= pos.z - MIN_Z_FALL ) {
+					item_z = temp_z;
+					item_flags = tile.flags;
+				}
+			} else if ( item_flags & TILEFLAG_BRIDGE && !(tile.flags & TILEFLAG_BRIDGE) ) {
+				if ( item_z < pos.z - MIN_Z_FALL && temp_z > item_z ) {
+					item_z = temp_z;
+					item_flags = tile.flags;
+				}
+			}
+		}
+	}
+
+	SI08 map_z = mapAverageElevation( pos.x, pos.y );
+	if (
+		// No Z value was found yet.
+		( item_z == illegal_z ) ||
+		// We're choosing between map and bridge: choose the highest one if the bridge is reachable only by falling down. Otherwise choose the bridge.
+		( item_flags & TILEFLAG_BRIDGE && item_z < pos.z - MIN_Z_FALL ) ||
+		// We're choosing between map and normal item: choose the highest one if the item is reachable only by falling down and map is reachable.
+		( map_z <= pos.z + MAX_Z_CLIMB_BRIDGE && item_z < pos.z - MIN_Z_FALL )
+	) {
+		final_z = qmax( map_z, item_z );
+	} else
+		final_z = item_z;
+
+	return final_z;
 }
 
 /*!

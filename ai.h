@@ -26,41 +26,41 @@
 \author Luxor
 \brief Base class of possible actions that would be chosen by an AI
 */
-class cAction {
+/*class cAction {
 private:
 	cAI *m_ai;
 public:
 	cAction( cAI* ai );
 	virtual void run();
-};
+};*/
 
 /*!
 \author Luxor
 */
-class cAttackAction : public cAction {
+/*class cAttackAction : public cAction {
 private:
-	m_target;
+	SERIAL m_target;
 public:
 	void run();
 	inline P_CHAR getTarget() { return pointers::findCharBySerial( m_target ); }
-};
+};*/
 
 /*!
 \author Luxor
 */
-class cDefendAction : public cAction {
+/*class cDefendAction : public cAction {
 private:
-	m_attacker;
+	SERIAL m_attacker;
 public:
 	void run();
 	inline P_CHAR getAttacker() { return pointers::findCharBySerial( m_attacker ); }
-};
+};*/
 
 /*!
 \author Luxor
 \brief Base class of AI implementation
 */
-class cAI {
+/*class cAI {
 private:
 	SERIAL m_pc;
 	cAction *currAction;
@@ -71,7 +71,7 @@ public:
 	void setAction();
 	inline LOGICAL hasAction() { return ( currAction != NULL ); }
 	inline P_CHAR getChar() { return pointers::findCharBySerial( m_pc ); }
-};
+};*/
 
 
 //@}
