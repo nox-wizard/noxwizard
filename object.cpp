@@ -22,13 +22,13 @@ cObject::cObject()
 	position = Loc(0,0,0);
 	ScriptID = 0;
 
-	amxEvents = 0;
+	//amxEvents = 0;
 	tempfx = NULL;
 }
 
 cObject::~cObject()
 {
-	if( amxEvents )
+	/*if( amxEvents )
 	{
 		//AmxEventMap::iterator it( amxEvents->begin() ), end( amxEvents->end() );
 		//for( ; it!=end; it++ )
@@ -36,7 +36,7 @@ cObject::~cObject()
 		//	delete it->second;
 		//}
 		safedelete( amxEvents );
-	}
+	}*/
 	if ( tempfx ) {
 		tempfx->clear();
 		safedelete( tempfx );
@@ -653,7 +653,7 @@ string cObject::getSecondaryName() const
 \brief Tell if the AmxEvent id is valid
 \author Luxor
 \since 0.82
-*/
+*//*
 LOGICAL cObject::isValidAmxEvent( UI32 eventId )
 {
 	if ( eventId < 0 )
@@ -729,7 +729,7 @@ void cObject::delAmxEvent( UI32 eventId )
 		}
 	}
 }
-
+*/
 
 /*!
 \author Luxor
