@@ -1206,8 +1206,10 @@ void cChar::MoveTo(Location newloc)
 		return;
 
 	mapRegions->remove(this);
+	pointers::addCharToLocationMap( this );
 	setPosition( newloc );
 	mapRegions->add(this);
+	pointers::delCharFromLocationMap( this );
 }
 
 UI32 cChar::getSkillSum()

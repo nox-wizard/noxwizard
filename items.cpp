@@ -599,8 +599,10 @@ void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
 void cItem::MoveTo(Location newloc)
 {
 	mapRegions->remove(this);
+	pointers::delItemFromLocationMap(this);
 	setPosition( newloc );
 	mapRegions->add(this);
+	pointers::addItemToLocationMap(this);
 }
 
 /*!

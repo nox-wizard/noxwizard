@@ -517,7 +517,10 @@ namespace item
 			}
 			else
 				if (pi->isInWorld())
+				{
 					mapRegions->add(pi);
+					pointers::addItemToLocationMap( pi );
+				}
 		}
 
 		return pi;

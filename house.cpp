@@ -272,6 +272,7 @@ void buildhouse(int s, int i)
 		if (pHouse->isInWorld()) 
 		{
 			mapRegions->add(pHouse);
+			pointers::addItemToLocationMap(pHouse);
 		}
 		if (!hitem[0] && !boat)
 		{
@@ -456,6 +457,7 @@ void buildhouse(int s, int i)
 					if (pi_l->isInWorld()) 
 					{
 						mapRegions->add(pi_l);
+						pointers::addItemToLocationMap(pi_l);
 					}
 				safedelete(iter);
 			}
@@ -697,7 +699,8 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-		mapRegions->add(pi); //Add to mapRegions
+		mapRegions->add(pi);
+		pointers::addItemToLocationMap(pi);
 	}
 
 	Map->SeekTile(pi->id(), &tile);
@@ -847,6 +850,7 @@ int add_hlist(int c, int h, int t)
 		pi->setPosition( pi_h->getPosition() );
 
 		mapRegions->add(pi);
+		pointers::addItemToLocationMap(pi);
 		return 1;
 	}
 	return 3;
@@ -874,6 +878,7 @@ int del_hlist(int c, int h)
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
 			mapRegions->remove(pli);
+			pointers::delItemFromLocationMap(pli);
 			pli->deleteItem();
 		}
 	}

@@ -1468,6 +1468,7 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 					pc->war  	= 0;
 					pc->targserial	= INVALID;
 					mapRegions->remove( pc_pet );
+					pointers::delCharFromLocationMap( pc_pet );
 					pc_pet->stable( pc_stablemaster );
 					// set timer for fee calculation
 					pc_pet->time_unused=0;
@@ -1614,6 +1615,7 @@ stabledPets.rewind();	// GH!
 					pc_pet->timeused_last = getclock();
 					pc_pet->time_unused=0;
 					mapRegions->add( pc_pet );
+					pointers::addCharToLocationMap( pc_pet );
 					pc_pet->teleport();
 				}
 				if( stabledPets.size() == 1 )

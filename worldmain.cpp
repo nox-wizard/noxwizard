@@ -566,6 +566,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
  // lord binarys body/skin autocorrection code
 	mapRegions->add(pc);
+	pointers::addCharToLocationMap(pc);
  // begin of meta gm stuff
 
 	if (!pc->npc)
@@ -1027,6 +1028,7 @@ void loaditem()
 		int max_x = MapTileWidth  * 8;
 		int max_y = MapTileHeight * 8;
 		mapRegions->add(pi);
+		pointers::addItemToLocationMap(pi);
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{

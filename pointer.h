@@ -73,8 +73,12 @@ namespace pointers {
 	P_CHAR stableSearch(int serial, int *index);
 	
 	// Sparhawk
-	
-#ifdef SPAR_NEW_WR_SYSTEM
+
+	typedef std::vector< P_CHAR > pCharVector;
+	typedef pCharVector::iterator pCharVectorIt;
+	typedef std::vector< P_ITEM > pItemVector;
+	typedef pItemVector::iterator pItemVectorIt;
+
 	enum eCharWorldMap
 	{
 		NONE	=  0,
@@ -83,16 +87,12 @@ namespace pointers {
 		NPC	=  4
 	};
 
-	class NxwCharWrapper;
-	class NxwItemWrapper;
-
-	void addCharToWorldMap( const P_CHAR who );
-	void delCharFromWorldMap( const P_CHAR who );
-	NxwCharWrapper getCharFromWorldMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
-	void addItemToWorldMap( const P_ITEM what );
-	void delItemFromWorldMap( const P_ITEM what );
-	NxwItemWrapper getItemFromWorldMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
-#endif
+	void addCharToLocationMap( const P_CHAR who );
+	void delCharFromLocationMap( const P_CHAR who );
+	pCharVector getCharFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
+	void addItemToLocationMap( const P_ITEM what );
+	void delItemFromLocationMap( const P_ITEM what );
+	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
 }
 
 #endif

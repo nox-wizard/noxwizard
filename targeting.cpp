@@ -1429,6 +1429,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
 		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
             pi->Refresh();
             mapRegions->add(pi); // lord Binary, xan, God Rah
+	    pointers::addItemToLocationMap( pi );
         }
 
     addid1[s]=0;
@@ -1633,11 +1634,13 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	VALIDATEPI(pi2);
 
 	mapRegions->remove(pi1);
+	pointers::delItemFromLocationMap( pi1 );
 
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
 
 	mapRegions->add(pi1); // lord Binary
+	pointers::addItemToLocationMap(pi1);
 
 	pi1->setDecayTime();
 	pi1->Refresh();
@@ -1713,9 +1716,12 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	P_ITEM pi3=MAKE_ITEMREF_LR(i);
 	VALIDATEPI(pi3);
 	mapRegions->remove(pi1);
+	pointers::delItemFromLocationMap(pi1);
+
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
 	mapRegions->add(pi1); // lord Binary
+	pointers::addItemToLocationMap(pi1);
 
 	pi1->setDecayTime();
 
@@ -2077,6 +2083,7 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 
 		pi->setPosition( pcpos );
 		mapRegions->add(pi);
+		pointers::addItemToLocationMap(pi);
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
 	}

@@ -295,8 +295,7 @@ namespace pointers {
 	std::map< UI32, vector < P_CHAR > > pCharWorldMap;
 	std::map< UI32, vector < P_ITEM > > pItemWorldMap;
 
-	#ifdef SPAR_NEW_WR_SYSTEM
-	void addCharToWorldMap( const P_CHAR who )
+	void addCharToLocationMap( const P_CHAR who )
 	{
 
 		VALIDATEPC(who);
@@ -308,7 +307,7 @@ namespace pointers {
 		pCharWorldMap[key].push_back( who );
 	}
 
-	void delCharFromWorldMap( const P_CHAR who )
+	void delCharFromLocationMap( const P_CHAR who )
 	{
 		VALIDATEPC(who);
 		//ConOut("delCharFromWorldMap %d^n", who->getSerial32() );
@@ -334,7 +333,7 @@ namespace pointers {
 		}
 	}
 
-	pCharVector getCharFromWorldMap( SI32 x, SI32 y, SI32 range, UI32 flags )
+	pCharVector getCharFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags )
 	{
 		pCharVector vCharsInRange;
 
@@ -418,7 +417,7 @@ namespace pointers {
 		return vCharsInRange;
 	}
 
-	void addItemToWorldMap( const P_ITEM what )
+	void addItemToLocationMap( const P_ITEM what )
 	{
 		VALIDATEPI(what);
 		UI32 key  = what->getPosition().x;
@@ -428,7 +427,7 @@ namespace pointers {
 		pItemWorldMap[key].push_back( what );
 	}
 
-	void delItemFromWorldMap( const P_ITEM what )
+	void delItemFromLocationMap( const P_ITEM what )
 	{
 		VALIDATEPI(what);
 		UI32 key  = what->getPosition().x;
@@ -453,7 +452,8 @@ namespace pointers {
 		}
 	}
 
-	pItemVector getItemFromWorldMap( SI32 x, SI32 y, SI32 range, UI32 flags )
+
+	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags )
 	{
 		pItemVector vItemsInRange;
 
@@ -521,8 +521,6 @@ namespace pointers {
 		}
 		return vItemsInRange;
 	}
-
-	#endif
 
 	/*!
 	\brief initializes pointer maps

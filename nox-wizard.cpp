@@ -144,6 +144,7 @@ static void item_char_test()
 				{
 					p_pet->unStable();
 					mapRegions->add(p_pet);
+					pointers::addCharToLocationMap( p_pet );
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
 					LogMessage("Stabled animal got freed because stablemaster died");
