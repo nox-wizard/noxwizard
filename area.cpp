@@ -14,7 +14,6 @@ cAreas*	Areas;
 
 cAreas::cAreas() 
 {
-	this->allareas.clear();
 	this->currarea=INVALID;
 };
 
@@ -43,45 +42,59 @@ SERIAL cAreas::insert( Area& newarea, SERIAL index )
 void cAreas::loadareas()
 {
 
-    cScpIterator* iter = NULL;
-    char script1[1024];
-    char script2[1024];
+	cScpIterator*	iter = 0;
+	std::string	rha,
+			lha;
 	int idxarea=0;
-	
+
 	int loopexit=0;
 	do
 	{
 		safedelete(iter);
 		SERIAL current=idxarea;
 		iter = Scripts::Areas->getNewIterator("SECTION AREA %i", idxarea++);
-		if( iter==NULL ) continue;
-
-		Area area;
-		UI16 check=0;
-
-		do
+		if( iter )
 		{
-			iter->parseLine(script1, script2);
-			if ((script1[0]!='}')&&(script1[0]!='{'))
+
+			Area area;
+			UI16 check=0;
+
+			do
 			{
-				if		(!strcmp("X1", script1)) 		  
-					{ area.x1 = str2num(script2); check|=0x000F; }
-				else if (!strcmp("Y1", script1))		  
-					{ area.y1 = str2num(script2); check|=0x00F0; }
-				else if (!strcmp("X2", script1))		  
-					{ area.x2 = str2num(script2); check|=0x0F00; }
-				else if (!strcmp("Y2", script1))		  
-					{ area.y2 = str2num(script2); check|=0xF000; }
-				else ConOut("[ERROR] on parse of areas.xss" );
+				iter->parseLine( lha, rha );
+				if ( lha[0] != '}' && lha[0] !='{' )
+				{
+					if	( lha == "X1")
+					{
+						area.x1 = str2num( rha );
+						check|=0x000F;
+					}
+					else if ( lha == "Y1" )
+					{
+						area.y1 = str2num( rha );
+						check|=0x00F0;
+					}
+					else if ( lha == "X2" )
+					{
+						area.x2 = str2num( rha );
+						check|=0x0F00;
+					}
+					else if ( lha == "Y2" )
+					{
+						area.y2 = str2num( rha );
+						check|=0xF000;
+					}
+					else
+						WarnOut("[ERROR] on parse of areas.xss" );
+				}
 			}
+			while ( lha[0] !='}' && ++loopexit < MAXLOOPS );
 
+			if( check==0xFFFF )
+				this->insert( area, current );
 		}
-        while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-		if( check==0xFFFF )
-			this->insert( area, current );
     }
-	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
+	while (  lha != "EOF" && ++loopexit < MAXLOOPS );
 
     safedelete(iter);
 
