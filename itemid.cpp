@@ -142,7 +142,7 @@ bool cItem::IsBowType()
 
 bool cItem::IsStave() // -Fraz- added
 {
-	return isWeaponLike( this->id(), STAVE1H);
+	return isWeaponLike( this->id(), STAVE1H, STAVE2H );
 
 }
 

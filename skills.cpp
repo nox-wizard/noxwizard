@@ -2717,57 +2717,60 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 	            break;
 		}
     }
-    if ( (v1>1)&&(v1<5) || (v1>8)) 
+    if ( (v1>1)&&(v1<5) || (v1>8))
 		pc->sysmsg( TRANSLATE("You cant use that from here."));
 
 }
 
-void Skills::Meditation (NXWSOCKET  s) // Morrolan - meditation(int socket)
+/*!
+\author Luxor
+\brief Implements Meditation skill
+*/
+void Skills::Meditation (NXWSOCKET  s)
 {
-	if ( s < 0 || s >= now ) //Luxor
+	if ( s < 0 || s >= now )
 		return;
 
-    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc_currchar);
+	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
+	VALIDATEPC(pc);
 
-    // blackwind warmode fix.
-    if (pc_currchar->war)
-    {
-        sysmessage(s, TRANSLATE("Your mind is too busy with the war thoughts."));
-        return;
-    }
-    if (Skills::GetAntiMagicalArmorDefence(DEREF_P_CHAR(pc_currchar))>15) // blackwind armor affect fix
-    {
-        sysmessage(s, TRANSLATE("Regenerative forces cannot penetrate your armor."));
-        pc_currchar->med = 0;
-        return;
-    }
-    else if (pc_currchar->getWeapon() || pc_currchar->getShield())
-    {
-        sysmessage(s, TRANSLATE("You cannot meditate with a weapon or shield equipped!"));
-        pc_currchar->med = 0;
-        return;
-    }
-    else if ((pc_currchar->mn) == (pc_currchar->in))
-    {
-        sysmessage(s, TRANSLATE("You are at peace."));
-        pc_currchar->med = 0;
-        return;
-    }
-    else if (!pc_currchar->checkSkill( MEDITATION, 0, 1000))
-    {
-        sysmessage(s, TRANSLATE("You cannot focus your concentration."));
-        pc_currchar->med = 0;
-        return;
-    }
-    else
-    {
-        sysmessage(s, TRANSLATE("You enter a meditative trance."));
-        pc_currchar->med = 1;
-        soundeffect(s, 0x00, 0xf9);
-        return;
-    }
+	P_ITEM pi = NULL;
 
+	pc->med = 0;
+
+	if ( pc->war ) {
+		pc->sysmsg( TRANSLATE("Your mind is too busy with the war thoughts.") );
+		return;
+	}
+
+	if ( Skills::GetAntiMagicalArmorDefence(pc->getSerial32()) > 15 ) {
+		pc->sysmsg( TRANSLATE("Regenerative forces cannot penetrate your armor.") );
+		return;
+	}
+
+	pi = pc->getWeapon();
+	if ( (ISVALIDPI(pi) && !pi->IsStave()) || pc->getShield() ) {
+		pc->sysmsg( TRANSLATE("You cannot meditate with a weapon or shield equipped!") );
+		return;
+	}
+
+	if ( pc->mn == pc->in ) {
+		pc->sysmsg( TRANSLATE("You are at peace.") );
+		return;
+	}
+
+
+	//
+	// Meditation check
+	//
+	if ( !pc->checkSkill(MEDITATION, 0, 1000) ) {
+		pc->sysmsg( TRANSLATE("You cannot focus your concentration.") );
+		return;
+	}
+
+	pc->sysmsg( TRANSLATE("You enter a meditative trance.") );
+	pc->med = 1;
+	soundeffect(s, 0x00, 0xf9);
 }
 
 //AntiChrist - 5/11/99
