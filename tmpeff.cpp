@@ -253,13 +253,13 @@ void cTempfx::start()
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 
-	if (!m_bSrcRepeatable && ISVALIDPC(src))
+	if ( !m_bSrcRepeatable && ISVALIDPC(src) )
 		src->setTempfx(m_nNum);
-		
-	if (!m_bDestRepeatable && ISVALIDPC(dest))
+
+	if ( !m_bDestRepeatable && ISVALIDPC(dest) )
 		dest->setTempfx(m_nNum);
 
-	if (!ISVALIDPC(dest))
+	if ( !ISVALIDPC(dest) )
 		return;
 
 	switch(m_nNum)
@@ -542,11 +542,12 @@ bool cTempfx::checkForExpire()
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	P_ITEM pi_dest = pointers::findItemBySerial(m_nDest);
 
-	if (!m_bSrcRepeatable && ISVALIDPC(src))
-		src->resetTempfx(m_nNum);
-
-	if (!m_bDestRepeatable && ISVALIDPC(dest))
-		dest->resetTempfx(m_nNum);
+        P_OBJECT po = NULL;
+	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(src)) ) )
+		po->resetTempfx(m_nNum);
+                                 
+	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(dest)) ) )
+		po->resetTempfx(m_nNum);
 	
 	switch(m_nNum)
 	{
@@ -811,10 +812,10 @@ void cTempfx::activate()
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	
 	
-	if (!m_bSrcRepeatable && ISVALIDPC(src) )
+	if ( !m_bSrcRepeatable && ISVALIDPC(src) )
 		src->setTempfx(m_nNum);
-	
-	if (!m_bDestRepeatable && ISVALIDPC(dest) )
+
+	if ( !m_bDestRepeatable && ISVALIDPC(dest) )
 		dest->setTempfx(m_nNum);
 		
 		
@@ -897,11 +898,12 @@ void cTempfx::deactivate()
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	
-	if (!m_bSrcRepeatable && ISVALIDPC(src) )
-		src->resetTempfx( m_nNum );
+        P_OBJECT po = NULL;
+	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(src)) ) )
+		po->resetTempfx(m_nNum);
 
-	if (!m_bDestRepeatable && ISVALIDPC(dest) )
-		dest->resetTempfx( m_nNum );
+	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(dest)) ) )
+		po->resetTempfx(m_nNum);
 
 
 	if (!ISVALIDPC(dest)/* || !ISVALIDPC(src)*/)
@@ -1121,10 +1123,19 @@ bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned cha
 // Author            : Luxor
 void tempeffectson()
 {
+	/*if ( tempfxQueue.empty() )
+		return;
+
+	tempfxVector = const_cast<cTempfx*>(&(tempfxQueue.top()));
+	//tempfxVector = static_cast< vector<cTempfx>* >( &tempfxQueue );
+	for ( UI32 i = 0; i < tempfxVector.size(); i++ )
+		tempfxVector[i].deactivate();*/
+
+
     if (!tempfxQueue.empty())
         while (!tempfxQueue.empty())
             tempfxQueue.pop();
-    
+
     if (tempfxVector.empty())
 	    return;
 
@@ -1132,7 +1143,7 @@ void tempeffectson()
         tempfxVector[i].activate();
         tempfxQueue.push(tempfxVector[i]);
     }
-    
+
     tempfxVector.clear();
 }
 
@@ -1142,12 +1153,19 @@ void tempeffectson()
 */
 void tempeffectsoff()
 {
+	if ( tempfxQueue.empty() )
+		return;
+
+	/*tempfxVector = static_cast< vector<cTempfx>* >( &tempfxQueue );
+	for ( UI32 i = 0; i < tempfxVector.size(); i++ )
+		tempfxVector[i].deactivate();*/
+
     if (!tempfxVector.empty())
         tempfxVector.clear();
-    
+
     if (tempfxQueue.empty())
 	    return;
-    
+
     while (!tempfxQueue.empty())
     {
         tempfxVector.push_back(tempfxQueue.top());
@@ -1164,7 +1182,7 @@ void checktempeffects()
 {
     if (tempfxQueue.empty())
 	    return;
-    
+
     if(static_cast<cTempfx>(tempfxQueue.top()).checkForExpire()) {
         tempfxQueue.pop();
         checktempeffects();
