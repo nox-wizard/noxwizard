@@ -647,17 +647,17 @@ public:
 		void		resetLockSkills();
 
 	private:
-		ustring* profile; //!< player profile
+		wstring* profile; //!< player profile
 	public:
-		ustring* getProfile();
-		void setProfile( ustring* profile );
+		wstring* getProfile();
+		void setProfile( wstring* profile );
 		void resetProfile();
 	
 	private:
-		ustring* speechCurrent;
+		wstring* speechCurrent;
 	public:
-		ustring* getSpeechCurrent();
-		void setSpeechCurrent( ustring* speech );
+		wstring* getSpeechCurrent();
+		void setSpeechCurrent( wstring* speech );
 		void resetSpeechCurrent();
 		void deleteSpeechCurrent();
 
@@ -763,7 +763,7 @@ public:
 		TIMERVAL		tempflagtime;
 		// End of Guild Related Character information
 
-		ustring* staticProfile; //!< player static profile
+		wstring* staticProfile; //!< player static profile
 
 
 		TIMERVAL		murderrate; //# of ticks until one murder decays //REPSYS

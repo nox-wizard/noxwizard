@@ -1907,9 +1907,9 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 }// namespace Speech
 
 
-/*inline void makeGhost( ustring* from, ustring* to ) {
+/*inline void makeGhost( wstring* from, wstring* to ) {
 
-	ustring::iterator iter( from->begin() ), end( from->end() );
+	wstring::iterator iter( from->begin() ), end( from->end() );
 	for( ; iter!=end; iter++) {
 		if( (*iter)!=32 && (*iter)!=0x0000 )
 			(*to) += ( (*iter) %2)? L'O' : L'o';
@@ -2037,10 +2037,10 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
-	ustring* speechUni= new ustring();
-	string2ustring( speech, *speechUni );
+	wstring* speechUni= new wstring();
+	string2wstring( speech, *speechUni );
 
-	//ustring* speechGhostUni=NULL;
+	//wstring* speechGhostUni=NULL;
 
 	int range;
 	switch ( buffer[socket][3] ) {
@@ -2077,16 +2077,16 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		bool ghost=false;
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			/*if( speechGhostUni==NULL ) {
-				speechGhostUni=new ustring();
+				speechGhostUni=new wstring();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->setSpeechCurrent( new ustring( *speechGhostUni ) );*/
+			pc->setSpeechCurrent( new wstring( *speechGhostUni ) );*/
 			pc->deleteSpeechCurrent();
 			pc->emote( a_pc->getSocket(), "*Speaks in an uncomprehensible way*", true );
 			ghost=true;
 		}
 		else
-			pc->setSpeechCurrent( new ustring( *speechUni ) );
+			pc->setSpeechCurrent( new wstring( *speechUni ) );
 
 		/*
 		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {

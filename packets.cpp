@@ -11,7 +11,7 @@
 #include "packets.h"
 #include "network.h"
 
-ustring emptyUnicodeString;
+wstring emptyUnicodeString;
 char stringTerminator = 0x00;
 char unicodeStringTerminator[2] = { 0x00, 0x00 };
 
@@ -81,12 +81,12 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 \param from offset
 \param size read until NULL termination if INVALID, else read size char
 */
-void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, ustring* c, int& from, int size )
+void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size )
 {
-	uchar_t* w=(uchar_t*)( &buffer[s][from] );
-	
+	wchar_t* w=(wchar_t*)( &buffer[s][from] );
+
 	c->erase();
-	
+
 	int i=0;
 	if( size==INVALID ) {//until termination
 		while ( w[i]!=0 ) {
@@ -102,6 +102,7 @@ void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, ustring* c, int& fr
 		from+=c->size()*2+2;
 	else
 		from+=size;
+
 }
 
 
@@ -429,7 +430,7 @@ SEND( Menu ) {
 	temp+=size_of_commands;
 	temp+=sizeof( numTextLines );
 
-	std::vector< ustring >::iterator itu( texts->begin() ), endu( texts->end() );
+	std::vector< wstring >::iterator itu( texts->begin() ), endu( texts->end() );
 	for( ; itu!=endu; itu++ ) {
 		temp += itu->size()*2 +sizeof( len );
 	}

@@ -61,13 +61,13 @@ CWorldMain::~CWorldMain()
 \param name the variable name
 \return the unicode string
 */
-ustring* HexVector2UnicodeString( char* s )
+wstring* HexVector2UnicodeString( char* s )
 {
-	ustring* w= new ustring();
+	wstring* w= new wstring();
 
 	int i=0;
 	char temp[6] = { '0','x', };
-	uchar_t baffer=0;
+	wchar_t baffer=0;
 	do {
 		memcpy( &temp[2], &s[i], 4 );
 		char* dummy; 
@@ -1300,18 +1300,18 @@ bool CWorldMain::Saving()
 
 
 /*
-\brief save on file a ustring 
+\brief save on file a wstring 
 \author Endymion
 \note save output is like 00E000123215, hex output
 \param f the file
 \param name the variable name
-\param c the ustring
+\param c the wstring
 */
-void fprintWstring( FILE* f, char* name, ustring* c )
+void fprintWstring( FILE* f, char* name, wstring* c )
 {
 	if( c==NULL ) return;
 	fprintf( f, "%s ", name );
-	ustring::iterator iter( c->begin() ), end( c->end() );
+	wstring::iterator iter( c->begin() ), end( c->end() );
 	for( ; iter!=end; iter++ ) {
 		fprintf( f, "%04x", (*iter) );
 	}
