@@ -2801,6 +2801,7 @@ NATIVE ( _set_size )
 \since 0.82
 \param 1: the set
 \return the object
+\note move index to next item
 */
 NATIVE( _set_get )
 {
@@ -2808,20 +2809,29 @@ NATIVE( _set_get )
 }
 
 /*!
-\brief Get current object of given set
+\brief Add object to given set
 \author Endymion
 \since 0.82
-\param 1: the set
-\return the object
+\param 1 the set
+\param 2 the object
+\return 0
 */
 NATIVE( _set_add )
 {
-//	amxSet::add( params[1], params[2] ); 
-#warning Missing in Action .... ehm .. missing function !!!
-
+	amxSet::add( params[1], params[2] ); 
 	return 0;
 }
 
+/*!
+\brief Add to given set the owned npc of given character
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the owner
+\param 3 include stabled
+\param 4 only following
+\return 0
+*/
 NATIVE( _set_addOwnedNpcs ) 
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
@@ -2830,12 +2840,34 @@ NATIVE( _set_addOwnedNpcs )
 	return 0;
 }
 
+/*!
+\brief Add to given set the character near location
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the x location
+\param 3 the y location
+\param 4 distance
+\param 5 exclude offline
+\param 6 only player
+\return 0
+*/
 NATIVE( _set_addCharsNearXYZ ) 
 {
 	amxSet::addCharsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0, params[6]!=0 );
 	return 0;
 }
 
+/*!
+\brief Add to given set the party friend of given character
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the character
+\param 3 distance
+\param 4 exclude this
+\return 0
+*/
 NATIVE( _set_addPartyFriend ) 
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
@@ -2844,6 +2876,16 @@ NATIVE( _set_addPartyFriend )
 	return 0;
 }
 
+/*!
+\brief Add to given set the item in given container
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 item
+\param 3 include sub containers
+\param 4 only first subcontainer
+\return 0
+*/
 NATIVE( _set_addItemsInContainer ) 
 {
 	P_ITEM pi=pointers::findItemBySerial( params[2] );
@@ -2852,6 +2894,17 @@ NATIVE( _set_addItemsInContainer )
 	return 0;
 }
 
+/*!
+\brief Add to given set the items weared by given character
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 character
+\param 3 include like hair
+\param 4 include protected layer
+\param 5 exclude illegar layer
+\return 0
+*/
 NATIVE( _set_addItemWeared ) 
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
@@ -2860,24 +2913,64 @@ NATIVE( _set_addItemWeared )
 	return 0;
 }
 
+/*!
+\brief Add to given set the items at given location
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 x
+\param 3 y
+\param 4 type
+\return 0
+*/
 NATIVE( _set_addItemsAtXY ) 
 {
 	amxSet::addItemsAtXY( params[1], params[2], params[3], params[4] );
 	return 0;
 }
 
+/*!
+\brief Add to given set the items near given location
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 x
+\param 3 y
+\param 4 distance
+\param 5 exclude not moveable
+\return 0
+*/
 NATIVE( _set_addItemsNearXYZ ) 
 {
 	amxSet::addItemsNearXYZ( params[1], params[2], params[3], params[4], params[5]!=0 );
 	return 0;
 }
 
+/*!
+\brief Add to given set all online players
+\author Endymion
+\since 0.82
+\param 1 the set
+\return 0
+\note are added ONLY client chaarcter online
+*/
 NATIVE( _set_addAllOnlinePlayers )
 {
 	amxSet::addAllOnlinePlayers( params[1] );
 	return 0;
 }
 
+/*!
+\brief Add to given set all online players near given character
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 character
+\param 3 exclude this
+\param 4 distance
+\return 0
+\note are added ONLY client chaarcter online
+*/
 NATIVE( _set_addOnlinePlayersNearChar )
 {
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
@@ -2886,6 +2979,17 @@ NATIVE( _set_addOnlinePlayersNearChar )
 	return 0;
 }
 
+/*!
+\brief Add to given set all online players near item
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the item
+\param 3 distance
+\return 0
+\note are added ONLY client chaarcter online
+\note if item is in a subcontainer, is returned the true location, the ocation of in world container
+*/
 NATIVE( _set_addOnlinePlayersNearItem )
 {
 	P_ITEM pi=pointers::findItemBySerial( params[2] );
@@ -2894,6 +2998,17 @@ NATIVE( _set_addOnlinePlayersNearItem )
 	return 0;
 }
 
+/*!
+\brief Add to given set all online players near location
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 x
+\param 3 y
+\param 4 distance
+\return 0
+\note are added ONLY client chaarcter online
+*/
 NATIVE( _set_addOnlinePlayersNearXY )
 {
 	amxSet::addOnlinePlayersNearXY( params[1], params[2], params[3], params[4] );
