@@ -1965,10 +1965,9 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	
 	if ( pc->amxevents[EVENT_CHR_ONSPEECH] ) {
 		g_bByPass = false;
+		strcpy( script2, speech.c_str() );
 		pc->amxevents[EVENT_CHR_ONSPEECH]->Call( pc->getSerial32() );
 		if( g_bByPass == true )
-			return;
-		if( pc->dead )	// Killed as result of script action
 			return;
 	}
 	/*
