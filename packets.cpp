@@ -711,6 +711,7 @@ void clPacketPartyTellMessage::receive( NXWCLIENT ps )
 
 	offset=headerSize;
 	getFromSocket( s, (char*)&this->member, sizeof(eSERIAL) );
+	this->offset+=4;
 	getUnicodeStringFromSocket( s, message );
 
 }

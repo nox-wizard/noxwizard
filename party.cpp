@@ -125,8 +125,11 @@ void cParty::talkToAll( std::wstring& s, COLOR color )
 	std::vector<P_PARTY_MEMBER>::iterator iter( members.begin() ), end( members.end() );
 	for ( ; iter!=end; ++iter ) {
 		P_CHAR pc = pointers::findCharBySerial( (*iter)->serial );
-		if( ISVALIDPC(pc) )
-			pc->sysmsg( (char*)m.c_str() );
+		if( ISVALIDPC(pc) ) {
+			NXWCLIENT ps = pc->getClient();
+			if( ps!=NULL )
+				ps->sysmsg( color, (char*)m.c_str() );
+		}
 	}
 }
 
@@ -147,12 +150,11 @@ void cParty::talkToOthers( SERIAL from, std::wstring& s, COLOR color )
 	pkg.message=&s;
 	
 	std::vector<P_PARTY_MEMBER>::iterator iter( members.begin() ), end( members.end() );
-	for ( ; iter!=end; ++iter )
-		if ( (*iter)->serial!=from ) {
-			P_CHAR pc = pointers::findCharBySerial( (*iter)->serial );
-			VALIDATEPC(pc);
+	for ( ; iter!=end; ++iter ) {
+		P_CHAR pc = pointers::findCharBySerial( (*iter)->serial );
+		VALIDATEPC(pc);
 			pkg.send( pc->getClient() );	
-		}
+	}
 			
 }
 
@@ -252,8 +254,12 @@ void cPartys::recive( NXWCLIENT ps )
 			subpkg.receive( ps );
 			P_CHAR pc = ps->currChar();
 			P_PARTY party = getParty( pc->party );
-			if( party!=NULL )
+			if( party!=NULL ) {
 				party->privateMessage( ps->currCharIdx(), subpkg.member.get(), subpkg.message );
+				if( ps->currCharIdx()!=subpkg.member.get() )
+					party->privateMessage( ps->currCharIdx(), ps->currCharIdx(), subpkg.message );
+			}
+			break;
 		}
 		case PARTY_SUBCMD_BROADCAST: {
 			clPacketPartyTellAllMessage subpkg;
@@ -262,6 +268,7 @@ void cPartys::recive( NXWCLIENT ps )
 			P_PARTY party = getParty( pc->party );
 			if( party!=NULL )
 				party->talkToOthers( ps->currCharIdx(), subpkg.message );
+			break;
 		}
 		case PARTY_SUBCMD_CANLOOT: {
 			clPacketPartyCanLoot subpkg;
