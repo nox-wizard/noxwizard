@@ -7288,21 +7288,41 @@ NATIVE ( _setLightLevel )
 }
 
 /*!
-\brief shuts down the server in param1 minutes and broadcast a message with shutdown time.
+\brief shuts down the server in param1 seconds.
 \author stonedz
 \since 0.82
 \fn shutdown
 \param 1 seconds until shutdown, if param 1 is 0 (zero) any previous shoutdown procedure will be interrupted.
+\param 2 optional message to be printed on clients after the custom message.
 \return true if operation succeed.
 */
 
 NATIVE ( _shutdown )
 {
-	char *err= NULL;
+	if ((char*)params[2]!="")
+	{
+		cell *cstr;
+		amx_GetAddr(amx, params[2], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;
+	}	
+		
+	if ((int)params[1]==0) //interrupts previous shutdown
+	{
+		endtime=0;
+		sysbroadcast(TRANSLATE("Previous shutdown has been interrupted!\n"));
+		InfoOut("Previous shutdown has been interrupted\n");
+	}
+	else 
+	{
+	endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*(int) params[1]); //sets the shutdown time
 	
-	endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*(int) params[1]);
-	sysbroadcast(TRANSLATE("The server will shutdown in %d minutes and %d seconds\n"),(int)params[1]/60, (int)params[1]%60);
-	InfoOut("The server will shutdown in %d minutes and %d seconds\n",(int)params[1]/60, (int)params[1]%60);
+	sysbroadcast(TRANSLATE("The server will shutdown in %d minutes and %d seconds.\n"),(int)params[1]/60, (int)params[1]%60);
+	if (g_cAmxPrintBuffer!="")
+		sysbroadcast("%s\n", g_cAmxPrintBuffer);
+	InfoOut("The server will shutdown in %d minutes and %d seconds.\n%s\n",(int)params[1]/60, (int)params[1]%60, g_cAmxPrintBuffer);
+	}
 	return true;
 }
 
