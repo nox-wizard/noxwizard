@@ -12,42 +12,11 @@
 namespace item
 {
 
-	/*!
-	\warning for internal use only
-	\author Xanathar
-	*/
-	static P_ITEM spawnItemByIdInternal(int nAmount, const char* cName, short id, short color)
-	{
-		LOGICAL pile=false;
-
-		tile_st tile;
-		Map->SeekTile(id, &tile);
-		pile = (tile.flag2&0x08);
-		P_ITEM pi=archive::getNewItem();
-		if ( pi==NULL )
-			return NULL;
-
-		if(cName!=NULL)
-			pi->setCurrentName(cName);
-
-		pi->setId(id);
-		pi->animSetId(0);
-		pi->setColor(color);
-		pi->amount=nAmount;
-		pi->pileable=(pile) ? '\1' : '\0';
-		pi->att=5;
-		pi->setDecay();
-		item::GetScriptItemSetting(pi); // Added by Magius(CHE) (2)
-		pi->Refresh();
-		return pi;
-	}
-
-	LOGICAL moreItemMemoryRequested = false;
 
 	/*!
 	\author Anthalir
 	*/
-	P_ITEM CreateFromScript(NXWSOCKET so, char *itemname, cObject* cont)
+	P_ITEM CreateFromScript( char *itemname, cObject* cont)
 	{
 		int scid= xss::getIntFromDefine(itemname);
 		if( scid==0 )
@@ -55,7 +24,7 @@ namespace item
 			LogError("item '%s' is not defined in scripts", itemname);
 			return NULL;
 		}
-		return item::CreateFromScript(so, scid, cont);
+		return item::CreateFromScript( scid, cont);
 	}
 
 	/*!
@@ -66,12 +35,12 @@ namespace item
 	\param itemnum item number to be created
 	\param cont container to add the item to
 	*/
-	P_ITEM CreateFromScript(NXWSOCKET  so, int itemnum, cObject* cont )
+	P_ITEM CreateFromScript( SCRIPTID itemnum, cObject* cont )
 	{
 		char sect[512];
-	char script1[1024];
-	char script2[1024];
-	cScpIterator* iter = NULL;
+		char script1[1024];
+		char script2[1024];
+		cScpIterator* iter = NULL;
 		int tmp, loopexit = 0;
 		tile_st tile;
 
@@ -219,7 +188,7 @@ namespace item
 						else if (!strcmp("ITEMLIST", script1))
 						{
 							pi->deleteItem();
-							pi=item::CreateScriptRandomItem(so, script2, cont);
+							pi=item::CreateScriptRandomItem( script2, cont);
 						}
 						else if (!strcmp("INT", script1))
 							pi->in = str2num(script2);
@@ -412,6 +381,82 @@ namespace item
 
 	}
 
+	int CreateRandomItem( char * sItemList )//NEW FUNCTION -- 24/6/99 -- AntiChrist merging codes
+	{
+		int i=0, loopexit=0, iList[256];  //-- no more than 256 items in a single item list
+		char sect[512];
+		cScpIterator* iter = NULL;
+		char script1[1024];
+
+		sprintf(sect, "SECTION ITEMLIST %s", sItemList);
+
+		iter = Scripts::Items->getNewIterator(sect);
+		if (iter==NULL) return -1;
+
+		do  // -- count items storing item #'s in iList[]
+		{
+			strcpy(script1, iter->getEntry()->getFullLine().c_str());
+			if ((script1[0]!='}')&&(script1[0]!='{'))
+			{
+				iList[i]=str2num(script1);
+				i++;
+			}
+		}
+		while ((script1[0]!='}')&&(++loopexit < MAXLOOPS));
+		safedelete(iter);
+
+		if (i==0) return iList[0]; else return(iList[rand()%i]);
+
+	}
+
+	P_ITEM CreateScriptRandomItem( char * sItemList, cObject* cont )
+	{
+		int k=CreateRandomItem(sItemList);   // -- Get random Item #
+
+		if (k>0) {
+			return CreateScriptItem( k, 1, cont);  // -- Create Item
+			// This stuff smells buggy >:[, Xan
+		}
+		else return NULL;
+	}
+
+
+
+
+//not checked
+
+	/*!
+	\warning for internal use only
+	\author Xanathar
+	*/
+	static P_ITEM spawnItemByIdInternal(int nAmount, const char* cName, short id, short color)
+	{
+		LOGICAL pile=false;
+
+		tile_st tile;
+		Map->SeekTile(id, &tile);
+		pile = (tile.flag2&0x08);
+		P_ITEM pi=archive::getNewItem();
+		if ( pi==NULL )
+			return NULL;
+
+		if(cName!=NULL)
+			pi->setCurrentName(cName);
+
+		pi->setId(id);
+		pi->animSetId(0);
+		pi->setColor(color);
+		pi->amount=nAmount;
+		pi->pileable=(pile) ? '\1' : '\0';
+		pi->att=5;
+		pi->setDecay();
+		item::GetScriptItemSetting(pi); // Added by Magius(CHE) (2)
+		pi->Refresh();
+		return pi;
+	}
+
+	LOGICAL moreItemMemoryRequested = false;
+
 	/*!
 	\brief adds an item from spawner or gm 'ADDITEM command
 	\return the pointer to the item added
@@ -423,7 +468,7 @@ namespace item
 	P_ITEM CreateScriptItem(NXWSOCKET s, SI32 itemnum, LOGICAL nSpawned, cObject* cont )
 	{
 		P_ITEM pi= NULL;
-		pi = item::CreateFromScript(s,itemnum,cont);
+		pi = item::CreateFromScript( itemnum,cont);
 		if (!ISVALIDPI(pi))
 		{
 			LogWarning("ITEM <%i> not found in the scripts",itemnum);
@@ -453,45 +498,6 @@ namespace item
 
 		return pi;
 
-	}
-
-	int CreateRandomItem(char * sItemList)//NEW FUNCTION -- 24/6/99 -- AntiChrist merging codes
-	{
-		int i=0, loopexit=0, iList[256];  //-- no more than 256 items in a single item list
-		char sect[512];
-		cScpIterator* iter = NULL;
-		char script1[1024];
-
-		sprintf(sect, "SECTION ITEMLIST %s", sItemList);
-
-		iter = Scripts::Items->getNewIterator(sect);
-		if (iter==NULL) return -1;
-
-		do  // -- count items storing item #'s in iList[]
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				iList[i]=str2num(script1);
-				i++;
-			}
-		}
-		while ((script1[0]!='}')&&(++loopexit < MAXLOOPS));
-		safedelete(iter);
-
-		if (i==0) return iList[0]; else return(iList[rand()%i]);
-
-	}
-
-	P_ITEM CreateScriptRandomItem(SI32 s, char * sItemList, cObject* cont )
-	{
-		int k=CreateRandomItem(sItemList);   // -- Get random Item #
-
-		if (k>0) {
-			return CreateScriptItem(s, k, 1, cont);  // -- Create Item
-			// This stuff smells buggy >:[, Xan
-		}
-		else return NULL;
 	}
 
 	/*!
@@ -1080,7 +1086,7 @@ namespace item
 
 	P_ITEM add (int itemid, int x, int y, int z)
 	{
-		P_ITEM pi= item::CreateFromScript(-1, itemid);
+		P_ITEM pi= item::CreateFromScript( itemid);
 		if ((pi!=NULL)&&(x!=INVALID)) {
 			z = Map->Height( x, y, z );
 			pi->MoveTo(x,y,z);

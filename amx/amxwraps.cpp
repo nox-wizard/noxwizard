@@ -1625,7 +1625,7 @@ NATIVE(_isetSerial)
 */
 NATIVE(_itm_createFromScript)
 {
-    P_ITEM pi = item::CreateFromScript(-1,params[1]);
+    P_ITEM pi = item::CreateFromScript(params[1]);
 	VALIDATEPIR(pi, INVALID);
     pi->Refresh();
 	return pi->getSerial32();

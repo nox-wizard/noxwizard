@@ -26,14 +26,15 @@
 namespace item
 {
 
-	P_ITEM		CreateScriptRandomItem(SI32 s, char *sItemList, cObject* cont=NULL );
+	P_ITEM		CreateFromScript( char* itemname, cObject* cont=NULL );
+	P_ITEM		CreateFromScript( SCRIPTID itemnum, cObject* cont=NULL );
+	P_ITEM		CreateScriptRandomItem( char* sItemList, cObject* cont=NULL );
+	SI32		CreateRandomItem( char *sItemList );
+
 	void		GetScriptItemSetting(P_ITEM pi); // by Magius(CHE)
 	SI32		getname(SI32 i, char* itemname);
 
-	P_ITEM		CreateFromScript(NXWSOCKET so, char *itemname, cObject* cont=NULL );
-	P_ITEM		CreateFromScript(NXWSOCKET s, SI32 itemnum, cObject* cont=NULL );
 	P_ITEM		CreateScriptItem(NXWSOCKET s, SI32 itemnum, LOGICAL nSpawned, cObject* cont=NULL );
-	SI32		CreateRandomItem(char *sItemList);
 	P_ITEM		SpawnItem(NXWSOCKET  nSocket,
 						SI32 nAmount, char* cName, LOGICAL nStackable,
 						SI16 cItemId, SI16 cColorId,
