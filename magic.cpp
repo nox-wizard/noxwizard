@@ -48,19 +48,22 @@ std::map< std::string, SpellId > speechMap;
 /*!
 \author Luxor
 */
-LOGICAL checkMagicalSpeech( P_CHAR pc, const char* speech )
+LOGICAL checkMagicalSpeech( P_CHAR pc, char* speech )
 {
 	VALIDATEPCR( pc, false );
 	NXWCLIENT client = pc->getClient();
 	if ( client == NULL )
 		return false;
-	char *upSpeech;
-	strcpy( upSpeech, speech );
-	strupr( upSpeech );
-	std::map< std::string, SpellId >::iterator it( speechMap.find( upSpeech ) );
+
+	strupr( speech );
+	std::map< std::string, SpellId >::iterator it( speechMap.find( speech ) );
 	if ( it == speechMap.end() )
 		return false;
 	SpellId spell = it->second;
+	if ( !pc->knowsSpell( spell ) ) {
+		pc->sysmsg("You don't know that spell yet.");
+		return true;
+	}
 	beginCasting( spell, client, CASTINGTYPE_SPELL );
 	return true;
 }
@@ -104,7 +107,8 @@ void loadSpellsFromScript()
 			else if (!strcmp("AREASIZE", script1))	g_Spells[curspell].areasize = str2num(script2);
 			else if (!strcmp("MANTRA", script1)) 	{ g_Spells[curspell].mantra += script2;
 				//Luxor: speech cast
-				speechMap.insert( pair< std::string, SpellId >( string( strupr( script2 ) ), static_cast<SpellId>(curspell) ) );
+				strupr( script2 );
+				speechMap.insert( pair< std::string, SpellId >( string( script2 ), static_cast<SpellId>(curspell) ) );
 			}
 			else if (!strcmp("ACTION", script1)) 	g_Spells[curspell].action = hex2num(script2);
 			else if (!strcmp("DELAY", script1))		g_Spells[curspell].delay = str2num(script2);

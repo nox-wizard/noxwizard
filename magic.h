@@ -221,7 +221,7 @@ namespace magic {
 
 	extern g_Spell g_Spells[MAX_SPELLS];
 
-	LOGICAL checkMagicalSpeech( P_CHAR pc, const char* speech );
+	LOGICAL checkMagicalSpeech( P_CHAR pc, char* speech );
 	bool beginCasting (SpellId num, NXWCLIENT s, CastingType type);
 	SpellId spellNumberFromScrollId(int id);
 	void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);

@@ -1971,7 +1971,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	// Pass speech to small
 	//
 	g_bByPass = false;
-	
+
 	std::string back( speech.c_str() ); //Luxor
 		
 	checkAmxSpeech(socket, const_cast<char *>(back.c_str()) );
@@ -2005,7 +2005,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	// Process speech which should not be send/echoed to others
 	//
-	if( magic::checkMagicalSpeech( pc, speech.c_str() ) ) //Luxor
+	std::string backk( speech.c_str() ); //Luxor
+	if( magic::checkMagicalSpeech( pc, const_cast<char *>(backk.c_str()) ) ) //Luxor
 		return;
 	if( pricePlayerVendorItem( pc, socket, speech ) )
 		return;
