@@ -439,12 +439,14 @@ public:
 */
 } PACK_NEEDED;
 
-#if 0
-// will be fully implemented in 0.83
-// Anthalir
-/*
 
-  properties of containers:
+#if 0
+
+/*
+\brief a container
+\author Anthalir
+\note will be fully implemented in 0.83
+\note properties of containers:
 	- one or more key(s)
 	- a list of items stored in it
 	- a gump
@@ -454,19 +456,11 @@ class cContainerItem : public cItem
 private:
 	vector<SI32>		ItemList;
 
-	SI16				getGumpType();
-	LOGICAL				pileItem(P_ITEM pItem);
-	void				setRandPos(P_ITEM pItem);
-
-public:
-						cContainerItem(LOGICAL ser= true);
-	LOGICAL				addItem(P_ITEM pItem, SI16 x= -1, SI16 y= -1);
-	UI32				removeItems(UI32 scriptID, UI32 amount/*= 1*/);
-	void				dropItem(P_ITEM pi);
-	UI32				countItems(UI32 scriptID, LOGICAL bAddAmounts= false);
-
 } PACK_NEEDED;
 
+/*
+\brief a weapon
+*/
 class cWeapon : public cItem
 {
 public:
