@@ -2342,8 +2342,9 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 			if(pi->hp<=0)
 			{
 				pc->sysmsg(TRANSLATE("Your weapon has been destroyed"));
+                                //<Luxor>
+				ps->sendRemoveObject( static_cast<P_OBJECT>(pi) );
 				pi->deleteItem();
-				pi->Refresh();
 			}
 		}
 	}
