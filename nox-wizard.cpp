@@ -65,7 +65,6 @@
 #include "calendar.h"
 #include "ntservice.h"
 #include "trigger.h"
-#include "collector.h"
 #include "magic.h"
 #include "set.h"
 #include "addmenu.h"

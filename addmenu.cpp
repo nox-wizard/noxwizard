@@ -10,8 +10,8 @@
 
 #include "nxwcommn.h"
 #include "sndpkg.h"
-#include "custmenu.h"
 #include "addmenu.h"
+#include "menu.h"
 
 
 cNewAddMenu::cNewAddMenu( SERIAL section, P_CHAR pc ) : cBasicMenu( MENUTYPE_CUSTOM )
@@ -40,7 +40,7 @@ void cNewAddMenu::loadFromScript( P_CHAR pc )
 		
 		oldmenu->setParameters(1, 1);
 		oldmenu->title = L"Menu Error, section not found";
-		oldmenu->style = MENUSTYLE_PAPER;
+		oldmenu->style = MENUTYPE_PAPER;
 		oldmenu->addMenuItem( 0, 0, std::wstring( L"Close this one here" ) );
 
 		commands.push_back( cScriptCommand( std::string("NOP"), std::string(" ") ) );
@@ -71,10 +71,10 @@ void cNewAddMenu::loadFromScript( P_CHAR pc )
 			oldmenu->setParameters(nOpt, 1);
 		else 
 			oldmenu->setParameters(10,(nOpt/10)+1);
-		oldmenu->style = MENUSTYLE_STONE;
+		oldmenu->style = MENUTYPE_STONE;
 	} else {
 		oldmenu->setParameters(nOpt, 1);
-		oldmenu->style = MENUSTYLE_ICONLIST;
+		oldmenu->style = MENUTYPE_ICONLIST;
 	}
 
 	string2wstring( entry->getFullLine(), oldmenu->title );

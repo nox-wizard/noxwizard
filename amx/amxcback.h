@@ -35,7 +35,6 @@
 #include <vector>
 using namespace std ;
 
-#include "custmenu.h"
 
 void checkTimer (void);
 void initTimers (void);
@@ -46,14 +45,6 @@ void targetCallback (int s, TargetLocation &TL);
 bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type);
 
 
-/*!
-\brief Definition of cAmxMenu, menu handled my small
-\author Xanathar
-*/
-class cAmxMenu : public cCustomMenu {
-public:
-	virtual void buttonSelected(NXWSOCKET  toSendTo, unsigned short buttonPressed, int type );
-};
 
 /*!
 \brief Definition of AmxEvent

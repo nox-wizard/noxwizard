@@ -654,10 +654,6 @@ SOURCE=.\cmdtable.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\collector.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\commands.h
 # End Source File
 # Begin Source File

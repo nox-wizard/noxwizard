@@ -30,7 +30,6 @@
 #include "nxwcommn.h"
 #include "amxcback.h"
 #include "sndpkg.h"
-#include "custmenu.h"
 #include "itemid.h"
 
 extern int g_nCurrentSocket;
@@ -349,25 +348,3 @@ void targetCallback (int s, TargetLocation &TL)
 }
 
 
-/*!
-\brief handler for amx menus
-\author Xanathar
-\param s socket who has made the choice
-\param btn button pressed
-\param seed seed of menu
-*/
-void cAmxMenu::buttonSelected (NXWSOCKET  s, unsigned short btn, int seed)
-{
-	//m_nSeed
-	int page = (btn-10)/m_nNumPerPage;
-	int item = (btn-10)%m_nNumPerPage;
-	if (btn < 10) page = item = -1;
-	
-	if (seed!=m_nSeed) {
-		sysmessage(s, 0x0d, TRANSLATE("You should be faster when choosing an option in your life.."));
-		return;
-	}
-	 
-	if (m_nCallback>=0) AmxFunction::g_prgOverride->CallFn(m_nCallback, s, page, item);	
-	else sysmessage(s, 0x0d, TRANSLATE("*You should install a callback for the menu to work*"));
-}

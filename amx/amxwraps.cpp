@@ -5286,21 +5286,15 @@ NATIVE( _menu_addInputField )
 \param 5 height
 \param 6 property
 \param 7 sub property
-\param 8 initial value
-\param 9 color
+\param 8 color
 \return false if error, true else
 */
-NATIVE( _menu_addPropertyField )
+NATIVE( _menu_addPropField )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
 
-	cell *cstr;
-	amx_GetAddr(amx,params[8],&cstr);
-	wstring s;
-	amx_GetStringUnicode( &s, cstr );
-
-	menu->addPropertyField( params[2], params[3], params[4], params[5], params[6], params[7], s, params[9] );
+	menu->addPropertyField( params[2], params[3], params[4], params[5], params[6], params[7], params[8] );
 
 	return 1;
 }
@@ -5798,7 +5792,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "menu_addGump", _menu_addGump },
  { "menu_addHtmlGump", _menu_addHtmlGump },
  { "menu_addInputField", _menu_addInputField },
- { "menu_addPropertyField", _menu_addPropertyField },
+ { "menu_addPropField", _menu_addPropField },
  { "menu_addRadioButton", _menu_addRadioButton },
  { "menu_addResizeGump", _menu_addResizeGump },
  { "menu_addText", _menu_addText },

@@ -10,7 +10,6 @@
 #include "nxwcommn.h"
 #include "debug.h"
 #include "sndpkg.h"
-#include "custmenu.h"
 #include "speech.h" //for unicode conversions
 #include "party.h"
 #include "menu.h"
@@ -41,7 +40,7 @@ void askPartyPermission( NXWCLIENT ps )
 	pc->custmenu = m->serial;
 
 	m->setParameters( 2, 1 );
-	m->style = MENUSTYLE_TRASPARENCY;
+	m->style = MENUTYPE_TRASPARENCY;
 	m->color = 0x481;
 	m->title = L"Party invitation";
 	m->addMenuItem( 0, 0, std::wstring( L"Accept invitation" ) );
