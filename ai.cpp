@@ -127,6 +127,23 @@ SI08 isWalkable( Location pos )
                 }
 	}
 
+	//
+	// CHARACTERS -- Check for characters in given position
+	//
+	/*NxwCharWrapper sc;
+	P_CHAR pc = NULL;
+	sc.fillCharsNearXYZ( pos, 1 );
+
+	for( sc.rewind(); !sc.isEmpty(); sc++ )	{
+		pc = sc.getChar();
+		if ( !ISVALIDPC( pc ) )
+			continue;
+		ConOut( "%s", pc->getCurrentNameC() );
+		if ( pc->getPosition().x == pos.x && pc->getPosition().y == pos.y ) {
+			if ( abs( pc->getPosition().z - zRes ) < MaxZstep )
+				return illegal_z;
+		}
+	}*/
 
 	return zRes;
 }

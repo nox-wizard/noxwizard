@@ -1525,6 +1525,7 @@ void cChar::follow( P_CHAR pc )
 	if ( UI32(dist( getPosition(), pc->getPosition() )) <= 1 ) { // Target reached
 		if ( hasPath() )
 			safedelete( path );
+		facexy( pc->getPosition().x, pc->getPosition().y );
 		return;
 	}
 	if ( !hasPath() ) { // We haven't got a path, call the pathfinding.
