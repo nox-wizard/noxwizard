@@ -90,6 +90,7 @@ warnings/errors/issues.
 #endif
 
 #include <map>
+#include <queue>
 #include <iterator>
 #include <algorithm>
 #include <stack>
