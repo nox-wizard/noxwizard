@@ -441,14 +441,14 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		if( pc->getId() == BODY_MALE )
 			pi= item::CreateFromScript( "$item_long_pants");
 		else
-			pi= item::CreateFromScript( "$item_a_skirt");
+			pi= item::CreateFromScript( "$item_skirt");
 	}
 	else
 	{
 		if( pc->getId() == BODY_MALE  )
 			pi= item::CreateFromScript( "$item_short_pants");
 		else
-			pi= item::CreateFromScript( "$item_a_kilt");
+			pi= item::CreateFromScript( "$item_kilt");
 	}
 
 	VALIDATEPI(pi);
@@ -2542,7 +2542,6 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 
 		for( objs.rewind(); !objs.IsEmpty(); objs++ )
 		{
-
 			if( isCharSerial( objs.getSerial() ) )
 			{
 				if( first ) 
@@ -2571,7 +2570,7 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 					}
 				}
 			}
-			else 
+			else if( isItemSerial( objs.getSerial() ) )
 			{
 
 				P_ITEM pi=(P_ITEM)(objs.getObject());
@@ -2596,6 +2595,11 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 					pi->Delete();
 					++removed;
 				}
+			}
+			else
+			{
+				objects.eraseObject (objs.getObject());
+				++corrected;
 			}
 		}
 		rtotal+=removed;
