@@ -130,7 +130,9 @@ void deleteItem( P_ITEM pi )
 	pi->setOwnerSerial32(INVALID);
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
-		Books::books.erase( Books::books.find(pi->morez) );
+		// make sure that the book is really there
+		if ( Books::books.find(pi->morez) != Books::books.end() )
+			Books::books.erase( Books::books.find(pi->morez) );
         // if a new book gets deleted also delete the corresponding map element
 
 	safedelete(pi);

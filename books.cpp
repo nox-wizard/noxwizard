@@ -378,30 +378,37 @@ namespace Books
 	\author Akron
 	\param s reference to the ostream where to dump the book
 	*/
+	// Modified by Wintermute, to support ms vc compilers
 	void cBook::DumpTo(std::ostream &s)
 	{
-#ifndef _MSC_VER
+// #ifndef _MSC_VER
 		if ( readonly )	// a readonly book shouldn't be dumped, but if we don't want to test it first...
 			return; // note that a class should be totally independent for OOP...
-
-		s	<< "SECTION RWBOOK " << index << std::endl
+		char indexStr[12];
+		numtostr(index, indexStr);
+		char pageStr[12];
+		numtostr(pages.size(), pageStr);
+		s	<< "SECTION RWBOOK " << indexStr << std::endl
 			<< "{" << std::endl
 			<< "AUTHOR " << author << std::endl
 			<< "TITLE " << title << std::endl
-			<< "NUMPAGES " << pages.size() << std::endl;
-
+			<< "NUMPAGES " << pageStr << std::endl;
+		UI32 i=0;
 		for(tpages::iterator it = pages.begin(); it != pages.end(); it++)
 		{
-			
-			s	<< "PAGE " << distance(pages.begin(), it) << " " << std::endl;
+			numtostr(i++,pageStr);
+			s	<< "PAGE " << pageStr << " " << std::endl;
 
 			for(std::vector<std::string>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++)
 				if ( ! (*it2).empty() )
-					s << "LINE " << distance((*it).begin(), it2) << " " << *it2 << std::endl;
+				{
+					numtostr(distance((*it).begin(), it2), pageStr);
+					s << "LINE " << pageStr << " " << *it2 << std::endl;
+				}
 		}
 
 		s << "}" << std::endl << std::endl;
-#endif
+  // #endif
 	}
 
 	/*!
