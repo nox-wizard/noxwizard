@@ -2,6 +2,9 @@
 #include "basics.h"
 #include "srvparms.h"
 #include "globals.h"
+#ifdef __unix__
+#include "dirent.h"
+#endif
 
 std::map<UI32, cResourceMap *> resourceMaps;
 UI32 resourcemapSerial =0;
@@ -56,10 +59,11 @@ void cResourceMap::save()
 
 void cResourceMap::load()
 {
-    struct _finddata_t c_file;
-    long hFile;
 	std::string currentFile=SrvParms->savePath+"*.res.nxw.bin";
 	std::string mapName;
+#ifdef WIN32
+    struct _finddata_t c_file;
+    long hFile;
     /* Find first ..res.nxw.bin file in current directory */
     if( (hFile = _findfirst( currentFile.c_str(), &c_file )) != -1L )
 	{
@@ -97,7 +101,47 @@ void cResourceMap::load()
 
 		_findclose( hFile );
 	}
+#else if __unix__
+		DIR *dirp;
+	struct dirent *entry;
 
+	if(dirp = opendir(SrvParms->savePath))
+	{
+		while( (entry = readdir(dirp) )
+		{
+			currentFile=SrvParms->savePath;
+			currentFile+=entry->d_name;
+			if ( currentFile.find(".res.nxw.bin") < 0 )
+				continue;
+			mapName=entry->d_name;
+			mapName=mapName.substr(0, mapName.find(".res.nxw.bin"));
+			ifstream datafile(currentFile.c_str(), ios::in|ios::binary);
+			if ( datafile.is_open() )
+			{
+				ResourceMapType tempType;
+				LOGICAL inMemory;
+				datafile.read((char *)&tempType,sizeof(tempType));
+				datafile.read((char *)&inMemory,sizeof(inMemory));
+				cResourceMap *map;
+				if ( tempType == RESOURCEMAP_LOCATION )
+				{
+					cResourceLocationMap *newmap = new cResourceLocationMap(mapName, 1);
+					map=newmap;
+				}
+				else if ( tempType == RESOURCEMAP_STRING )
+				{
+					cResourceStringMap *newmap = new cResourceStringMap(mapName, 1);
+					map=newmap;
+				}
+				map->setType(tempType);
+				map->setInMemory(inMemory);
+				map->deserialize(&datafile);
+				addMap(map);
+			}
+		}
+		closedir(dirp);
+	}
+#endif
 }
 
 
