@@ -89,11 +89,20 @@ public:
 };
 
 
-void amxCallback( NXWCLIENT ps, P_TARGET t );
+void amxCallbackOld( NXWCLIENT ps, P_TARGET t );
 
 
 
+typedef enum {
+	TARG_ALL = 0,
+	TARG_OBJ,
+	TARG_CHAR,
+	TARG_ITEM,
+	TARG_LOC
+} TARG_TYPE;
 
+
+P_TARGET createTarget( TARG_TYPE type );
 
 
 

@@ -40,6 +40,21 @@ void cTarget::error( NXWCLIENT ps )
 {
 }
 
+Location cTarget::getLocation()
+{
+	return Loc( pkg.x.get(), pkg.y.get(), pkg.z );
+}
+
+SERIAL cTarget::getClicked()
+{
+	return pkg.clicked.get();
+}
+
+UI16 cTarget::getModel()
+{
+	return pkg.model.get();
+}
+
 
 cObjectTarget::cObjectTarget() : cTarget( false )
 {
@@ -138,6 +153,23 @@ void amxCallbackOld( NXWCLIENT ps, P_TARGET t )
 
 
 
+P_TARGET createTarget( TARG_TYPE type )
+{
+	switch( type ) {
+		case TARG_CHAR:
+			return new cCharTarget();
+		case TARG_ITEM:
+			return new cItemTarget();
+		case TARG_OBJ:
+			return new cObjectTarget();
+		case TARG_LOC:
+			return new cLocationTarget();
+		case TARG_ALL:
+		default:
+			return new cTarget();
+	}
+
+}
 
 
 

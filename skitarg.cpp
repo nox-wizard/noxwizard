@@ -681,60 +681,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
     }
 }
 
-///////////////////////
-// name:    SmeltOre2
-// history: by Duke, 31 March 2000
-// Purpose: helper function for cSkills::SmeltOre()
-//          checks if the player's mining skill meets the requirements
-//          if yes, he'll get the specified ingots and appropriate messages
-// Remarks: CheckSkill does NOT use minskill (cause it was like that before)
-//
-/*static void SmeltOre2(  NXWSOCKET s,                  // current char's socket #
-                        int minskill,           // minimum skill required for ore color
-                        unsigned char id1, unsigned char id2,       // item ID of ingot to be created
-                        unsigned char col1,unsigned char col2,  // color
-                        char *orename)
-{
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
 
-    const P_ITEM pi=pointers::findItemBySerial(pc_currchar->smeltserial);   // on error return
-
-
-    if (pc_currchar->skill[MINING] < minskill)
-    {
-        sysmessage(s,TRANSLATE("You have no idea what to do with this strange ore"));
-        return;
-    }
-    if(!pc_currchar->checkSkill(MINING, 0, 1000))
-    {
-        if (pi->amount==1)
-        {
-            sysmessage(s,TRANSLATE("Your hand slips and the last of your materials are destroyed."));
-            pi->deleteItem();
-        }
-        else
-        {
-            sysmessage(s,TRANSLATE("Your hand slips and some of your materials are destroyed."));
-            pi->amount=pi->amount/2;
-            pi->Refresh();                    // tell the client item has been changed
-        }
-    }
-    else
-    {
-        char tmp[100];
-        int numore=pi->amount*2;            // one ore gives two ingots
-        sprintf(tmp,"%s Ingot",orename);
-
-        item::SpawnItem(s,DEREF_P_CHAR(pc_currchar),numore,tmp,1,    // socket #, char index, amount, name, stackable
-                        id1,id2, col1, col2,    // ID, color
-                        1,1);                   // create in Backpack, no more modifications
-
-        sysmessage(s,TRANSLATE("You have smelted your ore"));
-        sprintf(tmp,TRANSLATE("You place some %c%s ingots in your pack."),tolower(*orename), orename+1);
-        sysmessage(s,tmp);
-        pi->deleteItem();
-    }
-}*/
 
 //////////////////////////
 // Function:    SmeltOre

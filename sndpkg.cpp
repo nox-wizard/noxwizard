@@ -1324,7 +1324,7 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 			{
 				NXWSOCKET i=sw.getSocket();
 
-				SendSpeechMessagePkt(i, id, model, 1, color, font, name, &buffer[s][8]);
+				SendSpeechMessagePkt(i, id, model, 1, color, font, name, (char*)&buffer[s][8]);
 			}
 		} // end unicode IF
 		else
@@ -2062,7 +2062,7 @@ void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3
 //AoS/	Network->FlushBuffer(s);
 }
 
-void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI08 sysname[30], UI08 *text)
+void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI08 sysname[30],  char *text)
 {
         UI16 tl, len = strlen((char *)text) + 1;
         UI08 talk[14]={ 0x1C, 0x00, };

@@ -990,7 +990,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 					targ->send( getClientFromSocket(s) );
 					return; // lb bugfix
 				}
-				else if(Targ->BuyShop(s, DEREF_P_CHAR(pc_vendor)))
+				else if(BuyShop(s, DEREF_P_CHAR(pc_vendor)))
 					return; // lb bugfix
 			}
 		}
@@ -1056,7 +1056,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 						return;
 					}
 					else
-						if(Targ->BuyShop(s, DEREF_P_CHAR(pc)))
+						if(BuyShop(s, DEREF_P_CHAR(pc)))
 							return;
 				}
 			}
@@ -1902,7 +1902,7 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 		success = true;
 	}
 	else
-		if( Targ->BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
+		if( BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
 			success = true;
 	return success;
 
