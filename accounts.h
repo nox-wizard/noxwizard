@@ -120,6 +120,7 @@ public:
 	void AddCharToAccount( ACCOUNT acctnum, P_CHAR pc );
 	void GetAllChars( ACCOUNT acctnum, NxwCharWrapper& sc );
 	ACCOUNT GetAccountByName(std::string name);
+	cAccount *GetAccount(ACCOUNT acctnumb);
 	bool RemoveAccount( std::string name );
 
 };

@@ -269,6 +269,7 @@ short calcRegionFromXY(int x, int y)
 
 }
 
+
 void checkregion(P_CHAR pc)
 {
 //	P_CHAR pc = MAKE_CHAR_REF( i );

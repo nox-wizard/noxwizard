@@ -335,7 +335,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					hasInvalidAccount = true;
 				else
 					Accounts->AddCharToAccount( str2num(script2), pc );
-				if ( script2 == 0 )
+				if ( str2num( script2 ) == 0 )
 					pc->setPrivLevel(PRIVLEVEL_ADMIN);
 			}
 			else if (!strcmp(script1, "ALLMOVE"))

@@ -576,74 +576,86 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		}
 		//</Luxor>
 
-		if ( ServerScp::g_nUnequipOnReequip )
+		int drop[2]= {-1, -1};	// list of items to drop
+								// there no reason for it to be larger
+		int curindex= 0;
+
+		NxwItemWrapper si;
+		si.fillItemWeared( pc_currchar, false, true, true );
+		for( si.rewind(); !si.isEmpty(); si++ )
 		{
-			int drop[2]= {-1, -1};	// list of items to drop
-									// there no reason for it to be larger
-			int curindex= 0;
+			// we CANNOT directly bounce the item, or the containersearch() function will not work
+			// so we store the item ID in letsbounce, and at the end we bounce the item
 
-			NxwItemWrapper si;
-			si.fillItemWeared( pc_currchar, false, true, true );
-			for( si.rewind(); !si.isEmpty(); si++ )
+			pj=si.getItem();
+			if(!ISVALIDPI(pj))
+				continue;
+
+			if ((tile.quality == 1) || (tile.quality == 2))// weapons
 			{
-				// we CANNOT directly bounce the item, or the containersearch() function will not work
-				// so we store the item ID in letsbounce, and at the end we bounce the item
-
-				pj=si.getItem();
-				if(!ISVALIDPI(pj))
-					continue;
-
-				if ((tile.quality == 1) || (tile.quality == 2))// weapons
+				if (pi->itmhand == 2) // two handed weapons or shield
 				{
-					if (pi->itmhand == 2) // two handed weapons or shield
-					{
-						if (pj->itmhand == 2)
-							drop[curindex++]= DEREF_P_ITEM(pj);
+					if (pj->itmhand == 2)
+						drop[curindex++]= DEREF_P_ITEM(pj);
 
-						if ( (pj->itmhand == 1) || (pj->itmhand == 3) )
-							drop[curindex++]= DEREF_P_ITEM(pj);
-					}
-
-					if (pi->itmhand == 3)
-					{
-						if ((pj->itmhand == 2) || pj->itmhand == 3)
-							drop[curindex++]= DEREF_P_ITEM(pj);
-					}
-
-					if ((pi->itmhand == 1) && ((pj->itmhand == 2) || (pj->itmhand == 1)))
+					if ( (pj->itmhand == 1) || (pj->itmhand == 3) )
 						drop[curindex++]= DEREF_P_ITEM(pj);
 				}
-				else	// not a weapon
+
+				if (pi->itmhand == 3)
 				{
-					if (pj->layer == tile.quality)
+					if ((pj->itmhand == 2) || pj->itmhand == 3)
 						drop[curindex++]= DEREF_P_ITEM(pj);
+				}
+
+				if ((pi->itmhand == 1) && ((pj->itmhand == 2) || (pj->itmhand == 1)))
+					drop[curindex++]= DEREF_P_ITEM(pj);
+			}
+			else	// not a weapon
+			{
+				if (pj->layer == tile.quality)
+					drop[curindex++]= DEREF_P_ITEM(pj);
+			}
+		}
+
+		if (ServerScp::g_nUnequipOnReequip)
+		{
+			if (drop[0] > -1)	// there is at least one item to drop
+			{
+				for (int i= 0; i< 2; i++)
+				{
+					if (drop[i] > -1)
+					{
+						P_ITEM p_drop=MAKE_ITEM_REF(drop[i]);
+						if(ISVALIDPI(p_drop))
+							pc_currchar->UnEquip( p_drop, 0);
+					}
 				}
 			}
-
-			if (ServerScp::g_nUnequipOnReequip)
+			pc->playSFX( itemsfx(pi->getId()) );
+			pc_currchar->Equip(pi, 1);
+		}
+		else
+		{
+			if (drop[0] == -1)
 			{
-				if (drop[0] > -1)	// there is at least one item to drop
-				{
-					for (int i= 0; i< 2; i++)
-					{
-						if (drop[i] > -1)
-						{
-							P_ITEM p_drop=MAKE_ITEM_REF(drop[i]);
-							if(ISVALIDPI(p_drop))
-								pc_currchar->UnEquip( p_drop, 1);
-						}
-					}
-				}
 				pc->playSFX( itemsfx(pi->getId()) );
 				pc_currchar->Equip(pi, 1);
 			}
 			else
 			{
-				if (drop[0] == -1)
+				ps->sysmsg("You cannot wear two weapons.");
+				Sndbounce5(s);
+				if (ps->isDragging())
 				{
-					pc->playSFX( itemsfx(pi->getId()) );
-					pc_currchar->Equip(pi, 1);
+					ps->resetDragging();
+					UpdateStatusWindow(s,pi);
 				}
+				pi->setContSerial( pi->getContSerial(true) );
+				pi->setPosition( pi->getOldPosition() );
+				pi->layer = pi->oldlayer;
+				pi->Refresh();
+				return;
 			}
 		}
 

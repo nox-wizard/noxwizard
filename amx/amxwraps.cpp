@@ -70,6 +70,8 @@ NATIVE2(_getRaceProperty);
 NATIVE2(_getRaceGlobalProp);
 NATIVE2(_party_getProperty );
 NATIVE2(_party_setProperty );
+NATIVE2(_region_getProperty );
+NATIVE2(_region_setProperty );
 
 NATIVE2(_guild_setProperty);
 NATIVE2(_guild_getProperty);
@@ -2506,6 +2508,19 @@ NATIVE( _rgn_getName )
 	amx_GetAddr( amx, params[2], &cptr);
 	amx_SetString( cptr, str, g_nStringMode);
 	return strlen(str);
+}
+
+/*
+\brief Get region number
+\author Wintermute
+\since 0.82
+\param 1: x koordinate
+\param 2: y koordinate
+\return region or INVALID if not valid character else return length of param[4]
+*/
+NATIVE( _rgn_getRegion )
+{
+	return calcRegionFromXY(params[1], params[2]);
 }
 
 
@@ -6267,6 +6282,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "rgn_setGuarded", _rgn_setGuarded },
  { "rgn_isValid", _rgn_isValid },
  { "rgn_getName", _rgn_getName },
+ { "rgn_getRegion", _rgn_getRegion },
+ { "rgn_getProperty", _region_getProperty },
+ { "rgn_setProperty", _region_setProperty },
 // Trigger functions :
  { "trig_getTItem", _getTriggeredItem },
  { "trig_getTrigType", _getTriggeredItemTrigType },

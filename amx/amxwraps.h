@@ -73,6 +73,11 @@ enum PROP_TYPE{
 #define NXW_CP2_Z 2
 #define NXW_CP2_DZ 3
 
+#define NXW_RG2_X1 0
+#define NXW_RG2_Y1 1
+#define NXW_RG2_X2 2
+#define NXW_RG2_Y2 3
+
 //for stats : effective, decimals and real value. actual is hp/stm/mn
 #define NXW_CP2_EFF   0
 #define NXW_CP2_DEC   1
@@ -274,7 +279,8 @@ const int NXW_CP_STR_TITLE = 455;
 const int NXW_CP_STR_TRIGWORD = 456;
 const int NXW_CP_STR_SPEECHWORD = 457;
 const int NXW_CP_STR_SPEECH = 458;
-
+const int NXW_CP_STR_ACCOUNT =459;
+const int NXW_CP_STR_PASSWORD = 460;
 const int NXW_CP_UNI_SPEECH_CURRENT = 500;
 const int NXW_CP_UNI_PROFILE = 501;
 
@@ -524,5 +530,10 @@ const int PP_C_CANDIDATES = 101;
 const int PP_I_LEADER = 200;
 
 
+///
+/// Region constants
+///
+
+const int RG_I_BOUNDARY = 200;
 
 #endif //__AMXWRAPS_H__

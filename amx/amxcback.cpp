@@ -62,7 +62,7 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 
 	NXWSOCKET s = pc->getSocket();
 
-	if( !pi->isNewbie() )
+	if( !pi->isNewbie() && ! pc->IsGM())
 	{
 		if ( pi->st > pc->getStrength() ) 
 		{

@@ -728,6 +728,22 @@ ACCOUNT cAccounts::GetAccountByName(std::string accname)
 }
 
 /*!
+\brief Get an account from his name
+\author Akron
+\return the account object, or INVALID if no accounts found
+\param accname the account name
+*/
+cAccount *cAccounts::GetAccount(ACCOUNT acctnumb)
+{
+	ACCOUNT_LIST::iterator iter( acctlist.find( acctnumb ));
+	if ( iter!=acctlist.end() )
+		return &(iter->second);
+	else
+		return NULL;
+}
+
+
+/*!
 \brief Delete an account
 \author Akron
 \return true if account is deleted correctly, or false

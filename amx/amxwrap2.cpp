@@ -36,7 +36,7 @@
 #include "race.h"
 #include "layer.h"
 #include "party.h"
-
+#include "accounts.h"
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
@@ -926,6 +926,9 @@ void setCharStrProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			break;
 		case NXW_CP_STR_SPEECH :			 				//dec value: 458;
 			strcpy( script2, value );
+			break;
+		case NXW_CP_STR_PASSWORD:							//dec value: 460;
+			Accounts->GetAccount( pc->account)->pass=value;
 			break;
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
@@ -1915,6 +1918,8 @@ const char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_STR_TRIGWORD , pc->trigword.c_str() )  			//dec value: 456;
 		CHECK(	NXW_CP_STR_SPEECHWORD, script1 ) 			//dec value: 457;
 		CHECK(	NXW_CP_STR_SPEECH, script2 ) 				//dec value: 458;
+		CHECK(	NXW_CP_STR_ACCOUNT, Accounts->GetAccount( pc->account)->name.c_str()); 				//dec value: 459;
+		CHECK(	NXW_CP_STR_PASSWORD, Accounts->GetAccount( pc->account)->pass.c_str()); 				//dec value: 460;
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return emptyString;
@@ -3715,6 +3720,347 @@ NATIVE2( _party_getProperty )
 			case INVALID :
 			default :
 				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////// REGION PROPERTY ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+NATIVE2( _region_setProperty )
+{
+	// params[1] = region
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	short regionNumber = (short) params[1];
+	if ( regionNumber < 0 || regionNumber > 256 )
+	{
+		LogError( "_region_setProperty called with invalid region number %d", params[1] );
+		return INVALID;
+	}
+	if( region[regionNumber].inUse == false )
+	{
+		LogError( "_region_setProperty called with unused region number %d", params[1] );
+		return INVALID;
+	}
+
+	cell* cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+
+	case T_INT: {
+		int p = *cptr;
+		location_st *regionLocation=NULL;
+		for ( int index=0;index<sizeof(location);++index)
+		{
+			if ( location[index].region==regionNumber )
+			{
+				regionLocation=&location[index];
+				break;
+			}
+		}
+
+		switch( params[2] )
+		{
+			case NXW_RG2_X1:
+			{
+				if ( regionLocation != NULL )
+					regionLocation->x1=params[4];
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_Y1:
+			{
+				if ( regionLocation != NULL )
+					regionLocation->y1=params[4];
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_X2:
+			{
+				if ( regionLocation != NULL )
+					regionLocation->x2=params[4];
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_Y2:
+			{
+				if ( regionLocation != NULL )
+					regionLocation->y2=params[4];
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case INVALID:
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+
+		return p;
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p = *cptr? true : false;
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p = static_cast<short>(*cptr & 0xFFFF);
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p = static_cast<char>(*cptr & 0xFF);
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring w;
+		amx_GetStringUnicode( w, cptr );
+
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("_region_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+
+
+NATIVE2( _region_getProperty )
+{
+
+	// params[1] = region
+	// params[2] = property
+	// params[3] = subproperty
+
+	short regionNumber = (short) params[1];
+	if ( regionNumber < 0 || regionNumber > 256 )
+	{
+		LogError( "_region_getProperty called with invalid region number %d", params[1] );
+		return INVALID;
+	}
+	if( region[regionNumber].inUse == false )
+	{
+		LogError( "_region_getProperty called with unused region number %d", params[1] );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+
+	case T_INT: {
+
+		int p;
+		location_st *regionLocation=NULL;
+		for ( int index=0;index<sizeof(location);++index)
+		{
+			if ( location[index].region==regionNumber )
+			{
+				regionLocation=&location[index];
+				break;
+			}
+		}
+		switch(params[2]) {
+			case NXW_RG2_X1:
+			{
+				if ( regionLocation != NULL )
+					return regionLocation->x1;
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_Y1:
+			{
+				if ( regionLocation != NULL )
+					return regionLocation->y1;
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_X2:
+			{
+				if ( regionLocation != NULL )
+					return regionLocation->x2;
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case NXW_RG2_Y2:
+			{
+				if ( regionLocation != NULL )
+					return regionLocation->y2;
+				else
+					ErrOut("_region_setProperty called with region %d without a location!\n", regionNumber );
+				return INVALID;
+			}
+			case INVALID:
+			default:
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p;
+		switch(params[2]) {
+
+			case INVALID:
+			default:
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("_region_getProperty called with invalid property %d!\n", params[2] );
 				break;
   		}
 

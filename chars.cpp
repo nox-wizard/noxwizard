@@ -3252,14 +3252,14 @@ void cChar::checkEquipement()
 		pi=si.getItem();
 		if(!ISVALIDPI(pi))
 			continue;
-		if (((pi->st > getStrength()) || !checkItemUsability(this, pi, ITEM_USE_CHECKEQUIP)) && !pi->isNewbie())//if strength required > character's strength, and the item is not newbie
+		if (((pi->st > getStrength()) || !checkItemUsability(this, pi, ITEM_USE_CHECKEQUIP)) && !pi->isNewbie() && ! IsGM())//if strength required > character's strength, and the item is not newbie
 		{
 			if( strncmp(pi->getCurrentNameC(), "#", 1) )
 				pi->getName(temp2);
 			else
 				strcpy(temp2,pi->getCurrentNameC());
 
-			if( pi->st > getStrength()) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
+			if( pi->st > getStrength()  ) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
 			playSFX( itemsfx(pi->getId()) );
 
 			//Subtract stats bonus and poison
