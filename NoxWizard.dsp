@@ -70,6 +70,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
 # ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I ".\\" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /J /FD /GZ /c
+# SUBTRACT CPP /WX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x410 /d "_DEBUG"
@@ -79,7 +80,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib comctl32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib comctl32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"LIBCMT" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 
@@ -101,6 +103,10 @@ SOURCE=.\addmenu.cpp
 # Begin Source File
 
 SOURCE=.\commands\addremove.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\ai.cpp
 # End Source File
 # Begin Source File
 
@@ -172,10 +178,6 @@ SOURCE=.\bounty.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\cache.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\calendar.cpp
 # End Source File
 # Begin Source File
@@ -221,6 +223,10 @@ SOURCE=.\crontab.cpp
 # Begin Source File
 
 SOURCE=.\custmenu.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\data.cpp
 # End Source File
 # Begin Source File
 
@@ -308,15 +314,11 @@ SOURCE=.\logsystem.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\los.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\magic.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\mapstuff.cpp
+SOURCE=.\map.cpp
 # End Source File
 # Begin Source File
 
@@ -329,10 +331,6 @@ SOURCE=.\mount.cpp
 # Begin Source File
 
 SOURCE=.\msgboard.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\muls.cpp
 # End Source File
 # Begin Source File
 
@@ -385,6 +383,10 @@ SOURCE=.\object.cpp
 # Begin Source File
 
 SOURCE=.\oldmenu.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\organisation.cpp
 # End Source File
 # Begin Source File
 
@@ -566,6 +568,10 @@ SOURCE=.\weight.cpp
 
 SOURCE=.\worldmain.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\xwgui.rc
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -581,6 +587,10 @@ SOURCE=.\addmenu.h
 # Begin Source File
 
 SOURCE=.\commands\addremove.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ai.h
 # End Source File
 # Begin Source File
 
@@ -640,10 +650,6 @@ SOURCE=.\bounty.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\cache.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\calendar.h
 # End Source File
 # Begin Source File
@@ -697,6 +703,10 @@ SOURCE=.\crontab.h
 # Begin Source File
 
 SOURCE=.\custmenu.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\data.h
 # End Source File
 # Begin Source File
 
@@ -784,11 +794,11 @@ SOURCE=.\logsystem.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\los.h
+SOURCE=.\magic.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\magic.h
+SOURCE=.\map.h
 # End Source File
 # Begin Source File
 
@@ -801,10 +811,6 @@ SOURCE=.\mount.h
 # Begin Source File
 
 SOURCE=.\msgboard.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\muls.h
 # End Source File
 # Begin Source File
 
@@ -861,6 +867,10 @@ SOURCE=.\object.h
 # Begin Source File
 
 SOURCE=.\oldmenu.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\organisation.h
 # End Source File
 # Begin Source File
 
@@ -1048,16 +1058,16 @@ SOURCE=.\walking.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\weight.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\worldmain.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-# Begin Source File
-
-SOURCE=.\xwgui.rc
-# End Source File
 # End Group
 # End Target
 # End Project
