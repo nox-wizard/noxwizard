@@ -69,7 +69,7 @@ static void cacheMap()
 		SI08 yOffset;
 		SI16 blockY;
 		for ( blockX = 0; blockX < map_width; blockX++ ) {
-			for ( blockY = map_height - 1; blockY >= 0; blockY-- ) {
+			for ( blockY = (short )(map_height - 1); blockY >= 0; blockY-- ) {
 				for ( yOffset = 7; yOffset >= 0; yOffset-- ) {
 					for ( xOffset = 0; xOffset < 8; xOffset++ ) {
 						pos =
@@ -115,7 +115,7 @@ static void cacheStatics()
 	UI32 num;
 	ConOut( "\nCaching statics data ( staidx0.mul, statics0.mul )\t\t" );
 	for ( blockX = 0; blockX < map_width; blockX++ ) {
-		for ( blockY = map_height -1; blockY >= 0; blockY-- ) {
+		for ( blockY = (short )(map_height -1); blockY >= 0; blockY-- ) {
 			pos =
 				// Block position - A block contains (staticIdx_st.length / static_st_size ) statics.
 				// Blocks are registered in file by top to bottom columns from left to right.
@@ -185,7 +185,7 @@ static void cacheTileData()
 				tile_cache->insert( pair< UI32, tile_st >( pos, t ) );
 		}
 	}
-	ConOut( "[Done]" );
+	ConOut( "[Done]\n" );
 	tdTile->setCache( tile_cache );
 }
 
@@ -325,7 +325,7 @@ void init()
 	//
 	// MULs loaded, keep the server running
 	//
-	ConOut("MUL files loaded succesfully.\n" );
+	ConOut("\nMUL files loaded succesfully.\n" );
 	keeprun = true;
 }
 
@@ -431,7 +431,7 @@ LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap )
 		return false;
 
 	UI32 pos;
-	UI16 blockX = x / 8, blockY = y / 8, cellX = x % 8, cellY = y % 8;
+	UI16 blockX = (unsigned short )(x / 8), blockY = (unsigned short )(y / 8), cellX = (unsigned short )(x % 8), cellY = (unsigned short )(y % 8);
 	pos =
 		// Block position - A block contains 8x8 cells. Blocks are registered in file by top to bottom columns from left to right.
 		( blockX * map_height * MAP_BLOCK_SIZE ) + ( blockY * MAP_BLOCK_SIZE ) +
@@ -452,7 +452,7 @@ LOGICAL collectStatics( UI32 x, UI32 y, staticVector& s_vec )
 		return false;
 
 
-	UI16 blockX = x / 8, blockY = y / 8;
+	UI16 blockX = (unsigned short )(x / 8), blockY = (unsigned short )(y / 8);
 	UI32 pos =
 		// Block position - A block contains (staticIdx_st.length / static_st_size ) statics.
 		// Blocks are registered in file by top to bottom columns from left to right.
@@ -464,7 +464,7 @@ LOGICAL collectStatics( UI32 x, UI32 y, staticVector& s_vec )
 
 	UI32 num = staidx.length / static_st_size;
 	static_st s;
-	UI08 xOffset = x % 8, yOffset = y % 8;
+	UI08 xOffset = (unsigned char )(x % 8), yOffset = (unsigned char )(y % 8);
 	for ( UI32 i = 0; i < num; i++ ) {
 		pos = staidx.start + ( i * static_st_size );
 		if ( !statics->getData( pos, s ) )
@@ -486,7 +486,7 @@ LOGICAL seekLand( UI16 id, land_st& land )
 	if ( !tdLand->isReady() )
 		return false;
 
-	UI16 block = id / 32;
+	UI16 block = (unsigned short )(id / 32);
 
 	UI32 pos =
 		// Each block contains 32 land_st.
@@ -506,7 +506,7 @@ LOGICAL seekTile( UI16 id, tile_st& tile )
 	if ( !tdTile->isReady() )
 		return false;
 
-	UI16 block = id / 32;
+	UI16 block = (unsigned short )(id / 32);
 
 	UI32 pos =
 		// Go beyond the land_st dedicated space.

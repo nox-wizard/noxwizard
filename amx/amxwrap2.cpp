@@ -430,7 +430,7 @@ void setItemIntProperty(P_ITEM pi, int property, int prop2, int value )
 			pi->setScriptID( value );
 			break;
 		case NXW_IP_I_ANIMID :					//dec value 252;
-			pi->animSetId( value );
+			pi->animSetId( (short)value );
 			break;
 		case NXW_IP_I_RESISTS :					//dec value: 253;
 			pi->resists[prop2] = value;
@@ -757,8 +757,8 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 3: return pi->moreb3;
 				case 4: return pi->moreb4;
 			}
-		CHECK(NXW_IP_C_DAMAGETYPE, pi->damagetype)				//dec value :  121;
-		CHECK(NXW_IP_C_AUXDAMAGETYPE, pi->auxdamagetype)			//dec value :  122;
+		CHECK(NXW_IP_C_DAMAGETYPE, (char) pi->damagetype)				//dec value :  121;
+		CHECK(NXW_IP_C_AUXDAMAGETYPE, (char) pi->auxdamagetype)			//dec value :  122;
 		default:
 			ErrOut("itm_getProperty called with invalid property %d!\n", property );
 			return '\0';
@@ -1238,7 +1238,7 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 					pc->fy1 = value;
 					break;
 				case NXW_CP2_Z :
-					pc->fz1 = value;
+					pc->fz1 = (signed char) value;
 					break;
 			}
 			break;
@@ -1428,7 +1428,7 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 					pc->prevY = value;
 					break;
 				case NXW_CP2_Z :
-					pc->prevZ = value;
+					pc->prevZ = (signed char) value;
 					break;
 			}
 			break;

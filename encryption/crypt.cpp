@@ -195,7 +195,7 @@ void LoginCrypt::decrypt(unsigned char * in, unsigned char * out, int len)
 {
     for(int i = 0; i < len; i++)
     {
-        out[i] = in[i] ^ static_cast<unsigned char>(m_key[0]);
+        out[i] = (unsigned char)(in[i] ^ static_cast<unsigned char>(m_key[0]));
 
         unsigned int table0 = m_key[0];
         unsigned int table1 = m_key[1];
@@ -220,7 +220,7 @@ void LoginCrypt::encrypt(unsigned char * in, unsigned char * out, int len)
 {
     for(int i = 0; i < len; i++)
     {
-        out[i] = in[i] ^ static_cast<unsigned char>(m_key[0]);
+        out[i] =(unsigned char)( in[i] ^ static_cast<unsigned char>(m_key[0]));
 
         unsigned int table0 = m_key[0];
         unsigned int table1 = m_key[1];
@@ -247,7 +247,7 @@ void LoginCrypt::preview(unsigned char * in, unsigned char * out, int len)
 	old_mkey[1]=m_key[1];
     for(int i = 0; i < len; i++)
     {
-        out[i] = in[i] ^ static_cast<unsigned char>(m_key[0]);
+        out[i] = (unsigned char)(in[i] ^ static_cast<unsigned char>(m_key[0]));
 
         unsigned int table0 = m_key[0];
         unsigned int table1 = m_key[1];
@@ -271,7 +271,7 @@ void LoginCrypt::preview(unsigned char * in, unsigned char * out, int len)
 
 unsigned char LoginCrypt::decryptByte(unsigned char in)
 {
-	return in ^ static_cast<unsigned char>(m_key[0]);
+	return (unsigned char)(in ^ static_cast<unsigned char>(m_key[0]));
 }
 
 
@@ -1030,7 +1030,7 @@ void OldGameCrypt::decrypt(unsigned char * in, unsigned char * out, int len)
 */
         // CFB (Cipher FeedBack) encrypt
         unsigned char c = in[i];
-        out[i] = c  ^ m_seed[m_block_pos];
+        out[i] = (unsigned char)(c  ^ m_seed[m_block_pos]);
 		m_seed[m_block_pos]=c;
         m_block_pos = (m_block_pos + 1) % 8;
     }
@@ -1092,7 +1092,7 @@ void OldGameCrypt::encrypt(unsigned char * in, unsigned char * out, int len)
 			fprintf(logfile, "\n");
 			byteCount=0;
 		}
-		unsigned char c = in[i] ^ m_seed[m_block_pos];
+		unsigned char c = (unsigned char)(in[i] ^ m_seed[m_block_pos]);
         out[i] = c;
 
         m_seed[m_block_pos] = c;
@@ -1145,7 +1145,7 @@ void NewGameCrypt::encrypt(unsigned char * in, unsigned char * out, int len)
     DWORD dwTmpIndex = dwIndex;
     for ( int i=0; i<len; i++ )
     {
-        out [i] = in[i] ^ sm_bData[dwTmpIndex%16];
+        out [i] = (unsigned char)(in[i] ^ sm_bData[dwTmpIndex%16]);
         dwTmpIndex++;
     }
     dwIndex = dwTmpIndex;
@@ -1168,7 +1168,7 @@ void NewGameCrypt::init()
 
     reKey(&decrypt_ki);
     for(i=0; i<256; i++)
-        m_dec_subData3[i]=i;
+        m_dec_subData3[i]=(unsigned char)i;
     blockEncrypt(&decrypt_ci,&decrypt_ki,m_dec_subData3,256*8,tmpBuff);
     memcpy(m_dec_subData3,tmpBuff,256);
 
@@ -1192,7 +1192,7 @@ void NewGameCrypt::decrypt(unsigned char * in, unsigned char * out, int len)
             memcpy(m_dec_subData3, tmpBuff, 0x100);
             m_pos_dec = 0;
         }
-        out[i] = in[i] ^ m_dec_subData3[m_pos_dec++];
+        out[i] = (unsigned char)(in[i] ^ m_dec_subData3[m_pos_dec++]);
     }
 }
 
@@ -1495,15 +1495,15 @@ int NewGameCrypt::reKey(keyInstance *key)
     switch (k64Cnt & 3)                                         \
         {                                                       \
         case 0:  /* same as 4 */                                \
-                    b0(t)   = p8(04)[b0(t)] ^ b0(k32[3]);       \
-                    b1(t)   = p8(14)[b1(t)] ^ b1(k32[3]);       \
-                    b2(t)   = p8(24)[b2(t)] ^ b2(k32[3]);       \
-                    b3(t)   = p8(34)[b3(t)] ^ b3(k32[3]);       \
+                    b0(t)   = (unsigned char) (p8(04)[b0(t)] ^ b0(k32[3]));       \
+                    b1(t)   = (unsigned char) (p8(14)[b1(t)] ^ b1(k32[3]));       \
+                    b2(t)   = (unsigned char) (p8(24)[b2(t)] ^ b2(k32[3]));       \
+                    b3(t)   = (unsigned char) (p8(34)[b3(t)] ^ b3(k32[3]));       \
                  /* fall thru, having pre-processed t */        \
-        case 3:     b0(t)   = p8(03)[b0(t)] ^ b0(k32[2]);       \
-                    b1(t)   = p8(13)[b1(t)] ^ b1(k32[2]);       \
-                    b2(t)   = p8(23)[b2(t)] ^ b2(k32[2]);       \
-                    b3(t)   = p8(33)[b3(t)] ^ b3(k32[2]);       \
+        case 3:     b0(t)   = (unsigned char) (p8(03)[b0(t)] ^ b0(k32[2]));       \
+                    b1(t)   = (unsigned char) (p8(13)[b1(t)] ^ b1(k32[2]));       \
+                    b2(t)   = (unsigned char) (p8(23)[b2(t)] ^ b2(k32[2]));       \
+                    b3(t)   = (unsigned char) (p8(33)[b3(t)] ^ b3(k32[2]));       \
                  /* fall thru, having pre-processed t */        \
         case 2:  /* 128-bit keys (optimize for this case) */    \
             res=    MDStab[0][p8(01)[p8(02)[b0(t)] ^ b0(k32[1])] ^ b0(k32[0])] ^    \
@@ -1797,14 +1797,14 @@ int NewGameCrypt::blockEncrypt(cipherInstance *cipher, keyInstance *key,CONST BY
         for (n=0;n<inputLen;n++)
             {
             blockEncrypt(cipher,key,cipher->IV,BLOCK_SIZE,(BYTE *)x);
-            bit0  = 0x80 >> (n & 7);/* which bit position in byte */
-            ctBit = (input[n/8] & bit0) ^ ((((BYTE *) x)[0] & 0x80) >> (n&7));
-            outBuffer[n/8] = (outBuffer[n/8] & ~ bit0) | ctBit;
-            carry = ctBit >> (7 - (n&7));
+            bit0  = (unsigned char)(0x80 >> (n & 7));/* which bit position in byte */
+            ctBit = (unsigned char)(input[n/8] & bit0) ^ (unsigned char)((((BYTE *) x)[0] & 0x80) >> (n&7));
+            outBuffer[n/8] = (unsigned char)((outBuffer[n/8] & ~ bit0) | ctBit);
+            carry = (unsigned char)(ctBit >> (7 - (n&7)));
             for (i=BLOCK_SIZE/8-1;i>=0;i--)
                 {
-                bit = cipher->IV[i] >> 7;   /* save next "carry" from shift */
-                cipher->IV[i] = (cipher->IV[i] << 1) ^ carry;
+                bit = (unsigned char)(cipher->IV[i] >> 7);   /* save next "carry" from shift */
+                cipher->IV[i] = (unsigned char)((cipher->IV[i] << 1) ^ carry);
                 carry = bit;
                 }
             }
@@ -1954,15 +1954,15 @@ int NewGameCrypt::blockDecrypt(cipherInstance *cipher, keyInstance *key,CONST BY
         for (n=0;n<inputLen;n++)
             {
             blockEncrypt(cipher,key,cipher->IV,BLOCK_SIZE,(BYTE *)x);
-            bit0  = 0x80 >> (n & 7);
-            ctBit = input[n/8] & bit0;
-            outBuffer[n/8] = (outBuffer[n/8] & ~ bit0) |
-                             (ctBit ^ ((((BYTE *) x)[0] & 0x80) >> (n&7)));
-            carry = ctBit >> (7 - (n&7));
+            bit0  = (unsigned char)(0x80 >> (n & 7));
+            ctBit = (unsigned char)(input[n/8] & bit0);
+            outBuffer[n/8] = (unsigned char)((outBuffer[n/8] & ~ bit0) |
+                             (ctBit ^ ((((BYTE *) x)[0] & 0x80) >> (n&7))));
+            carry = (unsigned char)(ctBit >> (7 - (n&7)));
             for (i=BLOCK_SIZE/8-1;i>=0;i--)
                 {
-                bit = cipher->IV[i] >> 7;   /* save next "carry" from shift */
-                cipher->IV[i] = (cipher->IV[i] << 1) ^ carry;
+                bit = (unsigned char)(cipher->IV[i] >> 7);   /* save next "carry" from shift */
+                cipher->IV[i] = (unsigned char)((cipher->IV[i] << 1) ^ carry);
                 carry = bit;
                 }
             }

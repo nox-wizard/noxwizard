@@ -330,6 +330,9 @@ bool AmxProgram::findNativeNotFound( void* program )
 				case 3 :
 					ConOut( "\n[ERROR] native function not found [ %s ]   [ERROR]\n", func->name );
 					return false;
+				default:
+					ConOut( "\n[ERROR] native function not found [ %s ]   [ERROR]\n", func->name );
+					return false;	
 			}						
 
 			funcptr= NULL;
@@ -384,9 +387,6 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 
 	} catch(...) {
 		AMX *amx = m_AMX;
-		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
-		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
-		
 		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
@@ -518,9 +518,6 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 
 	} catch(...) {
 		AMX *amx = m_AMX;
-		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
-		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
-		
 		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
@@ -600,9 +597,6 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3 )
 
 	} catch(...) {
 		AMX *amx = m_AMX;
-		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
-		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
-		
 		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
@@ -640,9 +634,6 @@ cell AmxProgram::CallFn (int idx, int param1, int param2)
 
 	} catch(...) {
 		AMX *amx = m_AMX;
-		AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
-		AMX_FUNCSTUB *func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives+(int)idx*sizeof(AMX_FUNCSTUB));
-		
 		LogError("Exception Handled during AMX Script Execution : skipping script %s\n", amx_FindFunctionbyIndex(amx, idx));
 		return -1;
 	}
@@ -934,7 +925,7 @@ void AmxOverride::Parse(char *line)
 		m_function = new char[strlen(fn)+4];
 		strcpy(m_function, fn);
 		if (mode!=AMX_SKIP)
-			 ConOut("    Installing %s override for %s()...", strMode(mode), fn);
+			 ConOut("    Installing %s override for %s()...\t", strMode(mode), fn);
 		else ConOut("    Installing Skip override...[ OK ]\n");
 
 		m_mode = mode;

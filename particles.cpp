@@ -76,8 +76,8 @@ void ParticleFx::initWithSpellMoveEffect( magic::SpellId num )
 // Changes           : none yet
 void ParticleFx::initWithSpellStatEffect( magic::SpellId num )
 {
-    int te0,te1,te2,te3,te4;      // 2d effects
-    int te5,te6,te7,te8,te9,te10,te11,te12; // 3d particles
+    int te0=0,te1=0,te2=0,te3=0,te4=0;      // 2d effects
+    int te5=0,te6=0,te7=0,te8=0,te9=0,te10=0,te11=0,te12=0; // 3d particles
 	//te5=te6=te7=te8=te9=te10=0;
     te11=0; te12=1;
 
@@ -289,7 +289,7 @@ void ParticleFx::initWithSpellStatEffects_pre( magic::SpellId num)
    
 	for (int i = 0; i<=18; i++) effect[i] = -1;
 
-    int te4,te5,te6,te7,te8,te9,te10,te11,te12; // 3d particles
+    int te4=0,te5=0,te6=0,te7=0,te8=0,te9=0,te10=0,te11=0,te12=0; // 3d particles
 
     te11=0; te12=1;
 	te4=0x00; te5=0x00; te6=0x0a; te7=0x05; te8=0x23; te10=0xffff0102;
@@ -327,7 +327,7 @@ void ParticleFx::initWithSpellStatEffects_pre( magic::SpellId num)
 void ParticleFx::initWithSpellStatEffects_post( magic::SpellId num)
 {
 	for (int i = 0; i<=18; i++) effect[i] = -1;
-    int te4,te5,te6,te7,te8,te9,te10, te11,te12;
+    int te4=0,te5=0,te6=0,te7=0,te8=0,te9=0,te10=0, te11=0,te12=0;
 
     te11=0; te12=1;
     switch( num+1 )
@@ -362,7 +362,7 @@ void ParticleFx::initWithSpellStatEffects_post( magic::SpellId num)
 void ParticleFx::initWithSpellStatEffects_item( magic::SpellId num)
 {
 	for (int i = 0; i<=18; i++) effect[i] = -1;
-    int te4,te5,te6,te7,te8,te9,te10, te11;
+    int te4=0,te5=0,te6=0,te7=0,te8=0,te9=0,te10=0, te11=0;
 
     switch( num )
     {     

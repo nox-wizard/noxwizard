@@ -439,7 +439,7 @@ static int loadregenerate(char *script1, char *script2) // by Magius(CHE)
 		if(!(strcmp(script1,"HITPOINTS_REGENRATE"))) server_data.hitpointrate=str2num(script2);
 		else if(!(strcmp(script1,"STAMINA_REGENRATE"))) server_data.staminarate=str2num(script2);
 		else if(!(strcmp(script1,"MANA_REGENRATE"))) server_data.manarate=str2num(script2);
-		else if(!(strcmp(script1,"ARMOR_AFFECT_MANA_REGEN"))) server_data.armoraffectmana=str2num(script2);
+		else if(!(strcmp(script1,"ARMOR_AFFECT_MANA_REGEN"))) server_data.armoraffectmana=(char)str2num(script2);
 		else return -1;
 		return 0;
 }
@@ -460,7 +460,7 @@ static int block_acc(char *script1, char *script2) // elcabesa tempblock
 static int loadhunger(char *script1, char *script2) // by Magius(CHE)
 {
 		if(!(strcmp(script1,"HUNGERRATE"))) server_data.hungerrate=str2num(script2);
-		else if(!(strcmp(script1,"HUNGER_DAMAGE"))) server_data.hungerdamage=str2num(script2);
+		else if(!(strcmp(script1,"HUNGER_DAMAGE"))) server_data.hungerdamage=(unsigned char)str2num(script2);
 		else if(!(strcmp(script1,"HUNGER_SYSTEM"))) server_data.hunger_system=str2num(script2);
 		else if(!(strcmp(script1,"HUNGER_DAMAGE_RATE"))) server_data.hungerdamagerate=str2num(script2);
 		else return -1;
@@ -598,13 +598,13 @@ static int loadserver(char *script1, char *script2)
 		{
 			strcpy(server_data.specialbanktrigger,script2);
 			for(unsigned int i=0; i<strlen(server_data.specialbanktrigger);i++)
-				server_data.specialbanktrigger[i]=toupper(server_data.specialbanktrigger[i]);
+				server_data.specialbanktrigger[i]=(char)toupper(server_data.specialbanktrigger[i]);
 		}
 		else if(!strcmp(script1,"LANGUAGE"))			//N6 - Unicode language font
 		{
 			strcpy(server_data.Unicodelanguage,script2);
 			for(int i=0; i<3;i++)
-				server_data.Unicodelanguage[i]=toupper(server_data.Unicodelanguage[i]);//Uppercase please
+				server_data.Unicodelanguage[i]=(char)toupper(server_data.Unicodelanguage[i]);//Uppercase please
 				server_data.Unicodelanguage[3]=0;//cut to 3 letters
 		}
 		else if(!strcmp(script1,"STAMINAUSAGE"))
@@ -639,20 +639,20 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"INACTIVITYTIMEOUT"))		server_data.inactivitytimeout=str2num(script2);
 		else if(!strcmp(script1,"GATETIMER"))			server_data.gatetimer=str2num(script2);
 		else if(!strcmp(script1,"SHOWDEATHANIM"))		server_data.showdeathanim=str2num(script2);
-		else if(!strcmp(script1,"GUARDSACTIVE"))		server_data.guardsactive=str2num(script2);
-		else if(!strcmp(script1,"ANNOUNCE_WORLDSAVES"))		server_data.announceworldsaves=str2num(script2);
-		else if(!strcmp(script1,"BG_SOUNDS"))			server_data.bg_sounds=str2num(script2);
+		else if(!strcmp(script1,"GUARDSACTIVE"))		server_data.guardsactive=(unsigned char)str2num(script2);
+		else if(!strcmp(script1,"ANNOUNCE_WORLDSAVES"))		server_data.announceworldsaves=(char)str2num(script2);
+		else if(!strcmp(script1,"BG_SOUNDS"))			server_data.bg_sounds=(unsigned char)str2num(script2);
 		else if(!strcmp(script1,"POISONTIMER"))			server_data.poisontimer=str2num(script2); // lb
 		else if(!strcmp(script1,"JOINMSG"))			server_data.joinmsg=str2num(script2);
 		else if(!strcmp(script1,"PARTMSG"))			server_data.partmsg=str2num(script2);
-		else if(!strcmp(script1,"SERVER_LOG"))			server_data.server_log=str2num(script2);
-		else if(!strcmp(script1,"SPEECH_LOG"))			server_data.speech_log=str2num(script2);
-		else if(!strcmp(script1,"PVP_LOG"))			server_data.pvp_log=str2num(script2);
-		else if(!strcmp(script1,"GM_LOG"))			server_data.gm_log=str2num(script2);
+		else if(!strcmp(script1,"SERVER_LOG"))			server_data.server_log=(char)str2num(script2);
+		else if(!strcmp(script1,"SPEECH_LOG"))			server_data.speech_log=(char)str2num(script2);
+		else if(!strcmp(script1,"PVP_LOG"))			server_data.pvp_log=(char)str2num(script2);
+		else if(!strcmp(script1,"GM_LOG"))			server_data.gm_log=(char)str2num(script2);
 		else if(!strcmp(script1,"LOG_PATH"))			strcpy(server_data.log_path, script2);
 		else if(!strcmp(script1,"SAVESPAWNREGIONS"))		server_data.savespawns=str2num(script2);
 		else if(!strcmp(script1,"ROGUE"))			server_data.rogue=str2num(script2);
-		else if(!strcmp(script1,"CHAR_TIME_OUT"))		server_data.quittime=str2num(script2);//Instalog
+		else if(!strcmp(script1,"CHAR_TIME_OUT"))		server_data.quittime=(unsigned short)str2num(script2);//Instalog
 		else if(!strcmp(script1,"MAXSTEALTHSTEPS"))		server_data.maxstealthsteps=str2num(script2);//AntiChrist
 		else if(!strcmp(script1,"STEALTHONHORSE"))		ServerScp::g_nStealthOnHorse=str2num(script2);//AntiChrist
 		else if(!strcmp(script1,"STEALTHARLIMIT"))		ServerScp::g_nStealthArLimit=str2num(script2);//AntiChrist
@@ -662,7 +662,7 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"HTML"))			server_data.html=str2num(script2);//HTML
         else if(!strcmp(script1,"CUT_SCROLL_REQUIREMENTS"))	server_data.cutscrollreq=str2num(script2);//AntiChrist
         else if(!strcmp(script1,"PERSECUTION"))			server_data.persecute=str2num(script2);//AntiChrist
-		else if(!strcmp(script1,"AUTO_CREATE_ACCTS"))		server_data.auto_a_create = str2num( script2 );
+		else if(!strcmp(script1,"AUTO_CREATE_ACCTS"))		server_data.auto_a_create = (unsigned char)str2num( script2 );
 		else if(!strcmp(script1,"CHECKCHARAGE"))		server_data.checkcharage = str2num( script2 );
 		else if(!strcmp(script1,"AUTO_RELOAD_ACCTS"))		server_data.auto_a_reload = str2num( script2 );
 		else if(!strcmp(script1,"MSGBOARDPATH"))		strcpy(server_data.msgboardpath,script2);
@@ -679,7 +679,7 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"HOUSEINTOWN"))			server_data.houseintown=str2num(script2);
 		else if(!strcmp(script1,"SHOPRESTOCK"))			server_data.shoprestock=str2num(script2);
 		else if(!strcmp(script1, "COMMANDPREFIX"))		server_data.commandPrefix=script2[0];
-		else if(!strcmp(script1,"ERRORS_TO_CONSOLE"))		server_data.errors_to_console=str2num( script2 );
+		else if(!strcmp(script1,"ERRORS_TO_CONSOLE"))		server_data.errors_to_console=(char)str2num( script2 );
 		else if(!strcmp(script1,"HOUSEDECAY_SECS"))		server_data.housedecay_secs=str2num( script2 );
 		else if(!strcmp(script1,"BEGGING_TIME"))		begging_data.timer=str2num(script2);
 		else if(!strcmp(script1,"BEGGING_RANGE"))		begging_data.range=str2num(script2);
@@ -700,15 +700,15 @@ static int loadtime_light(char *script1, char *script2)
 		if(!(strcmp(script1,"ABSDAY"))) day=str2num(script2);
 		else if(!(strcmp(script1,"MOON1UPDATE"))) moon1update=str2num(script2);
 		else if(!(strcmp(script1,"MOON2UPDATE"))) moon2update=str2num(script2);
-		else if(!(strcmp(script1,"MOON1"))) moon1=str2num(script2);
-		else if(!(strcmp(script1,"MOON2"))) moon2=str2num(script2);
-		else if(!(strcmp(script1,"DUNGEONLIGHTLEVEL"))) dungeonlightlevel=str2num(script2);
-		else if(!(strcmp(script1,"WORLDFIXEDLEVEL"))) worldfixedlevel=str2num(script2);
-		else if(!(strcmp(script1,"WORLDCURLEVEL"))) worldcurlevel=str2num(script2);
-		else if(!(strcmp(script1,"WORLDBRIGHTLEVEL"))) worldbrightlevel=str2num(script2);
-		else if(!(strcmp(script1,"WORLDDARKLEVEL"))) worlddarklevel=str2num(script2);
+		else if(!(strcmp(script1,"MOON1"))) moon1=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"MOON2"))) moon2=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"DUNGEONLIGHTLEVEL"))) dungeonlightlevel=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"WORLDFIXEDLEVEL"))) worldfixedlevel=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"WORLDCURLEVEL"))) worldcurlevel=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"WORLDBRIGHTLEVEL"))) worldbrightlevel=(unsigned char)str2num(script2);
+		else if(!(strcmp(script1,"WORLDDARKLEVEL"))) worlddarklevel=(unsigned char)str2num(script2);
 		else if(!(strcmp(script1,"SECONDSPERUOMINUTE"))) secondsperuominute=str2num(script2);
-		else if(!(strcmp(script1,"SEASON"))) season=str2num(script2);
+		else if(!(strcmp(script1,"SEASON"))) season=(unsigned char)str2num(script2);
 		else if(!(strcmp(script1,"DAY"))) Calendar::g_nDay=str2num(script2);
 		else if(!(strcmp(script1,"HOUR"))) Calendar::g_nHour=str2num(script2);
 		else if(!(strcmp(script1,"MINUTE"))) Calendar::g_nMinute=str2num(script2);
@@ -728,8 +728,8 @@ static int loadnxwoptions (char *script1, char *script2)
 #endif*/
 	else if(!(strcmp(script1,"CHECKBYSMALL"))) ServerScp::g_nCheckBySmall|=(str2num(script2)!=0); // |= becuase can be also activated by arg -check
 	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
-	else if(!(strcmp(script1,"MAPHEIGHT"))) map_height=str2num(script2);
-	else if(!(strcmp(script1,"MAPWIDTH"))) map_width=str2num(script2);
+	else if(!(strcmp(script1,"MAPHEIGHT"))) map_height=(unsigned short)str2num(script2);
+	else if(!(strcmp(script1,"MAPWIDTH"))) map_width=(unsigned short)str2num(script2);
 	else if(!(strcmp(script1,"AUTODETECTMULS"))) ServerScp::g_nAutoDetectMuls=str2num(script2);
 	else if(!(strcmp(script1,"LINEBUFFER"))) ServerScp::g_nLineBuffer=str2num(script2);
 	else if(!(strcmp(script1,"USEACCOUNTENCRYPTION"))) ServerScp::g_nUseAccountEncryption=str2num(script2);
@@ -751,8 +751,8 @@ static int loadnxwoptions (char *script1, char *script2)
 	else if(!(strcmp(script1,"NEWNPCMAGIC"))) ServerScp::g_nUseNewNpcMagic=str2num(script2);
 	else if(!(strcmp(script1,"DEAMONMODE"))) ServerScp::g_nDeamonMode=str2num(script2);
 	else if(!(strcmp(script1,"INITIALGOLD"))) goldamount=str2num(script2);
-	else if(!(strcmp(script1,"INITIALPRIV1"))) defaultpriv1=str2num(script2);
-	else if(!(strcmp(script1,"INITIALPRIV2"))) defaultpriv2=str2num(script2);
+	else if(!(strcmp(script1,"INITIALPRIV1"))) defaultpriv1=(unsigned char)str2num(script2);
+	else if(!(strcmp(script1,"INITIALPRIV2"))) defaultpriv2=(unsigned char)str2num(script2);
 	else return -1;
 
 #ifdef _WINDOWS
@@ -773,7 +773,10 @@ static int loadinioptions (char *script1, char *script2)
 	if(!(strcmp(script1,"NAME"))) strcpy(serv[0][0], script2);
 	else if(!(strcmp(script1,"IP"))) {strcpy(serv[0][1], script2);strcpy(saveip, script2);}
 	else if(!(strcmp(script1,"PORT"))) strcpy(serv[0][2], script2);
-	else if(!(strcmp(script1,"AUTODETECTIP"))) ServerScp::g_nAutoDetectIP=str2num(script2);
+	else if(!(strcmp(script1,"AUTODETECTIP")))
+	{
+		ServerScp::g_nAutoDetectIP=str2num(script2);
+	}
 	else if(!(strcmp(script1,"BEHINDNAT"))) ServerScp::g_nBehindNat=str2num(script2);
 	else if(!(strcmp(script1,"MAP"))) strcpy(temp_map, script2);
 	else if(!(strcmp(script1,"MAP_CACHE"))) map_cache = str2num( script2 );
@@ -864,7 +867,7 @@ void loadshardlist()
 	
 	ConOut("Loading Shards list...");
 	if(!F) {
-		ConOut(" [ KO ]\n");
+		ConOut(" [FAIL]\n");
 		return;
 	}
 	do
@@ -1772,7 +1775,7 @@ int cfg_command (char *commandstr)
 	for (i=0; i<79; i++)
 	{
 		if ((commandstr[i]>='a')&&(commandstr[i]<='z'))
-			b[i] = commandstr[i]+ 'A'-'a';
+			b[i] = (char)(commandstr[i]+ 'A'-'a');
 		else b[i] = commandstr[i];
 		if (b[i]=='\0') break;
 	}

@@ -76,8 +76,8 @@ void cMakeMenu::loadFromScript( P_CHAR pc )
 	std::vector<std::string> names; //name
 	std::vector<std::string> models; //models
     
-	this->mat[0].number = ( mat[0].id!=0 )? pc->CountItems( mat[0].id, mat[0].color ) : 0;
-	this->mat[1].number = ( mat[1].id!=0 )? pc->CountItems( mat[1].id, mat[1].color ) : 0;
+	this->mat[0].number = ( mat[0].id!=0 )? (short)pc->CountItems( mat[0].id, mat[0].color ) : 0;
+	this->mat[1].number = ( mat[1].id!=0 )? (short)pc->CountItems( mat[1].id, mat[1].color ) : 0;
 
 	//da passare a checkReq PDPD
 	
@@ -312,7 +312,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		return;
 
 	if( mi->command->command=="MAKEMENU" ) {
-		Skills::MakeMenu( pc, str2num( mi->command->param ), skill, mat[0].id, mat[0].color, mat[1].id, mat[1].color );
+		Skills::MakeMenu( pc, (unsigned short)str2num( mi->command->param ), skill, mat[0].id, mat[0].color, mat[1].id, mat[1].color );
 		return;
 	}
 
@@ -334,11 +334,11 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		cRawItem& raw = mi->reqitems[j];
 		if( raw.id!=0 ) {
 
-			UI16 matToDel = raw.number;
+			UI16 matToDel = (unsigned short)raw.number;
 			if( failed )
-				matToDel = ( matToDel/2>0 )? matToDel/2 : 1;
+				matToDel = ( matToDel/2>0 )? (unsigned short)(matToDel/2) : 1;
 
-	        pc->delItems( raw.id, matToDel, raw.color );
+	        pc->delItems( raw.id, matToDel, (short)raw.color );
 		}
 	}
 
@@ -418,7 +418,7 @@ bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cRawItem* def )
 	for( int i=0; i<2; ++i ) {
         cRawItem& raw = reqitems[i];
 		if( raw.id!=0 ) {
-			bool have = ( def!=NULL )? (def[i].number>=raw.number) : ( pc->CountItems( raw.id, raw.color)>= raw.number );
+			bool have = ( def!=NULL )? (def[i].number>=raw.number) : ( pc->CountItems( (short)raw.id, (short)raw.color)>= raw.number );
 			if( !have ) {
 				if( !inMenu )
 					pc->sysmsg(TRANSLATE("You've not enough resources"));
@@ -588,7 +588,7 @@ cRawItem::cRawItem( std::string& s )
    	int params[3];
    	fillIntArray( (char*)s.c_str(), params, 3, 0 );
     id = params[0];
-    color = params[1];
+    color = (unsigned short)params[1];
     number = params[2];
     if(number < 1)
 		number = 1;

@@ -241,19 +241,6 @@ int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 void cNetwork::DoStreamCode( NXWSOCKET  socket )
 {
 	int status ;
-/*
-	FILE *debugout=fopen("d:\\packets.log", "a");
-	for ( int i = 0; i < boutlength[socket];++i)
-	{
-		if ( i % 32 == 0 )
-		{
-			fprintf(debugout, "\n0x%04x ", i);
-		}
-		fprintf(debugout, "%02x ", outbuffer[socket][i]);
-	}
-	fprintf(debugout, "\n------------------------------------------", i);
-	fclose(debugout);
-*/
 	int len = Pack( outbuffer[socket], xoutbuffer, boutlength[socket] );
 	// ConOut("Packed %d bytes input to %d bytes out\n", boutlength[socket], len);
 	NXWCLIENT ps = getClientFromSocket(socket);
@@ -278,6 +265,17 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 	int status ;
 	if ( boutlength[ socket ] > 0 )
 	{
+		FILE *debugout=fopen("d:\\packets.log", "a");
+		for ( int i = 0; i < boutlength[socket];++i)
+		{
+			if ( i % 32 == 0 )
+			{
+				fprintf(debugout, "\n0x%04x ", i);
+			}
+			fprintf(debugout, "%02x ", outbuffer[socket][i]);
+		}
+		fprintf(debugout, "\n%d------------------------------------------", client[socket]);
+		fclose(debugout);
 		if ( clientInfo[ socket ]->compressOut )
 		{
 			DoStreamCode( socket );
@@ -528,7 +526,7 @@ void cNetwork::LoginMain(int s)
 			crypter->setGameEncryption(j+1);
 			crypter->init(&clientSeed[s][0]);
 			crypter->decrypt(&cryptPacket[0], decryptPacket, length);
-			if ( decryptPacket[0x3e-1] == 0xFF )
+			if ( ( decryptPacket[0] == 0x80 ) && ( decryptPacket[30] == 0x00 ) && ( decryptPacket[60] == 0x00 ) ) 
 			{
 				// crypt key is correct only if Authentication is ok
 				memcpy (&cryptPacket[0], decryptPacket, length);
@@ -633,15 +631,15 @@ void cNetwork::Login2(int s)
 	if (SrvParms->server_log)
 		ServerLog.Write( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 
-	tlen = 6 + (servcount*40);
+	tlen = (unsigned short)(6 + (servcount*40));
 	ShortToCharPtr(tlen, newlist1 +1);
 	newlist1[3]=0xFF;			// System Info flag
-	ShortToCharPtr(servcount, newlist1 +4);
+	ShortToCharPtr((unsigned short)servcount, newlist1 +4);
 	Xsend(s, newlist1, 6);
 
 	for( i = 0; i < servcount; ++i )
 	{
-		ShortToCharPtr(i+1, newlist2);
+		ShortToCharPtr((unsigned short)(i+1), newlist2);
 
 		strcpy((char*)&newlist2[2], serv[i][0]);
 		newlist2[34]=0x12;		// %Full
@@ -665,11 +663,12 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 
 	// Enable autodetect unless you bind to a specific ip address
         // otherwise you should lead in some security issue
-        if(ServerScp::g_nAutoDetectIP || ServerScp::g_nBehindNat) { //Luxor
+	if(ServerScp::g_nAutoDetectIP || ServerScp::g_nBehindNat) 
+	{ //Luxor
 		//Xan : plug'n'play mode under windows :)
-                //Rik : and for linux too ;) (should run on other bsd compatible systems too)
+		//Rik : and for linux too ;) (should run on other bsd compatible systems too)
 		socklen_t n = sizeof(sockaddr_in);
-                sockaddr_in sa;
+		sockaddr_in sa;
 		getsockname (client[s], (sockaddr*)(&sa), (socklen_t*)(&n));
 		unsigned long oldip = ip;
 		//Luxor: REALLY tricky... i should change this soon, but no time to make it better by now :P
@@ -678,14 +677,16 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 //		printf("IP: %d.%d.%d.%d\n", IPPRINTF(ip));
 //		printf("SERVER_IP: %d.%d.%d.%d\n", IPPRINTF(serverip));
 //		printf("CLIENT_IP: %d.%d.%d.%d\n", IPPRINTF(clientip));
-		if (ServerScp::g_nBehindNat) { //if the server is behind a NAT, use the autodetection only if the client is in the same LAN
+		if (ServerScp::g_nBehindNat) 
+		{ //if the server is behind a NAT, use the autodetection only if the client is in the same LAN
 			if (((serverip&0xFF) == (clientip&0xFF)) && (((serverip>>8)&0xFF) == ((clientip>>8)&0xFF)))
 				ip = serverip;
-		} else
+		} 
+		else
 			ip = serverip;
-                if (ip != oldip)
+		if (ip != oldip)
 			InfoOut("client %d relayed to IP %d.%d.%d.%d instead of %d.%d.%d.%d\n", s, IPPRINTF(ip), IPPRINTF(oldip));
-        }
+	}
 
 
 #ifdef RELAY_TO_NOXSNIFFER
@@ -696,7 +697,7 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	UI08 login03[11]={ 0x8C, 0x00, };
 	ip = htonl(ip);			// host order -> network order !!!!
 	LongToCharPtr(ip, login03 +1);
-	ShortToCharPtr(port, login03 +5);
+	ShortToCharPtr((unsigned short)port, login03 +5);
 	srand(ip+acctno[s]+now+uiCurrentTime); // Perform randomize
 #ifdef ENCRYPTION
 	if ( clientCrypter[s] != NULL )
@@ -709,10 +710,6 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 		crypter->setEntering(true);
 		// memcpy(login03 +7, &clientip[s][0],4);
 		LongToCharPtr (loginseed, login03 +7); // set crypt key
-		// if ( clientCrypter[s]->getCryptVersion() < CRYPT_3_0_0c )
-		LongToCharPtr (ip, login03 +1); // set game server ip
-
-
 	}
 	else
 #endif
@@ -751,9 +748,9 @@ void cNetwork::GoodAuth(int s)
 {
 	UI32 j;
 	UI16 tlen;
-	UI08 login04a[4]={ 0xA9, 0x09, 0x24, 0x02 }, n = startcount;
+	UI08 login04a[4]={ 0xA9, 0x09, 0x24, 0x02 }, n = (unsigned char)startcount;
 
-	tlen=4+(5*60)+1+(startcount*63) +4;
+	tlen=(unsigned short)(4+(5*60)+1+(startcount*63) +4);
 
 	ShortToCharPtr(tlen, login04a +1);
 
@@ -765,7 +762,7 @@ void cNetwork::GoodAuth(int s)
 
 	ActivateFeatures(s);
 
-	login04a[3] = sc.size(); //Number of characters found
+	login04a[3] = (unsigned char)sc.size(); //Number of characters found
 	Xsend(s, login04a, 4);
 
 	j=0;
@@ -797,7 +794,7 @@ void cNetwork::GoodAuth(int s)
 	for (i=0;i<startcount;i++)
 	{
 		memset(login04d, 0, 63);
-		login04d[0]=i;
+		login04d[0]=(unsigned char)i;
 		for (j=0;j<=strlen(start[i][0]);j++) login04d[j+1]=start[i][0][j];
 		for (j=0;j<=strlen(start[i][1]);j++) login04d[j+32]=start[i][1][j];
 		Xsend(s, login04d, 63);
@@ -948,9 +945,9 @@ void cNetwork::enterchar(int s)
 
 	LongToCharPtr(pc->getSerial32(), startup +1);
 	ShortToCharPtr(pc->getId(), startup +9);
-	ShortToCharPtr(charpos.x, startup +11);
-	ShortToCharPtr(charpos.y, startup +13);
-	startup[16]= charpos.z;
+	ShortToCharPtr((unsigned short)charpos.x, startup +11);
+	ShortToCharPtr((unsigned short)charpos.y, startup +13);
+	startup[16]= (unsigned char)charpos.z;
 	startup[17]= pc->dir;
 	startup[28]= 0;
 
@@ -1218,7 +1215,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 			impowncreate(s,pc,0);
 	}
 
-	return valid;
+	return (char) valid;
 
 }
 
@@ -1232,6 +1229,8 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 int cNetwork::Receive(int s, int x, int a )
 {
 	if ( (x+a) >= MAXBUFFER) return 0;
+	FILE *debugout=fopen("d:\\packetsin.log", "a");
+	fprintf(debugout, "\nStart------------------------------------------\n");
 
 	int count,loopexit=0;
 	do
@@ -1241,6 +1240,16 @@ int cNetwork::Receive(int s, int x, int a )
 
 	}
 	while ( (count!=x) && (count>0) && (++loopexit < MAXBUFFER ));
+	for ( int i=0; i< count;++i)
+	{
+		if ( i % 32 == 0 )
+		{
+			fprintf(debugout, "\n0x%04x ", i);
+		}
+		fprintf(debugout, "%02x ", buffer[s][a+i]);
+	}
+	fprintf(debugout, "\nStop------------------------------------------\n");
+	fclose(debugout);
 
 	return count;
 }
@@ -1282,7 +1291,7 @@ void cNetwork::sockInit()
 		return;
 	}
 
-	g_nMainTCPPort = str2num(serv[0][2]);
+	g_nMainTCPPort = (short)str2num(serv[0][2]);
 
 	len_connection_addr=sizeof (struct sockaddr_in);
 	connection.sin_family=AF_INET;
@@ -1387,7 +1396,7 @@ void cNetwork::CheckConn() // Check for connection requests
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	int s;
 	socklen_t len;
-
+	char lingerBuffer=0;
 	if (now<MAXIMUM)
 
 	{
@@ -1421,6 +1430,7 @@ void cNetwork::CheckConn() // Check for connection requests
 				ioctl(client[now],FIONBIO,&nonzero) ;
 			#else
 				ioctlsocket(client[now],FIONBIO,&nonzero) ;
+				setsockopt(client[now],SOL_SOCKET,SO_DONTLINGER, &lingerBuffer, sizeof(lingerBuffer));
 			#endif
 
 				currchar[now] = INVALID;
@@ -1545,7 +1555,7 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 
 		while(nrBits--)
 		{
-			pOut[actByte] = (pOut[actByte] << 1) | (unsigned char)((value >> nrBits) & 0x1);
+			pOut[actByte] = (unsigned char)((pOut[actByte] << 1) | (unsigned char)((value >> nrBits) & 0x1));
 
 			bitByte = (bitByte + 1) & 0x07;
 			if(!bitByte) actByte++;
@@ -1558,7 +1568,7 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 	if ( nrBits <= 0 ) return 0;
 	while(nrBits--)
 	{
-		pOut[actByte] = (pOut[actByte] << 1) | (unsigned char)((value >> nrBits) & 0x1);
+		pOut[actByte] = (unsigned char)((pOut[actByte] << 1) | (unsigned char)((value >> nrBits) & 0x1));
 
 		bitByte = (bitByte + 1) & 0x07;
 		if(!bitByte) actByte++;
@@ -1599,7 +1609,7 @@ unsigned char cNetwork::calculateLoginKey(unsigned char loginKey[4], unsigned ch
 				((seed ^ 0x43210000) >> 16)
 			|   (((~seed) ^ 0xabcdffff) & 0xffff0000);
 		unsigned char med = static_cast<unsigned char>(m_key[0]);
-	    out = packetId ^ med;
+	    out = (unsigned char)(packetId ^ med);
 		if ( (out != 0x80) && (out != 0x91) )
 		{
 			found = false;
@@ -1780,6 +1790,20 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				{
 					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, length-cryptBufferOffset);
 				}
+				FILE *debugout=fopen("d:\\packetsin.log", "a");
+				fprintf(debugout, "\nStart decrypt %d------------------------------------------\n", client[s]);
+
+				for ( int i=0; i< length;++i)
+				{
+					if ( i % 32 == 0 )
+					{
+						fprintf(debugout, "\n0x%04x ", i);
+					}
+					fprintf(debugout, "%02x ", buffer[s][i]);
+				}
+				fprintf(debugout, "\nStop decrpyt------------------------------------------\n");
+				fclose(debugout);
+
 #endif
 
 				if (ISVALIDPC(pc_currchar))
@@ -1823,6 +1847,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_SELECTSERVER:
 					Relay(s);
+					// Disconnect(s);
 					break;
 
 				case PACKET_LOGINREQUEST:
@@ -1886,7 +1911,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						if ( (buffer[s][3]) >=0xc0 )
 						{
 
-							buffer[s][3] = buffer[s][3] & 0x0F ; // set to normal (cutting off the ascii indicator since we are converting back to unicode)
+							buffer[s][3] = (unsigned char)(buffer[s][3] & 0x0F) ; // set to normal (cutting off the ascii indicator since we are converting back to unicode)
 
 							int num_words,/*idx=0,*/ num_unknown;
 
@@ -2264,7 +2289,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						}
 						p += 2;
 						len = 7+p;
-						ShortToCharPtr(len, packet +1);
+						ShortToCharPtr((unsigned short)len, packet +1);
 						Xsend(s, packet, len);
 //AoS/						Network->FlushBuffer(s);
 					}

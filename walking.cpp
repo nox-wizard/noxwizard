@@ -329,7 +329,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 		if(ISVALIDPI(pi_multi))
 		{
-			z=house->getCurrentZPosition(pc);
+			z=(signed char)house->getCurrentZPosition(pc);
 			if (pc->getMultiSerial32() < 0)
 			{
 				//xan : probably the plr has entered the boat walking!
@@ -502,7 +502,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		//if (pc->isHidden()) walkok.notoriety=0x00;
 		walkok.send( pc->getClient() );
 
-		walksequence[s]=sequence;
+		walksequence[s]=(short)sequence;
 		walksequence[s]%=255;
 	}
 
@@ -510,10 +510,10 @@ void walking(P_CHAR pc, int dir, int sequence)
 	newx= pc->getPosition().x;
 	newy= pc->getPosition().y;
 
-	sendToPlayers( pc, dir );
+	sendToPlayers( pc, (signed char) dir );
 
 	if (dir>INVALID && (dir&0x0F)<8)
-		pc->dir=(dir&0x0F);
+		pc->dir=((signed char)(dir&0x0F));
 	else
 		ConOut("dir-screwed : %i\n",dir);
 
@@ -588,7 +588,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 				if (sendit)
 				{
 					NXWSOCKET s = ps_i->toInt();
-					UI08 dir = pc_s->dir & 0x7F, flag, hi_color;
+					UI08 dir = (unsigned char)(pc_s->dir & 0x7F), flag, hi_color;
 
 					// running stuff
 
@@ -658,8 +658,8 @@ int npcSelectDir(P_CHAR pc_i, int j)
 			j =pc_i->dir2;	/* =(j-2-x)%8; //works better  ????*/
 		else
 		{
-			if (rand()%2) j=pc_i->dir2=(j-2-x)%8;
-			else j=pc_i->dir2=(j+2+x)%8;
+			if (rand()%2) j=pc_i->dir2=(char)((j-2-x)%8);
+			else j=pc_i->dir2=(char)((j+2+x)%8);
 		}
 	}
 	if (j<0)
@@ -676,11 +676,11 @@ int npcSelectDirWarOld(P_CHAR pc_i, int j)
 		if (j/2.0!=j/2)
 			x=1;
 		if (pc_i->blocked<=2)
-			j =pc_i->dir2 =(j-2-x)%8; //works better  ????
+			j =pc_i->dir2 =(char)((j-2-x)%8); //works better  ????
 		else
 		{
-			if (rand()%2) j=pc_i->dir2=(j-2-x)%8;
-			else j=pc_i->dir2=(j+2+x)%8;
+			if (rand()%2) j=pc_i->dir2=(char)((j-2-x)%8);
+			else j=pc_i->dir2=(char)((j+2+x)%8);
 		}
 	}
 	if (j<0)
@@ -798,8 +798,8 @@ void cChar::walkNextStep()
 				playAction( 0x13 ); // Flying animation
 	}
 
-	SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
-	dir = dirXY & 0x0F;
+	SI08 dirXY = (signed char)getDirFromXY( this, pos.x, pos.y );
+	dir = (signed char)(dirXY & 0x0F);
 	MoveTo( pos );
 	sendToPlayers( this, dirXY );
 	setNpcMoveTime();
@@ -925,7 +925,7 @@ void cChar::walk()
 				return;
 			*/
 			int k = dir;
-			dir = l;
+			dir = (signed char) l;
 			l = npcmovetime;
 			npcwalk( this, k, 0);
 			if ( l != npcmovetime ) // it's been changed through small
@@ -971,7 +971,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	bool valid, move;
+	bool valid=false, move=false;
 	if ( pc_i->dir == newDirection )  // If we're moving, not changing direction
 	{
 		int newX = charpos.x;
@@ -1125,7 +1125,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	Location pcpos=pc->getPosition();
 
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pcpos, 2*VISRANGE, false );
+	si.fillItemsNearXYZ( pcpos, 4*VISRANGE, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
@@ -1147,11 +1147,11 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 
 		if( pi->IsHouse())
 		{
-			if (di<2*VISRANGE  ) // && pc->seeForFirstTime( *pi , false))
+			if (di<4*VISRANGE  ) // && pc->seeForFirstTime( *pi , false))
 			{
 				senditem(ps->toInt(), pi);
 			}
-			else if ( di >= 2*VISRANGE )
+			else if ( di >= 4*VISRANGE )
 				pc->seeForLastTime(*pi, false);
 
 		}
@@ -1228,7 +1228,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 					else
 					{
 						if ( (rand()%18)==0 )
-							pc->fly_steps = ( rand()%27 ) + 2;
+							pc->fly_steps = (char)(( rand()%27 ) + 2);
 					}
 		}
 

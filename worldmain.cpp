@@ -340,7 +340,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					pc->setPrivLevel(PRIVLEVEL_ADMIN);
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
-				pc->SetPriv2(str2num(script2));
+				pc->SetPriv2((signed char)str2num(script2));
 			else if (!strcmp(script1, "ATT"))
 				pc->att=str2num(script2);
 			else if (!strcmp(script1, "ADVOBJ"))
@@ -351,7 +351,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'b':
 			if (!(strcmp(script1, "BODY")))
 			{
-				UI16 body = str2num(script2);
+				UI16 body = (unsigned short)str2num(script2);
 				pc->setId( body );
 				pc->setOldId( body );
 			}
@@ -379,7 +379,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 				else if ( pc->commandLevel == 2 )
 					pc->setPrivLevel(PRIVLEVEL_GM);
 				else
-					pc->setPrivLevel(str2num(script2));
+					pc->setPrivLevel((unsigned char)str2num(script2));
 			}
 		break;
 
@@ -387,7 +387,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'd':
 			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition("dZ", str2num(script2));}
 			else if (!strcmp(script1, "DAMAGETYPE"))		{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
-			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
+			else if (!strcmp(script1, "DIR"))			{ pc->dir=(signed char)str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
 			else if (!strcmp(script1, "DEXTERITY2"))		{ pc->dx2=str2num(script2); }
 			else if (!strcmp(script1, "DEATHS"))			{ pc->deaths=str2num(script2);  }
@@ -402,19 +402,19 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'e':
 			if (!strcmp(script1, "EMOTE"))
 			{
-				pc->emotecolor = str2num(script2);
+				pc->emotecolor = (unsigned short)str2num(script2);
 			}
 		break;
 
 		case 'F':
 		case 'f':
 			if (!strcmp(script1, "FAME"))				{ pc->SetFame(str2num(script2)); }
-			else if (!strcmp(script1, "FIXEDLIGHT"))		{ pc->fixedlight=str2num(script2); }
-			else if (!strcmp(script1, "FONT"))			{ pc->fonttype=str2num(script2);}
+			else if (!strcmp(script1, "FIXEDLIGHT"))		{ pc->fixedlight=(unsigned char)str2num(script2); }
+			else if (!strcmp(script1, "FONT"))			{ pc->fonttype=(unsigned char)str2num(script2);}
 			else if (!strcmp(script1, "FLEEAT"))			{ pc->fleeat=str2num(script2);}
 			else if (!strcmp(script1, "FX1"))			{ pc->fx1=str2num(script2);}
 			else if (!strcmp(script1, "FY1"))			{ pc->fy1=str2num(script2);}
-			else if (!strcmp(script1, "FZ1"))			{ pc->fz1=str2num(script2);}
+			else if (!strcmp(script1, "FZ1"))			{ pc->fz1=(signed char)str2num(script2);}
 			else if (!strcmp(script1, "FX2"))			{ pc->fx2=str2num(script2);}
 			else if (!strcmp(script1, "FY2"))			{ pc->fy2=str2num(script2);}
 			else if (!strcmp(script1, "FOODX"))			{pc->foodloc.x=str2num(script2);}
@@ -441,7 +441,7 @@ void CWorldMain::loadChar() // Load a character from WSC
    }
    else if (!strcmp(script1, "GUILDTOGGLE")) { (str2num(script2) ? pc->SetGuildTitleToggle() : pc->ResetGuildTitleToggle() );}
    else if (!strcmp(script1, "GUILDNUMBER")) { pc->SetGuildNumber( str2num(script2) );}
-   else if (!strcmp(script1, "GMRESTRICT"))  { pc->gmrestrict=str2num(script2); }
+   else if (!strcmp(script1, "GMRESTRICT"))  { pc->gmrestrict=(unsigned char)str2num(script2); }
    else if (!strcmp(script1, "GUILDTITLE"))  { pc->SetGuildTitle(script2);}
    else if (!strcmp(script1, "GUILDFEALTY")) { pc->SetGuildFealty( str2num(script2) );}
    //////////////////////////////////
@@ -462,7 +462,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			//Luxor: players vendors fix
 			else if (!strcmp(script1, "HOLDG"))		{ pc->holdg=str2num(script2);}
 			else if (!strcmp(script1, "HIDAMAGE"))		{ pc->hidamage=str2num(script2);}
-			else if (!strcmp(script1, "HIDDEN"))			{ pc->hidden=str2num(script2);}
+			else if (!strcmp(script1, "HIDDEN"))			{ pc->hidden=(unsigned char)str2num(script2);}
 			else if (!strcmp(script1, "HUNGER"))			{ pc->hunger=str2num(script2);}
 			else if (!strcmp(script1, "HOLDGOLD"))		{ pc->holdg=str2num(script2);}
 			else if (!strcmp(script1, "HOMEX"))			{ pc->homeloc.x=str2num(script2);}
@@ -519,14 +519,14 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'N':
 		case 'n':
-			if (!(strcmp("NXWFLAG0",script1)))					{pc->nxwflags[0] = str2num(script2);  }
-			else if (!(strcmp("NXWFLAG1",script1)))				{pc->nxwflags[1] = str2num(script2);  }
-			else if (!(strcmp("NXWFLAG2",script1)))				{pc->nxwflags[2] = str2num(script2);  }
-			else if (!(strcmp("NXWFLAG3",script1)))				{pc->nxwflags[3] = str2num(script2);  }
-			else if (!strcmp(script1, "NPC"))			{ pc->npc=str2num(script2);}
-			else if (!strcmp(script1, "NPCWANDER"))		{ pc->npcWander=str2num(script2);}
+			if (!(strcmp("NXWFLAG0",script1)))					{pc->nxwflags[0] = (char)str2num(script2);  }
+			else if (!(strcmp("NXWFLAG1",script1)))				{pc->nxwflags[1] = (char)str2num(script2);  }
+			else if (!(strcmp("NXWFLAG2",script1)))				{pc->nxwflags[2] = (char)str2num(script2);  }
+			else if (!(strcmp("NXWFLAG3",script1)))				{pc->nxwflags[3] = (char)str2num(script2);  }
+			else if (!strcmp(script1, "NPC"))			{ pc->npc=(char)str2num(script2);}
+			else if (!strcmp(script1, "NPCWANDER"))		{ pc->npcWander=(char)str2num(script2);}
 			else if (!strcmp(script1, "NOTRAIN"))		{ pc->cantrain=false;}
-			else if (!strcmp(script1, "NPCTYPE"))		{ pc->npc_type=str2num(script2);  }
+			else if (!strcmp(script1, "NPCTYPE"))		{ pc->npc_type=(char)str2num(script2);  }
 //			else if (!strcmp(script1, "NAME"))			{ strcpy(pc->name,script2); }
 			else if (!strcmp(script1, "NAME"))			{ pc->setCurrentName(script2);}
 			else if (!strcmp(script1, "NPCAITYPE"))		{ pc->npcaitype=str2num(script2);}
@@ -534,7 +534,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'O':
 		case 'o':
-			if (!strcmp(script1, "OLDNPCWANDER"))		{ pc->oldnpcWander=str2num(script2);}
+			if (!strcmp(script1, "OLDNPCWANDER"))		{ pc->oldnpcWander=(char)str2num(script2);}
 			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition("x", str2num(script2)); }
 			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition("y", str2num(script2)); }
 			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition("z", str2num(script2)); }
@@ -543,8 +543,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'P':
 		case 'p':
-			if (!strcmp(script1, "PRIV"))				{ pc->SetPriv(str2num(script2));}
-			else if (!strcmp(script1, "PRIVLEVEL"))				{ pc->setPrivLevel(str2num(script2));}
+			if (!strcmp(script1, "PRIV"))				{ pc->SetPriv((unsigned char)str2num(script2));}
+			else if (!strcmp(script1, "PRIVLEVEL"))				{ pc->setPrivLevel((unsigned char)str2num(script2));}
 			else if (!strcmp(script1, "POISON"))			{ pc->poison=str2num(script2);}
 			else if (!strcmp(script1, "POISONED"))		{ pc->poisoned=(PoisonType)str2num(script2);}
 
@@ -594,7 +594,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "SAY"))
 			{
-				pc->saycolor = str2num(script2);
+				pc->saycolor = (unsigned short)str2num(script2);
 			}
 			else if (!strcmp(script1, "STRENGTH"))		{ pc->setStrength(str2num(script2), false);pc->st3=pc->getStrength();}
 			else if (!strcmp(script1, "STRENGTH2"))		{ pc->st2=str2num(script2);}
@@ -607,16 +607,16 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 			}
 //			else if (!strcmp(script1, "SHOP"))			{ pc->shopkeeper;} // no effect
-			else if (!strcmp(script1, "SPEECH"))			{ pc->speech=str2num(script2); }
+			else if (!strcmp(script1, "SPEECH"))			{ pc->speech=(char)str2num(script2); }
 			else if ((script1[0]=='S')&&(script1[1]=='K')&&(script1[2]=='I')&&
 				(script1[3]=='L')&&(script1[4]=='L'))
 			{
-				pc->baseskill[j=str2num(&script1[5])]=str2num(script2);
+				pc->baseskill[j=str2num(&script1[5])]=(unsigned short)str2num(script2);
 				Skills::updateSkillLevel(pc, j);
 			}
 			else if (!strcmp(script1, "SKIN"))
 			{
-				pc->setColor(str2num(script2));
+				pc->setColor((unsigned short)str2num(script2));
 
 			}
 			else if (!strcmp(script1, "SPATTACK"))		{ pc->spattack=str2num(script2);}
@@ -625,7 +625,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "SPLITCHANCE"))	{ pc->splitchnc=str2num(script2);}
 			else if (!strncmp(script1, "SKL", 3 ))		// for skill locking
 			{
-				pc->lockSkill[j=str2num(&script1[3])]=str2num(script2);
+				pc->lockSkill[j=str2num(&script1[3])]=(unsigned char)str2num(script2);
 			}
 			else if (!strcmp(script1, "STABLEMASTER"))
 			{
@@ -647,17 +647,17 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
-				pc->setOldId( str2num(script2) );
+				pc->setOldId((unsigned short) str2num(script2) );
 			}
 			else if (!strcmp(script1, "XSKIN"))
 			{
-				pc->setOldColor( str2num(script2) );
+				pc->setOldColor( (unsigned short)str2num(script2) );
 			}
 		break;
 
 		case 'W':
 		case 'w':
-			if (!strcmp(script1, "WAR"))					{ pc->war=str2num(script2);}
+			if (!strcmp(script1, "WAR"))					{ pc->war=(char)str2num(script2);}
 			else if (!strcmp(script1, "WORKX"))			{ pc->workloc.x=str2num(script2);}
 			else if (!strcmp(script1, "WORKY"))			{ pc->workloc.y=str2num(script2);}
 			else if (!strcmp(script1, "WORKZ"))			{ pc->workloc.z=str2num(script2);}
@@ -837,7 +837,7 @@ void loaditem()
 				amxVS.insertVariable( INVALID, str2num( script1 ), script3 );
 			}
 			else if (!(strcmp(script1, "AMOUNT")))
-				pi->amount=str2num(script2);
+				pi->amount=(unsigned short)str2num(script2);
 			else if (!(strcmp(script1, "ATT")))
 				pi->att=str2num(script2);
 			else if (!strcmp("ANIMID", script1))
@@ -888,9 +888,9 @@ void loaditem()
 			else if (!(strcmp(script1, "DISABLED")))
 				pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);
 			else if (!(strcmp(script1, "DIR")))
-				pi->dir=str2num(script2);
+				pi->dir=(short)str2num(script2);
 			else if (!(strcmp(script1, "DOORFLAG")))
-				pi->doordir=str2num(script2);
+				pi->doordir=(signed char)str2num(script2);
 			else if (!(strcmp(script1, "DYEABLE")))
 				pi->dye=str2num(script2);
 			else if (!(strcmp(script1, "DEF")))
@@ -953,7 +953,7 @@ void loaditem()
 				if (i>=0x4000)
 				{
 					multiVector m_vec;
-					data::seekMulti( (short) i-0x4000, m_vec );
+					data::seekMulti( (unsigned short) (i-0x4000), m_vec );
 					if( m_vec.empty() )
 					{
 						LogWarning("bad item, serial: %i name: %s\n",pi->getSerial32(), pi->getCurrentNameC());
@@ -968,7 +968,7 @@ void loaditem()
 		case 'l':
 		case 'L':
 			if (!(strcmp(script1, "LAYER")))
-				pi->layer=str2num(script2);
+				pi->layer=(signed char)str2num(script2);
 			else if (!(strcmp(script1, "LODAMAGE")))
 				pi->lodamage=str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
@@ -993,7 +993,7 @@ void loaditem()
 				pi->moreb4=(unsigned char)(i%256);
 			}
 			else if (!(strcmp(script1, "MOVABLE")))
-				pi->magic=str2num(script2);
+				pi->magic=(signed char)str2num(script2);
 			else if (!(strcmp(script1, "MAXHP")))
 				pi->maxhp=str2num(script2);
 			else if (!(strcmp(script1, "MOREX")))
@@ -1019,7 +1019,7 @@ void loaditem()
 			if (!(strcmp(script1, "OWNER")))
 				pi->setOwnerSerial32Only(str2num(script2));
 			else if (!(strcmp(script1, "OFFSPELL")))
-				pi->offspell=str2num(script2);
+				pi->offspell=(signed char)str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -1030,7 +1030,7 @@ void loaditem()
 			else if (!(strcmp(script1, "POISONED")))
 				pi->poisoned=(PoisonType)str2num(script2);
 			else if (!(strcmp(script1, "PRIV")))
-				pi->priv=str2num(script2);
+				pi->priv=(signed char)str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -1099,7 +1099,7 @@ void loaditem()
 		case 'v':
 		case 'V':
 			if (!(strcmp(script1, "VISIBLE")))
-				pi->visible=str2num(script2);
+				pi->visible=(signed char)str2num(script2);
 			else if (!(strcmp(script1, "VALUE")))
 				pi->value=str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
@@ -1229,7 +1229,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		WarnOut("%s not found.\n", fileName.c_str());
 		return;
 	} else {
-		ConOut("Loading characters \n");
+		ConOut("Loading characters ");
 
 		int loopexit=0;
 		UI32 ichar=1;
@@ -1257,7 +1257,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		WarnOut("%s not found.\n", fileName.c_str());
 		return;
 	} else {
-		ConOut("Loading items \n");
+		ConOut("Loading items ");
 
 		int loopexit=0;
 		UI32 iitem=1;

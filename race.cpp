@@ -157,9 +157,9 @@ void Race::parseGlobalSection( void )
 					// this will be fixed using a special class location
 					UI32 x, y, z;
 					sscanf( rha.c_str(), "%u %u %u", &x, &y, &z);
-					startLocation[0] = x;
-					startLocation[1] = y;
-					startLocation[2] = z;
+					startLocation[0] = (short) x;
+					startLocation[1] = (short) y;
+					startLocation[2] = (short) z;
 				}
 				break;
 			case 'T':
@@ -619,7 +619,7 @@ void Race::parseStartItemDetails( const string& itemReference )
 						break;
 					case 'L':
 						if ( lha == "LAYER"  )
-							raceItem.layer = str2num( rha );
+							raceItem.layer = (unsigned char) str2num( rha );
 						break;
 					case 'M':
 						if ( lha == "MOVABLE" && str2num( rha ) == 2 )
@@ -715,7 +715,7 @@ const std::string* Race::getPluralName( void )
 
 void Race::setName( const UI32 raceId, const char *newName )
 {
-//		raceMap[raceId]->Name = newName;
+	raceMap[raceId]->name = std::string(newName);
 }
 
 R32 Race::getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )

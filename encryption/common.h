@@ -58,7 +58,7 @@ inline sint32 unpack_big_sint32(uint8 * buf)
 // Given a buffer of 2 bytes, extract a big endian 16 bit unsigned integer
 inline uint16 unpack_big_uint16(uint8 * buf)
 {
-    return (buf[0] << 8) | buf[1];
+    return (unsigned short)((buf[0] << 8) | buf[1]);
 }
 
 // Given a buffer of 2 bytes, extract a little endian 16 bit unsigned integer
@@ -77,14 +77,14 @@ inline void pack_big_uint32(uint8 * buf, uint32 x)
 
 inline void pack_big_uint16(uint8 * buf, uint16 x)
 {
-    buf[0] = x >> 8;
-    buf[1] = x & 0xff;
+    buf[0] = (unsigned char)(x >> 8);
+    buf[1] = (unsigned char)(x & 0xff);
 }
 
 inline void pack_little_uint16(uint8 * buf, uint16 x)
 {
-    buf[0] = x & 0xff;
-    buf[1] = x >> 8;
+    buf[0] = (unsigned char)(x & 0xff);
+    buf[1] = (unsigned char)(x >> 8);
 }
 
 // GCC_NORETURN means the function never returns

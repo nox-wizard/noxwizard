@@ -42,10 +42,10 @@ void ClientCrypt::setCryptSeed(UI08 pseed[4])
 
 void ClientCrypt::setCryptSeed(UI32 pseed)
 {
-	clientSeed[0]=(pseed >> 24)&0xFF;
-	clientSeed[1]=(pseed >> 16)&0xFF;
-	clientSeed[2]=(pseed >> 8)&0xFF;
-	clientSeed[3]=pseed &0xFF;
+	clientSeed[0]=(unsigned char)((pseed >> 24)&0xFF);
+	clientSeed[1]=(unsigned char)((pseed >> 16)&0xFF);
+	clientSeed[2]=(unsigned char)((pseed >> 8)&0xFF);
+	clientSeed[3]=(unsigned char)(pseed &0xFF);
 
 }
 
