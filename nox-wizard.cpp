@@ -498,9 +498,9 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	//Set command priv level 255 if the player is an admin, 0 otherwise
 	if(acctno[s]==0)
-	pc->commandLevel=255;
+	pc->setPrivLevel(255);
 	else
-	pc->commandLevel=0;
+	pc->setPrivLevel(0);
 	
 	clientInfo[s]->ingame=true;
 

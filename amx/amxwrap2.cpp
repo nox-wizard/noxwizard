@@ -996,8 +996,8 @@ void setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_C_BLOCKED :							//dec value: 101;
 			pc->blocked = value;
 			break;
-		case NXW_CP_C_COMMANDLEVEL :				  		//dec value: 103;
-			pc->commandLevel = value;
+		case NXW_CP_C_PRIVLEVEL :				  		//dec value: 103;
+			pc->setPrivLevel(value);
 			break;
 		case NXW_CP_C_DIR :	  						//dec value: 104;
 			pc->dir = value;
@@ -1891,7 +1891,7 @@ char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 	switch( property )
 	{
 		CHECK(  NXW_CP_C_BLOCKED , pc->blocked )  			//dec value: 101;
-		CHECK(  NXW_CP_C_COMMANDLEVEL , pc->commandLevel )  		//dec value: 103;
+		CHECK(  NXW_CP_C_PRIVLEVEL , pc->getPrivLevel() )  		//dec value: 103;
 		CHECK(  NXW_CP_C_DIR , pc->dir )  				//dec value: 104;
 		CHECK(  NXW_CP_C_DIR2 , pc->dir2 )  				//dec value: 105;
 		CHECK(  NXW_CP_C_FIXEDLIGHT , pc->fixedlight )  		//dec value: 106;

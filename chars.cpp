@@ -2756,9 +2756,9 @@ void cChar::possess(P_CHAR pc)
 	pc->SetPriv2(sTemp);
 
 	//commandLevel
-	usTemp = commandLevel;
-	commandLevel = pc->commandLevel;
-	pc->commandLevel = usTemp;
+	usTemp = privLevel;
+	privLevel = pc->privLevel;
+	pc->privLevel = usTemp;
 
 	//Serials
 	if ( bSwitchBack ) {

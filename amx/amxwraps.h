@@ -111,7 +111,7 @@ const int NXW_CP_B_FROZEN = 17;
 
 const int NXW_CP_C_BLOCKED = 101;
 const int NXW_CP_C_CELL = 102;
-const int NXW_CP_C_COMMANDLEVEL = 103;
+const int NXW_CP_C_PRIVLEVEL = 103;
 const int NXW_CP_C_DIR = 104;
 const int NXW_CP_C_DIR2 = 105;
 const int NXW_CP_C_FIXEDLIGHT = 106;
