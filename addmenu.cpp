@@ -385,6 +385,8 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 
 		ps->sysmsg(TRANSLATE("You create the item and place it in your backpack."));
 
+		pi->magic = 1;
+
         pi->creator = pc->getCurrentName(); // Memorize Name of the creator
         if (pc->skill[skill]>950)
             pi->madewith=skill+1; // Memorize Skill used

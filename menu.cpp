@@ -673,9 +673,9 @@ std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERI
 				case T_CHAR :
 					return toWstr( getItemCharProperty( pi, prop, subProp ) );
 				case T_INT:
-					return toWstr( getItemCharProperty( pi, prop, subProp ) );
+					return toWstr( getItemIntProperty( pi, prop, subProp ) );
 				case T_SHORT:
-					return toWstr( getItemCharProperty( pi, prop, subProp ) );
+					return toWstr( getItemShortProperty( pi, prop, subProp ) );
 				case T_STRING:
 					return toWstr( getItemStrProperty( pi, prop, subProp ) );
 				case T_UNICODE:
