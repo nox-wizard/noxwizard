@@ -3611,13 +3611,16 @@ NATIVE(_chr_unmorph)
 \brief Speech
 \author Anthalir
 \since 0.7
-\param 1: sock
+\param 1: chr
 \param 2: item
 \param 3: text
 \return 0 or INVALID if not valid character
 */
 NATIVE(_itm_speech)
 {
+	
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	
 	P_ITEM cur = pointers::findItemBySerial(params[2]);
 	VALIDATEPIR(cur,INVALID);
 
@@ -3627,18 +3630,16 @@ NATIVE(_itm_speech)
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 
-	if (params[1] == -1)
+	if ( params[1] == INVALID )
 	{
-		itemtalk(cur,g_cAmxPrintBuffer);	//Numbersix: if socket = -1
+		itemtalk(cur,g_cAmxPrintBuffer);	//Numbersix: if char = -1
 		return 0;							// =>item speaks to all in range
 	}
-
-	NXWSOCKET s = params[1];
 
 	UI08 sysname[30]={ 0x00, };
 	strcpy((char *)sysname, "System");
 
-	SendSpeechMessagePkt(s, cur->getSerial32(), 0x0101, 6, 0x0481, 0x0003, sysname, g_cAmxPrintBuffer);
+	SendSpeechMessagePkt( pc->getSocket(), cur->getSerial32(), 0x0101, 6, 0x0481, 0x0003, sysname, g_cAmxPrintBuffer );
 
 	return 0;
 }
