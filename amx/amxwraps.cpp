@@ -4606,7 +4606,7 @@ NATIVE(_map_getFloorTileID)
 \param 2 the guild master
 \return 0 if valid or INVALID if error
 */
-NATIVE(_guild_makeGuildstone)
+NATIVE(_guild_guildstone)
 {
 	P_ITEM stone = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( stone, INVALID );
@@ -5611,10 +5611,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "map_getTileID", _map_getTileID}, //Keldan, posted 2003/01/27 - added 2003/03/01
  { "map_getFloorTileID", _map_getFloorTileID}, // Keldan, posted 2003/01/27 - added 2003/03/01
 // Guild function and properties - Endymion
- { "guild_makeGuildstone", _guild_makeGuildstone },
  { "guild_setProperty", _setGuildProperty },
  { "guild_getProperty", _getGuildProperty },
- { "guild_makeGuildstone", _guild_makeGuildstone },
+ { "guild_guildstone", _guild_guildstone },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
  { "guild_addRecruit", _guild_addRecruit },
