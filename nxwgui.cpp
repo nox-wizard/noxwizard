@@ -136,6 +136,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	initScr();
 
 	if (strstr(lpCmdLine, "-debug")) ServerScp::g_nLoadDebugger = 1;
+	if (strstr(lpCmdLine, "-check")) ServerScp::g_nCheckBySmall = 1;
 	
 	// Initialize global strings
 	LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

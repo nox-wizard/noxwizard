@@ -943,6 +943,8 @@ void angelMode();
 
 	if ((argc>1)&&(strstr(argv[1], "-debug")))	// activate debugger if requested
 		ServerScp::g_nLoadDebugger = 1;
+	if ((argc>1)&&(strstr(argv[1], "-check")))	// activate check if requested
+		ServerScp::g_nCheckBySmall = 1;
 
 	uiCurrentTime=getclock();
 	serverstarttime=getclock();
@@ -1275,6 +1277,10 @@ void angelMode();
 
 
 	checkGarbageCollect();
+
+	if( argc==1 ) 
+		InfoOut("Argomento %s\n", argv[0]);
+
 	
 	InfoOut("Server started\n");
 

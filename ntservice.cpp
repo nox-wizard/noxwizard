@@ -435,6 +435,7 @@ int main(int argc, char *argv[])
 	}
 
 	if ((argc>1)&&(strstr(argv[1], "-debug"))) ServerScp::g_nLoadDebugger = 1;
+	if ((argc>1)&&(strstr(argv[1], "-check"))) ServerScp::g_nCheckBySmall = 1;
 
 	if (ServerScp::g_nDeamonMode==0) {
 		win32_main(argc, argv);
