@@ -430,6 +430,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!strcmp(script1, "RACE"))				pc->race = str2num(script2);
 			else if (!strcmp(script1, "ROBE"))				pc->robe = str2num(script2);
 			else if (!strcmp(script1, "REATTACKAT"))		{ pc->reattackat=str2num(script2);}
+			else if (!strcmp(script1, "REGEN_HP"))		{ UI32 v=str2num(script2); pc->setRegenRate( STAT_HP, v, VAR_REAL ); pc->setRegenRate( STAT_HP, v, VAR_EFF ); }
+			else if (!strcmp(script1, "REGEN_ST"))		{ UI32 v=str2num(script2); pc->setRegenRate( STAT_STAMINA, v, VAR_REAL ); pc->setRegenRate( STAT_STAMINA, v, VAR_EFF ); }
+			else if (!strcmp(script1, "REGEN_MN"))		{ UI32 v=str2num(script2); pc->setRegenRate( STAT_MANA, v, VAR_REAL ); pc->setRegenRate( STAT_MANA, v, VAR_EFF ); }
 			else if (!(strcmp("RESISTS", script1)))
 			{// Added by Luxor
 				int params[2];
@@ -1642,6 +1645,14 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			}
 			if (pc->menupriv!=dummy.menupriv)
 				fprintf(cWsc, "MENUPRIV %i\n", pc->menupriv);
+
+			if (pc->getRegenRate( STAT_HP, VAR_REAL ) != dummy.getRegenRate( STAT_HP, VAR_REAL ) )
+				fprintf(cWsc, "REGEN_HP %i\n", pc->getRegenRate( STAT_HP, VAR_REAL ));
+			if (pc->getRegenRate( STAT_STAMINA, VAR_REAL ) != dummy.getRegenRate( STAT_STAMINA, VAR_REAL ) )
+				fprintf(cWsc, "REGEN_ST %i\n", pc->getRegenRate( STAT_STAMINA, VAR_REAL ));
+			if (pc->getRegenRate( STAT_MANA, VAR_REAL ) != dummy.getRegenRate( STAT_MANA, VAR_REAL ) )
+				fprintf(cWsc, "REGEN_MN %i\n", pc->getRegenRate( STAT_MANA, VAR_REAL ));
+
 			if (pc->homeloc.x!=dummy.homeloc.x)
 				fprintf(cWsc, "HOMEX %i\n", pc->homeloc.x);
 			if (pc->homeloc.y!=dummy.homeloc.y)
