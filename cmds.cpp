@@ -118,16 +118,16 @@ else
 
 //Implementation of cCallCommandMap Class
 
-void cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL) {
+void cCallCommandMap::addCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL) {
 
 	P_CALLCOMMAND cllcmd= new cCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
     
 	if (callCommand_map.empty())
 		CmdNextSerial=0;
-
-	cmdserial=++CmdNextSerial;	
 	
-	callCommand_map[cmdserial]= cllcmd;
+	//Inserts a cCallCommand object into map
+	callCommand_map[++CmdNextSerial]= cllcmd;
+	//return callCommand_map[CmdNextSerial];
  	
 }
 
@@ -197,14 +197,18 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 		
 		//Here there must be a control between cCommand privilege and cChar privilege.
 
-		//Here there must be the construction of command's parameters that will be put
-		//in cCallCommand object(If the char has the permission to xecute command).
-
-		called_command=new cCallCommand(comm[1], comm[2], comm[3], comm[4); 
+		
+		
+		//switch(tnum-1){  
+		//case n:
+		//callcommands->addCallCommand(*n parameters*);
+		//break;
+		//}
+			
 		
 		//Here there must be the call to small function specified in cCommand.cmd_callback.
 
-		delete called_command; 			
+		 //callcommands->remCallCommand(*serial*);		
 			  
 			
 			  //To be finished...
