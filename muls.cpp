@@ -77,19 +77,19 @@ template <typename T>
 bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 	
 	//ndEndy need because can be into verdata
-	std::map< SERIAL, std::vector<T>>::iterator iter( cache.find( i ) );
+	std::map< UI32, std::vector<T> >::iterator iter( cache.find( id ) );
 	if( iter!=cache.end() ) {
-		data=iter->second;
+		data=&iter->second;
 		return false;
 	}
 
-	if( (i==INVALID) || ( isCached ) || ( i*sizeof(TINDEX) >= idx->file.width() ) ) {
+	if( (id==INVALID) || ( isCached ) || ( id*sizeof(TINDEX) >= idx->file.width() ) ) {
 		data=NULL;
 		return false;
 	}
 
 	TINDEX index;
-	idx->file.seekg( i*sizeof(TINDEX) );
+	idx->file.seekg( id*sizeof(TINDEX) );
 	idx->file.read( (char*)&index, sizeof(TINDEX) );
 	if( index.start==INVALID || index.size==INVALID ) {
 		data=NULL;
@@ -97,17 +97,17 @@ bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 	}
 
 	if( ( index.size % sizeof(T) ) != 0  ) {
-		ErrOut( "data corrupted ( index=%i ) in %s ", i, idx.path.c_str() );
+		ErrOut( "data corrupted ( index=%i ) in %s ", id, idx->path.c_str() );
 		data=NULL;
 		return false;
 	}
 
 	data = new std::vector<T>;
-	data.seekg( index.start );
+	this->data->file.seekg( index.start );
 	T buffer;
 	for( int s=0; s< (index.size % sizeof(T)); ++s ) {
-		data.read( (char*)&buffer, sizeof(T));
-		data.push_back( buffer );
+		this->data->file.read( (char*)&buffer, sizeof(T));
+		data->push_back( buffer );
 	}
 
 	return true;
@@ -121,7 +121,7 @@ bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 template <typename T> 
 void cMULFile<T>::loadCache() {
 
-	if(!isReady() || isCached )
+	if(!is_open() || isCached )
 		return;
 
 	int i=INVALID;
@@ -136,14 +136,14 @@ void cMULFile<T>::loadCache() {
 			continue;
 
 		if( ( index.size % sizeof(T) ) != 0  ) {
-			ErrOut( "data corrupted ( index=%i ) in %s ", i, idx.path.c_str() );
+			ErrOut( "data corrupted ( index=%i ) in %s ", i, idx->path.c_str() );
 			continue;
 		}
 
-		data.seekg( index.start );
+		data->file.seekg( index.start );
 		for( int s=0; s< (index.size % sizeof(T)); ++s ) {
 			T baffer;
-			data.read( (char*)&baffer, sizeof(T));
+			data->file.read( (char*)&baffer, sizeof(T));
 			cache[i].push_back( baffer );
 		}
 

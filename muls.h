@@ -54,7 +54,7 @@ public:
 	cMULFile( std::string idx, std::string data, bool cache  );
 	~cMULFile();
 
-	virtual bool is_open() { return idx->is_open() && data->is_open(); }
+	virtual bool is_open() { return idx->file.is_open() && data->file.is_open(); }
 	virtual bool getData( UI32 i, std::vector< T >* data );
 	std::string getPath() { return idx->path; }
 
@@ -178,10 +178,12 @@ const int CELLSINBLOCK = XCELLSINBLOCK * YCELLSINBLOCK;
 
 struct tcella_st {
 	UI16 id;
-	SI08 altitudine;
+	SI08 z;
 } PACK_NEEDED;
 typedef tcella_st TCELLA;
 typedef TCELLA* P_CELLA;
+
+typedef tcella_st map_st;
 
 struct tblocco_st {
 	UI32 header;
