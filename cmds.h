@@ -45,7 +45,7 @@ public:
 
 //brief Declaration of cCallCommand Class
 //a cCallCommand object is created every time a command is executed. 
-//and destroyed whn the command has finished
+//and destroyed when the command has finished
 //All parameters given by the char who call the command goes here.
 
 //stonedz :Maybe, if Small supports it, we can use an array dynamically allocated(?).

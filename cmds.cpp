@@ -171,7 +171,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 		//Here there must be the construction of command's parameters that will be put
 		//in cCallCommand object(If the char has the permission to xecute command).
 
-		called_command=new cCallCommand(); 
+		called_command=new cCallCommand(comm[1], comm[2], comm[3], comm[4); 
 		
 		//Here there must be the call to small function specified in cCommand.cmd_callback.
 
@@ -191,41 +191,43 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 /*
 
 *******
-Must add a native function for AMX to get command property
+Must complete a native function for AMX to get command property
 for use it in small scripting.
-Something like :
 
-\param 1 char serial
-\param 2 cCallCommand serial
-\param ...  
-
-  NATIVE (_getCmdProperty){
-	...
-  }
 *******
+
 
 */
 
+static CP_PARAM=0;
+static CP_ALLPARAMS=1;
 
 
 /* Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
-			{ "getCmdProperty", _getCmdProperty }
+			{ "getCmdProperty", _getCmdProperty } */
+	// params[1] = char serial
+	// params[2] = cCallCommand Serial
+	// params[3] = property
+	// params[4] = 1st param given
+	// params[5] = 2nd param given
+	// params[6] = 3rd param given
+	// params[7] = 4th param given
+
 
 
 NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
 
-	if ( !params[1] )
+	if ( !params[2] )
 	{
-		switch( params[2] ) {
-			case T_INT: {
-				int p = getCharIntProperty( pc, params[2], params[3], params[4]);
-				cell i = p;
-				return i;
+		switch( params[3] ) {
 			
+			case CP_PARAM: {
+				}
+			case CP_ALLPARAMS: {
+				}
 		}
 
   	}
   	return INVALID;
 }
 
-*/
