@@ -1234,9 +1234,15 @@ signed char cMapStuff::Height( UI32 x, UI32 y, signed char oldz )
 // can the monster move here from an adjacent cell at elevation 'oldz'
 // use illegal_z if they are teleporting from an unknown z
 //bool cMapStuff::CanMonsterMoveHere(int x, int y, int oldz)
+/*!
+\author Unknown
+\todo remove it
+*/
 bool cMapStuff::CanMonsterMoveHere(UI32 x, UI32 y, signed char oldz)
 {
-	if( x >= ( MapTileWidth * 8 ) || y >= ( MapTileHeight * 8 ) )
+	Location pos = Loc( x, y, oldz );
+	return ( isWalkable( pos ) != illegal_z );
+/*	if( x >= ( MapTileWidth * 8 ) || y >= ( MapTileHeight * 8 ) )
 		return false;
 
 	const signed char elev = Height(x, y, oldz);
@@ -1288,7 +1294,7 @@ bool cMapStuff::CanMonsterMoveHere(UI32 x, UI32 y, signed char oldz)
 	if (DoesStaticBlock(x,y,elev))
 			return false;
 
-	return true;
+	return true;*/
 
 }
 

@@ -1500,7 +1500,10 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 		int newX = charpos.x;
 		int newY = charpos.y;
 		getXYfromDir( pc_i->dir, &newX, &newY );	// get coords of the location we want to walk
-		valid = validNPCMove( newX, newY, charpos.z, pc_i );
+                //<Luxor>
+		Location newpos = Loc( newX, newY, charpos.z );
+		valid = ( isWalkable( newpos ) != illegal_z );
+		//</Luxor>
 		if ( valid )
 		{
 			move = checkBounds( pc_i, newX, newY, type );
@@ -1512,12 +1515,18 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			{
 				int direction = getDirFromXY( pc_i, pc_i->fx1, pc_i->fy1 );
 				getXYfromDir( direction, &newX, &newY );
-				valid = validNPCMove( newX, newY, charpos.z, pc_i );
+				//<Luxor>
+				newpos = Loc( newX, newY, charpos.z );
+				valid = ( isWalkable( newpos ) != illegal_z );
+				//</Luxor>
 				if ( !valid ) // try to bounce around obstacle
 				{
 					direction = pc_i->dir;
 					getXYfromDir( pc_i->dir, &newX, &newY );
-					valid = validNPCMove( newX, newY, charpos.z, pc_i );
+					//<Luxor>
+					newpos = Loc( newX, newY, charpos.z );
+					valid = ( isWalkable( newpos ) != illegal_z );
+					//</Luxor>
 					bool clockwise = chance( 50 );
 					while( direction != pc_i->dir && !valid )
 					{
@@ -1526,7 +1535,10 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 						else
 							direction = getLeftDir( direction );
 						getXYfromDir( pc_i->dir, &newX, &newY );
-						valid = validNPCMove( newX, newY, charpos.z, pc_i );
+						//<Luxor>
+						newpos = Loc( newX, newY, charpos.z );
+						valid = ( isWalkable( newpos ) != illegal_z );
+						//</Luxor>
 					}
 				}
 				if ( valid )
@@ -1547,7 +1559,10 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			while( !valid && direction != pc_i->dir )
 			{
 				getXYfromDir( direction, &newX, &newY );
-				valid = validNPCMove( newX, newY, charpos.z, pc_i );
+				//<Luxor>
+				newpos = Loc( newX, newY, charpos.z );
+				valid = ( isWalkable( newpos ) != illegal_z );
+				//</Luxor>
 				if ( clockwise )
 					direction = getRightDir( direction );
 				else
@@ -1583,94 +1598,3 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 	}
 }
 
-int validNPCMove(int x, int y, signed char z, P_CHAR pc_s )
-{
-	VALIDATEPCR(pc_s, 0);
-
-	pc_s->blocked = 1;	// Hmmm..this will have to become a bool
-
-
-	NxwItemWrapper si;
-	si.fillItemsAtXY( x, y );
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_ITEM pi=si.getItem();
-		if( ISVALIDPI(pi) )
-		{
-			if (pi->getPosition().x != (UI32)x || pi->getPosition().y != (UI32)y )
-				continue;
-			//if (pi->isMulti()) continue;
-
-			tile_st tile;
-			Map->SeekTile( pi->id(), &tile);
-			/*
-			if ( (pi->getPosition("x")==x) && (pi->getPosition("y") == y) && (pi->getPosition("z") + tile.height > z + 1) && (pi->getPosition("z") < z + MaxZstep) )
-			{
-	        	if ( pi->type == 12 && pc_s->doorUse )
-        		{
-					dooruse(INVALID,DEREF_P_ITEM(pi)); // this should only be done if facing the door <Sparhawk>
-					pc_s->blocked = 0;
-					return 1;
-				}
-			}
-			*/
-			if ( pi->getPosition().z + tile.height > z+1 && pi->getPosition().z < z + MaxZstep )
-			{
-				if ( pi->id() == 0x3946 || pi->id() == 0x3956 )
-					return 0;
-				if ( pi->id() > 0x0854 && pi->id() < 0x0866 )
-					return 0;
-				if ( pi->id1<=2 || ( pi->id() >= 0x0300 && pi->id() <= 0x03E2 ) )
-					return 0;
-
-				if ( pi->type == 12 )
-        			{
-					if( pc_s->doorUse )
-					{
-						dooruse(INVALID,pi); // this should only be done if facing the door <Sparhawk>
-						pc_s->blocked = 0;
-						return 1;
-					}
-					return 0;
-				}
-			}
-		}
-	}
-
-	int mapid = 0;
-	signed char mapz = Map->AverageMapElevation(x, y, mapid);	// just to get the map-ID
-	if (mapz != illegal_z)
-	{
-		if ( 	//<Luxor>: denied texture map IDs
-			(mapid >= 0x00DC && mapid <= 0x00E7) ||
-			(mapid >= 0x00EC && mapid <= 0x00F7) ||
-			(mapid >= 0x00FC && mapid <= 0x0107) ||
-			(mapid >= 0x010C && mapid <= 0x0117) ||
-			(mapid >= 0x011E && mapid <= 0x0129) ||
-			(mapid >= 0x0141 && mapid <= 0x0144) ||
-			(mapid >= 0x01AF && mapid <= 0x01B0) ||
-			(mapid >= 0x01DE && mapid <= 0x01DB) ||
-			(mapid >= 0x021F && mapid <= 0x0244) ||
-			(mapid >= 0x025A && mapid <= 0x026D) ||
-			(mapid >= 0x02BC && mapid <= 0x02CB) ||
-			(mapid >= 0x06CD && mapid <= 0x06DD) ||
-			(mapid >= 0x06EB && mapid <= 0x073E) ||
-			(mapid >= 0x0745 && mapid <= 0x075C) ||
-			(mapid >= 0x07BD && mapid <= 0x07D4) ||
-			(mapid >= 0x0834 && mapid <= 0x08C6)
-			//</Luxor>
-			) 	
-			return 0;
-		if ( mapid >= 0x0A8 && mapid <= 0x0AB) 	// water (ocean ?)
-			return 0;
-	}
-	// see if the map says its ok to move here
-
-	//ConOut("Old %i %i %i ->", pc_s->getPosition().x,pc_s->getPosition().y,pc_s->getPosition().z);
-	if ( Map->CanMonsterMoveHere( x, y, z ) )
-	{
-		pc_s->blocked = 0;
-		return 1;
-	}
-	return 0;
-}

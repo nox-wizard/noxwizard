@@ -21,6 +21,7 @@
 #include "set.h"
 #include "house.h"
 #include "npcai.h"
+//#include "ai.h"
 
 std::map< SERIAL, P_CHAR > houses;
 
@@ -218,8 +219,9 @@ void buildhouse(int s, int i)
 				loc.y=y+l;
 
 				loc.z=z;
-				if (( !validNPCMove(x+k,y+l,z, pc ) ) &&
-					((charpos.x != x+k)&&(charpos.y != y+l)))
+				Location newpos = Loc( x+k, y+l, z );
+				if ( (isWalkable( newpos ) == illegal_z ) &&
+					((charpos.x != x+k)&&(charpos.y != y+l)) )
 					/*This will take the char making the house out of the space check, be careful
 					you don't build a house on top of your self..... this had to be done So you
 					could extra space around houses, (12+) and they would still be buildable.*/
