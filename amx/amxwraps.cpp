@@ -7334,14 +7334,14 @@ NATIVE ( _shutdown )
 	}
 	else 
 	{
-	endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*(int) params[1]); //sets the shutdown time
+		endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*(int) params[1]); //sets the shutdown time
 	
-	sysbroadcast(TRANSLATE("The server will shutdown in %d minutes and %d seconds.\n"),(int)params[1]/60, (int)params[1]%60);
+		sysbroadcast(TRANSLATE("The server will shutdown in %d minutes and %d seconds.\n"),(int)params[1]/60, (int)params[1]%60);
 	
-	if (g_cAmxPrintBuffer[0]!='\0')
-		sysbroadcast("%s\n", g_cAmxPrintBuffer);
+		if (g_cAmxPrintBuffer[0]!='\0')
+			sysbroadcast("%s\n", g_cAmxPrintBuffer);
 	
-	InfoOut("The server will shutdown in %d minutes and %d seconds.\n%s\n",(int)params[1]/60, (int)params[1]%60, g_cAmxPrintBuffer);
+		InfoOut("The server will shutdown in %d minutes and %d seconds.\n%s\n",(int)params[1]/60, (int)params[1]%60, g_cAmxPrintBuffer);
 	}
 	return true;
 }
@@ -7361,11 +7361,28 @@ NATIVE ( _setSecondsPerUoMinute )
 		secondsperuominute=(int)params[1];
 	else
 		secondsperuominute=5; // standard value
+	
 	InfoOut("Real seconds per UO minute are now set to %d.\n",secondsperuominute);
+	
 	return true;
 
 }
 
+/*!
+\brief Perform garbage collection
+\author stonedz
+\since 0.82
+\return none
+*/
+
+NATIVE ( _garbageCollection )
+{
+	InfoOut("Performing garbage collection...");
+	gcollect();
+	ConOut("[DONE]\n");
+	return true;
+
+}
 
 /*!
 \brief
@@ -7896,6 +7913,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "reload_commands", _reload_commands },
  { "shutdown", _shutdown },
  { "setSecondsPerUoMinute", _setSecondsPerUoMinute },
+ { "garbageCollection", _garbageCollection },
  { "recompileSmall", _recompileSmall },
 
 // speech APIs
