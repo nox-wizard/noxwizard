@@ -1157,7 +1157,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 		}
 		else if ( di<=VISRANGE  && pc->seeForFirstTime( *pi ) ) // Luxor
 			senditem( ps->toInt(), pi );
-		else 
+		else if ( di >=VISRANGE+1 )
 			pc->seeForLastTime( *pi );
 	}
 	return true;
