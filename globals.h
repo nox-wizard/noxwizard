@@ -109,7 +109,6 @@ extern int autoTimeCount;
 extern int loopTimeCount;
 
 //server.cfg/scp things :)
-extern tracking_st tracking_data;
 extern begging_st begging_data;
 extern fishing_st fishing_data;
 extern spiritspeak_st spiritspeak_data;
@@ -218,7 +217,6 @@ extern title_st title[ALLSKILLS+1];
 extern unsigned char *comm[CMAX];
 extern int layers[MAXLAYERS];
 
-extern creat_st creatures[2048]; //LB, stores the base-sound+sound flags of monsters, animals
 extern location_st location[4000];
 extern logout_st logout[1024];//Instalog
 extern region_st region[256];
@@ -293,9 +291,6 @@ extern int gDecayItem; //Last item that was checked for decay Tauriel 3/7/99
 extern int gRespawnItem; //Last item that was checked for respawn Tauriel 3/7/99
 
 extern int save_counter;//LB, world backup rate
-
-extern unsigned int fly_p; // flying probability = 1/fly_p each step (if it doesnt fly)
-extern unsigned char fly_steps_max;
 
 extern int gatecount;
 //Time variables

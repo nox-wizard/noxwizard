@@ -1542,15 +1542,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 		case NXW_CP_I_TIMEUSED_LAST :				  		//dec value: 305;
 			pc->timeused_last = value;
 			break;
-		case NXW_CP_I_TRACKINGDISPLAYTIMER :					  //dec value: 306;
-			pc->trackingdisplaytimer = value;
-			break;
-		case NXW_CP_I_TRACKINGTARGET :					  	//dec value: 307;
-			pc->trackingtarget_serial = value;
-			break;
-		case NXW_CP_I_TRACKINGTIMER :				  		//dec value: 308;
-			pc->trackingtimer = value;
-			break;
 		case NXW_CP_I_TRAINER :				  			//dec value: 309;
 			break;
 		case NXW_CP_I_FLEETIMER:
@@ -1823,9 +1814,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_TIME_UNUSED , pc->time_unused )  		//dec value: 303;
 		CHECK(  NXW_CP_I_TIMEOUT , pc->timeout )  			//dec value: 304;
 		CHECK(  NXW_CP_I_TIMEUSED_LAST , pc->timeused_last )  		//dec value: 305;
-		CHECK(  NXW_CP_I_TRACKINGDISPLAYTIMER , pc->trackingdisplaytimer )  //dec value: 306;
-		CHECK(  NXW_CP_I_TRACKINGTARGET , pc->trackingtarget_serial )  	//dec value: 307;
-		CHECK(  NXW_CP_I_TRACKINGTIMER , pc->trackingtimer )  		//dec value: 308;
 		CHECK(  NXW_CP_I_TRAINER , pc->getTrainer() )  			//dec value: 309;
 		CHECK(  NXW_CP_I_FLEETIMER , pc->fleeTimer )  			//dec value: 310;
 		CHECK(  NXW_CP_I_TRIGGER , pc->trigger )  			//dec value: 311;

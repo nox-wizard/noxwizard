@@ -73,6 +73,7 @@ typedef UI08				ARMORCLASS;
 typedef UI16				BODYTYPE;
 typedef SI32				CHARACTER;
 typedef UI16				COLOR;
+typedef SI32				SOUND;
 
 typedef SI32				ITEM;
 typedef class cNxwClientObj*		NXWCLIENT;
@@ -340,25 +341,6 @@ struct gmpage_st
 	TEXT name[20];
 	SI32 handled;
 } PACK_NEEDED;
-
-/*struct jail_st
-{
- UI32 oldx;
- UI32 oldy;
- SI08 oldz;
- UI32 x;
- UI32 y;
- SI08 z;
- UI32 occupied;
-} PACK_NEEDED;
-*/
-struct tracking_st
-{
- UI32 baserange;
- UI32 maxtargets;
- TIMERVAL basetimer;
- TIMERVAL redisplaytime;
-};
 
 struct begging_st
 {

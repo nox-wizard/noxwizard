@@ -47,6 +47,4 @@ LOGICAL setcharflag2(P_CHAR pc);
 void newScriptsInit();
 void deleteNewScripts();
 
-void init_creatures();
-
 #endif

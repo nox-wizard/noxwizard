@@ -1166,3 +1166,84 @@ P_CHAR SpawnRandomMonster(P_CHAR pc, char* cList, char* cNpcID)
 
 
 } // namespace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cCreatureInfo::cCreatureInfo()
+{
+	sounds[SND_STARTATTACK] = NULL;
+	sounds[SND_IDLE] = NULL;
+	sounds[SND_ATTACK] = NULL;
+	sounds[SND_DEFEND] = NULL;
+	sounds[SND_DIE] = NULL;
+	flag=0;
+	icon=0x20D1;
+}
+
+cCreatureInfo::~cCreatureInfo()
+{
+	for( int i=0; i<ALL_MONSTER_SOUND; ++i )
+		if( sounds[i]!=NULL )
+			delete sounds[i];
+}
+
+SOUND cCreatureInfo::getSound( MonsterSound type )
+{
+	if( ( sounds[ type ]==NULL ) )
+		return INVALID;
+
+	return (*sounds[ type ])[ rand()%( sounds[ type ]->size() ) ];
+
+}
+
+void cCreatureInfo::addSound( MonsterSound type, SOUND sound )
+{
+	if( sounds[ type ]==NULL )
+		sounds[ type ] = new std::vector<SOUND>;
+
+	sounds[ type ]->push_back( sound );
+}
+
+
+
+cAllCreatures creatures;
+
+cAllCreatures::cAllCreatures()
+{
+}
+
+cAllCreatures::~cAllCreatures()
+{
+}
+
+void cAllCreatures::load()
+{
+}
+
+P_CREATURE_INFO cAllCreatures::getCreature( UI16 id )
+{
+	std::map<UI16, cCreatureInfo>::iterator iter( allCreatures.find( id ) );
+	return ( iter!=allCreatures.end() )? &iter->second : NULL;
+}
+
+
+
+
+
+
+
+
+

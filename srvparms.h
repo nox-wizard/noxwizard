@@ -24,7 +24,6 @@ extern void commitserverscript(); // second phase setup
 void saveserverscript();
 #define SrvParms (&server_data)	// in preparation of making sever_data a class.Use SrvParms->xxx instead of server_dat.xxx (Duke)
 
-#define MAXTRACKINGTARGETS 20   // maximum number of trackable targets
 #define NPCSPEED .2	// 5 steps every second
 #define NPCFOLLOWSPEED ((NPCSPEED)/4)
 #define TRACKINGRANGE 10        // tracking range is at least TRACKINGRANGE, additional distance is calculated by Skill,INT

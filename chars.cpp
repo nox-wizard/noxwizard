@@ -236,9 +236,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	spatimer=0;
 	taming=0; //Skill level required for taming
 	summontimer=0; //Timer for summoned creatures.
-	trackingtimer=0; // Timer used for the duration of tracking
-	trackingtarget_serial=INVALID; // Tracking target ID
-	resetTrackingTargets();
 	fishingtimer=0; // Timer used to delay the catching of fish
 	advobj=0; //Has used advance gate?
 	poison=0; // used for poison skill
@@ -558,12 +555,6 @@ void cChar::resetSkill()
 {
 	for (register SI32 i=0; i < TRUESKILLS; i++)
 		skill[i]=0;
-}
-
-void cChar::resetTrackingTargets()
-{
-	for (register SI32 i=0; i < MAXTRACKINGTARGETS; i++)
-		trackingtargets_serial[i]=INVALID;
 }
 
 void cChar::resetNxwFlags()
@@ -2117,40 +2108,15 @@ void cChar::playSFX(SI16 sound, LOGICAL onlyToMe)
 */
 void cChar::playMonsterSound(MonsterSound sfx)
 {
-	SI32 basesound=0;
-	SI16 offset, x;
 
-	x = id;
-	if ((x < 0)||(x>2047)) x = 0;
-	basesound=creatures[x].basesound;
-	offset=sfx;
+	P_CREATURE_INFO creature = creatures.getCreature( id );
+	if( creature==NULL )
+		return;
 
-	if (basesound)
-	{
-		switch(creatures[x].soundflag)
-		{
-			case 0: break; // in normal case the offset is correct
-			case 1: break; // birds sounds will be implmented later
+	SOUND s = creature->getSound( sfx );
+	if( s!=INVALID )
+		playSFX( s );
 
-			case 2:	// only start-attack, attack & dýing sounds available
-				if (sfx==1 || sfx==3) return; // idle, defend ? play nothing
-				else if (sfx==2) offset=1; // correct offset
-				else if (sfx==4) offset=2;
-				break;
-			case 3: // only start-attack, attack, defense & dying
-				if (sfx==1) return; // idle -> play nothing
-				else if (sfx==2) offset=1; // otherwise correct offsets
-				else if (sfx==3) offset=2;
-				else if (sfx==4) offset=3;
-				break;
-			case 4: // only a single sound
-				if (sfx) return;
-				else offset=0;
-				break;
-		}
-		basesound += offset;
-		playSFX( basesound );
-	}
 }
 
 
@@ -4620,32 +4586,6 @@ void cChar::pc_heartbeat()
 		spiritspeaktimer = 0;
 
 
-	if( TIMEOUT( trackingtimer ) )
-	{
-		if( TIMEOUT( trackingdisplaytimer ) )
-		{
-			trackingdisplaytimer = uiCurrentTime + tracking_data.redisplaytime * MY_CLOCKS_PER_SEC;
-			P_CHAR target = pointers::findCharBySerial( trackingtarget_serial );
-			if ( ISVALIDPC(target) )
-				Skills::Track(DEREF_P_CHAR(this));
-		}
-		else if ( trackingtimer > uiCurrentTime / 10 ) // dont send arrow-away packet all the time
-		{
-			P_CHAR target = pointers::findCharBySerial( trackingtarget_serial );
-			if ( ISVALIDPC(target) )
-			{
-				Location targpos= target->getPosition();
-
-				trackingtimer = 0;
-				UI08 arrow[6] = { 0xBA, 0x00, };
-				ShortToCharPtr(targpos.x-1, arrow+2);
-				ShortToCharPtr(targpos.y, arrow+4);
-				Xsend( socket, arrow, 6 );
-//AoS/				Network->FlushBuffer(socket);
-			}
-		}
-	}
-	
 	if( onhorse )
 	{
 		P_ITEM pHorse = GetItemOnLayer(LAYER_MOUNT);

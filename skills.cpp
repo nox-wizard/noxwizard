@@ -1846,7 +1846,6 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case TRACKING:
-				Skills::TrackingMenu(s,TRACKINGMENUOFFSET);
 				break;
 			
 			case BEGGING:
@@ -1904,7 +1903,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 
 void Skills::Tracking(NXWSOCKET s,int selection)
 {
-	if ( s < 0 || s >= now ) //Luxor
+/*	if ( s < 0 || s >= now ) //Luxor
 		return;
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -1923,12 +1922,12 @@ void Skills::Tracking(NXWSOCKET s,int selection)
 	sprintf(temp,TRANSLATE("You are now tracking %s."), pc_targ->getCurrentNameC());
 
 	sysmessage(s,temp);
-	Skills::Track(DEREF_P_CHAR(pc));
+	Skills::Track(DEREF_P_CHAR(pc));*/
 }
 
 void Skills::CreateTrackingMenu(NXWSOCKET s,int m)
 {
-	if ( s < 0 || s >= now ) //Luxor
+/*	if ( s < 0 || s >= now ) //Luxor
 		return;
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2027,7 +2026,7 @@ void Skills::CreateTrackingMenu(NXWSOCKET s,int m)
 			}//switch
             
 			UI16 skid = pcm->GetBodyType();
-			if (/*(skid < 0)||*/(skid>2047)) 
+			if (/*(skid < 0)||*//*(skid>2047)) 
 				skid = 0;
 			if (pc->skill[TRACKING] < 800) {	//Luxor
 				if (skid == BODY_MALE)
@@ -2077,12 +2076,12 @@ void Skills::CreateTrackingMenu(NXWSOCKET s,int m)
 		lentext=strlen(gmtext[i]);
 		Xsend(s, &lentext, 1);
 		Xsend(s, gmtext[i], lentext);
-	}
+	}*/
 }
 
 void Skills::TrackingMenu(NXWSOCKET s,int gmindex)
 {
-	if (s < 0 || s >= now)
+/*	if (s < 0 || s >= now)
 		return;
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2153,13 +2152,13 @@ void Skills::TrackingMenu(NXWSOCKET s,int gmindex)
         Xsend(s, &lentext, 1);
         Xsend(s, gmtext[i], lentext);
     }
-
+*/
 }
 
 void Skills::Track(CHARACTER i)
 {
 
-	P_CHAR src=MAKE_CHAR_REF(i);
+/*	P_CHAR src=MAKE_CHAR_REF(i);
 	VALIDATEPC(src);
 
 	P_CHAR targ= pointers::findCharBySerial(src->trackingtarget_serial);
@@ -2214,13 +2213,13 @@ void Skills::Track(CHARACTER i)
     arrow[3]= (targpos.x - 1) % 256;
     arrow[4]= targpos.y >> 8;
     arrow[5]= targpos.y % 256;
-    Xsend(s,arrow,6);
+    Xsend(s,arrow,6);*/
 
 }
 
 int Skills::TrackingDirection(NXWSOCKET s, CHARACTER i)
 {
-	if ( s < 0 || s >= now ) //Luxor
+/*	if ( s < 0 || s >= now ) //Luxor
 		return 0;
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2253,7 +2252,7 @@ int Skills::TrackingDirection(NXWSOCKET s, CHARACTER i)
         return WEST;
     else if((charpos.x + direction) <= targpos.x)  // East
         return EAST;
-    else return 0;
+    else */return 0;
 
 }
 

@@ -186,6 +186,7 @@ class cIconListMenu : public cBasicMenu
 	private:
 
 		std::vector< pkg_icon_list_menu_st > icons;
+		std::map< SERIAL, SI32 > iconData;
 
 	protected:
 
@@ -200,6 +201,7 @@ class cIconListMenu : public cBasicMenu
 
 		virtual void handleButton( NXWCLIENT ps,  cClientPacket* pkg  );
 		void addIcon( UI16 model, COLOR color, std::string response );
+		void addIcon( UI16 model, COLOR color, SI32 data, std::string response );
 
 };
 

@@ -181,99 +181,49 @@ UI16 itemsfx(UI16 item)
 */
 void bgsound(CHARACTER s)
 {
-        P_CHAR pc_curr=MAKE_CHAR_REF(s);
+    P_CHAR pc_curr=MAKE_CHAR_REF(s);
 	VALIDATEPC(pc_curr);
 
-	int sound;
-	int distance=(VISRANGE+5);
 	P_CHAR inrange[15];
-	int basesound=0;
-	int bigf,xx;
-	char sf,bfs;
-
+	int y=0;
 
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc_curr->getPosition(), VISRANGE, true, false );
-	int y=0;
+	sc.fillCharsNearXYZ( pc_curr->getPosition(), VISRANGE+5, true, false );
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pc=sc.getChar();
-		if((pc->npc)&&(!(pc->dead))&&(!(pc->war))&&(y<=10))
+		if( pc->npc && !pc->dead && !pc->war )
 		{
-			if (char_inRange(pc_curr, pc, distance))
-			{
-				y++;
-				inrange[y]=pc;
-			}
+			inrange[y++]=pc;
+			if( y=15 )
+				return;
 		}
 	}
 
 	if (y>0)
 	{
-
-		sound=((rand()%(y))+1);
-
-		P_CHAR pc_inr=inrange[sound];
-		VALIDATEPC(pc_inr);
-
-		xx = pc_inr->GetBodyType();
-		if ((xx > INVALID) && (xx < 0x0800))
-		{
-			basesound=creatures[xx].basesound;
-			sf=creatures[xx].soundflag;
-		}
-		else return;
-
-		if (basesound!=0)
-		{
-			/*switch(sf) // play only idle sounds, if there arnt any, dont play them !
-			{
-			case 0: basesound++; break;	// normal case -> play idle sound
-			case 1: basesound++; break;	// birds sounds will be implmented later
-			case 2:	basesound=0; break;	// no idle sound, so dont play it !
-			case 3: basesound=0; break;	// no idle sound, so dont play it !
-			case 4:	break; // only a single sound, play it !
-			}
-			if (bgsound!=0) // bugfix lb
-			{
-				Location charpos= pc_inr->getPosition();
-
-				charpos.z = 0;
-
-				SendPlaySoundEffectPkt(pc_curr->getSocket(), 0x01, basesound, 0x0000, charpos);
-			} Temp removed by Luxor*/
-                        if ( chance(20) )
-				pc_inr->playMonsterSound(SND_IDLE);
-		}
+		P_CHAR pc_inr=inrange[ rand()%y ];
+        if( chance(20) )
+			pc_inr->playMonsterSound(SND_IDLE);
 	}
+
 	// play random mystic-sounds also if no creature is in range ...
 
-	bigf=rand()%3333;
-	basesound=0;
-
-	if (bigf==33)
-
+	if(rand()%3333==33)
 	{
-		bfs=rand()%7;
-		switch(bfs)
+		SOUND basesound=INVALID;
+		switch(rand()%7)
 		{
-		case 0: basesound=595;break; // gnome sound
-		case 1: basesound=287;break; // bigfoot 1
-		case 2: basesound=288;break; // bigfoot 2
-		case 3: basesound=639;break; // old snake sound
-		case 4: basesound=179;break; // lion sound
-		case 5: basesound=246;break; // mystic
-		case 6: basesound=253;break; // mystic II
+			case 0: basesound=595; break; // gnome sound
+			case 1: basesound=287; break; // bigfoot 1
+			case 2: basesound=288; break; // bigfoot 2
+			case 3: basesound=639; break; // old snake sound
+			case 4: basesound=179; break; // lion sound
+			case 5: basesound=246; break; // mystic
+			case 6: basesound=253; break; // mystic II
 		}
 
 
-		if (basesound !=0)
-		{
-			Location charpos = pc_curr->getPosition();
-
-			charpos.z = 0;
-
-			SendPlaySoundEffectPkt(pc_curr->getSocket(), 0x01, basesound, 0x0000, charpos ); 
-		}
+		pc_curr->playSFX( basesound, true );
 	}
 }
 

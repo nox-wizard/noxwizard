@@ -5643,7 +5643,8 @@ NATIVE( _menu_createIconList )
 \param 1 the menu serial
 \param 2 model
 \param 3 color
-\param 4 response
+\param 4 data
+\param 5 response
 \return false if error, true else
 */
 NATIVE( _menu_addIcon )
@@ -5652,12 +5653,12 @@ NATIVE( _menu_addIcon )
 	VALIDATEPMR( menu, 0 );
 
 	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	amx_GetAddr(amx,params[5],&cstr);
+	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 
-	menu->addIcon( params[2], params[3], std::string( g_cAmxPrintBuffer ) );
+	menu->addIcon( params[2], params[3], params[4], std::string( g_cAmxPrintBuffer ) );
 	return 1;
 }
 

@@ -779,17 +779,12 @@ void cChar::walkNextStep()
 	}
 
 
-        // <LB> Flying creatures stuff
-	SI32 b = GetBodyType();
-	if ( b < 0 || b > 2047 )
-		b = 0;
-	if ( ( creatures[b].who_am_i ) & 0x1 ) { // Can it fly?
-		if ( fly_steps > 0 ) {
-			if ( chance( 33 ) )
+	P_CREATURE_INFO creature = creatures.getCreature( GetBodyType() );
+	if( creature!=NULL ) {
+		if( creature->canFly() && ( fly_steps>0 ) )
+			if ( chance( 20 ) )
 				playAction( 0x13 ); // Flying animation
-		}
 	}
-	// </LB>
 
     SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
     dir = dirXY & 0x0F;
@@ -956,17 +951,11 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 
 	/////////// LB's flying creatures stuff, flying animation if they stand still ///////
 
-	int b = pc_i->GetBodyType();
-	if ( b < 0 || b > 2047 )
-		b = 0;
-	if ( ( creatures[b].who_am_i ) & 0x1 ) // can it fly ?
-	{
-		if ( pc_i->fly_steps > 0 )
-		{
-			if ( chance( 33 ) )
+	P_CREATURE_INFO creature = creatures.getCreature( pc_i->GetBodyType() );
+	if( creature!=NULL )
+		if( creature->canFly() && ( pc_i->fly_steps>0 ) )
+			if ( chance( 20 ) )
 				pc_i->playAction(0x13); // flying animation
-		}
-	}
 
 	/////////////////////////////////////////////////////////////////////////////////////
 
@@ -1201,30 +1190,22 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 		if ( pc->npc && ( pc->war || pc->ftargserial != INVALID ) )
 			dir |= 0x80;
 
-		// <LB> Flying stuff for npcs
 		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
-			SI32 d;
-			UI16 skid = pc->GetBodyType();
-			if ( skid > 2047 ) skid = 0;
-			if ( (creatures[skid].who_am_i) & 0x1 ) { // If true, the npc can fly
-				if ( pc->fly_steps > 0 ) {
-					pc->fly_steps--;
-					dir |= 0x80; // run mode = fly for that ones that can fly
-				} else {
-					if ( fly_p != 0 )
-						d = rand() % fly_p;
-					else
-						d = 0;
-					if ( d == 0 ) {
-						if ( fly_steps_max != 0 )
-							pc->fly_steps = ( rand() % fly_steps_max ) + 2;
-						else
-							pc->fly_steps += 2;
+			
+			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			if( creature!=NULL )
+				if( creature->canFly() )
+					if( pc->fly_steps > 0 ) 
+					{
+						pc->fly_steps--;
+						dir |= 0x80; // run mode = fly for that ones that can fly
+					} 
+					else 
+					{
+						if ( (rand()%18)==0 )
+							pc->fly_steps = ( rand()%27 ) + 2;
 					}
-				}
-			}
 		}
-		// </LB>
 
 		if ( pc->war )
 			flag = 0x40;

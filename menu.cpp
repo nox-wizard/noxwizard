@@ -809,11 +809,21 @@ void cIconListMenu::addIcon( UI16 model, COLOR color, std::string response )
 	icons.push_back( icon );
 }
 
+void cIconListMenu::addIcon( UI16 model, COLOR color, SI32 data, std::string response )
+{
+	addIcon( model, color, response );
+	iconData.insert( make_pair( icons.size(), data ) );
+}
+
+
 void cIconListMenu::handleButton( NXWCLIENT ps,  cClientPacket* pkg  )
 {
 	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
 
-	callback->Call( ps->toInt(), serial, p->index.get(), p->model.get(), p->color.get() );
+	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get() ) );
+	SERIAL data = ( iter!=iconData.end() )? iter->second : INVALID;
+	
+	callback->Call( ps->toInt(), serial, p->index.get(), p->model.get(), p->color.get(), data );
 
 }
 

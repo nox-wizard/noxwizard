@@ -51,7 +51,6 @@ enum
 	POLYMORPHMENUOFFSET = 8196,
 				//!< polymorph spell menu offset
 	MAKEMENUOFFSET = 2048,
-	TRACKINGMENUOFFSET = 4096,
 
 }; //enum
 
@@ -73,7 +72,8 @@ enum
 };
 
 //! List of monster sounds (see cChar::playMonsterSound())
-enum MonsterSound { SND_STARTATTACK = 0, SND_IDLE, SND_ATTACK, SND_DEFEND, SND_DIE };
+typedef enum { SND_STARTATTACK = 0, SND_IDLE, SND_ATTACK, SND_DEFEND, SND_DIE } MonsterSound;
+const ALL_MONSTER_SOUND = 5;
 
 //! Skills
 enum Skill {

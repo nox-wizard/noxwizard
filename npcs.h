@@ -70,4 +70,61 @@ typedef struct {
 } vendor_item;
 
 
+
+/*
+\soundflags	
+	0 - normal, 5 sounds (attack-started, idle, attack, defence, dying, see nxwcommn.h)
+	1 - birds .. only one "bird-shape" and zillions of sounds ...
+	2 - only 3 sounds -> (attack,defence,dying)
+	3 - only 4 sounds ->	(attack-started,attack,defnce,dying)
+	4 - only 1 sound !!
+\who_am_i
+	1 - creature can fly (must have the animations, so better dont change)
+	2 - anti-blink: these creatures dont have animation,  if not set creaure will randomly dissapear in battle
+					if you find a creature that blinks while fighting, set that bit
+icon: used for tracking, to set the appropriate icon
+*/
+
+#define CREATURE_CAN_FLY 1
+#define CREATURE_ANTI_BLINK 2
+
+class cCreatureInfo {
+
+private:
+
+	std::vector<SOUND>* sounds[ALL_MONSTER_SOUND];
+
+public:
+
+	UI08 flag;
+	SERIAL icon;
+
+	cCreatureInfo();
+	~cCreatureInfo();
+
+	bool canFly() {	return flag&CREATURE_CAN_FLY; }
+	bool needAntiBlink() { return flag&CREATURE_ANTI_BLINK; }
+	SOUND getSound( MonsterSound type );
+	void addSound( MonsterSound type, SOUND sound );
+
+};
+
+typedef cCreatureInfo* P_CREATURE_INFO;
+
+class cAllCreatures {
+
+	std::map<UI16, cCreatureInfo> allCreatures;
+
+public:
+
+	cAllCreatures();
+	~cAllCreatures();
+
+	void load();
+	P_CREATURE_INFO getCreature( UI16 id );
+
+};
+
+extern cAllCreatures creatures;
+
 #endif

@@ -173,9 +173,6 @@ unsigned char wtype;
 int executebatch;
 bool g_nShowLayers;
 
-unsigned int fly_p=18; // flying probability = 1/fly_p each step (if it doesnt fly)
-unsigned char fly_steps_max=27;
-
 unsigned int respawntime=0;
 unsigned int gatedesttime=0;
 
@@ -199,7 +196,6 @@ int donpcupdate;
 
 unsigned long int serverstarttime;
 
-tracking_st tracking_data = {TRACKINGRANGE,MAXTRACKINGTARGETS,TRACKINGTIMER,TRACKINGDISPLAYTIME};
 begging_st begging_data; // was = {BEGGINGRANGE,"Could thou spare a few coins?","Hey buddy can you spare some gold?","I have a family to feed, think of the children."};
 fishing_st fishing_data = {FISHINGTIMEBASE,FISHINGTIMER};
 spiritspeak_st spiritspeak_data = {SPIRITSPEAKTIMER};
@@ -320,7 +316,6 @@ SERIAL spyTo[MAXCLIENT];
  unsigned int metagm[256][7]; //!< for meta gm script
  signed short int menupriv[64][256]; //!< for menu priv script
  int validEscortRegion[256];
- creat_st creatures[2048];
 
 int priv3a[MAXCLIENT];
 int priv3b[MAXCLIENT];

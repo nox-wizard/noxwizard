@@ -384,10 +384,6 @@ void loadserverdefaults()
 	repsys.maxkills=4;
 	repsys.murderdecay=420;
 	//RepSys ---^
-	tracking_data.baserange=TRACKINGRANGE;
-	tracking_data.maxtargets=MAXTRACKINGTARGETS;
-	tracking_data.basetimer=TRACKINGTIMER;
-	tracking_data.redisplaytime=TRACKINGDISPLAYTIME;
 	begging_data.range=3;
 	begging_data.timer=300;
 	strcpy(begging_data.text[0],"Could thou spare a few coins?");
@@ -693,15 +689,6 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1, "COMMANDPREFIX"))		server_data.commandPrefix=script2[0];
 		else if(!strcmp(script1,"ERRORS_TO_CONSOLE"))		server_data.errors_to_console=str2num( script2 );
 		else if(!strcmp(script1,"HOUSEDECAY_SECS"))		server_data.housedecay_secs=str2num( script2 );
-		else if(!strcmp(script1,"BASE_TRACKING_RANGE"))		tracking_data.baserange=str2num(script2);
-		else if(!strcmp(script1,"MAX_TRACKING_TARGETS"))
-		{
-			tracking_data.maxtargets=str2num(script2);
-			if(tracking_data.maxtargets>MAXTRACKINGTARGETS)
-				tracking_data.maxtargets=MAXTRACKINGTARGETS;
-		}
-		else if(!strcmp(script1,"BASE_TRACKING_TIME"))		tracking_data.basetimer=str2num(script2);
-		else if(!strcmp(script1,"TRACKING_MESSAGE_REDISPLAY_TIME")) tracking_data.redisplaytime=str2num(script2);
 		else if(!strcmp(script1,"BEGGING_TIME"))		begging_data.timer=str2num(script2);
 		else if(!strcmp(script1,"BEGGING_RANGE"))		begging_data.range=str2num(script2);
 		else if(!strcmp(script1,"BEGGING_TEXT0"))		strcpy(begging_data.text[0],script2);
@@ -1125,14 +1112,6 @@ void saveserverscript()
     fprintf(file, "STATSADVANCEMODIFIER %i\n",server_data.statsadvancemodifier);
 	fprintf(file, "// This value multiplied by an item's minskill value indicates the maximum skill diff to create \n");
 	fprintf(file, "SKILLLEVEL %i\n",server_data.skilllevel); // By Magius(CHE)
-	fprintf(file, "// Minimum distance that a person can track  \n");
-	fprintf(file, "BASE_TRACKING_RANGE %i\n",tracking_data.baserange);
-	fprintf(file, "// Maximum number of targets that can be tracked  \n");
-	fprintf(file, "MAX_TRACKING_TARGETS %i\n",tracking_data.maxtargets);
-	fprintf(file, "// Minimum time you can track for  \n");
-	fprintf(file, "BASE_TRACKING_TIME %i\n",tracking_data.basetimer);
-	fprintf(file, "// How often the tracking info updates in seconds  \n");
-	fprintf(file, "TRACKING_MESSAGE_REDISPLAY_TIME %i\n",tracking_data.redisplaytime);
 	fprintf(file, "// How close you have to be to beg \n");
 	fprintf(file, "BEGGING_RANGE %i\n",begging_data.range);
 	fprintf(file, "BEGGING_TIME %i\n",begging_data.timer);

@@ -145,12 +145,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 			pc->teleport();
 		}
 		return;
-	} else if ( command == "CREATETRACKINGMENU" ) {
-		Skills::CreateTrackingMenu(s, str2num(param));
-		return;
-	} else if ( command == "TRACKINGMENU" ) {
-		Skills::TrackingMenu(s, str2num(param));
-		return;
 	} else if ( command == "GRINDPOTION" ) {
 		int type = str2num(param);
 		int sub = type % 10;

@@ -669,12 +669,6 @@ public:
 		//SI32			namedeed;
 		SI32			namedeedserial;
 
-		//UI32			trackingtarget; // Tracking target ID
-		SERIAL			trackingtarget_serial; //!< Tracking target ID
-		//UI32			trackingtargets[MAXTRACKINGTARGETS];
-		SERIAL			trackingtargets_serial[MAXTRACKINGTARGETS];
-
-
 	// END
 
 		SI32 			account; // changed to signed, lb
@@ -684,7 +678,6 @@ public:
 	private:
 		void		resetBaseSkill();
 		void		resetSkill();
-		void		resetTrackingTargets();
 		void		resetNxwFlags();
 		void		resetAmxEvents();
 		void		resetResists();
@@ -772,7 +765,6 @@ public:
 		TIMERVAL		spatimer;
 		SI32			taming; //Skill level required for taming
 		TIMERVAL		summontimer; //Timer for summoned creatures.
-		TIMERVAL		trackingtimer; // Timer used for the duration of tracking
 		TIMERVAL		fishingtimer; // Timer used to delay the catching of fish
 
 		char			nxwflags[4]; // for special nxw features
@@ -839,7 +831,6 @@ public:
 		UI32			holdg; // Gold a player vendor is holding for Owner
 		//SI32			weather;	//!< Weather!
 		char			fly_steps; // number of step the creatures flies if it can fly
-		TIMERVAL		trackingdisplaytimer;
 		SI32			menupriv; // needed fro LB's menu priv system
 		//taken from 6904t2(5/10/99) - AntiChrist
 		LOGICAL			tamed;
