@@ -1148,7 +1148,7 @@ void Skills::BottleTarget(NXWSOCKET s)
 		sysmessage(s,TRANSLATE("This is not an appropriate container for a potion."));
 }
 
-#define CREATEINBACKPACK( ITEM ) pi = item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( ITEM ), pc->getBackpack() );
+#define CREATEINBACKPACK( ITEM ) pi = item::CreateFromScript( ITEM, pc->getBackpack() );
 
 /*!
 \author Endymion

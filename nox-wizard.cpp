@@ -398,7 +398,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	P_ITEM pi;
 
 // - create the backpack
-	pi= item::CreateFromScript(s, "$item_backpack");
+	pi= item::CreateFromScript( "$item_backpack");
 	VALIDATEPI(pi);
 	pc->packitemserial= pi->getSerial32();
 	pi->setCont(pc);
@@ -407,16 +407,16 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	if( RandomNum(0, 1)==0 )
 	{
 		if( pc->GetBodyType() == BODY_MALE )
-			pi= item::CreateFromScript(s, "$item_long_pants");
+			pi= item::CreateFromScript( "$item_long_pants");
 		else
-			pi= item::CreateFromScript(s, "$item_a_skirt");
+			pi= item::CreateFromScript( "$item_a_skirt");
 	}
 	else
 	{
 		if( pc->GetBodyType() == BODY_MALE  )
-			pi= item::CreateFromScript(s, "$item_short_pants");
+			pi= item::CreateFromScript( "$item_short_pants");
 		else
-			pi= item::CreateFromScript(s, "$item_a_kilt");
+			pi= item::CreateFromScript( "$item_a_kilt");
 	}
 
 	VALIDATEPI(pi);
@@ -426,9 +426,9 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	pi->setCont(pc);
 
 	if( !(rand()%2) )
-		pi= item::CreateFromScript(s, "$item_fancy_shirt");
+		pi= item::CreateFromScript( "$item_fancy_shirt");
 	else
-		pi= item::CreateFromScript(s, "$item_shirt");
+		pi= item::CreateFromScript( "$item_shirt");
 
 	VALIDATEPI(pi);
 	pi->setColor( ShortFromCharPtr(buffer[s] +100) );

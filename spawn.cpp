@@ -472,7 +472,7 @@ void cSpawnDinamic::doSpawn()
 
 	if( spawn->type == ITYPE_ITEM_SPAWNER ) {
 		
-		P_ITEM pi=item::CreateFromScript( INVALID, spawn->morex, NULL );
+		P_ITEM pi=item::CreateFromScript( spawn->morex );
 		if( ISVALIDPI( pi ) ) {
 			this->current++;
 			this->item_spawned.insert( pi->getSerial32() );

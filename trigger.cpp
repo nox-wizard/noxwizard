@@ -161,7 +161,7 @@ void cTriggerContext::parseIAddCommand(char* par)
 	P_ITEM boh = NULL;
 	if (!InBackpack) 
 	{
-		P_ITEM pi=item::CreateFromScript(ts, itmNumber);
+		P_ITEM pi=item::CreateFromScript( itmNumber);
 		pi->MoveTo(triggerx, triggery, triggerz);
 		pi->Refresh();
 	} 
