@@ -825,7 +825,7 @@ bool AmxOverride::Exec (int moment, int socket)
 \param moment the phase of this override (BEFORE/AFTER)
 \param socket the socket which directly or indirectly invoked this override
 */
-bool AmxOverride::ExecTarget(int moment, int socket)
+bool AmxOverride::ExecTarget(int moment, SERIAL chrserial)
 {
 	CHECKAMX;
 	bool bypassmode = (m_mode&0x04) ? true : false;
@@ -838,9 +838,11 @@ bool AmxOverride::ExecTarget(int moment, int socket)
 	g_bByPass = false;
 
 	g_nMoment = moment;
-
-	P_TARGET targ_amx =clientInfo[socket]->getTarget();
-	if( targ_amx==NULL ) {
+	P_CHAR pc=pointers::findCharBySerial(chrserial);
+	g_nCurrentSocket = pc->getSocket();
+	P_TARGET targ_amx =clientInfo[g_nCurrentSocket]->getTarget();
+	if( targ_amx==NULL ) 
+	{
 		return false;
 	}
 
@@ -853,8 +855,8 @@ bool AmxOverride::ExecTarget(int moment, int socket)
 	else 
 		obj_serial = INVALID;
 		
-	g_nCurrentSocket = socket;
-	AmxFunction::g_prgOverride->CallFn(m_ordinal, socket, targ_amx->serial, obj_serial );
+	
+	AmxFunction::g_prgOverride->CallFn(m_ordinal, chrserial, targ_amx->serial, obj_serial );
 	g_nCurrentSocket = INVALID;
 
 	return ((g_bByPass) || (bypassmode));

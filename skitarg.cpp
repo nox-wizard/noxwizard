@@ -38,7 +38,6 @@
 #undef AMXSMELTORE
 #define AMXSMELTORE "__nxw_smeltOre"
 #undef AMXLUMBERJACKING
-#define AMXLUMBERJACKING "__nxw_sk_lumber"
 #undef AMXTAILORING
 #define AMXTAILORING "__nxw_sk_tailoring"
 #undef AMXTANNERING
@@ -537,7 +536,8 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
 	data::seekMap( t->getLocation().x, t->getLocation().y, map );
 	if( !id )
 		id= map.id;
-    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), pc->getSerial32(), t->getLocation().x, t->getLocation().y, id);
+	AmxFunction::g_prgOverride->CallFn( g_Scripts[AMXT_SKILLS][LUMBERJACKING].getOrdinal(), pc->getSerial32(), location.x, location.y, id);
+	if (g_bByPass==true) return;
 
     AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LUMBERJACKING,AMX_AFTER);
 }
