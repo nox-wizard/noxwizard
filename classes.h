@@ -310,8 +310,6 @@ namespace Skills {
 
 	void TellScroll(char *menu_name, int player, long item_param);
 
-	void CollectAmmo(NXWSOCKET s, int a, int b);
-
 	void Meditation(NXWSOCKET s);
 
 	//@{

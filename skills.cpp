@@ -2562,32 +2562,6 @@ void Skills::TDummy(NXWSOCKET s)
 
 }
 
-void CollectAmmo(NXWSOCKET s, int a, int b)
-{
-	if ( s < 0 || s >= now ) //Luxor
-		return;
-	
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);	
-
-    if (a)
-    {
-        P_ITEM pi=item::SpawnItem(s,a,"#",1,0x0F3F,0,1,1);
-		VALIDATEPI(pi);
-        pi->att=0;
-        pc->sysmsg(TRANSLATE("You collect the arrows."));
-    }
-
-    if (b)
-    {
-        P_ITEM pi=item::SpawnItem(s,b,"#",1,0x1BFB,0,1,1);
-		VALIDATEPI(pi);
-        pi->att=0;
-        pc->sysmsg(TRANSLATE("You collect the bolts."));
-    }
-
-}
-
 void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 {
 	if ( s1 < 0 || s1 >= now ) //Luxor
