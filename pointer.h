@@ -71,25 +71,29 @@ namespace pointers {
 	UI32 containerCountItems(SERIAL serial, short id, short color, LOGICAL bAddAmounts = true, LOGICAL recurseSubpack=true);
 	UI32 containerCountItemsByID(SERIAL serial, UI32 scriptID, LOGICAL bAddAmounts);
 	P_CHAR stableSearch(int serial, int *index);
-	
-	// Sparhawk
 
+	//
+	// Sparhawk:	mapRegion replacement (work in progress)
+	//
 	typedef std::vector< P_CHAR > pCharVector;
 	typedef pCharVector::iterator pCharVectorIt;
 	typedef std::vector< P_ITEM > pItemVector;
 	typedef pItemVector::iterator pItemVectorIt;
 
-	enum eCharWorldMap
+	enum
 	{
-		NONE	=  0,
-		ONLINE	=  1,
-		OFFLINE =  2,
-		NPC	=  4
+		NONE		=  0,
+		ONLINE		=  1,
+		OFFLINE 	=  2,
+		NPC		=  4,
+		SELF		=  8
 	};
-
+	
+	void showCharLocationMap();
 	void addCharToLocationMap( const P_CHAR who );
 	void delCharFromLocationMap( const P_CHAR who );
-	pCharVector getCharFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
+	pCharVector* getCharsNearLocation( cObject* pObject, SI32 range, UI32 flags );
+	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
 	void addItemToLocationMap( const P_ITEM what );
 	void delItemFromLocationMap( const P_ITEM what );
 	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
