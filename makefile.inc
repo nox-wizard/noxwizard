@@ -123,7 +123,6 @@ SOURCES =	\
 		trigger.cpp \
 		thievery.cpp \
 		utils.cpp \
-		unicode.cpp \
 		walking.cpp \
 		weight.cpp \
 		worldmain.cpp \
@@ -221,7 +220,6 @@ HEADERS =	\
 		translation.h \
 		trigger.h \
 		typedefs.h \
-		unicode.h \
 		version.h \
 		worldmain.h \
 		commands/addremove.h \
