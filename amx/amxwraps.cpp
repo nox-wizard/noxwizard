@@ -4618,19 +4618,25 @@ NATIVE(_map_distance)
 NATIVE(_map_getTileName)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
-    staticVector s_vec;
-    tile_st tile;
-    if( data::collectStatics( params[1], params[2], s_vec ) ) {
-        data::seekTile( s_vec[0].id, tile );
+    
+	NxwMulWrapperStatics sm( params[1], params[2] );
+    for( sm.rewind(); !sm.end(); sm++ ) {
 
-        char str[100];
-  		cell *cptr;
-	  	strcpy(str, (char*)(tile.name));
+		statics_st s = sm.get();
+		
+		tile_st tile;
+        if( data::seekTile( s.id, tile ) ) {
 
-  		amx_GetAddr(amx,params[3],&cptr);
-	  	amx_SetString(cptr,str, g_nStringMode);
+			char str[100];
+  			cell *cptr;
+	  		strcpy(str, (char*)(tile.name));
 
-  		return strlen(str);
+  			amx_GetAddr(amx,params[3],&cptr);
+	  		amx_SetString(cptr,str, g_nStringMode);
+
+  			return strlen(str);
+
+		}
     }
     return INVALID;
 }
@@ -4648,15 +4654,15 @@ NATIVE(_map_isUnderStatic)
 { 
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 
+	NxwMulWrapperStatics sm( params[1], params[2] );
+	for( sm.rewind(); !sm.end(); sm++ ) {
 
-	staticVector s_vec;
-	if ( !data::collectStatics( params[1], params[2], s_vec ) )
-   		return false;
-	for ( UI32 i = 0; i < s_vec.size(); i++ ) {
+		statics_st s = sm.get();
+
 		tile_st tile;
-		data::seekTile( s_vec[i].id, tile );
-		if ( ( tile.height + s_vec[i].z ) >params[3] ) // a roof  must be higher than player's z !
-			return true;
+		if( data::seekTile( s.id, tile ) ) 
+			if( ( tile.height + s.z ) >params[3] ) // a roof  must be higher than player's z !
+				return true;
 	}
 	return false;
 }
@@ -4673,12 +4679,13 @@ NATIVE(_map_isUnderStatic)
 NATIVE(_map_getTileID)
 {
 	if (params[1] < 0 || params[2] < 0) return INVALID;
-	staticVector s_vec;
-	if ( !data::collectStatics( params[1], params[2], s_vec ) )
-   		return INVALID;
-	for ( UI32 i = 0; i < s_vec.size(); i++ ) {
-		if ( s_vec[i].z == params[3])
-			return s_vec[i].id;
+	
+	NxwMulWrapperStatics sm( params[1], params[2] );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+
+		statics_st s = sm.get();
+		if( s.z == params[3])
+			return s.id;
 	}
 	return INVALID;
 }
