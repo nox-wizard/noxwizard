@@ -290,6 +290,40 @@ void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 	iter->second->rewind();
 }
 
+void addGuildMembers( SERIAL iSet, SERIAL guild )
+{
+ 
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillGuildMembers( guild );
+	sc->rewind();
+}
+
+void addGuildRecruits( SERIAL iSet, SERIAL guild )
+{
+ 
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillGuildRecruits( guild );
+	sc->rewind();
+}
+
+void addGuilds( SERIAL iSet, int options )
+{
+ 
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+}
+
+
 } //namespace
 
 
@@ -722,6 +756,43 @@ void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeTh
 	}	
 }
 
+
+/*!
+\brief Fills a set with a list of member in given guild
+\author Endymion
+\param guild the guild
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillGuildMembers( SERIAL guild )
+{
+	P_GUILD pGuild = Guildz.getGuild( guild );
+	if( pGuild==NULL ) return;
+
+	GUILDMEMBERMAP::iterator iter( pGuild->members.begin() ), end( pGuild->members.end() );
+	for( ; iter!=end; iter++ ) {
+		insertSerial( iter->first ); 
+	}
+
+}
+
+/*!
+\brief Fills a set with a list of recruit in given guild
+\author Endymion
+\param guild the guild
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
+{
+	P_GUILD pGuild = Guildz.getGuild( guild );
+	if( pGuild==NULL ) return;
+
+	GUILDRECRUITMAP::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
+	for( ; iter!=end; iter++ ) {
+		insertSerial( iter->first ); 
+	}
+
+}
+
 /*!
 \brief Constructor
 */
@@ -912,6 +983,44 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 	}
 
 }
+
+/*!
+\brief Fills a set with a list of all guilds or guild political
+\author Endymion
+\param guild INVALID for all or specific for use guild options
+\param options 
+\warning this function ADD new char to current list
+*/
+void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
+{
+	if( guild == INVALID ) { //all guilds
+		GUILDMAP::iterator iter( Guildz.guilds.begin() ), end( Guildz.guilds.end() );
+		for( ; iter!=end; iter++ ) {
+			insertSerial( iter->first );
+		}
+	}
+	else {
+
+		P_GUILD pGuild = Guildz.getGuild( guild );
+		if( pGuild==NULL ) return;
+
+		if( options == GUILD_WAR ) {
+			std::vector<SERIAL>::iterator iter( pGuild->war.begin() ), end( pGuild->war.end() );
+			for( ; iter!=end; iter++ ) {
+				insertSerial( *iter );	
+			}
+		}
+		else if( options == GUILD_ALLIED ) {
+			std::vector<SERIAL>::iterator iter( pGuild->allied.begin() ), end( pGuild->allied.end() );
+			for( ; iter!=end; iter++ ) {
+				insertSerial( *iter );	
+			}
+		}
+	}
+
+}
+
+
 
 /*!
 \brief Constructor

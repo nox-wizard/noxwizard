@@ -18,6 +18,11 @@ class cGuildMember ; //forward declaration
 
 #include "constants.h"
 #include "typedefs.h"
+
+typedef enum {
+	GUILD_WAR = 0,
+	GUILD_ALLIED
+} GUILD_POLITICAL;
  
 /*
 \note a candidate for membership of a guild
@@ -41,8 +46,8 @@ class cGuildRecruit
 		void		setRecruiter( const P_CHAR pChar );
 		void		setRecruiter( const SERIAL serial );
 	public:
-		cGameDate	recruitementDate;
-		cPoll		poll;
+		//cGameDate	recruitementDate;
+		//cPoll		poll;
 };
 
 typedef enum {
@@ -72,7 +77,7 @@ class cGuildMember
 		void setToggle( GUILD_TITLE_TOGGLE newToggle );
 		GUILD_TITLE_TOGGLE getToggle();
 	public:
-		cGameDate membershipDate; //!< membership date
+		//cGameDate membershipDate; //!< membership date
 };
 
 typedef std::map< SERIAL, cGuildMember > GUILDMEMBERMAP;
@@ -190,10 +195,8 @@ class cGuildz
 		void load();
 		void save( FILE *worldfile );
 
-	private:
-		GUILDMAP guilds;
-
 	public:
+		GUILDMAP guilds;
 
 		P_GUILD getGuild( SERIAL guild );
 		P_GUILD addGuild( P_ITEM stone, P_CHAR master );

@@ -16,6 +16,7 @@
 #define __SET_H__
 
 #include "nxwcommn.h"
+#include "guild.h"
 
 class NxwWrapper {
 
@@ -79,6 +80,8 @@ public:
 	void fillNpcsNearXY( UI16 x, UI16 y, int nDistance = VISRANGE );
 	void fillNpcsNear( P_CHAR pc, int nDistance = VISRANGE );
 	void fillNpcsNear( P_ITEM pi, int nDistance = VISRANGE );
+	void fillGuildMembers( SERIAL guild );
+	void fillGuildRecruits( SERIAL guild );
 
 };
 
@@ -98,6 +101,7 @@ public:
 	void fillItemsAtXY( Location location, UI32 type = UINVALID, SI32 id = INVALID );
 	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
 	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
+	void fillGuilds( SERIAL guild, GUILD_POLITICAL options );
 
 };
 
@@ -149,6 +153,9 @@ namespace amxSet {
 	void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance );
 	void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
 
+	void addGuildMembers( SERIAL iSet, SERIAL guild );
+	void addGuildRecruits( SERIAL iSet, SERIAL guild );
+	void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options );
 
 }
 
