@@ -19,7 +19,6 @@
 #include "nxwcommn.h"
 #include "basics.h"
 #include "cmdtable.h"
-//#include "cmds.h"
 #include "speech.h"
 #include "sndpkg.h"
 #include "sregions.h"

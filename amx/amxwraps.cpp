@@ -5693,6 +5693,30 @@ NATIVE( _party_broadcast )
 }
 
 
+////////////////////////////////////////////////////////////
+/////////////////////// COMMANDS////////////////////////////
+////////////////////////////////////////////////////////////
+
+
+/*
+\brief Add a new command
+\author Frodo
+\since 0.82
+\param 1 name
+\param 2 priv level
+\param 3 callback
+*/
+
+/*NATIVE(_guild_create)
+{
+
+	P_GUILD guild = Guildz.addGuild( params[1] );
+	return ( guild!=NULL )? guild->serial : INVALID;
+}*/
+
+
+
+
 /*!
 \file
 

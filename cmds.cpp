@@ -116,30 +116,30 @@ cCommandMap::cCommandMap() {
 	std::string var1, var3;
 	SI08 var2; 
       
-   //ifstream in; 
-      
-   pFile = fopen ("small-scripts/commands.txt" , "r");
+         
+	pFile = fopen ("small-scripts/commands.txt" , "r");		//Open commands.txt files
 
-   if (pFile == NULL) return;
+	if (pFile == NULL) return;
  
       
     while( !feof(pFile) ){  
       
-     //in >> str ; 
-     fgets (str , 80 , pFile);
+ 
+		fgets (str , 80 , pFile);
 
-	 if ( (str[0]=='/') || (str[0]=='\n') ) continue;
+		if ( (str[0]=='/') || (str[0]=='\n') ) continue;    //Ignore comments and blank lines
       
-	if (str[strlen(str)-1]=='\n')
-			str[strlen(str)-1]='\0';	
+		if (str[strlen(str)-1]=='\n')
+		
+			str[strlen(str)-1]='\0';	                    //Delete final \n of the strings
 	 
 	 
-	 var1=strtok(str,","); 
+		var1=strtok(str,","); 
 		strupr(var1); 
 		var2=atoi(strtok(0,","));      
 		var3=strtok(0,","); 
 		
-		addGmCommand(var1,var2,var3); 
+		addGmCommand(var1,var2,var3);						//Put the command in command_map
      } 
 
 }
@@ -193,7 +193,7 @@ cCommandMap* commands = new cCommandMap();
 //This function is called after the control done in speech.cpp
 
 
-void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
+void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 	{
 	
 	NXWCLIENT client= getClientFromSocket(s);
