@@ -677,7 +677,7 @@ static void exec_alert(char *params)
 
 static void exec_amxcall(char *params)
 {
-	g_prgOverride->CallFn(params);
+	AmxFunction::g_prgOverride->CallFn(params);
 }
 
 //  *CFG <section>.<property>=<value> : do a CFG command 

@@ -352,7 +352,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			}
 	default :
 		if (type > 200) // scripted gumps
-			g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXGUMPFUNC),s, type-200, button, radio);
+			AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXGUMPFUNC),s, type-200, button, radio);
 		break;
 	}
 }

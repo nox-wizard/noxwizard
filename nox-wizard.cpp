@@ -1263,6 +1263,12 @@ void angelMode();
 		SDbgOut("                         -=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 	}
 
+	if (ServerScp::g_nCheckBySmall) {
+		SDbgOut("                         -=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+		SDbgOut("                         ||  RUNNING IN CHECK MODE  ||\n");
+		SDbgOut("                         -=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	}
+
 #ifdef EXTREMELY_UNTESTED
 	if (!ServerScp::g_nLoadDebugger) {
 		SDbgOut("\nWARNING!\n");
@@ -1278,10 +1284,30 @@ void angelMode();
 
 	checkGarbageCollect();
 
-	if( argc==1 ) 
-		InfoOut("Argomento %s\n", argv[0]);
+	if( ServerScp::g_nCheckBySmall ) {
+		InfoOut("Check of all object started\n");
 
-	
+		AmxFunction checkItems( "__check_Item" );
+		AmxFunction checkNpcs( "__check_Npc" );
+		AmxFunction checkPlayers( "__check_Player" );
+
+		cAllObjectsIter objs;
+		P_CHAR pc = NULL;
+		P_ITEM pi = NULL;
+		for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
+			if ( isCharSerial( objs.getSerial() ) && ISVALIDPC( ( pc=static_cast<P_CHAR>(objs.getObject())) ) ) {
+				if( pc->npc )
+					checkNpcs.Call( pc->getSerial32() );
+				else
+					checkPlayers.Call( pc->getSerial32() );
+			}
+			if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( ( pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
+				checkItems.Call( pi->getSerial32() );
+			}
+		}
+		return 0;
+	}
+
 	InfoOut("Server started\n");
 
 	Spawns->doSpawnAll();	

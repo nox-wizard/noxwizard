@@ -309,7 +309,7 @@ void Skills::Mine(NXWSOCKET s)
 	}
 	ores.decreaseResource( target, res );
 
-	g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXMINING), s);
+	AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXMINING), s);
 	AMXEXECSV(s,AMXT_SKITARGS,MINING,AMX_AFTER);
 }
 

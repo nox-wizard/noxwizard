@@ -1880,7 +1880,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 		}
         //<Luxor>: Complete skills handling by AMX
-		g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMX_SKILLS_MAIN), s, x);
+		AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMX_SKILLS_MAIN), s, x);
         //</Luxor>
 	}
 	

@@ -579,7 +579,7 @@ void RemoteAdmin::ProcessInput(int s)
 			Printf(s,"Syntax is : AMXCALL <function>\r\nExample : AMXCALL foo\r\n");
 			return;
 		}
-		g_prgOverride->CallFn(cmd);
+		AmxFunction::g_prgOverride->CallFn(cmd);
 		return;
 	}
 
