@@ -455,7 +455,8 @@ void cTempfx::start()
 			if (dest->morphed)
 				dest->morph();  //if the char is morphed, unmorph him
 			setCrimGrey(dest, ServerScp::g_nPolymorphWillCriminal);
-			dest->morph( m_nMore1, -1, -1, -1, -1, -1, NULL, true );
+			// dest->morph( m_nMore1, -1, -1, -1, -1, -1, NULL, true );
+			dest->morph( m_nMore1, true );
 			dest->polymorph = true;
 			break;
 

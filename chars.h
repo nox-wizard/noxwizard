@@ -1271,9 +1271,8 @@ public:
 		P_ITEM			getHairItem();
 		void			morph ( short bodyid = INVALID, short skincolor = INVALID,
 								short hairstyle = INVALID, short haircolor = INVALID, short beardstyle = INVALID,
-								short beardcolor = INVALID, const char* newname = NULL, LOGICAL bBackup = true, SI32 npcNumber=INVALID);
-
-
+								short beardcolor = INVALID, const char* newname = NULL, LOGICAL bBackup = true);
+		void			morph ( SI32 npcNumber, LOGICAL bBackup);
 //@{
 /*!
 \name possess stuff

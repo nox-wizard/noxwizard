@@ -2715,7 +2715,7 @@ P_ITEM cChar::getHairItem()
 }
 
 /*!
-\author Xanathar
+\author Wintermute, previous code by Xanathar
 \note based on Antichrist incognito code
 \brief Characters morphing (incognito, polymorph, etc)
 \note Calling it with no params will undo any morphing
@@ -2723,11 +2723,17 @@ P_ITEM cChar::getHairItem()
 \note Can recurse :]
 \todo document parameters
 */
-void cChar::morph ( short bodyid, short skincolor, short hairstyle, short haircolor,
-    short beardstyle, short beardcolor, const char* newname, LOGICAL bBackup, SI32 npcNumber)
+// void cChar::morph ( short bodyid, short skincolor, short hairstyle, short haircolor,
+//    short beardstyle, short beardcolor, const char* newname, LOGICAL bBackup, SI32 npcNumber)
+void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 {
+	/*
 	if ((bodyid==INVALID)&&(skincolor==INVALID)&&(hairstyle==INVALID)&&
 	    (haircolor==INVALID)&&(beardstyle==INVALID)&&(beardcolor==INVALID)&& (newname==NULL))
+		*/
+	P_ITEM phair = getHairItem() ;
+	P_ITEM pbeard = getBeardItem();
+	if ( npcNumber == INVALID)
 	{ // if empty morph called, no matter which bBackup status, used for unmorphing
 		if(!morphed)
 		{
@@ -2738,14 +2744,26 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		if ( this->getBackupStats() != NULL )
 		{
 			cCharSaver *backup = this->getBackupStats();
-			morph( backup->getId(), 
-				backup->getColor(), 
-				backup->getHairStyle(), 
-				backup->getHairColor(), 
-				backup->getBeardStyle(), 
-				backup->getBeardColor(),
-				backup->getName().c_str(), 
-				false);
+			this->setId( backup->getId() );
+			this->setColor( backup->getColor() );
+
+			this->setCurrentName( backup->getName());
+			if(ISVALIDPI(pbeard))
+			{
+				pbeard->setId(backup->getBeardStyle());
+				pbeard->setColor(backup->getBeardColor());
+			}
+			if(ISVALIDPI(phair))
+			{
+				phair->setId(backup->getHairStyle());
+				phair->setColor(backup->getHairColor());
+			}
+			this->setStrength(backup->getStrength());
+			this->in=backup->getIntelligence();
+			this->dx=backup->getDexterity();
+			this->hp=backup->getHitpoints();
+			this->stm=backup->getStamina();
+			this->mn=backup->getMana();
 			this->setBackupStats(NULL);
 			delete backup;
 		}
@@ -2758,8 +2776,6 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		morph();
 
 
-	P_ITEM phair = getHairItem();
-	P_ITEM pbeard = getBeardItem();
 //Backing up all relevant things
 	if (bBackup)
 	{
@@ -2790,20 +2806,21 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 
 	if ( npcNumber != INVALID )
 	{
-		P_CHAR npcCopy = npcs::AddNPC(this->getSocket(), NULL, bodyid, 50,50,0); // the npc will be created at 50,50, since he will be deleted anyway
+		P_CHAR npcCopy = npcs::AddNPC(this->getSocket(), NULL, npcNumber, 50,50,0); // the npc will be created at 50,50, since he will be deleted anyway
 		this->setStrength(npcCopy->getStrength());
 		this->dx=npcCopy->dx;
 		this->in=npcCopy->in;
-		if (newname==NULL)
-			setCurrentName(npcCopy->getCurrentName());
+		setCurrentName(npcCopy->getCurrentName());
 		setId( npcCopy->getId());
+		setColor( npcCopy->getColor());
+		phair = npcCopy->getHairItem();
+		pbeard = npcCopy->getBeardItem();
+		phair->setContSerial(INVALID);
+		pbeard->setContSerial(INVALID);
+		this->Equip(phair, false);
+		this->Equip(pbeard, false);
 	}
-	if(bodyid!=INVALID)
-		setId( bodyid );
-
-	if(skincolor!=INVALID)
-		setColor( skincolor );
-
+/*
 	if (newname!=NULL)
 		setCurrentName(newname);
 
@@ -2822,7 +2839,107 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		if (haircolor!=INVALID)
 			phair->setColor( haircolor );
 	}
+*/
+	morphed = bBackup;
 
+	teleport( TELEFLAG_SENDWORNITEMS );
+
+}
+
+/*!
+\author Wintermute, previous code by Xanathar
+\note based on Antichrist incognito code
+\brief Characters morphing (incognito, polymorph, etc)
+\note Calling it with no params will undo any morphing
+\note Any morphing with backup on will undo all previous morphings and install itself
+\note Can recurse :]
+\todo document parameters
+*/
+void cChar::morph ( short bodyid, short skincolor, short hairstyle, short haircolor,
+    short beardstyle, short beardcolor, const char* newname, LOGICAL bBackup)
+{
+	P_ITEM phair = getHairItem() ;
+	P_ITEM pbeard = getBeardItem();
+	if ((bodyid==INVALID)&&(skincolor==INVALID)&&(hairstyle==INVALID)&&
+	    (haircolor==INVALID)&&(beardstyle==INVALID)&&(beardcolor==INVALID)&& (newname==NULL))
+	{ // if empty morph called, no matter which bBackup status, used for unmorphing
+		if(!morphed)
+		{
+			WarnOut("cChar::morph(<void>) with option unmorphing called on non-morphed char\n");
+			return;
+		}
+		morphed = false; //otherwise it will inf-loop
+		if ( this->getBackupStats() != NULL )
+		{
+			cCharSaver *backup = this->getBackupStats();
+			this->setId( backup->getId() );
+			this->setColor( backup->getColor() );
+
+			this->setCurrentName( backup->getName());
+			if(ISVALIDPI(pbeard))
+			{
+				pbeard->setId(backup->getBeardStyle());
+				pbeard->setColor(backup->getBeardColor());
+			}
+			if(ISVALIDPI(phair))
+			{
+				phair->setId(backup->getHairStyle());
+				phair->setColor(backup->getHairColor());
+			}
+			this->setBackupStats(NULL);
+			delete backup;
+		}
+		return;
+	}
+
+
+	// if already morphed and should backup, restore old backup first
+	if ((morphed)&&(bBackup))
+		morph();
+
+
+//Backing up all relevant things
+	if (bBackup)
+	{
+		// only use a temporary memory object that is destroyed on unmorphing
+		cCharSaver *backup = new cCharSaver();
+		backup->setId( getId() );
+		backup->setColor( getColor() );
+
+		backup->setName( getCurrentName() );
+		if(ISVALIDPI(pbeard))
+		{
+			backup->setBeardStyle(pbeard->getId());
+			backup->setBeardColor(pbeard->getColor());
+		}
+		if(ISVALIDPI(phair))
+		{
+			backup->setHairStyle(phair->getId());
+			backup->setHairColor(phair->getColor());
+		}
+		this->setBackupStats(backup);
+	}
+
+	if ( bodyid != INVALID )
+		this->setId(bodyid);
+	if (newname!=NULL)
+		setCurrentName(newname);
+
+	if(ISVALIDPI(pbeard))
+	{
+		if (beardstyle!=INVALID)
+			pbeard->setId( beardstyle );
+		if (beardcolor!=INVALID)
+			pbeard->setColor( beardcolor );
+	}
+
+	if(ISVALIDPI(phair))
+	{
+		if (hairstyle!=INVALID)
+			phair->setId( hairstyle );
+		if (haircolor!=INVALID)
+			phair->setColor( haircolor );
+	}
 	morphed = bBackup;
 
 	teleport( TELEFLAG_SENDWORNITEMS );
@@ -3265,7 +3382,6 @@ void cChar::Kill()
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
-
 	if (!npc)
 	{
 		P_ITEM pDeathRobe = item::addByID( ITEMID_DEATHSHROUD, 1, "a death shroud", 0, getPosition());
