@@ -201,56 +201,53 @@ void setrandomname(P_CHAR pc, char * namelist)
 	
 
 	VALIDATEPC(pc);
-	
-	char sect[512];
-	int i=0,j=0;
-	char script1[1024];
-	cScpIterator* iter = NULL;
 
-	sprintf(sect, "SECTION RANDOMNAME %s", namelist);
+	std::string sect( string("SECTION RANDOMNAME ") + namelist );
+	cScpIterator*	iter = 0;
+	int 		i=0,
+			j=0;
+
 	iter = Scripts::Npc->getNewIterator(sect);
-	if (iter==NULL) {
-		//sprintf(chars[s].getCurrentNameC(), "Error Namelist %s Not Found", namelist);
-		//chars[s].setCurrentName("Error Namelist " + string(namelist) + " Not Found");
-		char tmp[30];
-		sprintf(tmp, "Namelist not found: %10s", namelist);
-		pc->setCurrentName(tmp);
-		return;
-	}
-
-	int loopexit=0;
-	do
+	if ( iter != 0 )
 	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	iter->rewind();
-
-	if(i>0)
-	{
-		i=rand()%(i);
-		loopexit=0;
+		std::string 	script1;
+		int		loopexit=0;
 		do
 		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
+			script1 = iter->getEntry()->getFullLine();
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if(j==i)
-				{
-					//strcpy(chars[s].name,(char*)script1);
-					pc->setCurrentName( script1 );
-					break;
-				}
-				else j++;
+				i++;
 			}
 		}
 		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
+
+		iter->rewind();
+
+		if(i>0)
+		{
+			i=rand()%(i);
+			loopexit=0;
+			do
+			{
+				script1 = iter->getEntry()->getFullLine();
+				if ((script1[0]!='}')&&(script1[0]!='{'))
+				{
+					if(j==i)
+					{
+						pc->setCurrentName( script1 );
+						break;
+					}
+					else j++;
+				}
+			}
+			while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+			safedelete(iter);
+		}
+	}
+	else
+	{
+		pc->setCurrentName( string("Namelist not found: ") + string( namelist ).substr(0,10) );
 	}
 
 }
