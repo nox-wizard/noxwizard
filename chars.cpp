@@ -2766,6 +2766,7 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 			this->setBackupStats(NULL);
 			delete backup;
 		}
+		teleport( TELEFLAG_SENDWORNITEMS );
 		return;
 	}
 
@@ -2801,6 +2802,7 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 		backup->setStamina(this->stm);
 		backup->setMana(this->mn);
 		this->setBackupStats(backup);
+		
 	}
 
 	if ( npcNumber != INVALID )
@@ -2825,26 +2827,6 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 			this->Equip(pbeard, false);
 		}
 	}
-/*
-	if (newname!=NULL)
-		setCurrentName(newname);
-
-	if(ISVALIDPI(pbeard))
-	{
-		if (beardstyle!=INVALID)
-			pbeard->setId( beardstyle );
-		if (beardcolor!=INVALID)
-			pbeard->setColor( beardcolor );
-	}
-
-	if(ISVALIDPI(phair))
-	{
-		if (hairstyle!=INVALID)
-			phair->setId( hairstyle );
-		if (haircolor!=INVALID)
-			phair->setColor( haircolor );
-	}
-*/
 	morphed = bBackup;
 
 	teleport( TELEFLAG_SENDWORNITEMS );
@@ -2894,6 +2876,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 			this->setBackupStats(NULL);
 			delete backup;
 		}
+		teleport( TELEFLAG_SENDWORNITEMS );
 		return;
 	}
 

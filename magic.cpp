@@ -2073,25 +2073,59 @@ cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 	VALIDATEPC( pc );
 	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL )
 		addIcon( 0x2106, 0, pc->getOldId(), string("Undo polymorph") );
-	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
-	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
-	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
-	addIcon( 0x20D1, 0, 0xd0, string("Chicken") );
-	addIcon( 0x20D3, 0, 0x9, string("Daemon") );
-	addIcon( 0x20D8, 0, 0x2, string("Ettin") );
-	addIcon( 0x20D9, 0, 0x4, string("Gargoyle") );
-	addIcon( 0x20D6, 0, 0xc, string("Dragon") );
-	addIcon( 0x20C9, 0, 0x1d, string("Gorilla") );
-	addIcon( 0x20CA, 0, 0x23, string("Lizardman") );
-	addIcon( 0x20DF, 0, 0x1, string("Ogre") );
-	addIcon( 0x20D0, 0, 0xd7, string("Rat") );
-	addIcon( 0x20D4, 0, 0xed, string("Deer") );
-	addIcon( 0x20D7, 0, 0xe, string("Earth Elemental") );
-	addIcon( 0x20E7, 0, 0x32, string("Skeleton") );
-	addIcon( 0x2100, 0, 0x3a, string("Wisp") );
-	addIcon( 0x211F, 0, 0xc8, string("Horse") );
-	addIcon( 0x210B, 0, 0x10, string("Water Elemental") );
-
+	char 		sect[512];
+	std::string 	lha;
+	std::string 	rha;
+	cScpIterator* 	iter = NULL;
+	LOGICAL finished=false;
+	sprintf(sect, "SECTION POLYMORPHMENU");
+	if((iter = Scripts::Magic->getNewIterator(sect)) == NULL)
+	{
+		WarnOut("Undefined polymorph menu\n");
+		return ;
+	}
+	do
+	{
+		UI32 skillneeded =0;
+		UI32 npcID = 0;
+		std::string str_remain;
+		iter->parseLine( lha, rha );
+		lha=trim(lha);
+		rha=trim(rha);
+		if ( lha=="")
+			continue;
+		if ( lha=="{")
+			continue;
+		if ( lha=="}")
+		{
+			finished = true;
+			break;
+		}
+		// id always comes fires
+		UI16 id = str2num(lha, 16);
+		str_remain=rha;
+		rha="";
+		lha="";
+		splitLine( str_remain, lha, rha);
+		if ( lha == "SKILL" )
+		{
+			// rha should contain the needed skill now and the rest of the line, so split again
+			str_remain=rha;
+			rha="";
+			lha="";
+			splitLine( str_remain, lha, rha);
+			skillneeded = str2num( lha );
+			str_remain=rha;
+			rha="";
+			lha="";
+			splitLine( str_remain, lha, rha);
+		}
+		// if no skill is given the xss item define follows the id
+		npcID = str2num(lha);
+		if ( pc->skill[MAGERY] >= skillneeded)
+			addIcon( id, 0, npcID, rha);
+	}
+	while ( !finished );
 	question = string( "Choose a creature" );
 }
 
@@ -2176,17 +2210,59 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 cCreateFoodMenu::cCreateFoodMenu( P_CHAR pc ) : cIconListMenu()
 {
 	VALIDATEPC( pc );
-
-	addIcon( 0x9D0, 0, xss::getIntFromDefine("$item_apples"), string("Apple") );
-	addIcon( 0x103C, 0, xss::getIntFromDefine("$item_bread_loaves"), string("Bread") );
-	addIcon( 0x97C, 0, xss::getIntFromDefine("$item_wedges_of_cheese"), string("Cheese") );
-	addIcon( 0x9F2, 0, xss::getIntFromDefine("$item_cuts_of_ribs"), string("Cut of ribs") );
-	addIcon( 0x97B, 0, xss::getIntFromDefine("$item_fish_steaks"), string("Fish steak") );
-	addIcon( 0x9D1, 0, xss::getIntFromDefine("$item_grape_bunches"), string("Grape bunch") );
-	addIcon( 0x9C9, 0, xss::getIntFromDefine("$item_hams"), string("Ham") );
-	addIcon( 0x9EA, 0, xss::getIntFromDefine("$item_muffins"), string("Muffin") );
-	addIcon( 0x9D2, 0, xss::getIntFromDefine("$item_peaches"), string("Peach") );
-	addIcon( 0x9C0, 0, xss::getIntFromDefine("$item_sausages"), string("Sausage") );
+	char 		sect[512];
+	std::string 	lha;
+	std::string 	rha;
+	cScpIterator* 	iter = NULL;
+	LOGICAL finished=false;
+	sprintf(sect, "SECTION CREATEFOODMENU");
+	if((iter = Scripts::Magic->getNewIterator(sect)) == NULL)
+	{
+		WarnOut("Undefined create food menu\n");
+		return ;
+	}
+	do
+	{
+		UI32 skillneeded =0;
+		UI32 itemID = 0;
+		std::string str_remain;
+		iter->parseLine( lha, rha );
+		lha=trim(lha);
+		rha=trim(rha);
+		if ( lha=="")
+			continue;
+		if ( lha=="{")
+			continue;
+		if ( lha=="}")
+		{
+			finished = true;
+			break;
+		}
+		// id always comes fires
+		UI16 id = str2num(lha, 16);
+		str_remain=rha;
+		rha="";
+		lha="";
+		splitLine( str_remain, lha, rha);
+		if ( lha == "SKILL" )
+		{
+			// rha should contain the needed skill now and the rest of the line, so split again
+			str_remain=rha;
+			rha="";
+			lha="";
+			splitLine( str_remain, lha, rha);
+			skillneeded = str2num( lha );
+			str_remain=rha;
+			rha="";
+			lha="";
+			splitLine( str_remain, lha, rha);
+		}
+		// if no skill is given the xss item define follows the id
+		itemID = str2num(lha);
+		if ( pc->skill[MAGERY] >= skillneeded)
+			addIcon( id, 0, itemID, rha);
+	}
+	while ( !finished );
 
 	question = string( "Choose a food type" );
 }
@@ -2201,7 +2277,7 @@ void cCreateFoodMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 
 	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
 	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get()-1 ) );
-	UI16 data = ( iter!=iconData.end() )? iter->second : INVALID;
+	SI32 data = ( iter!=iconData.end() )? iter->second : INVALID;
 
 	item::CreateFromScript( data, pc->getBackpack() );
 	spellFX( SPELL_CREATEFOOD, pc, pc );

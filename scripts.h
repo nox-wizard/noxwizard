@@ -40,6 +40,7 @@ namespace Scripts {
 	extern class cScpScript* HtmlStrm;
 	extern class cScpScript* Items;
 	extern class cScpScript* Location;
+	extern class cScpScript* Magic;
 	extern class cScpScript* MenuPriv;
 	extern class cScpScript* Menus;
 	extern class cScpScript* MetaGM;

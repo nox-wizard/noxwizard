@@ -331,6 +331,7 @@ namespace Scripts {
 	cScpScript* WeaponInfo = NULL; //cScpScript("weaponinfo.xss");
 	cScpScript* Containers = NULL; //cScpScript("containers.xss");
 	cScpScript* Areas = NULL; //cScpScript("areas.xss");
+	cScpScript* Magic = NULL; //cScpScript("magic.xss");
 };
 
 void newScriptsInit()
@@ -377,6 +378,7 @@ void newScriptsInit()
 	Scripts::WeaponInfo = new cScpScript("scripts/weaponinfo.xss");
 	Scripts::Containers = new cScpScript("scripts/containers.xss");
 	Scripts::Areas = new cScpScript("scripts/areas.xss");
+	Scripts::Magic = new cScpScript("scripts/magic.xss");
 }
 
 
@@ -399,6 +401,7 @@ void deleteNewScripts()
 	safedelete(Scripts::HtmlStrm );//= new cScpScript("htmlstrm.scp");
 	safedelete(Scripts::Items );//= new cScpScript("items.scp");
 	safedelete(Scripts::Location );//= new cScpScript("location.scp");
+	safedelete(Scripts::Magic );//= new cScpScript("scripts/menus.xss");
 	safedelete(Scripts::Menus );//= new cScpScript("scripts/menus.xss");
 	safedelete(Scripts::MetaGM );//= new cScpScript("metagm.scp");
 	safedelete(Scripts::Misc );//= new cScpScript("misc.scp");
