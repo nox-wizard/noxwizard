@@ -913,10 +913,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 				{
 					Map->MultiArea(pi_multi,&sx,&sy,&ex,&ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));
-					Location pcpos= pc->getPosition();
-					pcpos.x= ex;
-					pcpos.y= ey+1;
-					pc->setPosition( pcpos );
+					pc->setPosition( oldpos );
 					pc->teleport();
 					return false;
 				}
@@ -929,10 +926,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	if ( z == -128 )
 	{
-		Location pcpos= pc->getPosition();
-		pcpos.x= oldx;
-		pcpos.y= oldy;
-		pc->setPosition( pcpos );
+		pc->setPosition( oldpos );
 		NXWSOCKET socket = pc->getSocket();
 		if ( socket != INVALID )
 			deny( socket, pc, sequence );
