@@ -2592,24 +2592,18 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
         if(pButte->more1>0)
         {
             
-			P_ITEM pi = item::SpawnItem(DEREF_P_CHAR(pc),pButte->more1/2,"#",1,0x0F3F,0x0000,1);
+			P_ITEM pi = item::CreateFromScript( "$item_arrow", pc->getBackpack() );
 			VALIDATEPI(pi);
+			pi->setAmount( pButte->more1/2 );
             pi->Refresh();
-			//c=item::SpawnItem(s1,,"#",1,0x0F,0x3F,0,0,1,0);
-            //if(c==INVALID) return;
-			//P_ITEM pc= MAKE_ITEM_REF(c);
-			//pc->Refresh();
         }
 
         if(pButte->more2>0)
         {
-			P_ITEM pi = item::SpawnItem(DEREF_P_CHAR(pc),pButte->more2/2,"#",1,0x1BFB,0x0000,1);
+			P_ITEM pi = item::CreateFromScript( "$item_crossbow_bolt", pc->getBackpack() );
 			VALIDATEPI(pi);
+			pi->setAmount( pButte->more2/2 );
             pi->Refresh();
-            //c=item::SpawnItem(s1,pButte->more2/2,"#",1,'\x1B','\xFB',0,0,1,0);
-            //if(c==INVALID) return;
-			//P_ITEM pc= MAKE_ITEM_REF(c);
-            //pc->Refresh();
         }
 
         int i=0;
