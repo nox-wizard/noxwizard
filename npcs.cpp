@@ -886,7 +886,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 						pc->npcaitype=hex2num(script2);
 					else {
 						pc->npcaitype=NPCAI_SMALL;
-						//pc->npcai_func= newAmxEvent( script2,  );
+						pc->npcai_func = new AmxFunction( script2 );
 					}
 				}
 				else if ( !strcmp( "NPCWANDER",script1) )		pc->npcWander=str2num(script2);
