@@ -58,7 +58,7 @@ class cCommand {
 
 		cCommand( std::string cmd_name, SI08 cmd_number, std::string callback );
 		SI08 getCommandLevel();
-		void call( NXWSOCKET s, P_CHAR current );
+		void call( P_CHAR current );
 
 };
 

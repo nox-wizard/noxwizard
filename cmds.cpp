@@ -82,7 +82,7 @@ SI08 cCommand::getCommandLevel() {
 
 
 
-void cCommand::call(NXWSOCKET s, P_CHAR curr_char){
+void cCommand::call(P_CHAR curr_char){
 
 	char* callback = (char*)(this->cmd_callback).c_str();
 	
@@ -90,11 +90,11 @@ void cCommand::call(NXWSOCKET s, P_CHAR curr_char){
 	AmxFunction* CommandFunction = NULL;      
 		
 		if(CommandFunction == NULL ) {
-	NXWCLIENT client= getClientFromSocket(s);
+	
 		
 	
 	CommandFunction = new AmxFunction( callback ); 
-		client->sysmsg("%s blabla", callback);
+		
 		}
 		else
 			
@@ -230,7 +230,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		
 		//Let's call the Small Function
 		
-		p_cmd->call(s, pc_currchar);
+		p_cmd->call(pc_currchar);
    
 		
 
