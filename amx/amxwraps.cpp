@@ -102,7 +102,7 @@ extern "C" {
 
 int g_AmxErrNo = AMXERRNO_OK;
 
-/*!
+/*
 \brief return the error type
 \author Xanathar
 \return error type
@@ -114,7 +114,7 @@ NATIVE (_geterror)
     return n;
 }
 
-/*!
+/*
 \brief set the window title
 \author Xanathar
 \since 0.30
@@ -151,7 +151,7 @@ NATIVE(_setWindowTitle)
 	#endif
 }
 
-/*!
+/*
 \brief bypasses default server behaviour
 \author Xanathar
 \since 0.10
@@ -159,7 +159,7 @@ NATIVE(_setWindowTitle)
 NATIVE(_bypass)
 { g_bByPass = true; return 0; }
 
-/*!
+/*
 \brief get the frame status
 \author Xanathar
 \since 0.20
@@ -168,7 +168,7 @@ NATIVE(_bypass)
 NATIVE(_getFrameStatus)
 { return (g_nMoment==AMX_AFTER) ? 1 : 0; }
 
-/*!
+/*
 \brief perform a CFG command configuring a server.scp entry
 \author Xanathar
 \since 0.50
@@ -184,7 +184,7 @@ NATIVE(_cfgServerOption)
   	return cfg_command(g_cAmxPrintBuffer);
 }
 
-/*!
+/*
 \brief brings up a target, that will invoke the specific callback when the choice is made
 \author Xanathar
 \since 0.20
@@ -202,7 +202,7 @@ NATIVE(_getTarget)
 	return amxTarget(params[1], params[2], g_cAmxPrintBuffer);
 }
 
-/*!
+/*
 \brief add a timer to the timer queque
 \author Xanathar
 \since 0.20
@@ -212,7 +212,7 @@ NATIVE(_getTarget)
 NATIVE(addTimer)
 { return addTimer(params[1],params[2],params[3],params[4]); }
 
-/*!
+/*
 \brief prepares a socket for a menu, initializing it and destroying any previous menu
 \author Xanathar
 \since 0.20
@@ -236,7 +236,7 @@ NATIVE(_menu_Prepare)
 	return 0;
 }
 
-/*!
+/*
 \brief set menu style and eventually the color
 \author Xanathar
 \since 0.20
@@ -256,7 +256,7 @@ NATIVE(_menu_SetStyle)
 	return 0;
 }
 
-/*!
+/*
 \brief set the menu title
 \author Xanathar
 \since 0.20
@@ -280,7 +280,7 @@ NATIVE(_menu_SetTitle)
 	return 0;
 }
 
-/*!
+/*
 \brief set the menu color
 \author Xanathar
 \since 0.20
@@ -298,7 +298,7 @@ NATIVE(_menu_SetColor)
 	return 0;
 }
 
-/*!
+/*
 \brief adds an item at a given position of a correctly inizialized menu
 \author Xanathar
 \since 0.20
@@ -330,7 +330,7 @@ NATIVE(_gump_show)
 	return 0;
 }
 
-/*!
+/*
 \brief pop up the menu window
 \author Xanathar
 \since 0.20
@@ -349,7 +349,7 @@ NATIVE(_menu_Show)
 	return 0;
 }
 
-/*!
+/*
 \brief set the callback for this menu events
 \author Xanathar
 \since 0.20
@@ -390,7 +390,7 @@ NATIVE ( _gui_show )
 	return ( nxwGump::showGump( params[1], pc ) ? 1 : 0 );
 }
 
-/*!
+/*
 \author Luxor
 \brief Set the callback function of a gump
 */
@@ -585,7 +585,7 @@ NATIVE ( _gui_getInputField )
 //
 //
 
-/*!
+/*
 \brief get the item that invoked the trigger
 \author Xanathar
 \since 0.53
@@ -596,7 +596,7 @@ NATIVE ( _gui_getInputField )
 NATIVE(_getTriggeredItem)
 { return g_nTriggeredItem; }
 
-/*!
+/*
 \brief get the type of item that invoked the trigger
 \author Xanathar
 \since 0.53
@@ -607,7 +607,7 @@ NATIVE(_getTriggeredItem)
 NATIVE(_getTriggeredItemTrigType)
 { return g_nTriggerType; }
 
-/*!
+/*
 \brief get the NoxWizard Version
 \author Xanathar
 \since 0.10
@@ -617,7 +617,7 @@ NATIVE(_getTriggeredItemTrigType)
 NATIVE(_getNXWVersion)
 { return VERHEXCODE; }
 
-/*!
+/*
 \brief get the NoxWizard Version type
 \author Xanathar
 \since 0.50
@@ -627,7 +627,7 @@ NATIVE(_getNXWVersion)
 NATIVE(_getNXWVersionType)
 { return VERTYPE; }
 
-/*!
+/*
 \brief get the platform where NoxWizard is running
 \author Xanathar
 \since 0.50
@@ -654,7 +654,7 @@ NATIVE(_sprintf)
 	return strlen( g_cAmxPrintBuffer );
 }
 
-/*!
+/*
 \brief print a message to a given socket
 \author Xanathar
 \since 0.10
@@ -679,7 +679,7 @@ NATIVE(_nprintf)
   return 0;
 }
 
-/*!
+/*
 \brief print a message to a given socket using a given color
 \author Xanathar
 \since 0.20
@@ -702,7 +702,7 @@ NATIVE(_ncprintf)
   return 0;
 }
 
-/*!
+/*
 \brief get the socket used by the given char
 \author Xanathar
 \since 0.60
@@ -716,7 +716,7 @@ NATIVE(_getSocketFromChar)
     return INVALID;
 }
 
-/*!
+/*
 \brief get current socket
 \author Xanathar
 \since 0.10
@@ -729,7 +729,7 @@ NATIVE(_getCurrentSocket)
 	return g_nCurrentSocket;
 }
 
-/*!
+/*
 \brief get the targetted char
 \author Xanathar
 \since 0.10
@@ -742,7 +742,7 @@ NATIVE(_getCharTarget)
     return pc->getSerial32();
 }
 
-/*!
+/*
 \brief get the targetted item
 \author Xanathar
 \since 0.10
@@ -756,7 +756,7 @@ NATIVE(_getItemTarget)
 }
 
 
-/*!
+/*
 \brief get the current string mode used
 \author Xanathar
 \since 0.10
@@ -765,7 +765,7 @@ NATIVE(_getItemTarget)
 NATIVE(_getStringMode)
 { 	return g_nStringMode; }
 
-/*!
+/*
 \brief set the current string mode used
 \author Xanathar
 \since 0.10
@@ -775,7 +775,7 @@ NATIVE(_getStringMode)
 NATIVE(_setStringMode)
 {	g_nStringMode = params[1];	return g_nStringMode; }
 
-/*!
+/*
 \brief get the current time
 \author Xanathar
 \since 0.10
@@ -784,7 +784,7 @@ NATIVE(_setStringMode)
 NATIVE(_getCurrentTime)
 {	return uiCurrentTime; }
 
-/*!
+/*
 \brief get the current system time (in s)
 \author Keldan
 \since 0.83
@@ -793,7 +793,7 @@ NATIVE(_getCurrentTime)
 NATIVE(_getSystemTime)
 {   return getsysclock(); }
 
-/*!
+/*
 \brief get if the character Yell is a server broadcast
 \author Xanathar
 \since 0.10
@@ -807,7 +807,7 @@ NATIVE(_canBroadcast)
 	return pc->CanBroadcast();
 }
 
-/*!
+/*
 \brief get if the character can see serial number
 \author Xanathar
 \since 0.10
@@ -821,7 +821,7 @@ NATIVE(_canSeeSerials)
 	return pc->CanSeeSerials();
 }
 
-/*!
+/*
 \brief get if the character can snoop everywhere always
 \author Xanathar
 \since 0.10
@@ -835,7 +835,7 @@ NATIVE(_canSnoop)
 	return pc->CanSnoop();
 }
 
-/*!
+/*
 \brief get the total gold in character bank box
 \author Xanathar
 \since 0.10
@@ -849,7 +849,7 @@ NATIVE(_CountBankGold)
 	return pc->countBankGold();
 }
 
-/*!
+/*
 \brief get the total gold in character backpack
 \author Xanathar
 \since 0.10
@@ -867,7 +867,7 @@ NATIVE(_CountGold)
 { return chars[params[1]].CountItems(params[2], params[3]); }
 */
 
-/*!
+/*
 \brief get number of item of given type and given color in backpack?
 \author ??
 \since ??
@@ -884,7 +884,7 @@ NATIVE(_CountColoredItems)
 }
 
 
-/*!
+/*
 \brief disturb the meditation of the character
 \author Xanathar
 \since 0.10
@@ -899,7 +899,7 @@ NATIVE(_disturbMed)
 	return 0;
 }
 
-/*!
+/*
 \brief get the char's bankbox
 \author Xanathar
 \since 0.10
@@ -917,7 +917,7 @@ NATIVE(_GetBankBox)
         return pi->getSerial32();
 }
 
-/*!
+/*
 \brief get the serial of the item on the specified layer of the character
 \author Xanathar
 \since 0.10
@@ -933,7 +933,7 @@ NATIVE(_GetItemOnLayer)
 	return ISVALIDPI(pi) ? pi->getSerial32() : INVALID;
 }
 
-/*!
+/*
 \brief get character's privileges
 \author Xanathar
 \since 0.10
@@ -947,7 +947,7 @@ NATIVE(_GetPriv)
 	return pc->GetPriv();
 }
 
-/*!
+/*
 \brief get character's shield
 \author Xanathar
 \since 0.10
@@ -962,7 +962,7 @@ NATIVE(_GetShield)
     return (ISVALIDPI(pi))? pi->getSerial32() : INVALID;
 }
 
-/*!
+/*
 \brief get character's weapon
 \author Xanathar
 \since 0.10
@@ -977,7 +977,7 @@ NATIVE(_GetWeapon)
     return (ISVALIDPI(pi))? pi->getSerial32() : INVALID;
 }
 
-/*!
+/*
 \brief check if character is conselour
 \author Xanathar
 \since 0.10
@@ -991,7 +991,7 @@ NATIVE(_isCounselor)
 	return pc->IsCounselor();
 }
 
-/*!
+/*
 \brief check if character is criminal
 \author Xanathar
 \since 0.10
@@ -1005,7 +1005,7 @@ NATIVE(_isCriminal)
 	return pc->IsCriminal();
 }
 
-/*!
+/*
 \brief check if character is Grey for any reason
 \author Xanathar
 \since 0.20
@@ -1020,7 +1020,7 @@ NATIVE(_isGrey)
     return pc->IsGrey();
 }
 
-/*!
+/*
 \brief check if character is Game Master
 \author Xanathar
 \since 0.10
@@ -1035,7 +1035,7 @@ NATIVE(_isGM)
     return pc->IsGM();
 }
 
-/*!
+/*
 \brief check if character is Game Master or Conselour
 \author Xanathar
 \since 0.54
@@ -1050,7 +1050,7 @@ NATIVE(_isGMorCounselor)
     return pc->IsGMorCounselor();
 }
 
-/*!
+/*
 \brief check if character have human body
 \author Xanathar
 \since 0.10
@@ -1065,7 +1065,7 @@ NATIVE(_isHuman)
     return pc->HasHumanBody();
 }
 
-/*!
+/*
 \brief check if character is blue flagged
 \author Xanathar
 \since 0.10
@@ -1080,7 +1080,7 @@ NATIVE(_isInnocent)
     return pc->IsInnocent();
 }
 
-/*!
+/*
 \brief check if character is invulnerable
 \author Xanathar
 \since 0.10
@@ -1095,7 +1095,7 @@ NATIVE(_isInvul)
     return pc->IsInvul();
 }
 
-/*!
+/*
 \brief check if character is a murderer
 \author Xanathar
 \since 0.10
@@ -1110,7 +1110,7 @@ NATIVE(_isMurderer)
     return pc->IsMurderer();
 }
 
-/*!
+/*
 \brief check if character is a GM ( not considering restriction )
 \author Xanathar
 \since 0.10
@@ -1125,7 +1125,7 @@ NATIVE(_isTrueGM)
     return pc->IsTrueGM();
 }
 
-/*!
+/*
 \brief make the character invulnerable
 \author Xanathar
 \since 0.54
@@ -1140,7 +1140,7 @@ NATIVE(_makeInvulnerable)
     return 0;
 }
 
-/*!
+/*
 \brief make the character vulnerable
 \author Xanathar
 \since 0.10
@@ -1154,7 +1154,7 @@ NATIVE(_makeVulnerable)
     pc->MakeVulnerable(); return 0;
 }
 
-/*!
+/*
 \brief teleport char to given position
 \author Xanathar
 \since 0.10
@@ -1173,7 +1173,7 @@ NATIVE(_moveTo)
 	return 0;
 }
 
-/*!
+/*
 \brief set the given character criminal
 \author Xanathar
 \since 0.10
@@ -1188,7 +1188,7 @@ NATIVE(_setCriminal)
 	return 0;
 }
 
-/*!
+/*
 \brief set the given character grey for a limited time
 \author Xanathar
 \since 0.20
@@ -1203,7 +1203,7 @@ NATIVE(_setGrey)
 	return 0;
 }
 
-/*!
+/*
 \brief set the given character grey forever
 \author Xanathar
 \since 0.20
@@ -1218,7 +1218,7 @@ NATIVE(_setPermaGrey)
 	return 0;
 }
 
-/*!
+/*
 \brief set the given character innocent
 \author Xanathar
 \since 0.10
@@ -1233,7 +1233,7 @@ NATIVE(_setInnocent)
 	return 0;
 }
 
-/*!
+/*
 \brief set the given character murderer
 \author Xanathar
 \since 0.10
@@ -1248,7 +1248,7 @@ NATIVE(_setMurderer)
 	return 0;
 }
 
-/*!
+/*
 \brief set the characters privileges
 \author Xanathar
 \since 0.10
@@ -1263,7 +1263,7 @@ NATIVE(_setPriv)
 	pc->SetPriv(params[2]); return 0;
 }
 
-/*!
+/*
 \brief unhide the character
 \author Xanathar
 \since 0.10
@@ -1278,7 +1278,7 @@ NATIVE(_unhide)
 	return 0;
 }
 
-/*!
+/*
 \brief set the multi serial
 \author Xanathar
 \since 0.10
@@ -1295,7 +1295,7 @@ NATIVE(_setMultiSerial)
 	return 0;
 }
 
-/*!
+/*
 \brief set the owner serial
 \author Xanathar
 \since 0.10
@@ -1311,7 +1311,7 @@ NATIVE(_setOwnSerial)
 	return 0;
 }
 
-/*!
+/*
 \brief set the owner serial ( without updating the internal sctructure )
 \author Xanathar
 \since 0.54
@@ -1327,7 +1327,7 @@ NATIVE(_setOwnSerialOnly)
 	return 0;
 }
 
-/*!
+/*
 \brief get the character by given socket
 \author ??
 \since ??
@@ -1345,7 +1345,7 @@ NATIVE(_getCharFromSocket)
 	return pc->getSerial32();
 }
 
-/*!
+/*
 \brief add given item at the given cantainer in the given position
 \author Xanathar
 \since 0.10
@@ -1365,7 +1365,7 @@ NATIVE(_contAddItem)
 }
 
 
-/*!
+/*
 \brief get the item color
 \author Xanathar
 \since 0.10
@@ -1379,7 +1379,7 @@ NATIVE(_color)
 	return pi->color();
 }
 
-/*!
+/*
 \brief Pile an item into container
 \author Xanathar
 \since 0.10
@@ -1396,7 +1396,7 @@ NATIVE(_contPileItem)
 	return pi->AddItem(pi1);
 }
 
-/*!
+/*
 \brief Count item by id and eventually color in the given container
 \author Xanathar
 \since 0.10
@@ -1412,7 +1412,7 @@ NATIVE(_contCountItems)
 	return pi->CountItems(params[2], params[3]);
 }
 
-/*!
+/*
 \brief Count item by ScriptID
 \author Keldan
 \since 0.82
@@ -1431,7 +1431,7 @@ NATIVE(_countItemsByID)
 {	return items[params[1]].CountItems(params[2], params[3]); }
 */
 
-/*!
+/*
 \brief Delete amount of item in the given container by id and eventually color
 \author Xanathar
 \since 0.10
@@ -1448,7 +1448,7 @@ NATIVE(_contDelAmount)
 	return pi->DeleteAmount(params[2], params[3],params[4]);
 }
 
-/*!
+/*
 \brief Delete amount of item in the given container by ScriptID
 \author Keldan
 \since 0.82
@@ -1464,7 +1464,7 @@ NATIVE(_DelAmountByID)
    return pi->DeleteAmountByID(params[2], params[3]);
 }
 
-/*!
+/*
 \brief move given item to specified position
 \author Xanathar
 \since 0.10
@@ -1483,7 +1483,7 @@ NATIVE(_imoveto)
 	return 0;
 }
 
-/*!
+/*
 \brief pile an item into another
 \author Xanathar
 \since 0.10
@@ -1501,7 +1501,7 @@ NATIVE(_pileitem)
 	return pi->PileItem(pi1);
 }
 
-/*!
+/*
 \brief reduce the amount of the given pileable item
 \author Xanathar
 \since 0.10
@@ -1516,7 +1516,7 @@ NATIVE(_reduceamount)
 	return pi->ReduceAmount(params[2]);
 }
 
-/*!
+/*
 \brief set the container serial
 \author Xanathar
 \since 0.10
@@ -1532,7 +1532,7 @@ NATIVE(_isetContSerial)
 	return 0;
 }
 
-/*!
+/*
 \brief set the container serial without done the appropriate remove aperation
 \author Xanathar
 \since 0.54
@@ -1549,7 +1549,7 @@ NATIVE(_isetContSerialonly)
 	return 0;
 }
 
-/*!
+/*
 \brief set the multi serial
 \author Xanathar
 \since 0.10
@@ -1565,7 +1565,7 @@ NATIVE(_isetMultiSerial)
 	return 0;
 }
 
-/*!
+/*
 \brief set the owner serial
 \author Xanathar
 \since 0.10
@@ -1580,7 +1580,7 @@ NATIVE(_isetOwnSerial)
 	pi->setOwnerSerial32(params[2]); return 0;
 }
 
-/*!
+/*
 \brief set the owner serial without done the appropriate remove aperation
 \author Xanathar
 \since 0.54
@@ -1597,7 +1597,7 @@ NATIVE(_isetOwnSerialOnly)
 	return 0;
 }
 
-/*!
+/*
 \brief set the item serial
 \author Xanathar
 \since 0.10
@@ -1614,7 +1614,7 @@ NATIVE(_isetSerial)
 	return 0;
 }
 
-/*!
+/*
 \brief create a new item from the script
 \author Xanathar
 \since 0.54
@@ -1634,7 +1634,7 @@ NATIVE(_itm_createFromScript)
 	return pi->getSerial32();
 }
 
-/*!
+/*
 \brief create a new item from the script
 \author Luxor
 \since 0.82
@@ -1659,7 +1659,7 @@ NATIVE(_itm_createByDef)
 	return INVALID;
 }
 
-/*!
+/*
 \brief get the backpack of given character
 \author Xanathar
 \since 0.50
@@ -1675,7 +1675,7 @@ NATIVE(_itm_getCharBackPack)
 	return pi->getSerial32();
 }
 
-/*!
+/*
 \brief check if character can keep the equipment worn
 \author Xanathar
 \since 0.50
@@ -1690,7 +1690,7 @@ NATIVE(_chr_CheckEquipment)
     return 0;
 }
 
-/*!
+/*
 \brief created an item of given type in the backpack of char with given socket
 \author Xanathar
 \since ??
@@ -1706,7 +1706,7 @@ NATIVE(_createiteminbackpack)
     return pi->getSerial32();
 }
 
-/*!
+/*
 \brief Spawn given item in the bank of char with given socket
 \author Xanathar
 \since ??
@@ -1725,7 +1725,7 @@ NATIVE(_itm_spawnBank)
     return pi->getSerial32();
 }
 
-/*!
+/*
 \brief Spawn given item in the bank of given char
 \author Xanathar
 \since ??
@@ -1742,7 +1742,7 @@ NATIVE(_chr_spawnIteminBank)
     return pi->getSerial32();
 }
 
-/*!
+/*
 \brief Check the item for decay
 \author Xanathar
 \since 0.50
@@ -1757,7 +1757,7 @@ NATIVE(_itm_checkDecay)
 	return 0;
 }
 
-/*!
+/*
 \brief Delete an item
 \author Xanathar
 \since 0.50
@@ -1772,7 +1772,7 @@ NATIVE(_itm_remove)
 	return 0;
 }
 
-/*!
+/*
 \brief Add a new NPC
 \author Xanathar
 \since 0.50
@@ -1789,7 +1789,7 @@ NATIVE(_chr_addNPC) //addNPC npcnum, x,y,z
     return pc->getSerial32();
 }
 
-/*!
+/*
 \brief Remove a character
 \author Xanathar
 \since 0.50
@@ -1804,7 +1804,7 @@ NATIVE(_chr_remove)
     return 0;
 }
 
-/*!
+/*
 \brief Calculates character attac power
 \author Xanathar
 \since 0.50
@@ -1818,7 +1818,7 @@ NATIVE(_chr_calcAtt)
     return pc->calcAtt();
 }
 
-/*!
+/*
 \brief Calculates character defence power of the given body part
 \author Xanathar
 \since 0.50
@@ -1833,7 +1833,7 @@ NATIVE(_chr_calcDef)
     return pc->calcDef(params[2]);
 }
 
-/*!
+/*
 \brief the given item fish
 \author Xanathar
 \since 0.50
@@ -1848,7 +1848,7 @@ NATIVE(_chr_fish)
     return 0;
 }
 
-/*!
+/*
 \brief Get the guild the char is a member of if any
 \author Sparhawk
 \since 0.82.rc3
@@ -1862,7 +1862,7 @@ NATIVE( _chr_getGuild )
 	return pChar->getGuild();
 }
 
-/*!
+/*
 \brief Set the guild the char is a member of
 \author Sparhawk
 \since 0.82.rc3
@@ -1876,7 +1876,7 @@ NATIVE( _chr_setGuild )
 	return 1;
 }
 
-/*!
+/*
 \brief the given item fish
 \author Xanathar
 \since 0.50
@@ -1894,7 +1894,7 @@ NATIVE(_chr_guildCompare)
 }
 
 
-/*!
+/*
 \brief given character cast field
 \author Xanathar
 \since 0.50
@@ -1922,7 +1922,7 @@ NATIVE(_magic_castFieldSpell)
 
 }
 
-/*!
+/*
 \brief Check if given spell is contained in spell book
 \author Xanathar
 \since 0.50
@@ -1938,7 +1938,7 @@ NATIVE(_magic_checkSpellbook)
 	return 0;
 }
 
-/*!
+/*
 \brief reverses attacker and defender, according to reflection
 \author Xanathar
 \since 0.50
@@ -2041,7 +2041,7 @@ NATIVE(_magic_castWeaken)
 { return g_nSandBoxLevel; }
 */
 
-/*!
+/*
 \brief Send a complete network packet to given socket
 \author Xanathar
 \since 0.50
@@ -2071,7 +2071,7 @@ NATIVE(_send_send)
 }
 
 
-/*!
+/*
 \brief Send an attack stuff
 \author Xanathar
 \since ??
@@ -2094,7 +2094,7 @@ NATIVE(_chr_attackStuff)
 }
 
 
-/*!
+/*
 \brief Send an attack confirmation to given socket for the given character
 \author Xanathar
 \since 0.50
@@ -2109,7 +2109,7 @@ NATIVE(_send_confirmAttack)
     SndAttackOK(params[1], pc->getSerial32()); return 0;
 }
 
-/*!
+/*
 \brief test if status request from client is for character stats
 \author Sparhawk
 \since 0.82
@@ -2120,7 +2120,7 @@ NATIVE(_rcve_statsRequest )
 	return ( buffer[params[1]][5] == 4 );
 }
 
-/*!
+/*
 \brief test if status request from client is for character skills
 \author Sparhawk
 \since 0.82
@@ -2132,7 +2132,7 @@ NATIVE(_rcve_skillsRequest )
 }
 
 
-/*!
+/*
 \brief get number of active socket
 \author Xanathar
 \since 0.50
@@ -2143,7 +2143,7 @@ NATIVE(_getSocketCount)
 { return now; }
 
 
-/*!
+/*
 \brief Activate a temp effect
 \author Xanathar
 \since 0.53
@@ -2168,7 +2168,7 @@ NATIVE(_tempfx_activate)
 	//</Luxor>
 	return 0;
 }
-/*!
+/*
 \brief Get an event handler name from a given character
 \author Sparhawk
 \since 0.82
@@ -2202,7 +2202,7 @@ NATIVE(_chr_getEventHandler)
 	amx_SetString(cptr,str, g_nStringMode);
 	return strlen(str);
 }
-/*!
+/*
 \brief Set an event handler to given character
 \author Xanathar
 \since 0.50
@@ -2229,7 +2229,7 @@ NATIVE(_chr_setEventHandler)
 	g_nAmxPrintPtr=0;
 	return 0;
 }
-/*!
+/*
 \brief Get an event handler name from a given item
 \author Sparhawk
 \since 0.82
@@ -2263,7 +2263,7 @@ NATIVE(_itm_getEventHandler)
 	amx_SetString(cptr,str, g_nStringMode);
 	return strlen(str);
 }
-/*!
+/*
 \brief Set an event handler to given item
 \author Xanathar
 \since 0.50
@@ -2291,7 +2291,7 @@ NATIVE(_itm_setEventHandler)
 	return 0;
 }
 
-/*!
+/*
 \brief Delete event from given character
 \author Xanathar
 \since ??
@@ -2310,7 +2310,7 @@ NATIVE(_chr_delEventHandler)
 	return 0;
 }
 
-/*!
+/*
 \brief Delete event from given item
 \author Xanathar
 \since ??
@@ -2327,7 +2327,7 @@ NATIVE(_itm_delEventHandler)
 	return 0;
 }
 
-/*!
+/*
 \brief send a movign effect to a given character to another
 \author Xanathar
 \since 0.53
@@ -2353,7 +2353,7 @@ NATIVE (_send_movingfx)
 }
 
 
-/*!
+/*
 \brief send an hardcoded target to given socket
 \author Xanathar
 \since 0.53
@@ -2377,7 +2377,7 @@ NATIVE (_nativeTarget)
 	return 0;
 }
 
-/*!
+/*
 \brief send a stat update to given character
 \author Xanathar
 \since 0.53
@@ -2396,7 +2396,7 @@ NATIVE (_send_statUpdate)
 }
 
 
-/*!
+/*
 \brief Does all the stuff involved in a player helping another ( like healing criminal as such )
 \author Xanathar
 \since 0.53
@@ -2415,7 +2415,7 @@ NATIVE (_chr_helpStuff)
 }
 
 
-/*!
+/*
 \brief Set the weather in a region
 \author Xanathar
 \since 0.53
@@ -2442,7 +2442,7 @@ NATIVE (_rgn_setWeather)
 	return oldw;
 }
 
-/*!
+/*
 \brief Get the weather in a region
 \author Xanathar
 \since 0.53
@@ -2454,7 +2454,7 @@ NATIVE (_rgn_getWeather)
 	return region[params[1]].wtype;
 }
 
-/*!
+/*
 \brief Get the guarded status of a region
 \author Xanathar
 \since 0.53
@@ -2466,7 +2466,7 @@ NATIVE (_rgn_getGuarded)
 	return region[params[1]].priv & 0x01;
 }
 
-/*!
+/*
 \brief Set the guarded status of a region
 \author Sparhawk
 \since 0.82
@@ -2482,7 +2482,7 @@ NATIVE (_rgn_setGuarded)
 	return 1;
 }
 
-/*!
+/*
 \brief Check if mark is allowed
 \author Xanathar
 \since 0.53
@@ -2494,7 +2494,7 @@ NATIVE (_rgn_getMarkAllowed)
 	return region[params[1]].priv & 0x02;
 }
 
-/*!
+/*
 \brief Set the mark status of a region
 \author Sparhawk
 \since 0.82
@@ -2510,7 +2510,7 @@ NATIVE (_rgn_setMarkAllowed )
 	return 1;
 }
 
-/*!
+/*
 \brief check if gate is allowed
 \author Xanathar
 \since 0.53
@@ -2522,7 +2522,7 @@ NATIVE (_rgn_getGateAllowed)
 	return region[params[1]].priv & 0x04;
 }
 
-/*!
+/*
 \brief Set the gate status of a region
 \author Sparhawk
 \since 0.82
@@ -2538,7 +2538,7 @@ NATIVE (_rgn_setGateAllowed )
 	return 1;
 }
 
-/*!
+/*
 \brief check if recall is allowed
 \author Xanathar
 \since 0.53
@@ -2550,7 +2550,7 @@ NATIVE (_rgn_getRecallAllowed )
 	return region[params[1]].priv & 0x08;
 }
 
-/*!
+/*
 \brief Set the recall status of a region
 \author Sparhawk
 \since 0.82
@@ -2566,7 +2566,7 @@ NATIVE (_rgn_setRecallAllowed )
 	return 1;
 }
 
-/*!
+/*
 \brief check if magic damage region
 \author Xanathar
 \since 0.53
@@ -2578,7 +2578,7 @@ NATIVE (_rgn_getNoMagicDamage )
 	return region[params[1]].priv & 0x40;
 }
 
-/*!
+/*
 \brief Set the magic damage status of a region
 \author Sparhawk
 \since 0.82
@@ -2594,7 +2594,7 @@ NATIVE (_rgn_setNoMagicDamage )
 	return 1;
 }
 
-/*!
+/*
 \brief check if region has been loaded from regions.xss
 \author Sparhawk
 \since 0.82
@@ -2606,7 +2606,7 @@ NATIVE (_rgn_isValid )
 	return region[params[1]].inUse;
 }
 
-/*!
+/*
 \brief Get region name
 \author Sparhawk
 \since 0.82
@@ -2629,7 +2629,7 @@ NATIVE( _rgn_getName )
 }
 
 
-/*!
+/*
 \brief send a bolt effect
 \author Xanathar
 \since 0.53
@@ -2651,7 +2651,7 @@ NATIVE (_direct_castSpell)
 	return 0;
 }
 
-/*!
+/*
 \brief given character do the specified action
 \author Xanathar
 \since 0.53
@@ -2669,7 +2669,7 @@ NATIVE (_chr_action)
 }
 
 
-/*!
+/*
 \brief set the hardcoded spell type
 \author Xanathar
 \since 0.53
@@ -2688,7 +2688,7 @@ NATIVE (_direct_setSpellType)
 	return ov;
 }
 
-/*!
+/*
 \brief Check the given skill in character
 \author Xanathar
 \since 0.53
@@ -2707,7 +2707,7 @@ NATIVE (_chr_checkSkill)
 }
 
 
-/*!
+/*
 \brief Un mount the given character
 \author Xanathar
 \since 0.53
@@ -2722,7 +2722,7 @@ NATIVE (_chr_unmountHorse)
 	return 0;
 }
 
-/*!
+/*
 \brief The character mount the given animal
 \author Xanathar
 \since 0.53
@@ -2743,7 +2743,7 @@ NATIVE (_chr_mountHorse)
 	return 0;
 }
 
-/*!
+/*
 \brief Given character play specified sound
 \author Xanathar
 \since 0.53
@@ -2759,7 +2759,7 @@ NATIVE(_chr_sound)
 	return 0;
 }
 
-/*!
+/*
 \brief Play a sound effect on a item
 \author Xanathar
 \since 0.54
@@ -2775,7 +2775,7 @@ NATIVE(_itm_sound)
 	return 0;
 }
 
-/*!
+/*
 \brief Open a set
 \author Endymion
 \since 0.82
@@ -2786,7 +2786,7 @@ NATIVE( _set_create )
 	return amxSet::create( );
 }
 
-/*!
+/*
 \brief Close a set
 \author Endymion
 \since 0.82
@@ -2799,7 +2799,7 @@ NATIVE( _set_delete )
 	return 0;
 }
 
-/*!
+/*
 \brief Rewind a set
 \author Endymion
 \since 0.82
@@ -2812,7 +2812,7 @@ NATIVE( _set_rewind )
 	return 0;
 }
 
-/*!
+/*
 \brief Move to next item
 \author Endymion
 \since 0.82
@@ -2825,7 +2825,7 @@ NATIVE( _set_next )
 	return 0;
 }
 
-/*!
+/*
 \brief Check if at end of the given set
 \author Endymion
 \since 0.82
@@ -2838,7 +2838,7 @@ NATIVE( _set_end )
 }
 
 
-/*!
+/*
 \brief Get number of element contained in a set
 \author Endymion
 \since 0.82
@@ -2850,7 +2850,7 @@ NATIVE ( _set_size )
 	return amxSet::size( params[1] );
 }
 
-/*!
+/*
 \brief Get current object of given set
 \author Endymion
 \since 0.82
@@ -2863,7 +2863,7 @@ NATIVE( _set_get )
 	return amxSet::get( params[1] );
 }
 
-/*!
+/*
 \brief Get current character of given set
 \author Endymion
 \since 0.82
@@ -2877,7 +2877,7 @@ NATIVE( _set_getChar )
 	return ISVALIDPC(pc)? pc->getSerial32() : INVALID;
 }
 
-/*!
+/*
 \brief Get current item of given set
 \author Endymion
 \since 0.82
@@ -2891,7 +2891,7 @@ NATIVE( _set_getItem )
 	return ISVALIDPI(pi)? pi->getSerial32() : INVALID;
 }
 
-/*!
+/*
 \brief Add to given set the value
 \author Endymion
 \since 0.82
@@ -2905,7 +2905,7 @@ NATIVE( _set_add )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the owned npc of given character
 \author Endymion
 \since 0.82
@@ -2923,7 +2923,7 @@ NATIVE( _set_addOwnedNpcs )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the npcs near location
 \author Endymion
 \since 0.82
@@ -2939,7 +2939,7 @@ NATIVE( _set_addNpcsNearXY )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the npcs near object
 \author Endymion
 \since 0.82
@@ -2959,7 +2959,7 @@ NATIVE( _set_addNpcsNearObj )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the party friend of given character
 \author Endymion
 \since 0.82
@@ -2977,7 +2977,7 @@ NATIVE( _set_addPartyFriend )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the item in given container
 \author Endymion
 \since 0.82
@@ -2995,7 +2995,7 @@ NATIVE( _set_addItemsInCont )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the items weared by given character
 \author Endymion
 \since 0.82
@@ -3014,7 +3014,7 @@ NATIVE( _set_addItemWeared )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the items at given location
 \author Endymion
 \since 0.82
@@ -3030,7 +3030,7 @@ NATIVE( _set_addItemsAtXY )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set the items near given location
 \author Endymion
 \since 0.82
@@ -3047,7 +3047,7 @@ NATIVE( _set_addItemsNearXY )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set all online players
 \author Endymion
 \since 0.82
@@ -3061,7 +3061,7 @@ NATIVE( _set_addAllOnlinePl )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set all online players near given character
 \author Endymion
 \since 0.82
@@ -3089,7 +3089,7 @@ NATIVE( _set_addOnlinePlNearObj )
 }
 
 
-/*!
+/*
 \brief Add to given set all online players near location
 \author Endymion
 \since 0.82
@@ -3106,7 +3106,7 @@ NATIVE( _set_addOnlinePlNearXY )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set all guild member
 \author Endymion
 \since 0.82
@@ -3120,7 +3120,7 @@ NATIVE( _set_addGuildMembers )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set all guild recruit
 \author Endymion
 \since 0.82
@@ -3134,7 +3134,7 @@ NATIVE( _set_addGuildRecruit )
 	return 0;
 }
 
-/*!
+/*
 \brief Add to given set all guild or guild political
 \author Endymion
 \since 0.82
@@ -3150,7 +3150,7 @@ NATIVE( _set_addGuilds )
 }
 
 
-/*!
+/*
 \brief Resurrect a character
 \author Xanathar
 \param 1: the character
@@ -3169,7 +3169,7 @@ NATIVE(_chr_resurrect)
 }
 
 
-/*!
+/*
 \brief generic npctalk/npcemote handler
 \author Sparhawk
 \since 0.60
@@ -3222,7 +3222,7 @@ NATIVE(_chr_speech)
 }
 
 
-/*!
+/*
 \brief sends message on top of char visible to one socket only
 \author Sparhawk
 \since 0.82
@@ -3256,7 +3256,7 @@ NATIVE( _chr_showMessage )
 	return INVALID;
 }
 
-/*!
+/*
 \brief get distance from two character
 \author Luxor
 \since 0.82
@@ -3274,7 +3274,7 @@ NATIVE(_chr_distance)
     return pc1->distFrom(pc2);
 }
 
-/*!
+/*
 \brief A character Attack another
 \author Luxor
 \since 0.82
@@ -3293,7 +3293,7 @@ NATIVE(_chr_npcattack)
 	return 0;
 }
 
-/*!
+/*
 \brief Update a character
 \author Luxor
 \since 0.82
@@ -3308,7 +3308,7 @@ NATIVE(_chr_updatechar)
 	return 0;
 }
 
-/*!
+/*
 \brief Play a static effect to a character
 \author Luxor
 \since 0.82
@@ -3325,7 +3325,7 @@ NATIVE(_send_staticfx)
     return 0;
 }
 
-/*!
+/*
 \brief Get the serial from an item
 \author Luxor
 \since 0.7
@@ -3340,7 +3340,7 @@ NATIVE(_getItemFromSerial)
     return pi->getSerial32();
 }
 
-/*!
+/*
 \brief Release NPC
 \author Luxor
 \since 0.7
@@ -3362,7 +3362,7 @@ NATIVE(_chr_npcRelease)
 	return 0;
 }
 
-/*!
+/*
 \brief Check if a character own anothe given character
 \author Luxor
 \since 0.7
@@ -3384,7 +3384,7 @@ NATIVE(_chr_owns)
 }
 
 
-/*!
+/*
 \brief Get the serial from an character
 \author Luxor
 \since 0.7
@@ -3399,7 +3399,7 @@ NATIVE(_getCharFromSer)
     return pc->getSerial32();
 }
 
-/*!
+/*
 \brief Teleport a character
 \author Luxor
 \since 0.7
@@ -3415,7 +3415,7 @@ NATIVE(_chr_teleport)
 	return 0;
 }
 
-/*!
+/*
 \brief Refresh an item
 \author Luxor
 \since 0.7
@@ -3431,7 +3431,7 @@ NATIVE(_itm_refresh)
 	return 0;
 }
 
-/*!
+/*
 \brief Line of sight
 \author Luxor
 \since 0.7
@@ -3452,7 +3452,7 @@ NATIVE(_chr_lineOfSight)
 
 
 
-/*!
+/*
 \brief return the guild type
 \author Sparhawk
 \since 0.82a
@@ -3465,7 +3465,7 @@ NATIVE( _chr_getGuildType )
     VALIDATEPCR(pc, INVALID);
 	return pc->GetGuildType();
 }
-/*!
+/*
 \brief set the guild type
 \author Sparhawk
 \since 0.82a
@@ -3481,7 +3481,7 @@ NATIVE( _chr_setGuildType )
 	return 0;
 }
 
-/*!
+/*
 \brief return the guild traitor status
 \author Sparhawk
 \since 0.82a
@@ -3494,7 +3494,7 @@ NATIVE( _chr_isGuildTraitor )
     VALIDATEPCR(pc, INVALID);
 	return pc->IsGuildTraitor();
 }
-/*!
+/*
 \brief set the guild traitor status
 \author Sparhawk
 \since 0.82a
@@ -3510,7 +3510,7 @@ NATIVE( _chr_setGuildTraitor )
 	return 0;
 }
 
-/*!
+/*
 \brief return the guild title toggle status
 \author Sparhawk
 \since 0.82a
@@ -3523,7 +3523,7 @@ NATIVE( _chr_hasGuildToggle )
     VALIDATEPCR(pc, INVALID);
 	return pc->HasGuildTitleToggle();
 }
-/*!
+/*
 \brief set the guild title toggle status
 \author Sparhawk
 \since 0.82a
@@ -3541,7 +3541,7 @@ NATIVE( _chr_setGuildToggle )
 	return 0;
 }
 
-/*!
+/*
 \brief return the guild fealty
 \author Sparhawk
 \since 0.82a
@@ -3555,7 +3555,7 @@ NATIVE( _chr_getGuildFealty )
 
 	return pc->GetGuildFealty();
 }
-/*!
+/*
 \brief set the guild fealty
 \author Sparhawk
 \since 0.82a
@@ -3571,7 +3571,7 @@ NATIVE( _chr_setGuildFealty )
 	return 0;
 }
 
-/*!
+/*
 \brief return the guild number
 \author Sparhawk
 \since 0.82a
@@ -3585,7 +3585,7 @@ NATIVE( _chr_getGuildNumber )
 
 	return pc->GetGuildNumber();
 }
-/*!
+/*
 \brief set the guild number
 \author Sparhawk
 \since 0.82a
@@ -3601,7 +3601,7 @@ NATIVE( _chr_setGuildNumber )
 	return 0;
 }
 
-/*!
+/*
 \brief return the guild title
 \author Sparhawk
 \since 0.82a
@@ -3624,7 +3624,7 @@ NATIVE( _chr_getGuildTitle )
   	return strlen(str);
 
 }
-/*!
+/*
 \brief set the guild title
 \author Sparhawk
 \since 0.82a
@@ -3646,7 +3646,7 @@ NATIVE( _chr_setGuildTitle )
   	return 0;
 }
 
-/*!
+/*
 \brief return the creation day since EPOCH
 \author Sparhawk
 \since 0.82a
@@ -3662,7 +3662,7 @@ NATIVE( _chr_getCreationDay )
 	return pc->GetCreationDay();
 }
 
-/*!
+/*
 \brief set the creation day
 \author Sparhawk
 \since 0.82a
@@ -3680,7 +3680,7 @@ NATIVE( _chr_setCreationDay )
 
 
 
-/*!
+/*
 \brief Morph a character
 \author Luxor
 \since 0.82
@@ -3713,7 +3713,7 @@ NATIVE(_chr_morph)
     return 0;
 }
 
-/*!
+/*
 \brief UnMorph a character
 \author Luxor
 \since 0.82
@@ -3729,7 +3729,7 @@ NATIVE(_chr_unmorph)
     return 0;
 }
 
-/*!
+/*
 \brief Speech
 \author Anthalir
 \since 0.7
@@ -3765,7 +3765,7 @@ NATIVE(_itm_speech)
 	return 0;
 }
 
-/*!
+/*
 \brief given character equip specific item
 \author Anthalir
 \since 0.7
@@ -3784,7 +3784,7 @@ NATIVE(_ItemEquip)
 }
 
 
-/*!
+/*
 \brief Item bounce to pack
 \author Anthalir
 \since 0.7
@@ -3802,7 +3802,7 @@ NATIVE(_ItemBounceToPack)
 }
 
 
-/*!
+/*
 \brief Print a translated message to a given socket
 \author Luxor
 \since 0.82
@@ -3825,7 +3825,7 @@ NATIVE(_ntprintf)
 	return 0;
 }
 
-/*!
+/*
 \brief Launchs the web browser
 \author Luxor
 \since 0.82
@@ -3847,7 +3847,7 @@ NATIVE(_weblaunch)
 	return 0;
 }
 
-/*!
+/*
 \brief System Broadcast
 \author Luxor
 \since 0.82
@@ -3865,7 +3865,7 @@ NATIVE(_sysbroadcast)
 	return 0;
 }
 
-/*!
+/*
 \brief Poisons an character
 \author Luxor
 \since 0.82
@@ -3882,7 +3882,7 @@ NATIVE(_chr_poison)
 	return params[2];
 }
 
-/*!
+/*
 \brief Returns the combat skill used by the item
 \author Luxor
 \since 0.82
@@ -3896,7 +3896,7 @@ NATIVE(_itm_getCombatSkill)
         return pi->getCombatSkill();
 }
 
-/*!
+/*
 \brief Opens a skill makemenu
 \author Luxor
 \since 0.82
@@ -3914,7 +3914,7 @@ NATIVE(_chr_skillMakeMenu)
         return 1;
 }
 
-/*!
+/*
 \brief Hides given character
 \author Luxor
 \since 0.82
@@ -3944,7 +3944,7 @@ NATIVE(_chr_hide)
 	return 0;
 }
 
-/*!
+/*
 \brief Applys damage to a character
 \author Luxor
 \since 0.82
@@ -3963,7 +3963,7 @@ NATIVE(_chr_applyDamage)
 	return 1;
 }
 
-/*!
+/*
 \brief Set random name
 \author Luxor
 \since 0.82
@@ -3985,7 +3985,7 @@ NATIVE(_chr_setRandomName)
 	return 1;
 }
 
-/*!
+/*
 \brief made "possessor" character possess "possessed" character
 \author Keldan
 \since 0.82
@@ -4004,7 +4004,7 @@ NATIVE(_chr_possess)
 	return 1;
 }
 
-/*!
+/*
 \brief Get local variable error
 \author Sparhawk
 \since 0.82
@@ -4015,7 +4015,7 @@ NATIVE(_chr_getLocalVarErr)
 	return amxVS.getError();
 }
 
-/*!
+/*
 \brief check if given are a local variable
 \author Sparhawk
 \since 0.82
@@ -4031,7 +4031,7 @@ NATIVE(_chr_isaLocalVar)
 	return amxVS.existsVariable( pc->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Delete given local variable
 \author Sparhawk
 \since 0.82
@@ -4046,7 +4046,7 @@ NATIVE(_chr_delLocalVar)
 	return amxVS.deleteVariable( pc->getSerial32(), params[2] );
 }
 
-/*!
+/*
 \brief Add a local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4062,7 +4062,7 @@ NATIVE(_chr_addLocalIntVar)
 	return amxVS.insertVariable( pc->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Get a local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4079,7 +4079,7 @@ NATIVE(_chr_getLocalIntVar)
 	return value;
 }
 
-/*!
+/*
 \brief Set a local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4095,7 +4095,7 @@ NATIVE (_chr_setLocalIntVar)
 	return amxVS.updateVariable( pc->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Add a local variable ( int vector )
 \author Sparhawk
 \since 0.82
@@ -4112,7 +4112,7 @@ NATIVE( _chr_addLocalIntVec )
 	return amxVS.insertVariable( pc->getSerial32(), params[2], params[3], params[4] );
 }
 
-/*!
+/*
 \brief Get a local variable ( int vector )
 \author Sparhawk
 \since 0.82
@@ -4130,7 +4130,7 @@ NATIVE(_chr_getLocalIntVec)
 	return value;
 }
 
-/*!
+/*
 \brief Set a local variable ( int vector )
 \author Sparhawk
 \since 0.82
@@ -4147,7 +4147,7 @@ NATIVE (_chr_setLocalIntVec)
 	return amxVS.updateVariable( pc->getSerial32(), params[2], params[3], params[4] );
 }
 
-/*!
+/*
 \brief Add a local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4171,7 +4171,7 @@ NATIVE(_chr_addLocalStrVar)
 }
 
 
-/*!
+/*
 \brief Get a local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4259,7 +4259,7 @@ NATIVE( _var_nextLocalVar )
 	return amxVS.nextVariable( params[1], params[2] );
 }
 
-/*!
+/*
 \brief Get the size of a local variable
 \author Sparhawk
 \since 0.82
@@ -4273,7 +4273,7 @@ NATIVE ( _var_sizeofLocalVar )
 	return amxVS.size( params[1], params[2], params[3] );
 }
 
-/*!
+/*
 \brief Set a local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4296,7 +4296,7 @@ NATIVE(_chr_setLocalStrVar)
 	return success;
 }
 
-/*!
+/*
 \brief Get local varible error
 \author Sparhawk
 \since 0.82
@@ -4307,7 +4307,7 @@ NATIVE(_itm_getLocalVarErr)
   return amxVS.getError();
 }
 
-/*!
+/*
 \brief Check if given is a local variable
 \author Sparhawk
 \since 0.82
@@ -4323,7 +4323,7 @@ NATIVE(_itm_isaLocalVar)
 		return amxVS.existsVariable( pi->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Delete given local variable
 \author Sparhawk
 \since 0.82
@@ -4340,7 +4340,7 @@ NATIVE(_itm_delLocalVar)
 		return amxVS.deleteVariable( pi->getSerial32(), params[2] );
 }
 
-/*!
+/*
 \brief Add a local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4356,7 +4356,7 @@ NATIVE(_itm_addLocalIntVar)
 	return amxVS.insertVariable( pi->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Get given local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4374,7 +4374,7 @@ NATIVE(_itm_getLocalIntVar)
 		return value;
 }
 
-/*!
+/*
 \brief Set given local variable ( int type )
 \author Sparhawk
 \since 0.82
@@ -4390,7 +4390,7 @@ NATIVE (_itm_setLocalIntVar)
 		return amxVS.updateVariable( pi->getSerial32(), params[2], params[3] );
 }
 
-/*!
+/*
 \brief Add given local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4414,7 +4414,7 @@ NATIVE(_itm_addLocalStrVar)
 }
 
 
-/*!
+/*
 \brief Get given local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4440,7 +4440,7 @@ NATIVE(_itm_getLocalStrVar)
 	return false;
 }
 
-/*!
+/*
 \brief Set given local variable ( String type )
 \author Sparhawk
 \since 0.82
@@ -4463,7 +4463,7 @@ NATIVE(_itm_setLocalStrVar)
 	return success;
 }
 
-/*!
+/*
 \brief Check if NPC can move in given location
 \author Sparhawk
 \since 0.82
@@ -4476,7 +4476,7 @@ NATIVE(_map_canMoveHere)
 	return Map->CanMonsterMoveHere( static_cast<short int>(params[1]), static_cast<short int>(params[2]), illegal_z );
 }
 
-/*!
+/*
 \brief Get distance from two location
 \author Sparhawk
 \since 0.82
@@ -4493,7 +4493,7 @@ NATIVE(_map_distance)
 	return cell(dist( params[1], params[2], params[3], params[4], params[5], params[6] ));
 }
 
-/*!
+/*
 \brief Get Tile name
 \author Luxor
 \since 0.82
@@ -4524,7 +4524,7 @@ NATIVE(_map_getTileName)
     return INVALID;
 }
 
-/*! 
+/* 
 \brief return true if position is located under a static item 
 \author Keldan 
 \since 0.82 
@@ -4554,7 +4554,7 @@ NATIVE(_map_isUnderStatic)
 
 }
 
-/*!
+/*
 \brief Get Tile ID
 \author Keldan
 \since 0.82
@@ -4578,7 +4578,7 @@ NATIVE(_map_getTileID)
     return INVALID;
 }
 
-/*!
+/*
 \brief Get Tile ID
 \author Keldan
 \since 0.82
@@ -4598,7 +4598,7 @@ NATIVE(_map_getFloorTileID)
 ////////////////////////////////////////////////////////////
 
 
-/*!
+/*
 \brief Make a guildstone ( and a guild :D ) the given item
 \author Endymion
 \since 0.82
@@ -4618,7 +4618,7 @@ NATIVE(_guild_guildstone)
 	return 0;
 }
 
-/*!
+/*
 \brief Add a member to a guild
 \author Endymion
 \since 0.82
@@ -4640,7 +4640,7 @@ NATIVE(_guild_addMember)
 	return 0;
 }
 
-/*!
+/*
 \brief A member resign from his guild
 \author Endymion
 \since 0.82
@@ -4662,7 +4662,7 @@ NATIVE(_guild_resignMember)
 	return 0;
 }
 
-/*!
+/*
 \brief Add a recuit to a guild
 \author Endymion
 \since 0.82
@@ -4688,7 +4688,7 @@ NATIVE(_guild_addRecruit)
 	return 0;
 }
 
-/*!
+/*
 \brief Given recruit are refused
 \author Endymion
 \since 0.82
@@ -4710,7 +4710,7 @@ NATIVE(_guild_refuseRecruit)
 	return 0;
 }
 
-/*!
+/*
 \brief check if guild exists
 \author Endymion
 \since 0.82
@@ -4722,7 +4722,7 @@ NATIVE(_guild_exists)
 	return ISVALIDGUILD( params[1] );
 }
 
-/*!
+/*
 \brief Add a new timer
 \author Endymion
 \since 0.82
@@ -4743,7 +4743,7 @@ NATIVE(_timer_add)
 	return 0;
 }
 
-/*!
+/*
 \brief Log a message
 \author Sparhawk
 \since 0.82
@@ -4761,7 +4761,7 @@ NATIVE(_log_message)
   return 0;
 }
 
-/*!
+/*
 \brief Log a warning
 \author Sparhawk
 \since 0.82
@@ -4779,7 +4779,7 @@ NATIVE(_log_warning)
   return 0;
 }
 
-/*!
+/*
 \brief Log an error
 \author Sparhawk
 \since 0.82
@@ -4797,7 +4797,7 @@ NATIVE(_log_error)
   return 0;
 }
 
-/*!
+/*
 \brief Log a critical error
 \author Sparhawk
 \since 0.82
@@ -4815,7 +4815,7 @@ NATIVE(_log_critical)
   return 0;
 }
 
-/*!
+/*
 \brief Open a file
 \author Sparhawk
 \since 0.82
@@ -4839,7 +4839,7 @@ NATIVE( _file_open )
 	return amxFileServer.open( fileName, g_cAmxPrintBuffer );
 }
 
-/*!
+/*
 \brief Close a file
 \author Sparhawk
 \since 0.82
@@ -4851,7 +4851,7 @@ NATIVE( _file_close )
 	return amxFileServer.close( params[1] );
 }
 
-/*!
+/*
 \brief Check for end of file
 \author Sparhawk
 \since 0.82
@@ -4863,7 +4863,7 @@ NATIVE( _file_eof )
 	return amxFileServer.eof( params[1] );
 }
 
-/*!
+/*
 \brief Write a string to a file
 \author Sparhawk
 \since 0.82
@@ -4881,7 +4881,7 @@ NATIVE( _file_write )
 	return amxFileServer.write( params[1], g_cAmxPrintBuffer );
 }
 
-/*!
+/*
 \brief Read a line from a file
 \author Sparhawk
 \since 0.82
@@ -4900,7 +4900,7 @@ NATIVE( _file_read )
 	return true;
 }
 
-/*!
+/*
 \brief Call an AMX function without parameters
 \author Luxor
 \since 0.82
@@ -4911,7 +4911,7 @@ NATIVE( _callFunction )
 	return AmxFunction::g_prgOverride->CallFn(params[1]);
 }
 
-/*!
+/*
 \brief Call an AMX function with 1 parameter
 \author Luxor
 \since 0.82
@@ -4922,7 +4922,7 @@ NATIVE( _callFunction1P )
 	return AmxFunction::g_prgOverride->CallFn(params[1], params[2]);
 }
 
-/*!
+/*
 \brief Call an AMX function with 2 parameters
 \author Luxor
 \since 0.82
@@ -4933,7 +4933,7 @@ NATIVE( _callFunction2P )
 	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3]);
 }
 
-/*!
+/*
 \brief Call an AMX function with 3 parameters
 \author Luxor
 \since 0.82
@@ -4944,7 +4944,7 @@ NATIVE( _callFunction3P )
 	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4]);
 }
 
-/*!
+/*
 \brief Call an AMX function with 4 parameters
 \author Luxor
 \since 0.82
@@ -4955,7 +4955,7 @@ NATIVE( _callFunction4P )
 	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5]);
 }
 
-/*!
+/*
 \brief Call an AMX function with 5 parameters
 \author Luxor
 \since 0.82
@@ -4966,7 +4966,7 @@ NATIVE( _callFunction5P )
 	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5], params[6]);
 }
 
-/*!
+/*
 \brief Check if a character is online
 \author Luxor
 \since 0.82
@@ -4978,7 +4978,7 @@ NATIVE( _chr_isOnline )
 	return pc->IsOnline();
 }
 
-/*!
+/*
 \brief Check if a character is frozen
 \author Luxor
 \since 0.82
@@ -4990,7 +4990,7 @@ NATIVE( _chr_isFrozen )
 	return pc->IsFrozen();
 }
 
-/*!
+/*
 \brief Make a character doing his combat animation
 \author Luxor
 \since 0.82
@@ -5003,7 +5003,7 @@ NATIVE( _chr_doCombatAction )
 	return 1;
 }
 
-/*!
+/*
 \brief Stable the caracter
 \author Endymion
 \since 0.82
@@ -5021,7 +5021,7 @@ NATIVE( _chr_stable )
 	return 1;
 }
 
-/*!
+/*
 \brief Unstable the character
 \author Endymion
 \since 0.82
@@ -5050,7 +5050,7 @@ NATIVE( _chr_unStable )
 // New Menu API -- still highly experimental
 //
 
-/*!
+/*
 \brief Create a new menu
 \author Endymion
 \since 0.82
@@ -5072,7 +5072,7 @@ NATIVE ( _menu_create )
 //	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
 }
 
-/*!
+/*
 \brief Delete a menu
 \author Endymion
 \since 0.82
@@ -5084,7 +5084,7 @@ NATIVE ( _menu_delete )
 	return ( menus.deleteMenu( params[1] ) )? 1 : 0;
 }
 
-/*!
+/*
 \brief Delete a menu
 \author Endymion
 \since 0.82
@@ -5103,7 +5103,7 @@ NATIVE ( _menu_show )
 	return 0;
 }
 
-/*!
+/*
 \brief Add a new button at given menu
 \author Endymion
 \since 0.82
@@ -5127,7 +5127,7 @@ NATIVE ( _menu_addButton )
 	return 0;
 }
 
-/*!
+/*
 \brief Add a new button at given menu
 \author Endymion
 \since 0.82
@@ -5146,7 +5146,7 @@ NATIVE ( _menu_addPage )
 	return 0;
 }
 
-/*!
+/*
 \brief Add a resized gump at given menu
 \author Endymion
 \since 0.82
@@ -5169,7 +5169,7 @@ NATIVE (  _menu_addResizeGump )
 	return 0;
 }
 
-/*!
+/*
 \brief Add a page button at given menu
 \author Endymion
 \since 0.82
@@ -5192,7 +5192,7 @@ NATIVE ( _menu_addPageButton )
 	return 0;
 }
 
-/*!
+/*
 \brief Add text at given menu
 \author Endymion
 \since 0.82
@@ -5218,45 +5218,31 @@ NATIVE ( _menu_addText )
 	return 0;
 }
 
+/*!
+\file
 
+<h2>API standard syntax :</h2>
+for generic system functions : functionName
+for other functions xxxx_functionName where
+xxxx is :
 
-//
-//
-//
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//API standard syntax :
-// for generic system functions : functionName
-// for other functions xxxx_functionName where
-// xxxx is :
-
-//		chr - for charachter related functions
-//		itm - for item related functions
-//		mnu - for menu access (0.20s)
-//		magic - for magic access (0.50s)
-//		send - for packet send functions (0.50s)
-//		direct - for direct access functions (0.53b)
-//		tempfx - for temp effects access functions (0.53b)
-//		rgn - for region access functions (0.54b)
-//		trig - for triggers functions (0.54b)
-//		set - for sets (0.55x)
-//		cal - for calendar access (Sparhawk 2001-09-15}
-//		map - for map access (Sparhawk 082.)
-//		guild - for guild acces ( Endymion 0.82 )
-//		log - for logging messages ( Sparhawk 0.82 )
+<ul>
+	<li>	chr - for charachter related functions
+	<li>	itm - for item related functions
+	<li>	mnu - for menu access (0.20s)
+	<li>	magic - for magic access (0.50s)
+	<li>	send - for packet send functions (0.50s)
+	<li>	direct - for direct access functions (0.53b)
+	<li>	tempfx - for temp effects access functions (0.53b)
+	<li>	rgn - for region access functions (0.54b)
+	<li>	trig - for triggers functions (0.54b)
+	<li>	set - for sets (0.55x)
+	<li>	cal - for calendar access (Sparhawk 2001-09-15}
+	<li>	map - for map access (Sparhawk 082.)
+	<li>	guild - for guild acces ( Endymion 0.82 )
+	<li>	log - for logging messages ( Sparhawk 0.82 )
+</ul>
+*/
 
 AMX_NATIVE_INFO nxw_API[] = {
 // Standard commands :
