@@ -359,10 +359,10 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 	int i, db, x;//, z;
 	char changed=0;
 
-	if (ISVALIDPC(pc) && (item_inRange(pc,pi,2)==0) && s>INVALID) {
+	/*if (ISVALIDPC(pc) && (item_inRange(pc,pi,2)==0) && s>INVALID) {
 		sysmessage(s, TRANSLATE("You cannot reach the handle from here"));
 		return;
-	}
+	}*/
 
 	x=pi->id();
 	for (i=0;i<DOORTYPES;i++)

@@ -1116,19 +1116,19 @@ static void castStatPumper(SpellId spellnumber, TargetLocation& dest, P_CHAR pa,
 			tempfx::add(pa, pd, tempfx::SPELL_CURSE, bonus, bonus, bonus, duration);
 			break;
 		case SPELL_CUNNING:
-			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
 			tempfx::add(pa, pd, tempfx::SPELL_CUNNING, bonus, 0, 0, duration);
 			break;
 		case SPELL_AGILITY:
-			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
 			tempfx::add(pa, pd, tempfx::SPELL_AGILITY, bonus, 0, 0, duration);
 			break;
 		case SPELL_STRENGHT:
-			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
 			tempfx::add(pa, pd, tempfx::SPELL_STRENGHT, bonus, 0, 0, duration);
 			break;
 		case SPELL_BLESS:
-			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
 			tempfx::add(pa, pd, tempfx::SPELL_BLESS, bonus, bonus, bonus, duration);
 			break;
 		default :
@@ -1494,6 +1494,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			break;
 		case SPELL_TELEKINESYS: // Luxor
 			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 10 );
+			spellFX( spellnumber, src );
 			break;
 		case SPELL_POLYMORPH:
 			{ // Luxor
@@ -1579,7 +1580,6 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			break;
 
 		case SPELL_ARCHPROTECTION: {
-			spellFX(spellnumber, src, pd);
 			if (src!=NULL) {
 			  if (nTime==INVALID) nTime = 12;
 			  if (nValue==INVALID) nValue = 80;
@@ -1592,8 +1592,10 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
-				if(ISVALIDPC(pd))
+				if(ISVALIDPC(pd)) {
 					tempfx::add(pd,pd, tempfx::SPELL_PROTECTION, nValue, 0, 0, nTime);
+					spellFX(spellnumber, src, pd);
+				}
 			}
 			}
 		break;
