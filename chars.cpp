@@ -2009,6 +2009,7 @@ LOGICAL cChar::losFrom(P_CHAR pc)
 \author Xanathar
 \brief plays a sound effect on a char
 \param sound as default
+\param onlyToMe Send sfx only to same char not to all near players (default: false)
 */
 void cChar::playSFX(SI16 sound, LOGICAL onlyToMe)
 {

@@ -1115,6 +1115,7 @@ void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 
 \brief Fills with a list of socket
 \author Endymion, rewritten by Luxor
 \param location only socket near given location are added
+\param nDistance the distance requested
 \warning this function ADD new char to current list
 */
 void NxwSocketWrapper::fillOnline( Location location, int nDistance )
@@ -1137,6 +1138,7 @@ void NxwSocketWrapper::fillOnline( Location location, int nDistance )
 \brief Fills with a list of socket
 \author Endymion
 \param onlyNearThis only socket near given item are added
+\param nDistance the distance requested
 \warning this function ADD new char to current list
 */
 void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, int nDistance )
