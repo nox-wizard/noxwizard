@@ -45,7 +45,10 @@ static bool checkForCastingLoss(P_CHAR pc, int damage)
 */
 void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 {
-	VALIDATEPC(pc_def);
+	if ( !ISVALIDPC(pc_def) ) {
+		swingtargserial = INVALID;
+		return;
+	}
 	/*
 	if ( amxevents[EVENT_CHR_ONCOMBATHIT] ) {
 		g_bByPass = false;
