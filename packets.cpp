@@ -507,12 +507,12 @@ SEND( IconListMenu ) {
 
 	//question string
 	temp+=question.size();
-	this->question_length=temp;
+	this->question_length=question.size();
 
 	
 	temp+=sizeof( icon_count );
 
-	std::vector< pkg_icon_list_menu_st >::iterator iter( icons.begin() ), end( icons.end() );
+	std::vector< pkg_icon_list_menu_st >::iterator iter( icons->begin() ), end( icons->end() );
 	for( ; iter!=end; iter++ ) {
 		temp += sizeof( iter->model );
 		temp += sizeof( iter->color );
@@ -527,12 +527,14 @@ SEND( IconListMenu ) {
 
 	Xsend( s, question.c_str(), question.size() );
 
-	icon_count = icons.size();
+	icon_count = icons->size();
+	Xsend( s, (char*)&icon_count, sizeof(icon_count) );
 
-	iter = icons.begin();
+	iter = icons->begin();
 	for( ; iter!=end; iter++ ) {
 		Xsend( s, (char*)&iter->model, ( sizeof(iter->model) +sizeof(iter->color) ) );
-		eUI08 rl; rl=iter->response.size();
+		eUI08 rl=iter->response.size();
+		Xsend( s, (char*)&rl, sizeof(rl) );
 		Xsend( s, iter->response.c_str(), iter->response.size() ); //not send null terminator
 	}
 

@@ -1916,7 +1916,7 @@ public:
 private:
 	eUI08 icon_count; //!< icon number
 public:
-	std::vector< pkg_icon_list_menu_st > icons; //!< icons
+	std::vector< pkg_icon_list_menu_st >* icons; //!< icons
 
 	cPacketIconListMenu();
 	void send( NXWCLIENT ps );

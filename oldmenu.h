@@ -43,7 +43,7 @@ public:
 	void setParameters( int numPerPage, int numpages );
 	void addMenuItem( int page, int idx, char *desc );
 	void showMenu( NXWSOCKET s );
-	void setTitle( char *str );
+	void setTitle( wstring& str );
 	void setWidth( int width );
 	void setStyle( int style, int color = 0 );
 	void setColor( int color );
@@ -55,7 +55,7 @@ public:
 /*!
 \brief an Old type menu [ CLASSIC ]
 */
-class cOldMenuClassic : public cOldMenu , public cMenu
+class cOldMenuClassic : public cMenu, public cOldMenu
 {
 
 private:
@@ -73,17 +73,18 @@ public:
 /*!
 \brief an Old type menu [ ICONLIST ]
 */
-class cOldMenuIconList : public cOldMenu, public cBasicMenu
+class cOldMenuIconList : public cBasicMenu, public cOldMenu
 {
 
 private:
 
-	void buildOldMenu();
+	std::vector<pkg_icon_list_menu_st> icons;
 
 public:
 	cOldMenuIconList();
 	virtual ~cOldMenuIconList();
 
+	void addMenuItem( int page, int idx, char* desc );
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
 	virtual void show( P_CHAR pc );
 

@@ -127,10 +127,9 @@ void cOldMenu::showMenu( NXWSOCKET s )
 \since 0.82
 \param str the title
 */
-void cOldMenu::setTitle( char* str )
+void cOldMenu::setTitle( wstring& str )
 {
-	string sDesc(str);
-	string2wstring( sDesc, title );
+	title = str;
 }
 
 /*!
@@ -316,13 +315,42 @@ cOldMenuIconList::~cOldMenuIconList()
 {
 }
 
-/*!
-\brief Build an icon list menu
-\author Endymion
-\since 0.82
-*/
-void cOldMenuIconList::buildOldMenu()
+//note to remove pd
+static inline char hex2byte (char *str)
 {
+	char c;
+	char b = 0;
+
+	c = str[0];
+	if ((c >= '0')&&(c <= '9')) c -= '0';
+	else if ((c >= 'A')&&(c <= 'F')) c -= 'A'-'\xa';
+	else if ((c >= 'a')&&(c <= 'f')) c -= 'a'-'\xa';
+	else c = 0;
+
+	b = c << 4;
+
+	c = str[1];
+	if ((c >= '0')&&(c <= '9')) c -= '0';
+	else if ((c >= 'A')&&(c <= 'F')) c -= 'A'-'\xa';
+	else if ((c >= 'a')&&(c <= 'f')) c -= 'a'-'\xa';
+	else c = 0;
+
+	b += (c & 0xF);
+
+	return b;
+}
+
+
+void cOldMenuIconList::addMenuItem( int page, int idx, char* desc )
+{
+	
+	pkg_icon_list_menu_st icon;
+
+	icon.color = hex2byte( desc );
+	icon.model = hex2num( desc +2 );
+	icon.response += (desc +5);
+	icons.push_back( icon );
+	
 }
 
 
@@ -333,8 +361,21 @@ void cOldMenuIconList::buildOldMenu()
 */
 void cOldMenuIconList::show( P_CHAR pc )
 {
+	
+	VALIDATEPC(pc);
+
+	cPacketIconListMenu p;
+	
+	p.gump = serial;
+	p.id= id;
+	wstring2string( title, p.question );
+
+	p.icons = &this->icons;
+	
+	p.send( pc->getClient() );
 }
 
 void cOldMenuIconList::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
 {
+	ConOut( "chiamata" );
 }
