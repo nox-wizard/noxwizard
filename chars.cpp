@@ -4929,3 +4929,37 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 	else
 		return false;
 }
+
+/*
+\brief Check if char is stabled
+\author Endymion
+\return true if stabled
+*/
+bool cChar::isStabled()
+{
+	return (stablemaster_serial!=INVALID);
+}
+
+/*
+\brief Stable the character
+\author Endymion
+\param stablemaster the stablemaster
+*/
+void cChar::stable( P_CHAR stablemaster )
+{
+	VALIDATEPC(stablemaster);
+	if( !this->npc ) return;
+	this->stablemaster_serial=stablemaster->getSerial32();
+	pointers::addToStableMap( this );
+}
+
+/*
+\brief Unstable the character
+\author Endymion
+*/
+void cChar::unStable()
+{
+	if( !isStabled() ) return;
+	pointers::delFromStableMap( this );
+	this->stablemaster_serial=INVALID;
+}

@@ -662,6 +662,12 @@ public:
 		void resetSpeechCurrent();
 		void deleteSpeechCurrent();
 
+	private:
+		SERIAL	stablemaster_serial; //!< the stablemaster serial
+	public:
+		bool isStabled();
+		void stable( P_CHAR stablemaster );
+		void unStable();
 	
 	public:
 
@@ -827,7 +833,6 @@ public:
 		SERIAL			spawnserial; //!< Spawned by dinamic
 		SERIAL			spawnregion; //!< Spawned by scripted
 
-		SERIAL			stablemaster_serial;
 		char			npc_type;		// currently only used for stabling, (type==1 -> stablemaster)
 							// can be used for other npc types too of course
 
