@@ -1502,7 +1502,7 @@ void command_poly(NXWSOCKET  s)
 			pc_currchar->SetBodyType(k);
 			pc_currchar->SetOldBodyType(k);
 
-			c1= pc_currchar->getSkinColor()					// transparency for mosnters allowed, not for players,
+			c1= pc_currchar->getSkinColor();					// transparency for mosnters allowed, not for players,
 											// if polymorphing from monster to player we have to switch from transparent to semi-transparent
 											// or we have that sit-down-client crash
 
@@ -1510,8 +1510,8 @@ void command_poly(NXWSOCKET  s)
 			{
 				if (c1!=0x8000)
 				{
-					pc_currchar->SetSkinColor(0xF000);
-					pc_currchar->SetOldSkinColor(0xF000);
+					pc_currchar->setSkinColor(0xF000);
+					pc_currchar->setOldSkinColor(0xF000);
 				}
 			}
 		}
@@ -1536,8 +1536,8 @@ void command_skin(NXWSOCKET  s)
 
 		if (k != 0x8000)
 		{
-			pc_currchar->SetSkinColor(k);
-			pc_currchar->SetOldSkinColor(k);
+			pc_currchar->setSkinColor(k);
+			pc_currchar->setOldSkinColor(k);
 			pc_currchar->teleport();
 		}
 	}
