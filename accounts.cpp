@@ -557,7 +557,7 @@ namespace accounts
 	\param acctnum Account number
 	\param socket Socket
 	*/
-	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket );
+	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket )
 	{
 		if(sck<=INVALID) 
 			return;
