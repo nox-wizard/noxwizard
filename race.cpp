@@ -22,6 +22,8 @@
 #include "inlines.h"
 #include "basics.h"
 #include "scripts.h"
+#include "constants.h"
+
 
 using namespace std;
 
@@ -904,4 +906,14 @@ void Race::show( void )
 {
 	SDbgOut("Race %d %s\n", this->id, this->name.c_str() );
 	skills.show();
+}
+
+int Race::getRaceGender( void )
+{
+	
+	if(this->gender==MALE) return GENDER_MALE;
+	if(this->gender==MALE) return GENDER_FEMALE;
+	if(this->gender==FEMALE_OR_MALE) return GENDER_FEMALE_OR_MALE;
+	else
+		return INVALID;
 }

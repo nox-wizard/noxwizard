@@ -93,6 +93,7 @@ class Race
 		static	RequiredType	getHairPerm( UI32 raceId );
 
 		static	bool		isProtectedLayer( UI32 raceId, unsigned char layer );
+		
 
 		//static	UI32		getSkillCap( UI32 raceId );
 		//static	UI32		setSkillCap( UI32 raceId, newSkillCap );
@@ -199,6 +200,7 @@ class Race
 			UI32				getStrCap( void );
 			int					getStrModifier( UI32 baseDex );
 			UI32				getStrStart( void );
+			int					getRaceGender( void );
 
 			bool				isPlayerRace( void );
 			bool				isProtectedLayer( unsigned char layer );

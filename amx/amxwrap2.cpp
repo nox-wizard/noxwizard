@@ -3288,6 +3288,9 @@ NATIVE2(_getRaceProperty)
 
 		int p;
 		switch(params[2]) {
+			case RP_I_GENDER:
+				return race->getRaceGender();
+				break;
 			case INVALID:
 			default:
 				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );

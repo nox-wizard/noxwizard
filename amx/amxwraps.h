@@ -524,6 +524,7 @@ const int RP_C_TYPE = 100;
 const int RP_C_LAYER_PERMITTED = 101;
 
 const int RP_I_STARTLOCATION = 200;
+const int RP_I_GENDER = 201;
 
 const int RP_S_SKIN = 400;
 
