@@ -241,9 +241,8 @@ void Skills::Carpentry(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
 }
 
-/*!
-\todo use or remove it!
-*/
+//! \todo ForgeInRange function is unused.
+#if 0
 static bool ForgeInRange(NXWSOCKET s)
 {
     P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], false);
@@ -257,6 +256,7 @@ static bool ForgeInRange(NXWSOCKET s)
     }
     return false;
 }
+#endif
 
 static bool AnvilInRange(NXWSOCKET s)
 {

@@ -67,7 +67,7 @@ cNetwork	*Network;
 #define PACKET_MISC_REQ			0xBF
 #define PACKET_CLIENT_VERSION		0xBD
 
-static int m_packetLen[256] =
+static UI16 m_packetLen[256] =
 {
 // 0..15
 	0x0068,	0x0005,	0x0007,	0x0000,	0x0002,	0x0005,	0x0005,	0x0007,	0x000E,	0x0005,	0x000B,	0x010A,	0x0000,	0x0003,	0x0000,	0x003D,
@@ -103,7 +103,7 @@ static int m_packetLen[256] =
 	0x0000,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF
 };
 
-static unsigned int bit_table[257][2] =
+static UI16 bit_table[257][2] =
 {
 {0x0002, 0x0000}, {0x0005, 0x001F}, {0x0006, 0x0022}, {0x0007, 0x0034}, {0x0007, 0x0075}, {0x0006, 0x0028}, {0x0006, 0x003B}, {0x0007, 0x0032}, 
 {0x0008, 0x00E0}, {0x0008, 0x0062}, {0x0007, 0x0056}, {0x0008, 0x0079}, {0x0009, 0x019D}, {0x0008, 0x0097}, {0x0006, 0x002A}, {0x0007, 0x0057}, 
@@ -223,8 +223,8 @@ void cNetwork::DoStreamCode( NXWSOCKET  socket )
 
 }
 
-
-void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
+//! Sends buffered data at once
+void cNetwork::FlushBuffer( NXWSOCKET socket )
 {
 
 	int status ;
@@ -245,7 +245,8 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 	}
 }
 
-void cNetwork::ClearBuffers() // Sends ALL buffered data
+//! Sends ALL buffered data
+void cNetwork::ClearBuffers()
 {
 	for ( int i = 0; i < now; ++i )
 		FlushBuffer( i );
@@ -296,9 +297,8 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 	boutlength[ socket ] += length;
 }
 
-
-
-void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player //Instalog
+//! Force disconnection of player
+void cNetwork::Disconnect ( NXWSOCKET socket )
 {
 	const char msgDisconnect[]	= "Client %i disconnected. [Total online clients: %i]\n";
 	const char msgPart[]		= "%s has left the realm";
@@ -893,8 +893,8 @@ void cNetwork::enterchar(int s)
 
 }
 
-
-void cNetwork::startchar(int s) // Send character startup stuff to player
+//! Send character startup stuff to player
+void cNetwork::startchar(int s)
 {
 
 	if ( s < 0 || s >= now ) //Luxor
@@ -1190,8 +1190,7 @@ void cNetwork::sockInit()
 	if (ServerScp::g_nDeamonMode==0) {
 		MessageBox(NULL, temp, "NoX-Wizard network error [bind]", MB_ICONSTOP);
 	}
-#endif //win32
-#ifndef WIN32
+#else
 		ErrOut("ERROR: Unable to bind socket - Error code: %i\n",bcode);
 #endif
 		keeprun=false;
@@ -1228,7 +1227,8 @@ void cNetwork::sockInit()
 
 }
 
-void cNetwork::SockClose () // Close all sockets for shutdown
+//! Close all sockets for shutdown
+void cNetwork::SockClose ()
 {
 
 	int i;
@@ -1238,7 +1238,8 @@ void cNetwork::SockClose () // Close all sockets for shutdown
 
 }
 
-void cNetwork::CheckConn() // Check for connection requests
+//! Check for connection requests
+void cNetwork::CheckConn()
 {
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -1346,7 +1347,8 @@ void cNetwork::CheckConn() // Check for connection requests
 
 }
 
-void cNetwork::CheckMessage() // Check for messages from the clients
+//! Check for messages from the clients
+void cNetwork::CheckMessage()
 {
 
 	int s, i, oldnow;
@@ -1392,8 +1394,8 @@ void cNetwork::CheckMessage() // Check for messages from the clients
 	}
 }
 
-
-cNetwork::cNetwork() // Initialize sockets
+//! Check for messages from the clients
+cNetwork::cNetwork()
 {
     sockInit();
 }
@@ -1452,7 +1454,8 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 
 }
 
-void cNetwork::GetMsg(int s) // Receive message from client
+//! Receive message from client
+void cNetwork::GetMsg(int s)
 {
 
 	NXWCLIENT ps = getClientFromSocket(s);

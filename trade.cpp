@@ -590,7 +590,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 	}
 }
 
-/*
+#if 0
 void restock(bool total)
 {
         //Luxor: new cAllObjects system -> this should be changed soon... too slow!!
@@ -633,14 +633,7 @@ void restock(bool total)
 		//if (SrvParms->trade_system==1) StoreItemRandomValue(pi,-1);// Magius(CHE) (2)
 	}
 }
-*/
-
-
-
-
-
-
-
+#endif
 
 cRestockMng::cRestockMng()
 {
@@ -750,17 +743,4 @@ void cRestockMng::updateTimer()
 
 
 cRestockMng* Restocks = NULL;
-
-
-
-
-
-
-
-
-
-
-
-
-
 

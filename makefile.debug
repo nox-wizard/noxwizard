@@ -13,9 +13,10 @@
 
 CC		= gcc
 CXX		= g++
-WARNINGS	= -Wall -Wno-reorder -Wno-switch
-CFLAGS		= -pipe -D_REENTRANT -g $(WARNINGS)
-CXXFLAGS	= -funsigned-char -pipe -D_REENTRANT -g $(WARNINGS)
+WARNCC		= -Wall -Wno-switch
+WARNCXX		= -Wall -Wno-reorder -Wno-switch
+CFLAGS		= -pipe -D_REENTRANT -g $(WARNCC)
+CXXFLAGS	= -funsigned-char -pipe -D_REENTRANT -g $(WARNCXX)
 INCPATH =	-I ./
 LINK		= g++
 LFLAGS		= -lc -lstdc++
