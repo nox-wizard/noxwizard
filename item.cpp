@@ -458,7 +458,7 @@ namespace item
 
 	/*!
 	\warning for internal use only
-	\author Xanathar
+	\author Luxor
 	*/
 	static P_ITEM spawnItemByIdInternal(int nAmount, const char* cName, short id, short color)
 	{
@@ -467,22 +467,17 @@ namespace item
 		tile_st tile;
 		data::seekTile(id, tile);
 		pile = (tile.flags&TILEFLAG_STACKABLE);
-		P_ITEM pi=archive::item::New();
-		if ( pi==NULL )
-			return NULL;
+
+		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
+   		VALIDATEPIR( pi, NULL );
+    		pi->setId( id );
+		pi->setColor( color );
+    		pi->pileable = pile;
 
 		if(cName!=NULL)
 			pi->setCurrentName(cName);
 
-		pi->setId(id);
-		pi->animSetId(0);
-		pi->setColor(color);
-		pi->amount=nAmount;
-		pi->pileable=(pile) ? '\1' : '\0';
-		pi->att=5;
 		pi->setDecay();
-		item::GetScriptItemSetting(pi); // Added by Magius(CHE) (2)
-		pi->Refresh();
 		return pi;
 	}
 
