@@ -3355,51 +3355,66 @@ NATIVE(_chr_kill)
 
 /*
 \brief generic npctalk/npcemote handler
-\author Sparhawk
+\author Sparhawk modified by Frodo
 \since 0.60
-\param 1 required function
-\param 2 player character (only used for npctalk,npctalk_runic,npcemote)
-\param 3 npc who'll do the talking or emoting
-\param 4 text to talk or emote
+\param 1 speaker
+\param 2 listener
+\param 3 version ( RUNIC or EMOTE or _ for plain text )
+\param 4 color
 \param 5 antispam flag
-\return 0 or INVALID if not valid character
-\note handle npctalk, npctalkall, npctalk_runic, npctalkall_runic, npcemote, npcemoteall
+\param 6 text
+\return 0 or INVALID if not valid characters
 */
+
+
 NATIVE(_chr_speech)
 {
-    P_CHAR pc = pointers::findCharBySerial(params[2]);
-    P_CHAR pc2 = pointers::findCharBySerial(params[3]);
-    VALIDATEPCR(pc2, INVALID);
+    P_CHAR pc = pointers::findCharBySerial(params[1]);
+	P_CHAR pc2 = pointers::findCharBySerial(params[2]);
 
-	switch( params[1] )
-	{
-		case NXW_SPEECH_TALK:
-		case NXW_SPEECH_TALK_RUNIC:
-		case NXW_SPEECH_EMOTE:
-		VALIDATEPCR(pc, INVALID);
-	}
+    VALIDATEPCR(pc, INVALID);
+
+	int flag_all;
+
+	if(!ISVALIDPC(pc2))
+		
+		flag_all=1;
+	
+	else 
+		
+		flag_all=0;
+
 
     cell *cstr;
-	amx_GetAddr(amx, params[4], &cstr);
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	amx_GetAddr(amx, params[6], &cstr);
+	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 
-	switch( params[1] )
+	switch( params[3] )
 	{
-		case NXW_SPEECH_TALK : pc2->talk( pc->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
-			break;
-		case NXW_SPEECH_TALK_ALL : pc2->talkAll( g_cAmxPrintBuffer, (char) params[5]);
-			break;
-		case NXW_SPEECH_TALK_RUNIC : pc2->talkRunic( pc->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
-			break;
-		case NXW_SPEECH_TALK_ALL_RUNIC : pc2->talkAllRunic( g_cAmxPrintBuffer, (char) params[5]);
-			break;
-		case NXW_SPEECH_EMOTE : pc2->emote( pc->getSocket(), g_cAmxPrintBuffer,(char) params[5]);
-			break;
-		case NXW_SPEECH_EMOTE_ALL : pc2->emoteall( g_cAmxPrintBuffer, (char) params[5]);
-			break;
-		default : WarnOut("_chr_speech called with invalid params[1] (%d)\n", params[1]);
+		case NXW_SPEECH_TALK : 
+				
+				if(!flag_all) pc->talk( pc2->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
+				pc->talkAll( g_cAmxPrintBuffer, (char) params[6]);
+			
+				break;
+		
+		case NXW_SPEECH_TALK_RUNIC : 
+			
+				if(!flag_all) pc->talkRunic( pc2->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
+				pc->talkAllRunic( g_cAmxPrintBuffer, (char) params[5]);
+				
+				break;
+		
+		case NXW_SPEECH_EMOTE : 
+			
+				if(!flag_all) pc->emote( pc2->getSocket(), g_cAmxPrintBuffer,(char) params[5]);
+				pc->emoteall( g_cAmxPrintBuffer, (char) params[6]);
+
+				break;
+		
+		default : WarnOut("_chr_speech called with invalid params[1] (%d)\n", params[3]);
 			break;
 	}
 	return 0;
@@ -7213,7 +7228,7 @@ NATIVE (_reload_accounts )
 	}
 	ConOut("[DONE]\n");
 	
-
+	return 0;
 }
 
 

@@ -449,11 +449,8 @@ const int NXW_CALP_STR_SEASONNAME = 452;
 
 // Speech constants added by Sparhawk
 const int NXW_SPEECH_TALK = 1;
-const int NXW_SPEECH_TALK_ALL = 2;
-const int NXW_SPEECH_TALK_RUNIC = 3;
-const int NXW_SPEECH_TALK_ALL_RUNIC = 4;
-const int NXW_SPEECH_EMOTE = 5;
-const int NXW_SPEECH_EMOTE_ALL = 6;
+const int NXW_SPEECH_TALK_RUNIC = 2;
+const int NXW_SPEECH_EMOTE = 3;
 
 //Endymion Guild Constant
 
