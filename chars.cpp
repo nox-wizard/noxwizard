@@ -1822,10 +1822,14 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         // Send the object remove packet
         //
 	if ( cli == NULL ) {
-		sw.fillOnline();
+		sw.fillOnline( getOldPosition() );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_w = sw.getClient();
-			if ( ps_w != NULL )
+			if ( ps_w == NULL )
+				continue;
+                        if ( !ISVALIDPC( ps_w->currChar() ) )
+				continue;
+                        if ( distFrom( ps_w->currChar() ) > VISRANGE )
 				ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
 		}
 	} else
@@ -2253,12 +2257,48 @@ UI32 cChar::getAmount(short id, short col, bool onlyPrimaryBackpack)
 }
 
 /*!
-\brief deletes itself :)
+\brief sends a remove packet to everyone nearby and deletes itself
 \author Luxor
 */
 void cChar::deleteChar()
 {
-	archive::DeleteChar(this);
+        NxwSocketWrapper sc;
+        sc.fillOnline( this );
+	for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
+		NXWCLIENT ps = sc.getClient();
+		if ( ps != NULL )
+			ps->sendRemoveObject( static_cast<P_OBJECT>(this) );
+	}
+	archive::DeleteChar( this );
+}
+
+/*!
+\author Luxor
+\brief Tells if a char sees an object for the first time
+*/
+LOGICAL cChar::seeForFirstTime( P_OBJECT po )
+{
+        //
+        // The char cannot see itself for the first time ;)
+        //
+	if ( po->getSerial32() == getSerial32() )
+		return false;
+
+	//
+	// Check if the object is in visRange
+	//
+	R64 distance = dist( po->getPosition(), getPosition(), false );
+	if ( distance > VISRANGE ) // We cannot see it!
+		return false;
+
+        //
+        // Check if the object was visible even before
+        //
+	distance = dist( po->getPosition(), getOldPosition(), false );
+	if ( distance <= VISRANGE )
+		return false;
+
+	return true;
 }
 
 /*!
@@ -3075,7 +3115,8 @@ void cChar::Kill()
 		
 	}
 
-	teleport( TELEFLAG_SENDWORNITEMS );
+        if ( !npc )
+		teleport( TELEFLAG_SENDWORNITEMS );
 
 	//<Luxor>
 	pCorpse->Refresh();
@@ -3090,7 +3131,7 @@ void cChar::Kill()
 		amxevents[EVENT_CHR_ONAFTERDEATH]->Call(getSerial32(), pCorpse->getSerial32() );
 	}
 
-	if (npc)
+	if ( npc )
 		deleteChar();
 }
 

@@ -2164,6 +2164,8 @@ void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn,
 
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 {
+        if ( s < 0 || s > now ) // Luxor
+		return;
 	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
 

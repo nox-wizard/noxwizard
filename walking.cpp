@@ -946,8 +946,6 @@ bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 			}
 			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
 				senditem( ps->toInt(), pi );
-				/*if( IsSeenFirstTime(pc, pi ))
-					senditem(ps->toInt(),pi);*/
 	}
 	return true;
 }

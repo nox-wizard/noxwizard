@@ -381,6 +381,7 @@ SI32 cObject::getPosition( const char *what ) const
 */
 void cObject::setPosition(Location where)
 {
+        old_position = position; // Luxor
 	position.x= where.x;
 	position.y= where.y;
 	position.z= where.z;
@@ -397,9 +398,7 @@ void cObject::setPosition(Location where)
 */
 void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 {
-	position.x= x;
-	position.y= y;
-	position.z= z;
+	setPosition( Loc( x, y, z ) ); // Luxor
 }
 
 /*!
@@ -416,6 +415,7 @@ void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 */
 void cObject::setPosition( const char *what, SI32 value)
 {
+        old_position = position; // Luxor
 	switch( what[0] )
 	{
 	case 'x':

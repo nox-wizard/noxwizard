@@ -460,9 +460,10 @@ class cChar : public cObject
 		cPath*			path;			//!< current path <Luxor>
 		void			walkNextStep();		//!< walk next path step <Luxor>
 	public:
-		void			walk();
-		inline LOGICAL		hasPath() { return (path!=NULL); }
-		void			follow( P_CHAR pc );
+                LOGICAL			seeForFirstTime( P_OBJECT po );	//!< does it see po for the first time? <Luxor>
+		void			walk();			//!< execute walk code <Luxor>
+		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set? <Luxor>
+		void			follow( P_CHAR pc ); //!< follow pc <Luxor>
 		void			pathFind( Location pos, LOGICAL bOverrideCurrentPath = true );	//!< Walk to position <Luxor>
 		SI08			dir;			//!< &0F=Direction
 		UI32			LastMoveTime;		//!< server time of last move
