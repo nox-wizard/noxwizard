@@ -284,6 +284,18 @@ void command_setmurder( NXWCLIENT ps )
 void command_readaccounts( NXWCLIENT ps )
 {
 	Accounts->LoadAccounts();
+	cAllObjectsIter objs;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ )
+	{
+		if( isCharSerial( objs.getSerial() ) )
+		{
+			P_CHAR pc = (P_CHAR) objs.getObject();
+			if ( ! pc->npc ) // seems to be a player
+			{
+				Accounts->AddCharToAccount(pc->account, pc);
+			}
+		}
+	}
 	ps->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 

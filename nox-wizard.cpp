@@ -753,9 +753,25 @@ void checkkey ()
 				break;
 			case 'A': //reload the accounts file
 			case 'a':
+				{
 				InfoOut("Reloading accounts file...");
 				Accounts->LoadAccounts();
+				cAllObjectsIter objs;
+				for( objs.rewind(); !objs.IsEmpty(); objs++ )
+				{
+					if( isCharSerial( objs.getSerial() ) )
+					{
+						P_CHAR pc = (P_CHAR) objs.getObject();
+						if ( ! pc->npc ) // seems to be a player
+						{
+							Accounts->AddCharToAccount(pc->account, pc);
+						}
+					}
+				}
+
+
 				ConOut("[DONE]\n");
+				}
 				break;
 			case 'x':
 			case 'X':
@@ -880,6 +896,18 @@ void signal_handler(int signal)
 
 	case SIGUSR1:
 		Accounts->LoadAccounts();
+		cAllObjectsIter objs;
+		for( objs.rewind(); !objs.IsEmpty(); objs++ )
+		{
+			if( isCharSerial( objs.getSerial() ) )
+			{
+				P_CHAR pc = (P_CHAR) obj;
+				if ( ! pc->npc ) // seems to be a player
+				{
+					Accounts->AddCharToAccount(chr->account, pc);
+				}
+			}
+		}
 		break ;
 	case SIGUSR2:
 		cwmWorldState->saveNewWorld();
