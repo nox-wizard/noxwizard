@@ -83,7 +83,7 @@ void MsgBoardGetPostType( NXWSOCKET s )
 }
 
 /*!
-\param s player socket
+\param s character
 \param nPostType type of post
 
 Used to set the postType for the current user (Typically a GM)
@@ -96,6 +96,7 @@ void MsgBoardSetPostType( NXWSOCKET s, PostType nPostType )
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
+	
 
 	pc->postType = nPostType;
 

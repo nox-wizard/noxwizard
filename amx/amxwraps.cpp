@@ -7115,10 +7115,11 @@ NATIVE ( _world_save )
 
 NATIVE ( _chr_setPostType )
 {
-	
-	if (ISVALIDPC( pointers::findCharBySerial(params[1])))
+
+     P_CHAR pc = pointers::findCharBySerial(params[1]);
+	if (ISVALIDPC(pc))
 	{
-		MsgBoards::MsgBoardSetPostType(params[1], (MsgBoards::PostType) params[2] );
+		MsgBoards::MsgBoardSetPostType( pc->getSocket() , (MsgBoards::PostType) params[2] );
 		return true;	
 	}
 	return false;
@@ -7656,7 +7657,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  
 // misc APIs need to be renamed
  { "world_save", _world_save },
- { "chr_setPostTypee", _chr_setPostType },
+ { "chr_setPostType", _chr_setPostType },
  { "setLightLevel", _setLightLevel },
 
 // speech APIs
