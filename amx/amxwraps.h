@@ -79,6 +79,12 @@ enum PROP_TYPE{
 #define NXW_CP2_REAL  2
 #define NXW_CP2_ACT   3
 
+#define NXW_CP2_STARTATTACK 0
+#define NXW_CP2_IDLE 1
+#define NXW_CP2_ATTACK 2
+#define NXW_CP2_DEFEND 3
+#define NXW_CP2_DIE 4
+
 const int NXW_CP_B_CANTRAIN = 0;
 const int NXW_CP_B_DEAD = 1;
 const int NXW_CP_B_FREE = 2;
@@ -256,6 +262,9 @@ const int NXW_CP_S_ID = 403;
 const int NXW_CP_S_SKIN = 404;
 const int NXW_CP_S_XID = 405;
 const int NXW_CP_S_XSKIN = 406;
+const int NXW_CP_S_ICON = 407;
+const int NXW_CP_S_SOUND = 408;
+const int NXW_CP_S_RACE = 409;
 
 const int NXW_CP_STR_DISABLEDMSG = 450;
 const int NXW_CP_STR_GUILDTITLE = 451;

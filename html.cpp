@@ -18,6 +18,7 @@
 #include "items.h"
 #include "inlines.h"
 #include "basics.h"
+#include "scripts.h"
 
 void offlinehtml()//HTML
 {

@@ -25,6 +25,7 @@
 #include "items.h"
 #include "basics.h"
 #include "inlines.h"
+#include "scripts.h"
 
 cFishing* Fishing=NULL;
 

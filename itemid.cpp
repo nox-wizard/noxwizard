@@ -22,6 +22,7 @@
 #include "items.h"
 #include "chars.h"
 #include "inlines.h"
+#include "scripts.h"
 
 WEAPONINFOMAP weaponinfo;
 

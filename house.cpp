@@ -30,6 +30,7 @@
 #include "chars.h"
 #include "inlines.h"
 #include "classes.h"
+#include "scripts.h"
 
 std::map< SERIAL, P_CHAR > houses;
 

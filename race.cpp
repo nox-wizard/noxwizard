@@ -21,6 +21,7 @@
 #include "chars.h"
 #include "inlines.h"
 #include "basics.h"
+#include "scripts.h"
 
 using namespace std;
 

@@ -19,6 +19,7 @@
 #include "inlines.h"
 #include "utils.h"
 #include "range.h"
+#include "scripts.h"
 
 std::map< SI32, SI32 > mountinfo;
 

@@ -155,7 +155,7 @@ void doubleclick(NXWCLIENT ps)
 
 
 	///MODIFY, CANT CLICK ITEM AT DISTANCE >2//////////////
-	if ( pc->distFrom(pi) > 2 && !pc->IsGM() && (!pc->nxwflags[0] & NCF0_TELEKINESYS) ) //Luxor: let's check also for the telekinesys spell
+	if ( (pc->distFrom(pi)>2) && !pc->IsGM() && !(pc->nxwflags[0] & NCF0_TELEKINESYS) ) //Luxor: let's check also for the telekinesys spell
 	{
 		pc->sysmsg( TRANSLATE("Must be closer to use this!"));
 		pc->objectdelay=0;

@@ -556,7 +556,6 @@ LOGICAL seekVerTile( UI16 id, tile_st& tile )
 		return false;
 
 	UI32 i, pos;
-	UI08 index;
 	verdata_st v;
 	UI32 block = id / 32 + 512;
 
@@ -585,7 +584,6 @@ LOGICAL seekVerLand( UI16 id, land_st& land )
 		return false;
 
 	UI32 i, pos;
-	UI08 index;
 	verdata_st v;
 	UI32 block = id / 32;
 

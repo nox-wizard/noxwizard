@@ -13,6 +13,7 @@
 #include "globals.h"
 #include "basics.h"
 #include "inlines.h"
+#include "scripts.h"
 
 
 cAreas*	Areas=NULL;

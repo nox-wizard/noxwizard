@@ -955,6 +955,8 @@ void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubp
 		case NXW_CP_S_XSKIN :
 			pc->setOldSkinColor( value );
 			break;
+		case NXW_CP_S_RACE :
+			pc->race = value;
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
@@ -1860,6 +1862,16 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_SKIN, pc->getSkinColor() )
 		CHECK(  NXW_CP_S_XID, pc->GetOldBodyType() )
 		CHECK(  NXW_CP_S_XSKIN, pc->getOldSkinColor() )
+		case NXW_CP_S_ICON : {
+			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			return ( creature!=NULL )? creature->icon : INVALID;
+
+		}
+		case NXW_CP_S_SOUND : {
+			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			return ( creature!=NULL )? creature->getSound( static_cast<MonsterSound>(prop2) ) : INVALID;
+		}
+		CHECK(  NXW_CP_S_RACE, pc->race )
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return INVALID;

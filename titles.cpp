@@ -12,6 +12,8 @@
 #include "chars.h"
 #include "items.h"
 #include "inlines.h"
+#include "scripts.h"
+
 
 int bestskill(P_CHAR p) // Which skill is the highest for character p
 {

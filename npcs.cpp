@@ -1228,16 +1228,85 @@ cAllCreatures::cAllCreatures()
 
 cAllCreatures::~cAllCreatures()
 {
+	for( int i=0; i<CREATURE_COUNT; ++i )
+		if( allCreatures[i]!=NULL )
+			delete allCreatures[i];
 }
 
 void cAllCreatures::load()
 {
+	cScpIterator*	iter = 0;
+	std::string	rha, lha;
+	int idxarea=0;
+
+	int loopexit=0;
+	do
+	{
+		safedelete(iter);
+		SERIAL current=idxarea;
+		iter = Scripts::Creatures->getNewIterator("SECTION CREATURE %i", idxarea++);
+		if( iter )
+		{
+
+			P_CREATURE_INFO cinfo = new cCreatureInfo;
+
+			do
+			{
+				iter->parseLine( lha, rha );
+				if ( lha[0] != '}' && lha[0] !='{' )
+				{
+					if	( lha == "START_ATTACK")
+					{
+						cinfo->addSound( SND_STARTATTACK, str2num( rha ) );
+					}
+					else if ( lha == "IDLE" )
+					{
+						cinfo->addSound( SND_IDLE, str2num( rha ) );
+					}
+					else if ( lha == "ATTACK" )
+					{
+						cinfo->addSound( SND_ATTACK, str2num( rha ) );
+					}
+					else if ( lha == "DEFEND" )
+					{
+						cinfo->addSound( SND_DEFEND, str2num( rha ) );
+					}
+					else if ( lha == "DIE" )
+					{
+						cinfo->addSound( SND_DIE, str2num( rha ) );
+					}
+					else if ( lha == "ICON" )
+					{
+						cinfo->icon = str2num( rha );
+					}
+					else if ( lha == "ANTIBLINK" )
+					{
+						cinfo->flag |= CREATURE_ANTI_BLINK;
+					}
+					else if ( lha == "CANFLY" )
+					{
+						cinfo->flag |= CREATURE_CAN_FLY;
+					}
+					else
+						WarnOut("[ERROR] on parse of areas.xss" );
+				}
+			}
+			while ( lha[0] !='}' && ++loopexit < MAXLOOPS );
+
+		}
+    }
+	while (  lha != "EOF" && ++loopexit < MAXLOOPS );
+
+    safedelete(iter);
+
 }
 
 P_CREATURE_INFO cAllCreatures::getCreature( UI16 id )
 {
-	std::map<UI16, cCreatureInfo>::iterator iter( allCreatures.find( id ) );
-	return ( iter!=allCreatures.end() )? &iter->second : NULL;
+	if( id>=CREATURE_COUNT )
+		return NULL;
+	else
+		return allCreatures[id];
 }
 
 

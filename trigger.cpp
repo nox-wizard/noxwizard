@@ -25,6 +25,7 @@
 #include "skills.h"
 #include "range.h"
 #include "utils.h"
+#include "scripts.h"
 
 
 //debugger things :] --begin--

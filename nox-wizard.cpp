@@ -104,6 +104,7 @@
 #include "nox-wizard.h"
 #include "containers.h"
 #include "classes.h"
+#include "scripts.h"
 
 
 
@@ -937,8 +938,6 @@ void init_deamon()
 void updateMenus();
 #endif
 
-void angelMode();
-
 #ifndef _WINDOWS
 	#ifndef USES_QT
 		int main(int argc, char *argv[])
@@ -1042,9 +1041,12 @@ void angelMode();
 		loadweaponsinfo();
 		ConOut("[DONE]\n");
 
-
 		ConOut("Loading mountable creature...");
 		loadmounts();
+		ConOut("[DONE]\n");
+
+		ConOut("Loading Creature info...");
+		creatures.load();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading container...");
@@ -1089,12 +1091,6 @@ void angelMode();
 	data::init(); // Luxor
 
 
-/*
-	if ((argc>1)&&(strstr(argv[1], "-syra"))) {
-		angelMode();
-		exit(99);
-	}
-*/
 	if (!keeprun) error = 1;
 #ifdef WIN32
 	if (error==1) { Network->SockClose(); DeleteClasses(); if (ServerScp::g_nDeamonMode==0) {MessageBox(NULL, "Startup failure. System halted.\nSome MUL files couldn't be loaded. Fix pathnames in server.cfg.\nPress OK to terminate.", "NoX-Wizard Fatal Error", MB_ICONSTOP);} exit(INVALID); }
@@ -2686,147 +2682,4 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 	}
 }
 
-namespace Scripts {
-	cScpScript* Advance = NULL; //cScpScript("advance.scp");
-	cScpScript* Calendar = NULL; //cScpScript("calendar.scp");
-	cScpScript* Carve = NULL; //cScpScript("carve.scp");
-	cScpScript* Colors = NULL; //cScpScript("colors.scp");
-	cScpScript* Create = NULL; //cScpScript("create.scp");
-	cScpScript* CronTab = NULL; //cScpScript("crontab.scp");
-	cScpScript* Envoke = NULL; //cScpScript("envoke.scp");
-	cScpScript* Fishing = NULL; //cScpScript("fishing.scp");
-	cScpScript* HardItems = NULL; //cScpScript("harditems.scp");
-	cScpScript* House = NULL; //cScpScript("house.scp");
 
-	cScpScript* HostDeny = NULL; //cScpScript("host_deny.xss");
-	cScpScript* HtmlStrm = NULL; //cScpScript("htmlstrm.scp");
-	cScpScript* Items = NULL; //cScpScript("items.scp");
-	cScpScript* Location = NULL; //cScpScript("location.scp");
-	cScpScript* MenuPriv = NULL; //cScpScript("menupriv.scp");
-	cScpScript* Menus = NULL; //cScpScript("menus.scp");
-	cScpScript* MetaGM = NULL; //cScpScript("metagm.scp");
-	cScpScript* Misc = NULL; //cScpScript("misc.scp");
-	cScpScript* MList = NULL; //cScpScript("mlist.scp");
-	cScpScript* MsgBoard = NULL; //cScpScript("msgboard.scp");
-	cScpScript* Necro = NULL; //cScpScript("necro.scp");
-	cScpScript* Newbie = NULL; //cScpScript("newbie.scp");
-	cScpScript* Npc = NULL; //cScpScript("npc.scp");
-	cScpScript* NpcMagic = NULL; //cScpScript("npcmagic.scp");
-	cScpScript* NTrigrs = NULL; //cScpScript("ntrigrs.scp");
-	cScpScript* Override = NULL; //cScpScript("override.scp");
-	cScpScript* Polymorph = NULL; //cScpScript("polymorph.scp");
-	cScpScript* Regions = NULL; //cScpScript("regions.scp");
-	cScpScript* Skills = NULL; //cScpScript("skills.scp");
-	cScpScript* Spawn = NULL; //cScpScript("spawn.scp");
-	cScpScript* Speech = NULL; //cScpScript("speech.scp");
-	cScpScript* Spells = NULL; //cScpScript("spells.scp");
-	cScpScript* Teleport = NULL; //cScpScript("teleport.scp");
-	cScpScript* Titles = NULL; //cScpScript("titles.scp");
-	cScpScript* Triggers = NULL; //cScpScript("triggers.scp");
-	cScpScript* WTrigrs = NULL; //cScpScript("wtrigrs.scp");
-	cScpScript* Mountable = NULL; //cScpScript("mount.xss");
-	cScpScript* WeaponInfo = NULL; //cScpScript("weaponinfo.xss");
-	cScpScript* Containers = NULL; //cScpScript("containers.xss");
-	cScpScript* Areas = NULL; //cScpScript("areas.xss");
-};
-
-void newScriptsInit()
-{
-	cScpScript* Dummy = new cScpScript("scripts/symbols.xss");
-	safedelete(Dummy);
-	Scripts::Advance = new cScpScript("scripts/advance.xss");
-//	Scripts::Calendar = new cScpScript("calendar.scp");
-	Scripts::Carve = new cScpScript("scripts/carve.xss");
-	Scripts::Colors = new cScpScript("scripts/colors.xss");
-	Scripts::Create = new cScpScript("scripts/create.xss");
-//	Scripts::CronTab = new cScpScript("crontab.scp");
-	Scripts::Envoke = new cScpScript("scripts/envoke.xss");
-	Scripts::Fishing = new cScpScript("scripts/fishing.xss");
-	Scripts::HardItems = new cScpScript("scripts/harditems.xss");
-	Scripts::House = new cScpScript("scripts/house.xss");
-
-	Scripts::HostDeny = new cScpScript("config/hostdeny.xss");
-	Scripts::HtmlStrm = new cScpScript("scripts/html.xss");
-	Scripts::Items = new cScpScript("scripts/items.xss");
-	Scripts::Location = new cScpScript("scripts/location.xss");
-//	Scripts::MenuPriv = new cScpScript("menupriv.scp");
-	Scripts::Menus = new cScpScript("scripts/menus.xss");
-	Scripts::MetaGM = new cScpScript("scripts/metagm.xss");
-	Scripts::Misc = new cScpScript("scripts/misc.xss");
-	Scripts::MsgBoard = new cScpScript("scripts/msgboard.xss");
-	Scripts::Necro = new cScpScript("scripts/necro.xss");
-	Scripts::Newbie = new cScpScript("scripts/newbie.xss");
-	Scripts::Npc = new cScpScript("scripts/npc.xss");
-	Scripts::NpcMagic = new cScpScript("scripts/npcmagic.xss");
-//	Scripts::NTrigrs = new cScpScript("ntrigrs.scp");
-//	Scripts::Override = new cScpScript("override.scp");
-	Scripts::Polymorph = new cScpScript("scripts/polymorph.xss");
-	Race::load("scripts/race.xss");
-	Scripts::Regions = new cScpScript("scripts/regions.xss");
-	Scripts::Skills = new cScpScript("scripts/skills.xss");
-	Scripts::Spawn = new cScpScript("scripts/spawn.xss");
-	Scripts::Speech = new cScpScript("scripts/speech.xss");
-	Scripts::Spells = new cScpScript("scripts/spells.xss");
-//	Scripts::Teleport = new cScpScript("teleport.scp");
-	Scripts::Titles = new cScpScript("scripts/titles.xss");
-	Scripts::Triggers = new cScpScript("scripts/triggers.xss");
-//	Scripts::WTrigrs = new cScpScript("wtrigrs.scp");
-	Scripts::Mountable = new cScpScript("scripts/mounts.xss");
-	Scripts::WeaponInfo = new cScpScript("scripts/weaponinfo.xss");
-	Scripts::Containers = new cScpScript("scripts/containers.xss");
-	Scripts::Areas = new cScpScript("scripts/areas.xss");
-}
-
-
-void deleteNewScripts()
-{
-	cScpScript* Dummy = new cScpScript("scripts/symbols.xss");
-	safedelete(Dummy);//
-	safedelete(Scripts::Advance );//= new cScpScript("scripts/advance.xss");
-//	Scripts::Calendar = new cScpScript("calendar.scp");
-	safedelete(Scripts::Carve );//= new cScpScript("carve.scp");
-	safedelete(Scripts::Colors );//= new cScpScript("colors.scp");
-	safedelete(Scripts::Create );//= new cScpScript("create.scp");
-//	Scripts::CronTab = new cScpScript("crontab.scp");
-	safedelete(Scripts::Envoke );//= new cScpScript("envoke.scp");
-	safedelete(Scripts::Fishing );//= new cScpScript("fishing.scp");
-	safedelete(Scripts::HardItems );//= new cScpScript("harditems.scp");
-	safedelete(Scripts::House );//= new cScpScript("house.scp");
-
-	safedelete(Scripts::HostDeny);
-	safedelete(Scripts::HtmlStrm );//= new cScpScript("htmlstrm.scp");
-	safedelete(Scripts::Items );//= new cScpScript("items.scp");
-	safedelete(Scripts::Location );//= new cScpScript("location.scp");
-	safedelete(Scripts::MenuPriv );//= new cScpScript("menupriv.scp");
-	safedelete(Scripts::Menus );//= new cScpScript("scripts/menus.xss");
-	safedelete(Scripts::MetaGM );//= new cScpScript("metagm.scp");
-	safedelete(Scripts::Misc );//= new cScpScript("misc.scp");
-	safedelete(Scripts::MList );//= new cScpScript("mlist.scp");
-	safedelete(Scripts::MsgBoard);// = new cScpScript("msgboard.scp");
-	safedelete(Scripts::Necro );//= new cScpScript("scripts/necro.xss");
-	safedelete(Scripts::Newbie );//= new cScpScript("newbie.scp");
-	safedelete(Scripts::Npc );// new cScpScript("scripts/npc.xss");
-	safedelete(Scripts::NpcMagic);// = new cScpScript("npcmagic.scp");
-//	safedelete(Scripts::NTrigrs);// = new cScpScript("ntrigrs.scp");
-//	Scripts::Override = new cScpScript("override.scp");
-	safedelete(Scripts::Polymorph);// = new cScpScript("polymorph.scp");
-	safedelete(Scripts::Regions);// = new cScpScript("regions.scp");
-	safedelete(Scripts::Skills);// = new cScpScript("skills.scp");
-	safedelete(Scripts::Spawn);// = new cScpScript("spawn.scp");
-	safedelete(Scripts::Speech);// = new cScpScript("speech.scp");
-	safedelete(Scripts::Spells);// = new cScpScript("spells.scp");
-	safedelete(Scripts::Teleport);// = new cScpScript("teleport.scp");
-	safedelete(Scripts::Titles);// = new cScpScript("titles.scp");
-	safedelete(Scripts::Triggers);// = new cScpScript("triggers.scp");
-//	safedelete(Scripts::WTrigrs);// = new cScpScript("wtrigrs.scp");
-	safedelete(Scripts::Mountable);
-	safedelete(Scripts::WeaponInfo);
-	safedelete(Scripts::Containers);
-	safedelete(Scripts::Areas);
-}
-
-#ifndef _EXTERNANGEL
-void angelMode()
-{
-}
-#endif

@@ -35,6 +35,7 @@
 #include "inlines.h"
 #include "skills.h"
 #include "nox-wizard.h"
+#include "scripts.h"
 
 
 

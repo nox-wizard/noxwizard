@@ -27,6 +27,7 @@
 #include "classes.h"
 #include "utils.h"
 #include "nox-wizard.h"
+#include "scripts.h"
 
 
 #define MAXBUFFER_REAL MAXBUFFER

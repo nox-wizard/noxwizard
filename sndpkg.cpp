@@ -32,6 +32,7 @@
 #include "range.h"
 #include "classes.h"
 #include "utils.h"
+#include "scripts.h"
 
 void gmyell(char *txt)
 {

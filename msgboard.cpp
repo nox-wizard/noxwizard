@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "inlines.h"
 #include "nox-wizard.h"
+#include "scripts.h"
 
 namespace MsgBoards
 {

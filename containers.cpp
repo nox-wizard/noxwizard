@@ -13,6 +13,7 @@
 #include "items.h"
 #include "basics.h"
 #include "inlines.h"
+#include "scripts.h"
 
 CONTINFOGUMPMAP contInfoGump;
 CONTINFOMAP contInfo;

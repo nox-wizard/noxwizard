@@ -14,6 +14,7 @@
 #include "items.h"
 #include "inlines.h"
 #include "utils.h"
+#include "scripts.h"
 
 cScpIterator* cObject::getScriptIterator( std::string section, std::string& sectionId )
 {

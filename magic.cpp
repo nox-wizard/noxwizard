@@ -26,7 +26,7 @@
 #include "inlines.h"
 #include "classes.h"
 #include "utils.h"
-
+#include "scripts.h"
 
 
 namespace magic {

@@ -111,9 +111,11 @@ public:
 
 typedef cCreatureInfo* P_CREATURE_INFO;
 
+#define CREATURE_COUNT 2048
+
 class cAllCreatures {
 
-	std::map<UI16, cCreatureInfo> allCreatures;
+	P_CREATURE_INFO allCreatures[CREATURE_COUNT];
 
 public:
 

@@ -13,6 +13,7 @@
 #include "items.h"
 #include "chars.h"
 #include "inlines.h"
+#include "scripts.h"
 
 cSpawns* Spawns=NULL;
 
