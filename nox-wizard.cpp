@@ -2018,7 +2018,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		if (s==INVALID) return;
 		if( clientInfo[s]->lsd )
 		{
-			pc->sysmsg(TRANSLATE("no,no,no,cant you get enough ?"));
+			pc->sysmsg(TRANSLATE("no,no,no,can't you get enough ?"));
 			return;
 		}
 		tempfx::add(pc, pc, tempfx::HALLUCINATE, (char) (60+RandomNum(1,120)), 0, 0); // trigger effect

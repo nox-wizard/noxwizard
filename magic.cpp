@@ -1220,7 +1220,11 @@ void castFieldSpell( P_CHAR pc, int x, int y, int z, int spellnumber)
 	if ((R<=INVALID)||(R>255)) R = 255;
 
 
-	if ((region[R].priv&RGNPRIV_GUARDED)&&(SrvParms->guardsactive)) return;
+	if ((region[R].priv&RGNPRIV_GUARDED)&&(SrvParms->guardsactive)) 
+	{
+		pc->sysmsg("You cannot cast field spells in town! ");
+		return;
+	}
 
 	for( j=0; j<=fieldLen; j++ )
 	{

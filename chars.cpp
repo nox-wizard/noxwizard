@@ -4792,6 +4792,30 @@ void cChar::do_lsd()
 					soundeffect5(socket,(UI16)(246+snd));
 			}
 		}
+		switch (rand()%9)
+		{
+			case 0:
+				sysmsg("Did you see the size of that chicken ?");
+			case 1:
+				sysmsg("Boy, i could swear i saw a three headed monkey!");
+			case 2:
+				sysmsg("Hey, this is better than a trip to las vegas!");
+			case 3:
+				sysmsg("Did you know that there are roots growing from my ears ?");
+			case 4:
+				sysmsg("I wonder how my head looks like without those purple antennas.");
+			case 5:
+				sysmsg("What was that?");
+			case 6:
+				sysmsg("Did you see that?");
+			case 7:
+				sysmsg("The rocks are lovely this time of year.");
+			case 8:
+				sysmsg("I'll show you that damn rock there is weaker than my head!");
+			case 9:
+			default:
+				sysmsg("I don't really feel so good");
+		}
 	}
 
 }
