@@ -20,6 +20,7 @@
 #include "trigger.h"
 #include "house.h"
 #include "tmpeff.h"
+#include "packets.h"
 
 /*!
 \brief Calculates the adjacent direction (counterclockwise)
@@ -1293,14 +1294,15 @@ void walking(P_CHAR pc, int dir, int sequence)
 
 	if (s!=INVALID)
 	{
-		char walkok[4]="\x22\x00\x01";
-		walkok[1]=buffer[s][2];
-		walkok[2]=0x41;
-		//if (pc->hidden==1) walkok[2]=0x00;
-		//if (pc->isHidden()) walkok[2]=0x00;
-		Xsend(s, walkok, 3);
+		cPacketWalkAck walkok;
+		walkok.sequence=buffer[s][2];
+		walkok.notoriety=0x41;
+		//if (pc->hidden==1) walkok.notoriety=0x00;
+		//if (pc->isHidden()) walkok.notoriety=0x00;
+		walkok.send( pc->getClient() );
+		
 		walksequence[s]=sequence;
-		if (walksequence[s]==255) walksequence[s]=0;
+		walksequence[s]%=255;
 	}
 
 

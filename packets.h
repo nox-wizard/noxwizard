@@ -64,7 +64,7 @@ public:
 \since 0.83a
 */
 class cServerPacket : public cPacket {
-
+public:
 	void send( NXWCLIENT ps );
 	void send( P_CHAR pc );
 
@@ -1607,7 +1607,6 @@ public:
 	eUI08   sequence;	//!< sequence
 	eUI08   notoriety;	//!< notoriety ( see note and NOTORIETY )
 	cPacketWalkAck();
-	void send( NXWCLIENT ps );
 
 };
 
