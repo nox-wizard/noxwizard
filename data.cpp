@@ -11,7 +11,6 @@
 \file
 \author Luxor
 \brief Data files handling system
-\todo finish it - experimental yet
 */
 
 #include "data.h"
@@ -19,34 +18,218 @@
 namespace data {
 
 
-cMULFile< map_st > *Map;
+std::vector < cMULFile< map_st >* > maps; // Maps (map0.mul map1.mul...)
+cMULFile< staticIdx_st >* staticIdx; // staidx0.mul
+cMULFile< static_st >* statics; // statics.mul
+cMULFile< land_st >* tdLand; // tiledata.mul
+cMULFile< tile_st >* tdTile; // tiledata.mul
+cMULFile< multiIdx_st >* multiIdx; // multi.idx
+cMULFile< multi_st >* multi; // multi.mul
+
+cMULFile< verdata_st >* verIdx; // verdata.mul
+cMULFile< land_st >* verLand; // verdata.mul
+cMULFile< tile_st >* verTile; // verdata.mul
+
+static SI32 verdataEntries;
 
 /*!
 \author Luxor
+\brief Caches map mul files, trying to maintain a sequential reading to get the best speed.
 */
-static void cacheData()
+static void cacheMap()
 {
-	//
-	// Map caching
-	//
-	Map->setCache( NULL );
-	map_st m;
-	std::map< UI32, map_st > *cache = new std::map< UI32, map_st >;
-	UI16 x1, y1, x2, y2;
-	UI32 x, y, pos;
-	for ( x = 0; x < ( ServerScp::g_nMapWidth * 8 ); x++ ) {
-		x1 = x / 8;
-		x2 = x % 8;
-		for ( y = 0; y < ( ServerScp::g_nMapHeight * 8 ); y++ ) {
-			y1 = y / 8;
-			y2 = y % 8;
-			pos = ( x1 * ServerScp::g_nMapHeight * 196 ) + ( y1 * 196 ) + ( y2 * 24 ) + ( x2 * 3 ) + 4;
-			if ( Map->getData( pos, m ) )
-				cache->insert( make_pair( pos, m ) );
+	UI32 i, pos;
+
+	for ( i = 0; i < maps.size(); i++ ) {
+		if ( !maps[i]->isReady() )
+			continue;
+		map_st m;
+		std::map< UI32, map_st > *map_cache = new std::map< UI32, map_st >;
+		ConOut( "\nCaching map %i data ( map0.mul )\t\t", i );
+		UI16 blockX;
+		UI08 xOffset;
+		SI08 yOffset;
+		SI16 blockY;
+		for ( blockX = 0; blockX < ServerScp::g_nMapWidth; blockX++ ) {
+			for ( blockY = ServerScp::g_nMapHeight - 1; blockY >= 0; blockY-- ) {
+				for ( yOffset = 7; yOffset >= 0; yOffset-- ) {
+					for ( xOffset = 0; xOffset < 8; xOffset++ ) {
+						pos =
+							// Block position - A block contains 8x8 cells.
+							// Blocks are registered in file by top to bottom columns from left to right.
+							( blockX * ServerScp::g_nMapHeight * MAP_BLOCK_SIZE ) + ( blockY * MAP_BLOCK_SIZE ) +
+							// Header of the block, it doesn't interest us.
+							MAP_HEADER_SIZE +
+							// Cell position in block - A cell is a map_st.
+							// Cells are registered in blocks by left to right rows from top to bottom.
+							( yOffset * 8 * map_st_size ) + ( xOffset * map_st_size );
+
+						if ( maps[i]->getData( pos, m ) )
+							map_cache->insert( pair< UI32, map_st >( pos, m ) );
+					}
+				}
+			}
+		}
+		maps[i]->setCache( map_cache );
+		ConOut( "[Done]" );
+	}
+}
+
+/*!
+\author Luxor
+\brief Caches statics mul files, trying to maintain a sequential reading to get the best speed.
+*/
+static void cacheStatics()
+{
+	UI32 i, pos;
+
+	if ( !statics->isReady() || !staticIdx->isReady() )
+		return;
+
+	static_st s;
+	std::map< UI32, static_st > *statics_cache = new std::map< UI32, static_st >;
+
+	staticIdx_st staidx;
+	std::map< UI32, staticIdx_st > *staidx_cache = new std::map< UI32, staticIdx_st >;
+
+	UI16 blockX;
+	SI16 blockY;
+	UI32 num;
+	ConOut( "\nCaching statics data ( staidx0.mul, statics0.mul )\t\t" );
+	for ( blockX = 0; blockX < ServerScp::g_nMapWidth; blockX++ ) {
+		for ( blockY = ServerScp::g_nMapHeight -1; blockY >= 0; blockY-- ) {
+			pos =
+				// Block position - A block contains (staticIdx_st.length / static_st_size ) statics.
+				// Blocks are registered in file by top to bottom columns from left to right.
+				( blockX * ServerScp::g_nMapHeight * staticIdx_st_size ) + ( blockY * staticIdx_st_size );
+
+			if ( !staticIdx->getData( pos, staidx ) || staidx.start == 0xFFFFFFFF || staidx.start < 0 || staidx.length <= 0 )
+				continue;
+			staidx_cache->insert( pair< UI32, staticIdx_st >( pos, staidx ) );
+
+			num = staidx.length / static_st_size;
+
+			for ( i = 0; i < num; i++ ) {
+				pos = staidx.start + ( i * static_st_size );
+				if ( statics->getData( pos, s ) )
+					statics_cache->insert( pair< UI32, static_st >( pos, s ) );
+			}
 		}
 	}
-	Map->setCache( cache );
+	statics->setCache( statics_cache );
+	staticIdx->setCache( staidx_cache );
+	ConOut( "[Done]" );
 }
+
+/*!
+\author Luxor
+\brief Caches tiledata mul files, trying to maintain a sequential reading to get the best speed.
+*/
+static void cacheTileData()
+{
+	if ( !tdLand->isReady() || !tdTile->isReady() )
+		return;
+
+	UI32 pos;
+	tile_st t;
+	land_st l;
+	std::map< UI32, land_st > *land_cache = new std::map< UI32, land_st >;
+	std::map< UI32, tile_st > *tile_cache = new std::map< UI32, tile_st >;
+
+	UI32 block;
+	UI08 index;
+	ConOut( "\nCaching land data ( tiledata.mul )\t\t" );
+	for ( block = 0; block < 512; block++ ) {
+		for ( index = 0; index < 32; index++ ) {
+			pos =
+				// Each block contains 32 land_st.
+				( (block + 1) * TILE_HEADER_SIZE ) + ( land_st_size * (index + block * 32) );
+			if ( tdLand->getData( pos, l ) )
+				land_cache->insert( pair< UI32, land_st >( pos, l ) );
+		}
+	}
+	ConOut( "[Done]" );
+	tdLand->setCache( land_cache );
+
+	ConOut( "\nCaching tiles data ( tiledata.mul ) \t\t" );
+	for ( block = 0; !tdTile->eof(); block++ ) {
+		for ( index = 0; index < 32; index++ ) {
+			pos =
+				// Go beyond the land_st dedicated space.
+				TILEDATA_LAND_SIZE +
+				// Each block contains 32 tile_st.
+				( (block + 1) * TILE_HEADER_SIZE ) + ( tile_st_size * (index + block * 32) );
+			if ( tdTile->getData( pos, t ) )
+				tile_cache->insert( pair< UI32, tile_st >( pos, t ) );
+		}
+	}
+	ConOut( "[Done]" );
+	tdTile->setCache( tile_cache );
+}
+
+static void cacheVerdataIndex()
+{
+	if ( !verIdx->isReady() )
+		return;
+
+	std::map< UI32, verdata_st >* verIdx_cache = new std::map< UI32, verdata_st >;
+	verIdx->getData( 0, (BYTE*)(&verdataEntries), 4 );
+
+	verdata_st v;
+
+	ConOut( "\nCaching verdata index ( verdata.mul ) \t\t" );
+	for ( i = 0; i < verdataEntries; i++ ) {
+		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
+		if ( verIdx->getData( pos, v ) )
+			verIdx_cache->insert( pair< UI32, verdata_st >( pos, v ) );
+	}
+	ConOut( "[Done]" );
+	verIdx->setCache( verIdx_cache );
+}
+
+static void cacheVerdata()
+{
+	if ( !verIdx->isReady() && !verTile->isReady() && !verLand->isReady() )
+		return;
+
+	std::map< UI32, tile_st >* verTile_cache = new std::map< UI32, tile_st >;
+	std::map< UI32, land_st >* verLand_cache = new std::map< UI32, land_st >;
+	verdata_st v;
+	tile_st t;
+	land_st l;
+	UI32 block;
+	UI08 index;
+
+	ConOut( "\nCaching verdata tiledata info ( verdata.mul ) \t\t" );
+	for ( i = 0; i < verdataEntries; i++ ) {
+		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
+		if ( !verIdx->getData( pos, v ) )
+			continue;
+		if ( v.fileid != VerTileData )
+			continue;
+
+		if ( v.block >= 512 ) {
+			block = v.block - 512;
+
+			for ( index = 0; index < 32; index++ ) {
+				pos = TILE_HEADER_SIZE + v.pos + index * tile_st_size;
+				if ( verTile->getData( pos, t ) )
+					verTile_cache->insert( pair< UI32, tile_st >( pos, t ) );
+			}
+		} else {
+			for ( index = 0; index < 32; index++ ) {
+				pos = TILE_HEADER_SIZE + v.pos + index * land_st_size;
+				if ( verLand->getData( pos, l ) )
+					verLand_cache->insert( pair< UI32, land_st >( pos, l ) );
+			}
+		}
+	}
+	ConOut( "[Done]" );
+	verTile->setCache( verTile_cache );
+	verLand->setCache( verLand_cache );
+}
+
+
 
 
 /*!
@@ -54,10 +237,53 @@ static void cacheData()
 */
 void init( LOGICAL cache )
 {
+	//
+	// If MULs loading fails, stop the server!
+	//
+	keeprun = false;
 
-	Map = new cMULFile< map_st > ( "./mul/map0.mul", "rb" );
-	if ( cache )
-		cacheData();
+	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
+	
+	maps.push_back( new cMULFile< map_st > ( "./mul/map0.mul", "rb" ) );
+	staticIdx = new cMULFile< staticIdx_st > ( "./mul/staidx0.mul", "rb" );
+	statics = new cMULFile< static_st > ( "./mul/statics0.mul", "rb" );
+	tdLand = new cMULFile< land_st > ( "./mul/tiledata.mul", "rb" );
+	tdTile = new cMULFile< tile_st > ( "./mul/tiledata.mul", "rb" );
+	multiIdx = new cMULFile< multiIdx_st > ( "./mul/multi.idx", "rb" );
+	multi = new cMULFile< multi_st > ( "./mul/multi.mul", "rb" );
+	verIdx = new cMULFile< verdata_st > ( "./mul/verdata.mul", "rb" );
+	verLand = new cMULFile< land_st > ( "./mul/verdata.mul", "rb" );
+	verTile = new cMULFile< tile_st > ( "./mul/verdata.mul", "rb" );
+
+	//
+	// We cache always the verdata index, it's very small and it really improves performances.
+	//
+	cacheVerdataIndex();
+
+	//
+	// MULs loaded, let's keep the server running
+	//
+	keeprun = true;
+}
+
+/*!
+\author Luxor
+*/
+void shutdown()
+{
+	UI32 i;
+	for ( i = 0; i < maps.size(); i++ )
+		safedelete( maps[i] );
+
+	safedelete( staticIdx );
+	safedelete( statics );
+	safedelete( tdLand );
+	safedelete( tdTile );
+	safedelete( multiIdx );
+	safedelete( multi );
+	safedelete( verIdx );
+	safedelete( verLand );
+	safedelete( verTile );
 }
 
 
@@ -67,12 +293,179 @@ void init( LOGICAL cache )
 */
 LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap )
 {
-	if ( !Map->isReady() )
+	if ( nMap >= maps.size() )
+		return false;
+	if ( !maps[ nMap ]->isReady() )
 		return false;
 
-	UI16 x1 = x / 8, y1 = y / 8, x2 = x % 8, y2 = y % 8;
-	UI32 pos = ( x1 * ServerScp::g_nMapHeight * 196 ) + ( y1 * 196 ) + ( y2 * 24 ) + ( x2 * 3 ) + 4;
-	return Map->getData( pos, m );
+	UI32 pos;
+	UI16 blockX = x / 8, blockY = y / 8, cellX = x % 8, cellY = y % 8;
+	pos =
+		// Block position - A block contains 8x8 cells. Blocks are registered in file by top to bottom columns from left to right.
+		( blockX * ServerScp::g_nMapHeight * MAP_BLOCK_SIZE ) + ( blockY * MAP_BLOCK_SIZE ) +
+		// Header of the block, it doesn't interest us.
+		MAP_HEADER_SIZE +
+		// Cell position in block - A cell is a map_st. Cells are registered in blocks by left to right rows from top to bottom.
+		( cellY * 8 * map_st_size ) + ( cellX * map_st_size );
+
+	return maps[ nMap ]->getData( pos, m );
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL collectStatics( UI32 x, UI32 y, staticVector& s_vec )
+{
+	if ( !staticIdx->isReady() || !statics->isReady() )
+		return false;
+
+
+	UI16 blockX = x / 8, blockY = y / 8;
+	UI32 pos =
+		// Block position - A block contains (staticIdx_st.length / static_st_size ) statics.
+		// Blocks are registered in file by top to bottom columns from left to right.
+		( blockX * ServerScp::g_nMapHeight * staticIdx_st_size ) + ( blockY * staticIdx_st_size );
+
+	staticIdx_st staidx;
+	if ( !staticIdx->getData( pos, staidx ) || staidx.start == 0xFFFFFFFF || staidx.start < 0 || staidx.length <= 0 )
+		return false;
+
+	UI32 num = staidx.length / static_st_size;
+	static_st s;
+	UI08 xOffset = x % 8, yOffset = y % 8;
+	for ( UI32 i = 0; i < num; i++ ) {
+		pos = staidx.start + ( i * static_st_size );
+		if ( !statics->getData( pos, s ) )
+			continue;
+		if ( s.xoff == xOffset && s.yoff == yOffset )
+			s_vec.push_back( s );
+	}
+	return ( s_vec.size() > 0 );
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekLand( UI16 id, land_st& land )
+{
+	if ( seekVerLand( id, land ) )
+		return true;
+
+	if ( !tdLand->isReady() )
+		return false;
+
+	UI16 block = id / 32;
+
+	UI32 pos =
+		// Each block contains 32 land_st.
+		( (block + 1) * TILE_HEADER_SIZE ) + ( land_st_size * id );
+
+	return tdLand->getData( pos, land );
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekTile( UI16 id, tile_st& tile )
+{
+	if ( seekVerTile( id, tile ) )
+		return true;
+
+	if ( !tdTile->isReady() )
+		return false;
+
+	UI16 block = id / 32;
+
+	UI32 pos =
+		// Go beyond the land_st dedicated space.
+		TILEDATA_LAND_SIZE +
+		// Each block contains 32 tile_st.
+		( (block + 1) * TILE_HEADER_SIZE ) + ( tile_st_size * id );
+
+	return tdTile->getData( pos, tile );
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekMulti( UI16 id, multiVector& m_vec )
+{
+	if ( !multiIdx->isReady() || !multi->isReady() )
+		return false;
+
+	multiIdx_st idx;
+	UI32 pos = id * multiIdx_st_size;
+	if ( !multiIdx->getData( pos, idx ) || idx.start == (0xFFFFFFFF - 1) || idx.start < 0 || idx.length <= 0 )
+		return false;
+
+	multi_st m;
+	UI32 num = idx.length / multi_st_size;
+	for ( UI32 i = 0; i < num; i++ ) {
+		pos = idx.start + ( i * multi_st_size );
+		if ( !multi->getData( pos, m ) )
+			continue;
+		m_vec.push_back( m );
+	}
+	return ( m_vec.size() > 0 );
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekVerTile( UI16 id, tile_st& tile )
+{
+	if ( !verIdx->isReady() || !verTile->isReady() )
+		return false;
+
+	UI32 i, pos;
+	UI08 index;
+	verdata_st v;
+	UI32 block = id / 32 + 512;
+
+	for ( i = 0; i < verdataEntries; i++ ) {
+		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
+		if ( !verIdx->getData( pos, v ) )
+			continue;
+		if ( v.fileid != VerTileData || v.block < 512 )
+			continue;
+
+		if ( block != v.block )
+			continue;
+
+		pos = TILE_HEADER_SIZE + v.pos + ( id % 32 ) * tile_st_size;
+		return verTile->getData( pos, tile );
+	}
+	return false;
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekVerLand( UI16 id, land_st& land )
+{
+	if ( !verIdx->isReady() || !verLand->isReady() )
+		return false;
+
+	UI32 i, pos;
+	UI08 index;
+	verdata_st v;
+	UI32 block = id / 32;
+
+	for ( i = 0; i < verdataEntries; i++ ) {
+		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
+		if ( !verIdx->getData( pos, v ) )
+			continue;
+		if ( v.fileid != VerTileData || v.block >= 512 )
+			continue;
+
+
+		if ( block != v.block )
+			continue;
+
+		pos = TILE_HEADER_SIZE + v.pos + ( id % 32 ) * land_st_size;
+		return verLand->getData( pos, land );
+	}
+	return false;
 }
 
 
@@ -83,7 +476,6 @@ LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap )
 template <typename T>
 cMULFile<T>::cMULFile( std::string path, std::string mode )
 {
-	m_file = NULL;
 	m_cache = NULL;
 	m_file = fopen( path.c_str(), mode.c_str() );
 }
@@ -98,7 +490,7 @@ LOGICAL cMULFile<T>::getData( UI32 index, T& data )
 		return false;
 	if ( !isCached() ) {
 		fseek( m_file, index, SEEK_SET );
-		return ( fread( &data, sizeof( T ), 1, m_file ) == 0 );
+		return ( fread( &data, sizeof( T ), 1, m_file ) != 0 );
 	}
 
 	typename std::map< UI32, T >::iterator it = m_cache->find( index );
@@ -113,11 +505,34 @@ LOGICAL cMULFile<T>::getData( UI32 index, T& data )
 \author Luxor
 */
 template <typename T>
+LOGICAL cMULFile<T>::getData( UI32 index, BYTE* ptr, UI32 size )
+{
+	if ( !isReady() )
+		return false;
+	fseek( m_file, index, SEEK_SET );
+	return ( fread( ptr, sizeof( BYTE ), size, m_file ) != 0 );
+}
+
+/*!
+\author Luxor
+*/
+template <typename T>
 void cMULFile<T>::setCache( typename std::map< UI32, T > *cache )
 {
 	if ( m_cache != NULL )
 		safedelete( m_cache );
 	m_cache = cache;
+}
+
+/*!
+\author Luxor
+*/
+template <typename T>
+LOGICAL cMULFile<T>::eof()
+{
+	if ( m_file == NULL )
+		return true;
+	return feof( m_file );
 }
 
 
