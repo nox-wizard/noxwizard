@@ -2379,9 +2379,37 @@ void cChar::boltFX(LOGICAL bNoParticles)
 \author Xanathar
 \param id effect id
 */
-void cChar::circleFX(short id)
+void cChar::circleFX(UI16 eff)
 {
-	bolteffect2(this,id >> 8,id & 0xFF);
+	UI08 effect[28]={ 0x70, 0x00, };
+	UI16 y=rand()%36, x=rand()%36;
+
+	Location pos2, charpos = getPosition();
+
+	if (rand()%2==0) x=-x;
+	if (rand()%2==0) y=-y;
+	pos2.x = charpos.x + x;
+	pos2.y = charpos.y + y;
+
+	static const UI16 max_x = MapTileWidth  * 8, max_y = MapTileHeight * 8;
+	
+	if (pos2.x > max_x) pos2.x = max_x;
+	if (pos2.y > max_y) pos2.y = max_y;
+
+	charpos.z = 0; pos2.z = 127;
+	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+
+	 NxwSocketWrapper sw;
+	 sw.fillOnline( this );
+	 for( sw.rewind(); !sw.isEmpty(); sw++ )
+	 {
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
 }
 
 /*!

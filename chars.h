@@ -993,7 +993,7 @@ public:
 		void			movingFX(P_CHAR dst, UI16 id, UI08 speed, UI08 loop, LOGICAL explode, class ParticleFx* part = NULL);
 		void			staticFX(UI16 id, UI08 speed, UI08 loop, class ParticleFx* part = NULL);
 		void			boltFX(LOGICAL bNoParticles);
-		void			circleFX(short id);
+		void			circleFX(UI16 eff);
 
 		P_ITEM			getBeardItem();
 		P_ITEM			getHairItem();

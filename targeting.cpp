@@ -970,18 +970,16 @@ public:
     cBoltTarget(NXWCLIENT pCli) : cCharTarget(pCli) {}
     void CharSpecific()
     {
+        P_CHAR pc_inx=MAKE_CHAR_REF(inx);
+	VALIDATEPC(pc_inx);
         if (w_anim[0]==0 && w_anim[1]==0)
         {
-            P_CHAR pc_inx=MAKE_CHAR_REF(inx);
-	    if(ISVALIDPC(pc_inx))
-	    {
 		pc_inx->playSFX( 0x0029);
 		pc_inx->boltFX(false);
-	    }
         }
         else
         {
-            for (int j=0;j<=333;j++) bolteffect2(MAKE_CHAR_REF(inx),w_anim[0],w_anim[1]);
+            for (int j=0;j<=333;j++) pc_inx->circleFX(w_anim[0] << 8 + w_anim[1]);
         }
     }
 };
