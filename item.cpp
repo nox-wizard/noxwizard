@@ -588,7 +588,7 @@ namespace item
 			return NULL;
 		}
 
-		NXWSOCKET  s = calcSocketFromChar(ch);          // Don't check if s == -1, it's ok if it is.
+		NXWSOCKET  s = pc->getSocket();
 		P_ITEM pi = item::CreateScriptItem(s, nItem, 1);
 		VALIDATEPIR(pi,NULL);
 		item::GetScriptItemSetting(pi);

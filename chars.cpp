@@ -1266,6 +1266,8 @@ NXWCLIENT cChar::getClient() const
 */
 NXWSOCKET cChar::getSocket() const
 {
+        if (npc) return INVALID;
+
 	NXWCLIENT cli = getClient();
 	if (cli != NULL)
 		return cli->toInt();
@@ -1833,13 +1835,13 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 				impowncreate( ps_i->toInt(), this, 1 );
 				//ndEndy not too sure of this
 				if ( flags&TELEFLAG_SENDWORNITEMS )
-					wornitems( ps_i->toInt(), getSerial32() );
+					wornitems( ps_i->toInt(), this );
 			}
 		}
 	} else {
 		impowncreate( cli->toInt(), this, 1 );
 		if ( flags&TELEFLAG_SENDWORNITEMS )
-			wornitems( cli->toInt(), getSerial32() );
+			wornitems( cli->toInt(), this );
 	}
 
 
@@ -3142,7 +3144,7 @@ void cChar::checkEquipement()
 			for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 				NXWCLIENT ps=sw.getClient();
 				if(ps!=NULL ) {
-					wornitems(ps->toInt(), DEREF_P_CHAR(this));
+					wornitems(ps->toInt(), this );
 					senditem(ps->toInt(), pi);
 				}
 			}

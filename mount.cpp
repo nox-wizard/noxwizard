@@ -209,7 +209,7 @@ void cChar::mounthorse( P_CHAR mount )
 		{
 			NXWSOCKET si=sw.getSocket();
 			if( si!=INVALID )
-				wornitems(si, DEREF_P_CHAR(this));
+				wornitems(si, this );
 		}
 
 		// if this is a gm lets tame the animal in the process

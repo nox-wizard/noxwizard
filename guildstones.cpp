@@ -1359,7 +1359,7 @@ void cGuilds::SetType(int guildnumber, int type)
 				{
 					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
-					item::SpawnItemBackpack2( calcSocketFromChar( holding ), 29, 1 );	// will not work for offline chars (Duke)
+					item::SpawnItemBackpack2( hold->getSocket(), 29, 1 );	// will not work for offline chars (Duke)
 				}
 			}
 			Guilds->Broadcast( guildnumber, TRANSLATE("Your guild is now an Order guild.") );
@@ -1373,7 +1373,7 @@ void cGuilds::SetType(int guildnumber, int type)
 				{
 					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
-					item::SpawnItemBackpack2( calcSocketFromChar( holding ), 28, 1 );
+					item::SpawnItemBackpack2( hold->getSocket(), 28, 1 );
 				}
 			}
 			Guilds->Broadcast( guildnumber, TRANSLATE("Your guild is now a Chaos guild.") );
@@ -1414,7 +1414,7 @@ void cGuilds::SetType(int guildnumber, int type)
 // guildbroadcast(guildnumber, text) broadcasts message to all online members of guild
 void cGuilds::Broadcast(int guildnumber, char *text)
 {
-	int member/*, c, s*/;
+	int member;
 
 	if (guildnumber==-1) return;
 
@@ -1422,9 +1422,6 @@ void cGuilds::Broadcast(int guildnumber, char *text)
 	{
 		if (guilds[guildnumber].member[member]!=0)
 		{
-//			c = calcCharFromSer(guilds[guildnumber].member[member]);
-//			s = calcSocketFromChar(c);
-//			P_CHAR pc= MAKE_CHAR_REF(c);
 			P_CHAR pc = pointers::findCharBySerial(guilds[guildnumber].member[member]);
 			if( pc->IsOnline() )
 				pc->sysmsg(text);

@@ -222,18 +222,13 @@ void bgsound(CHARACTER s)
 			case 3: basesound=0; break;	// no idle sound, so dont play it !
 			case 4:	break; // only a single sound, play it !
 			}
-			unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
 			if (bgsound!=0) // bugfix lb
 			{
 				Location charpos= pc_inr->getPosition();
 
-				sfx[2]= basesound >> 8;
-				sfx[3]= basesound % 256;
-				sfx[6]= charpos.x >> 8;
-				sfx[7]= charpos.x % 256;
-				sfx[8]= charpos.y >> 8;
-				sfx[9]= charpos.y % 256;
-				Xsend(calcSocketFromChar(DEREF_P_CHAR(pc_curr)), sfx, 12); //bugfix, LB
+				charpos.z = 0;
+
+				SendPlaySoundEffectPkt(pc_curr->getSocket(), 0x01, basesound, 0x0000, charpos);
 			} Temp removed by Luxor*/
                         if ( chance(20) )
 				pc_inr->playMonsterSound(SND_IDLE);
@@ -262,18 +257,11 @@ void bgsound(CHARACTER s)
 
 		if (basesound !=0)
 		{
-			Location charpos= pc_curr->getPosition();
+			Location charpos = pc_curr->getPosition();
 
-			UI08 sfx[12]={ 0x54, 0x00, };
+			charpos.z = 0;
 
-			sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
-			ShortToCharPtr(basesound, sfx +2);		// Sound model
-			ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
-			ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
-			ShortToCharPtr(charpos.y, sfx +8);		//       Y
-			ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
-			Xsend(pc_curr->getSocket(), sfx, 12);
-//AoS/			Network->FlushBuffer(pc_curr->getSocket());
+			SendPlaySoundEffectPkt(pc_curr->getSocket(), 0x01, basesound, 0x0000, charpos ); 
 		}
 	}
 }
@@ -2805,19 +2793,17 @@ void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
 
 }
 
-void wornitems(NXWSOCKET  s, CHARACTER j) // Send worn items of player j
+void wornitems(NXWSOCKET  s, P_CHAR pc) // Send worn items of player
 {
-	P_CHAR pj=MAKE_CHAR_REF(j);
-	VALIDATEPC(pj);
+	VALIDATEPC(pc);
 
 	NxwItemWrapper si;
-	si.fillItemWeared( pj, true, true, false );
+	si.fillItemWeared( pc, true, true, false );
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
 		if(ISVALIDPI(pi))
 			wearIt(s,pi);
 	}
-
 }
 

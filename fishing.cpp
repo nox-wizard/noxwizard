@@ -195,12 +195,12 @@ void cFishing::Fish(CHARACTER i)
 
 	int ii;
 	int idnum;
-	int s=calcSocketFromChar(i);
 	SI16 color;
 
 	P_CHAR pc = MAKE_CHAR_REF(i);
 	VALIDATEPC(pc);
 	P_ITEM pc_bp = pc->getBackpack();
+	NXWSOCKET s = pc->getSocket();
         
 	Location charpos= pc->getPosition();
 	if(pc->stm<=2) //Luxor bug fix

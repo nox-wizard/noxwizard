@@ -90,7 +90,6 @@ void targetParty( NXWCLIENT ps )
 		return;
 	}
 
-	//int st = calcSocketFromChar(DEREF_P_CHAR(pc_s));
 	if ( !target->IsOnline() ) {
 		ps->sysmsg( TRANSLATE("The selected person must be online to give you permission. "));
 		return;

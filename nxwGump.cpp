@@ -515,5 +515,5 @@ void nxwGump::show( P_CHAR pc )
 		packetLength -= MAXBUFFER;
 		packetIndex += MAXBUFFER;
 	}
-	//Xsend( calcSocketFromChar( DEREF_P_CHAR( pc ) ), packet, ((packet[1] << 8) + packet[2]) );
+	//Xsend( pc->getSocket(), packet, ((packet[1] << 8) + packet[2]) );
 }

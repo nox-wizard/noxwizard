@@ -525,7 +525,7 @@ void callguards( CHARACTER p )
 	{
 		if ( guards.empty() && ServerScp::g_nInstantGuard == 1 )
 		{
-			P_CHAR  guard = npcs::AddNPCxyz( calcSocketFromChar( p ), region[caller->region].guardnum[(rand()%10)+1], caller->getPosition());
+			P_CHAR  guard = npcs::AddNPCxyz( caller->getSocket(), region[caller->region].guardnum[(rand()%10)+1], caller->getPosition());
 
 			if ( ISVALIDPC( guard ) )
 			{
@@ -2794,7 +2794,7 @@ void setcharflag(P_CHAR pc)// repsys ...Ripper
 	setcharflag2(pc);
 	//if( setcharflag2(pc) )
 		/*if (pc->amxevents[EVENT_CHR_ONFLAGCHG])
-			pc->amxevents[EVENT_CHR_ONFLAGCHG]->Call(pc->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)));*/
+			pc->amxevents[EVENT_CHR_ONFLAGCHG]->Call(pc->getSerial32(), pc->getSocket() );*/
 }
 
 LOGICAL setcharflag2(P_CHAR pc)// repsys ...Ripper

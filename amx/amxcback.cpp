@@ -56,6 +56,9 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 	g_nType = type;
 	VALIDATEPIR(pi, false);
 	VALIDATEPCR(pc, false);
+
+	NXWSOCKET s = pc->getSocket();
+
 	if( !pi->isNewbie() )
 	{
 		if ( pi->st > pc->getStrength() ) 
@@ -82,7 +85,7 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 			}
 		}
 	}
-	int s = calcSocketFromChar(DEREF_P_CHAR(pc));
+
 	if (s >-1 && s < now) //Luxor
 	{
 		

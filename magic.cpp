@@ -648,7 +648,7 @@ void spellFailFX(P_CHAR pc)
 
 	pc->staticFX(0x3735, 0, 30);
 	pc->playSFX(0x005C);
-	pc->emote(calcSocketFromChar(DEREF_P_CHAR(pc)),TRANSLATE("The spell fizzles."),1);
+	pc->emote(pc->getSocket(), TRANSLATE("The spell fizzles."),1);
 }
 
 
@@ -1577,7 +1577,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				char buffer_list[20];
 				//itoa( nValue, buffer_list, 10 ); // Only works on win os Sparhawk so let's sprintf it
 				sprintf( buffer_list, "%d", nValue );
-				P_CHAR p_monster = MAKE_CHAR_REF(npcs::AddRandomNPC( calcSocketFromChar(DEREF_P_CHAR(src)), buffer_list, -1 ));
+				P_CHAR p_monster = MAKE_CHAR_REF(npcs::AddRandomNPC( src->getSocket(), buffer_list, -1 ));
 				if (ISVALIDPC(p_monster)) {
 					p_monster->setOwner(src);
 					p_monster->tamed = true;

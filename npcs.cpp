@@ -439,7 +439,7 @@ P_CHAR AddRespawnNPC(P_ITEM pi, int npcNum)
 P_CHAR AddRespawnNPC(P_CHAR pc, int npcNum)
 {
         VALIDATEPCR(pc, NULL);
-        return AddNPC(calcSocketFromChar(DEREF_P_CHAR(pc)), NULL, npcNum, 0,0,0);
+        return AddNPC(pc->getSocket(), NULL, npcNum, 0,0,0);
 }
 
 //<Anthalir>
@@ -1150,7 +1150,6 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 		   pc->dispz= chars[c].z= items[i].z;
 		   */
 		   pc->MoveTo( pi_i->getPosition() );
-		   //setserial(DEREF_P_CHAR(pc),DEREF_P_ITEM(pi_i),6);
 
 		} // end of if !triggerx
 		break;

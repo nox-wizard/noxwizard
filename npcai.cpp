@@ -722,7 +722,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		} 
 		break;
 		default:
-			WarnOut("cCharStuff::CheckAI-> Error npc %i (%x %x %x %x) has invalid AI type %i\n",DEREF_P_CHAR(pc),pc->getSerial().ser1,pc->getSerial().ser2,pc->getSerial().ser3,pc->getSerial().ser4,pc->npcaitype); //Morrolan
+			WarnOut("cCharStuff::CheckAI-> Error npc %i ( %08x ) has invalid AI type %i\n", pc->getSerial32(), pc->getSerial32(), pc->npcaitype);
 			return;
 	}	//switch(pc->npcaitype)
 } //void checkAI(unsigned int currenttime, P_CHAR pc)

@@ -121,7 +121,7 @@ UI16 itemsfx(UI16 item);
 
 void weather(int s, unsigned char bolt);
 void dosocketmidi(int s);
-void wornitems(NXWSOCKET  s, CHARACTER j);
+void wornitems(NXWSOCKET  s, P_CHAR pc);
 void bgsound(int s);
 void pweather(NXWSOCKET  s);
 

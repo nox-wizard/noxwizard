@@ -149,7 +149,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 
 	if ((pc->advobj==0)||(allways==1))
 	{
-		staticeffect(s, 0x37, 0x3A, 0, 15);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
 		pc->playSFX( 0x01E9);
 		pc->advobj=x;
 		sprintf(sect, "SECTION ADVANCEMENT %i", x);
@@ -350,13 +350,11 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 							if(pi->layer==LAYER_HAIR || pi->layer==LAYER_BEARD)
 							{
-								//setserial(DEREF_P_ITEM(pi),s,4);
 								pi->setContSerial(pc->getSerial32());
 							}
 							else
 							{
 								if(ISVALIDPI(packnum)) 
-									//setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(packnum),1);
 									pi->setContSerial(packnum->getSerial32());
 							}
 							pi->Refresh();//AntiChrist
@@ -382,16 +380,14 @@ void advancementobjects(CHARACTER s, int x, int allways)
 
 					if (!(strcmp("ADVOBJ",script1)))
 					{
-						x=str2num(script2);
-						pc->advobj=x;
+						pc->advobj = str2num(script2);
 					}
 				}
 			}
 			while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
 			safedelete(iter);
 	}
-	else sysmessage(calcSocketFromChar(s),TRANSLATE("You have already used an advancement object with this character."));
-
+	else pc->sysmsg(TRANSLATE("You have already used an advancement object with this character."));
 }
 
 

@@ -661,7 +661,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		{
 			NXWSOCKET j=sw.getSocket();
 			if( j!=INVALID )
-				wornitems(j, DEREF_P_CHAR(pck));
+				wornitems(j, pck );
 		}
 
 		pc->playSFX( itemsfx(pi->id()) );

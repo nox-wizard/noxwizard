@@ -524,11 +524,11 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 					
 					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
 					{
-						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
+						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
 						g_bByPass = false; //ndEndy ?? what is this?
 					}
 					/*
-					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
+					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
 					g_bByPass = false;
 					*/
 				}
@@ -782,7 +782,7 @@ void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 			{
 				if (((xyblock[num].flag1&0x80)&&(xyblock[num].flag1&0x40))&&(!(pc->IsGM())))
 				{
-					if(calcSocketFromChar(DEREF_P_CHAR(pc))==INVALID) {
+					if(pc->getSocket() == INVALID) {
 						if((pc->nxwflags[0]&NCF0_WATERWALK)==0)
 						{
 							z=-128;
@@ -850,7 +850,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
 			ErrOut("\tcaused by chr %s. dir: %i dir&0x0f: %i dir-passed : %i dp&0x0f : %i\n", pc->getCurrentNameC(), pc->dir, pc->dir&0x0f, dir, dir&0x0f);
-			if (calcSocketFromChar(DEREF_P_CHAR(pc))!=INVALID) deny(calcSocketFromChar(DEREF_P_CHAR(pc)), pc, sequence); // lb, crashfix
+			if (pc->getSocket() != INVALID) deny(pc->getSocket(), pc, sequence); // lb, crashfix
 			return false;
 	}
 
@@ -1087,7 +1087,6 @@ bool WalkSendToPlayers(P_CHAR pc, int dir, int oldx, int oldy, int newx, int new
 //
 bool WalkHandleCharsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 {
-
 	VALIDATEPCR(pc, false);
 
 	Location pcpos= pc->getPosition();
@@ -1102,7 +1101,7 @@ bool WalkHandleCharsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 		if(ISVALIDPC(pc_i)) 
 		{
 			if( IsSeenFirstTime( pc, pc_i ) ) {
-				impowncreate( calcSocketFromChar(DEREF_P_CHAR(pc)), pc_i, 1);
+				impowncreate( pc->getSocket(), pc_i, 1);
 			}
 
 			if(pc_i->getPosition()==pcpos)
@@ -1196,8 +1195,9 @@ bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 
 void WalkingHandleRainSnow(P_CHAR pc)
 {
-
 	VALIDATEPC(pc);
+	NXWSOCKET s = pc->getSocket();
+
 	int i;
 	int wtype = region[pc->region].wtype;
 
@@ -1213,16 +1213,15 @@ void WalkingHandleRainSnow(P_CHAR pc)
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB
 
-		int kk=noweather[calcSocketFromChar(DEREF_P_CHAR(pc))];
+		int kk=noweather[s];
 		if (j || i || x!=-127 ) 
-			noweather[calcSocketFromChar(DEREF_P_CHAR(pc))]=1;
+			noweather[s]=1;
 		else 
-			noweather[calcSocketFromChar(DEREF_P_CHAR(pc))]=0; // no rain & snow in static buildings+dungeons;
-		if (kk-noweather[calcSocketFromChar(DEREF_P_CHAR(pc))]!=0) 
-			weather(calcSocketFromChar(DEREF_P_CHAR(pc)),0); // iff outside-inside changes resend weather ...
+			noweather[s]=0; // no rain & snow in static buildings+dungeons;
+		if (kk-noweather[s]!=0) 
+			weather(s, 0); // iff outside-inside changes resend weather ...
 	// needs to be de-rem'd if weather is available again
   }
-
 }
 
 

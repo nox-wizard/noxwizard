@@ -2139,9 +2139,7 @@ NATIVE2(_setGuildProperty)
 								LogWarning("Amxscript replaced guildmaster %d by character %d\n", pOldGuildMaster->getSerial32(), pc->getSerial32() );
 								if( pOldGuildMaster->IsOnline() )
 								{
-									NXWSOCKET socket = calcSocketFromChar( DEREF_P_CHAR( pOldGuildMaster ) );
-									if( socket != INVALID )
-										sysmessage( socket, "Amxscript has replaced you as master for guild %s by %s", pGuild->getName().c_str(), pc->getCurrentNameC() );
+									pOldGuildMaster->sysmsg("Amxscript has replaced you as master for guild %s by %s", pGuild->getName().c_str(), pc->getCurrentNameC() );
 								}
 							}
 						}

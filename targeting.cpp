@@ -827,7 +827,6 @@ static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
         P_ITEM pPack=item::CreateFromScript( "$item_backpack" );
         VALIDATEPI(pPack);
 		pc->packitemserial=pPack->getSerial32();
-        //setserial(DEREF_P_ITEM(pPack),DEREF_P_CHAR(pc_2),4);
 		pPack->setContSerial(pc_2->getSerial32());
     }
 
@@ -837,8 +836,8 @@ static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
     {
         P_ITEM pi=si.getItem();
 		if(!ISVALIDPI(pi)) continue;
-		if (pi->layer!=0x15 && pi->layer!=0x1D &&
-            pi->layer!=0x10 && pi->layer!=0x0B )
+		if (pi->layer!=LAYER_BACKPACK && pi->layer!=LAYER_BANKBOX &&
+            pi->layer!=LAYER_BEARD && pi->layer!=LAYER_HAIR )
         {
             pi->setContSerial( pPack->getSerial32() );
 			pi->SetRandPosInCont( pPack );
@@ -847,7 +846,7 @@ static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
             pi->Refresh();
         }
         else if (pc->IsWearing(pi) &&
-            (pi->layer==0x0B || pi->layer==0x10))   // hair & beard (Duke)
+            (pi->layer==LAYER_HAIR || pi->layer==LAYER_BEARD))
         {
             pi->deleteItem();
         }
@@ -860,9 +859,6 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
 	VALIDATEPC(pc);
 
 	if (ps == NULL) return;
-
-//    NXWSOCKET  s = ps->toInt(); // unused variable
-    //CHARACTER c = DEREF_P_CHAR(pc);
 
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
@@ -909,13 +905,10 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
     pc->dx  = 100;
     pc->dx2 = 100;
 
-//	if (strncmp(pc->name, "GM", 2))
 	if (strncmp(pc->getCurrentNameC(), "GM", 2))
     {
         sprintf(temp, "GM %s", pc->getCurrentNameC());
 		pc->setCurrentName(temp);
-        //strcpy(pc->name,(char*)temp);
-		//pc->setCurrentName( "GM " + pc->getCurrentName() );
     }
     MoveBelongingsToBp(pc,pc);
 }
@@ -924,12 +917,10 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
 {
 	if (ps == NULL) return;
 	VALIDATEPC(pc);
-//    NXWSOCKET  s = ps->toInt(); // unused variable
 
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
 
-    //CHARACTER c = DEREF_P_CHAR(pc);
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     if (SrvParms->gm_log)
@@ -946,8 +937,6 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
     {
         sprintf(temp, "Counselor %s", pc->getCurrentNameC());
 		pc->setCurrentName(temp);
-//		strcpy(pc->name,(char*)temp);
-//		pc->setCurrentName( "Counselor " + pc->getCurrentName() );
     }
     for (int u=0;u<7;u++) // this overwrites all previous settigns !!!
     {
@@ -1210,14 +1199,13 @@ static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
 
 void cTargets::AllSetTarget(NXWSOCKET s)
 {
-    int j, k;
+    int j;
 
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
-    if(i!=-1)
+    P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
+
+    if(ISVALIDPC(pc))
     {
-        k=calcSocketFromChar(i);
+        NXWSOCKET k = pc->getSocket();
         if (addx[s]<TRUESKILLS)
         {
             pc->baseskill[addx[s]]=addy[s];
@@ -1511,7 +1499,7 @@ void cTargets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this 
 
 static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and places it (unmovable) at that spot
 {
-    P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
     int x, y, z;
@@ -1533,7 +1521,7 @@ static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and pla
             pi->Refresh();
         }
     }
-    else sysmessage(s,TRANSLATE("You cannot throw the potion there!"));
+    else pc->sysmsg(TRANSLATE("You cannot throw the potion there!"));
 }
 
 static void Priv3Target(NXWSOCKET  s, P_CHAR pc)
@@ -1551,29 +1539,30 @@ static void Priv3Target(NXWSOCKET  s, P_CHAR pc)
 
 void cTargets::SquelchTarg(NXWSOCKET s)
 {
+	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(Me);
 
-
-    P_CHAR pc =pointers::findCharBySerPtr(buffer[s]+7);
-    if (ISVALIDPC(pc))
+	P_CHAR pc =pointers::findCharBySerPtr(buffer[s]+7);
+	if (ISVALIDPC(pc))
     {
         if(pc->IsGM())
         {
-            sysmessage(s, TRANSLATE("You cannot squelch GMs."));
+            Me->sysmsg(TRANSLATE("You cannot squelch GMs."));
             return;
         }
         if (pc->squelched)
         {
             pc->squelched=0;
-            sysmessage(s, TRANSLATE("Un-squelching..."));
-            sysmessage(calcSocketFromChar(DEREF_P_CHAR(pc)), TRANSLATE("You have been unsquelched!"));
+            Me->sysmsg(TRANSLATE("Un-squelching..."));
+            pc->sysmsg(TRANSLATE("You have been unsquelched!"));
             pc->mutetime=0;
         }
         else
         {
             pc->mutetime=0;
             pc->squelched=1;
-            sysmessage(s, TRANSLATE("Squelching..."));
-            sysmessage(calcSocketFromChar(DEREF_P_CHAR(pc)), TRANSLATE("You have been squelched!"));
+            Me->sysmsg(TRANSLATE("Squelching..."));
+            pc->sysmsg(TRANSLATE("You have been squelched!"));
 
             if (addid1[s]!=255 || addid1[s]!=0)
             {
@@ -2589,14 +2578,12 @@ void cTargets::SetPoisonTarget(NXWSOCKET s)
 
 void cTargets::SetPoisonedTarget(NXWSOCKET s)
 {
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
-    if (i!=-1)
+    P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
+    if (ISVALIDPC(pc))
     {
         pc->poisoned=(PoisonType)tempint[s];
         pc->poisonwearofftime=uiCurrentTime+(MY_CLOCKS_PER_SEC*SrvParms->poisontimer); // lb, poison wear off timer setting
-        impowncreate(calcSocketFromChar(i),pc,1); //Lb, sends the green bar !
+        impowncreate(pc->getSocket(), pc, 1); //Lb, sends the green bar !
     }
 }
 

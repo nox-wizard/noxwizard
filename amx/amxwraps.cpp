@@ -223,12 +223,11 @@ NATIVE(addTimer)
 */
 NATIVE(_menu_Prepare)
 {
-//	int s = calcSocketFromChar(params[1]);
 	if ( params[1] < 0 )
 		return INVALID;
-    NXWCLIENT s = getClientFromSocket(params[1]);
-    P_CHAR pc = s->currChar();
-    //P_CHAR pc = &chars[currchar[params[1]]];
+
+	NXWCLIENT s = getClientFromSocket(params[1]);
+	P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
 	if (pc->customMenu != NULL)
 		safedelete(pc->customMenu);

@@ -1254,7 +1254,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 
     
     if (pc->amxevents[EVENT_CHR_ONGETSKILLCAP])
-        skillcap = pc->amxevents[EVENT_CHR_ONGETSKILLCAP]->Call(pc->getSerial32(),calcSocketFromChar(s));
+        skillcap = pc->amxevents[EVENT_CHR_ONGETSKILLCAP]->Call(pc->getSerial32(), pc->getSocket() );
 	/*
 	if ( pc->getAmxEvent(EVENT_CHR_ONGETSKILLCAP) != NULL )
 		skillcap = pc->runAmxEvent( EVENT_CHR_ONGETSKILLCAP, pc->getSerial32(), pc->getSocket() );
@@ -1292,8 +1292,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 
         if (ges>skillcap && c==0) // skill capped and no skill is marked as fall down.
         {
-            sprintf(temp,TRANSLATE("You have reached the skill-cap of %i and no skill can fall!"), skillcap);
-            sysmessage(calcSocketFromChar(s),temp);
+            pc->sysmsg(TRANSLATE("You have reached the skill-cap of %i and no skill can fall!"), skillcap);
             return 0;
         }
 
@@ -1378,7 +1377,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 						d=0; // should never happen ...
                     pc->baseskill[atrophy_candidates[0]]-=d;
 					Skills::updateSkillLevel(pc, atrophy_candidates[0]);         // we HAVE to correct the skill-value
-                    updateskill(calcSocketFromChar(s), atrophy_candidates[0]); // and send changed skill values packet so that client can re-draw correctly
+                    updateskill(pc->getSocket(), atrophy_candidates[0]); // and send changed skill values packet so that client can re-draw correctly
                 }
             // this is very important cauz this is ONLY done for the calling skill value automatically .
             }
@@ -1392,7 +1391,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 					{
 	                    pc->baseskill[atrophy_candidates[d]]--;
 						Skills::updateSkillLevel(pc, atrophy_candidates[d]);
-						updateskill(calcSocketFromChar(s), atrophy_candidates[d]);
+						updateskill(pc->getSocket(), atrophy_candidates[d]);
 					}
 
                 }
@@ -1622,7 +1621,7 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 	bool 	update 	= false;
 
 	if ( pc->statGainedToday <= ServerScp::g_nStatDailyLimit )
-    {
+	{
 		bool strCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st ) > (UI32)(rand() % mod);
     	bool dexCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx ) > (UI32)(rand() % mod);
     	bool intCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceIntelligence( sk ) : skillinfo[sk].in ) > (UI32)(rand() % mod);
@@ -1667,22 +1666,24 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 			}
 
 
-    	if ( update )
-	    {
-  			int socket = calcSocketFromChar( s );
+    	
+		if ( update )
+		{
+  			
+			NXWSOCKET socket = pc->getSocket();
+
 			++pc->statGainedToday;
   
-	    	if ( socket != INVALID )
-       			statwindow( pc, pc);              // update client's status window
+			if ( socket != INVALID )
+				statwindow( pc, pc);              // update client's status window
 
-        	for ( i = 0;  i < ALLSKILLS; i++ )
-	            updateSkillLevel(pc,i );     // update client's skill window
+        	
+			for ( i = 0;  i < ALLSKILLS; i++ )
+				updateSkillLevel(pc,i );     // update client's skill window
 
-        	if ( atCap && !pc->IsGM() )
-	        {
-       			sprintf( temp, TRANSLATE("You have reached the stat-cap of %i!") ,statcap );
-       			sysmessage( socket, temp );
-	        }
+			if ( atCap && !pc->IsGM() )
+				pc->sysmsg(TRANSLATE("You have reached the stat-cap of %i!") ,statcap );
+	        
 		}
 	}
 }
@@ -2793,7 +2794,7 @@ void Skills::Persecute (NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-    P_CHAR pc_targ=pointers::findCharBySerial(pc->targserial);
+	P_CHAR pc_targ=pointers::findCharBySerial(pc->targserial);
 	VALIDATEPC(pc_targ);
 
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -2811,8 +2812,8 @@ void Skills::Persecute (NXWSOCKET  s)
             else
                 pc_targ->mn-=decrease;//decrease mana
             pc_targ->updateStats(1);//update
-            sysmessage(s,TRANSLATE("Your spiritual forces disturb the enemy!"));
-            sysmessage(calcSocketFromChar(DEREF_P_CHAR(pc_targ)),TRANSLATE("A damned soul is disturbing your mind!"));
+		pc->sysmsg(TRANSLATE("Your spiritual forces disturb the enemy!"));
+		pc_targ->sysmsg(TRANSLATE("A damned soul is disturbing your mind!"));
             SetSkillDelay(DEREF_P_CHAR(pc));
 
             sprintf(temp, TRANSLATE("%s is persecuted by a ghost!!"), pc_targ->getCurrentNameC());
@@ -2823,11 +2824,12 @@ void Skills::Persecute (NXWSOCKET  s)
             
         } else
         {
-            sysmessage(s,TRANSLATE("Your mind is not strong enough to disturb the enemy."));
+		pc->sysmsg(TRANSLATE("Your mind is not strong enough to disturb the enemy."));
         }
     } else
     {
-        sysmessage(s,TRANSLATE("You are unable to persecute him now...rest a little..."));
+        
+	pc->sysmsg(TRANSLATE("You are unable to persecute him now...rest a little..."));
     }
 
 }

@@ -69,7 +69,7 @@ inline int calcItemFromSer(int ser) // Aded by Magius(CHE) (2)
 }
 
 //Modified by Luxor for the erasing of charcount
-inline NXWSOCKET  calcSocketFromChar(CHARACTER i)
+/*inline NXWSOCKET  calcSocketFromChar(CHARACTER i)
 {
         P_CHAR pc = MAKE_CHAR_REF(i);
         if (!ISVALIDPC(pc)) return INVALID;
@@ -81,7 +81,7 @@ inline NXWSOCKET  calcSocketFromChar(CHARACTER i)
 
         return cli->toInt();
 
-}
+}*/
 
 /*inline int calcCharFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
 {
