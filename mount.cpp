@@ -302,6 +302,7 @@ int cChar::unmountHorse()
 					p_pet->mounted=false;
 
 					p_pet->MoveTo( getPosition() );
+					p_pet->dir = dir; // Luxor
 					p_pet->teleport();
 
 					pi->deleteItem();
