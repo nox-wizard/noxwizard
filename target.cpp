@@ -174,12 +174,12 @@ void amxCallback( NXWCLIENT ps, P_TARGET t )
 	if( t->amx_callback==NULL) 
 		return;
 
-	UI16 model = t->getModel();
-	if( model == 0 ) 
+	SI16 model = t->getModel();
+	if( model == 0 )
 		model = INVALID;
 
 	/// targ_serial, chr, obj, x, y, z, model, param
-	
+
 	P_OBJECT po = objects.findObject( t->getClicked() );
 	if( ISVALIDPO(po) ) {
         t->amx_callback->Call( t->serial, ps->currCharIdx(), po->getSerial32(), INVALID, INVALID, INVALID, model, t->buffer[0] );
