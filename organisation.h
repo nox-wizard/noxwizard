@@ -22,6 +22,7 @@ namespace Organisation
 
 	class Guild
 	{
+		public:
 		typedef map< SERIAL, P_GUILD >		GUILD_TBL		;
 		typedef GUILD_TBL::iterator		GUILD_TBL_IT		;
 
