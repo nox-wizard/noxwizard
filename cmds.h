@@ -55,7 +55,7 @@ class cCommand {
 		cCommand( std::string& cmd_name, SI08 cmd_number, AmxFunction* callback );
 		SI08 getCommandLevel(P_COMMAND cmd);
 		AmxFunction* getCommandCallback(P_COMMAND cmd);
-		void call( std::string params );
+		//void call( std::string params );
 
 };
 
@@ -104,7 +104,7 @@ public:
 	
 	cCommandMap();
 	static P_COMMAND addGmCommand(std::string name, SI08 number ,AmxFunction* callback);
-	static bool Check(string& text);
+	//static bool Check(string& text);
 	static P_COMMAND findCommand(std::string name);
 
 };

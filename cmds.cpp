@@ -115,7 +115,7 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* ca
 }
 
 
-
+/*
 
 bool cCommandMap::Check( string& text ){
 	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( text ) );
@@ -127,7 +127,7 @@ bool cCommandMap::Check( string& text ){
 	return true;
 }
 
-
+*/
 
 
 P_COMMAND cCommandMap::findCommand(std::string name){
@@ -197,17 +197,13 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 	{
 	
 	NXWCLIENT client= getClientFromSocket(s);
-	client->sysmsg("No Commands Avaible. Works in Progress, sorry :( !");
+	//client->sysmsg("No Commands Avaible. Works in Progress, sorry :( !");
 	
-	/*	unsigned char *comm;
+		unsigned char *comm;
 		unsigned char nonuni[512];
-		//cCallCommand* command; 
 
 		//cmd_offset = 1;
 
-		//cCallCommandMap* callcommands = new cCallCommandMap()
-		
-		
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 		VALIDATEPC( pc_currchar );
 
@@ -225,9 +221,8 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		P_COMMAND p_cmd= commands->findCommand((char*)comm);
 		
 		
-		NXWCLIENT client= getClientFromSocket(s);
-
 		if(p_cmd==NULL) {
+			client->sysmsg("Command %s doesn't exist!", (char*)comm);
 			return;
 		}
 		
@@ -240,21 +235,20 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		}
 
 		
-		/* cCallCommand* called= new cCallCommand(speech);
+		// cCallCommand* called= new cCallCommand(speech);
     
 
-		SERIAL cmd_serial=called->addCallCommand(called);
+		//SERIAL cmd_serial=called->addCallCommand(called);
 
-	
 		AmxFunction* CommandFunction = NULL;      
 		if(CommandFunction == NULL ) 
 			CommandFunction = new AmxFunction("p_cmd->getCommandCallback"); 
-		CommandFunction->Call(pc_currchar->getSerial32(), cmd_serial); */
+		CommandFunction->Call( pc_currchar->getSerial32() ); 
 		
 		
 		//Let's delete the temp object		
 			  
-		//called->delCommand(cmd_serial);     */
+		//called->delCommand(cmd_serial);     
 		
 
 	}
