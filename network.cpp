@@ -1763,8 +1763,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
         		    // LB, client activity-timestamp !!! to detect client crashes, ip changes etc and disconnect in that case
         		    // 0x73 (idle packet) also counts towards client idle time
 
-				if (ISVALIDPC(pc_currchar))
-					AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
 
 				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;
 #ifdef ENCRYPTION
@@ -1781,6 +1779,9 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, length-cryptBufferOffset);
 				}
 #endif
+
+				if (ISVALIDPC(pc_currchar))
+					AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
 				switch(packet)
 				{
 
