@@ -605,6 +605,10 @@ void cTempfx::start()
 			dest->sysmsg( TRANSLATE("You are now a criminal!") );
 			break;
 
+		case SPELL_TELEKINESYS:
+			dest->nxwflags[0] |= NCF0_TELEKINESYS;
+			break;
+
 		default:
 			break;
 	}
@@ -874,8 +878,14 @@ void cTempfx::executeExpireCode()
 			break;
 
 		case CRIMINAL:
+			VALIDATEPC( dest );
 			dest->SetInnocent();
 			dest->sysmsg(TRANSLATE("You are no longer a criminal."));
+			break;
+
+		case SPELL_TELEKINESYS:
+			VALIDATEPC( dest );
+			dest->nxwflags[0] &= ~NCF0_TELEKINESYS;
 			break;
 
 		default:
@@ -889,10 +899,9 @@ void cTempfx::executeExpireCode()
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::activate
-// Return type       : void
-// Author            : Luxor
+/*!
+\author Luxor
+*/
 void cTempfx::activate()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
@@ -959,6 +968,10 @@ void cTempfx::activate()
 
 		case CRIMINAL:
 			dest->SetCriminal();
+			break;
+
+		case SPELL_TELEKINESYS:
+			dest->nxwflags[0] |= NCF0_TELEKINESYS;
 			break;
 
 		default:
@@ -1039,6 +1052,9 @@ void cTempfx::deactivate()
 
 		case CRIMINAL:
 			dest->SetInnocent();
+			break;
+		case SPELL_TELEKINESYS:
+			dest->nxwflags[0] &= ~NCF0_TELEKINESYS;
 			break;
 
 		default:
@@ -1128,7 +1144,7 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	else
 		m_nExpireTime = uiCurrentTime + (getTempFxTime(pointers::findCharBySerial(m_nSrc), num, more1, more2, more3)*MY_CLOCKS_PER_SEC);
 
-	if ( m_nNum == AMXCUSTOM && amxcback <= -2 )
+	if ( m_nNum == AMXCUSTOM && amxcback <= INVALID )
 		return;
 
 	m_nMore1 = more1;

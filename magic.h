@@ -17,6 +17,8 @@
 
 #include "nxwcommn.h"
 #include "targeting.h"
+#include "packets.h"
+#include "menu.h"
 
 
 //! dont use up mana
@@ -64,6 +66,17 @@
 \brief Magic related stuff
 */
 namespace magic {
+
+	/*!
+	\author Luxor
+	\brief Polymorph menu
+	*/
+	class cPolymorphMenu : public cIconListMenu {
+	public:
+		cPolymorphMenu( P_CHAR pc );
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+	};
+
 
 	/*!
 	\brief Spells ID

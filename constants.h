@@ -260,6 +260,7 @@ namespace tempfx {
 		GREY,			//!< mark grey
 		CRIMINAL,		//!< mark criminal
 		FIELD_DAMAGE,		//!< magic fields damage
+		SPELL_TELEKINESYS,	//!< telekinesys spell
 		MAX_TEMPFX_INDEX
 	};
 };

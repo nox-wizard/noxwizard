@@ -160,7 +160,7 @@ private:
 	TempfxVector		*tempfx;
 
 public:
-	LOGICAL			addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback );
+	LOGICAL			addTempfx( cObject& src, SI32 num, SI32 more1 = 0, SI32 more2 = 0, SI32 more3 = 0, SI32 dur = 0, SI32 amxcback = INVALID );
 	void			delTempfx( SI32 num, LOGICAL executeExpireCode = true, SERIAL funcidx = INVALID );
 	void			checkTempfx();
 	void			tempfxOn();

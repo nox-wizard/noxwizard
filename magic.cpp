@@ -778,9 +778,6 @@ static inline int spellTargetType(SpellId spellnum)
 		case SPELL_POLYMORPH:
 			return TARGTYPE_NONE;
 
-		case SPELL_TELEKINESYS:
-			return TARGTYPE_ITEM;
-
 		case SPELL_TRAP:
 		case SPELL_UNTRAP:
 			return TARGTYPE_CONTAINER;
@@ -1364,12 +1361,38 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				//3 seconds left
 				if ( pd->summontimer > (uiCurrentTime + 3*MY_CLOCKS_PER_SEC) )
 					pd->summontimer = uiCurrentTime + 3*MY_CLOCKS_PER_SEC;
+				spellFX( spellnumber, pd );
 			}
 			break;
-		case SPELL_MASSDISPEL:
-		case SPELL_TELEKINESYS:
-		case SPELL_POLYMORPH:
-			src->sysmsg("Sorry, spell not yet implemented in this version :(");
+		case SPELL_MASSDISPEL:{ // Luxor
+			if ( ISVALIDPC( pd ) ) {
+				x = pd->getPosition().x;
+				y = pd->getPosition().y;
+			} else if ( ISVALIDPI( pi ) ) {
+				x = pi->getPosition().x;
+				y = pi->getPosition().y;
+			}
+			NxwCharWrapper sc;
+			P_CHAR pc_curr;
+			sc.fillCharsNearXYZ( x, y, 10, true, false );
+			for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
+				pc_curr = sc.getChar();
+				if ( !ISVALIDPC( pc_curr ) )
+					continue;
+				if ( pc_curr->summontimer > 0 ) {
+					pc_curr->emoteall( "%s begins disappearing", true, pc_curr->getCurrentNameC() );
+					if ( pc_curr->summontimer > (uiCurrentTime + 3*MY_CLOCKS_PER_SEC) )
+						pc_curr->summontimer = uiCurrentTime + 3*MY_CLOCKS_PER_SEC;
+				}
+				spellFX( SPELL_DISPEL, pc_curr );
+			}}
+			break;
+		case SPELL_TELEKINESYS: // Luxor
+			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 10 );
+			break;
+		case SPELL_POLYMORPH:{ // Luxor
+			Menus.insertMenu( new cPolymorphMenu( src ) );
+			}
 			break;
 
 		case SPELL_GATE: //Luxor
@@ -1913,8 +1936,96 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 
 
 
+/*
+\brief Constructor
+\author Luxor
+\since 0.82
+*/
+cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
+{
+	VALIDATEPC( pc );
+	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
+	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
+	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
+	addIcon( 0x20D1, 0, 0xd0, string("Chicken") );
+	addIcon( 0x20D3, 0, 0x9, string("Daemon") );
+	addIcon( 0x20D8, 0, 0x2, string("Ettin") );
+	addIcon( 0x20D9, 0, 0x4, string("Gargoyle") );
+	addIcon( 0x20D6, 0, 0xc, string("Dragon") );
+	addIcon( 0x20C9, 0, 0x1d, string("Gorilla") );
+	addIcon( 0x20CA, 0, 0x23, string("Lizardman") );
+	addIcon( 0x20DF, 0, 0x1, string("Ogre") );
+	addIcon( 0x20D0, 0, 0xd7, string("Rat") );
+	addIcon( 0x20D4, 0, 0xed, string("Deer") );
+	addIcon( 0x20D7, 0, 0xe, string("Earth Elemental") );
+	addIcon( 0x20E7, 0, 0x32, string("Skeleton") );
+	addIcon( 0x2100, 0, 0x3a, string("Wisp") );
+	addIcon( 0x211F, 0, 0xc8, string("Horse") );
+	addIcon( 0x210B, 0, 0x10, string("Water Elemental") );
+	show( pc );
+}
 
+/*!
+\author Luxor
+*/
+void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
+{
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc );
 
+	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
+	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get() ) );
+	SERIAL data = ( iter!=iconData.end() )? iter->second : INVALID;
+
+	pc->delTempfx( SPELL_POLYMORPH );
+	pc->delTempfx( SPELL_STRENGHT );
+	pc->delTempfx( SPELL_CUNNING );
+	pc->delTempfx( SPELL_AGILITY );
+	pc->delTempfx( SPELL_FEEBLEMIND );
+	pc->delTempfx( SPELL_CLUMSY );
+	pc->delTempfx( SPELL_CURSE );
+	pc->delTempfx( SPELL_BLESS);
+	pc->delTempfx( SPELL_WEAKEN );
+	pc->addTempfx( *pc, SPELL_POLYMORPH, data >> 8, data % 256 );
+	switch( data )
+	{
+		case 0xd3:
+		case 0xd4:
+		case 0xd5:
+			pc->addTempfx( *pc, SPELL_STRENGHT, 40, 0, 0, polyduration );
+			pc->addTempfx( *pc, SPELL_CURSE, 0, 15, 20, polyduration );
+			break;
+		case 0xd0:
+			pc->delTempfx( SPELL_WEAKEN );
+			pc->addTempfx( *pc, SPELL_WEAKEN, 20, 0, 0, polyduration );
+			break;
+		case 0x9:
+			pc->addTempfx( *pc, SPELL_BLESS, 10, 10, 10, polyduration );
+			pc->addTempfx( *pc, SPELL_TELEKINESYS, 0, 0, 0, polyduration );
+			break;
+		case 0x2:
+		case 0x4:
+		case 0x1d:
+		case 0x23:
+		case 0x1:
+		case 0x10:
+			pc->addTempfx( *pc, SPELL_STRENGHT, 30, 0, 0, polyduration );
+			break;
+		case 0xe:
+			pc->addTempfx( *pc, SPELL_STRENGHT, 50, 0, 0, polyduration );
+			break;
+		case 0xc8:
+			pc->addTempfx( *pc, SPELL_AGILITY, 50, 0, 0, polyduration );
+			break;
+		case 0x3a:
+			pc->addTempfx( *pc, SPELL_CUNNING, 40, 0, 0, polyduration );
+			break;
+		case 0x32:
+			pc->addTempfx( *pc, SPELL_STRENGHT, 10, 0, 0, polyduration );
+			pc->addTempfx( *pc, SPELL_FEEBLEMIND, 20, 0, 0, polyduration );
+			break;
+	}
+}
 
 
 } // namespace

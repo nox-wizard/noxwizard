@@ -32,12 +32,12 @@
 \brief native extension to game play :)
 */
 #define NCF0_GREY			1	 // char is grey
-#define NCF0_PERMAGREY		2	 // char is permagrey
+#define NCF0_PERMAGREY			2	 // char is permagrey
 #define NCF0_RFIRE			4	 // char resists fire (future use)
-#define NCF0_RPARALISYS 	8	 // char resists paralisys (future use)
-#define NCF0_RPOISON		16	 // char resists poison (future use)
-#define NCF0_WATERWALK		32	 // char walks on water (npc only)
-#define NCF0_BIT6			64
+#define NCF0_RPARALISYS 		8	 // char resists paralisys (future use)
+#define NCF0_RPOISON			16	 // char resists poison (future use)
+#define NCF0_WATERWALK			32	 // char walks on water (npc only)
+#define NCF0_TELEKINESYS		64	//<! Luxor: telekinesys spell
 #define NCF0_BIT7			128
 
 #define NCF1_BIT0			1

@@ -183,14 +183,11 @@ class cMenu : public cBasicMenu
 class cIconListMenu : public cBasicMenu
 {
 
-	private:
-
-		std::vector< pkg_icon_list_menu_st > icons;
-		std::map< SERIAL, SI32 > iconData;
-
 	protected:
 
 		virtual cServerPacket* createPacket();
+		std::vector< pkg_icon_list_menu_st > icons;
+		std::map< SERIAL, SI32 > iconData;
 
 	public:
 
