@@ -338,13 +338,10 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 */
 bool WalkHandleAllowance(P_CHAR pc, int sequence)
 {
-
 	VALIDATEPCR(pc,false);
 	if (pc->isStabled() || pc->mounted) return false; // shouldnt be called for stabled pets, just to be on the safe side
 
-
-
-	NXWSOCKET  s=calcSocketFromChar(DEREF_P_CHAR(pc));
+	NXWSOCKET  s = pc->getSocket();
 	if(s!=INVALID)
 	{
 		if ((walksequence[s]+1!=sequence)&&(sequence!=256))
@@ -369,7 +366,6 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 		}
 	}
 
-	// dont put a if s!=-1 here !!!
 	if(pc->IsFrozen()) // lord binary !!!
 	{
 		pc->teleport();
@@ -384,7 +380,6 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 		return false;
 	}
 	return true;
-
 }
 
 
@@ -481,13 +476,12 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 //
 UI32 WalkCollectBlockers(P_CHAR pc)
 {
-
 	VALIDATEPCR(pc, 0);
 	UI32 blockers_count= 0;
 
 
 	int mapid = 0;
-	signed char mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
+	SI08 mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
 	if (mapz != illegal_z)
 	{
 		land_st land;
@@ -521,7 +515,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 					{
 						if ( TIMEOUT( pi->disabled ) )//AntiChrist
 						{
-							triggerItem(calcSocketFromChar(DEREF_P_CHAR(pc)),pi,TRIGTYPE_WALKOVER);  //When player steps on a trigger
+							triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
 						}
 					}
 				}
@@ -557,7 +551,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
 			{
 				MULFile *mfile = NULL;
-				SI32 length = 0;		// should be SI32, not long
+				SI32 length = 0;
 
 				Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
 				length=length/MultiRecordSize;
@@ -620,14 +614,13 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 // history:	cut from walking() by Duke, 20.11.2000
 // Purpose:	Decides if something in the array blocks the walker
 //
-void WalkEvaluateBlockers(P_CHAR pc, signed char *pz, signed char *pdispz, UI32 blockers)
+void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 {
-
 	VALIDATEPC(pc);
 	
 	if( blockers == 0 ) return;	// nothing to do since there is nothing on the way
 
-	signed char z, oldz, seekz,dispz = -128;
+	SI08 z, oldz, seekz,dispz = -128;
 	int num;
 	UI32 i;
 	char gmbody;
@@ -675,7 +668,7 @@ void WalkEvaluateBlockers(P_CHAR pc, signed char *pz, signed char *pdispz, UI32 
 				if (xyblock[num].height==0) xyblock[num].height++;
 				if ((!(xyblock[num].id==1))&&(xyblock[num].basez<=oldz+MaxZstep))
 				{
-					//TEMP REMOVE.. DONT DONT ERASE.. MONDAY I READD THIS
+					//TEMP REMOVE.. DONT DONT ERASE.. MONDAY I READD THIS			// ehm ... of which year ? o_O' 
 					//if( xyblock[num].flag1&0x40 &&(xyblock[num].basez+xyblock[num].height<=oldz+MaxZstep) )
 					//	z=-128;
 					//else
@@ -837,21 +830,21 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	switch(dir&0x0F)
 	{
-		case '\x00' : pc->setPosition("y", pcpos.y-1);
+		case 0: pc->setPosition("y", pcpos.y-1);
 			break;
-		case '\x01' : { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
+		case 1: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
 			break;
-		case '\x02' : pc->setPosition("x", pcpos.x+1);
+		case 2: pc->setPosition("x", pcpos.x+1);
 			break;
-		case '\x03' : { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
+		case 3: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case '\x04' : pc->setPosition("y", pcpos.y+1);
+		case 4: pc->setPosition("y", pcpos.y+1);
 			break;
-		case '\x05' : { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
+		case 5: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case '\x06' : pc->setPosition("x", pcpos.x-1);
+		case 6: pc->setPosition("x", pcpos.x-1);
 			break;
-		case '\x07' : { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
+		case 7: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
 			break;
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
@@ -860,9 +853,9 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			return false;
 	}
 
-	UI32 blockers= WalkCollectBlockers(pc);
+	UI32 blockers = WalkCollectBlockers(pc);
 
-	signed char z, dispz=0;
+	SI08 z, dispz=0;
 
 	WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
@@ -934,7 +927,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		pcpos.x= oldx;
 		pcpos.y= oldy;
 		pc->setPosition( pcpos );
-		NXWSOCKET socket = calcSocketFromChar(DEREF_P_CHAR(pc));
+		NXWSOCKET socket = pc->getSocket();
 		if ( socket != INVALID )
 			deny( socket, pc, sequence );
 		else
@@ -1280,7 +1273,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 	int newx, newy;
 	VALIDATEPC( pc );
 
-	NXWSOCKET  s=calcSocketFromChar(DEREF_P_CHAR(pc));
+	NXWSOCKET  s = pc->getSocket();
 
 	if (!WalkHandleAllowance(pc,sequence))		// check sequence, frozen, weight etc.
 		return;
@@ -1362,7 +1355,6 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 	int sendit;
 
 	Location charpos= pc_s->getPosition();
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc_s, false );
@@ -1380,8 +1372,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 				{
 					if (!pc_i->dead)
 					{
-						LongToCharPtr(pc_s->getSerial32(), removeitem+1);
-						Xsend(ps_i->toInt(), removeitem, 5);
+						SendDeleteObjectPkt(ps_i->toInt(), pc_s->getSerial32());
 					 	sendit = 0;
 					}
 					else
@@ -1394,8 +1385,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 				{
 					unsigned char extmove[18]="\x77\x01\x02\x03\x04\x01\x90\x01\x02\x01\x02\x0A\x00\xED\x00\x00\x00";
 					LongToCharPtr(pc_s->getSerial32(), extmove+1);
-					extmove[5] = pc_s->id1;
-					extmove[6] = pc_s->id2;
+					ShortToCharPtr(pc_s->GetBodyType(), extmove +5);
 					ShortToCharPtr(charpos.x, extmove+7);
 					ShortToCharPtr(charpos.y, extmove+9);
 					extmove[11] = charpos.dispz;
@@ -1406,27 +1396,29 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 					if (pc_s->npc && pc_s->war) // Skyfire
 					{
 						extmove[12] = dir | 0x80;
-						Xsend(ps_i->toInt(), extmove, 17);
+//						Xsend(ps_i->toInt(), extmove, 17);
+//AoS/						Network->FlushBuffer(ps_i->toInt());
 					}
 					if (pc_s->npc && pc_s->ftargserial!=INVALID)
 					{
 						extmove[12] = dir | 0x80;
-						Xsend(ps_i->toInt(), extmove, 17);
+//						Xsend(ps_i->toInt(), extmove, 17);
+//AoS/						Network->FlushBuffer(ps_i->toInt());
 					}
 
-            				extmove[13] = pc_s->skin1; // ripper, skin problems bugfix
-					extmove[14] = pc_s->skin2;
+            				ShortToCharPtr(pc_s->getSkinColor(), extmove +13);
 
 					if (pc_s->war)
 						extmove[15] = 0x40;
 					else
 						extmove[15] = 0x00;
 					if (pc_s->IsHidden())
-						extmove[15] = extmove[15] | 0x80;
+						extmove[15] |= 0x80;
 					if (pc_s->poisoned)
-						extmove[15] = extmove[15] | 0x04; // AntiChrist -- thnx to SpaceDog
+						extmove[15] |= 0x04; // AntiChrist -- thnx to SpaceDog
 					if (pc_s->kills >= 4)
 						extmove[16] = 6; // ripper
+
 					int guild;
 					guild = Guilds->Compare(pc_s, pc_i);
 					if (guild == 1)// Same guild (Green)
@@ -1454,8 +1446,11 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 						pc_s->targserial=INVALID;
 					}
 
-					if (sendit)
-						Xsend(ps_i->toInt(), extmove, 17);
+//					if (sendit)
+//					{
+					Xsend(ps_i->toInt(), extmove, 17);
+//AoS/					Network->FlushBuffer(ps_i->toInt());
+//					}
 				}
 			}
 		}
