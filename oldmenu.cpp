@@ -109,7 +109,7 @@ void cOldMenu::setWidth( int width )
 \brief Set style
 \author Endymion
 \since 0.82
-\param width the style
+\param style the style
 \param color the color
 */
 void cOldMenu::setStyle( int style, int color )

@@ -85,7 +85,7 @@ private:
 	void EraseGuild(int guildnumber);
 	void ToggleAbbreviation(int s);
 	int SearchSlot(int guildnumber, int type);
-	void ChangeName(int s, char *text);
+	void ChangeName(NXWSOCKET s, char *text);
 	void ChangeAbbreviation(int s, char *text);
 	void ChangeTitle(int s, char *text);
 	void ChangeCharter(int s, char *text);
@@ -342,7 +342,7 @@ namespace Skills {
 	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM mortar);
 	void AlchemyTarget(NXWSOCKET s);
 	void BottleTarget(NXWSOCKET s);
-	void PotionToBottle(CHARACTER s, int mortar);
+	void PotionToBottle(SERIAL s, int mortar);
 	//@}
 
 	//@{
