@@ -18,7 +18,8 @@
 
 #include "nxwcommn.h"
 #include "basics.h"
-#include "cmdtable.h"
+//#include "cmdtable.h"
+#include "cmds.h"
 #include "speech.h"
 #include "sndpkg.h"
 #include "sregions.h"
@@ -3672,3 +3673,59 @@ NATIVE2( _party_getProperty )
 		return INVALID;
 	}
 }
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////// COMMANDS PROPERTIES //////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+// Frodo
+
+const int CP_PARAM=0;
+const int CP_ALLPARAMS=1;
+const int CP_N_PARAMS=2;
+
+
+//Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
+//			{ "getCmdProperty", _getCmdProperty } 
+	
+	// params[1] = cCallCommand Serial
+	// params[2] = property
+	// params[3] = number of the param 
+
+/*
+
+
+NATIVE2(_getCmdProperty) {		
+
+	*cCallCommand cmd=cCallCommand::findCallCommand(params[1]);
+
+	if (cmd==NULL)
+		return NULL;
+	  
+		
+	if ( !params[2] )
+	{
+		switch( params[2] ) {
+			
+			case CP_ALLPARAMS: {
+				}
+			case CP_PARAM: {
+				}
+			case CP_N_PARAMS: {
+				}
+		}
+
+ 	}
+  	
+	ErrOut("itm_getProperty called without a valid property !\n");
+	return '\0';
+	
+}
+
+*/
+ 
