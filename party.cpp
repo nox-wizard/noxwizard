@@ -55,11 +55,10 @@ void cParty::removeMember( P_CHAR member )
 			if( !members.empty() ) {
 				sendToAllMember( &pkg );
 			}
-			else {
-				Partys.removeParty( this->serial );
-			}
 			member->party=INVALID;
 			pkg.send( member->getClient() );
+			if( members.empty() )
+				Partys.removeParty( this->serial );
 			return;
 		}
 	}
