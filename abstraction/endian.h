@@ -47,7 +47,7 @@ class eUI32 {
 } PACK_NEEDED;
 
 typedef UI08 eUI08;		//!< fake endian-independent UI08
-typedef bool ebool;		//!< fake endian-independent bool
+typedef bool eBool;		//!< fake endian-independent bool
 typedef eUI16 eCOLOR;	//!< endian-independent color
 typedef eUI32 eSERIAL;	//!< endian-independent serial
 
