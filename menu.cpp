@@ -9,6 +9,11 @@
 
 #include "menu.h"
 
+
+MENU_MAP cMenu::menuMap;
+map<UI32, std::string > cMenu::responseMap;
+
+
 #define OPTIONS2BITSET( MOVE, CLOSE, DISPOSE ) \
 	( MOVE*MOVEABLE | CLOSE*CLOSEABLE | DISPOSE*DISPOSEABLE  ) \
 
