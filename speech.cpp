@@ -1907,15 +1907,15 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 }// namespace Speech
 
 
-inline void makeGhost( ustring* from, ustring* to ) {
-	/*
+/*inline void makeGhost( ustring* from, ustring* to ) {
+
 	ustring::iterator iter( from->begin() ), end( from->end() );
 	for( ; iter!=end; iter++) {
 		if( (*iter)!=32 && (*iter)!=0x0000 )
 			(*to) += ( (*iter) %2)? L'O' : L'o';
-	}*/
+	}
 
-}
+}*/
 
 
 void talking( NXWSOCKET socket, string speech) // PC speech
@@ -2040,7 +2040,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	ustring* speechUni= new ustring();
 	string2ustring( speech, *speechUni );
 
-	ustring* speechGhostUni=NULL;
+	//ustring* speechGhostUni=NULL;
 
 	int range;
 	switch ( buffer[socket][3] ) {
@@ -2075,15 +2075,17 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}
 
 		bool ghost=false;
-		/*if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
-			if( speechGhostUni==NULL ) {
+		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
+			/*if( speechGhostUni==NULL ) {
 				speechGhostUni=new ustring();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->setSpeechCurrent( new ustring( *speechGhostUni ) );
+			pc->setSpeechCurrent( new ustring( *speechGhostUni ) );*/
+			pc->deleteSpeechCurrent();
+			pc->emote( a_pc->getSocket(), "*Speaks in an uncomprehensible way*", true );
 			ghost=true;
 		}
-		else*/
+		else
 			pc->setSpeechCurrent( new ustring( *speechUni ) );
 
 		/*
@@ -2095,14 +2097,14 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		talk.msg=pc->getSpeechCurrent();
 		talk.send( a_pc->getClient() );
 
-		if( ( pc->getSpeechCurrent()!=speechUni ) && ( pc->getSpeechCurrent()!=speechGhostUni ) ) //so was modified in event
+		if( ( pc->getSpeechCurrent()!=speechUni ) /*&& ( pc->getSpeechCurrent()!=speechGhostUni )*/ ) //so was modified in event
 			pc->deleteSpeechCurrent();
 	}
 
 	safedelete(speechUni);
 	pc->resetSpeechCurrent();
-	if( speechGhostUni!=NULL )
-		safedelete(speechGhostUni);
+	/*if( speechGhostUni!=NULL )
+		safedelete(speechGhostUni);*/
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
 	{

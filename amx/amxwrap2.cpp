@@ -227,12 +227,6 @@ NATIVE2(_setCharProperty)
 	cell *cptr;
 	amx_GetAddr(amx,params[4],&cptr);
 
-	cell *cptr2;
-	amx_GetAddr(amx,params[5],&cptr2);
-
-	int sp2 = *cptr2;
-
-
 	if (tp==T_INT) {
 		int p = *cptr;
 
@@ -541,7 +535,7 @@ NATIVE2(_setCharProperty)
 				pc->reattackat = p;
 				break;
 			case NXW_CP_I_REGENRATE :				  		//dec value: 271;
-				pc->setRegenRate( static_cast<StatType>(params[3]), p, static_cast<VarType>(sp2) );
+				pc->setRegenRate( static_cast<StatType>(params[3]), p, static_cast<VarType>(params[5]) );
 				break;
 			case NXW_CP_I_ROBE :			  				//dec value: 274;
 				pc->robe = p;
