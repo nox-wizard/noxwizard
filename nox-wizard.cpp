@@ -1239,31 +1239,26 @@ void angelMode();
 	//	ConOut("\nServer waiting connections on all interfaces at TCP port %s\n", serv[0][2]);
 
     // print allowed clients
-    const char * t;
+    std::string t;
     std::vector<std::string>::const_iterator vis( clientsAllowed.begin() ), vis_end( clientsAllowed.end() );
 
     ConOut("\nAllowed clients : ");
     for ( ; vis != vis_end;  ++vis)
     {
-    t = (*vis).c_str();  // a bit pervert to store c++ strings and operate with c strings, admitably
+    t = (*vis);  // a bit pervert to store c++ strings and operate with c strings, admitably
 
-	  strcpy(temp2,t);
-	  strcpy(temp,t);strcat(temp,",");
-
-	  if (!strcmp(temp2,"SERVER_DEFAULT") )
+	  if ( t == "SERVER_DEFAULT" )
 	  {
-		  char temp3[TEMP_STR_SIZE];
-		  sprintf(temp3,"%s : %s\n",temp2, SUPPORTED_CLIENT);
-		  ConOut(temp3);
+		  ConOut("%s : %s\n", t.c_str(), SUPPORTED_CLIENT);
 		  break;
 	  }
-	  else if (!strcmp(temp2,"ALL") )
+	  else if ( t == "ALL" )
 	  {
 		  ConOut("ALL\n");
 		  break;
 	  }
 
-	  ConOut(temp);
+	  ConOut("%s,", t.c_str());
     }
     ConOut("\n");
 
