@@ -42,6 +42,7 @@
 #include "skills.h"
 #include "utils.h"
 #include "nox-wizard.h"
+#include "house.h"
 
 #ifdef _WIN32
 	using namespace std;
@@ -1255,7 +1256,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 
 	Guildz.load();
 	loadPrison();
-
+	cHouses::load();
 
 	//Luxor: reload dynamic spawners here.
 	Spawns->clearDynamic();
@@ -1420,7 +1421,8 @@ void CWorldMain::saveNewWorld()
 
 	Books::safeoldsave();
 	Books::SaveBooks();
-
+	cHouses::safeoldsave();
+	cHouses::save();
 	sysbroadcast(TRANSLATE("Worldsave Done!\n"));
 
 	ConOut(" [DONE]\n");
@@ -2752,7 +2754,24 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			return;
 
 	}
+	// converting old house styles to new housesystem
+	if ( pi->IsHouse() )
+	{
+		// Look if pi serial connects to a house in cHouses
+		P_HOUSE house=cHouses::findHouse(pi->getSerial32());
+		if ( house == NULL )
+		{
+			// No house information has been made yet
+			P_ITEM temp = item::CreateFromScript( pi->morex, NULL);
+			P_HOUSE newHouse = new cHouse();
+			newHouse->setSerial(pi->getSerial32());
+			newHouse->createHouse(temp->morex);
+			newHouse->setOwner(pi->getOwnerSerial32());
+			cHouses::addHouse(newHouse );
+			temp->Delete();
 
+		}
+	}
 	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
 	{
 		fprintf(iWsc, "SECTION WORLDITEM %i\n", this->itm_curr++);

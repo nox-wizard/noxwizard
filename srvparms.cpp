@@ -401,6 +401,7 @@ void loadserverdefaults()
  	server_data.guildWorldfile="nxwguild";
  	server_data.jailWorldfile="nxwjail";
 	server_data.bookWorldfile="nxwbook";
+	server_data.houseWorldfile="nxwhouses";
 }
 
 static int loadspeed(char *script1, char *script2)//Lag Fix -- Zippy -- NEW FUNCTION
@@ -563,6 +564,7 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"GUILDWORLDFILE"))		server_data.guildWorldfile = script2;
 		else if(!strcmp(script1,"JAILWORLDFILE"))		server_data.jailWorldfile = script2;
 		else if(!strcmp(script1,"BOOKWORLDFILE"))		server_data.bookWorldfile = script2;
+		else if(!strcmp(script1,"HOUSEWORLDFILE"))		server_data.houseWorldfile = script2;
 		else if(!strcmp(script1,"WORLDFILEEXTENSION"))		server_data.worldfileExtension = script2;
 		else if(!strcmp(script1,"SKILLCAP"))			server_data.skillcap=str2num(script2);
 		else if(!strcmp(script1,"ENABLEBOOKS"))			ServerScp::g_nEnableBooks = str2num(script2);
@@ -1267,6 +1269,8 @@ void saveserverscript()
 	fprintf(file, "JAILWORLDFILE %s\n", server_data.jailWorldfile.c_str() );
 	fprintf(file, "// Book worldfile name\n");
 	fprintf(file, "BOOKWORLDFILE %s\n", server_data.bookWorldfile.c_str() );
+	fprintf(file, "// House worldfile name\n");
+	fprintf(file, "HOUSEWORLDFILE %s\n", server_data.houseWorldfile.c_str() );
 	fprintf(file, "// Set directory where worldfile saves will be stored\n");
 	fprintf(file, "SAVEPATH %s\n", server_data.savePath.c_str() );
 	fprintf(file, "// Set directory where worldfile backups will be stored\n");

@@ -403,9 +403,9 @@ bool cItem::IsTheatreSign()
 bool itemById::IsHouse( UI16 id )
 {
 
-  if (id < 0x0040) return false;
+  if (id < 0x4000) return false;
 
-  if ( (id >= 0x0064) && (id <= 0x007f) ) return true;
+  if ( (id >= 0x4064) && (id <= 0x407f) ) return true;
 
   switch(id%256)
   {

@@ -460,10 +460,10 @@ SI08 getHeight( Location pos )
 /*!
 \author Luxor
 */
-void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 )
+void getMultiCorners( P_ITEM pi, SI32 &x1, SI32 &y1, SI32 &x2, SI32 &y2 )
 {
 	VALIDATEPI( pi );
-
+	x1=y1=x2=y2=0;
 	multiVector m;
 	data::seekMulti( pi->getId() - 0x4000, m );
 	for( UI32 i = 0; i < m.size(); i++ ) {

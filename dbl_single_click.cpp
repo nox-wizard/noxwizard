@@ -645,6 +645,13 @@ void doubleclick(NXWCLIENT ps)
 			pc->smoketimer = pi->morex*MY_CLOCKS_PER_SEC + getclock();
 			pi->ReduceAmount(1);
 			return;
+	case ITYPE_HOUSEDEED:
+			cHouses::buildhouse(pc, pi);
+			return;
+	case ITYPE_BOATDEED:
+
+
+			return;
 	case ITYPE_RENAME_DEED:
 			pc->namedeedserial = pi->getSerial32();
 			pc->sysmsg( TRANSLATE("Enter your new name."));

@@ -516,16 +516,17 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		pc->objectdelay=uiCurrentTime+ (server_data.objectdelay/4)*MY_CLOCKS_PER_SEC;
 		// house refreshment when a house owner or friend of a houe opens the house door
 
-		int j, houseowner_serial,ds;
-		P_ITEM pi_house=findmulti( pi->getPosition() );
+		int ds;
+		P_HOUSE house=cHouses::findHouse(pi->getPosition());
+		P_ITEM pi_house = pointers::findItemBySerial(house->getSerial());
+
 		if(ISVALIDPI(pi_house))
 		{
 			const P_ITEM pi2=pi_house;
-			if ( pi_house->IsHouse() )
+			if ( house != NULL )
 			{
-				houseowner_serial=pi2->getOwnerSerial32();
-				j=on_hlist(pi_house, pc->getSerial().ser1,  pc->getSerial().ser2,  pc->getSerial().ser3,  pc->getSerial().ser4, NULL);
-				if ( j==H_FRIEND || (pi2->getOwnerSerial32()==pc->getSerial32()) ) // house_refresh stuff, LB, friends of the house can do.
+
+				if( !house->isCoOwner(pc) && !house->isFriend(pc) && house->getOwner() != pc->getSerial32() )// house_refresh stuff, LB, friends of the house can do.
 				{
 					if (s!=INVALID)
 					{
@@ -535,7 +536,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 
 						if (ds>=50) // sysmessage iff decay status >=50%
 						{
-							if (houseowner_serial!= pc->getSerial32())
+
+							if (house->getOwner()!= pc->getSerial32() && !house->isCoOwner(pc))
 								sysmessage(s,TRANSLATE("You refreshed your friend's house"));
 							else
 								sysmessage(s,TRANSLATE("You refreshed the house"));

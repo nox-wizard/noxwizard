@@ -46,7 +46,7 @@ SI08 tileHeight( UI16 id );
 SI08 mapElevation( UI32 x, UI32 y );
 SI08 dynamicElevation( Location pos );
 SI08 getHeight( Location pos );
-void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 );
+void getMultiCorners( P_ITEM pi, SI32 &x1, SI32 &y1, SI32 &x2, SI32 &y2 );
 
 inline SI32 line_of_sight( Location a, Location b  ,SI32 checkfor=WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC )
 { return lineOfSight( a, b, checkfor ); }

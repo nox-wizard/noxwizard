@@ -31,11 +31,12 @@
 #include "inlines.h"
 #include "classes.h"
 #include "scripts.h"
+#include "sregions.h"
 
-std::map< SERIAL, P_CHAR > houses;
 
 LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy);
-
+std::map< SERIAL, P_HOUSE > cHouses::houses;
+std::map< int, UI32VECTOR> cHouses::houseitems;
 /*!
 \todo take a look to initialization, we could initialize the vector with the variables
 */
@@ -54,8 +55,23 @@ void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 //AoS/	Network->FlushBuffer(s);
 }
 
+SERIAL cHouse::getSerial()
+{
+	return houseserial;
+}
+
+void cHouse::setSerial(SERIAL itemLink)
+{
+	houseserial=itemLink;
+}
+
+SI32 cHouse::getKeycode()
+{
+	return keycode;
+}
+
 /*!
-\author Zippy
+\author Wintermute, original code by Zippy
 \brief Build an house
 
 Triggered by double clicking a deed-> the deed's morex is read
@@ -63,38 +79,22 @@ for the house section in house.cpp. Extra items can be added
 using HOUSE ITEM, (this includes all doors!) and locked "LOCK"
 Space around the house with SPACEX/Y and CHAR offset CHARX/Y/Z
 */
-void buildhouse( NXWCLIENT ps, P_TARGET t )
+
+void cHouse::createHouse(UI32 houseNumber)
 {
-	NXWSOCKET s = ps->toInt();
-	int i = t->buffer[2];
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int loopexit=0;//where they click, and the house/key items
-	UI32 x, y, k, sx = 0, sy = 0, icount=0;
-	signed char z;
 	int hitem[100];//extra "house items" (up to 100)
 	char sect[512];                         //file reading
-	char itemsdecay = 0;            // set to 1 to make stuff decay in houses
-	static int looptimes=0;         //for targeting
-	int cx=0,cy=0,cz=8;             //where the char is moved to when they place the house (Inside, on the steps.. etc...)(Offset)
-	int boat=0;//Boats
-	int hdeed=0;//deed id #
-	int norealmulti=0,nokey=0,othername=0;
 	char name[512];
-	P_CHAR pc=ps->currChar();
-	VALIDATEPC(pc);
-	Location charpos= pc->getPosition();
-
-	SI16 id = INVALID; //house ID
-
-	
-
+	P_ITEM house = pointers::findItemBySerial(this->getSerial());
+	UI32 sx = 0, sy = 0, icount=0;
+	int loopexit=0;//the house/key items
 	hitem[0]=0;//avoid problems if there are no HOUSE_ITEMs by initializing the first one as 0
-	if (i)
+	if (houseNumber)
 	{
 		cScpIterator* iter = NULL;
 		char script1[1024];
 		char script2[1024];
-		sprintf(sect, "SECTION HOUSE %d", i);//and BTW, .find() adds SECTION on there for you....
+		sprintf(sect, "SECTION HOUSE %d", houseNumber);//and BTW, .find() adds SECTION on there for you....
 
 		iter = Scripts::House->getNewIterator(sect);
 		if (iter==NULL) return;
@@ -106,544 +106,476 @@ void buildhouse( NXWCLIENT ps, P_TARGET t )
 			{
 				if (!(strcmp(script1,"ID")))
 				{
-					id = hex2num(script2);
-				}
-				else if (!(strcmp(script1,"SPACEX")))
-				{
-					sx=str2num(script2)+1;
-				}
-				else if (!(strcmp(script1,"SPACEY")))
-				{
-					sy=str2num(script2)+1;
-				}
-				else if (!(strcmp(script1,"CHARX")))
-				{
-					cx=str2num(script2);
-				}
-				else if (!(strcmp(script1,"CHARY")))
-				{
-					cy=str2num(script2);
-				}
-				else if (!(strcmp(script1,"CHARZ")))
-				{
-					cz=str2num(script2);
-				}
-				else if( !(strcmp(script1, "ITEMSDECAY" )))
-				{
-					itemsdecay = str2num( script2 );
+					house->setId(hex2num(script2));
 				}
 				else if (!(strcmp(script1,"HOUSE_ITEM")))
 				{
-					hitem[icount]=str2num(script2);
-					icount++;
+					cHouses::addHouseItem(houseNumber, str2num(script2));
+				}
+				else if (!(strcmp(script1,"SPACEX1")))
+				{
+					spacex1=str2num(script2)+1;
+				}
+				else if (!(strcmp(script1,"SPACEY1")))
+				{
+					spacey1=str2num(script2)+1;
+				}
+				else if (!(strcmp(script1,"SPACEX2")))
+				{
+					spacex2=str2num(script2)+1;
+				}
+				else if (!(strcmp(script1,"SPACEY2")))
+				{
+					spacey2=str2num(script2)+1;
+				}
+				else if (!(strcmp(script1,"CHARX")))
+				{
+					char_x=str2num(script2);
+				}
+				else if (!(strcmp(script1,"CHARY")))
+				{
+					char_y=str2num(script2);
+				}
+				else if (!(strcmp(script1,"CHARZ")))
+				{
+					char_z=str2num(script2);
+				}
+				else if( !(strcmp(script1, "ITEMSDECAY" )))
+				{
+					house->more4=str2num( script2 );
 				}
 				else if (!(strcmp(script1, "HOUSE_DEED")))
 				{
-					hdeed=str2num(script2);
+					housedeed=str2num(script2);
 				}
-				else if (!(strcmp(script1, "BOAT"))) boat=1;//Boats
-
+				else if (!(strcmp(script1, "BOAT"))) 
+				{
+					ErrOut("Bad house script # %i!\n",houseNumber);
+					return;
+				}
 				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
-				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
+				else if (!(strcmp(script1, "NOKEY"))) this->publicHouse=1;
 				else if (!(strcmp(script1, "NAME")))
 				{
 					strcpy(name,script2);
-					othername=1;
+					house->setCurrentName(name);
 				}
 			}
 		}
 		while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 		safedelete(iter);
 
-		if (!id)
+		if (!house->getId())
 		{
-			ErrOut("Bad house script # %i!\n",i);
+			ErrOut("Bad house script # %i!\n",houseNumber);
+			return;
+		}
+		
+	}
+}
+
+void cHouse::transfer(SERIAL newOwner)
+{
+	P_ITEM house = pointers::findItemBySerial(this->getSerial());
+	this->friends.clear();
+	this->coowners.clear();
+	this->banned.clear();
+	cHouses::killkeys(house->getSerial32());
+
+}
+
+bool cHouse::isRealMulti()
+{
+	return norealmulti==0;
+}
+
+void cHouses::makeKeys(P_HOUSE pHouse, P_CHAR pc)
+{
+	P_ITEM pKey=NULL;
+	P_ITEM pKey2=NULL;
+	P_ITEM house = pointers::findItemBySerial(pHouse->getSerial());
+
+	P_ITEM pBackPack = pc->getBackpack();
+	SI16 id=house->getId();
+	char temp[100];
+	//Key...
+	//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
+	if ((id%256 >=0x70) && (id%256 <=0x73))
+	{
+		sprintf(temp,"%s's tent key",pc->getCurrentNameC());
+		pKey = item::CreateFromScript( "$item_iron_key", pBackPack ); //iron key for tents
+		pKey2= item::CreateFromScript( "$item_iron_key", pBackPack );
+	}
+	else if(id%256 <=0x18)
+	{
+		sprintf(temp,"%s's ship key",pc->getCurrentNameC());
+		pKey= item::CreateFromScript( "$item_bronze_key", pBackPack ); //Boats -Rusty Iron Key
+		pKey2= item::CreateFromScript( "$item_bronze_key", pBackPack );
+		
+	}
+	else
+	{
+		sprintf(temp,"%s's house key",pc->getCurrentNameC());
+		pKey= item::CreateFromScript( "$item_gold_key", pBackPack ); //gold key for everything else;
+		pKey2= item::CreateFromScript( "$item_gold_key", pBackPack );
+	}
+
+	VALIDATEPI( pKey )
+	VALIDATEPI( pKey2 )
+
+	pKey->Refresh();
+	pKey2->Refresh();
+
+	house->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
+	house->st2= pKey2->getSerial32();	// house, housesign and housekeys without having to loop trough
+													// all world items (Sparhawk)
+
+
+	pKey->more1=(pHouse->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
+	pKey->more2=(pHouse->getSerial()>>16)&0xFF;
+	pKey->more3=(pHouse->getSerial()>>8)&0xFF;
+	pKey->more4=(pHouse->getSerial())&0xFF;
+	pKey->moreb1=(pHouse->getKeycode()>>24)&0xFF;
+	pKey->moreb2=(pHouse->getKeycode()>>16)&0xFF;
+	pKey->moreb3=(pHouse->getKeycode()>>8)&0xFF;
+	pKey->moreb4=(pHouse->getKeycode())&0xFF;
+	pKey->type=ITYPE_KEY;
+	pKey->setNewbie();
+	pKey2->more1=(pHouse->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
+	pKey2->more2=(pHouse->getSerial()>>16)&0xFF;
+	pKey2->more3=(pHouse->getSerial()>>8)&0xFF;
+	pKey2->more4=(pHouse->getSerial())&0xFF;
+	pKey2->moreb1=(pHouse->getKeycode()>>24)&0xFF;
+	pKey2->moreb2=(pHouse->getKeycode()>>16)&0xFF;
+	pKey2->moreb3=(pHouse->getKeycode()>>8)&0xFF;
+	pKey2->moreb4=(pHouse->getKeycode())&0xFF;
+	pKey2->type=ITYPE_KEY;
+	pKey2->setNewbie();
+
+	P_ITEM bankbox = pc->GetBankBox();
+	if(bankbox!=NULL) // we sould add a key in bankbox only if the player has a bankbox =)
+	{
+
+		P_ITEM p_key3=item::CreateFromScript( "$item_gold_key" );
+		VALIDATEPI(p_key3);
+		p_key3->setCurrentName( "a house key" );
+		p_key3->more1=(pHouse->getSerial()>>24)&0xFF;
+		p_key3->more2=(pHouse->getSerial()>>16)&0xFF;
+		p_key3->more3=(pHouse->getSerial()>>8)&0xFF;
+		p_key3->more4=(pHouse->getSerial())&0xFF;
+		p_key3->moreb1=(pHouse->getKeycode()>>24)&0xFF;
+		p_key3->moreb2=(pHouse->getKeycode()>>16)&0xFF;
+		p_key3->moreb3=(pHouse->getKeycode()>>8)&0xFF;
+		p_key3->moreb4=(pHouse->getKeycode())&0xFF;
+		p_key3->type=ITYPE_KEY;
+		p_key3->setNewbie();
+		bankbox->AddItem(p_key3);
+	}
+
+}
+
+/*!
+\author Wintermute
+\brief Build an house
+Create an image of the house at the mouse pointer, allowing the char to drag it to the right position
+\param builder, the char, who is building the house
+\param housedeed, the housedeed that is used to build
+*/
+
+void cHouses::buildhouse( P_CHAR builder, P_ITEM housedeed)
+{
+	NXWCLIENT ps = builder->getClient();
+	SI16 id = INVALID;
+	P_HOUSE newHouse = new cHouse();
+	P_TARGET targ = NULL;
+	P_ITEM pHouse = item::CreateFromScript( "$item_hardcoded" );
+	VALIDATEPI(pHouse);
+	builder->fx1=housedeed->getSerial32();
+	newHouse->setSerial(pHouse->getSerial32());
+	newHouse->createHouse(housedeed->morex);
+	id = pHouse->getId();
+	if (ps->isDragging()) 
+	{
+		ps->resetDragging();
+		// UpdateStatusWindow(builder->getSocket(),pi);
+	}
+
+	pHouse->setDecay( false );
+	pHouse->setNewbie( false );
+	pHouse->setDispellable( false );
+	pHouse->setOwnerSerial32(builder->getSerial32());
+	pHouse->setPosition (0,0,0);
+	newHouse->setOwner(builder->getSerial32());
+	houses.insert( make_pair( newHouse->getSerial(), newHouse ) );
+
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
+	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
+	targ->code_callback=cHouses::target_buildhouse;
+	targ->buffer[0]=newHouse->getSerial();
+	targ->send( ps );
+	ps->sysmsg( TRANSLATE("Where do you want to dig?"));
+}
+
+/*!
+\author Wintermute, original code by Zippy
+\brief Build an house
+
+Triggered by double clicking a deed-> the deed's morex is read
+for the house section in house.cpp. Extra items can be added
+using HOUSE ITEM, (this includes all doors!) and locked "LOCK"
+Space around the house with SPACEX/Y and CHAR offset CHARX/Y/Z
+*/
+void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
+{
+	NXWSOCKET s = ps->toInt();
+	SERIAL houseserial=t->buffer[0];
+	P_ITEM iHouse=pointers::findItemBySerial(houseserial);
+	P_HOUSE pHouse=cHouses::findHouse(houseserial);
+	int housenumber;
+	UI32 x, y;
+	SI32 k, icount=0;
+	signed char z;
+	int boat=0;//Boats
+	char sect[512];                         //file reading
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+	x = t->getLocation().x; //where they targeted
+	y = t->getLocation().y;
+	z = t->getLocation().z;
+
+	Location charpos= pc->getPosition();
+
+	SI16 id = iHouse->getId(); //house ID
+
+	if(!pc->IsGM() && SrvParms->houseintown==0)
+	{
+		if ((region[calcRegionFromXY(x,y)].priv & RGNPRIV_GUARDED) ) // popy
+		{
+			sysmessage(s,TRANSLATE(" You cannot build houses in town!"));
 			return;
 		}
 	}
-
-	if(!looptimes)
-	{
-		if (i)
-		{
-
-			
-			if (norealmulti) {
-				P_TARGET targ = clientInfo[s]->newTarget( new cLocationTarget() );
-				targ->code_callback=buildhouse;
-				targ->buffer[0]=0x40;
-				targ->buffer[1]=100;
-				//targ->buffer[2]; never setted
-				targ->send( ps );
-				ps->sysmsg( TRANSLATE("Select a place for your structure: ")); 
-			}
-			else
-				mtarget(s, 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
-
-		}
-		else
-		{
-			mtarget(s, 0, 1, 0, 0, t->buffer[0]-0x40, t->buffer[1], TRANSLATE("Select location for building."));
-		}
-		looptimes++;//for when we come back after they target something
-		return;
-	}
-	if(looptimes)
-	{
-		looptimes=0;
-		if(!pc->IsGM() && SrvParms->houseintown==0)
-		{
-			if ((region[pc->region].priv & RGNPRIV_GUARDED) && itemById::IsHouse(id) ) // popy
-			{
-			    sysmessage(s,TRANSLATE(" You cannot build houses in town!"));
-			    return;
-			}
-		}
-
-		x = ShortFromCharPtr(buffer[s] +11); //where they targeted
-		y = ShortFromCharPtr(buffer[s] +13);
-		z = buffer[s][16] + tileHeight(ShortFromCharPtr(buffer[s] +17));
 
 #define XBORDER 200
 #define YBORDER 200
 
-		//XAN : House placing fix :)
-		if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
-		{
-			sysmessage(s, TRANSLATE("You cannot build your structure there!"));
-			return;
-		}
-
-
-		/*
-		if (ishouse(id1, id2)) // strict checking only for houses ! LB
-		{
-			if(!(CheckBuildSite(x,y,z,sx,sy)))
-			{
-				sysmessage(s,TRANSLATE("Can not build a house at that location (CBS)!"));
-				return;
-			}
-		}*/
-
-
-		for (k=0;k<sx;k++)//check the SPACEX and SPACEY to make sure they are valid locations....
-		{
-			for (UI32 l=0;l<sy;l++)
-			{
-
-				Location loc;
-
-				loc.x=x+k;
-
-				loc.y=y+l;
-
-				loc.z=z;
-				Location newpos = Loc( x+k, y+l, z );
-				if ( (isWalkable( newpos ) == illegal_z ) &&
-					((charpos.x != x+k)&&(charpos.y != y+l)) )
-					/*This will take the char making the house out of the space check, be careful
-					you don't build a house on top of your self..... this had to be done So you
-					could extra space around houses, (12+) and they would still be buildable.*/
-				{
-					sysmessage(s, TRANSLATE("You cannot build your stucture there."));
-					return;
-					//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
-				} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
-
-				P_ITEM pi_ii=findmulti(loc);
-				if (ISVALIDPI(pi_ii) && !(norealmulti))
-				{
-					sysmessage(s,TRANSLATE("You cant build structures inside structures"));
-					return;
-				}
-			}
-		}
-
-		//Boats ->
-		if((id % 256)>=18)
-			sprintf(temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
-		else
-			strcpy(temp, "a mast");
-		if(norealmulti)
-			strcpy(temp, name);
-		//--^
-
-		if (othername)
-			strcpy(temp,name);
-
-		if (id == INVALID)
-			return;
-
-		P_ITEM pHouse = item::CreateFromScript( "$item_hardcoded" );
-		VALIDATEPI(pHouse);
-		pHouse->setId( id );
-		pHouse->setCurrentName( temp );
-
-		pc->making=0;
-
-		pHouse->setPosition(x, y, z);
-		pHouse->setDecay( false );
-		pHouse->setNewbie( false );
-		pHouse->setDispellable( false );
-		pHouse->more4 = itemsdecay; // set to 1 to make items in houses decay
-		pHouse->morex=hdeed; // crackerjack 8/9/99 - for converting back *into* deeds
-		pHouse->setOwnerSerial32(pc->getSerial32());
-		if (pHouse->isInWorld()) 
-		{
-			mapRegions->add(pHouse);
-		}
-		if (!hitem[0] && !boat)
-		{
-			pc->teleport();
-			return;//If there's no extra items, we don't really need a key, or anything else do we? ;-)
-		}
-
-		if(boat) //Boats
-		{
-			if(!Boats->Build(s,pHouse, id%256/*id2*/))
-			{
-				pHouse->Delete();
-				return;
-			}
-		}
-
-		if (i)//Boats->.. Moved from up there ^
-		{
-			P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
-			if ( pFx1 != 0 )
-				pFx1->Delete(); // this will del the deed no matter where it is
-		}
-
-		pc->fx1=-1; //reset fx1 so it does not interfere
-		// bugfix LB ... was too early reseted
-
-		P_ITEM pKey=NULL;
-		P_ITEM pKey2=NULL;
-
-		P_ITEM pBackPack = pc->getBackpack();
-
-		//Key...
-		//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
-		if ((id%256 >=0x70) && (id%256 <=0x73))
-		{
-			sprintf(temp,"%s's tent key",pc->getCurrentNameC());
-			pKey = item::CreateFromScript( "$item_iron_key", pBackPack ); //iron key for tents
-			pKey2= item::CreateFromScript( "$item_iron_key", pBackPack );
-		}
-		else if(id%256 <=0x18)
-		{
-			sprintf(temp,"%s's ship key",pc->getCurrentNameC());
-			pKey= item::CreateFromScript( "$item_bronze_key", pBackPack ); //Boats -Rusty Iron Key
-			pKey2= item::CreateFromScript( "$item_bronze_key", pBackPack );
-			
-		}
-		else
-		{
-			sprintf(temp,"%s's house key",pc->getCurrentNameC());
-			pKey= item::CreateFromScript( "$item_gold_key", pBackPack ); //gold key for everything else;
-			pKey2= item::CreateFromScript( "$item_gold_key", pBackPack );
-		}
-
-		VALIDATEPI( pKey )
-		VALIDATEPI( pKey2 )
-
-		pKey->Refresh();
-		pKey2->Refresh();
-
-		pHouse->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
-		pHouse->st2= pKey2->getSerial32();	// house, housesign and housekeys without having to loop trough
-														// all world items (Sparhawk)
-
-
-		pKey->more1=pHouse->getSerial().ser1;//use the house's serial for the more on the key to keep it unique
-		pKey->more2=pHouse->getSerial().ser2;
-		pKey->more3=pHouse->getSerial().ser3;
-		pKey->more4=pHouse->getSerial().ser4;
-		pKey->type=ITYPE_KEY;
-		pKey->setNewbie();
-		pKey2->more1=pHouse->getSerial().ser1;//use the house's serial for the more on the key to keep it unique
-		pKey2->more2=pHouse->getSerial().ser2;
-		pKey2->more3=pHouse->getSerial().ser3;
-		pKey2->more4=pHouse->getSerial().ser4;
-		pKey2->type=ITYPE_KEY;
-		pKey2->setNewbie();
-
-		P_ITEM bankbox = pc->GetBankBox();
-		if(bankbox!=NULL) // we sould add a key in bankbox only if the player has a bankbox =)
-		{
-
-			P_ITEM p_key3=item::CreateFromScript( "$item_gold_key" );
-			VALIDATEPI(p_key3);
-			p_key3->setCurrentName( "a house key" );
-			p_key3->more1=pHouse->getSerial().ser1;
-			p_key3->more2=pHouse->getSerial().ser2;
-			p_key3->more3=pHouse->getSerial().ser3;
-			p_key3->more4=pHouse->getSerial().ser4;
-			p_key3->type=ITYPE_KEY;
-			p_key3->setNewbie();
-			bankbox->AddItem(p_key3);
-		}
-		if(nokey)
-		{
-			pKey->Delete(); // No key for .. nokey items
-			pKey2->Delete(); // No key for .. nokey items
-		}
-
-		for (k=0;k<icount;k++)//Loop through the HOUSE_ITEMs
-		{
-			cScpIterator* iter = NULL;
-			char script1[1024];
-			char script2[1024];
-			sprintf(sect,"SECTION HOUSE ITEM %i",hitem[k]);
-			iter = Scripts::House->getNewIterator(sect);
-
-			if (iter!=NULL)
-			{
-				P_ITEM pi_l=NULL;
-				loopexit=0;
-				do
-				{
-					iter->parseLine(script1, script2);
-					if (script1[0]!='}')
-					{
-						if (!(strcmp(script1,"ITEM")))
-						{
-							pi_l=item::CreateScriptItem(s,str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.
-
-							if(ISVALIDPI(pi_l))
-							{
-
-					
-							pi_l->magic=2;//Non-Movebale by default
-							pi_l->setDecay( false ); //since even things in houses decay, no-decay by default
-							pi_l->setNewbie( false );
-							pi_l->setDispellable( false );
-							pi_l->setPosition(x, y, z);
-							pi_l->setOwnerSerial32(pc->getSerial32());
-							// SPARHAWK 2001-01-28 Added House sign naming
-							if (pi_l->IsSign())
-								if ((id%256 >=0x70) && (id%256<=0x73))
-									pi_l->setCurrentName("%s's tent",pc->getCurrentNameC());
-								else if (id%256<=0x18)
-									pi_l->setCurrentName("%s's ship",pc->getCurrentNameC());
-								else
-									pi_l->setCurrentName("%s's house",pc->getCurrentNameC());
-
-							}
-						}
-						if (!(strcmp(script1,"DECAY")))
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setDecay();
-						}
-						if (!(strcmp(script1,"NODECAY")))
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setDecay( false );
-						}
-						if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
-						}
-						if (!(strcmp(script1,"MOVEABLE")))
-						{
-							if (ISVALIDPI(pi_l)) pi_l->magic=1;
-						}
-						if (!(strcmp(script1,"LOCK")))//lock it with the house key
-						{
-							if (ISVALIDPI(pi_l)) {
-								pi_l->more1=pHouse->getSerial().ser1;
-								pi_l->more2=pHouse->getSerial().ser2;
-								pi_l->more3=pHouse->getSerial().ser3;
-								pi_l->more4=pHouse->getSerial().ser4;
-							}
-						}
-						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
-						}
-						if (!(strcmp(script1,"Y")))
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
-						}
-						if (!(strcmp(script1,"Z")))
-						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
-						}
-					}
-				}
-				while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
-
-				if (ISVALIDPI(pi_l)) 
-					if (pi_l->isInWorld()) 
-					{
-						mapRegions->add(pi_l);
-					}
-				safedelete(iter);
-			}
-		}
-			
-        NxwSocketWrapper sw;
-		sw.fillOnline( pc, false );
-        for( sw.rewind(); !sw.isEmpty(); sw++ ) {
-			NXWCLIENT ps_i = sw.getClient();
-			if(ps_i==NULL) 
-				continue;
-			P_CHAR pc_i=ps_i->currChar();
-			if(ISVALIDPC(pc_i))
-				pc_i->teleport();
-		}
-                //</Luxor>
-		if (!(norealmulti))
-		{
-			charpos.x= x+cx; //move char inside house
-			charpos.y= y+cy;
-			charpos.dispz= charpos.z= z+cz;
-
-			pc->setPosition( charpos );
-			//ConOut("Z: %i Offset: %i Char: %i Total: %i\n",z,cz,chars[currchar[s]].z,z+cz);
-			pc->teleport();
-		}
-	}
-}
-
-/*!
-\brief Turn a house into a deed if posible
-\author CrackerJack
-\param s socket of player
-\param pi pointer to the house item
-*/
-void deedhouse(NXWSOCKET s, P_ITEM pi)
-{
-	UI32 x1, y1, x2, y2;
-	VALIDATEPI(pi);
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-	Location charpos= pc->getPosition();
-
-
-	if(pi->getOwnerSerial32() == pc->getSerial32() || pc->IsGM()) // bugfix LB, was =
+	//XAN : House placing fix :)
+	if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
 	{
-		getMultiCorners(pi, x1,y1,x2,y2);
-
-		P_ITEM pi_ii=item::CreateFromScript( pi->morex, pc->getBackpack() ); // need to make before delete
-		VALIDATEPI(pi_ii);
-
-		sysmessage( s, TRANSLATE("Demolishing House %s"), pi->getCurrentNameC());
-		pi->Delete();
-		sysmessage(s, TRANSLATE("Converted into a %s."), pi_ii->getCurrentNameC());
-		// door/sign delete
-
-		NxwCharWrapper sc;
-		sc.fillCharsNearXYZ( charpos, BUILDRANGE, true, false );
-		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			P_CHAR p_index=sc.getChar();
-			if( ISVALIDPC(p_index) ) {
-
-				Location charpos2= p_index->getPosition();
-				if( (charpos2.x >= (UI32)x1) && (charpos2.y >= (UI32)y1) && (charpos2.x <= (UI32)x2) && (charpos2.y <= (UI32)y2) )
-				{
-                
-					if( p_index->npcaitype == NPCAI_PLAYERVENDOR )
-					{
-						char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-						sprintf( temp, TRANSLATE("A vendor deed for %s"), p_index->getCurrentNameC() );
-						P_ITEM pDeed = item::CreateFromScript( "$item_employment_deed", pc->getBackpack() );
-						VALIDATEPI(pDeed);
-
-						pDeed->Refresh();
-						sprintf(temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
-						p_index->Delete();
-						sysmessage(s, temp);
-					}
-				}		
-			}
-		}
-        
-		NxwItemWrapper si;
-		si.fillItemsNearXYZ( charpos, BUILDRANGE, false );
-		for( si.rewind(); !si.isEmpty(); si++ ) {
-		{
-			P_ITEM p_item=si.getItem();
-			if(ISVALIDPI(p_item)) {
-				if( (p_item->getPosition().x >= (UI32)x1) &&
-					(p_item->getPosition().x <= (UI32)x2) &&
-					(p_item->getPosition().y >= (UI32)y1) &&
-					(p_item->getPosition().y <= (UI32)y2) )
-					{
-							p_item->Delete();
-					}
-				}
-			}
-		}
-
-		cHouses::killkeys( pi->getSerial32() );
-		sysmessage(s,TRANSLATE("All house items and keys removed."));
-		/*
-		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
-		pc->setPosition( charpos );
-		*/
-		pc->setPosition("z", mapElevation(charpos.x, charpos.y));
-		pc->setPosition("dz", mapElevation(charpos.x, charpos.y));
-		pc->teleport();
+		sysmessage(s, TRANSLATE("You cannot build your structure there!"));
 		return;
 	}
+
+
+	/*
+	if (ishouse(id1, id2)) // strict checking only for houses ! LB
+	{
+		if(!(CheckBuildSite(x,y,z,sx,sy)))
+		{
+			sysmessage(s,TRANSLATE("Can not build a house at that location (CBS)!"));
+			return;
+		}
+	}*/
+
+
+	for (k=-pHouse->getLeftXRange();k<pHouse->getRightXRange();k++)//check the SPACEX and SPACEY to make sure they are valid locations....
+	{
+		for (SI32 l=-pHouse->getUpperYRange();l<pHouse->getLowerYRange();l++)
+		{
+			Location loc;
+			loc.x=x+k;
+			loc.y=y+l;
+			loc.z=z;
+
+			Location newpos = Loc( x+k, y+l, z );
+			if ( (isWalkable( newpos ) == illegal_z ) &&
+				((charpos.x != x+k)&&(charpos.y != y+l)) )
+				/*This will take the char making the house out of the space check, be careful
+				you don't build a house on top of your self..... this had to be done So you
+				could extra space around houses, (12+) and they would still be buildable.*/
+			{
+				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
+				pHouse->remove();
+				iHouse->Delete();
+				cHouses::Delete(pHouse->getSerial());
+				delete pHouse;
+				return;
+				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
+			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
+
+			P_HOUSE house2=cHouses::findHouse(loc);
+			if ( house2 == NULL )
+				continue;
+			P_ITEM pi_ii=pointers::findItemBySerial(house2->getSerial());
+			if ((ISVALIDPI(pi_ii) && (pHouse->isRealMulti())) || (house2 != NULL ))
+			{
+				sysmessage(s,TRANSLATE("You cant build structures inside structures"));
+				pHouse->remove();
+				iHouse->Delete();
+				cHouses::Delete(pHouse->getSerial());
+				delete pHouse;
+				return;
+			}
+		}
+	}
+
+
+	if (id == INVALID)
+		return;
+	iHouse->setPosition (t->getLocation());
+	if (iHouse->isInWorld()) 
+	{
+		mapRegions->add(iHouse);
+	}
+
+	P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
+	housenumber=pFx1->morex;
+	if ( pFx1 != 0 )
+		pFx1->Delete(); // this will del the deed no matter where it is
+
+	pc->fx1=-1; //reset fx1 so it does not interfere
+	// bugfix LB ... was too early reseted
+
+	cHouses::makeKeys(pHouse, pc);
+	UI32VECTOR items=cHouses::getHouseItems(housenumber);
+	UI32VECTOR::iterator item=items.begin();
+	for (;item != items.end();item++)//Loop through the HOUSE_ITEMs
+	{
+		cScpIterator* iter = NULL;
+		char script1[1024];
+		char script2[1024];
+		sprintf(sect,"SECTION HOUSE ITEM %i",*item);
+		iter = Scripts::House->getNewIterator(sect);
+
+		if (iter!=NULL)
+		{
+			P_ITEM pi_l=NULL;
+			int loopexit=0;
+			do
+			{
+				iter->parseLine(script1, script2);
+				if (script1[0]!='}')
+				{
+					if (!(strcmp(script1,"ITEM")))
+					{
+						pi_l=item::CreateScriptItem(s,str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.
+
+						if(ISVALIDPI(pi_l))
+						{
+
+				
+						pi_l->magic=2;//Non-Movebale by default
+						pi_l->setDecay( false ); //since even things in houses decay, no-decay by default
+						pi_l->setNewbie( false );
+						pi_l->setDispellable( false );
+						pi_l->setPosition(x, y, z);
+						pi_l->setOwnerSerial32(pc->getSerial32());
+						// SPARHAWK 2001-01-28 Added House sign naming
+						if (pi_l->IsSign())
+							if ((id%256 >=0x70) && (id%256<=0x73))
+								pi_l->setCurrentName("%s's tent",pc->getCurrentNameC());
+							else if (id%256<=0x18)
+								pi_l->setCurrentName("%s's ship",pc->getCurrentNameC());
+							else
+								pi_l->setCurrentName("%s's house",pc->getCurrentNameC());
+
+						}
+					}
+					if (!(strcmp(script1,"DECAY")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setDecay();
+					}
+					if (!(strcmp(script1,"NODECAY")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setDecay( false );
+					}
+					if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
+					}
+					if (!(strcmp(script1,"MOVEABLE")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->magic=1;
+					}
+					if (!(strcmp(script1,"LOCK")))//lock it with the house key
+					{
+						if (ISVALIDPI(pi_l)) {
+							pi_l->more1=iHouse->getSerial().ser1;
+							pi_l->more2=iHouse->getSerial().ser2;
+							pi_l->more3=iHouse->getSerial().ser3;
+							pi_l->more4=iHouse->getSerial().ser4;
+						}
+					}
+					if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
+					}
+					if (!(strcmp(script1,"Y")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
+					}
+					if (!(strcmp(script1,"Z")))
+					{
+						if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
+					}
+				}
+			}
+			while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
+
+			if (ISVALIDPI(pi_l)) 
+				if (pi_l->isInWorld()) 
+				{
+					mapRegions->add(pi_l);
+				}
+			safedelete(iter);
+		}
+	}
+		
+    NxwSocketWrapper sw;
+	sw.fillOnline( pc, false );
+    for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+		NXWCLIENT ps_i = sw.getClient();
+		if(ps_i==NULL) 
+			continue;
+		P_CHAR pc_i=ps_i->currChar();
+		if(ISVALIDPC(pc_i))
+			pc_i->teleport();
+	}
+            //</Luxor>
+	if (pHouse->isRealMulti())
+	{
+		int newx, newy, newz;
+		pHouse->getCharPos(newx, newy, newz);
+		charpos.x= x+newx; //move char inside house
+		charpos.y= y+newy;
+		charpos.dispz= charpos.z= z+newz;
+
+		pc->setPosition( charpos );
+		//ConOut("Z: %i Offset: %i Char: %i Total: %i\n",z,cz,chars[currchar[s]].z,z+cz);
+		pc->teleport();
+	}
 }
 
-// removes houses - without regions. slow but necassairy for house decay
-// LB 19-September 2000
-/*!
-\brief Remove Houses, without regions, slow but necessariry for house decay
-\todo Need rewrite, now commented out
-*/
-void killhouse(ITEM i)
+void cHouse::getCharPos(int &x, int &y, int &z)
 {
-/*	P_CHAR pc;
-	P_ITEM pi;
-	int x1, y1, x2, y2;
+	x=char_x;
+	y=char_y;
+	z=char_z;
+}
 
+void cHouse::setPublicState(bool state)
+{
+	this->publicHouse=state;
+}
 
-	pi = MAKE_ITEM_REF(i);
-
-	Map->MultiArea(pi, &x1, &y1, &x2, &y2);
-	SERIAL serial = pi->getSerial32();
-
-	int a;
-	for (a = 0; a < charcount; a++) // deleting npc-vendors attched to the decying house
-	{
-		pc = MAKE_CHAR_REF(a);
-		Location charpos= pc->getPosition();
-
-		if ((charpos.x >= x1) && (charpos.y >= y1) && (charpos.x <= x2) && (charpos.y <= y2) && !pc->free)
-		{
-			if (pc->npcaitype == NPCAI_PLAYERVENDOR) // player vendor in right place, delete !
-			{
-				pc->deleteChar();
-			}
-		}
-	}
-
-	for (a = 0; a < itemcount; a++) // deleting itmes inside house
-	{
-		pi = MAKE_ITEM_REF(a);
-		if ((pi->getPosition("x") >= x1) && 
-			(pi->getPosition("y") >= y1) && 
-			(pi->getPosition("x") <= x2) && 
-			(pi->getPosition("y") <= y2) && 
-			(!pi->free))
-		{
-			if (pi->type != ITYPE_GUILDSTONE) // dont delete guild stones !
-			{
-				pi->deleteItem();
-			}
-		}
-	}
-
-	// deleting house keys
-	killkeys(serial);
-	*/
+void cHouse::togglePublicState()
+{
+	this->publicHouse=!this->publicHouse;
 }
 
 /*!
@@ -722,180 +654,23 @@ void cHouses::killkeys(SERIAL serial) // Crackerjack 8/11/99
 	}
 }
 
-/*!
-\brief Checks if somebody is on the house list
-\param pi pointer to the house item
-\param s1 serial (byte1)
-\param s2 serial (byte2)
-\param s3 serial (byte3)
-\param s4 serial (byte4)
-\param li pointer to variable to put items[] index of list item in or NULL
-\return 0 if character is not on house list, else the type of list
-\todo change the 4 chars to a single serial32
-*/
-int on_hlist(P_ITEM pi, unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4, int *li)
-{
-
-	VALIDATEPIR( pi, 0);
-	if( !pi->isInWorld() )
-		return 0;
-	
-	P_ITEM p_ci=NULL;
-
-	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pi->getPosition(), BUILDRANGE, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) {
-
-		p_ci=si.getItem();
-		if(ISVALIDPI(p_ci)) {
-
-			if((p_ci->morey== (UI32)pi->getSerial32())&&
-			   (p_ci->more1== s1)&&(p_ci->more2==s2)&&
-			   (p_ci->more3== s3)&&(p_ci->more4==s4))
-				{
-				    if(li!=NULL) *li=DEREF_P_ITEM(p_ci);
-						return p_ci->morex;
-				}
-		}
-	}
-
-	return 0;
-}
-/*
-int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4, int *li)
-{
-	int cc;
-	int cl=-1;
-	int ci=-1;
-
-	cc=mapRegions->GetCell(items[h].x,items[h].y);
-	do {
-		cl=mapRegions->GetNextItem(cc, cl);
-		if(cl==-1) break;
-		ci=mapRegions->GetItem(cc, cl);
-		if(ci<1000000) {
-			if((items[ci].contserial==items[h].serial)&&
-				(items[ci].more1==s1)&&(items[ci].more2==s2)&&
-				(items[ci].more3==s3)&&(items[ci].more4==s4))
-			{
-				if(li!=NULL) *li=ci;
-				return items[ci].morex;
-			}
-		}
-	} while(ci!=-1);
-	return 0;
-}
-*/
-
-/*!
-\brief Adds somebody to a house list
-\param c chars[] index
-\param h items[] index
-\param t list tyle
-\return 1 if successful addition, 2 if the char was alredy on a house list, 3 if the character is not on property
-*/
-int add_hlist(int c, int h, int t)
-{
-	UI32 sx, sy, ex, ey;
-
-	P_CHAR pc=MAKE_CHAR_REF(c);
-	VALIDATEPCR(pc,3);
-
-	P_ITEM pi_h=MAKE_ITEM_REF(h);
-	VALIDATEPIR(pi_h,3);
-
-	if(on_hlist(pi_h, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL))
-		return 2;
-
-
-	
-	getMultiCorners(pi_h, sx,sy,ex,ey);
-	// Make an object with the character's serial & the list type
-	// and put it "inside" the house item.
-	Location charpos= pc->getPosition();
-
-	if((charpos.x >= (UI32)sx) && (charpos.y >= (UI32)sy) && (charpos.x <= (UI32)ex) && (charpos.y <= (UI32)ey))
-	{
-		P_ITEM pi=archive::item::New();
-		
-
-		pi->morex= t;
-		pi->more1= pc->getSerial().ser1;
-		pi->more2= pc->getSerial().ser2;
-		pi->more3= pc->getSerial().ser3;
-		pi->more4= pc->getSerial().ser4;
-		pi->morey= pi_h->getSerial32();
-
-		pi->setDecay( false );
-		pi->setNewbie( false );
-		pi->setDispellable( false );
-		pi->visible= 0;
-		pi->setCurrentName(TRANSLATE("friend of house"));
-
-		pi->setPosition( pi_h->getPosition() );
-#ifdef SPAR_I_LOCATION_MAP
-		pointers::addToLocationMap(pi);
-#else
-		mapRegions->add(pi);
-#endif
-		return 1;
-	}
-	return 3;
-}
-
-/*!
-\brief Remove somebody from a house list
-\param c chars[] index
-\param h items[] index for house
-\todo change to P_CHAR & P_ITEM
-\return 0 if the player was not on a list, else the list which the player was in.
-*/
-int del_hlist(int c, int h)
-{
-	int hl, li;
-
-	P_CHAR pc=MAKE_CHAR_REF(c);
-	VALIDATEPCR(pc,0);
-
-	P_ITEM pi=MAKE_ITEM_REF(h);
-	VALIDATEPIR(pi,0);
-
-	hl=on_hlist(pi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, &li);
-	if(hl) {
-		P_ITEM pli=MAKE_ITEM_REF(li);
-		if(ISVALIDPI(pli)) {
-#ifdef SPAR_I_LOCATION_MAP
-			//
-			// Hmmm....this is handled by pointers::delItem()....must remove it later
-			//
-			pointers::delItemFromLocationMap(pli);
-#else
-			mapRegions->remove(pli);
-#endif
-			pli->Delete();
-		}
-	}
-	return(hl);
-}
-
 LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 {
 	//
 	// NOTE: Socket and pc checking allready done in talking()
 	//
-	int  fr;
-	P_ITEM pi = findmulti( pc->getPosition() );
+	P_HOUSE house=cHouses::findHouse(pc->getPosition());
+	P_ITEM ihouse=pointers::findItemBySerial(house->getSerial());
 	//
 	// As we don't want a error logged when not in a house we cannot use VALIDATEPIR here
 	//
-	if( !ISVALIDPI( pi ) )
+	if( !ISVALIDPI( ihouse ) )
 		return false;
 
 	//
 	// if pc is not a friend or owner, we don't care what he says
 	//
-	fr=on_hlist(pi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
-	if( fr != H_FRIEND && pi->getOwnerSerial32() != pc->getSerial32() )
+	if( !house->isCoOwner(pc) && !house->isFriend(pc) && house->getOwner() != pc->getSerial32() )
 		return false;
 	//
 	// house ban
@@ -904,7 +679,7 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
 		targ->code_callback=cHouses::target_houseBan;
-		targ->buffer[0]=pi->getSerial32();
+		targ->buffer[0]=ihouse->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select person to ban from house."));
 		return true;
@@ -916,7 +691,7 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cCharTarget() );
 		targ->code_callback=cHouses::target_houseEject;
-		targ->buffer[0]=pi->getSerial32();
+		targ->buffer[0]=ihouse->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select person to eject from house."));
 		return true;
@@ -928,7 +703,7 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
 		targ->code_callback=cHouses::target_houseLockdown;
-		targ->buffer[0]=pi->getSerial32();
+		targ->buffer[0]=ihouse->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to lock down"));
 		return true;
@@ -940,7 +715,7 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
 		targ->code_callback=cHouses::target_houseRelease;
-		targ->buffer[0]=pi->getSerial32();
+		targ->buffer[0]=ihouse->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to release"));
 		return true;
@@ -952,7 +727,7 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
 		targ->code_callback=cHouses::target_houseSecureDown;
-		targ->buffer[0]=pi->getSerial32();
+		targ->buffer[0]=ihouse->getSerial32();
 		targ->send( getClientFromSocket( socket) );
 		sysmessage( socket, TRANSLATE("Select item to secure"));
 		return true;
@@ -990,8 +765,372 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy)
 		return false;
 }
 
+
+cHouse::cHouse() 
+{
+	owner=INVALID;
+	norealmulti=0;
+	keycode=0;
+	publicHouse=false;
+}
+
+void cHouse::getCorners( SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 )
+{
+	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	getMultiCorners( iHouse, x1, y1, x2, y2 );
+	return;
+}
+
+int cHouse::getUpperYRange()
+{
+	return spacey1;
+}
+
+int cHouse::getLowerYRange()
+{
+	return spacey2;
+}
+int cHouse::getLeftXRange()
+{
+	return spacex1;
+}
+int cHouse::getRightXRange()
+{
+	return spacex2;
+}
+
+SERIAL cHouse::getOwner()
+{
+	return owner;
+}
+
+void cHouse::setOwner(SERIAL newOwner)
+{
+	owner=newOwner;
+	// TBD: delete all previous keys to the house
+}
+
+/*!
+\brief Turn a house into a deed if posible
+\author Wintermute, original code CrackerJack
+\param P_CHAR deedMaker, the player who is deeding the house
+*/
+
+void cHouse::deedhouse(P_CHAR deedMaker)
+{
+	VALIDATEPC(deedMaker);
+	Location charpos= deedMaker->getPosition();
+	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+
+
+	if(this->getOwner() == deedMaker->getSerial32() || deedMaker->IsGM()) // bugfix LB, was =
+	{
+		P_ITEM pi_ii=item::CreateFromScript( iHouse->morex, deedMaker->getBackpack() ); // need to make before delete
+		VALIDATEPI(pi_ii);
+
+		sysmessage( deedMaker->getSocket(), TRANSLATE("Demolishing House %s"), iHouse->getCurrentNameC());
+		sysmessage(deedMaker->getSocket(), TRANSLATE("Converted into a %s."), pi_ii->getCurrentNameC());
+		// door/sign delete
+
+		NxwCharWrapper sc;
+		sc.fillCharsNearXYZ( charpos, BUILDRANGE, true, false );
+		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+			P_CHAR p_index=sc.getChar();
+			if( ISVALIDPC(p_index) ) {
+
+				Location charpos2= p_index->getPosition();
+				if( inHouse(charpos2) )
+				{
+                
+					if( p_index->npcaitype == NPCAI_PLAYERVENDOR )
+					{
+						char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+
+						sprintf( temp, TRANSLATE("A vendor deed for %s"), p_index->getCurrentNameC() );
+						P_ITEM pDeed = item::CreateFromScript( "$item_employment_deed", deedMaker->getBackpack() );
+						VALIDATEPI(pDeed);
+
+						pDeed->Refresh();
+						sprintf(temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
+						p_index->Delete();
+						sysmessage(deedMaker->getSocket(), temp);
+					}
+				}		
+			}
+		}
+		this->remove();
+		iHouse->Delete();
+		sysmessage(deedMaker->getSocket(),TRANSLATE("All house items and keys removed."));
+		deedMaker->setPosition("z", mapElevation(charpos.x, charpos.y));
+		deedMaker->setPosition("dz", mapElevation(charpos.x, charpos.y));
+		deedMaker->teleport();
+
+	}
+}
+
+void cHouse::remove()
+{
+	NxwItemWrapper si;
+	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	si.fillItemsNearXYZ( iHouse->getPosition(), BUILDRANGE, false );
+	for( si.rewind(); !si.isEmpty(); si++ )
+	{
+		P_ITEM p_item=si.getItem();
+		if(ISVALIDPI(p_item)) 
+		{
+			if( inHouse(p_item->getPosition()))
+			{
+					p_item->Delete();
+			}
+		}
+	}
+	this->friends.clear();
+	this->coowners.clear();
+	this->banned.clear();
+	cHouses::killkeys( this->getSerial() );
+}
+
+bool cHouse::isInsideHouse(P_ITEM pi)
+{
+	Location itemLoc=pi->getPosition();
+	if ( isInsideHouse(itemLoc.x, itemLoc.y, itemLoc.z) )
+		return true;
+	return false;
+}
+
+bool cHouse::isInsideHouse(P_CHAR pc)
+{
+	Location charLoc=pc->getPosition();
+	if ( isInsideHouse(charLoc.x, charLoc.y, charLoc.z) )
+		return true;
+	return false;
+}
+
+bool cHouse::isInsideHouse(Location where)
+{
+	if ( isInsideHouse(where.x, where.y, where.z) )
+		return true;
+	return false;
+}
+
+bool cHouse::isInsideHouse(int x, int y, int z)
+{
+	if ( ! inHouse(x, y) )
+		return false;
+	// ToDo: Test if the item is really inside the house(meaning: under a roof)
+	return false;
+}
+
+bool cHouse::inHouse(P_ITEM pi)
+{
+	Location itemLoc=pi->getPosition();
+	return inHouse(itemLoc.x, itemLoc.y);
+}
+
+bool cHouse::inHouse(Location where)
+{
+	return inHouse(where.x, where.y);
+}
+
+bool cHouse::inHouse(int x, int y)
+{
+	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+	Location houseLoc=iHouse->getPosition();
+	if (( x >= houseLoc.x-this->spacex1 ) && ( x <= houseLoc.x+this->spacex2))
+		if (( y >= houseLoc.y-this->spacey1 ) && ( y <= houseLoc.y+this->spacey2))
+			return true;
+	return false;
+}
+
+void cHouse::addFriend(P_CHAR newfriend)
+{
+	this->friends.push_back(newfriend->getSerial32());
+}
+
+void cHouse::removeFriend(P_CHAR newfriend)
+{
+	vector<SERIAL>::iterator itRemove = friends.begin();
+	for ( ; itRemove < friends.end(); itRemove++)
+		if ( *itRemove == newfriend->getSerial32() ) friends.erase(itRemove);
+
+}
+
+std::vector<SERIAL>::iterator cHouse::getHouseFriends()
+{
+	return this->friends.begin();
+}
+
+
+/*!
+\brief Checks if somebody is on the friends list
+\param pc the char to be tested
+*/
+bool cHouse::isFriend(P_CHAR pc)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = friends.begin();iter != friends.end(); iter++ )
+	{
+	    if (*iter == pc->getSerial32() )
+			return true;
+	}
+	return false;
+
+}
+
+void cHouse::addCoOwner(P_CHAR newCoOwner)
+{
+	this->coowners.push_back(newCoOwner->getSerial32());
+}
+
+void cHouse::removeCoOwner(P_CHAR newCoOwner)
+{
+	vector<SERIAL>::iterator itRemove = coowners.begin();
+	for ( ; itRemove < coowners.end(); itRemove++)
+		if ( *itRemove == newCoOwner->getSerial32() ) coowners.erase(itRemove);
+
+}
+
+std::vector<SERIAL>::iterator cHouse::getHouseCoOwners()
+{
+	return this->coowners.begin();
+}
+
+/*!
+\brief Checks if somebody is on the friends list
+\param pc the char to be tested
+*/
+bool cHouse::isCoOwner(P_CHAR pc)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = coowners.begin();iter != coowners.end(); iter++ )
+	{
+	    if (*iter == pc->getSerial32() )
+			return true;
+	}
+	return false;
+
+}
+
+void cHouse::addBan(P_CHAR newBanned)
+{
+	this->banned.push_back(newBanned->getSerial32());
+}
+
+void cHouse::removeBan(P_CHAR bannedChar)
+{
+	vector<SERIAL>::iterator itRemove = banned.begin();
+	for ( ; itRemove < banned.end(); itRemove++)
+		if ( *itRemove == bannedChar->getSerial32() ) banned.erase(itRemove);
+
+}
+
+std::vector<SERIAL>::iterator cHouse::getHouseBans()
+{
+	return this->banned.begin();
+}
+
+/*!
+\brief Checks if somebody is on the friends list
+\param pc the char to be tested
+*/
+bool cHouse::isBanned(P_CHAR pc)
+{
+	std::vector< SERIAL>::iterator iter;
+	for ( iter = banned.begin();iter != banned.end(); iter++ )
+	{
+	    if (*iter == pc->getSerial32() )
+			return true;
+	}
+	return false;
+
+}
+
+bool cHouse::isPublicHouse()
+{
+	return this->publicHouse == 1;
+}
+
+SI32 cHouse::getCurrentZPosition(P_CHAR pc)
+{
+	SI32 tempZ=0;
+	P_ITEM iHouse = pointers::findItemBySerial(houseserial);
+
+	Location pos=pc->getPosition();
+	multiVector m;
+	int itemCount =data::seekMulti( (short) (iHouse->getId()-0x4000), m );
+	if ( itemCount < 0 )
+		return 0;
+	for (int i =0;i < itemCount;++i)
+	{
+		if (( m[i].flags != 0 ) && ( m[i].x == pos.x ) && ( m[i].y == pos.y ))
+		{
+			const int tmpTop = tempZ + m[i].height;
+			if ( tmpTop <= tempZ + MaxZstep && tmpTop >= tempZ-1 )
+			{
+				tempZ=m[i].height;
+				break;
+			}
+			else if ( tmpTop >= tempZ - MaxZstep && tmpTop < tempZ - 1 )
+			{
+				tempZ=m[i].height;
+				break;
+			}
+		}                                                                                                                 
+	}
+	tempZ+=dynamicElevation(pos);
+	if ( pos.z != tempZ )
+		return tempZ;
+	return 0;
+}
+
+cHouse *cHouses::findHouse(Location loc)
+{
+	return findHouse(loc.x, loc.y);
+}
+
+cHouse *cHouses::findHouse(int x, int y)
+{
+	std::map< SERIAL, P_HOUSE >::iterator allHouses (houses.begin());
+	for ( ;allHouses!=houses.end();allHouses++)
+	{
+		P_HOUSE house=allHouses->second;
+		if ( house->inHouse(x,y) )
+			return house;
+	}
+	return NULL;
+}
+
+cHouse *cHouses::findHouse(SERIAL houseSerial)
+{
+	std::map< SERIAL, P_HOUSE >::iterator theHouse (houses.find(houseSerial));
+	if (theHouse != houses.end() )
+		return theHouse->second;
+	return NULL;
+}
+
+std::map< SERIAL, P_HOUSE >::iterator cHouses::findHouses(SERIAL owner)
+{
+	std::map< SERIAL, P_HOUSE > ownedHouses;
+	std::map< SERIAL, P_HOUSE >::iterator allHouses (houses.begin());
+	for ( ;allHouses!=houses.end();allHouses++)
+	{
+		P_HOUSE house=allHouses->second;
+		if ( house->getOwner() == owner )
+			ownedHouses.insert(make_pair(house->getSerial(),house));
+	}
+	
+	return ownedHouses.begin();
+}
+
+void cHouses::Delete(SERIAL houseserial)
+{
+	std::map< SERIAL, P_HOUSE >::iterator removeHouse(houses.find(houseserial));
+	if ( removeHouse != houses.end() )
+		houses.erase(removeHouse);
+}
+
 // buffer 0 the sign
-void target_houseOwner( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseOwner( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
@@ -1067,7 +1206,7 @@ void cHouses::target_houseEject( NXWCLIENT ps, P_TARGET t )
 
 	Location pcpos= pc->getPosition();
 
-	UI32 sx, sy, ex, ey;
+	SI32 sx, sy, ex, ey;
     getMultiCorners(pi_h, sx,sy,ex,ey);
     if((pcpos.x>=(UI32)sx) && (pcpos.y>=(UI32)sy) && (pcpos.x<=(UI32)ex) && (pcpos.y<=(UI32)ey))
     {
@@ -1093,27 +1232,25 @@ void cHouses::target_houseBan( NXWCLIENT ps, P_TARGET t )
 
 	NXWSOCKET s = ps->toInt();
 
-	P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
-	if(ISVALIDPI(pi))
+	P_HOUSE house=cHouses::findHouse(t->buffer[0]);
+	P_ITEM iHouse = pointers::findItemBySerial(house->getSerial());
+	if(ISVALIDPI(iHouse))
 	{
 		if(pc->getSerial32() == curr->getSerial32())
 			return;
-		int r=add_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), H_BAN);
-		if(r==1)
+		if(!house->isBanned(pc))
 		{
 			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
 		}
-		else if(r==2)
+		else 
 		{
 			sysmessage(s, "That player is already on a house register.");
 		}
-		else
-			sysmessage(s, "That player is not on the property.");
 	}
 }
 
 // buffer[0] the house
-void target_houseFriend( NXWCLIENT ps, P_TARGET t )
+void cHouses::target_houseFriend( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR Friend = pointers::findCharBySerial( t->getClicked() );
 
@@ -1122,31 +1259,31 @@ void target_houseFriend( NXWCLIENT ps, P_TARGET t )
 
 	NXWSOCKET s = ps->toInt();
 
-	P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
+	P_HOUSE house=cHouses::findHouse(t->buffer[0]);
+	P_ITEM iHouse = pointers::findItemBySerial(house->getSerial());
 
-	if(ISVALIDPC(Friend) && ISVALIDPI(pi))
+	if(ISVALIDPC(Friend) && ISVALIDPI(iHouse))
 	{
 		if(Friend->getSerial32() == curr->getSerial32())
 		{
 			sysmessage(s,"You cant do that!");
 			return;
 		}
-		int r=add_hlist(DEREF_P_CHAR(Friend), DEREF_P_ITEM(pi), H_FRIEND);
-		if(r==1)
+		
+		if(! house->isFriend(Friend))
 		{
 			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
 		}
-		else if(r==2)
+		else 
 		{
-			sysmessage(s, "That player is already on a house register.");
+			sysmessage(s, "That player is already a friend of the house.");
 		}
-		else
-			sysmessage(s, "That player is not on the property.");
 	}
 }
 
 // bugffer[0] the hose
-void target_houseUnlist( NXWCLIENT ps, P_TARGET t )
+/*
+void cHouses::target_houseUnlist( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
     P_ITEM pi= pointers::findItemBySerial( t->buffer[0] );
@@ -1162,6 +1299,9 @@ void target_houseUnlist( NXWCLIENT ps, P_TARGET t )
             sysmessage(s, TRANSLATE("That player is not on the house registry."));
     }
 }
+
+*/
+
 void cHouses::target_houseLockdown( NXWCLIENT ps, P_TARGET t )
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house
 // POST:    either locks down the item, or puts a message to the owner saying he's a moron
@@ -1337,72 +1477,240 @@ void cHouses::target_houseRelease( NXWCLIENT ps, P_TARGET t )
     }
 }
 
-cHouse::cHouse() : cItem(objects.getNextItemSerial())
+void cHouses::safeoldsave()
 {
-	owner=INVALID;
-	;
+	std::string oldFileName=std::string( SrvParms->savePath + SrvParms->houseWorldfile + SrvParms->worldfileExtension );
+	std::string newFileName=std::string( SrvParms->savePath + SrvParms->houseWorldfile + SrvParms->worldfileExtension + "$" );
+	remove( newFileName.c_str() );
+	rename( oldFileName.c_str(), newFileName.c_str() );
 }
 
-void cHouse::getCorners(unsigned int &x1, unsigned int &x2, unsigned int &y1, unsigned int &y2 )
+bool cHouses::save( )
 {
-	getMultiCorners( this, x1, y1, x2, y2 );
-	return;
+	safeoldsave();
+	std::string filename( std::string( SrvParms->savePath + SrvParms->houseWorldfile + SrvParms->worldfileExtension) );
+	ofstream output;
+	output.open(filename.c_str());
+	if( ! output.is_open() )
+	{
+		ErrOut("Error, couldn't open %s for writing. Check file permissions.\n", filename.c_str() );
+		tempfx::tempeffectson();
+		return false;
+	}
+
+	output << "// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
+	output << "// || NoX-Wizard guild save (nxwguild.wsc)                                ||" << endl;
+	output << "// || Automatically generated on worldsaves                               ||" << endl;
+	output << "// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl;
+	output << "// || Generated by NoX-Wizard version " << VERNUMB << " " << OSFIX << "               ||" << endl;
+	output << "// || Requires NoX-Wizard version 0.82 to be read correctly               ||" << endl;
+	output << "// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" << endl <<endl << endl;
+
+	std::map< SERIAL, P_HOUSE >::iterator iter( houses.begin() ), end( houses.end() );
+	for( ; iter!=end; iter++ )
+	{
+		iter->second->save( &output );
+	}
+
+	output.close();
+
+	return true;
 }
 
-int cHouse::getUpperYRange()
+bool cHouses::load()
 {
-	return INVALID;
+	std::string filename( std::string( SrvParms->savePath + SrvParms->houseWorldfile + SrvParms->worldfileExtension) );
+	cStringFile file( filename, "r" );
+
+	if( file.eof() )
+	{
+		WarnOut("Houses file [ %s ] not found.\n", filename.c_str());
+		return false;
+	}
+
+	ConOut("Loading houses ");
+	do
+	{
+		std::string a, b, c;
+		file.read( a, b, c );
+		if ( a=="SECTION" )
+		{
+			if( b =="HOUSE" )
+			{
+				P_HOUSE house = new cHouse();
+				house->setSerial(str2num( c ));
+				house->load(file);
+				houses.insert( make_pair( house->getSerial(), house ) );
+			}
+		}
+	}
+	while ( !file.eof() );
+	return true;
 }
 
-int cHouse::getLowerYRange()
+void cHouse::save(ofstream *output)
 {
-	return INVALID;
-}
-int cHouse::getLeftXRange()
-{
-	return INVALID;
-}
-int cHouse::getRightXRange()
-{
-	return INVALID;
-}
-SERIAL cHouse::getOwner()
-{
-	return owner;
+	*output << "SECTION HOUSE " << houseserial << endl;
+	*output << "{" << endl;
+	*output << "	OWNER " << owner<< endl;
+	*output << "	KEYCODE " << keycode<< endl;
+	*output << "	CHARX " << char_x << endl;
+	*output << "	CHARY " << char_y << endl;
+	*output << "	CHARZ " << char_z << endl;
+	
+	*output << "	SPACEX1 " << (int) spacex1 << endl;
+	*output << "	SPACEX2 " << (int) spacex2 << endl;
+	*output << "	SPACEY1 " << (int) spacey1 << endl;
+	*output << "	SPACEY2 " << (int) spacey2 << endl;
+	*output << "	HOUSEDEED " << housedeed << endl;
+	if ( publicHouse) *output << "	PUBLIC" << endl;
+	if ( norealmulti) *output << "	NOREALMULTI" << endl;
+	std::vector<SERIAL>::iterator liststart (friends.begin()), listend(friends.end());
+	for( ; liststart!=listend; ++liststart)
+	{
+		*output << "FRIEND " << *liststart << endl;
+	}
+	liststart=coowners.begin();
+	listend=coowners.end();
+	for( ; liststart!=listend; ++liststart)
+	{
+		*output <<"COOWNER " << *liststart << endl;
+	}
+	liststart=banned.begin();
+	listend=banned.end();
+	for( ; liststart!=listend; ++liststart)
+	{
+		*output << "BANNED " << *liststart << endl;
+	}
+	*output << "}" << endl << endl;
+	return ;
 }
 
-void cHouse::setOwner(SERIAL newOwner)
+void cHouse::load(cStringFile& input)
 {
-	owner=newOwner;
-	// delete all previous keys to the house
+	do
+	{
+		std::string l, r;
+		input.read( l, r );
+
+		if( l[0]=='{' )
+			continue;
+
+		if( l[0]=='}' )
+			break;
+
+		switch( l[0] )
+		{
+			case 'A':
+			case 'a':
+			case 'B':
+			case 'b':
+				if ( l=="BANNED" )
+				{
+					P_CHAR banned=pointers::findCharBySerial(str2num(r));
+					if (banned != NULL )
+						this->addBan(banned);
+				}
+				break;
+			case 'C':
+			case 'c':
+				if ( l=="COOWNER" )
+				{
+					P_CHAR coowner=pointers::findCharBySerial(str2num(r));
+					if (coowner != NULL )
+						this->addCoOwner(coowner);
+				}
+				else if ( l == "CHARX" )
+					char_x = str2num(r);
+				else if ( l == "CHARY" )
+					char_y = str2num(r);
+				else if ( l == "CHARZ" )
+					char_z = str2num(r);
+				break;
+			case 'F':
+			case 'f':
+				if ( l=="FRIENDS" )
+				{
+					P_CHAR Friend=pointers::findCharBySerial(str2num(r));
+					if (Friend != NULL )
+						this->addFriend(Friend);
+				}
+				break;
+			case 'H':
+			case 'h':
+				if ( l=="HOUSEDEED" )
+				{
+					housedeed=str2num(r);
+				}
+				break;
+			case 'K':
+			case 'k':
+				if ( l=="KEYCODE" )
+					keycode=str2num(r);
+				break;
+			case 'N':
+			case 'n':
+				if ( l=="NOREALMULTI" )
+					norealmulti=true;
+				break;
+			case 'O':
+			case 'o':
+				if ( l=="OWNER" )
+					owner=str2num(r);
+				break;
+			case 'P':
+			case 'p':
+				if ( l=="PUBLIC" )
+					publicHouse=true;
+				break;
+			case 'S':
+			case 's':
+				if ( l == "SPACEX1" )
+					spacex1 = str2num(r);
+				else if ( l == "SPACEX2" )
+					spacex2 = str2num(r);
+				else if ( l == "SPACEY1" )
+					spacey1 = str2num(r);
+				else if ( l == "SPACEY2" )
+					spacey2 = str2num(r);
+				break;
+		}
+
+	}  while( !input.eof() );
+
+	return ;
 }
 
-void cHouse::deedhouse(NXWSOCKET  s, P_ITEM pi)
+void cHouses::addHouseItem(int housenumber, int itemNumber)
 {
+	UI32VECTOR *itemVec;
+	std::map<int, UI32VECTOR>>::iterator itemVecIt = houseitems.find(housenumber);
+	if ( itemVecIt != houseitems.end())
+	{
+		itemVec=&itemVecIt->second;
+		UI32VECTOR::iterator items=itemVec->begin();
+		for ( ; items != itemVec->end();items++)
+		{
+			if ( *items == itemNumber )
+				return; // item already inserted
+		}
+	}
+	else
+		itemVec=new UI32VECTOR();
+	itemVec->push_back(itemNumber);	
+	houseitems.insert(make_pair(housenumber, *itemVec));
 }
 
-bool cHouse::inHouse(P_ITEM pi)
+UI32VECTOR cHouses::getHouseItems(int housenumber)
 {
-	return false;
-}
-
-bool cHouse::inHouse(Location where)
-{
-	return false;
-}
-
-
-cHouse *cHouses::findHouse(Location loc)
-{
+	std::map<int, UI32VECTOR>>::iterator itemVec = houseitems.find(housenumber);
+	if (itemVec != houseitems.end() )
+		return itemVec->second;
 	return NULL;
-}
-cHouse *cHouses::findHouse(int x, int y, int z)
-{
-	return NULL;
-}
-std::map< SERIAL, P_HOUSE >::iterator *cHouses::findHouses(SERIAL owner)
-{
-	return NULL;
+
 }
 
-
+void cHouses::addHouse(P_HOUSE newHouse )
+{
+	houses.insert(make_pair(newHouse->getSerial(), newHouse));
+}

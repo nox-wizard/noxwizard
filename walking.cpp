@@ -312,7 +312,6 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	//WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
 	// check if player is banned from a house - crackerjack 8/12/99
-	int j;
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
@@ -352,10 +351,9 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
-				UI32 sx, sy, ex, ey;
-				j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
-
-				if(j==H_BAN)
+				SI32 sx, sy, ex, ey;
+				P_HOUSE house=cHouses::findHouse(pc->getPosition());
+				if(house->isBanned(pc))
 				{
 					getMultiCorners(pi_multi,sx,sy,ex,ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));

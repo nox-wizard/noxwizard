@@ -102,6 +102,7 @@ struct server_st
  std::string guildWorldfile;
  std::string jailWorldfile;
  std::string bookWorldfile;
+ std::string houseWorldfile;
 
  int backup_save_ratio; // LB, each X'th save-intervall a backup is done if a path is given ...
 

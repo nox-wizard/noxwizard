@@ -14,9 +14,8 @@
 #ifndef _HOUSE_H_
 #define _HOUSE_H_
 
+#include "worldmain.h"
 #include "items.h"
-
-extern std::map< SERIAL, P_CHAR > houses;
 
 int 	add_hlist(int c, int h, int t);
 void buildhouse( NXWCLIENT ps, P_TARGET t );
@@ -25,17 +24,32 @@ int		on_hlist(P_ITEM pi, unsigned char s1, unsigned char s2, unsigned char s3, u
 void 	mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt);
 
 
+extern std::map< SERIAL, P_HOUSE > houses;
 
-class cHouse : public cItem
+class cHouse 
 {
 private:
+	SERIAL houseserial;
 	SERIAL owner;
+	SI32	keycode;
+	std::vector<SERIAL> friends;
+	std::vector<SERIAL> coowners;
+	std::vector<SERIAL> banned;
+	LOGICAL publicHouse, norealmulti;
+	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
+	SI32 char_x, char_y, char_z;
+	SI32 housedeed;
 protected:
 
 public:
 
 	cHouse();
-	void getCorners(unsigned int &x1, unsigned int &x2, unsigned int &y1, unsigned int &y2 );
+	SERIAL getSerial();
+	void setSerial(SERIAL itemLink);
+	SI32 cHouse::getKeycode();
+	void getCorners(SI32 &x1, SI32 &x2, SI32 &y1, SI32 &y2 );
+	void getCharPos( int &x,  int &y,  int &z);
+
 	int getUpperYRange();
 	int getLowerYRange();
 	int getLeftXRange();
@@ -43,19 +57,52 @@ public:
 	SERIAL getOwner();
 	void setOwner(SERIAL newOwner);
 	void deedhouse(NXWSOCKET  s, P_ITEM pi);
-
+	void deedhouse(P_CHAR owner);
+	bool isInsideHouse(P_ITEM pi);
+	bool isInsideHouse(P_CHAR pc);
+	bool isInsideHouse(Location where);
+	bool isInsideHouse(int x, int y, int z);
 	bool inHouse(P_ITEM pi);
 	bool inHouse(Location where);
+	bool inHouse(int x, int y);
+	bool isRealMulti();
+	void remove();
+	std::vector<SERIAL>::iterator getHouseFriends();
+	std::vector<SERIAL>::iterator getHouseCoOwners();
+	std::vector<SERIAL>::iterator getHouseBans();
+	void addFriend(P_CHAR newfriend);
+	void removeFriend(P_CHAR newfriend);
+	bool isFriend(P_CHAR pc);
+	void addCoOwner(P_CHAR newCoOwner);
+	void removeCoOwner(P_CHAR newCoOwner);
+	bool isCoOwner(P_CHAR pc);
+	void addBan(P_CHAR newBanned);
+	void removeBan(P_CHAR newBanned);
+	bool isBanned(P_CHAR pc);
+	bool isPublicHouse();
+	void setPublicState(bool state);
+	void togglePublicState();
+	SI32 getCurrentZPosition(P_CHAR pc);
+	void createHouse(UI32 houseNumber);
+	void transfer(SERIAL newOwner);
+	void save(ofstream  *output);
+	void load(cStringFile& input);
 };
+
 
 class cHouses
 {
-	static std::map< SERIAL, P_CHAR > houses;
+
+	static std::map< SERIAL, P_HOUSE > houses;
+	static std::map< int, UI32VECTOR> houseitems;
 public:
 	static cHouse *findHouse(Location loc);
-	static cHouse *findHouse(int x, int y, int z);
-	static std::map< SERIAL, P_HOUSE >::iterator *findHouses(SERIAL owner);
+	static cHouse *findHouse(int x, int y);
+	static cHouse *cHouses::findHouse(SERIAL houseSerial);
+	static std::map< SERIAL, P_HOUSE >::iterator findHouses(SERIAL owner);
 	static void killkeys(SERIAL serial);
+	static void buildhouse( P_CHAR builder, P_ITEM housedeed );
+	static void target_buildhouse( NXWCLIENT ps, P_TARGET t );
 	static void target_houseOwner( NXWCLIENT ps, P_TARGET t );
 	static void target_houseEject( NXWCLIENT ps, P_TARGET t );
 	static void target_houseBan( NXWCLIENT ps, P_TARGET t );
@@ -66,6 +113,15 @@ public:
 	static void target_houseSecureDown( NXWCLIENT ps, P_TARGET t );
 	static LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk);
 	static int 	check_house_decay();
+	static void cHouses::Delete(SERIAL houseserial);
+	static void cHouses::makeKeys(P_HOUSE phouse, P_CHAR pc);
+	static void cHouses::safeoldsave();
+	static bool cHouses::save( );
+	static bool cHouses::load();
+	static void cHouses::addHouseItem(int housenumber, int itemnumber);
+	static UI32VECTOR  getHouseItems(int housenumber);
+	static void cHouses::addHouse(P_HOUSE newHouse );
+
 
 };
 
