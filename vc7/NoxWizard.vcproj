@@ -269,9 +269,6 @@
 				RelativePath="..\guild.cpp">
 			</File>
 			<File
-				RelativePath="..\guildstones.cpp">
-			</File>
-			<File
 				RelativePath="..\house.cpp">
 			</File>
 			<File

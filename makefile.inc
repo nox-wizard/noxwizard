@@ -58,7 +58,6 @@ SOURCES =	\
 		globals.cpp \
 		gmpages.cpp \
 		guild.cpp \
-		guildstones.cpp \
 		house.cpp \
 		html.cpp \
 		itemid.cpp \
