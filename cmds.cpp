@@ -127,6 +127,8 @@ cCommandMap::cCommandMap() {
  
 		fgets (str , 80 , pFile);
 
+		if ( str[1]==EOF ) break;
+		
 		if ( (str[0]=='/') || (str[0]=='\n') ) continue;    //Ignore comments and blank lines
       
 		if (str[strlen(str)-2]=='\r')
