@@ -890,12 +890,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					if (ISVALIDPI(mypack))
 					{
 						storeval=str2num(script2);
-						pi_n=item::CreateScriptItem(INVALID, storeval, 0);
-						if (ISVALIDPI(pi_n))
-						{
-							pi_n->setContSerial(mypack->getSerial32());
-							pi_n->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
-						}
+						pi_n=item::CreateScriptItem(INVALID, storeval, mypack);
 						strcpy(script1, "DUMMY"); // Prevents unexpected matchups...
 					}
 					else
