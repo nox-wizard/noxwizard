@@ -350,7 +350,7 @@ void cFishing::Fish(CHARACTER i)
 			fish->id2= idnum;
 		
 			if (ISVALIDPI(pc_bp))
-				pc_bp->putInto( fish );
+				pc_bp->AddItem( fish );
 			else {
 				fish->MoveTo( charpos ); //Luxor bug fix
 				fish->Refresh();

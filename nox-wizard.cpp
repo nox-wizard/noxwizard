@@ -2084,7 +2084,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 		P_ITEM pack=pc->getBackpack();
 		if (ISVALIDPI(pack)) {
-			pack->putInto( pi );
+			pack->AddItem( pi );
 		} 
 		else {
 			pi->MoveTo( pc->getPosition() );
