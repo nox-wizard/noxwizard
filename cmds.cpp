@@ -225,7 +225,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		
 		//Control between cCommand privilege and cChar privilege.
 
-		if(p_cmd->getCommandLevel(p_cmd)>pc_currchar->commandLevel){
+		if( (p_cmd->getCommandLevel(p_cmd)) > (pc_currchar->commandLevel) ){
 		client->sysmsg("You can't use this command!");
 			return;
 		}
@@ -292,9 +292,9 @@ NATIVE2(_getCmdProperty) {
 	{
 		switch( params[2] ) {
 			
-			case CP_PARAM: {
-				}
 			case CP_ALLPARAMS: {
+				}
+			case CP_PARAM: {
 				}
 			case CP_N_PARAMS: {
 				}
