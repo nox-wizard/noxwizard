@@ -43,7 +43,7 @@ P_ITEM Check4Pack(NXWSOCKET  s)
         return packnum;
 }
 
-bool CheckInPack(NXWSOCKET  s, PC_ITEM pi)
+bool CheckInPack(NXWSOCKET  s, P_ITEM pi)
 {
     P_ITEM pPack=Check4Pack(s);
     VALIDATEPIR(pPack, false);
@@ -335,30 +335,29 @@ void Skills::TasteIDTarget(NXWSOCKET s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 
     AMXEXECSV(s,AMXT_SKITARGS,TASTEID,AMX_BEFORE);
     if (pi->magic!=4) // Ripper
     {
-        if(!( pi->type==19 || pi->type==14))
+        if( pi->type!=ITYPE_POTION && pi->type!=ITYPE_FOOD )
         {
-            sysmessage(s,TRANSLATE("You cant taste that!"));
+            pc->sysmsg(TRANSLATE("You cant taste that!"));
             return;
         }
         if (!pc->checkSkill( TASTEID, 0, 250))
         {
-            sysmessage(s, TRANSLATE("You can't quite tell what this item is..."));
+            pc->sysmsg(TRANSLATE("You can't quite tell what this item is..."));
         }
         else
         {
             if(pi->corpse)
             {
-                sysmessage(s, TRANSLATE("You have to use your forensics evalutation skill to know more on this corpse."));
+                pc->sysmsg(TRANSLATE("You have to use your forensics evalutation skill to know more on this corpse."));
                 return;
             }
 
@@ -373,28 +372,24 @@ void Skills::TasteIDTarget(NXWSOCKET s)
                 else
 					strcpy(temp2, pi->getCurrentNameC());
 
-                sprintf(temp, TRANSLATE("You found that this item appears to be called: %s"), temp2);
-                sysmessage(s, temp);
+                pc->sysmsg(TRANSLATE("You found that this item appears to be called: %s"), temp2);
 
                 if (pc->checkSkill( TASTEID, 250, 500))
                 {
                     if((pi->poisoned>0) || (pi->morex==4 && pi->morey==6 && pi->morez==1))
-                        sysmessage(s,TRANSLATE("This item is poisoned!"));
+                        pc->sysmsg(TRANSLATE("This item is poisoned!"));
                     else
-                        sysmessage(s,TRANSLATE("This item shows no poison."));
+                        pc->sysmsg(TRANSLATE("This item shows no poison."));
 
-                    // Show Creator by Magius(CHE)
                     if (pc->checkSkill( TASTEID, 250, 500))
                     {
                         if (strlen(pi->creator)>0)
                         {
-                            if (pi->madewith>0) sprintf((char*)temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                            else if (pi->madewith<0) sprintf((char*)temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                            else sprintf((char*)temp2, TRANSLATE("It is made by %s"),pi->creator); // Magius(CHE)
-                        } else strcpy((char*)temp2, TRANSLATE("You don't know its creator!"));
-                    } else strcpy((char*)temp2, TRANSLATE("You can't know its creator!"));
-                    sysmessage(s, (char*)temp2);
-                    // End Show creator
+                            if (pi->madewith>0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator);
+                            else if (pi->madewith<0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator);
+                            else pc->sysmsg(TRANSLATE("It is made by %s"),pi->creator);
+                        } else pc->sysmsg(TRANSLATE("You don't know its creator!"));
+                    } else pc->sysmsg(TRANSLATE("You can't know its creator!"));
                 }
         }
     }
@@ -518,7 +513,7 @@ void Skills::TreeTarget(NXWSOCKET s)
 
     if(!((cx<=2) && (cy<=2) && (cz<=25)))
     {
-        sysmessage(s,TRANSLATE("You are to far away to reach that"));
+        pc->sysmsg(TRANSLATE("You are to far away to reach that"));
         return;
     }
 	int weapon = DEREF_P_ITEM(pc->getWeapon());
@@ -527,7 +522,7 @@ void Skills::TreeTarget(NXWSOCKET s)
 			cancut = true;
 	if (!cancut)
 	{
-		sysmessage(s,TRANSLATE("You must have a weapon in hand in order to chop."));
+		pc->sysmsg(TRANSLATE("You must have a weapon in hand in order to chop."));
 		return;
 	}
 
@@ -535,7 +530,7 @@ void Skills::TreeTarget(NXWSOCKET s)
     //Logging stamina
     if (resource.logstamina<0 && abs(resource.logstamina)>pc->stm)
     {
-        sysmessage(s,TRANSLATE("You are too tired to chop."));
+        pc->sysmsg(TRANSLATE("You are too tired to chop."));
         return;
     }
 
@@ -564,19 +559,18 @@ void Skills::TreeTarget(NXWSOCKET s)
         LogMessage("[DONE]");
     }
 
-    //AntiChrist
-    if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF)
+    if (LongFromCharPtr(buffer[s] + 11) == INVALID)
     return; // Test if use canceled the mining request
 
-
-    px=((buffer[s][0x0b]<<8)+(buffer[s][0x0c]%256));
-    py=((buffer[s][0x0d]<<8)+(buffer[s][0x0e]%256));
+    px = ShortFromCharPtr(buffer[s] +11);
+    py = ShortFromCharPtr(buffer[s] +13);
     // amount=world_resource_check(px,py,4,1); working... but not finished
     cx= abs((int)charpos.x - px);
     cy= abs((int)charpos.y - py);
-    if(!((cx<=5)&&(cy<=5)))
+
+    if((cx>5) || (cy >5))
     {
-        sysmessage(s,TRANSLATE("You are to far away to reach that"));
+        pc->sysmsg(TRANSLATE("You are to far away to reach that"));
         return;
     }
 
@@ -602,19 +596,22 @@ void Skills::TreeTarget(NXWSOCKET s)
 
     if(logamount[a][b]<=0)
     {
-        sysmessage(s,TRANSLATE("There is no more wood here to chop."));
+        pc->sysmsg(TRANSLATE("There is no more wood here to chop."));
         return;
     }
 
-    packnum= pc->getBackpack();
-    if (packnum==NULL) {sysmessage(s,TRANSLATE("No backpack to store logs")); return; } //LB
+    packnum = pc->getBackpack();
+    	if (!packnum) {
+    		pc->sysmsg(TRANSLATE("No backpack to store logs"));
+		return; 
+	}
 
     pc->playAction( pc->isMounting() ? 0x1C : 0x0D );
     soundeffect(s,0x01,0x3E);
 
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
-        sysmessage(s,TRANSLATE("You chop for a while, but fail to produce any usable wood."));
+        pc->sysmsg(TRANSLATE("You chop for a while, but fail to produce any usable wood."));
         if(logamount[a][b]>0 && rand()%2==1) logamount[a][b]--;//Randomly deplete resources even when they fail 1/2 chance you'll loose wood.
         return;
     }
@@ -665,16 +662,16 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
     {
     case 2:
         npcs::SpawnRandomMonster(pc,"UNDEADLIST","1000"); // Low level Undead - Random
-        sysmessage(s,TRANSLATE("You have disturbed the rest of a vile undead creature."));
+        pc->sysmsg(TRANSLATE("You have disturbed the rest of a vile undead creature."));
         break;
     case 4:
 		{
 			P_ITEM pi=item::SpawnRandomItem(s,"ITEMLIST","1001"); // Armor and shields - Random
 			if(ISVALIDPI(pi))
 				if((pi->id()>=7026)&&(pi->id()<=7035))
-					sysmessage(s,TRANSLATE("You unearthed an old shield and placed it in your pack"));
+					pc->sysmsg(TRANSLATE("You unearthed an old shield and placed it in your pack"));
 				else
-		            sysmessage(s,TRANSLATE("You have found an old piece armor and placed it in your pack."));
+		            pc->sysmsg(TRANSLATE("You have found an old piece armor and placed it in your pack."));
 		}
         break;
     case 5:
@@ -684,7 +681,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
         { // randomly create a gem and place in backpack
             P_ITEM pi=item::SpawnRandomItem(s,"ITEMLIST","999");
             if(ISVALIDPI(pi))
-				sysmessage(s,TRANSLATE("You place a gem in your pack."));
+				pc->sysmsg(TRANSLATE("You place a gem in your pack."));
         }
         else
         { // Create between 1 and 15 goldpieces and place directly in backpack
@@ -692,9 +689,9 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
             addgold(DEREF_P_CHAR(pc),nAmount);
             goldsfx(s,nAmount);
             if (nAmount==1)
-                sysmessage(s,TRANSLATE("You unearthed %i gold coin."), nAmount);
+                pc->sysmsg(TRANSLATE("You unearthed %i gold coin."), nAmount);
             else
-                sysmessage(s,TRANSLATE("You unearthed %i gold coins."), nAmount);
+                pc->sysmsg(TRANSLATE("You unearthed %i gold coins."), nAmount);
         }
         break;
     case 6:
@@ -702,13 +699,13 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1000"); // Low level Undead - Random
         else
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1001"); // Med level Undead - Random
-        sysmessage(s,TRANSLATE("You have disturbed the rest of a vile undead creature."));
+        pc->sysmsg(TRANSLATE("You have disturbed the rest of a vile undead creature."));
         break;
     case 8: 
 		{
 			P_ITEM pi=item::SpawnRandomItem(s,"ITEMLIST","1000");
 			if(ISVALIDPI(pi))
-				sysmessage(s,TRANSLATE("You unearthed a old weapon and placed it in your pack."));
+				pc->sysmsg(TRANSLATE("You unearthed a old weapon and placed it in your pack."));
 		}
         break;
     case 10:
@@ -716,14 +713,14 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1001"); // Med level Undead - Random
         else
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1002"); // High level Undead - Random
-        sysmessage(s,TRANSLATE("You have disturbed the rest of a vile undead creature."));
+        pc->sysmsg(TRANSLATE("You have disturbed the rest of a vile undead creature."));
         break;
     case 12:
         if(nFame>1000)
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1002"); // High level Undead - Random
         else
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1001"); // Med level Undead - Random
-        sysmessage(s,TRANSLATE("You have disturbed the rest of a vile undead creature."));
+        pc->sysmsg(TRANSLATE("You have disturbed the rest of a vile undead creature."));
         break;
     default:
         nRandnum=rand()%2;
@@ -746,11 +743,11 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
                     case 10: iID=0x1B; break;
                     case 11: iID=0x1C; break;
                 }
-                item::SpawnItem(s,DEREF_P_CHAR(pc),1,NULL,0,0x1b00+iID,0,1,1);
-                sysmessage(s,TRANSLATE("You have unearthed some old bones and placed them in your pack."));
+                item::SpawnItem(s,DEREF_P_CHAR(pc),1,NULL,0,0x1B00+iID,0,1,1);
+                pc->sysmsg(TRANSLATE("You have unearthed some old bones and placed them in your pack."));
                 break;
             default: // found an empty grave
-                sysmessage(s,TRANSLATE("This grave seems to be empty."));
+               	pc->sysmsg(TRANSLATE("This grave seems to be empty."));
         }
     }
 }
@@ -824,8 +821,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 void Skills::SmeltOre(NXWSOCKET s)
 {
     P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
-
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
     if ( pi->magic!=4) // Ripper
@@ -833,13 +829,13 @@ void Skills::SmeltOre(NXWSOCKET s)
         if( pi->IsForge() )
         {
             if(!item_inRange(pc,pi,3))        //Check if the forge is in range
-                sysmessage(s,TRANSLATE("You cant smelt here."));
+                pc->sysmsg(TRANSLATE("You cant smelt here."));
             else
             {
-                const PC_ITEM pix=pointers::findItemBySerial(pc->smeltserial);  // on error return
-                int color1 = pix->color1;
+                P_ITEM pix=pointers::findItemBySerial(pc->smeltserial);  // on error return
+                /*int color1 = pix->color1;
                 int color2 = pix->color2;
-                /*switch (color)
+                switch (color)
                 {
                     case 0x0000:    SmeltOre2(s,   0, 0x1B, 0xF2, 0x09, 0x61,"Iron");break;
                     case 0x0466:    SmeltOre2(s, 850, 0x1B, 0xF2, 0x04, 0x66,"Golden");break;
@@ -859,7 +855,7 @@ void Skills::SmeltOre(NXWSOCKET s)
                 //
                 //Luxor - new implementation of AMX controlled ores smelting.
 
-                g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXSMELTORE), s, color1, color2, pix->getSerial32());
+                g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color() >> 8), (pix->color() % 256), pix->getSerial32());
             }
         }
     }
@@ -871,8 +867,7 @@ void Skills::SmeltOre(NXWSOCKET s)
 void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
 {
     P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     VALIDATEPI(pi);
 
     int tailme=0;
@@ -884,12 +879,14 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
         {
             if (!pc_currchar->checkSkill(TAILORING, 0, 1000))
             {
-                sysmessage(s,TRANSLATE("You failed to spin your material."));
+                pc_currchar->sysmsg(TRANSLATE("You failed to spin your material."));
                 return;
             }
-            sysmessage(s,TRANSLATE("You have successfully spun your material."));
 
-            const P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);   // on error return
+            P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);   // on error return
+	    VALIDATEPI(pti);
+
+            pc_currchar->sysmsg(TRANSLATE("You have successfully spun your material."));
 
             if (mat==YARN)
             {
@@ -904,77 +901,79 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
                 pti->amount=pti->amount*3;
             }
 
-            pti->priv |= 0x01;
+            pti->priv |= ITMPRIV_DECAY;
             pti->Refresh();
             tailme=1;
         }
     }
+    
     pc_currchar->tailserial=INVALID;
-    if(!tailme) 
-		sysmessage(s,TRANSLATE("You cant tailor here."));
+    if(!tailme) pc_currchar->sysmsg(TRANSLATE("You cant tailor here."));
 }
 
 void Skills::Loom(NXWSOCKET s)
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
 	int tailme=0;
 
-    if (pi->magic!=4) // Ripper
-    {
-        if ( pi->id() >= 0x105F && pi->id() <= 0x1066 )
-        {
-            if(item_inRange(pc_currchar,pi,3))
-            {
-                const P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);   // on error return
-                if(pti->amount<5)
-                {
-                    sysmessage(s,TRANSLATE("You do not have enough material to make anything!"));
-                    return;
-                }
-                if (!pc_currchar->checkSkill(TAILORING, 300, 1000))
-                {
-                    sysmessage(s,TRANSLATE("You failed to make cloth."));
-                    sysmessage(s,TRANSLATE("You have broken and lost some material!"));
-                    pti->ReduceAmount( 1+(rand() % (pti->amount)));
-                    pti->Refresh();
-                    return;
-                }
+    	
+	if (pi->magic!=4) // Ripper
+	{
+		if ( pi->id() >= 0x105F && pi->id() <= 0x1066 )
+		{
+			if(item_inRange(pc_currchar,pi,3))
+			{
+				P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);
+				VALIDATEPI(pti);
 
-								switch( pti->id() )
-								{
-									case 0x0E1E :
-									case 0x0E1D :
-									case 0x0E1F	:
-										// yarn
-                    sysmessage(s,TRANSLATE("You have made your cloth."));
+				if(pti->amount<5)
+				{
+					pc_currchar->sysmsg(TRANSLATE("You do not have enough material to make anything!"));
+					return;
+				}
 
-                    pti->setCurrentName("#");
-                    pti->setId(0x175D);
-                    pti->priv |= 0x01;
-                    pti->amount=(pti->amount-1)*10; //Araknesh se no troppo pochi static_cast<unsigned short> (pti->amount*0.25);
-										break;
-									case 0x0FA0	:
-									case 0x0FA1	:
-										// thread
-                    sysmessage(s,TRANSLATE("You have made a bolt of cloth."));
+				if (!pc_currchar->checkSkill(TAILORING, 300, 1000))
+				{
+					pc_currchar->sysmsg(TRANSLATE("You failed to make cloth."));
+					pc_currchar->sysmsg(TRANSLATE("You have broken and lost some material!"));
+					pti->ReduceAmount( 1+(rand() % (pti->amount)));
+					pti->Refresh();
+					return;
+				}
 
-                    pti->setCurrentName("#");
-                    pti->setId(0x0F95);
-                    pti->priv |= 1;
-                    pti->amount=static_cast<unsigned short> (pti->amount*0.25);
-										break;
-								}
-                pti->Refresh();
-                tailme=1;
-            }
-        }
-    }
-    pc_currchar->tailserial=INVALID;
-    if(!tailme) sysmessage(s,TRANSLATE("You can't tailor here."));
+				switch( pti->id() )
+				{
+					case 0x0E1E: // Yarn
+					case 0x0E1D:
+					case 0x0E1F:	
+						pc_currchar->sysmsg(TRANSLATE("You have made your cloth."));
+						pti->setCurrentName("#");
+						pti->setId(0x175D);
+						pti->priv |= ITMPRIV_DECAY;
+						pti->amount=(pti->amount-1)*10;
+						break;
+					case 0x0FA0: // Thread
+					case 0x0FA1:
+						pc_currchar->sysmsg(TRANSLATE("You have made a bolt of cloth."));
+						pti->setCurrentName("#");
+						pti->setId(0x0F95);
+						pti->priv |= ITMPRIV_DECAY;
+						pti->amount=(UI16)(pti->amount*0.25);
+						break;
+				}
+				
+				pti->Refresh();
+
+				tailme=1;
+			}
+		}
+	}
+	
+	pc_currchar->tailserial=INVALID;
+	if(!tailme) pc_currchar->sysmsg(TRANSLATE("You can't tailor here."));
 }
 
 ////////////
@@ -982,13 +981,13 @@ void Skills::Loom(NXWSOCKET s)
 // By:      Ripper & Duke, 07/20/00
 // Purpose: so you can use raw meat on fire
 //
-void Skills::CookOnFire(NXWSOCKET s, short id1, short id2, char* matname)
+void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
 {
     
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
     if (pi->magic!=4) // Ripper
@@ -1000,24 +999,22 @@ void Skills::CookOnFire(NXWSOCKET s, short id1, short id2, char* matname)
             {
                 if(item_inRange(pc,pi,3))
                 {
-                    char tmpmsg[250];
                     soundeffect(s,0x01,0xDD);   // cooking sound
                     if (!pc->checkSkill(COOKING, 0, 1000))
                     {
-                        sprintf(tmpmsg,TRANSLATE("You failed to cook the %s and drop some into the ashes."),matname);
                         piRaw->ReduceAmount(1+(rand() %(piRaw->amount)));
+                        pc->sysmsg(TRANSLATE("You failed to cook the %s and drop some into the ashes."),matname);
                     }
                     else
                     {
-                        sprintf(tmpmsg,TRANSLATE("You have cooked the %s,and it smells great."),matname);
-                        P_ITEM pi=item::SpawnItem(s,currchar[s],piRaw->amount,"#",1,(id1<<8)+id2,0,1,1);
+                        P_ITEM pi=item::SpawnItem(s,currchar[s],piRaw->amount,"#",1,id,0,1,1);
                         VALIDATEPI(pi);
 
                         pi->type=ITYPE_FOOD;
                         pi->Refresh();
                         piRaw->deleteItem();
+                        pc->sysmsg(TRANSLATE("You have cooked the %s,and it smells great."),matname);
                     }
-                    sysmessage(s,tmpmsg);
                 }
             }
         }
@@ -1026,9 +1023,8 @@ void Skills::CookOnFire(NXWSOCKET s, short id1, short id2, char* matname)
 
 void Skills::MakeDough(NXWSOCKET s)
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
     
 	int tailme=0;
@@ -1037,66 +1033,70 @@ void Skills::MakeDough(NXWSOCKET s)
     {
         if(pi->id()==0x103A)
         {
-            if(item_inRange(pc_currchar,pi,3))
+            if(item_inRange(pc,pi,3))
             {
-                if (!pc_currchar->checkSkill(COOKING, 0, 1000))
+                if (!pc->checkSkill(COOKING, 0, 1000))
                 {
-                    sysmessage(s,TRANSLATE("You failed to mix, and spilt your water."));
+                    pc->sysmsg(TRANSLATE("You failed to mix, and spilt your water."));
                     return;
                 }
-                sysmessage(s,TRANSLATE("You have mixed very well to make your dough."));
 
-                const P_ITEM pti=MAKE_ITEMREF_LR(pc_currchar->tailserial);   // on error return
-				pti->setCurrentName("#");
+                P_ITEM pti=MAKE_ITEMREF_LR(pc->tailserial);
+		VALIDATEPI(pti);
 
+                pc->sysmsg(TRANSLATE("You have mixed very well to make your dough."));
+
+		pti->setCurrentName("#");
                 pti->setId(0x103D);
-                pti->priv |= 0x01;
+                pti->priv |= ITMPRIV_DECAY;
                 pti->amount *= 2;
                 pti->Refresh();
                 tailme=1;
             }
         }
     }
-    pc_currchar->tailserial=INVALID;
-    if(!tailme) sysmessage(s,TRANSLATE("You cant mix here."));
+    pc->tailserial=INVALID;
+    if(!tailme) pc->sysmsg(TRANSLATE("You cant mix here."));
 }
 
 void Skills::MakePizza(NXWSOCKET s)
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     VALIDATEPI(pi);
 	
 	int tailme=0;
-
-    if ( pi->magic!=4) // Ripper
-    {
-        if(pi->id()==0x103D)
-        {
-            if(item_inRange(pc_currchar,pi,3))
-            {
-				if (!pc_currchar->checkSkill(COOKING, 0, 1000))
+	
+	if ( pi->magic!=4) // Ripper
+	{
+        	if(pi->id()==0x103D)
+        	{
+			if(item_inRange(pc,pi,3))
+			{
+				if (!pc->checkSkill(COOKING, 0, 1000))
 				{
-					sysmessage(s,TRANSLATE("You failed to mix."));
+					pc->sysmsg(TRANSLATE("You failed to mix."));
 					pi->deleteItem();
 					return;
 				}
-				sysmessage(s,TRANSLATE("You have made your uncooked pizza, ready to place in oven."));
 
-				const P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);    // on error return
+				P_ITEM pti=pointers::findItemBySerial(pc->tailserial);
+				VALIDATEPI(pti);
+
+				pc->sysmsg(TRANSLATE("You have made your uncooked pizza, ready to place in oven."));
+
 				pti->setCurrentName("#");
-
 				pti->setId(0x1083);
-				pti->priv |= 0x01;
+				pti->priv |= ITMPRIV_DECAY;
 				pti->amount *= 2;
 				pti->Refresh();
 				tailme = 1;
-            }
-        }
-    }
-    pc_currchar->tailserial=INVALID;
-    if(!tailme) sysmessage(s,TRANSLATE("You cant mix here."));
+			}
+		}
+	}
+    	
+	pc->tailserial=INVALID;
+	if(!tailme) pc->sysmsg(TRANSLATE("You cant mix here."));
 }
 
 /*
@@ -1145,7 +1145,7 @@ void Skills::DetectHidden(NXWSOCKET  s)
 
 	NxwCharWrapper sw;
 	LOGICAL bFound = false;
-	NXWCLIENT ps = NULL;
+//	NXWCLIENT ps = NULL;
 	P_CHAR pc_curr = NULL;
 	SI32 nDist = 0;
 	sw.fillCharsNearXYZ( x, y, nRange, true, true );
@@ -1617,7 +1617,7 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
     P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-    const PC_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
     AMXEXECSV(s,AMXT_SKITARGS,ARMSLORE,AMX_BEFORE);
@@ -2189,46 +2189,41 @@ void Skills::AnimalLoreTarget(NXWSOCKET s)
 
 void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-    const PC_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_ITEM pi = pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
+	
+	AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_BEFORE);
 
-    AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_BEFORE);
-
-    int curtim=uiCurrentTime;
-    char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	int curtim=uiCurrentTime;
 
 
-    if (!pi->corpse)
-    {
-        sysmessage(s, TRANSLATE("That does not appear to be a corpse."));
-        return;
-    }
+	if (!pi->corpse) {
+    		pc->sysmsg(TRANSLATE("That does not appear to be a corpse."));
+    		return;
+	}
 
-    if(pc_currchar->IsGM())
-    {
-        sprintf((char*)temp,TRANSLATE("The %s is %i seconds old and the killer was %s."), pi->getCurrentNameC(), (curtim-pi->murdertime)/MY_CLOCKS_PER_SEC, pi->murderer.c_str());
-        sysmessage(s, (char*)temp);
-    }
-    else
-    {
-        if (!pc_currchar->checkSkill( FORENSICS, 0, 500)) sysmessage(s,TRANSLATE("You are not certain about the corpse.")); else
-        {
-            char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-            if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)<=60) strcpy((char*)temp2,TRANSLATE("few"));
-            if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>60) strcpy((char*)temp2,TRANSLATE("many"));
-            if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy((char*)temp2,TRANSLATE("many many"));
-            sprintf((char*)temp,TRANSLATE("The %s is %s seconds old."), pi->getCurrentNameC(), temp2);
-            sysmessage(s,(char*)temp);
-            if (!pc_currchar->checkSkill( FORENSICS, 500, 1000) || *(pi->murderer.c_str())=='\0') sysmessage(s,TRANSLATE("You can't say who was the killer.")); else
-            {
-                sprintf((char*)temp,TRANSLATE("The killer was %s."),pi->murderer.c_str());
-                sysmessage(s,(char*)temp);
-            }
-        }
-    }
+	if(pc->IsGM()) {
+    		pc->sysmsg(TRANSLATE("The %s is %i seconds old and the killer was %s."), pi->getCurrentNameC(), (curtim-pi->murdertime)/MY_CLOCKS_PER_SEC, pi->murderer.c_str());
+	} else {
+		if (!pc->checkSkill( FORENSICS, 0, 500)) pc->sysmsg(TRANSLATE("You are not certain about the corpse.")); else
+    		{
+			char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-    AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_AFTER);
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)<=60) strcpy((char*)temp2,TRANSLATE("few"));
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>60) strcpy((char*)temp2,TRANSLATE("many"));
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy((char*)temp2,TRANSLATE("many many"));
+
+			pc->sysmsg(TRANSLATE("The %s is %s seconds old."), pi->getCurrentNameC(), temp2);
+			
+			if (!pc->checkSkill( FORENSICS, 500, 1000) || pi->murderer.empty())
+				pc->sysmsg(TRANSLATE("You can't say who was the killer."));
+			else
+				pc->sysmsg(TRANSLATE("The killer was %s."), pi->murderer.c_str());
+		}
+	}
+
+	AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_AFTER);
 }
    	
 

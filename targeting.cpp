@@ -3906,13 +3906,13 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 46: InfoTarget(s,pt); break;
         case 47: /* if (Cready) strcpy(pc->title,xtext[s]); */ break;//TitleTarget
         case 48: break; //XAN : THIS *IS* FREE
-        case 49: Skills::CookOnFire(s,0x09,0x7B,"fish steaks"); break;
+        case 49: Skills::CookOnFire(s,0x097B,"fish steaks"); break;
         case 50: Skills::Smith(s); break;
         case 51: Skills::Mine(s); break;
         case 52: Skills::SmeltOre(s); break;
         case 53: npcact(s); break;
-        case 54: Skills::CookOnFire(s,0x09,0xB7,"bird"); break;
-        case 55: Skills::CookOnFire(s,0x16,0x0A,"lamb"); break;
+        case 54: Skills::CookOnFire(s,0x09B7,"bird"); break;
+        case 55: Skills::CookOnFire(s,0x160A,"lamb"); break;
         case 56: Targ->NpcTarget(s); break;
         case 57: Targ->NpcTarget2(s); break;
         case 58: VALIDATEPC(curr); curr->resurrect(); break;
@@ -3925,8 +3925,8 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 65: //MoreZTarget
         case 66: ItemTarget(ps,pt); break;//MoreXYZTarget
         case 67: Targ->NpcRectTarget(s); break;
-        case 68: Skills::CookOnFire(s,0x09,0xF2,"ribs"); break;
-        case 69: Skills::CookOnFire(s,0x16,0x08,"chicken legs"); break;
+        case 68: Skills::CookOnFire(s,0x09F2,"ribs"); break;
+        case 69: Skills::CookOnFire(s,0x1608,"chicken legs"); break;
         case 70: Skills::TasteIDTarget(s); break;
         case 71: if (Iready) ContainerEmptyTarget1(ps,pi); break;
         case 72: if (Iready) ContainerEmptyTarget2(ps,pi); break;

@@ -4178,8 +4178,8 @@ void cChar::pc_heartbeat()
 
 	int timer;
 
-	NXWCLIENT ps = getClient();
-	int socket = getSocket();
+//	NXWCLIENT ps = getClient();
+	NXWSOCKET socket = getSocket();
 
 	if     ( swingtargserial == INVALID )
 		doCombat();

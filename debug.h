@@ -44,7 +44,7 @@ extern int g_nExceptionHandling;
 //---------------------------------------------------------------------------
 //     Prototypes of functions
 //---------------------------------------------------------------------------
-
+/*
 #define _ ,
 
 //#define Xsend(sock,buff,length) if (sock<0 || sock>=MAXCLIENT) LogCritical("Socket/Index confusion @ Xsend %i\n" _ sock);  else Network->xSend(sock, buff, length, 0)
@@ -62,7 +62,7 @@ extern int g_nExceptionHandling;
 #define todo( x )  message( __FILE__LINE__" TODO :   " #x "\n" ) 
 #define fixme( x ) message( __FILE__LINE__" FIXME:   " #x "\n" ) 
 #define note( x )  message( __FILE__LINE__" NOTE :   " #x "\n" ) 
-
+*/
 //Endy needed for log Xsend with INVALID socket
 extern "C" void __CDECL ConOut(char *txt, ...);		//! Unformatted output
 

@@ -361,7 +361,7 @@ namespace Skills {
 	/*!
 	\name Cooking stuff
 	*/
-	void CookOnFire(NXWSOCKET s, short id1, short id2, char* matname);
+	void CookOnFire(NXWSOCKET s, short id, char* matname);
 	void MakeDough(NXWSOCKET s);
 	void MakePizza(NXWSOCKET s);
 	//@}
