@@ -724,7 +724,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if(ISNOTNPC(m_nTriggerType)) STOPTRIGGER;
 			} else if (!(strcmp("IFITEMTRIGGER", cmd))) {
 				if(ISNPC(m_nTriggerType)) STOPTRIGGER;
-			} else if (!(strcmp("IDADD", cmd))) { // Add item in front of player by ID
+			} else if (!(strcmp("IDADD", cmd))) { // Add item in front of player by ID //ndEndy DEPRECATED
 				int r = 0;
 				int array[4];
 				//syntax : IDADD <id1> <id2> <minimum> <maximum>
@@ -736,7 +736,10 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (r == 0) return;
 
 				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
-				pc->setId( (array[0]<<8) | array[1] );
+				pc->setId( DBYTE2WORD( array[0], array[1] ) );
+				if( ISVALIDPC( m_pcCurrChar ) )
+					pc->putInto( m_pcCurrChar->getBackpack() );
+
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
 				// Added colormem token here! by Magius(CHE) §

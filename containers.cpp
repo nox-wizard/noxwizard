@@ -234,13 +234,16 @@ SI16 cItem::getContGump()
 /*
 \brief Put an item into this container
 \author Endymion
+\param pi the containet where put into
 \note do refresh
+\remarks is inverse of additem
 */
 void cItem::putInto( P_ITEM pi )
 {
 	VALIDATEPI(pi);
 //	pi->AddItem( this );  // Are you sure !?
-	AddItem(pi);
+//	AddItem(pi); //ndEndy yes pd.. i write this function
+	pi->AddItem( this );
 }
 
 
