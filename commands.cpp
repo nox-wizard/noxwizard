@@ -657,4 +657,11 @@ namespace Commands
 		pc->possess(pcPos);
 
 	}
+
+	// To be done !!!!!!!!!
+	// new command implementation for speech calls
+	void Command( NXWSOCKET , char * )
+	{
+	}
+
 };

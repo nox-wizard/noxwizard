@@ -258,7 +258,8 @@ class cChar : public cObject
 		inline const LOGICAL	IsCounselor() const
 		{ return ( privLevel > PRIVLEVEL_CNS ); }
 
-		const LOGICAL		IsGMorCounselor() const;
+		inline const LOGICAL	IsGMorCounselor() const
+		{ return IsCounselor(); }
 
 		inline const LOGICAL	IsInvul() const
 		{ return priv & flagPrivInvulnerable; }
@@ -808,7 +809,7 @@ public:
 		wstring* speechCurrent;
 	public:
 		//! Return current speech
-		inline const wstring* getSpeechCurrent() const
+		inline wstring* getSpeechCurrent() 
 		{ return speechCurrent; }
 
 		//! Set current speech

@@ -882,7 +882,7 @@ void command_nodecay( NXWCLIENT ps )
 // Displays the current UO time.
 void command_showtime( NXWCLIENT ps )
 {
-
+	char s_szCmdTableTemp[35];
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -1592,7 +1592,8 @@ void command_midi( NXWCLIENT ps )
 // Forces a respawn.
 void command_respawn( NXWCLIENT ps )
 {
-
+	// Names can be maximum 30 chars
+	char s_szCmdTableTemp[31];
 	NXWSOCKET s = ps->toInt();
 
 
@@ -1609,6 +1610,8 @@ void command_respawn( NXWCLIENT ps )
 // (d) Spawns in all regions up to the specified maximum number of NPCs/Items.
 void command_regspawnmax( NXWCLIENT ps )
 {
+	// Names can be maximum 30 chars
+	char s_szCmdTableTemp[31];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -1628,6 +1631,8 @@ void command_regspawnmax( NXWCLIENT ps )
 // (d d) Preforms a region spawn. First argument is region, second argument is max # of items/NPCs to spawn in that region.
 void command_regspawn( NXWCLIENT ps )
 {
+	// Names can be maximum 30 chars
+	char s_szCmdTableTemp[31];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -1645,6 +1650,8 @@ void command_regspawn( NXWCLIENT ps )
 
 void command_regedit( NXWCLIENT ps )
 {
+	// Names can be maximum 30 chars
+	char s_szCmdTableTemp[31];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -1775,6 +1782,8 @@ void command_decay( NXWCLIENT ps )
 // Display some performance information.
 void command_pdump( NXWCLIENT ps )
 {
+	
+	char s_szCmdTableTemp[255];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -2079,6 +2088,8 @@ void command_gmtransfer( NXWCLIENT ps )
 // Displays a list of users currently online.
 void command_who( NXWCLIENT ps )
 {
+	// maximum 150 chars
+	char s_szCmdTableTemp[150];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -2114,6 +2125,7 @@ void command_who( NXWCLIENT ps )
 
 void command_gms( NXWCLIENT ps )
 {
+	char s_szCmdTableTemp[25];
 
 	NXWSOCKET s = ps->toInt();
 
@@ -2785,8 +2797,8 @@ void target_makegm( NXWCLIENT ps, P_TARGET t )
     pc->setOldId(BODY_GMSTAFF);
     pc->setColor(0x8021);
     pc->setOldColor(0x8021);
-    pc->SetPriv(0xF7);
-    pc->SetPriv2(0xD9);
+    pc->SetPriv((UI08) 0xF7);
+    pc->SetPriv2((UI08) 0xD9);
 
     for( int j=0; j<TRUESKILLS; j++ )
     {
@@ -2849,8 +2861,8 @@ void target_makecns( NXWCLIENT ps, P_TARGET t )
     pc->setOldId(BODY_GMSTAFF);
     pc->setColor(0x8003);
     pc->setOldColor(0x8002);
-    pc->SetPriv(0xB6);
-    pc->SetPriv2(0x008D);
+    pc->SetPriv((UI08) 0xB6);
+    pc->SetPriv2((UI08) 0x8D);
     pc->gmrestrict = 0;
 	pc->setCurrentName("Counselor %s", pc->getCurrentNameC());
 

@@ -594,8 +594,12 @@ SEND( IconListMenu ) {
 
 CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )
 
-template< class T >
-cPacketTargetingCursor<T>::cPacketTargetingCursor() {
+cPacketTargetingCursor<cServerPacket>::cPacketTargetingCursor() {
+	cmd = PKG_TARGETING;
+	headerSize = 0x13;
+}
+
+cPacketTargetingCursor<cClientPacket>::cPacketTargetingCursor() {
 	cmd = PKG_TARGETING;
 	headerSize = 0x13;
 }

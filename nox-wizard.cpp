@@ -244,7 +244,6 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	if (s < 0) return; //Luxor
 
-	unsigned int i ;
 	signed int ii ;
 	int totalstats,totalskills;
 
@@ -855,7 +854,8 @@ void signal_handler(int signal)
 	case SIGHUP:
 		//loadspawnregions();
 		loadregions();
-		loadmetagm();
+//		NO longer need for metagm.xss
+//		loadmetagm();
 		loadserverscript();
 		Network->LoadHosts_deny();
 		break ;
@@ -1088,9 +1088,10 @@ void updateMenus();
 	ConOut("Initializing random number seed... [ OK ]\n");
 
 	srand(uiCurrentTime); // initial randomization call
-	ConOut("Loading vital scripts... ");
-	loadmetagm();
-	ConOut("[DONE]\n");
+	// ConOut("Loading vital scripts... ");
+	// load metag gm no longer needed
+	// loadmetagm();
+	// ConOut("[DONE]\n");
 //	ConOut("Loading NoX-Wizard extensions...\n");
 
 	npcs::initNpcSpells();

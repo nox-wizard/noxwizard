@@ -45,8 +45,8 @@
 #include "layer.h"
 #include "scripts.h"
 
-
-
+// Reference to static member
+std::map< std::string, P_COMMAND > cCommandMap::command_map;
 
 /*///////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -109,14 +109,12 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* ca
 
 
 bool cCommandMap::Check( string& text ){
-
 	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( text ) );
 
 	if ( iter == command_map.end() )	//command not exists
 		return false;
 
 	//other checks..
-
 	return true;
 }
 
@@ -125,7 +123,6 @@ bool cCommandMap::Check( string& text ){
 
 P_COMMAND cCommandMap::findCommand(std::string name){
 
-		
 	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( "name" ) );
 
 	if ( iter != command_map.end() )	//command exists

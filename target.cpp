@@ -14,7 +14,6 @@
 #include "network.h"
 #include "archive.h"
 
-
 SERIAL cTarget::serial_current = 0;
 
 cTarget::cTarget( bool selectLocation )

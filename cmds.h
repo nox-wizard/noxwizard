@@ -61,6 +61,7 @@ class cCommand {
  it is destroyed when the command has finished
  All parameters given by the char who call the command goes in this obj.
 */
+
 class cCallCommand 
 {
 
@@ -95,11 +96,12 @@ private:
 public:
 	
 	cCommandMap();
-	P_COMMAND addGmCommand(std::string name, SI08 number ,AmxFunction* callback);
+	static P_COMMAND addGmCommand(std::string name, SI08 number ,AmxFunction* callback);
 	static bool Check(string& text);
-	P_COMMAND findCommand(std::string name);
+	static P_COMMAND findCommand(std::string name);
 
 };
+
 
 
 
