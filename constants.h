@@ -134,7 +134,7 @@ enum {	RGNPRIV_GUARDED = 0x01, RGNPRIV_MARKALLOWED = 0x02, RGNPRIV_GATEALLOWED =
 };
 
 //! Stat types
-enum StatType { STAT_HP = 0, STAT_MANA, STAT_STAMINA };
+enum StatType { STAT_HP = 0, STAT_MANA, STAT_STAMINA, ALL_STATS };
 
 //! Type of damage
 enum DamageType {
