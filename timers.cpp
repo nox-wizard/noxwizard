@@ -30,15 +30,6 @@ cTimer::cTimer(SERIAL newSerial, UI32 newSecs, UI08 newFlags, SI32 n, UI32 newMo
 };
 
 /*!
-\brief Destructor
-\author Endymion
-*/
-cTimer::~cTimer()
-{
-};
-
-
-/*!
 \brief on timer
 \author Endymion
 */

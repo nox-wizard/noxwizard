@@ -2231,7 +2231,7 @@ R32 Race::getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )
 	return pr;
 }
 
-Race::Race( void )
+Race::Race()
 {
 	activeRace = false;
 	skinColor.clear();
@@ -2244,10 +2244,6 @@ Race::Race( void )
 	webLink = "";
 	startItems.clear();
 	skillCap = SrvParms->skillcap;
-}
-
-Race::~Race( void )
-{
 }
 
 bool Race::isRaceActive( void )

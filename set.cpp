@@ -339,13 +339,6 @@ NxwWrapper::NxwWrapper() {
 };
 
 /*!
-\brief Destructor
-*/
-NxwWrapper::~NxwWrapper() {
-};
-
-
-/*!
 \brief Check if empty
 \author Endymion
 \return true if empty
@@ -441,18 +434,6 @@ void NxwWrapper::insert( SERIAL s )
 		vect.push_back( s );
 };
 
-
-/*!
-\brief Constructor
-*/
-NxwSerialWrapper::NxwSerialWrapper() { };
-
-/*!
-\brief Destructor
-*/
-NxwSerialWrapper::~NxwSerialWrapper() { };
-
-
 /*!
 \brief Get the current serial
 \author Endymion
@@ -529,21 +510,10 @@ void NxwSerialWrapper::fillSerialInContainer( cObject* obj, bool bIncludeSubCont
 		fillSerialInContainer( obj->getSerial32(), bIncludeSubContained, bIncludeOnlyFirstSubcont );
 }
 
-
-/*!
-\brief Constructor
-*/
-NxwCharWrapper::NxwCharWrapper() { };
-
 NxwCharWrapper::NxwCharWrapper( const NxwCharWrapper& that )
 {
 	copyQ( that );
 }
-
-/*!
-\brief Destructor
-*/
-NxwCharWrapper::~NxwCharWrapper() { };
 
 /*!
 \brief Get the current char and after move to next
@@ -797,20 +767,10 @@ void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
 
 }
 
-/*!
-\brief Constructor
-*/
-NxwItemWrapper::NxwItemWrapper() { };
-
 NxwItemWrapper::NxwItemWrapper( const NxwItemWrapper& that )
 {
 	copyQ( that );
 }
-
-/*!
-\brief Destructor
-*/
-NxwItemWrapper::~NxwItemWrapper() { };
 
 /*!
 \brief Get the current item
@@ -1023,18 +983,6 @@ void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
 	}
 
 }
-
-
-
-/*!
-\brief Constructor
-*/
-NxwSocketWrapper::NxwSocketWrapper() { };
-
-/*!
-\brief Destructor
-*/
-NxwSocketWrapper::~NxwSocketWrapper() { };
 
 /*!
 \brief Get the current socket

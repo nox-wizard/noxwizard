@@ -30,7 +30,7 @@ void loadregions()//New -- Zippy spawn regions
 
 	for (i=0;i<256;i++)
 	{
-		region_st &regionRef = region[i];
+		regions::region_st &regionRef = region[i];
 		
 		regionRef.inUse = false;
 		regionRef.midilist=0;
@@ -341,7 +341,7 @@ void check_region_weatherchange ()
 
 	for (i=0;i<256;i++)
 	{
-		region_st &regionRef = region[i];
+		regions::region_st &regionRef = region[i];
 		if ((regionRef.keepchance==0)&&(regionRef.drychance==0)) continue;
 		r = rand()%100;
 		if ((r<=regionRef.keepchance)||(regionRef.keepchance==100)) continue;

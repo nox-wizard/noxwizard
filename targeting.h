@@ -187,9 +187,6 @@ public:
 class cPacketTargeting
 {
 	public:
-			cPacketTargeting();
-			~cPacketTargeting();
-
 		UI08	getPacketType( NXWSOCKET socket );
 		UI08	getTargetType( NXWSOCKET socket );
 		SERIAL	getCharacterSerial( NXWSOCKET socket );

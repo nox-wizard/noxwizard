@@ -72,10 +72,6 @@ nxwString::nxwString( nxwString const &arg )
 	*this = arg;
 }
 
-nxwString::~nxwString()
-{
-}
-
 LOGICAL nxwString::empty()
 {
 	return value.empty();

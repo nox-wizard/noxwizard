@@ -23,10 +23,6 @@ cResources::cResources( UI32 areawidth, UI32 areaheight )
 	stamina=-5;
 }
 
-cResources::~cResources()
-{
-}
-
 void cResources::setDimArea( UI32 areawidth, UI32 areaheight )
 {
 	area_width=areawidth;

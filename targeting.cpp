@@ -4209,16 +4209,6 @@ TargetLocation::TargetLocation(PKGx6C* pp)
 	m_z=0;
 }
 
-
-
-cPacketTargeting::cPacketTargeting()
-{
-}
-
-cPacketTargeting::~cPacketTargeting()
-{
-}
-
 UI08 cPacketTargeting::getTargetType( NXWSOCKET socket )
 {
 	return buffer[socket][1];

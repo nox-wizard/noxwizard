@@ -2177,10 +2177,10 @@ void cNetwork::LoadHosts_deny()
 			if (ip_address != INADDR_NONE)
 				ip_block.mask = ip_address;
 			else
-				ip_block.mask = static_cast<unsigned long>(~0); // mask is not required. (fills all bits with 1's)
+				ip_block.mask = 0xFFFFFFFF; // mask is not required. (fills all bits with 1's)
 		}
 		else
-			ip_block.mask = static_cast<unsigned long>(~0);
+			ip_block.mask = 0xFFFFFFFF;
 		hosts_deny.push_back(ip_block);
 	} 
 	while ( sScript1.c_str()[0] != '}' );

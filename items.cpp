@@ -247,11 +247,6 @@ void setserial(int nChild, int nParent, int nType)
 }
 #endif
 
-cItem::~cItem()
-{
-
-}
-
 void cItem::setCont(P_OBJECT obj)
 {
 	setContSerial(obj->getSerial32());

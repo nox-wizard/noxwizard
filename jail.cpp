@@ -37,12 +37,6 @@ cPrisonCell::cPrisonCell()
 	free=true;
 };
 
-/*!
-\brief Destructor of cJailed
-\author Endymion
-*/
-cPrisonCell::~cPrisonCell() { };
-
 namespace prison {
 /*!
 \brief archive a jail worldfile

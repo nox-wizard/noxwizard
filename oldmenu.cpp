@@ -50,15 +50,6 @@ cOldMenu::cOldMenu()
 /*
 \brief Destructor
 \author Endymion
-\since 0.82
-*/
-cOldMenu::~cOldMenu()
-{
-}
-
-/*
-\brief Destructor
-\author Endymion
 \param numPerPage number of item for page
 \param numpages the page count
 \attention is useless now
@@ -146,10 +137,6 @@ void cOldMenu::show( P_CHAR pc )
 
 
 cOldMenuClassic::cOldMenuClassic() : cMenu()
-{
-}
-
-cOldMenuClassic::~cOldMenuClassic()
 {
 }
 
@@ -286,10 +273,6 @@ void cOldMenuClassic::show( P_CHAR pc )
 
 
 cOldMenuIconList::cOldMenuIconList()
-{
-}
-
-cOldMenuIconList::~cOldMenuIconList()
 {
 }
 

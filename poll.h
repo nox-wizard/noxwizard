@@ -12,9 +12,6 @@
 
 class cPoll
 {
-	public:
-				cPoll();
-				~cPoll();
 	private:
 		SERIAL		serial;
 	public:

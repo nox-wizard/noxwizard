@@ -20,7 +20,6 @@ class nxwStringList
 		SERIAL										listItemSerial;
 	public:
 															nxwStringList();
-		virtual										~nxwStringList();
 
 		UI32											append( const char*					what );
 		UI32											append( const std::string&	what );

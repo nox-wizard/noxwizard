@@ -47,7 +47,6 @@ class cPrisonCell
 {
 public:
 	cPrisonCell();
-	~cPrisonCell();
 
 	SERIAL serial;		//!< serial of the cell
 	Location pos;		//!< position of the cell

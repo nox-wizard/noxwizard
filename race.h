@@ -190,8 +190,7 @@ class Race
 			void 				parseStartItemDetails( const string& itemReference );
 
 	public:
-							Race( void );
-			virtual				~Race( void );
+							Race();
 
 			bool				getCanUseSkill( UI32 skillId );
 			UI32				getDexCap( void );
