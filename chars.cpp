@@ -328,12 +328,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetLockSkills();
 
 	this->beardserial=INVALID;
-	this->oldbeardcolor=0;
-	this->oldbeardstyle=0;
-
 	this->hairserial=INVALID;
-	this->oldhaircolor=0;
-	this->oldhairstyle=0;
 
 	possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
@@ -3230,19 +3225,35 @@ void cChar::Kill()
 			{ // PvP
 				if ( !IsGrey() && IsInnocent() && Guildz.compareGuilds(pKiller->getGuild(),getGuild()) == 0 )
 				{
-					murdererSer = pKiller->getSerial32();
-					++pKiller->kills;
-					pKiller->sysmsg(TRANSLATE("You have killed %i innocent people."), pKiller->kills);
+					RACIALRELATION relation=RACE_ENEMY;
 
-					if (pKiller->kills==(unsigned)repsys.maxkills)
-						pKiller->sysmsg(TRANSLATE("You are now a murderer!"));
-					setcharflag(pKiller);
+					// Wintermute Race war support
+					//		When the race system is active and the other user belongs to another race
+					//
+					if ( Race::isRaceSystemActive() )
+					{
+						// if race system is active, everyone has a race, even if it is default
+						// if you belong to the same race no difference is to normal coloring 
+						// if you belong to different races check if the two races are at war => color orange
+						// if you belong to different races check if the two races are at peace => no color change
+						relation = Race::getRacialRelation(this->getRace(), showToWho->getRace());
+					}
+					if ( !Race::isRaceSystemActive() || relation == RACE_ENEMY )
+					{
+						murdererSer = pKiller->getSerial32();
+						++pKiller->kills;
+						pKiller->sysmsg(TRANSLATE("You have killed %i innocent people."), pKiller->kills);
 
-				if (SrvParms->pvp_log)
-				{
-						LogFile pvplog("PvP.log");
-						pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pKiller->getCurrentNameC());
-				}
+						if (pKiller->kills==(unsigned)repsys.maxkills)
+							pKiller->sysmsg(TRANSLATE("You are now a murderer!"));
+						setcharflag(pKiller);
+
+						if (SrvParms->pvp_log)
+						{
+								LogFile pvplog("PvP.log");
+								pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pKiller->getCurrentNameC());
+						}
+					}
 			}   // was innocent
 
 			if (pKiller->amxevents[EVENT_CHR_ONKILL])
@@ -4130,7 +4141,19 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	getGuild()->showTitle( (P_CHAR) this, showToWho );
 
 	UI16 color;
+	RACIALRELATION relation;
 	SI32 guild = Guildz.compareGuilds(showToWho->getGuild(),this->getGuild());
+	// Wintermute Race war support
+	//		When the race system is active and the other user belongs to another race
+	//
+	if ( Race::isRaceSystemActive() )
+	{
+		// if race system is active, everyone has a race, even if it is default
+		// if you belong to the same race no difference is to normal coloring 
+		// if you belong to different races check if the two races are at war => color orange
+		// if you belong to different races check if the two races are at peace => no color change
+		relation = Race::getRacialRelation(this->getRace(), showToWho->getRace());
+	}
 
 	UI08 sysname[30]={ 0x00, };
 	strcpy((char *)sysname, "System");
@@ -4150,6 +4173,14 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	else if (IsGrey())
 	{
 		color = 0x03B2;
+	}
+	else if ( relation == RACE_ENEMY )
+	{
+		color = 0x0030;
+	}
+	else if ( relation == RACE_FRIEND )
+	{
+		color = 0x0049;
 	}
 	else
 	{

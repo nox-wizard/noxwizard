@@ -22,7 +22,7 @@
 
 //#include "cPoison.h"
 
-typedef enum { ENEMY, NEUTRAL, FRIEND } RACIALRELATION;
+typedef enum { RACE_ENEMY, RACE_NEUTRAL, RACE_FRIEND } RACIALRELATION;
 
 typedef enum { NOBEARD,	SHORTBEARD, LONGBEARD, GOATEE, MOUSTACHE, SHORTBEARDWITHMOUSTACHE, LONGBEARDWITHMOUSTACHE, VANDYKE } BEARDSTYLE;
 
@@ -81,8 +81,8 @@ class Race
 		//static	void		resurrect( const P_CHAR pc );
 
 		static	bool		isRaceSystemActive( void );
-		static	const 	string*	getName( const UI32 raceId );
-		static	const 	string*	getPluralName( const UI32 raceId );
+		static	const 		string*	getName( const UI32 raceId );
+		static	const 		string*	getPluralName( const UI32 raceId );
 		static	void		setName( const UI32 raceId, const char *newName )	;
 
 		static	R32			getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )	;
@@ -182,13 +182,13 @@ class Race
 
 			bool				getCanUseSkill( UI32 skillId );
 			UI32				getDexCap( void );
-			int				getDexModifier( UI32 baseDex );
+			int					getDexModifier( UI32 baseDex );
 			UI32				getDexStart( void );
 			UI32				getIntCap( void );
-			int				getIntModifier( UI32 baseDex );
+			int					getIntModifier( UI32 baseDex );
 			UI32				getIntStart( void );
-			const string*			getPluralName( void );
-			RACIALRELATION			getRacialRelation( UI32 raceId );
+			const string*		getPluralName( void );
+			RACIALRELATION		getRacialRelation( UI32 raceId );
 			UI32				getSkillAdvanceDexterity( UI32 skillId );
 			UI32				getSkillAdvanceIntelligence( UI32 skillId );
 			UI32				getSkillAdvanceStrength( UI32 skillId );
@@ -197,7 +197,7 @@ class Race
 			UI32				getSkillCap( void );
 			UI32				getStatCap( void );
 			UI32				getStrCap( void );
-			int				getStrModifier( UI32 baseDex );
+			int					getStrModifier( UI32 baseDex );
 			UI32				getStrStart( void );
 
 			bool				isPlayerRace( void );
@@ -208,18 +208,18 @@ class Race
 			void				setSkillCap( UI32 newSkillCap );
 			void				show( void );
 
-			vector< UI32 >			skinColor;
+			vector< UI32 >		skinColor;
 			string				webLink;
 			std::vector< string >		description;
 			RaceType			raceType;
 			UI32				skin;
 			//UI32		skinColor;
-			RequiredType			hairPerm;
+			RequiredType		hairPerm;
 			UI32				hairStyle;
-			vector< UI32>			hairColor;
-			RequiredType			beardPerm;
-			vector< BEARDSTYLE >		beardStyles;
-			vector< UI32 >			beardColor;
+			vector< UI32>		hairColor;
+			RequiredType		beardPerm;
+			vector< BEARDSTYLE >	beardStyles;
+			vector< UI32 >		beardColor;
 			string				name;
 };
 

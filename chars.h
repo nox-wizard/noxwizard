@@ -30,6 +30,7 @@
 #include "basics.h"
 #include "items.h"
 #include "cmds.h"
+#include "encryption/clientcrypt.h"
 
 #ifndef TIMEOUT
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
@@ -583,10 +584,10 @@ class cChar : public cObject
 */
 	public:
 		std::string		title;
-		UI16			oldhairstyle;
-		UI16			oldbeardstyle;
-		UI16			oldhaircolor;
-		UI16			oldbeardcolor;
+// 		UI16			oldhairstyle;
+// 		UI16			oldbeardstyle;
+// 		UI16			oldhaircolor;
+// 		UI16			oldbeardcolor;
 
 		inline const LOGICAL	HasHumanBody() const
 		{ return (getId()==BODY_MALE) || (getId()==BODY_FEMALE); }

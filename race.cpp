@@ -280,7 +280,7 @@ void Race::parseRaceSection( void )
 					else if	( lha == "DEXSTART" )					race->dexStart = str2num( rha );
 					break;
 				case 'E':
-					if 			( lha == "ENEMY" )						race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = ENEMY;
+					if 			( lha == "RACE_ENEMY" )						race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = RACE_ENEMY;
 					else if ( lha == "ENTICEMENT" ||
 						  			lha == "EVALUATEINTELLECT")	race->parseSkill( rha );
 					break;
@@ -288,7 +288,7 @@ void Race::parseRaceSection( void )
 					if 			( lha == "FENCING" ||
 					     			lha == "FISHING" ||
 					     			lha == "FORENSICS")					race->parseSkill( rha );
-					else if ( lha == "FRIEND" ) 					race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = FRIEND;
+					else if ( lha == "RACE_FRIEND" ) 					race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = RACE_FRIEND;
 					break;
 				case 'G':
 					if 			( lha == "GENDER" ) 					race->gender = rha;
@@ -329,7 +329,7 @@ void Race::parseRaceSection( void )
 					break;
 				case 'N':
 					if 			( lha == "NAME" ) 						race->name = rha;
-					else if ( lha == "NEUTRAL" )					race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = NEUTRAL;
+					else if ( lha == "RACE_NEUTRAL" )					race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = RACE_NEUTRAL;
 					break;
 				case 'P':
 					if ( lha == "PEACEMAKING" ) 				race->parseSkill(rha);
@@ -775,7 +775,7 @@ RACIALRELATION Race::getRacialRelation( UI32 raceId1, UI32 raceId2 )
 	if ( raceIter != raceMap.end() )
 		return raceIter->second->getRacialRelation( raceId2 );
 	else
-		return NEUTRAL;
+		return RACE_NEUTRAL;
 }
 
 RACIALRELATION Race::getRacialRelation( UI32 raceId )
@@ -785,7 +785,7 @@ RACIALRELATION Race::getRacialRelation( UI32 raceId )
 	if ( relationIter != m_mapRacialRelations.end() )
 		return m_mapRacialRelations[ raceId ];
 	else
-		return NEUTRAL;
+		return RACE_NEUTRAL;
 }
 
 bool Race::isProtectedLayer( UI32 raceId, unsigned char layer )
