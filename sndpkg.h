@@ -97,6 +97,11 @@ void deathaction(int s, int x);
 	//!< Character does a certain action
 void deathmenu(int s);
 	//!< Character sees death menu
+void SendPauseResumePkt(NXWSOCKET s, UI08 flag);
+void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial);
+void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z);
+void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3);
+void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen);
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send
 void sendshopinfo(int s, int c, P_ITEM pi);

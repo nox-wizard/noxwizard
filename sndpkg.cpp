@@ -20,29 +20,20 @@
 #include "tmpeff.h"
 #include "speech.h"
 #include "packets.h"
+#include "layer.h"
 
 void gmyell(char *txt)
-//Modified by N6 to use UNICODE packets
 {
-	UI08 talk2[18]={ 0xAE, 0x00, };
-	char unicodetext[512];
+	UI08 unicodetext[512];
 	int ucl = ( strlen ( txt ) * 2 ) + 2 ;
 
-	int tl = ucl + 48 ;
 	char2wchar(txt);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	ShortToCharPtr(tl, talk2 +1);
-	LongToCharPtr(0x01010101, talk2 +3); 	// ID
-	ShortToCharPtr(0x0101, talk2 +7);	// Model
-	talk2[9] = 1;				// Type
-	ShortToCharPtr(0x0040, talk2 +10);	// Color
-	ShortToCharPtr(0x0003, talk2 +12);	// Font type
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "[WebAdmin - GM Only]");
 
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -54,10 +45,7 @@ void gmyell(char *txt)
 		NXWSOCKET s = ps_i->toInt();
 		if( ISVALIDPC(pc) && pc->IsGM())
 		{
-			Xsend(s, talk2, 18);
-			Xsend(s, const_cast<char*>("[WebAdmin - GM Only]"), 30);
-			Xsend(s, unicodetext, ucl);
-//AoS/			Network->FlushBuffer(s);
+			SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 1, 0x0040, 0x0003, lang, sysname, unicodetext,  ucl);
 		}
 	}
 
@@ -100,14 +88,11 @@ void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt)
 
 void SndRemoveitem(SERIAL serial)
 {
-	UI08 removeitem[5] = { 0x1D, 0x00, };
-	LongToCharPtr(serial, removeitem +1);
 	NxwSocketWrapper sw;
 	sw.fillOnline();
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
-		Xsend(sw.getSocket(), removeitem, 5);
-//AoS/		Network->FlushBuffer(sw.getSocket());
+		SendDeleteObjectPkt(sw.getSocket(), serial);
 	}
 }
 
@@ -478,7 +463,7 @@ void pweather(NXWSOCKET  s)
 void sysbroadcast(char *txt, ...) // System broadcast in bold text
 //Modified by N6 to use UNICODE packets
 {
-	char unicodetext[512];
+	UI08 unicodetext[512];
 
 	va_list argptr;
 	char msg[512];
@@ -487,25 +472,12 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 	va_end( argptr );
 
 	int ucl = ( strlen ( msg ) * 2 ) + 2 ;
-	int tl = ucl + 48 ;
 
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	UI08 talk2[18]={ 0xAE, 0x00, };
-	ShortToCharPtr(tl, talk2+1);
-	LongToCharPtr(0x01010101, talk2 +3); 	// ID
-	ShortToCharPtr(0x0101, talk2 +7);	// Model
-	talk2[9] = 6;				// Type
-	ShortToCharPtr(0x084D, talk2 +10);	// Color.  0x0040
-	ShortToCharPtr(0x0000, talk2 +12);	// Font type
-
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
-
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -514,23 +486,18 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 		NXWSOCKET sock=sw.getSocket();
 		if( sock!=INVALID )
 		{
-			Xsend(sock, talk2, 18);
-			Xsend(sock, sysname, 30);
-			Xsend(sock, unicodetext, ucl);
-//AoS/			Network->FlushBuffer(sock);
+			SendUnicodeSpeechMessagePkt(sock, 0x01010101, 0x0101, 6, 0x084D /*0x0040*/, 0x0000, lang, sysname, unicodetext,  ucl);
 		}
 	}
-
 }
 
 
 void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower left corner)
-//Modified by N6 to use UNICODE packets
 {
 	if(s < 0) 
 		return;
 
-	char unicodetext[512];
+	UI08 unicodetext[512];
 
 	va_list argptr;
 	char msg[512];
@@ -539,39 +506,24 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	va_end( argptr );
 
 	int ucl = ( strlen ( msg ) * 2 ) + 2 ;
-	int tl = ucl + 48 ;
 
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	UI08 talk2[18]={ 0xAE, 0x00, };
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-	ShortToCharPtr(tl, talk2 +1);
-	LongToCharPtr(0x01010101, talk2 +3); 	// ID
-	ShortToCharPtr(0x0101, talk2 +7);	// Model
-	talk2[9] = 6;				// Type
-	ShortToCharPtr(0x0387, talk2 +10);	// Color - Previous default was 0x0040 - 0x03E9
-	ShortToCharPtr(0x0003, talk2 +12);	// Font type
+	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, 0x0387 /* Color - Previous default was 0x0040 - 0x03E9*/, 0x0003, lang, sysname, unicodetext,  ucl);
 
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-	Xsend(s, talk2, 18);
-	Xsend(s, sysname, 30);
-	Xsend(s, unicodetext, ucl);
-//AoS/	Network->FlushBuffer(s);
 }
 
 
 void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System message (In lower left corner)
-//Modified by N6 to use UNICODE packets
 {
 	if( s < 0)
 		return;
 
-	char unicodetext[512];
+	UI08 unicodetext[512];
 
 	va_list argptr;
 	char msg[512];
@@ -579,38 +531,25 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	//vsnprintf( msg, sizeof(msg)-1, txt, argptr );
         vsprintf( msg, txt, argptr );
 	va_end( argptr );
-	int ucl = ( strlen ( msg ) * 2 ) + 2 ;
-	int tl = ucl + 48 ;
+	UI16 ucl = ( strlen ( msg ) * 2 ) + 2 ;
 
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	UI08 talk2[18]={ 0xAE, 0x00, };
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-	ShortToCharPtr(tl, talk2 +1);
-	LongToCharPtr(0x01010101, talk2 +3); 	// ID
-	ShortToCharPtr(0x0101, talk2 +7);	// Model
-	talk2[9] = 0;				// Type
-	ShortToCharPtr(color, talk2 +10);	// Color
-	ShortToCharPtr(0x0003, talk2 +12);	// Font type
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
+	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-	Xsend(s, talk2, 18);
-	Xsend(s, sysname, 30);
-	Xsend(s, unicodetext, ucl);
-//AoS/	Network->FlushBuffer(s);
 }
 
 void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
-{// The message when an item is clicked (new interface, Duke)
+{
+// The message when an item is clicked (new interface, Duke)
 //Modified by N6 to use UNICODE packets
-	char unicodetext[512];
-	int ucl = ( strlen ( txt ) * 2 ) + 2 ;
+
+	UI08 unicodetext[512];
+	UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
 
 	P_ITEM pi=pointers::findItemBySerial(serial);
 	VALIDATEPI(pi);
@@ -620,32 +559,16 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 		(pi->id()==0x1BF2 && color == 0x0000))
 		color = 0x03B2;
 
-	int tl = ucl + 48 ;
 	char2wchar(txt);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	color = 0x0481; // UOLBR patch to prevent client crash by Juliunus
 
-	UI08 talk2[18]={ 0xAE, 0x00, };
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-	ShortToCharPtr(tl, talk2 +1);
-	LongToCharPtr(serial, talk2 +3); 	// ID
-	ShortToCharPtr(0x0101, talk2 +7);	// Model
-	talk2[9] = 6;				// Type "You see" ...
-	ShortToCharPtr(color, talk2 +10);	// Color
-	ShortToCharPtr(0x0003, talk2 +12);	// Font type
+	SendUnicodeSpeechMessagePkt(s, serial, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
-
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-	Xsend(s, talk2, 18);
-	Xsend(s, sysname, 30);
-	Xsend(s, unicodetext, ucl);
-//AoS/	Network->FlushBuffer(s);
 }
 
 void wearIt(const NXWSOCKET  s, const P_ITEM pi)
@@ -1509,40 +1432,35 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 		} // end unicode IF
 		else
 		{
-			UI16 font, color;
-			char unicodetext[512];
-			int ucl = ( strlen ( &nonuni[0] ) * 2 ) + 2 ;
-			tl=tl = ucl + 48 ;
+			UI32 id;
+			UI16 model,font, color;
+			UI08 unicodetext[512];
+			UI16 ucl = ( strlen ( &nonuni[0] ) * 2 ) + 2 ;
+
 			char2wchar(&nonuni[0]);
 			memcpy(unicodetext, Unicode::temp, ucl);
 
+			id = pc->getSerial32();
+			model = pc->GetBodyType();
 			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
 			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
-			UI08 talk2[18]={ 0xAE, 0x00, };
-
-			ShortToCharPtr(tl, talk2 +1);
-			LongToCharPtr(pc->getSerial32(), talk2 +3);
-			ShortToCharPtr(pc->GetBodyType(), talk2 +7);	// Model
-			talk2[9]=1;
-			ShortToCharPtr(color, talk2 +10);
-			ShortToCharPtr(font, talk2 +12);
-			LongToCharPtr( LongFromCharPtr(buffer[s] +9), talk2 +14);
+			UI32 lang =  LongFromCharPtr(buffer[s] +9);
+			UI08 name[30]={ 0x00, };
+			strcpy((char *)name, pc->getCurrentNameC());
 
 			NxwSocketWrapper sw;
 			sw.fillOnline();
 			for( sw.rewind(); !sw.isEmpty(); sw++ )
 			{
 				NXWSOCKET i=sw.getSocket();
-				Xsend(i, talk2, 18);
-				Xsend(i, pc->getCurrentNameC(), 30);
-				Xsend(i, unicodetext, ucl);
-//AoS/				Network->FlushBuffer(i);
+				SendUnicodeSpeechMessagePkt(i, id, model, 1, color, font, lang, name, unicodetext,  ucl);
 			}
 		}
 }
 
-void itemtalk(P_ITEM pi, char *txt) // Item "speech"
+void itemtalk(P_ITEM pi, char *txt)
+// Item "speech"
 //Modified by N6 to use UNICODE packets
 {
 
@@ -1555,30 +1473,18 @@ void itemtalk(P_ITEM pi, char *txt) // Item "speech"
 		NXWSOCKET s=sw.getSocket();
 		if(s==INVALID) continue;
 
-		char unicodetext[512];
-		int ucl = ( strlen ( txt ) * 2 ) + 2 ;
-		int tl = ucl + 48 ;
+		UI08 unicodetext[512];
+		UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
+
 		char2wchar(txt);
 		memcpy(unicodetext, Unicode::temp, ucl);
 
-		UI08 talk2[18]={ 0xAE, 0x00, };
+		UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, pi->getCurrentNameC());
 
-		ShortToCharPtr(tl, talk2 +1);
-		LongToCharPtr(pi->getSerial32(), talk2 +3);
-		ShortToCharPtr(pi->id(), talk2 +7);	// Model
-		talk2[9]=0; // Type
-		ShortToCharPtr(0x0481, talk2 +10);
-		ShortToCharPtr(0x0003, talk2 +12);
+		SendUnicodeSpeechMessagePkt(s, pi->getSerial32(), pi->id(), 0, 0x0481, 0x0003, lang, name, unicodetext,  ucl);
 
-		talk2[14] = server_data.Unicodelanguage[0];
-		talk2[15] = server_data.Unicodelanguage[1];
-		talk2[16] = server_data.Unicodelanguage[2];
-		talk2[17] = 0;
-
-		Xsend(s, talk2, 18);
-		Xsend(s, pi->getCurrentNameC(), 30);
-		Xsend(s, unicodetext, ucl);
-//AoS/		Network->FlushBuffer(s);
 	}
 }
 
@@ -2082,10 +1988,10 @@ void updateskill(NXWSOCKET s, int skillnum) // updated for client 1.26.2b by LB
 
 void deathaction(P_CHAR pc, P_ITEM pi)
 {
-	unsigned char deathact[14]="\xAF\x01\x02\x03\x04\x01\x02\x00\x05\x00\x00\x00\x00";
+	UI08 deathact[13]={ 0xAF, 0x00, };
 
-	LongToCharPtr(pc->getSerial32(), deathact+1);
-	LongToCharPtr(pi->getSerial32(), deathact+5);
+	LongToCharPtr(pc->getSerial32(), deathact +1);
+	LongToCharPtr(pi->getSerial32(), deathact +5);
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( pc, true );
@@ -2093,76 +1999,70 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 	 {
 		NXWSOCKET i=sw.getSocket();
 		if( i!=INVALID )
+		{
 			Xsend(i, deathact, 13);
+//AoS/			Network->FlushBuffer(i);
+		}
 	}
-
-
 }
 
 void deathmenu(NXWSOCKET s) // Character sees death menu
 {
-
-
-	char testact[3]="\x2C\x00";
+	UI08 testact[2]={ 0x2C, 0x00 };
 	Xsend(s, testact, 2);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
-void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
+void SendPauseResumePkt(NXWSOCKET s, UI08 flag)
 {
-	int k;
-	unsigned char oc[1024];
+/* Flag: 0=pause, 1=resume */ // uhm.... O_o ... or viceversa ? -_-;
+	UI08 m2[2]={ 0x33, 0x00 };
+
+	m2[1]=flag;
+	Xsend(s, m2, 2);
+//AoS/	Network->FlushBuffer(s);
+}
+
+void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial)
+{
+	UI08 removeitem[5] = { 0x1D, 0x00, };
+	LongToCharPtr(serial, removeitem +1);
+
+	Xsend(s, removeitem, 5);
+//AoS/	Network->FlushBuffer(s);
+}
+
+void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
+{
 	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
+	UI32 k;
+	UI08 oc[1024]={ 0x78, 0x00, };
 
-	Location charpos= pc->getPosition();
+	Location charpos = pc->getPosition();
 
-	UI08 removeitem[5]={ 0x1D, 0x00, 0x00, 0x00, 0x00 };
-
-	if (pc->isStabled() || pc->mounted) 
-		return; // dont **show** stabled pets
-
-	bool sendit = true; //Luxor bug fix
-	if (pc->IsHidden() && pc->getSerial32()!=pc_currchar->getSerial32() && !pc_currchar->IsGM()) 
-		sendit=false; 
-
-	if( !pc->npc && !pc->IsOnline()  && !pc_currchar->IsGM() )
-	{
-		sendit=false;
-		LongToCharPtr(pc->getSerial32(), removeitem+1);
-		Xsend(s, removeitem, 5);
-	}
-	// hidden chars can only be seen "grey" by themselves or by gm's
-	// other wise they are invisible=dont send the packet
-	if (!sendit) 
-		return;
-
-	oc[0]=0x78; // Message type 78
-
-	LongToCharPtr(pc->getSerial32(), oc+3);
-	oc[7]= pc->id1; // Character art id
-	oc[8]= pc->id2; // Character art id
+	LongToCharPtr(pc->getSerial32(), oc +3);
+	ShortToCharPtr(pc->GetBodyType(), oc +7); 	// Character art id
 	ShortToCharPtr(charpos.x, oc+9);
 	ShortToCharPtr(charpos.y, oc+11);
 	if (z)
-		oc[13]= charpos.dispz; // Character z position
+		oc[13]= charpos.dispz; 			// Character z position
 	else
 		oc[13]= charpos.z;
-	oc[14]= pc->dir; // Character direction
-	oc[15]= pc->skin1; // Character skin color
-	oc[16]= pc->skin2; // Character skin color
-	oc[17]=0; // Character flags
+	oc[14]= pc->dir; 				// Character direction
+	ShortToCharPtr(pc->getSkinColor(), oc +15);	// Character skin color
+	oc[17]=0; 					// Character flags
 	if (pc->IsHidden() || !(pc->IsOnline()||pc->npc))
-		oc[17]|=0x80; // Show hidden state correctly
+		oc[17]|=0x80; 				// .... show hidden state correctly
 	if (pc->poisoned)
 		oc[17]|=0x04; //AntiChrist -- thnx to SpaceDog
 
 	k=19;
 	int guild;
 	guild=Guilds->Compare(pc_currchar,pc);
-	if (guild==1)//Same guild (Green)
+	if (guild==1)					//Same guild (Green)
 		oc[18]=2;
-	else if (guild==2) // Enemy guild.. set to orange
+	else if (guild==2) 				// Enemy guild.. set to orange
 		oc[18]=5;
 	else if (pc->IsGrey()) oc[18] = 3;
 	else switch(pc->flag)
@@ -2187,56 +2087,110 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 				LongToCharPtr(pj->getSerial32(), oc+k+0);
 				ShortToCharPtr(pj->id(), oc+k+4);
 				oc[k+6]=pj->layer;
-				k=k+7;
+				k += 7;
 				if (pj->color1!=0 || pj->color2!=0)
 				{
 					oc[k-3]|=0x80;
-					oc[k+0]=pj->color1;
-					oc[k+1]=pj->color2;
-					k=k+2;
+					ShortToCharPtr(pj->color(), oc+k);
+					k+= 2;
 				}
 				layers[pj->layer] = 1;
 			}
 	}
 
-	oc[k+0]=0;// Not well understood. It's a serial number. I set this to my serial number,
-	oc[k+1]=0;// and all of my messages went to my paperdoll gump instead of my character's
-	oc[k+2]=0;// head, when I was a character with serial number 0 0 0 1.
-	oc[k+3]=0;
+	UI32 ser = 0; 	// Not well understood. It's a serial number. I set this to my serial number,
+			// and all of my messages went to my paperdoll gump instead of my character's
+			// head, when I was a character with serial number 0 0 0 1.
+	LongToCharPtr(ser, oc+k);
 	k=k+4;
-
 	// unimportant remark: its a packet "terminator" !!! LB
 
-	oc[1]=k>>8;
-	oc[2]=k%256;
+	ShortToCharPtr(k, oc +1);
 	Xsend(s, oc, k);
+//AoS/	Network->FlushBuffer(s);
+}
+
+void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3)
+{
+	UI16 len;
+	UI08 msg[17]={ 0x6F, 0x00, };
+	
+
+	len = 17;		//Size - no name in this message -  so len is fixed
+	msg[3]=action;		//State
+	LongToCharPtr(id1, msg +4);
+	LongToCharPtr(id2, msg +8);
+	LongToCharPtr(id3, msg +12);
+	msg[16]=0; 		// No name in this message
+
+	ShortToCharPtr(len, msg +1);
+	Xsend(s, msg, len);
+	Network->FlushBuffer(s);
+}
+
+void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen)
+{
+	UI16 tl;
+	UI08 talk2[18]={ 0xAE, 0x00, };
+
+	tl = 18 + 30 + unicodelen;
+	
+	ShortToCharPtr(tl, talk2 +1);
+	LongToCharPtr(id, talk2 +3);
+	ShortToCharPtr(model, talk2 +7);
+	talk2[9]=type;
+	ShortToCharPtr(color, talk2 +10);
+	ShortToCharPtr(fonttype, talk2 +12);
+	LongToCharPtr(lang, talk2 +14);
+
+	Xsend(s, talk2, 18);
+	Xsend(s, sysname, 30);
+	Xsend(s, unicodetext, unicodelen);
+
+//AoS/	Network->FlushBuffer(s);
+}
+
+void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
+{
+	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
+
+	Location charpos= pc->getPosition();
+
+	if (pc->isStabled() || pc->mounted) 
+		return; // dont **show** stabled pets
+
+	bool sendit = true; //Luxor bug fix
+	if (pc->IsHidden() && pc->getSerial32()!=pc_currchar->getSerial32() && !pc_currchar->IsGM()) 
+		sendit=false; 
+
+	if( !pc->npc && !pc->IsOnline()  && !pc_currchar->IsGM() )
+	{
+		sendit=false;
+		SendDeleteObjectPkt(s, pc->getSerial32());
+	}
+	// hidden chars can only be seen "grey" by themselves or by gm's
+	// other wise they are invisible=dont send the packet
+	if (!sendit) 
+		return;
+
+	SendDrawObjectPkt(s, pc, z);
 	//pc_currchar->sysmsg( "sended %s", pc->getCurrentNameC() );
-
-
 }
 
 void sendshopinfo(int s, int c, P_ITEM pi)
 {
-
 	VALIDATEPI(pi);
 
-	unsigned char m1[6096];
-	unsigned char m2[6096];
-	char itemname[256];
 	char cFoundItems=0;
-	memset(m1,0,6096);
-	memset(m2,0,6096);
-	memset(itemname,0,256);
 	int k, m1t, m2t, value,serial;
 
-	m1[0]=0x3C; // Container content message
-	m1[1]=0;// Size of message
-	m1[2]=0;// Size of message
-	m1[3]=0;//  Count of items
-	m1[4]=0;// Count of items
-	m2[0]=0x74;// Buy window details message
-	m2[1]=0;// Size of message
-	m2[2]=8;// Size of message
+	UI08 itemname[256]={ 0x00, };
+
+	UI08 m1[6096]={ 0x3C, 0x00, };	// Container content message
+
+	UI08 m2[6096]={ 0x74, 0x00, };	// Buy window details message
+
 	LongToCharPtr(pi->getSerial32(), m2+3); //Container serial number
 	m2[7]=0; // Count of items;
 	m1t=5;
@@ -2252,55 +2206,47 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 		if (ISVALIDPI(pj))
 			if ((m2[7]!=255) && (pj->amount!=0) ) // 255 items max per shop container
 			{
+				UI08 namelen;
 				if (m2t>6000 || m1t>6000) break;
 
 				LongToCharPtr(pj->getSerial32(), m1+m1t+0);//Item serial number
-				ShortToCharPtr(pj->id(),m1+m1t+4);
+				ShortToCharPtr(pj->id(), m1+m1t+4);
 				m1[m1t+6]=0;			//Always zero
-				m1[m1t+7]=pj->amount>>8;//Amount for sale
-				m1[m1t+8]=pj->amount%256;//Amount for sale
-				m1[m1t+9]=loopexit>>8;//pj->getPosition("x")>>8;//items[j].x/256; //Item x position
-				m1[m1t+10]=loopexit%256;//pj->getPosition("x")%256;//items[j].x%256;//Item x position
-				m1[m1t+11]=loopexit>>8;//pj->getPosition("y")>>8;//items[j].y/256;//Item y position
-				m1[m1t+12]=loopexit%256;//pj->getPosition("y")%256;//items[j].y%256;//Item y position
+				ShortToCharPtr(pj->amount, m1+m1t+7); //Amount for sale
+				ShortToCharPtr(loopexit, m1+m1t+9); 
+				ShortToCharPtr(loopexit, m1+m1t+11);
 				LongToCharPtr(pi->getSerial32(), m1+m1t+13); //Container serial number
-				m1[m1t+17]=pj->color1;//Item color
-				m1[m1t+18]=pj->color2;//Item color
+				ShortToCharPtr(pj->color(), m1+m1t+17);
 				m1[4]++; // Increase item count.
-				m1t=m1t+19;
+				m1t += 19;
 				value=pj->value;
 				value=calcValue(DEREF_P_ITEM(pj), value);
 				if (SrvParms->trade_system==1) 
 					value=calcGoodValue(c,DEREF_P_ITEM(pj),value,0); // by Magius(CHE)
-				m2[m2t+0]=value>>24;// Item value/price
-				m2[m2t+1]=value>>16;//Item value/price
-				m2[m2t+2]=value>>8; // Item value/price
-				m2[m2t+3]=value%256; // Item value/price
-				m2[m2t+4]=pj->getName(itemname); // Item name length
+				LongToCharPtr(value, m2+m2t+0);		// Item value/price
+				namelen = pj->getName((char *)itemname);
+				m2[m2t+4]=namelen; 			// Item name length
 
-				for(k=0;k<m2[m2t+4];k++)
+				for(k=0;k<namelen;k++)
 				{
 				  	m2[m2t+5+k]=itemname[k];
 				}
 
-				m2t=m2t+(m2[m2t+4])+5;
+				m2t += namelen +5;
 				m2[7]++;
 				cFoundItems=1; //we found items so send message
-
 			}
 	}
 
-	m1[1]=m1t>>8;
-	m1[2]=m1t%256;
-	m2[1]=m2t>>8;
-	m2[2]=m2t%256;
+	ShortToCharPtr(m1t, m1 +1); // Size of message
+	ShortToCharPtr(m2t, m2 +1); // Size of message
 
 	if (cFoundItems==1)
 	{
 		Xsend(s, m1, m1t);
 		Xsend(s, m2, m2t);
+//AoS/		Network->FlushBuffer(s);
 	}
-
 }
 
 int sellstuff(NXWSOCKET s, CHARACTER i)
@@ -2313,8 +2259,6 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 	char itemname[256];
 	int m1t, z, value;
 	int serial,serial1;
-	unsigned char m1[2048];
-	unsigned char m2[2];
 	char ciname[256]; // By Magius(CHE)
 	char cinam2[256]; // By Magius(CHE)
 
@@ -2323,25 +2267,19 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 	{*/
 	//<Luxor>
 
-	P_ITEM pp=pc->GetItemOnLayer(0x1C);
+	P_ITEM pp=pc->GetItemOnLayer(LAYER_TRADE_BOUGHT);
 	VALIDATEPIR(pp,0);
 
-	m2[0]=0x33;
-	m2[1]=0x01;
-	Xsend(s, m2, 2);
+	SendPauseResumePkt(s, 0x01);
 
 	P_ITEM pack= pcs->getBackpack();
 	VALIDATEPIR(pack, 0);
 
-	m1[0]='\x9E'; // Header
-	m1[1]=0; // Size
-	m1[2]=0; // Size
-	m1[3]=pc->getSerial().ser1;
-	m1[4]=pc->getSerial().ser2;
-	m1[5]=pc->getSerial().ser3;
-	m1[6]=pc->getSerial().ser4;
-	m1[7]=0; // Num items
-	m1[8]=0; // Num items
+	UI08 m1[2048]={ 0x9E, 0x00, };
+	
+	LongToCharPtr(pc->getSerial32(), m1 +3);
+	ShortToCharPtr(0, m1 +7);	// Num items  m1[7],m1[8]
+
 	m1t=9;
 
 	serial= pp->getSerial32();
@@ -2374,6 +2312,7 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 						pj1->type==pj->type && 
 						((SrvParms->sellbyname==0)||(SrvParms->sellbyname==1 && (!strcmp(ciname,cinam2))))) // If the names are the same! --- Magius(CHE)
 					{
+						UI08 namelen;
 						LongToCharPtr(pj1->getSerial32(), m1+m1t+0);
 						ShortToCharPtr(pj1->id(),m1+m1t+4);
 						ShortToCharPtr(pj1->color(),m1+m1t+6);
@@ -2382,31 +2321,31 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 						value=calcValue(DEREF_P_ITEM(pj1), value);
 						if (SrvParms->trade_system==1)
 							value=calcGoodValue(i,DEREF_P_ITEM(pj1),value,1); // by Magius(CHE)
-						m1[m1t+10]=value>>8;
-						m1[m1t+11]=value%256;
+						ShortToCharPtr(value, m1+m1t+10);
+						namelen = pj1->getName(itemname);
 						m1[m1t+12]=0;// Unknown... 2nd length byte for string?
-						m1[m1t+13]=pj1->getName(itemname);
-						m1t=m1t+14;
-						for(z=0;z<m1[m1t-1];z++)
+						m1[m1t+13] = namelen;
+						m1t += 14;
+						for(z=0;z<namelen;z++)
 						{
 							m1[m1t+z]=itemname[z];
 						}
-						m1t=m1t+m1[m1t-1];
+						m1t += namelen;
 						m1[8]++;
 					}
 				}
-				
 			}
 		}
 	}
 
-	m1[1]=m1t>>8;
-	m1[2]=m1t%256;
+	ShortToCharPtr(m1t, m1 +1);
+
 	if (m1[8]<51) //With too many items, server crashes
 	{
 		if (m1[8]!=0)
 		{
 			Xsend(s, m1, m1t);
+//AoS/			Network->FlushBuffer(s);
 		}
 		else
 		{
@@ -2417,56 +2356,43 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 	{
 			pc->talkAll( TRANSLATE("Sorry i cannot take so many items.."),0);
 	}
-	m2[0]=0x33;
-	m2[1]=0x00;
-	Xsend(s, m2, 2);
-	return 1;
 
+	SendPauseResumePkt(s, 0x00);
+
+	return 1;
 }
 
 void playmidi(int s, char num1, char num2)
 {
-	UI08 msg[3] = { 0x06D, num1, num2 };
+	UI16 music_id = (num1<<8)|(num2%256);
+	UI08 msg[3] = { 0x06D, 0x00, };
+
+	ShortToCharPtr(music_id, msg +1);
 	Xsend(s, msg, 3);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void sendtradestatus(int cont1, int cont2)
 {
-
 	P_ITEM c1=MAKE_ITEM_REF(cont1);
-	VALIDATEPI(c1);
 	P_ITEM c2=MAKE_ITEM_REF(cont2);
+	VALIDATEPI(c1);
 	VALIDATEPI(c2);
 
+	NXWSOCKET s1, s2;
 
-	unsigned char msg[30];
-	int p1, p2, s1, s2;
+	P_CHAR p1, p2;
 
-	p1=calcCharFromSer(c1->getContSerial());
-	p2=calcCharFromSer(c2->getContSerial());
-	s1=calcSocketFromChar(p1);
-	s2=calcSocketFromChar(p2);
+	p1 = pointers::findCharBySerial(c1->getContSerial());
+	VALIDATEPC(p1);
+	p2 = pointers::findCharBySerial(c2->getContSerial());
+	VALIDATEPC(p2);
 
-	msg[0]=0x6F;//Header
-	msg[1]=0x00;//Size
-	msg[2]=0x11;//Size
-	msg[3]=0x02;//State
-	LongToCharPtr(c1->getSerial32(), msg+4);
-	msg[8]=0;
-	msg[9]=0;
-	msg[10]=0;
-	msg[11]=c1->morez%256;
-	msg[12]=0;
-	msg[13]=0;
-	msg[14]=0;
-	msg[15]=c2->morez%256;
-	msg[16]=0; // No name in this message
-	Xsend(s1, msg, 17);
+	s1 = p1->getSocket();
+	s2 = p2->getSocket();
 
-	LongToCharPtr(c2->getSerial32(), msg+4);
-	msg[11]=c2->morez%256;
-	msg[15]=c1->morez%256;
-	Xsend(s2, msg, 17);
+	SendSecureTradingPkt(s1, 0x02, c1->getSerial32(), (UI32) (c1->morez%256), (UI32) (c2->morez%256));
+	SendSecureTradingPkt(s2, 0x02, c2->getSerial32(), (UI32) (c2->morez%256), (UI32) (c1->morez%256));
 
 }
 
@@ -2476,8 +2402,6 @@ void endtrade(int b1, int b2, int b3, int b4)
 	VALIDATEPI(c1);
 	P_ITEM c2=pointers::findItemBySerial(calcserial(c1->moreb1, c1->moreb2, c1->moreb3, c1->moreb4));
 	VALIDATEPI(c2);
-
-	unsigned char msg[30];
 
 	P_CHAR pc1=pointers::findCharBySerial(c1->getContSerial());
 	VALIDATEPC(pc1);
@@ -2490,42 +2414,15 @@ void endtrade(int b1, int b2, int b3, int b4)
 	VALIDATEPI(bp1);
 	P_ITEM bp2= pc2->getBackpack();
 	VALIDATEPI(bp2);
-	NXWSOCKET s1=calcSocketFromChar(DEREF_P_CHAR(pc1));
-	NXWSOCKET s2=calcSocketFromChar(DEREF_P_CHAR(pc2));
 
-	msg[0]=0x6F;//Header Byte
-	msg[1]=0x00;//Size
-	msg[2]=0x11;//Size
-	msg[3]=0x01;//State byte
-	LongToCharPtr(c1->getSerial32(), msg+4);
-	msg[8]=0;
-	msg[9]=0;
-	msg[10]=0;
-	msg[11]=0;
-	msg[12]=0;
-	msg[13]=0;
-	msg[14]=0;
-	msg[15]=0;
-	msg[16]=0;
+	NXWSOCKET s1 = pc1->getSocket();
+	NXWSOCKET s2 = pc2->getSocket();
+
 	if (s1 > -1)	// player may have been disconnected (Duke)
-		Xsend(s1, msg, 17);
+		SendSecureTradingPkt(s1, 0x01, c1->getSerial32(), 0, 0);
 
-	msg[0]=0x6F;//Header Byte
-	msg[1]=0x00;//Size
-	msg[2]=0x11;//Size
-	msg[3]=0x01;//State byte
-	LongToCharPtr(c2->getSerial32(), msg+4);
-	msg[8]=0;
-	msg[9]=0;
-	msg[10]=0;
-	msg[11]=0;
-	msg[12]=0;
-	msg[13]=0;
-	msg[14]=0;
-	msg[15]=0;
-	msg[16]=0;
 	if (s2 > -1)	// player may have been disconnected (Duke)
-		Xsend(s2, msg, 17);
+		SendSecureTradingPkt(s2, 0x01, c2->getSerial32(), 0, 0);
 
 	
 	NxwItemWrapper si;
@@ -2561,7 +2458,6 @@ void endtrade(int b1, int b2, int b3, int b4)
 
 	c1->deleteItem();
 	c2->deleteItem();
-
 }
 
 void tellmessage(int i, int s, char *txt)
@@ -2571,45 +2467,20 @@ void tellmessage(int i, int s, char *txt)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	unsigned char talk2[19];
-	char unicodetext[512];
+	UI08 unicodetext[512];
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	sprintf(temp, TRANSLATE("GM tells %s: %s"), pc->getCurrentNameC(), txt);
 
-	int ucl = ( strlen ( temp ) * 2 ) + 2 ;
-	int tl = ucl + 48 ;
+	UI16 ucl = ( strlen ( temp ) * 2 ) + 2 ;
 	char2wchar(temp);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = (char)0xAE;
-	talk2[1] = tl >> 8;
-	talk2[2] = tl&0xFF;
-	talk2[3]=1;
-	talk2[4]=1;
-	talk2[5]=1;
-	talk2[6]=1;
-	talk2[7]=1;
-	talk2[8]=1;
-	talk2[9]=0;
-	talk2[10]=0x00; //First Part  \_Yellow
-	talk2[11]=0x35; //Second Part /
-	talk2[12]=0;
-	talk2[13]=3;
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
-
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-	Xsend(s, talk2, 18);
-	Xsend(s, sysname, 30);
-	Xsend(s, unicodetext, ucl);
-	Xsend(i, talk2, 18);//So Person who said it can see too
-	Xsend(i, sysname, 30);
-	Xsend(i, unicodetext, ucl);
+	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl);
+	SendUnicodeSpeechMessagePkt(i, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl); //So Person who said it can see too
 
 }
 
@@ -2897,42 +2768,20 @@ void bolteffectUO3D(CHARACTER player)
 */
 }
 
-void sysmessageflat(NXWSOCKET  s, short color, const char *txt) // System message (In lower left corner)
+void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
+// System message (In lower left corner)
 //Modified by N6 to use UNICODE packets
 {
+	UI08 unicodetext[512];
+	UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
 
-	unsigned char talk2[19];
-	char unicodetext[512];
-	int ucl = ( strlen ( txt ) * 2 ) + 2 ;
-
-	int tl = ucl + 48 ;
 	char2wchar(txt);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = (char)0xAE;
-	talk2[1] = tl >> 8;
-	talk2[2] = tl&0xFF;
-	talk2[3] = 1;
-	talk2[4] = 1;
-	talk2[5] = 1;
-	talk2[6] = 1;
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9] = 6;
-	talk2[10]= color>>8; // UOLBR patch to prevent client crash by Juliunus
-	talk2[11]= color%256;
-	talk2[12] = 0;
-	talk2[13] = 3;
+	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
-	talk2[14] = server_data.Unicodelanguage[0];
-	talk2[15] = server_data.Unicodelanguage[1];
-	talk2[16] = server_data.Unicodelanguage[2];
-	talk2[17] = 0;
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-	Xsend(s, talk2, 18);
-	Xsend(s, sysname, 30);
-	Xsend(s, unicodetext, ucl);
+	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
 }
 

@@ -346,12 +346,8 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 			Send[d]=ps_i->toInt();
 			
 			//////////////FOR ELCABESA VERY WARNING BY ENDYMION
-			//////TI PACKET PAUSE THE CLIENT
-			UI08 wppause[2]= { 0x33, 0x01 };
-			//////////////FOR ELCABESA VERY WARNING BY ENDYMION
-			//////TI PACKET PAUSE THE CLIENT
-			Xsend(ps_i->toInt(),wppause,2);
-//AoS/			Network->FlushBuffer(ps_i->toInt());
+			//////THIS PACKET PAUSE THE CLIENT
+			SendPauseResumePkt(ps_i->toInt(), 0x01);
 			d++;
 		}
 	}
@@ -540,9 +536,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	for (int a=0;a<d;a++) {
 		/////////FOR ELCABESA VERY IMPORTAT BY ENDY 
 		///////THIS PACKET RESUME CLIENT
-		UI08 restart[2] = { 0x33, 0x00 };
-		Xsend(Send[a],restart,2);
-//AoS/		Network->FlushBuffer(Send[a]);
+		SendPauseResumePkt(Send[a], 0x00);
 	}
 }
 
@@ -1206,12 +1200,8 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	P_ITEM hold=boat->p_container;
 
 	//////////////FOR ELCABESA VERY WARNING BY ENDYMION
-	//////TI PACKET PAUSE THE CLIENT
-	UI08 wppause[2] ={ 0x33, 0x01 };
-	Xsend(s,wppause,2);
-//AoS/	Network->FlushBuffer(s);
-	//////////////FOR ELCABESA VERY WARNING BY ENDYMION
-	//////TI PACKET PAUSE THE CLIENT
+	//////THIS PACKET PAUSE THE CLIENT
+	SendPauseResumePkt(s, 0x01);
 
 	switch(dir&0x0F)//Which DIR is it going in?
 	{
@@ -1255,17 +1245,13 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 #define YBORDER 200
 
 	Location boatpos= pBoat->getPosition();
-	/////////FOR ELCABESA VERY IMPORTAT BY ENDY
-	///////THIS PACKET RESUME CLIENT
-	UI08 restart[2]={ 0x33, 0x00 };
 
 	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=((MapTileWidth*8)-XBORDER))
 		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=((MapTileHeight*8)-YBORDER))) //bugfix LB
 	{
 		pBoat->type2=0;
 		itemtalk(tiller,TRANSLATE("Arr, Sir, we've hit rough waters!"));
-		Xsend(s,restart,2);
-//AoS/		Network->FlushBuffer(s);
+		SendPauseResumePkt(s, 0x00);
 		return;
 	}
 
@@ -1277,16 +1263,14 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	{
 		pBoat->type2=0;
 		itemtalk(tiller, TRANSLATE("Arr, somethings in the way!"));
-		Xsend(s,restart,2);
-//AoS/		Network->FlushBuffer(s);
+		SendPauseResumePkt(s, 0x00);
 		return;
 	}
 	if(collision(pBoat, boatpos,0)==true)
 	{
 		pBoat->type2=0;
 		itemtalk(tiller, TRANSLATE("Arr, another ship in the way"));
-		Xsend(s,restart,2);
-//AoS/		Network->FlushBuffer(s);
+		SendPauseResumePkt(s, 0x00);
 		return;
 	}
 
@@ -1355,8 +1339,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	}
 */
 
-	Xsend(s,restart,2);
-//AoS/	Network->FlushBuffer(s);
+	SendPauseResumePkt(s, 0x00);
 	pBoat->Refresh();
 	tiller->Refresh();
 	p1->Refresh();
