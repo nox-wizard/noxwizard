@@ -63,16 +63,16 @@ CWorldMain::~CWorldMain()
 */
 void HexVector2UnicodeString( cUnicodeString* c, char* s )
 {
-	c->clear();
+	
 	int i=0;
 	int size= strlen( s );
 	char temp[6] = { '0','x', };
 	while( i<size ) {
-		memcpy( &s[i], &temp[2], 4 );
+		memcpy( &temp[2], &s[i], 4 );
 		char* dummy; 
 		wchar_t v= (wchar_t)strtol( temp, &dummy, 0 );
-		if( v==0 ) return; // terminator
-		c->append( v );
+		if( v==0 ) return; // terminator added yet
+		(*c)+=v;
 		i+=4;
 	}
 }
@@ -1310,12 +1310,9 @@ void fprintVector( FILE* f, char* name, std::vector<UI08>* c )
 {
 	if( c==NULL ) return;
 	fprintf( f, "%s ", name );
-	char temp[5];
 	std::vector<UI08>::iterator iter( c->begin() ), end( c->end() );
 	for( ; iter!=end; iter++ ) {
-		sprintf( (char*)&temp, "%x", (*iter) );
-		temp[4]=0x00;
-		fprintf( f, "%s", &temp[2] );
+		fprintf( f, "%x", (*iter) );
 	}
 	fprintf( f, "\n" );
 }
