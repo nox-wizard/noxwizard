@@ -237,17 +237,17 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'D':
 		case 'd':
-			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition("dZ", str2num(script2));}
-			else if (!strcmp(script1, "DAMAGETYPE"))		{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
+			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition('d', str2num(script2));}
+			else if (!strcmp(script1, "DAMAGETYPE"))	{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
 			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
-			else if (!strcmp(script1, "DEXTERITY2"))		{ pc->dx2=str2num(script2); }
-			else if (!strcmp(script1, "DEATHS"))			{ pc->deaths=str2num(script2);  }
+			else if (!strcmp(script1, "DEXTERITY2"))	{ pc->dx2=str2num(script2); }
+			else if (!strcmp(script1, "DEATHS"))		{ pc->deaths=str2num(script2);  }
 			else if (!strcmp(script1, "DEAD"))			{ pc->dead = true; } // dead only appears in file if it's true.
 			else if (!strcmp(script1, "DEF"))			{ pc->def=str2num(script2);}
 			else if (!strcmp(script1, "DISABLED"))		{ pc->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);}//AntiChrist
 			else if (!strcmp(script1, "DISABLEMSG"))	{ pc->disabledmsg = new std::string( script2 );}
-			else if (!strcmp(script1, "DOORUSE"))			{ pc->doorUse=str2num(script2);}
+			else if (!strcmp(script1, "DOORUSE"))		{ pc->doorUse=str2num(script2);}
 		break;
 
 		case 'E':
@@ -387,9 +387,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'O':
 		case 'o':
 			if (!strcmp(script1, "OLDNPCWANDER"))		{ pc->oldnpcWander=str2num(script2);}
-			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition("x", str2num(script2)); }
-			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition("y", str2num(script2)); }
-			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition("z", str2num(script2)); }
+			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition('x', str2num(script2)); }
+			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition('y', str2num(script2)); }
+			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition('z', str2num(script2)); }
 			else if (!strcmp(script1, "OWN"))			{ pc->setOwnerSerial32Only(str2num(script2)); }
 		break;
 
@@ -502,7 +502,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'X':
 		case 'x':
-			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
+			if (!strcmp(script1, "X"))					{ pc->setPosition('x', str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
 				pc->SetOldBodyType( str2num(script2) );
@@ -523,15 +523,15 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'Y':
 		case 'y':
-			if (!strcmp(script1, "Y"))					{ pc->setPosition("y", str2num(script2)); }
+			if (!strcmp(script1, "Y"))					{ pc->setPosition('y', str2num(script2)); }
 		break;
 
 		case 'Z':
 		case 'z':
 			if (!strcmp(script1, "Z"))
 			{
-				pc->setPosition("z", str2num(script2));
-				pc->setPosition("dZ", str2num(script2));
+				pc->setPosition('z', str2num(script2));
+				pc->setPosition('d', str2num(script2));
 
 			}
 		break;
@@ -975,14 +975,14 @@ void loaditem()
 		case 'x':
 		case 'X':
 			if (!(strcmp(script1, "X")))
-				pi->setPosition("x", str2num(script2));
+				pi->setPosition('x', str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
 		case 'y':
 		case 'Y':
 			if (!(strcmp(script1, "Y")))
-				pi->setPosition("y", str2num(script2));
+				pi->setPosition('y', str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -998,7 +998,7 @@ void loaditem()
 		case 'z':
 		case 'Z':
 			if (!(strcmp(script1, "Z")))
-				pi->setPosition("z", str2num(script2));
+				pi->setPosition('z', str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 		}
@@ -1033,7 +1033,7 @@ void loaditem()
 			insert_boat(pi);
 		}
 
-		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
+		if ((pi->getPosition().x<0) || (pi->getPosition().y<0) || (pi->getPosition().x>max_x) || (pi->getPosition().y>max_y))	// lord bianry
 			pi->deleteItem();
 	}
 
@@ -1382,12 +1382,12 @@ void CWorldMain::SaveChar( P_CHAR pc )
 //			if (pcpos.dispz)
 				fprintf(cWsc, "DISPZ %i\n", pcpos.dispz);
 
-			if (pc->getOldPosition("x")!=dummy.getOldPosition("x"))
-				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition("x"));
-			if (pc->getOldPosition("y")!=dummy.getOldPosition("y"))
-				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition("y"));
-			if (pc->getOldPosition("z")!=dummy.getOldPosition("z"))
-				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition("z"));
+			if (pc->getOldPosition().x!=dummy.getOldPosition().x)
+				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition().x);
+			if (pc->getOldPosition().y!=dummy.getOldPosition().y)
+				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition().y);
+			if (pc->getOldPosition().z!=dummy.getOldPosition().z)
+				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition().z);
 
 			if (pc->dir!=dummy.dir)
 				fprintf(cWsc, "DIR %i\n", pc->dir);
@@ -1772,7 +1772,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	}
 
-	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
+	if ( ( !pi->isInWorld() || ((pi->getPosition().x > 1) && (pi->getPosition().x < 6144) && (pi->getPosition().y < 4096))))
 	{
 		fprintf(iWsc, "SECTION WORLDITEM %i\n", itm_curr++);
 		fprintf(iWsc, "{\n");

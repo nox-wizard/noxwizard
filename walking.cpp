@@ -110,6 +110,7 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 		return false;
 	
 	Location pcpos=pc->getPosition();
+	Location opos=po->getPosition();
 
 	UI16 start_x, scan_y, scan_x;
 	switch (pc->dir)
@@ -121,9 +122,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if ((po->getPosition("x")==scan_x) || (po->getPosition("x")==scan_x+1))
+				if ((opos.x==scan_x) || (opos.x==scan_x+1))
 				{
-					if (po->getPosition("y")==scan_y)
+					if (opos.y==scan_y)
 					{
 						return true;
 					}
@@ -138,9 +139,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x || po->getPosition("x")==scan_x+1)
+				if((opos.x==scan_x) || (opos.x==scan_x+1))
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -155,9 +156,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
+					if((opos.y==scan_y) || (opos.y==scan_y+1))
 					{
 						return true;
 					}
@@ -171,11 +172,11 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 			start_x= pcpos.x + 2;
 			scan_y= pcpos.y - 14;
 
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
+			for(scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
+					if((opos.y==scan_y) || (opos.y==scan_y+1))
 					{
 						return true;
 					}
@@ -191,9 +192,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -206,9 +207,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -224,9 +225,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -239,9 +240,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -257,9 +258,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -272,9 +273,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -289,9 +290,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -304,9 +305,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if (po->getPosition("x")==scan_x)
+				if(opos.x==scan_x)
 				{
-					if (po->getPosition("y")==scan_y)
+					if(opos.y==scan_y)
 					{
 						return true;
 					}
@@ -508,7 +509,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 			continue;
 		if (pi->id1<0x40) // Not a Multi
 		{
-			if ((pi->getPosition("x")== pc->getPosition("x")) && (pi->getPosition("y")==pc->getPosition("y")))
+			if ((pi->getPosition().x== pc->getPosition().x) && (pi->getPosition().y==pc->getPosition().y))
 			{
 				if (pi->trigger!=0)
 				{
@@ -536,7 +537,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				tile_st tile;
 				Map->SeekTile(pi->id(), &tile);
 				xyblock[blockers_count].type=1;
-				xyblock[blockers_count].basez= pi->getPosition("z");
+				xyblock[blockers_count].basez= pi->getPosition().z;
 				xyblock[blockers_count].id=pi->id();
 				xyblock[blockers_count].flag1=tile.flag1;
 				xyblock[blockers_count].flag2=tile.flag2;
@@ -549,8 +550,8 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 		else	// Multi Tile
 		{
-			if ( (abs(pi->getPosition("x") - (int)pc->getPosition("x"))<=BUILDRANGE) &&
-				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
+			if ( (abs(pi->getPosition().x - (int)pc->getPosition().x)<=BUILDRANGE) &&
+				 (abs(pi->getPosition().y - (int)pc->getPosition().y)<=BUILDRANGE) )
 			{
 				MULFile *mfile = NULL;
 				SI32 length = 0;
@@ -567,12 +568,12 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				{
 					st_multi multi;
 					mfile->get_st_multi(&multi);
-					if (multi.visible && (pi->getPosition("x")+multi.x == pc->getPosition("x")) && (pi->getPosition("y")+multi.y == pc->getPosition("y")))
+					if (multi.visible && (pi->getPosition().x+multi.x == pc->getPosition().x) && (pi->getPosition().y+multi.y == pc->getPosition().y))
 					{
 						tile_st tile;
 						Map->SeekTile(multi.tile, &tile);
 						xyblock[blockers_count].type=2;
-						xyblock[blockers_count].basez= multi.z+pi->getPosition("z");
+						xyblock[blockers_count].basez= multi.z+pi->getPosition().z;
 						xyblock[blockers_count].id= multi.tile;
 						xyblock[blockers_count].flag1= tile.flag1;
 						xyblock[blockers_count].flag2= tile.flag2;
@@ -587,7 +588,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 	}
 
-    MapStaticIterator msi( pc->getPosition("x"), pc->getPosition("y") );
+    MapStaticIterator msi( pc->getPosition().x, pc->getPosition().y );
 	staticrecord *stat;
 	int loopexit=0;
 	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
