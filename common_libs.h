@@ -193,20 +193,12 @@ using namespace std;
     #include <pthread.h>
 #endif
 
-#ifdef __unix__
-    #ifndef __BEOS__
-        #define PTHREADS
-    #endif
+#if defined __unix__ && !defined __BEOS__
+    #define PTHREADS
 #endif
 
-#ifdef __BEOS__
-    #error BeOS threads are not supported, sorry ;[
-#endif
-
-#ifndef WIN32
-#ifndef PTHREADS
+#ifndef WIN32 && !defined PTHREADS
     #error Your platform is not supported by Trivial Threads :[
-#endif
 #endif
 
 namespace tthreads {
@@ -219,16 +211,14 @@ class Mutex {
     #ifdef WIN32
     	CRITICAL_SECTION m_cs;
     	CRITICAL_SECTION m_cs2;
-    #endif
-    #ifdef PTHREADS
+    #elif defined PTHREADS
     	pthread_mutex_t* m_mutex;
     #endif
    inline void init(bool alreadylocked) {
         #ifdef WIN32
     	    InitializeCriticalSection(&m_cs);
     	    InitializeCriticalSection(&m_cs2);
-        #endif
-        #ifdef PTHREADS
+	#elif defined PTHREADS
     	    m_mutex = (pthread_mutex_t *) malloc (sizeof (pthread_mutex_t));
     	    pthread_mutex_init (m_mutex, NULL);
         #endif
@@ -247,8 +237,7 @@ class Mutex {
         #ifdef WIN32
     	    DeleteCriticalSection(&m_cs);
     	    DeleteCriticalSection(&m_cs2);
-        #endif
-        #ifdef PTHREADS
+	#elif defined PTHREADS
     	    pthread_mutex_destroy (m_mutex);
         	free(m_mutex);
         #endif
@@ -258,8 +247,7 @@ class Mutex {
         #ifdef WIN32
     	    EnterCriticalSection(&m_cs2);
     	    EnterCriticalSection(&m_cs);
-        #endif
-        #ifdef PTHREADS
+	#elif defined PTHREADS
     	    pthread_mutex_lock(m_mutex);
         #endif
         m_bLocked = true;
@@ -273,22 +261,12 @@ class Mutex {
         m_bLocked = false;
         #ifdef WIN32
     	    LeaveCriticalSection(&m_cs);
-        #endif
-        #ifdef PTHREADS
+	#elif defined PTHREADS
         	pthread_mutex_unlock(m_mutex);
         #endif
     }
     inline bool tryEnter () {
         if (m_bDebug) printf("DBG-MUTEX: Try-Locking mutex %s\n", m_szMutexName);
-        #ifdef POSIX
-            return pthread_mutex_trylock(m_mutex)==0;
-        #endif
-				//
-				// Sparhawk fix for gcc 3.2
-				//
-        #ifdef PTHREADS
-            return pthread_mutex_trylock(m_mutex)==0;
-        #endif
         #ifdef WIN32
             //if (getOSVersion()==OSVER_WINNT) return TryEnterCriticalSection(&m_cs);
             // Xan : workaround for TryEnterCriticalSection not working in Win9x
@@ -302,6 +280,8 @@ class Mutex {
             enter();
        	    LeaveCriticalSection(&m_cs2);
             return true;
+	#elif defined PTHREADS
+            return pthread_mutex_trylock(m_mutex)==0;
         #endif
     }
     void setDebugMode (char *name) { m_bDebug = false; m_szMutexName = new char[strlen(name)+2]; strcpy(m_szMutexName, name);}
@@ -360,7 +340,7 @@ public :
 #ifdef WIN32
     #define TTHREAD void
     #define EXIT_TTHREAD { return; }
-#else
+#elif defined PTHREADS
     #define TTHREAD void*
     #define EXIT_TTHREAD { return NULL; }
 #endif
@@ -374,7 +354,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param = NULL );
     inline bool pollCloseRequests () { return false; }
     inline void setup_signals (){ return; }
     inline void start_signal_thread() {return;}
-#else
+#elif defined PTHREADS
     extern bool pollHUPStatus ();
     extern bool pollCloseRequests ();
     extern void setup_signals ();
