@@ -443,27 +443,28 @@ bool cMap::isReady()
 \param y the y location
 \param cella the map cell
 */
-bool cMap::getMap( UI16 x, UI16 y, TCELLA& cella )
+bool cMap::getMap( UI16 x, UI16 y, map_st& m )
 {
 	if( !isReady() )
 		return false;
 
-	if( x>=width || y>=height )
+	UI16 blockX = x / 8, blockY = y / 8;
+	if( (blockX>=width) || (blockY>=height) )
 		return false;
 
-	file.seekg( x*height +y );
-	file.read( (char*)&cella, sizeof(TCELLA) );
+	UI16 cellX = x%8, cellY = y%8;
+	UI32 pos =
+		// Block position - A block contains 8x8 cells. Blocks are registered in file by top to bottom columns from left to right.
+		( blockX * this->height * sizeof(mapblock_st) ) + ( blockY * sizeof(mapblock_st) ) +
+		// Header of the block, it doesn't interest us.
+		sizeof( UI32 ) +
+		// Cell position in block - A cell is a map_st. Cells are registered in blocks by left to right rows from top to bottom.
+		( cellY * 8 * sizeof( map_st ) ) + ( cellX * sizeof( map_st ) );
+
+	file.seekg( pos );
+	file.read( (char*)&m, sizeof(map_st) );
 	return true;
-
-	/*		int x1=x/8;
-        int y1=y/8;
-        int x2=(x-(x1*8));
-        int y2=(y-(y1*8));
-        int pos=(x1*512*196)+(y1*196)+(y2*24)+(x2*3)+4;
-
-        fseek(mapfile, pos, SEEK_SET);
-        fread(&map1, 3, 1, mapfile);
-*/
+/////////////////////////////
 }
 
 

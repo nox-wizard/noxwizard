@@ -280,21 +280,16 @@ const int XCELLSINBLOCK = 8;
 const int YCELLSINBLOCK = 8;
 const int CELLSINBLOCK = XCELLSINBLOCK * YCELLSINBLOCK;
 
-struct tcella_st {
+struct map_st {
 	UI16 id;
 	SI08 z;
 } PACK_NEEDED;
-typedef tcella_st TCELLA;
-typedef TCELLA* P_CELLA;
 
-typedef tcella_st map_st;
-
-struct tblocco_st {
+struct mapblock_st {
 	UI32 header;
-	TCELLA celle[XCELLSINBLOCK][YCELLSINBLOCK];
+	map_st celle[XCELLSINBLOCK][YCELLSINBLOCK];
 }  PACK_NEEDED;
 
-typedef tblocco_st TBLOCCO;
 
 /*!
 \brief Map
@@ -315,7 +310,7 @@ public:
 	~cMap();
 
 	bool isReady();
-	bool getMap( UI16 x, UI16 y, TCELLA& cella );
+	bool getMap( UI16 x, UI16 y, map_st& m );
 
 };
 
