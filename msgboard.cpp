@@ -2072,7 +2072,7 @@ void MsgBoardQuestEscortCreate( int npcIndex )
 	npc->questType = ESCORTQUEST;
 
 	// Make sure they don't move until an player accepts the quest
-	npc->npcWander       = 0;                // Don't want our escort quest object to wander off.
+	npc->npcWander       = WANDER_NOMOVE;                // Don't want our escort quest object to wander off.
 	npc->npcaitype = NPCAI_GOOD;                // Remove any AI from the escort (should be dumb, just follow please :)
 	npc->questOrigRegion = npc->region;  // Store this in order to remeber where the original message was posted
 
@@ -2146,7 +2146,7 @@ void MsgBoardQuestEscortArrive( P_CHAR pc, P_CHAR pc_k)
 	pc_k->sysmsg(TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title.c_str() );
 
 	// Take the NPC out of quest mode
-	pc->npcWander = 2;         // Wander freely
+	pc->npcWander = WANDER_FREELY_CIRCLE;         // Wander freely
 	pc->ftargserial = INVALID;            // Reset follow target
 	pc->questType = QTINVALID;         // Reset quest type
 	pc->questDestRegion = 0;   // Reset quest destination region

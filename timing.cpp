@@ -295,7 +295,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				if( pNpc->lastNpcCheck != uiCurrentTime &&
 				    (TIMEOUT( checknpcs ) ||
 				    (TIMEOUT( checktamednpcs ) && pNpc->tamed) ||
-				    (TIMEOUT( checknpcfollow ) && pNpc->npcWander == 1 ) ) )
+				    (TIMEOUT( checknpcfollow ) && pNpc->npcWander == WANDER_FOLLOW ) ) )
 				{
 					pNpc->heartbeat();
 					pNpc->lastNpcCheck = uiCurrentTime;
@@ -315,7 +315,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				if( npc->lastNpcCheck != uiCurrentTime &&
 				    (TIMEOUT( checknpcs ) ||
 				    (TIMEOUT( checktamednpcs ) && npc->tamed) ||
-				    (TIMEOUT( checknpcfollow ) && npc->npcWander == 1 ) ) )
+				    (TIMEOUT( checknpcfollow ) && npc->npcWander == WANDER_FOLLOW ) ) )
 				{
 					npc->heartbeat();
 					npc->lastNpcCheck = uiCurrentTime;

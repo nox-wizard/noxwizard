@@ -332,7 +332,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if( pc->war )
 				return;
 
-			if( pc->npcWander == 5 )
+			if( pc->npcWander == WANDER_FLEE )
 				return;
 			
 			if( pc->shopkeeper )
@@ -402,7 +402,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		{
 			if ( pc->war )
 				return;
-			if ( pc->npcWander == 5 )
+			if ( pc->npcWander == WANDER_FLEE )
 				return;
 			
 			if (pc->baseskill[MAGERY] > 400)
@@ -566,14 +566,14 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			// Sparhawk	Check wether a guard should continue walking towards the character who called him
 			//
 			int x, y;
-			if ( pc->npcWander == 1 )
+			if ( pc->npcWander == WANDER_FOLLOW )
 			{
 				P_CHAR guardcaller = pointers::findCharBySerial( pc->ftargserial );
 
 				if ( (!(ISVALIDPC( guardcaller ))) || TIMEOUT( pc->antiguardstimer ) || pc->distFrom( guardcaller ) <= 1 )
 				{
 					pc->npcWander = pc->oldnpcWander;
-					pc->oldnpcWander = 0;
+					pc->oldnpcWander = WANDER_NOMOVE;
 					pc->ftargserial = INVALID;
 				}
 				else
@@ -612,10 +612,10 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 							character->IsCriminal()
 						   )
 						{
-							if ( pc->npcWander == 1 )
+							if ( pc->npcWander == WANDER_FOLLOW )
 							{
 								pc->npcWander = pc->oldnpcWander;
-								pc->oldnpcWander = 0;
+								pc->oldnpcWander = WANDER_NOMOVE;
 								pc->ftargserial = INVALID;
 							}
 

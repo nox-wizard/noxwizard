@@ -677,7 +677,7 @@ void doubleclick(NXWCLIENT ps)
 			vendor->unHide();
 			vendor->stealth=INVALID;
 			vendor->dir = pc->dir;
-			vendor->npcWander = 0;
+			vendor->npcWander = WANDER_NOMOVE;
 			vendor->SetInnocent();
 			vendor->setOwnerSerial32( pc->getSerial32() );
 			vendor->tamed = false;

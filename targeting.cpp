@@ -2101,7 +2101,7 @@ void cTargets::NpcTarget2(NXWSOCKET s)
         if (pc->npc==1)
         {
             pc->ftargserial=calcserial(addid1[s], addid2[s], addid3[s], addid4[s]);
-            pc->npcWander=1;
+            pc->npcWander=WANDER_FOLLOW;
         }
 }
 
@@ -2119,7 +2119,7 @@ void cTargets::NpcRectTarget(NXWSOCKET s)
             pc->fz1=-1;
             pc->fx2=addx2[s];
             pc->fy2=addy2[s];
-            pc->npcWander=3;
+            pc->npcWander=WANDER_FREELY_BOX;
         }
 }
 
@@ -2136,7 +2136,7 @@ void cTargets::NpcCircleTarget(NXWSOCKET s)
             pc->fy1=addy[s];
             pc->fz1=-1;
             pc->fx2=addx2[s];
-            pc->npcWander=2; // bugfix, LB
+            pc->npcWander=WANDER_FREELY_CIRCLE; // bugfix, LB
         }
 }
 
@@ -2361,7 +2361,7 @@ void cTargets::FollowTarget(NXWSOCKET s)
 	VALIDATEPC(pc2);
 
     pc->ftargserial=pc2->getSerial32();
-    pc->npcWander=1;
+    pc->npcWander=WANDER_FOLLOW;
 }
 
 void cTargets::TransferTarget(NXWSOCKET s)
@@ -2390,9 +2390,9 @@ void cTargets::TransferTarget(NXWSOCKET s)
     pc1->talkAll(t,0);
 
     pc1->setOwner( pc2 );
-    pc1->npcWander=1;
+    pc1->npcWander=WANDER_FOLLOW;
     pc1->ftargserial=INVALID;
-    pc1->npcWander=0;
+    pc1->npcWander=WANDER_NOMOVE;
 }
 
 void cTargets::BuyShopTarget(NXWSOCKET s)
@@ -3521,7 +3521,7 @@ void cTargets::GuardTarget( NXWSOCKET  s )
     }
     pPet->npcaitype = NPCAI_PETGUARD;
     pPet->ftargserial=pc->getSerial32();
-    pPet->npcWander=1;
+    pPet->npcWander=WANDER_FOLLOW;
     sysmessage(s, TRANSLATE("Your pet is now guarding you."));
     pc->guarded = true;
 }

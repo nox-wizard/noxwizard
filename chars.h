@@ -32,11 +32,11 @@
 \brief native extension to game play :)
 */
 #define NCF0_GREY			1	 // char is grey
-#define NCF0_PERMAGREY			2	 // char is permagrey
+#define NCF0_PERMAGREY		2	 // char is permagrey
 #define NCF0_RFIRE			4	 // char resists fire (future use)
-#define NCF0_RPARALISYS 		8	 // char resists paralisys (future use)
-#define NCF0_RPOISON			16	 // char resists poison (future use)
-#define NCF0_WATERWALK			32	 // char walks on water (npc only)
+#define NCF0_RPARALISYS 	8	 // char resists paralisys (future use)
+#define NCF0_RPOISON		16	 // char resists poison (future use)
+#define NCF0_WATERWALK		32	 // char walks on water (npc only)
 #define NCF0_BIT6			64
 #define NCF0_BIT7			128
 
@@ -97,6 +97,16 @@ enum Races {
 	ANIMAL_ABERRATION
 };
 
+
+enum WanderMode {
+	WANDER_NOMOVE = 0,
+	WANDER_FOLLOW,
+	WANDER_FREELY_CIRCLE,
+	WANDER_FREELY_BOX,
+	WANDER_FREELY,
+	WANDER_FLEE,
+	WANDER_AMX
+};
 
 /*!
 \brief AMX Events for Characters
@@ -459,17 +469,18 @@ class cChar : public cObject
 \name Movement
 */
 	private:
-		cPath*			path;			//!< current path <Luxor>
-		void			walkNextStep();		//!< walk next path step <Luxor>
+		cPath*			path;			//!< current path 
+		void			walkNextStep();		//!< walk next path step 
 		SERIAL_SLIST		sentObjects;
 	public:
-		LOGICAL			canSee( cObject &obj );	//!< can it see the object? <Luxor>
-		LOGICAL			seeForFirstTime( cObject &obj );	//!< does it see the object for the first time? <Luxor>
-		LOGICAL			seeForLastTime( cObject &obj ); //!< does it see the object for the first time? <Luxor>
+		LOGICAL			canSee( cObject &obj );	//!< can it see the object? 
+		LOGICAL			seeForFirstTime( cObject &obj );	//!< does it see the object for the first time? 
+		LOGICAL			seeForLastTime( cObject &obj ); //!< does it see the object for the first time? 
 		void			walk();			//!< execute walk code <Luxor>
-		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set? <Luxor>
-		void			follow( P_CHAR pc ); //!< follow pc <Luxor>
-		void			pathFind( Location pos, LOGICAL bOverrideCurrentPath = true );	//!< Walk to position <Luxor>
+		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set? 
+		void			follow( P_CHAR pc ); //!< follow pc 
+		void flee( P_CHAR pc, SI32 seconds=INVALID ); //!< flee from pc 
+		void			pathFind( Location pos, LOGICAL bOverrideCurrentPath = true );	//!< Walk to position 
 		SI08			dir;			//!< &0F=Direction
 		UI32			LastMoveTime;		//!< server time of last move
 //@}
@@ -731,6 +742,7 @@ public:
 		TIMERVAL		npcmovetime; // Next time npc will walk
 		char			npcWander; // NPC Wander Mode
 		char			oldnpcWander; // Used for fleeing npcs
+		TIMERVAL		fleeTimer;
 		R32			npcMoveSpeed; // Used to controll npc walking speed
 		R32			npcFollowSpeed; // Used to controll npc walking speed when following a target (npcwander = 1)
 		SI32			fx1; //NPC Wander PoSI32 1 x
@@ -738,6 +750,7 @@ public:
 		SI32			fy1; //NPC Wander Point 1 y
 		SI32			fy2; //NPC Wander Point 2 y
 		signed char		fz1; //NPC Wander Point 1 z
+		
 		UI08			hidden; // 0 = not hidden, 1 = hidden, 2 = invisible spell
 		TIMERVAL		invistimeout;
 		SI32			hunger;  // Level of hungerness, 6 = full, 0 = "empty"

@@ -197,16 +197,19 @@ cChar::cChar( SERIAL ser ) : cObject()
 	
 	runeserial=INVALID; // Used for naming runes
 	attackerserial=INVALID; // Character who attacked this character
-	npcmovetime=uiCurrentTime; // Next time npc will walk
 	nextAiCheck=uiCurrentTime;
-	npcWander=0; // NPC Wander Mode
-	oldnpcWander=0; // Used for fleeing npcs
+
+	npcmovetime=uiCurrentTime; // Next time npc will walk
+	npcWander=WANDER_NOMOVE; // NPC Wander Mode
+	fleeTimer=INVALID;
+	oldnpcWander=WANDER_NOMOVE; // Used for fleeing npcs
 	ftargserial=INVALID; // NPC Follow Target
 	fx1=-1; //NPC Wander Point 1 x
 	fx2=-1; //NPC Wander Point 2 x
 	fy1=-1; //NPC Wander Point 1 y
 	fy2=-1; //NPC Wander Point 2 y
 	fz1=0; //NPC Wander Point 1 z
+
 	spawnserial=INVALID; // Spawned by
 	hidden=UNHIDDEN;
 	invistimeout=0;
@@ -2623,7 +2626,7 @@ LOGICAL const cChar::IsOverWeight()
 void cChar::setOwner(P_CHAR owner)
 {
 	setOwnerSerial32(owner->getSerial32());
-	npcWander=0;
+	npcWander=WANDER_NOMOVE;
 	tamed = true;
 	npcaitype=NPCAI_GOOD;
 }
@@ -2998,7 +3001,7 @@ void cChar::Kill()
 		if( pKiller->npcaitype==NPCAI_TELEPORTGUARD )
 		{
 			pKiller->summontimer=(uiCurrentTime+(MY_CLOCKS_PER_SEC*20));
-			pKiller->npcWander=2;
+			pKiller->npcWander=WANDER_FREELY_CIRCLE;
 			pKiller->setNpcMoveTime();
 			pKiller->talkAll(TRANSLATE("Thou have suffered thy punishment, scoundrel."),0);
 		}
@@ -3092,7 +3095,7 @@ void cChar::Kill()
 		if (pk->npcaitype==NPCAI_TELEPORTGUARD)
 		{
 			pk->summontimer=(uiCurrentTime+(MY_CLOCKS_PER_SEC*20));
-			pk->npcWander=2;
+			pk->npcWander=WANDER_FREELY_CIRCLE;
 			pk->setNpcMoveTime();
 			pk->talkAll(TRANSLATE("Thou have suffered thy punishment, scoundrel."),0);
 		}
@@ -3347,7 +3350,7 @@ void cChar::Kill()
 void cChar::setNpcMoveTime()
 {
 //	npcmovetime = uiCurrentTime;
-	if ( npcWander == 1 )
+	if ( npcWander == WANDER_FOLLOW )
 		npcmovetime = UI32( uiCurrentTime + ( float( npcFollowSpeed * MY_CLOCKS_PER_SEC ) ) );
 	else
 		npcmovetime = UI32( uiCurrentTime + ( float( npcMoveSpeed * MY_CLOCKS_PER_SEC ) ) );
@@ -4766,7 +4769,7 @@ void cChar::npc_heartbeat()
 				case 1: emoteall( TRANSLATE("* %s must eat very soon or he will die! *"), 1, getCurrentNameC() );
 					break;
 				case 0:	ftargserial = INVALID;
-					npcWander = 2;
+					npcWander = WANDER_FREELY_CIRCLE;
 					setOwnerSerial32( INVALID );
 					emoteall( TRANSLATE("* %s appears to have decided that it is better off without a master *"), 0, getCurrentNameC());
 					playSFX( 0x01FE);
@@ -4781,25 +4784,21 @@ void cChar::npc_heartbeat()
 		hungertime = uiCurrentTime + ( SrvParms->hungerrate * MY_CLOCKS_PER_SEC );
 	}
 
-	if ( !fleeat )
-		fleeat = NPC_BASE_FLEEAT;
-
-	if ( !reattackat )
-		reattackat = NPC_BASE_REATTACKAT;
-
-	if ( npcWander != 5 && ( hp < getStrength() * fleeat / 100 ) )
-	{
-		oldnpcWander = npcWander;
-		npcWander = 5;
-		setNpcMoveTime();
+	if( npcWander!=WANDER_FLEE ) {
+		if( hp < getStrength() * fleeat / 100 ) {
+			flee( pointers::findCharBySerial( ftargserial ) );
+			setNpcMoveTime();
+		}
 	}
-
-	if ( npcWander == 5 && ( hp > getStrength() * reattackat / 100 ) )
-	{
-		npcWander = oldnpcWander;
-		setNpcMoveTime();
-		oldnpcWander = 0; // so it won't save this at the wsc file
-	}
+	else   
+		if( ( ( fleeTimer==INVALID ) && ( hp > getStrength() * reattackat / 100 ) ) ||
+			( ( fleeTimer!=INVALID ) && TIMEOUT( fleeTimer ) ) )
+		{
+			npcWander = oldnpcWander;
+			setNpcMoveTime();
+			oldnpcWander = WANDER_NOMOVE; // so it won't save this at the wsc file
+			fleeTimer=INVALID;
+		}
 	
 	//
 	//	Handle ai

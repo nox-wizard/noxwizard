@@ -2147,6 +2147,27 @@ NATIVE(_tempfx_isActive)
 }
 
 /*
+\brief Flee from target
+\author Endymion
+\since 0.82
+\param 1 npc 
+\param 2 from character
+\param 3 seconds
+\return 0 or INVALID if not valid character
+*/
+NATIVE(_chr_flee)
+{
+	P_CHAR npc=pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( npc, INVALID );
+
+	P_CHAR from=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( from, INVALID );
+
+	npc->flee( from, params[3] );
+	return 0;
+}
+
+/*
 \brief Get an event handler name from a given character
 \author Sparhawk
 \since 0.82
@@ -3334,7 +3355,7 @@ NATIVE(_chr_npcRelease)
 		pc->summontimer=uiCurrentTime;
 	}
 	pc->ftargserial=INVALID;
-	pc->npcWander=2;
+	pc->npcWander=WANDER_FREELY_CIRCLE;
 	pc->setOwnerSerial32(-1);
 	pc->tamed = false;
 	return 0;
@@ -5706,6 +5727,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 //
 // End of new character guild functions
 //
+ { "chr_flee", _chr_flee },
  { "chr_attackStuff", _chr_attackStuff },
  { "chr_helpStuff", _chr_helpStuff },
  { "chr_action", _chr_action },

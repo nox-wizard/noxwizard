@@ -799,6 +799,28 @@ void cChar::walkNextStep()
 }
 
 /*!
+\brief Flee from target
+\author Endymion
+\param pc the character
+\param seconds the seconds or INVALID if is hp fear
+*/
+void cChar::flee( P_CHAR pc, SI32 seconds )
+{
+	VALIDATEPC( pc );
+
+	if( seconds!=INVALID )
+		fleeTimer=uiCurrentTime +MY_CLOCKS_PER_SEC*seconds;
+	else
+		fleeTimer=INVALID;
+
+	oldnpcWander = npcWander;
+	npcWander = WANDER_FLEE;
+	targserial=pc->getSerial32();
+	
+}
+
+
+/*!
 \author Luxor
 */
 void cChar::follow( P_CHAR pc )
@@ -840,16 +862,16 @@ void cChar::walk()
 	if ( !ISVALIDPC( pc_att ) )
 		war = 0;
 
-	if ( war && npcWander != 5 && ( pc_att->IsOnline() || pc_att->npc ) ) { //We are following a combat target
+	if ( war && npcWander != WANDER_FLEE && ( pc_att->IsOnline() || pc_att->npc ) ) { //We are following a combat target
                 follow( pc_att );
                 return;
         }
 
 	switch( npcWander )
 	{
-		case 0: //No movement
+		case WANDER_NOMOVE: //No movement
 			break;
-		case 1: //Follow the follow target
+		case WANDER_FOLLOW: //Follow the follow target
 		{
 			P_CHAR pc = pointers::findCharBySerial( ftargserial );
 			if ( !ISVALIDPC( pc ) )
@@ -861,16 +883,16 @@ void cChar::walk()
 			follow( pc );
 		}
 			break;
-		case 2: // Wander freely, in a defined circle
+		case WANDER_FREELY_CIRCLE: // Wander freely, in a defined circle
 			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 2 );
 			break;
-		case 3: // Wander freely, within a defined box
+		case WANDER_FREELY_BOX: // Wander freely, within a defined box
 			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 1 );
 			break;
-		case 4: // Wander freely, avoiding obstacles
+		case WANDER_FREELY: // Wander freely, avoiding obstacles
 			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 0 );
 			break;
-		case 5: //FLEE!!!!!!
+		case WANDER_FLEE: //FLEE!!!!!!
 		{
 			P_CHAR target = pointers::findCharBySerial( targserial );
 			if (ISVALIDPC(target)) {
@@ -880,7 +902,7 @@ void cChar::walk()
 			}
 		}
 			break;
-		case 6: // Sparhawk: script controlled movement
+		case WANDER_AMX: // Sparhawk: script controlled movement
 		{
 			UI32 l = dir;
 			if (amxevents[EVENT_CHR_ONWALK])

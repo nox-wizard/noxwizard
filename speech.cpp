@@ -346,7 +346,7 @@ int response(NXWSOCKET  s)
 						pc_map->ftargserial = pc->getSerial32();
 
 						// Set the NPC to wander freely
-						pc_map->npcWander = 1;
+						pc_map->npcWander = WANDER_FOLLOW;
 
 						// Set the expire time if nobody excepts the quest
 						pc_map->summontimer = ( uiCurrentTime + ( MY_CLOCKS_PER_SEC * SrvParms->escortactiveexpire ) );
@@ -551,7 +551,7 @@ int response(NXWSOCKET  s)
 							if ( requestFollowMe )
 							{
 								pc_map->ftargserial = pc->getSerial32();
-								pc_map->npcWander = 1;
+								pc_map->npcWander = WANDER_FOLLOW;
 								pc_map->playMonsterSound(SND_STARTATTACK);
 								return 1;
 							}
@@ -660,7 +660,7 @@ int response(NXWSOCKET  s)
 						{
 							pc->guarded = false;
 							pc_map->ftargserial=pc->getSerial32();
-							pc_map->npcWander=1;
+							pc_map->npcWander=WANDER_FOLLOW;
 							sysmessage(s, TRANSLATE("Your pet begins following you."));
 							return 1;
 						}
@@ -709,7 +709,7 @@ int response(NXWSOCKET  s)
 							if ( pc_map->war )
 								pc_map->toggleCombat();	// Sparhawk Allmost all pet commands need to do this and non pet commands need
 												// to check for war status
-							pc_map->npcWander=0;
+							pc_map->npcWander=WANDER_NOMOVE;
 							return 1;
 						}
 					}
@@ -769,7 +769,7 @@ int response(NXWSOCKET  s)
 							}
 							//pet release code here
 							pc_map->ftargserial=INVALID;
-							pc_map->npcWander=2;
+							pc_map->npcWander=WANDER_FREELY_CIRCLE;
 							pc_map->setOwnerSerial32(INVALID);
 							pc_map->taming=2000;//he cannot be retamed	Sparhawk	This is bullshit!!!
 							//taken from 6904t2(5/10/99) - AntiChrist
@@ -797,7 +797,7 @@ int response(NXWSOCKET  s)
 						}
 						//pet release code here
 						pc_map->ftargserial=INVALID;
-						pc_map->npcWander=2;
+						pc_map->npcWander=WANDER_FREELY_CIRCLE;
 						pc_map->setOwnerSerial32(INVALID);
 						pc_map->taming=2000;//he cannot be retamed
 						pc_map->tamed = false;

@@ -1305,7 +1305,7 @@ void Skills::EnticementTarget2(NXWSOCKET  s)
 		P_CHAR pc_target = pointers::findCharBySerial( calcserial( addid1[s], addid2[s], addid3[s], addid4[s] ) );
 		VALIDATEPC(pc_target);
 		pc_target->ftargserial = pc_ftarg->getSerial32();
-		pc_target->npcWander = 1;
+		pc_target->npcWander = WANDER_FOLLOW;
 		sysmessage(s, TRANSLATE("You play your hypnotic music, luring them near your target."));
 		PlayInstrumentWell(s, inst);
 	}

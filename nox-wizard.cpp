@@ -545,7 +545,7 @@ void callguards( CHARACTER p )
 			if ((!character->IsInnocent() || character->npcaitype == NPCAI_EVIL) && !character->IsHidden() )
 				offenders = true;
 			else
-				if ((character->npcaitype == NPCAI_TELEPORTGUARD || character->npcaitype == NPCAI_GUARD) && !character->war && character->npcWander != 1)
+				if ((character->npcaitype == NPCAI_TELEPORTGUARD || character->npcaitype == NPCAI_GUARD) && !character->war && character->npcWander != WANDER_FOLLOW)
 					guards.push_back( character );
 		}
 	}
@@ -558,7 +558,7 @@ void callguards( CHARACTER p )
 			if ( ISVALIDPC( guard ) )
 			{
 				guard->npcaitype=NPCAI_TELEPORTGUARD;
-				guard->npcWander=2;
+				guard->npcWander=WANDER_FREELY_CIRCLE;
 				guard->setNpcMoveTime();
 				guard->summontimer = uiCurrentTime + MY_CLOCKS_PER_SEC * 25 ;
 
@@ -576,7 +576,7 @@ void callguards( CHARACTER p )
 			{
 				guard = guards.back();
 				guard->oldnpcWander = guard->npcWander;
-				guard->npcWander = 1;
+				guard->npcWander = WANDER_FOLLOW;
 				guard->ftargserial = caller->getSerial32();
 				guard->antiguardstimer=uiCurrentTime+(MY_CLOCKS_PER_SEC*10); // Sparhawk this should become server configurable
 				guard->talkAll( TRANSLATE("Don't fear, help is on the way"), 0 );

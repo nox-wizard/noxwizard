@@ -1553,6 +1553,9 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			break;
 		case NXW_CP_I_TRAINER :				  			//dec value: 309;
 			break;
+		case NXW_CP_I_FLEETIMER:
+			pc->fleeTimer = value;
+			break;
 		case NXW_CP_I_TRIGGER :				  			//dec value: 311;
 			pc->trigger = value;
 			break;
@@ -1824,6 +1827,7 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_TRACKINGTARGET , pc->trackingtarget_serial )  	//dec value: 307;
 		CHECK(  NXW_CP_I_TRACKINGTIMER , pc->trackingtimer )  		//dec value: 308;
 		CHECK(  NXW_CP_I_TRAINER , pc->getTrainer() )  			//dec value: 309;
+		CHECK(  NXW_CP_I_FLEETIMER , pc->fleeTimer )  			//dec value: 310;
 		CHECK(  NXW_CP_I_TRIGGER , pc->trigger )  			//dec value: 311;
 		CHECK(  NXW_CP_I_WEIGHT , pc->weight )  			//dec value: 312;
 		case NXW_CP_I_WORKLOCPOS:					//dec value: 313;
