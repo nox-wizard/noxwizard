@@ -617,13 +617,12 @@ namespace Commands
 
 	void DyeItem(NXWSOCKET s) // Rehue an item
 	{
-		int body,b,k;
-		SI16 color;
-		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
+		UI16 color, body;
 
+		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
 		if(ISVALIDPI(pi))
 		{
-			color = ShortFromCharPtr(buffer[7] +7);
+			color = ShortFromCharPtr(buffer[s] +7);
 
 
 			if(!(dyeall[s]))
@@ -634,9 +633,8 @@ namespace Commands
 				}
 			}
 
-			b=(( color & 0x4000) >>14) | (( color & 0x8000) >>15);
 
-			if (!b)
+			if (! ((color & 0x4000) || (color & 0x8000)) )
 			{
 				pi->color1 = color >> 8;
 				pi->color2 = color % 256;
@@ -654,28 +652,31 @@ namespace Commands
 			return;
 		}
 
-		P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
+		P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +1);
 		if(ISVALIDPC(pc))
 		{
-			P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-			if( !(pc_currchar->IsGM() ) ) return; // Only gms dye characters
-			k = ShortFromCharPtr(buffer[s] +7);
+			color = ShortFromCharPtr(buffer[s] +7);
+
+			P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
+			VALIDATEPC(Me);
+
+			if( !Me->IsGM() ) return; // Only gms dye characters
 
 			body = pc->GetBodyType();
 
-			if( ( ( k>>8 ) < 0x80 ) && body >= BODY_MALE && body <= BODY_DEADFEMALE ) k|= 0x8000;
+			if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
 
-			if ((k & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) k=0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
+			if ((color & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) color = 0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
 
-			if (k!=0x8000)
+			if (color != 0x8000)
 			{
-
-				pc->setSkinColor(k);
-				pc->setOldSkinColor(k);
+				pc->setSkinColor(color);
+				pc->setOldSkinColor(color);
 				pc->teleport();
+
+				soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
 			}
 		}
-		soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
 	}
 
 
