@@ -175,6 +175,10 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		
 		unsigned char *comm;
 		unsigned char nonuni[512];
+		char command_line[300];
+		char* params;
+		char* pch;
+		int n=0;
 
 		//cmd_offset = 1;
 
@@ -206,7 +210,20 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		return;	
 		}
 		
-	
+		params=&speech[strlen((char*)comm)+2];
+		strcpy(command_line, params);
+
+		pch = strtok (command_line," ");
+		client->sysmsg("%s!\n", command_line);
+		
+		while (pch != NULL){
+			if( strcmp( pch, '\0' )!=0 ){ pc_currchar->setCommandParams(n, pch);
+			/*client->sysmsg("%s!\n", pch);*/}
+			pch = strtok (NULL, " ");
+			n++;
+		}
+  
+		
 		p_cmd->call(pc_currchar); //Let's call the Small Function
    
 		

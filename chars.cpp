@@ -587,7 +587,7 @@ void cChar::resetCommandParams(){
 \authors Frodo & Stonedz
 */
 
-void cChar::setCommandParams(std::string param, int number){
+void cChar::setCommandParams(int number, std::string param){
 	
 	switch(number){
 	case 1: param1=param;

@@ -282,6 +282,7 @@ const int NXW_CP_STR_SPEECHWORD = 457;
 const int NXW_CP_STR_SPEECH = 458;
 const int NXW_CP_STR_ACCOUNT =459;
 const int NXW_CP_STR_PASSWORD = 460;
+const int NXW_CP_STR_PARAM = 461;
 const int NXW_CP_UNI_SPEECH_CURRENT = 500;
 const int NXW_CP_UNI_PROFILE = 501;
 

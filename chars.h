@@ -847,9 +847,9 @@ public:
 		//! Reset all the Params strings
 		void resetCommandParams();
 		//! Set a Param
-		void setCommandParams(std::string, int); 
+		void setCommandParams(int index, std::string param); 
 		//! Get a Param
-		std::string getCommandParams(int);
+		std::string getCommandParams(int index);
 		
 		inline SI32 getHireFee()
 		{ return hirefee; }
