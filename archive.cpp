@@ -239,7 +239,8 @@ SERIAL cAllObjectsIter::getSerial()
 cAllObjectsIter& cAllObjectsIter::operator++(int)
 {
 	this->curr=this->next;
-	this->next++;
+	if ( this->next != objects.all.end() )
+		this->next++;
 	return (*this);
 }
 
