@@ -63,14 +63,20 @@ NATIVE2(_setCharProperty);
 NATIVE2(_getItemProperty);
 NATIVE2(_setItemProperty);
 NATIVE2(_getCalProperty);
-NATIVE2(_setGuildProperty);
-NATIVE2(_getGuildProperty);
 NATIVE2(_setMenuProperty);
 NATIVE2(_getMenuProperty);
 NATIVE2(_getRaceProperty);
 NATIVE2(_getRaceGlobalProp);
 NATIVE2(_party_getProperty );
 NATIVE2(_party_setProperty );
+
+NATIVE2(_guild_setProperty);
+NATIVE2(_guild_getProperty);
+NATIVE2(_guildMember_setProperty);
+NATIVE2(_guildMember_getProperty);
+NATIVE2(_guildRecruit_setProperty);
+NATIVE2(_guildRecruit_getProperty);
+
 
 
 int g_nCurrentSocket;
@@ -1858,7 +1864,9 @@ NATIVE( _chr_getGuild )
 {
 	P_CHAR pChar = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pChar, INVALID);
-	return pChar->getGuild();
+	
+	P_GUILD guild = pChar->getGuild();
+	return ( guild!=NULL )? guild->serial : INVALID;
 }
 
 /*
@@ -3210,12 +3218,11 @@ NATIVE( _set_addGuildRecruit )
 \since 0.82
 \param 1 the set
 \param 2 the guild ( if INVALID all, else use options )
-\param 3 the options ( WAR, ALLIED )
 \return 0
 */
 NATIVE( _set_addGuilds )
 {
-	amxSet::addGuilds( params[1], params[2], static_cast<GUILD_POLITICAL>(params[3]) );
+	amxSet::addGuilds( params[1], params[2] );
 	return 0;
 }
 
@@ -4731,23 +4738,18 @@ NATIVE(_map_getFloorTileID)
 
 
 /*
-\brief Make a guildstone ( and a guild :D ) the given item
+\brief Create a new guild
 \author Endymion
 \since 0.82
-\param 1 the stone
-\param 2 the guild master
-\return 0 if valid or INVALID if error
+\param 1 the serial
+\return guild serial or INVALID if error
+\note serial is same of guildstone
 */
-NATIVE(_guild_guildstone)
+NATIVE(_guild_create)
 {
-	P_ITEM stone = pointers::findItemBySerial(params[1]);
-	VALIDATEPIR( stone, INVALID );
-	P_CHAR master = pointers::findCharBySerial(params[2]);
-	VALIDATEPCR( master, INVALID );
 
-	Guildz.addGuild( stone, master );
-
-	return 0;
+	P_GUILD guild = Guildz.addGuild( params[1] );
+	return ( guild!=NULL )? guild->serial : INVALID;
 }
 
 /*
@@ -4756,20 +4758,40 @@ NATIVE(_guild_guildstone)
 \since 0.82
 \param 1 the guild
 \param 2 the new member
-\return 0 or INVALID if error
+\param 3 the rank
+\param 4 title toggle
+\param 5 title
+\return member or INVALID if error
+\note member serial is same of player serial
 */
 NATIVE(_guild_addMember)
 {
 	
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
 	P_CHAR pc=pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
 
-	P_GUILD guild = Guildz.getGuild( params[1] );
-	if( guild==NULL )
-		return INVALID;
 
-	guild->addMember( pc );
-	return 0;
+	P_GUILD_MEMBER member = guild->addMember( pc );
+	if ( member==NULL)	return INVALID;
+	
+	member->rank = params[3];
+	member->toggle = static_cast<GUILD_TITLE_TOGGLE>( params[4] );
+	
+	std::string title;
+	
+	cell *cstr;
+	amx_GetAddr(amx,params[5],&cstr);
+	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+
+	member->title = g_cAmxPrintBuffer;
+
+	return member->serial;
+
 }
 
 /*
@@ -4778,20 +4800,19 @@ NATIVE(_guild_addMember)
 \since 0.82
 \param 1 the guild
 \param 2 the member
-\return 0 or INVALID if error
+\return true or false if error
 */
 NATIVE(_guild_resignMember)
 {
 	
-	P_CHAR pc=pointers::findCharBySerial( params[2] );
-	VALIDATEPCR( pc, INVALID );
-
 	P_GUILD guild = Guildz.getGuild( params[1] );
-	if( guild==NULL )
-		return INVALID;
+	if ( guild==NULL )	return false;
+
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
 
 	guild->resignMember( pc );
-	return 0;
+	return true;
 }
 
 /*
@@ -4801,23 +4822,23 @@ NATIVE(_guild_resignMember)
 \param 1 the guild
 \param 2 the new recruit
 \param 3 the recruiter
-\return 0 or INVALID if error
+\return recruit or INVALID if error
+\note recruit serial is same of player serial
 */
 NATIVE(_guild_addRecruit)
 {
 	
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
 	P_CHAR recruit=pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( recruit, INVALID );
 
 	P_CHAR recruiter=pointers::findCharBySerial( params[3] );
 	VALIDATEPCR( recruiter, INVALID );
 
-	P_GUILD guild = Guildz.getGuild( params[1] );
-	if( guild==NULL )
-		return INVALID;
-
-	guild->addNewRecruit( recruit, recruiter );
-	return 0;
+	P_GUILD_RECRUIT guild_recruit = guild->addNewRecruit( recruit, recruiter );
+	return guild_recruit->serial;
 }
 
 /*
@@ -4826,33 +4847,24 @@ NATIVE(_guild_addRecruit)
 \since 0.82
 \param 1 the guild
 \param 2 the recruit
-\return 0 or INVALID if error
+\return true or false if error
 */
 NATIVE(_guild_refuseRecruit)
 {
 	
-	P_CHAR recruit=pointers::findCharBySerial( params[2] );
-	VALIDATEPCR( recruit, INVALID );
-
 	P_GUILD guild = Guildz.getGuild( params[1] );
-	if( guild==NULL )
-		return INVALID;
+	if ( guild==NULL )	return false;
+
+	P_CHAR recruit=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( recruit, false );
 
 	guild->refuseRecruit( recruit );
-	return 0;
+	return true;
 }
 
-/*
-\brief check if guild exists
-\author Endymion
-\since 0.82
-\param 1 the guild
-\return true or false
-*/
-NATIVE(_guild_exists)
-{
-	return ISVALIDGUILD( params[1] );
-}
+
+
+
 
 /*
 \brief Add a new timer
@@ -6353,14 +6365,20 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "map_getTileID", _map_getTileID}, //Keldan, posted 2003/01/27 - added 2003/03/01
  { "map_getFloorTileID", _map_getFloorTileID}, // Keldan, posted 2003/01/27 - added 2003/03/01
 // Guild function and properties - Endymion
- { "guild_setProperty", _setGuildProperty },
- { "guild_getProperty", _getGuildProperty },
- { "guild_guildstone", _guild_guildstone },
+ { "guild_setProperty", _guild_setProperty },
+ { "guild_getProperty", _guild_getProperty },
+ { "guild_create", _guild_create },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
- { "guild_exists", _guild_exists },
+// Guild member function and properties - Endymion
+ { "gmember_setProperty", _guildMember_setProperty },
+ { "gmember_getProperty", _guildMember_getProperty },
+// Guild member function and properties - Endymion
+ { "grecrui_setProperty", _guildRecruit_setProperty },
+ { "grecrui_getProperty", _guildRecruit_getProperty },
+
 // Timer function - Endymion
  { "timer_add", _timer_add },
 // Log message functions - Sparhawk
