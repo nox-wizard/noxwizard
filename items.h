@@ -439,6 +439,7 @@ public:
 */
 } PACK_NEEDED;
 
+#if 0
 // will be fully implemented in 0.83
 // Anthalir
 /*
@@ -471,6 +472,8 @@ class cWeapon : public cItem
 public:
         cWeapon(SERIAL serial);
 } PACK_NEEDED;
+
+#endif
 
 extern LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2);
 

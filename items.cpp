@@ -26,12 +26,14 @@ otherwise, more memory will be allocated in the mainloop (Duke)
 */
 #define ITEM_RESERVE 3000
 
+#if 0
 /*!
 \brief Base constructor for cWeapon class
 */
 cWeapon::cWeapon(SERIAL serial) : cItem (serial)
 {
 }
+#endif
 
 /*!
 \author Luxor
@@ -192,7 +194,7 @@ void cItem::safeoldsave()
 //
 // Object methods
 //
-/*
+#if 0
 void setserial(int nChild, int nParent, int nType)
 { // Sets the serial #'s and adds to pointer arrays
   // types: 1-item container, 2-item spawn, 3-Item's owner 4-container is PC/NPC
@@ -243,7 +245,7 @@ void setserial(int nChild, int nParent, int nType)
 		break;
 	}
 }
-*/
+#endif
 
 cItem::~cItem()
 {
@@ -1222,6 +1224,7 @@ void cItem::Refresh()
 	}
 }
 
+#if 0
 cContainerItem::cContainerItem(LOGICAL ser/*= true*/) : cItem(ser)
 {
 	ItemList.empty();
@@ -1442,6 +1445,7 @@ void cContainerItem::dropItem(P_ITEM pi)
 	}
 	while( ++it!=ItemList.end() );
 }
+#endif
 
 /*!
 \brief Get the out most container
