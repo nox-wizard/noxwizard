@@ -129,6 +129,10 @@ cCommandMap::cCommandMap() {
 
 		if ( (str[0]=='/') || (str[0]=='\n') ) continue;    //Ignore comments and blank lines
       
+		if (str[strlen(str)-2]=='\r')
+			
+			str[strlen(str)-2]='\0';						//Delete eventually added \r
+		
 		if (str[strlen(str)-1]=='\n')
 		
 			str[strlen(str)-1]='\0';	                    //Delete final \n of the strings
