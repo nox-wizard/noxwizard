@@ -101,7 +101,7 @@ int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source )
      * cells; on Little Endian machines, we must swap all cells.
     */
     if (!amx_getLittleEndian()) {
-		int len = ( source->size()/2 ) -2;
+		int len = source->size();
 		while (len>=0)
 			swapcell((ucell *)&dest[len--]);
     }
