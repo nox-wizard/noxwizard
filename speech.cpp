@@ -2121,7 +2121,12 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		pc->setSpeechCurrent( &speechUni );
 
 		if( a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]!=NULL )
+		{
+			g_bByPass = false;
 			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
+			if (g_bByPass==true) return;
+		}
+			
 		//a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
 
 		bool modifiedInEvent = false;
