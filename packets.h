@@ -37,7 +37,8 @@ class cPacket
 
 protected:
 
-	UI16 headerSize;	//!< size of the header, not all the packet if size are variable ( NOT SENDED OR RECEIVED. USE INTERNAL )
+	int headerSize; //!< header size ( NOT SENDED OR RECEIVED. USE INTERNAL )
+	int offset; //!< current baffer offset ( NOT SENDED OR RECEIVED. USE INTERNAL )
 	char* getBeginValid();
 
 public:
@@ -55,9 +56,9 @@ public:
 class cClientPacket : public cPacket {
 protected:
 	char* getBeginValidForReceive();
-	void getFromSocket( NXWSOCKET socket, char* b, int size, int& from );
-	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
-	void getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size=INVALID ); 
+	void getFromSocket( NXWSOCKET socket, char* b, int size );
+	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght );
+	void getUnicodeStringFromSocket( NXWSOCKET s, wstring& c, int size=INVALID ); 
 
 public:
 	virtual void receive( NXWCLIENT ps );
@@ -76,7 +77,13 @@ public:
 } PACK_NEEDED;
 
 
-
+class cServerClientPacket : public cClientPacket, public cServerPacket
+{
+protected:
+	char* getBeginValidForReceive();
+public:
+	virtual void receive( NXWCLIENT ps );
+};
 
 typedef cPacket* P_PACKET;	//!< pointer to cPacket
 typedef cClientPacket* P_CLIENT_PACKET;	//!< pointer to cClientPacket
@@ -1036,31 +1043,6 @@ class cPacketWeather : public cServerPacket {
 
 } PACK_NEEDED;
 
-#define PKG_TARGETING 0x6C;
-/*!
-\brief Targeting Cursor Commands
-\author Endymion
-\since 0.83
-\note 0x6C
-\remarks the model number shouldn’t be trusted
-*/
-class cPacketTargetingCursor : public cServerPacket /*CLIENTPACKET ALSO*/ {
-
-	UI08	type;		//!< type ( 0=Select Object, 1=Select X, Y, Z )
-	UI32	cursor;		//!< cursor id
-	UI08	cursorType;	//!< cursor type
-
-	//The following are always sent but are only valid if sent by client
-	UI32	clicked;	//!<  clicked on id
-	UI16	x ;			//!< click x Location
-	UI16	y ;			//!< click y Location
-	UI08	unk;		//!< nown (0x00)
-	SI08	z ;			//!< click z Location
-	UI16	model;		//!< model number ( 0=map/landscape tile, else static tile )
-	
-	cPacketTargetingCursor();	
-} PACK_NEEDED;
-
 #define PKG_MIDI 0x6D;
 /*!
 \brief Play Midi Music
@@ -1910,5 +1892,34 @@ public:
 	cPacketQuestArrow();
 
 };
+
+#define PKG_TARGETING 0x6C;
+/*!
+\brief Targeting Cursor Commands
+\author Endymion
+\since 0.83
+\note 0x6C
+\remarks the model number shouldn’t be trusted
+*/
+class cPacketTargetingCursor : public cServerClientPacket {
+
+public:
+
+	eUI08	type;		//!< type ( 0=Select Object, 1=Select X, Y, Z )
+	eUI32	cursor;		//!< cursor id
+	eUI08	cursorType;	//!< cursor type
+
+	//The following are always sent but are only valid if sent by client
+	eUI32	clicked;	//!<  clicked on id
+	eUI16	x ;			//!< click x Location
+	eUI16	y ;			//!< click y Location
+	eUI08	unk;		//!< nown (0x00)
+	eSI08	z ;			//!< click z Location
+	eUI16	model;		//!< model number ( 0=map/landscape tile, else static tile )
+	
+	cPacketTargetingCursor();
+
+} PACK_NEEDED;
+
 
 #endif

@@ -17,6 +17,8 @@ wstring emptyUnicodeString;
 char stringTerminator = 0x00;
 char unicodeStringTerminator[2] = { 0x00, 0x00 };
 
+
+
 /*!
 \brief get pointer at first valid position in packet ( headerSize is used internal )
 \author Endymion
@@ -24,6 +26,73 @@ char unicodeStringTerminator[2] = { 0x00, 0x00 };
 */
 char* cPacket::getBeginValid() {
 	return (char*)(&this->cmd);
+}
+
+/*!
+\brief get From Client
+\author Endymion
+\since 0.83a
+\param socket the socket
+\param b the data
+\param size the number of byte to read
+\param from offset
+*/
+inline void reciveFromSocket( NXWSOCKET socket, char* b, int size, int& from )
+{
+	memcpy( b, &buffer[socket][from], size );
+	from+=size;
+};
+
+/*!
+\brief read a string from socket buffer
+\author Endymion
+\since 0.83a
+\param socket the socket
+\param s the string
+\param lenght the length of need to read
+\param from offset
+*/
+inline void reciveStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from ) {
+	from-=1;
+	while( buffer[socket][++from]!=0 ) {
+		s+=buffer[socket][from];
+	}
+}
+
+/*!
+\brief read an unicode string from socket buffer
+\author Endymion
+\since 0.83a
+\param s the socket
+\param c the string
+\param from offset
+\param size read until NULL termination if INVALID, else read size char
+*/
+inline void reciveUnicodeStringFromSocket( NXWSOCKET s, wstring& c, int& from, int size )
+{
+	SI32 chSize = sizeof( UI16 );
+	UI16* w=(UI16*)( &buffer[s][from] );
+
+	c.erase();
+
+	SI32 i=0;
+	if( size==INVALID ) {//until termination
+		while ( w[i]!=0 ) {
+			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
+			c+=ntohs( w[i] );
+		}
+	}
+	else { //until size
+		for( ; i<size; ++i ) {
+			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
+			c+=ntohs( w[i] );
+		}
+	}
+	if( size==INVALID )
+		from+=c.size()*chSize+chSize;
+	else
+		from+=size*chSize;
+
 }
 
 /*!
@@ -45,17 +114,9 @@ char* cClientPacket::getBeginValidForReceive() {
 \param size the number of byte to read
 \param from offset
 */
-void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size, int& from ) 
+void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size )
 {
-/*
-	int count;
-	if( ( count = recv( s, buffer, size, MSG_NOSIGNAL) ) == SOCKET_ERROR )
-	{
-		LogSocketError("Socket Recv Error %s\n", errno) ;
-	}
-*/
-	memcpy( b, &buffer[socket][from], size );
-	from+=size;
+	reciveFromSocket( socket, b, size, offset );
 };
 
 /*!
@@ -67,11 +128,9 @@ void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size, int& fro
 \param lenght the length of need to read
 \param from offset
 */
-void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from ) {
-	int i=0;
-	while( buffer[socket][from+i]!=0 ) {
-		s+=buffer[socket][from+ i++];
-	}
+void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int length ) 
+{
+	reciveStringFromSocket( socket, s, length, offset );
 }
 
 /*!
@@ -83,33 +142,10 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 \param from offset
 \param size read until NULL termination if INVALID, else read size char
 */
-void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size )
+void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET socket, wstring& c, int size )
 {
-	SI32 chSize = sizeof( UI16 );
-	UI16* w=(UI16*)( &buffer[s][from] );
-
-	c->erase();
-
-	SI32 i=0;
-	if( size==INVALID ) {//until termination
-		while ( w[i]!=0 ) {
-			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
-			(*c)+=ntohs( w[i] );
-		}
-	}
-	else { //until size
-		for( ; i<size; ++i ) {
-			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
-			(*c)+=ntohs( w[i] );
-		}
-	}
-	if( size==INVALID )
-		from+=c->size()*chSize+chSize;
-	else
-		from+=size*chSize;
-
+	reciveUnicodeStringFromSocket( socket, c, offset, size );
 }
-
 
 /*!
 \brief Receive packet from client
@@ -119,9 +155,9 @@ void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& fr
 \attention NOT WRITE THE CMD, it's read before
 */
 void cClientPacket::receive( NXWCLIENT ps ) {
-	int i=1;
+	offset=1;
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize, i );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize );
 };
 
 /*!
@@ -134,7 +170,7 @@ void cServerPacket::send( NXWCLIENT ps ) {
 	if( ps == NULL )
 		return;
 
-	ps->send( getBeginValid(), headerSize );
+	Xsend( ps->toInt(), getBeginValid(), headerSize );
 };
 
 
@@ -150,17 +186,57 @@ void cServerPacket::send( P_CHAR pc ) {
 };
 
 
+/*!
+\brief get pointer after the packet command ( it's read before )
+\author Endymion
+\since 0.83
+\note point to cmd of serverpacket because is after in declatation
+*/
+char* cServerClientPacket::getBeginValidForReceive()
+{
+	return ( cServerPacket::getBeginValid() +sizeof(cServerPacket::cmd) );
+}
+
+/*!
+\brief Receive packet from client
+\author Endymion
+\since 0.83a
+\param ps the client who send this packet
+\attention NOT WRITE THE CMD, it's read before
+*/
+void cServerClientPacket::receive( NXWCLIENT ps ) {
+	cClientPacket::offset=1;
+	if ( ps != NULL )
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), cServerPacket::headerSize );
+};
+
+
+
+
+
+
+
+
 
 //@{
 /*!
-\brief constructors create macro
+\brief packet macro
 \author Endymion
 \since 0.83a
 */
-#define CREATE( NAME, CMD, SIZE )  cPacket##NAME::cPacket##NAME() { cmd = CMD; headerSize = SIZE; };
-#define SEND( NAME ) void cPacket##NAME::send( NXWCLIENT ps )
-#define RECEIVE( NAME ) void cPacket##NAME::receive( NXWCLIENT ps )
+
+#define CREATE( NAME, CMD, SIZE ) \
+cPacket##NAME##::cPacket##NAME##() { \
+	cmd = CMD; \
+	headerSize = SIZE; \
+};
+
+#define SEND( NAME ) void cPacket##NAME##::send( NXWCLIENT ps )
+
+#define RECEIVE( NAME ) void cPacket##NAME##::receive( NXWCLIENT ps )
 //@}
+
+
 
 CREATE( CreateCharacter, PKG_CREATE_CHARACTER, 0x0A )
 RECEIVE( CreateCharacter ) {
@@ -176,6 +252,7 @@ CREATE( DisconnectNotification, PKG_DISCONNECT_NOTIFY, 0x05 )
 CREATE( TalkRequest, PKG_TALK_REQUEST, 0x08 )
 RECEIVE( TalkRequest ) {
 	/*if( ps == NULL ) return; //after error here
+	offset=1;
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->msg, this->size-0x08 ); 	*/
 };
@@ -303,6 +380,7 @@ CREATE( Time, PKG_TIME, 0x04 )
 CREATE( Login, PKG_LOGIN, 0x05 )
 RECEIVE( Login ) {
 /*	if( ps == NULL ) return; //after error here
+	offset=1;
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
 	getStringFromSocket( ps->toInt(), this->passwd, 30 );
@@ -310,8 +388,6 @@ RECEIVE( Login ) {
 }
 
 CREATE( Weather, PKG_WEATHER, 0x04 )
-
-CREATE( TargetingCursor, PKG_TARGETING, 0x13 )
 
 CREATE( Midi, PKG_MIDI, 0x03 )
 
@@ -351,6 +427,7 @@ CREATE( LoginDenied, PKG_LOGIN_DENIED, 0x02 )
 CREATE( DeleteCharacter, PKG_DELETE_CHARACHTER, 0x01 )
 RECEIVE( DeleteCharacter ) {
 /*	if( ps == NULL ) return; 
+	offset=1;
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 ); // nothing.. remove?
 	getStringFromSocket( ps->toInt(), this->passwd, 30 ); 	
 	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );*/
@@ -383,13 +460,12 @@ CREATE( CharProfileReq, PKG_CHAR_PROFILE, 0x08 )
 RECEIVE( CharProfileReq ) {
 	if( ps == NULL ) return; 
 	NXWSOCKET s=ps->toInt();
-	
-	int offset=1;
-	
-	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
+
+	offset=1;
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1 );
 	if( update ) { //complete packet so
-		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
-		getUnicodeStringFromSocket( s, &this->profile, offset, len.get() );
+		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len) );
+		getUnicodeStringFromSocket( s, this->profile, len.get() );
 	}
 }
 
@@ -474,26 +550,25 @@ RECEIVE( MenuSelection ) {
 	if( ps == NULL ) return; 
 	NXWSOCKET s=ps->toInt();
 	
-	int offset=1;
-	
-	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
+	offset=1;
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1 );
 	
 	int si = switchcount.get();
 	while( si-- ) {
 		eSERIAL sw;
-		getFromSocket( s, (char*)&sw, sizeof(sw), offset );
+		getFromSocket( s, (char*)&sw, sizeof(sw) );
 		switchs.push_back( sw.get() );
 	}
 
-	getFromSocket( s, (char*)&textcount, sizeof(textcount), offset );
+	getFromSocket( s, (char*)&textcount, sizeof(textcount) );
 
 	int ti=textcount.get();
 	while( ti-- ) {
 		text_entry_st te;
-		getFromSocket( s, (char*)&te, sizeof(te.id)+sizeof(te.textlength), offset );
+		getFromSocket( s, (char*)&te, sizeof(te.id)+sizeof(te.textlength) );
 		
 		std::wstring entry;
-		getUnicodeStringFromSocket( s, &entry, offset, te.textlength.get() );
+		getUnicodeStringFromSocket( s, entry, te.textlength.get() );
 
 		text_entries.insert( make_pair( te.id.get(), entry ) );
 	}
@@ -545,3 +620,11 @@ SEND( IconListMenu ) {
 }
 
 CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )
+
+cPacketTargetingCursor::cPacketTargetingCursor() 
+{
+	cServerPacket::cmd = PKG_TARGETING;
+	cServerPacket::headerSize = 0x13;
+}
+
+
