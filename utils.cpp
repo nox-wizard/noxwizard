@@ -170,178 +170,153 @@ static void doorsfx(P_ITEM pi, int x, int y)
 } // doorsfx() END
 
 
-void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
+/*
+\brief Use a door
+\note can be called with invalid socket from automatic door close 
+*/
+void dooruse(NXWSOCKET  s, P_ITEM pi )
 {
-	P_CHAR pc;
-//!!! NOT VALIDATE !!, this function is called with invalid socket when automatic door close
-	if(s <0)
-		pc = NULL;
-	else
-		pc =MAKE_CHAR_REF(currchar[s]);
-//	const P_ITEM pi=MAKE_ITEMREF_LR(item);	// on error return
 
-	int i, db, x;//, z;
-	char changed=0;
+	VALIDATEPI(pi);
+	P_CHAR pc = ( s>INVALID )? MAKE_CHAR_REF(currchar[s]) : NULL;
 
-	if (ISVALIDPC(pc) && (item_inRange(pc,pi,2)==0) && s>INVALID) {
+	if(ISVALIDPC(pc) && (pc->distFrom(pi)<=2) && !pc->IsGM()) {
 		sysmessage(s, TRANSLATE("You cannot reach the handle from here"));
 		return;
 	}
 
-	x=pi->id();
-	for (i=0;i<DOORTYPES;i++)
-	{
-		db=doorbase[i];
+	Location li = pi->getPosition();
+	int x=pi->id();
+	bool changed=false;
 
-		if (x==(db+0))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+1))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+2))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc , pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+3))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+4))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+5))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+6))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+7))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+8))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+9))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+10))
-		{
-			pi->id2++;
-			pi->setPosition("x", pi->getPosition("x") + 1);
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+11))
-		{
-			pi->id2--;
-			pi->setPosition("x", pi->getPosition("x") - 1);
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		}
-		else if (x==(db+12))
-		{
-			pi->id2++;
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+13))
-		{
-			pi->id2--;
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
-		} else if (x==(db+14))
-		{
-			pi->id2++;
-			pi->setPosition("y", pi->getPosition("y") - 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 0);
-			tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
-			pi->dooropen=1;
-		} else if (x==(db+15))
-		{
-			pi->id2--;
-			pi->setPosition("y", pi->getPosition("y") + 1);
-			pi->Refresh();
-			changed=1;
-			doorsfx(pi, x, 1);
-			pi->dooropen=0;
+	for( int i=0; i<DOORTYPES && !changed; ++i )
+	{
+		int db=doorbase[i];
+
+		if( x == db+0) {
+				pi->id2++;
+				li.x -= 1;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+1 ) {
+				pi->id2--;
+				li.x += 1;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+2 ) {
+				pi->id2++;
+				li.x += 1;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc , pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+3 ) {
+				pi->id2--;
+				li.x -= 1;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+4 ) {
+				pi->id2++;
+				li.x -= 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+5 ) {
+				pi->id2--;
+				li.x += 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+6 ) {
+				pi->id2++;
+				li.x += 1;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+7 ) {
+				pi->id2--;
+				li.x -= 1;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+8 ) {
+				pi->id2++;
+				li.x += 1;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+9 ) {
+				pi->id2--;
+				li.x -= 1;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+10 ) {
+				pi->id2++;
+				li.x += 1;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+11 ) {
+				pi->id2--;
+				li.x -= 1;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+12 ) {
+				pi->id2++;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+13 ) {
+				pi->id2--;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
+		} else if( x == db+14 ) {
+				pi->id2++;
+				li.y -= 1;
+				changed=true;
+				doorsfx(pi, x, 0);
+				tempfx::add(pc, pi, tempfx::AUTODOOR, 0, 0, 0);
+				pi->dooropen=1;
+		} else if( x == db+15 ) {
+				pi->id2--;
+				li.y += 1;
+				changed=true;
+				doorsfx(pi, x, 1);
+				pi->dooropen=0;
 		}
 	}
 
-	if (changed && ISVALIDPC(pc))
+	if(!changed && s>INVALID) {
+		sysmessage(s, TRANSLATE("This doesnt seem to be a valid door type. Contact a GM."));
+		return;
+	}
+
+	pi->setPosition( li );
+	pi->Refresh();
+
+	if(ISVALIDPC(pc))
 	{
 		
 		pc->objectdelay=uiCurrentTime+ (server_data.objectdelay/4)*MY_CLOCKS_PER_SEC;
@@ -358,19 +333,16 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 				j=on_hlist(pi_house, pc->getSerial().ser1,  pc->getSerial().ser2,  pc->getSerial().ser3,  pc->getSerial().ser4, NULL);
 				if ( j==H_FRIEND || (pi2->getOwnerSerial32()==pc->getSerial32()) ) // house_refresh stuff, LB, friends of the house can do.
 				{
-					if (s!=INVALID)
-					{
-						if (SrvParms->housedecay_secs!=0)
-							ds=((pi2->time_unused)*100)/(SrvParms->housedecay_secs);
-						else ds=INVALID;
+					if (SrvParms->housedecay_secs!=0)
+						ds=((pi2->time_unused)*100)/(SrvParms->housedecay_secs);
+					else ds=INVALID;
 
-						if (ds>=50) // sysmessage iff decay status >=50%
-						{
-							if (houseowner_serial!= pc->getSerial32())
-								sysmessage(s,TRANSLATE("You refreshed your friend's house"));
-							else
-								sysmessage(s,TRANSLATE("You refreshed the house"));
-						}
+					if (ds>=50) // sysmessage iff decay status >=50%
+					{
+						if (houseowner_serial!= pc->getSerial32())
+							sysmessage(s,TRANSLATE("You refreshed your friend's house"));
+						else
+							sysmessage(s,TRANSLATE("You refreshed the house"));
 					}
 
 					pi2->time_unused=0;
@@ -381,8 +353,6 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} // end of is_multi
 	}
 
-	if (changed==0 && s>INVALID) 
-		sysmessage(s, TRANSLATE("This doesnt seem to be a valid door type. Contact a GM."));
 }
 
 void endmessage(int x) // If shutdown is initialized
