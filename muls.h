@@ -247,7 +247,7 @@ private:
 
 	bool isCached;	//!< true if cached on memory
 
-	STATICINFOMAP staticsCached;	//!< all static info cached
+	STATICINFOMAP tilesCached;	//!< all static info cached
 	LANDINFOMAP landsCached;	//!< all land info cached
 
 public:

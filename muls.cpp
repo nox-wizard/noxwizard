@@ -164,10 +164,11 @@ void cMULFile<T>::loadCache() {
 		}
 
 		data->file.seekg( index.start );
-		for( int s=0; s< (index.size % sizeof(T)); ++s ) {
-			T baffer;
-			data->file.read( (char*)&baffer, sizeof(T));
-			cache[ getIndexForCache( i-1, baffer ) ].push_back( baffer );
+		int count = index.size / sizeof(T);
+		for( int s=0; s<count; ++s ) {
+			T buffer;
+			data->file.read( (char*)&buffer, sizeof(T));
+			cache[ getIndexForCache( i-1, buffer ) ].push_back( buffer );
 		}
 
 	}
@@ -352,8 +353,8 @@ bool cTiledata::getStatic( SERIAL id, tile_st& stat )
 	//	return false;
 
 	//need because can be verdata info
-	STATICINFOMAP::iterator iter = staticsCached.find(id);
-	if(iter!=staticsCached.end()) {
+	STATICINFOMAP::iterator iter = tilesCached.find(id);
+	if(iter!=tilesCached.end()) {
 		stat=iter->second;
 		return true;
 	}
@@ -393,7 +394,7 @@ void cTiledata::loadForCaching() {
 	for ( i=0; i<TILEGROUPCOUNT; i++ ) {
 		file.read( (char*)&staticg, sizeof(tile_group_st) );
 		for( int j=0; j<TILESINGROUP; j++ )
-			staticsCached[i*TILESINGROUP+j]=staticg.tile[j];
+			tilesCached[i*TILESINGROUP+j]=staticg.tile[j];
 	}
 
 	isCached=true;
@@ -508,7 +509,7 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 	if(!isReady() )
 		return;
 
-	SI32 nblocchi=INVALID;
+	SI32 nblocchi=0;
 	file.seekg( 0 );
 	file.read( (char*)&nblocchi, sizeof( SI32 ) );
 	
@@ -528,9 +529,10 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 				if((patch.info.size % sizeof(multi_st))==0) {
 					multi_st m;
 					multi->cache.erase( patch.id );
-					for( UI32 j=0; j<(patch.info.size % sizeof(multi_st)); j++ ) {
+					int count = patch.info.size / sizeof(multi_st);
+					for( UI32 j=0; j<count; j++ ) {
 						file.read( (char*)&m, sizeof(multi_st) );
-						multi->cache[patch.id+j].push_back(m);
+						multi->cache[patch.id].push_back(m);
 					}
 				}
 				else 
@@ -541,7 +543,6 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 					file.seekg( patch.info.start );
 					if(patch.info.size==sizeof(land_group_st)) {
 						land_group_st landg;
-						tiledata->landsCached.erase( patch.id );
 						file.read( (char*)&landg, sizeof(land_group_st) );
 						for( int j=0; j<LANDSINGROUP; j++ )
 							tiledata->landsCached[(patch.id*LANDSINGROUP)+j]=landg.land[j];
@@ -553,10 +554,9 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 					file.seekg( patch.info.start );
 					if(patch.info.size==sizeof(tile_group_st)) {
 						tile_group_st staticg;
-						tiledata->staticsCached.erase( patch.id );
 						file.read( (char*)&staticg, sizeof(tile_group_st) );
 						for( int j=0; j<TILESINGROUP; j++ )
-							tiledata->staticsCached[(patch.id*TILESINGROUP)+j]=staticg.tile[j];
+							tiledata->tilesCached[(patch.id-LANDGROUPCOUNT)*TILESINGROUP+j]=staticg.tile[j];
 					}
 					else 
 						ErrOut("VERDATA contains tiledata.statics data with wrong lenght. Ignoring version record.\n");
@@ -621,7 +621,14 @@ UI32 cStatics::getIndexForCache( UI32 id, statics_st b ) {
 
 namespace data {
 
-#define CHECKMUL( A, B ) if ( !A->isReady() ) { LogError( "ERROR: Mul File %s not found...\n", B.c_str() ); return; }
+#define CHECKMUL( A, B, C ) \
+	ConOut( "Loading %s ... ", B ); \
+	if ( !A->isReady() ) { \
+		LogError( "[ERROR] file not found %s ...\n", C.c_str() ); \
+		return; \
+	} \
+	else ConOut( "[DONE]\n" ); \
+		
 
 void init()
 {
@@ -633,18 +640,21 @@ void init()
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 
 	maps = new cMap( map_path, map_width, map_height );
-	CHECKMUL( maps, map_path );
+	CHECKMUL( maps, "MAP", map_path );
 
 	statics = new cStatics( statics_idx_path, statics_path, map_width, map_height, statics_cache );
-	CHECKMUL( statics, std::string( statics_idx_path + " or " + statics_path ) );
+	CHECKMUL( statics, "STATICS", std::string( statics_idx_path + " or " + statics_path ) );
 
 	tiledata = new cTiledata( tiledata_path, tiledata_cache );
-	CHECKMUL( tiledata, tiledata_path );
+	CHECKMUL( tiledata, "TILEDATA", tiledata_path );
 
 	verdata = new cVerdata( verdata_path );
-	CHECKMUL( verdata, verdata_path );
+	CHECKMUL( verdata, "VERDATA", verdata_path );
+	ConOut("Caching verdata info..");
+	verdata->load( tiledata, multi );
+	ConOut("[DONE]\n");
 
-	ConOut("[DONE] All *.mul files opened\n");
+	ConOut("All *.mul files opened\n\n");
 	//
 	// MULs loaded, let's keep the server running
 	//
