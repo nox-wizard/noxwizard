@@ -84,7 +84,7 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size )
 {
 	SI32 chSize = sizeof( UI16 );
-	wchar_t* w=(wchar_t*)( &buffer[s][from] );
+	UI16* w=(UI16*)( &buffer[s][from] );
 
 	c->erase();
 
