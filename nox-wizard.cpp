@@ -1637,26 +1637,35 @@ int fielddir(CHARACTER s, int x, int y, int z)
 /*!
 \brief makes an npc attacking someone
 \author Luxor
+\param target2 the npc attacker
+\param target the victim
 */
-bool npcattacktarget(CHARACTER target2, CHARACTER target)
+void npcattacktarget(CHARACTER target2, CHARACTER target)
 {
 	P_CHAR pc = pointers::findCharBySerial( target2 );
 	P_CHAR pc_target = pointers::findCharBySerial( target );
-	VALIDATEPCR(pc, false);
-	VALIDATEPCR(pc_target, false);
+	VALIDATEPC(pc);
+	VALIDATEPC(pc_target);
 	
 	if ( !pc->npc )
-		return false;
+		return;
 		
 	if ( pc->dead || pc_target->dead )
-		return false;
+		return;
 		
 	if ( pc->getSerial32() == pc_target->getSerial32() )
-		return false;
+		return;
 		
 	if ( !pc->losFrom(pc_target) )
-		return false;
+		return;
 		
+	pc->runAmxEvent( EVENT_CHR_ONBEGINATTACK, pc->getSerial32(), pc_target->getSerial32() );
+	if (g_bByPass==true)
+		return;
+	pc->runAmxEvent( EVENT_CHR_ONBEGINDEFENSE, pc_target->getSerial32(), pc->getSerial32() );
+	if (g_bByPass==true)
+		return;
+
 	pc->playMonsterSound(SND_STARTATTACK);
 	
 	pc->targserial = pc_target->getSerial32();
@@ -1684,7 +1693,7 @@ bool npcattacktarget(CHARACTER target2, CHARACTER target)
 
 	pc->emoteall( "You see %s attacking %s!", 1, pc->getCurrentNameC(), pc_target->getCurrentNameC() );
 
-	return true;
+	return;
 }
 
 
