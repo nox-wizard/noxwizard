@@ -73,22 +73,25 @@ public:
 
 };
 
-template <typename T> class NxwMulWrapper {
+template <typename T, typename M> class NxwMulWrapper {
 
 private:
 	std::vector< T >* data; 
+	std::vector< T >::iterator current;
 	bool needFree;
+	UI32 idx;
+	cMULFile<M>* mul;
 
 public:
 
-	NxwMulWrapper();
+	NxwMulWrapper( cMULFile<M>* mul, UI32 i );
 	~NxwMulWrapper();
 
 	void rewind();
 	UI32 size();
 	bool end();
 	bool isEmpty();
-	NxwMulWrapper<T>& operator++(int);
+	NxwMulWrapper<T,M>& operator++(int);
 	T get();
 
 };

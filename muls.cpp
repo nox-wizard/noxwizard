@@ -138,40 +138,48 @@ bool cMULFileCached<T>::getData( UI32 i, std::vector< T >* data ) {
 
 }
 
-template <typename T>
-NxwMulWrapper<T>::NxwMulWrapper() {
+template <typename T, typename M>
+NxwMulWrapper<T,M>::NxwMulWrapper( cMULFile<M>* mul, UI32 i ) {
+	idx=i;
+	this->mul=mul;
+	needFree=false;
 	data=NULL;
 }
 
-template <typename T>
-NxwMulWrapper<T>::~NxwMulWrapper() {
+template <typename T, typename M>
+NxwMulWrapper<T,M>::~NxwMulWrapper() {
 	if( needFree )
 		delete data;
 }
 
-template <typename T>
-void NxwMulWrapper<T>::rewind() {
-
+template <typename T, typename M>
+void NxwMulWrapper<T,M>::rewind() {
+	needFree = mul->getData( i );
 }
 
-template <typename T>
-UI32 NxwMulWrapper<T>::size() {
+template <typename T, typename M>
+UI32 NxwMulWrapper<T,M>::size() {
+	return (data!=NULL)? data->size() : 0;
 }
 
-template <typename T>
-bool NxwMulWrapper<T>::end() {
+template <typename T, typename M>
+bool NxwMulWrapper<T,M>::end() {
+	return current==data->end();
 }
 
-template <typename T>
-bool NxwMulWrapper<T>::isEmpty() {
+template <typename T, typename M>
+bool NxwMulWrapper<T,M>::isEmpty() {
+	return size()<=0;
 }
 
-template <typename T>
-NxwMulWrapper<T>& NxwMulWrapper<T>::operator++(int) {
+template <typename T, typename M>
+NxwMulWrapper<T,M>& NxwMulWrapper<T,M>::operator++(int) {
+	current++;
 }
 
-template <typename T>
-T NxwMulWrapper<T>::get() {
+template <typename T, typename M>
+T NxwMulWrapper<T,M>::get() {
+	return *current;
 }
 
 
