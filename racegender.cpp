@@ -87,40 +87,40 @@ Gender& Gender::operator=( const GENDER newGender )
 
 bool Gender::operator==( Gender that )
 {
-	return ( that.value == value );
+	return ( that.value == this->value );
 }
 
 bool Gender::operator==( GENDER that )
 {
-	return ( that == value ) ;
+	return ( that == this->value ) ;
 }
 
 bool Gender::operator==( int that )
 {
-	return ( that == int( value ) );
+	return ( that == int( this->value ) );
 }
 
 bool Gender::operator==( char* that )
 {
-	return ( strcmp( genderNames[ value ].c_str(), that ) == 0 );
+	return ( strcmp( genderNames[ this->value ].c_str(), that ) == 0 );
 }
 
 bool Gender::operator==( const string& that )
 {
-	return ( genderNames[ value ] == that );
+	return ( genderNames[ this->value ] == that );
 }
 
 Gender::operator int() const
 {
-	return value;
+	return this->value;
 }
 
 Gender::operator char*() const
 {
-	return const_cast< char * >( genderNames[ value ].c_str() ) ;
+	return const_cast< char * >( genderNames[ this->value ].c_str() ) ;
 }
 
 Gender::operator string*() const
 {
-	return ( &genderNames[ value ] ) ;
+	return ( &genderNames[ this->value ] ) ;
 }

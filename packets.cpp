@@ -21,7 +21,7 @@ char unicodeStringTerminator[2] = { 0x00, 0x00 };
 \since 0.83
 */
 char* cPacket::getBeginValid() {
-	return (char*)(&cmd);
+	return (char*)(&this->cmd);
 }
 
 /*!
@@ -163,10 +163,10 @@ void cServerPacket::send( P_CHAR pc ) {
 CREATE( CreateCharacter, PKG_CREATE_CHARACTER, 0x0A )
 RECEIVE( CreateCharacter ) {
 	/*if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 );
-	getStringFromSocket( ps->toInt(), name, 30 ); 	
-	getStringFromSocket( ps->toInt(), passwd, 30 );
-	getFromSocket( ps->toInt(), (char*)(&sex), 30 );*/
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
+	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
+	getStringFromSocket( ps->toInt(), this->passwd, 30 );
+	getFromSocket( ps->toInt(), (char*)(&this->sex), 30 );*/
 };
 
 CREATE( DisconnectNotification, PKG_DISCONNECT_NOTIFY, 0x05 )
@@ -174,8 +174,8 @@ CREATE( DisconnectNotification, PKG_DISCONNECT_NOTIFY, 0x05 )
 CREATE( TalkRequest, PKG_TALK_REQUEST, 0x08 )
 RECEIVE( TalkRequest ) {
 	/*if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 );
-	getStringFromSocket( ps->toInt(), msg, size-0x08 ); 	*/
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
+	getStringFromSocket( ps->toInt(), this->msg, this->size-0x08 ); 	*/
 };
 
 CREATE( GodModeToggle, PKG_GODMODE_TOGGLE, 0x02  )
@@ -192,25 +192,25 @@ CREATE( SingleClick, PKG_SINGLE_CLICK, 0x05 )
 
 CREATE( StatWindow, PKG_STAT_WINDOW, 0x2B )
 SEND( StatWindow ) {
-	sendBasic( ps );
+	this->sendBasic( ps );
 };
 
-void cPacketStatWindow::sendBasic( NXWCLIENT ps, UI08 newFlag  ) {
+void cPacketStatWindow::sendBasic( NXWCLIENT ps, UI08 flag  ) {
 	if( ps == NULL ) return; //after error here
-	flag = newFlag;
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
+	this->flag = flag;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 };
 
 void cPacketStatWindow::sendStat( NXWCLIENT ps ) {
 	if( ps == NULL ) return; //after error here
 	sendBasic( ps, 0x01 );
-	Xsend( ps->toInt(), (char*)(&sex), 0x17 );
+	Xsend( ps->toInt(), (char*)(&this->sex), 0x17 );
 };
 
 void cPacketStatWindow::sendExtended( NXWCLIENT ps ) {
 	if( ps == NULL ) return; //after error here
 	sendBasic( ps, 0x03 );
-	Xsend( ps->toInt(), (char*)(&sex), 0x1B );
+	Xsend( ps->toInt(), (char*)(&this->sex), 0x1B );
 };
 
 CREATE( Wear, PKG_DROP_OR_WEAR_ITEM, 0x0A )
@@ -220,11 +220,11 @@ CREATE( CharInfo, PKG_CHAR_INFO, 0x25 )
 CREATE( Speech, PKG_SPEECH, 0x0E )
 SEND( Speech ) {
 	if( ps == NULL ) return; //after error here
-	size=headerSize +30 +msg->length()+1;
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
-	name.resize( 30 );
-	Xsend( ps->toInt(), name.c_str(), 30 );
-	Xsend( ps->toInt(), msg->c_str(), msg->length()+1 );
+	this->size=this->headerSize +30 +msg->length()+1;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	this->name.resize( 30 );
+	Xsend( ps->toInt(), this->name.c_str(), 30 );
+	Xsend( ps->toInt(), this->msg->c_str(), this->msg->length()+1 );
 };
 
 CREATE( Delete, PKG_DELETE, 0x05 )
@@ -264,12 +264,12 @@ CREATE( PlayerStatus, PKG_PLAYER_STATUS, 0x0A )
 CREATE( Buy, PKG_BUY, 0x08 )
 SEND( Buy ) {
 	if( ps == NULL ) return; //after error here
-	size=headerSize +list.size()*sizeof( buyitem_st );
+	this->size=this->headerSize +list.size()*sizeof( buyitem_st );
 	if( list.size() == 0 )
-		flag=0x00;
+		this->flag=0x00;
 	else
-		flag=0x02;
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
+		this->flag=0x02;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	for( vector<buyitem_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char *)&(*iter), sizeof( buyitem_st ) );
 }
@@ -277,9 +277,9 @@ SEND( Buy ) {
 CREATE( Container, PKG_CONTAINER, 0x05 )
 SEND( Container ) {
 	if( ps == NULL ) return; //after error here
-	size=headerSize +list.size()*sizeof( itemincont_st );
-	n=list.size();
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
+	this->size=this->headerSize +list.size()*sizeof( itemincont_st );
+	this->n=list.size();
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	for( vector<itemincont_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char *)&(*iter), sizeof( itemincont_st ) );
 }
@@ -301,10 +301,10 @@ CREATE( Time, PKG_TIME, 0x04 )
 CREATE( Login, PKG_LOGIN, 0x05 )
 RECEIVE( Login ) {
 /*	if( ps == NULL ) return; //after error here
-	getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 );
-	getStringFromSocket( ps->toInt(), name, 30 ); 	
-	getStringFromSocket( ps->toInt(), passwd, 30 );
-	getFromSocket( ps->toInt(), (char*)(&slot), 8 );*/
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
+	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
+	getStringFromSocket( ps->toInt(), this->passwd, 30 );
+	getFromSocket( ps->toInt(), (char*)(&this->slot), 8 );*/
 }
 
 CREATE( Weather, PKG_WEATHER, 0x04 )
@@ -322,9 +322,9 @@ CREATE( WarMode, PKG_WAR_MODE, 0x05 )
 CREATE( OpenBuy, PKG_OPEN_BUY, 0x08 )
 void cPacketOpenBuy::send( NXWCLIENT ps ) {
 	if( ps == NULL ) return; //after error here
-	size=headerSize +list.size()*sizeof( openbuyitem_st );
-	n=list.size();
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
+	this->size=this->headerSize +list.size()*sizeof( openbuyitem_st );
+	this->n=list.size();
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	for( vector<openbuyitem_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char*)iter, sizeof( openbuyitem_st ) );
 }
@@ -333,9 +333,9 @@ void cPacketOpenBuy::send( NXWCLIENT ps ) {
 CREATE( Rename, PKG_RENAME, 0x05 )
 SEND( Rename ) {
 	if( ps == NULL ) return; //after error here
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
-	newname.resize(30);
-	Xsend( ps->toInt(), newname.c_str(), 30 );
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	this->newname.resize(30);
+	Xsend( ps->toInt(), this->newname.c_str(), 30 );
 }
 
 CREATE( NewSubserver, PKG_NEW_SUBSERVER, 0x10 )
@@ -349,9 +349,9 @@ CREATE( LoginDenied, PKG_LOGIN_DENIED, 0x02 )
 CREATE( DeleteCharacter, PKG_DELETE_CHARACHTER, 0x01 )
 RECEIVE( DeleteCharacter ) {
 /*	if( ps == NULL ) return; 
-	getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 ); // nothing.. remove?
-	getStringFromSocket( ps->toInt(), passwd, 30 ); 	
-	getFromSocket( ps->toInt(), (char*)(&idx), 8 );*/
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 ); // nothing.. remove?
+	getStringFromSocket( ps->toInt(), this->passwd, 30 ); 	
+	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );*/
 }
 
 
@@ -362,10 +362,10 @@ CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
 	if( ps == NULL || msg == NULL ) return;
 	SI32 nSize = sizeof( UI16 );
-	size=headerSize +30 + msg->size()*nSize+nSize;
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
-	name.resize( 30 );
-	Xsend( ps->toInt(), name.c_str(), 30 );
+	this->size=this->headerSize +30 + msg->size()*nSize+nSize;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	this->name.resize( 30 );
+	Xsend( ps->toInt(), this->name.c_str(), 30 );
 	Xsend( ps->toInt(), *msg, true );
 };
 
@@ -384,10 +384,10 @@ RECEIVE( CharProfileReq ) {
 	
 	int offset=1;
 	
-	getFromSocket( s, getBeginValidForReceive(), headerSize-1, offset );
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
 	if( update ) { //complete packet so
-		getFromSocket( s, (char*)&type, sizeof(type)+sizeof(len), offset );
-		getUnicodeStringFromSocket( s, &profile, offset, len.get() );
+		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
+		getUnicodeStringFromSocket( s, &this->profile, offset, len.get() );
 	}
 }
 
@@ -396,9 +396,9 @@ SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	if( profile==NULL ) profile=&emptyUnicodeString;
 	if( staticProfile==NULL ) staticProfile=&emptyUnicodeString;
-	size=headerSize +(title.size()+1) + profile->size()*2+2 + staticProfile->size()*2+2;
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
-	Xsend( ps->toInt(), title.c_str(), title.size()+1 );
+	this->size=this->headerSize +(title.size()+1) + profile->size()*2+2 + staticProfile->size()*2+2;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	Xsend( ps->toInt(), this->title.c_str(), title.size()+1 );
 	Xsend( ps->toInt(), *staticProfile, true );
 	Xsend( ps->toInt(), *profile, true );
 }
@@ -408,9 +408,9 @@ CREATE( Features, PKG_FEATURES, 0x03 )
 CREATE( WebBrowser, PKG_WEB_BROWSER, 0x03 )
 SEND( WebBrowser ) {
 	if( ps == NULL ) return; 
-	size=headerSize + (link.size()+1 );
-	Xsend( ps->toInt(), getBeginValid(), headerSize );
-	Xsend( ps->toInt(), link.c_str(), link.size()+1 );
+	this->size=this->headerSize + (link.size()+1 );
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	Xsend( ps->toInt(), this->link.c_str(), link.size()+1 );
 }
 
 CREATE( Menu, PKG_MENU, 0x15 )
@@ -420,7 +420,7 @@ SEND( Menu ) {
 	NXWSOCKET s = ps->toInt();
 
 	//calc of packet size
-	UI32 temp=headerSize;
+	UI32 temp=this->headerSize;
 
 	//command string
 	UI32 size_of_commands=0;
@@ -429,7 +429,7 @@ SEND( Menu ) {
 		size_of_commands += its->length();
 	}
 	++size_of_commands; // terminator of command string
-	cmd_length=size_of_commands;
+	this->cmd_length=size_of_commands;
 
 	temp+=size_of_commands;
 	temp+=sizeof( numTextLines );
@@ -439,12 +439,12 @@ SEND( Menu ) {
 		temp += itu->size()*2 +sizeof( len );
 	}
 	
-	size=temp;
+	this->size=temp;
 	
-	numTextLines=texts->size();
+	this->numTextLines=texts->size();
 
 	//send of header
-	Xsend( s, getBeginValid(), headerSize );
+	Xsend( s, this->getBeginValid(), this->headerSize );
 	
 	//send of command string
 	its = commands->begin();
@@ -474,7 +474,7 @@ RECEIVE( MenuSelection ) {
 	
 	int offset=1;
 	
-	getFromSocket( s, getBeginValidForReceive(), headerSize-1, offset );
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
 	
 	int si = switchcount.get();
 	while( si-- ) {
@@ -503,11 +503,11 @@ SEND( IconListMenu ) {
 	NXWSOCKET s = ps->toInt();
 
 	//calc of packet size
-	UI32 temp=headerSize;
+	UI32 temp=this->headerSize;
 
 	//question string
 	temp+=question.size();
-	question_length=question.size();
+	this->question_length=question.size();
 
 	
 	temp+=sizeof( icon_count );
@@ -519,10 +519,10 @@ SEND( IconListMenu ) {
 		temp += sizeof( eUI08 ) + iter->response.size();
 	}
 	
-	size=temp;
+	this->size=temp;
 	
 	//send of header
-	Xsend( s, getBeginValid(), headerSize );
+	Xsend( s, this->getBeginValid(), this->headerSize );
 	
 
 	Xsend( s, question.c_str(), question.size() );

@@ -18,12 +18,22 @@
 
 #include "particles.h"
 
+
+#if _MSC_VER >= 1000
+#pragma once
+#endif
+
 void SndAttackOK(NXWSOCKET  s, int serial);
 void SndDyevat(NXWSOCKET  s, int serial, short id);
 void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt);
 void SndRemoveitem(int serial);
 void SndShopgumpopen(NXWSOCKET  s, int serial);
 
+void soundeffect(NXWSOCKET s, UI16 sound);
+	//!< Play sound effect for player
+void soundeffect3(P_ITEM pi, UI16 sound);
+void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound);
+void soundeffect5(NXWSOCKET s, UI16 sound);
 void sysbroadcast(char *txt, ...);
 	//!< System broadcast in bold text
 void sysmessage(NXWSOCKET  s, const char *txt, ...);
@@ -61,19 +71,32 @@ void weblaunch(int s, const char *txt);
 	//!< Direct client to a web page
 void broadcast(int s);
 	//!< GM Broadcast (Done if a GM yells something);
+void itemtalk( P_ITEM pi, char *txt);
+	//!< Item "speech"
 
-void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode );
+
+void staticeffect (CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false );
+void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
+void bolteffect(CHARACTER player, bool UO3DonlyEffekt=false, bool skip_old=false);
+void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
 
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode);
-#if 0
 void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed char z, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode);
-#endif
+void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode,unsigned char unk1,unsigned char unk2,unsigned char ajust,unsigned char type);
+void movingeffect2(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode);
+void bolteffect2(CHARACTER player,char a1,char a2);	// experimenatal, lb
+
+void staticeffectUO3D(CHARACTER player, ParticleFx *sta);
+void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta);
+void bolteffectUO3D(CHARACTER player);
+void itemeffectUO3D(P_ITEM pi, ParticleFx *sta);
 
 void dolight(int s, char level);
 void updateskill(int s, int skillnum);
 void deathaction(P_CHAR player_id, P_ITEM corpse_id);
 	//!< Character does a certain action
-void deathmenu(NXWSOCKET s);
+void deathmenu(int s);
+	//!< Character sees death menu
 void SendPauseResumePkt(NXWSOCKET s, UI08 flag);
 void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial);
 void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z);
@@ -83,7 +106,6 @@ void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color);
 void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false); 
 void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn, Location pos, bool useDispZ = false);
-void SendSetWeatherPkt(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature);
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send
 void sendshopinfo(int s, int c, P_ITEM pi);
@@ -94,10 +116,14 @@ void endtrade(SERIAL serial);
 void tellmessage(int i, int s, char *txt);
 void gmyell(char *txt);
 
-void weather(NXWSOCKET s);
+UI16 goldsfx(int goldtotal);
+UI16 itemsfx(UI16 item);
+
+void weather(int s, unsigned char bolt);
 void dosocketmidi(int s);
 void wornitems(NXWSOCKET  s, P_CHAR pc);
 void bgsound(int s);
 void pweather(NXWSOCKET  s);
+
 
 #endif

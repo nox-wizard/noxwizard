@@ -132,8 +132,10 @@ void updatehtml()//HTML
 				}
 			}
 		}
-		else if( script1 == "NOWNUM")		fprintf(html,"%i",now);
-		else if( script1 == "ACCOUNTNUM" )	fprintf(html,"%i",accounts::Count());
+		else if( script1 == "NOWNUM")
+			fprintf(html,"%i",now);
+		else if( script1 == "ACCOUNTNUM" )
+			fprintf(html,"%i",Accounts->Count());
 		else if( script1 == "CHARCOUNT" )
 		{
 			if(ccount==0)

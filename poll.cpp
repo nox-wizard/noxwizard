@@ -9,14 +9,22 @@
 
 #include "nxwcommn.h"
 
+cPoll::cPoll()
+{
+}
+
+cPoll::~cPoll()
+{
+}
+
 SERIAL cPoll::getSerial()
 {
 	return serial;
 }
 
-void cPoll::setSerial( const SERIAL newSerial )
+void cPoll::setSerial( const SERIAL serial )
 {
-	serial = newSerial;
+	this->serial = serial;
 }
 
 std::string cPoll::getQuestion()
@@ -24,9 +32,9 @@ std::string cPoll::getQuestion()
 	return question;
 }
 
-void cPoll::setQuestion( const std::string &newQuestion )
+void cPoll::setQuestion( const std::string &question )
 {
-	question = newQuestion;
+	this->question = question;
 }
 
 UI32 cPoll::getRunForDays()
@@ -36,7 +44,7 @@ UI32 cPoll::getRunForDays()
 
 void cPoll::setRunForDays( UI32 days )
 {
-	runForDays = days;
+	this->runForDays = days;
 }
 
 std::string cPoll::getPollOption( const UI32 option )

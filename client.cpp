@@ -17,7 +17,7 @@
 #include "speech.h"
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
-	m_sck=s;
+	this->m_sck=s;
 	currentCommand= NULL;
 }
 
@@ -49,10 +49,8 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	talk2[16] = server_data.Unicodelanguage[2];
 	talk2[17] = 0;
 
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
-
 	send(talk2, 18);
+	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
 //AoS/	Network->FlushBuffer(m_sck);
@@ -92,10 +90,8 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	talk2[16] = server_data.Unicodelanguage[2];
 	talk2[17] = 0;
 
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
-
 	send(talk2, 18);
+	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
 //AoS/	Network->FlushBuffer(m_sck);
@@ -134,6 +130,7 @@ bool cNxwClientObj::inGame()
 
 P_CHAR cNxwClientObj::currChar() 
 { 
+	
 	return MAKE_CHAR_REF(currchar[m_sck]); 
 }
 
@@ -168,7 +165,7 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
     if (pi==NULL) // item number send by client?
         pi=pointers::findItemBySerPtr(getRcvBuffer()+1);
 
-    P_CHAR pc_currchar = currChar();
+    P_CHAR pc_currchar = this->currChar();
 
 	P_ITEM p_back=pc_currchar->getBackpack();
 
@@ -210,14 +207,17 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
         ((ISVALIDPI(p_back)) && (pi->getContSerial()!=p_back->getSerial32()) &&    // not in primary pack
                 !pc_currchar->IsWearing(pi)))       // not equipped
     {
-        sysmsg(TRANSLATE("In order to open spellbook, it must be equipped in your hand or in the first layer of your backpack."));
+        this->sysmsg(TRANSLATE("In order to open spellbook, it must be equipped in your hand or in the first layer of your backpack."));
         return;
     }
 
     if (pi->layer!=1) senditem(m_sck,pi); // prevents crash if pack not open
 
-    UI08 sbookstart[8]="\x24\x40\x01\x02\x03\xFF\xFF";
-    LongToCharPtr(pi->getSerial32(), sbookstart+1);
+    char sbookstart[8]="\x24\x40\x01\x02\x03\xFF\xFF";
+    sbookstart[1]= pi->getSerial().ser1;
+    sbookstart[2]= pi->getSerial().ser2;
+    sbookstart[3]= pi->getSerial().ser3;
+    sbookstart[4]= pi->getSerial().ser4;
     send(sbookstart, 7);
 
     int spells[70] = {0,};

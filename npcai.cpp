@@ -378,7 +378,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 				pc->playAction(0x10);
 				pj->resurrect();
-				pj->staticFX(0x376A, 1, 0);
+				pj->staticFX(0x376A, 1, 0, NULL);
 				switch(RandomNum(0, 4))
 				{
 					case 0: pc->talkAll(TRANSLATE("Thou art dead, but 'tis within my power to resurrect thee.	Live!"), 1); break;
@@ -464,7 +464,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				}
 				pc->playAction(0x10);
 				pj->resurrect();
-				pj->staticFX(0x3709, 1, 0);
+				pj->staticFX(0x3709, 1, 0, NULL);
 				switch (RandomNum(0,4))
 				{
 					case 0:	pc->talkAll(TRANSLATE("Fellow minion of Mondain, Live!!"), 1); break;
@@ -533,14 +533,14 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					//	Guard is still walking towards char who called
 					//	In that case check whether guard can see targets within visual range of caller
 					//
-					x = guardcaller->getPosition().x;
-					y = guardcaller->getPosition().y;
+					x = guardcaller->getPosition("x");
+					y = guardcaller->getPosition("y");
 				}
 			}
 			else
 			{
-				x = pc->getPosition().x;
-				y = pc->getPosition().y;
+				x = pc->getPosition("x");
+				y = pc->getPosition("y");
 			}
 
 			NxwCharWrapper sc;

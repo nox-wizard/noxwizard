@@ -41,7 +41,7 @@ inline void SetSkillDelay(CHARACTER cc)
 { 
 	P_CHAR pc_cc=MAKE_CHAR_REF(cc);
 	VALIDATEPC(pc_cc);
-	SetTimerSec(pc_cc->skilldelay,SrvParms->skilldelay);
+	SetTimerSec(&pc_cc->skilldelay,SrvParms->skilldelay);
 }
 
 /*!
@@ -1704,7 +1704,7 @@ void Skills::SpiritSpeak(NXWSOCKET s)
     impaction(s,0x11);          // I heard there is no action...but I decided to add one
     pc->playSFX(0x024A);   // only get the sound if you are successful
     sysmessage(s,TRANSLATE("You establish a connection to the netherworld."));
-    SetTimerSec(pc->spiritspeaktimer,spiritspeak_data.spiritspeaktimer+pc->in);
+    SetTimerSec(&(pc->spiritspeaktimer),spiritspeak_data.spiritspeaktimer+pc->in);
 }
 
 /*!
@@ -1903,8 +1903,8 @@ void Skills::Tracking(NXWSOCKET s,int selection)
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-	SetTimerSec(pc->trackingtimer,(((tracking_data.basetimer*pc->skill[TRACKING])/1000)+1)); // tracking time in seconds ... gm tracker -> basetimer+1 seconds, 0 tracking -> 1 sec, new calc by LB
-	SetTimerSec(pc->trackingdisplaytimer,tracking_data.redisplaytime);
+	SetTimerSec(&pc->trackingtimer,(((tracking_data.basetimer*pc->skill[TRACKING])/1000)+1)); // tracking time in seconds ... gm tracker -> basetimer+1 seconds, 0 tracking -> 1 sec, new calc by LB
+	SetTimerSec(&pc->trackingdisplaytimer,tracking_data.redisplaytime);
 
 	sprintf(temp,TRANSLATE("You are now tracking %s."), pc_targ->getCurrentNameC());
 
@@ -2570,15 +2570,15 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 	int v1;
     if(pButte->id()==0x100A)
     { // East Facing Butte
-        if ((pButte->getPosition().x > pc->getPosition().x)||(pButte->getPosition().y != pc->getPosition().y))
+        if ((pButte->getPosition("x") > pc->getPosition("x"))||(pButte->getPosition("y") != pc->getPosition("y")))
             v1= INVALID;
-        else v1= pc->getPosition().x - pButte->getPosition().x;
+        else v1= pc->getPosition("x") - pButte->getPosition("x");
     }
     else
     { // South Facing Butte
-        if ((pButte->getPosition().y > pc->getPosition().y)||(pButte->getPosition().x != pc->getPosition().x))
+        if ((pButte->getPosition("y") > pc->getPosition("y"))||(pButte->getPosition("x") != pc->getPosition("x")))
             v1= INVALID;
-        else v1= pc->getPosition().y - pButte->getPosition().y;
+        else v1= pc->getPosition("y") - pButte->getPosition("y");
     }
 
     int arrowsquant=0;
@@ -3183,7 +3183,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
         else
             pc->sysmsg(TRANSLATE("You fail to decipher the map"));      // Nope :P
         // Set the skill delay, no matter if it was a success or not
-        SetTimerSec(pc->skilldelay,SrvParms->skilldelay);
+        SetTimerSec(&pc->skilldelay,SrvParms->skilldelay);
         pc->playSFX(0x0249); // Do some inscription sound regardless of success or failure
         pc->sysmsg(TRANSLATE("You put the deciphered tresure map in your pack"));       // YAY
     }

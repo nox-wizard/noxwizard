@@ -739,13 +739,13 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->setOldPosition(X,value);
+					pc->setOldPosition("x",value);
 					break;
 				case NXW_CP2_Y :
-					pc->setOldPosition(Y,value);
+					pc->setOldPosition("y",value);
 					break;
 				case NXW_CP2_Z :
-					pc->setOldPosition(Z,value);
+					pc->setOldPosition("z",value);
 					break;
 			}
 			break;
@@ -774,13 +774,13 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->setPosition(X,value);
+					pc->setPosition("x",value);
 					break;
 				case NXW_CP2_Y :
-					pc->setPosition(Y,value);
+					pc->setPosition("y",value);
 					break;
 				case NXW_CP2_Z :
-					pc->setPosition(Z,value);
+					pc->setPosition("z",value);
 			} break;
 		case NXW_CP_I_POSTTYPE :			  			//dec value: 263;
 			pc->postType = (MsgBoards::PostType)value;
@@ -968,13 +968,13 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			pc->race = value;
 			break;
 		case NXW_CP_I_CX :			 			//dec value: 316
-			pc->setPosition(X,value);
+			pc->setPosition("x",value);
 			break;
 		case NXW_CP_I_CY :			 			//dec value: 317
-			pc->setPosition(Y,value);
+			pc->setPosition("y",value);
 			break;
 		case NXW_CP_I_CZ :			 			//dec value: 318
-			pc->setPosition(Z,value);
+			pc->setPosition("z",value);
 			break;
 		case NXW_CP_I_LASTMOVETIME :					//dec value: 319
 			pc->LastMoveTime = value;
@@ -1153,13 +1153,13 @@ NATIVE2(_setItemProperty)
 			case NXW_IP_I_OLDPOSITION:								//dec value : 224;
 				switch(params[3]) {
 					case NXW_CI2_X:
-						pi->setOldPosition(X, p);
+						pi->setOldPosition("x", p);
 						break;
 					case NXW_CI2_Y:
-						pi->setOldPosition(Y, p);
+						pi->setOldPosition("y", p);
 						break;
 					default :
-						pi->setOldPosition(Z, p);
+						pi->setOldPosition("z", p);
 						break;
 				} break;
 			case NXW_IP_I_OWNERSERIAL :				   //dec value :  225;
@@ -1171,13 +1171,13 @@ NATIVE2(_setItemProperty)
 			case NXW_IP_I_POSITION:							//dec value : 227;
 				switch(params[3]) {
 					case NXW_CI2_X:
-						pi->setPosition(X, p);
+						pi->setPosition("x", p);
 						break;
 					case NXW_CI2_Y:
-						pi->setPosition(Y, p);
+						pi->setPosition("y", p);
 						break;
 					default :
-						pi->setPosition(Z, p);
+						pi->setPosition("z", p);
 						break;
 				} break;
 			case NXW_IP_I_RANK :					   //dec value :  228;

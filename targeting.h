@@ -9,7 +9,7 @@
 
 /*!
 \file
-\brief Header for targeting handling namespace and classes
+\brief Header for targeting handling class
 */
 
 #ifndef _TARGETING_INCLUDED
@@ -45,11 +45,11 @@ typedef struct _PKGx6C
 } PKGx6C;
 
 /*!
-\brief Targeting functions stuff
-\todo check for remove commented functions
+\brief class for handle targeting functions
 */
-namespace targets
+class cTargets
 {
+private:
 	void CharTarget(NXWCLIENT ps, PKGx6C *pt);
 	void HouseSecureDown( NXWSOCKET  s ); // Ripper
 	void HouseLockdown( NXWSOCKET  s ); // Abaddon
@@ -132,6 +132,7 @@ namespace targets
 	void SetWork(NXWSOCKET s);
 	void SetFood(NXWSOCKET s);
 	void AllAttackTarget(NXWSOCKET s);
+public:
 	void IDtarget(NXWSOCKET s);
 	void MultiTarget(NXWCLIENT ps);
 	//void Wiping(NXWSOCKET s);
@@ -141,7 +142,8 @@ namespace targets
 	int AddMenuTarget(NXWSOCKET s, int x, int addmitem);
 	void XTeleport(NXWSOCKET s, int x);
 	int BuyShop(NXWSOCKET s, CHARACTER c);
-}
+};
+
 
 class TargetLocation
 {
@@ -187,6 +189,9 @@ public:
 class cPacketTargeting
 {
 	public:
+			cPacketTargeting();
+			~cPacketTargeting();
+
 		UI08	getPacketType( NXWSOCKET socket );
 		UI08	getTargetType( NXWSOCKET socket );
 		SERIAL	getCharacterSerial( NXWSOCKET socket );

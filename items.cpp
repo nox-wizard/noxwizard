@@ -26,14 +26,12 @@ otherwise, more memory will be allocated in the mainloop (Duke)
 */
 #define ITEM_RESERVE 3000
 
-#if 0
 /*!
 \brief Base constructor for cWeapon class
 */
 cWeapon::cWeapon(SERIAL serial) : cItem (serial)
 {
 }
-#endif
 
 /*!
 \author Luxor
@@ -247,6 +245,11 @@ void setserial(int nChild, int nParent, int nType)
 }
 */
 
+cItem::~cItem()
+{
+
+}
+
 void cItem::setCont(P_OBJECT obj)
 {
 	setContSerial(obj->getSerial32());
@@ -294,7 +297,7 @@ void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)
 	}
 }
 
-UI08 cItem::getContSerialByte(UI08 nByte, LOGICAL old) const
+BYTE cItem::getContSerialByte(UI32 nByte, LOGICAL old/*= false*/) const
 {
 	const Serial *cont;
 	
@@ -315,7 +318,7 @@ UI08 cItem::getContSerialByte(UI08 nByte, LOGICAL old) const
 	return 0;
 }
 
-SERIAL cItem::getContSerial(LOGICAL old) const
+SI32 cItem::getContSerial(LOGICAL old/*= 0*/) const
 {
 	if(old)
 		return oldcontserial.serial32;
@@ -323,7 +326,7 @@ SERIAL cItem::getContSerial(LOGICAL old) const
 		return contserial.serial32;
 }
 
-PC_OBJECT cItem::getContainer() const
+const cObject* cItem::getContainer() const
 {
 	SI32 ser= contserial.serial32;
 
@@ -334,6 +337,11 @@ PC_OBJECT cItem::getContainer() const
 		return pointers::findCharBySerial(ser);
 
 	return NULL;					// container serial is invalid
+}
+
+LOGICAL cItem::isInWorld()
+{
+	return (contserial.serial32==-1);
 }
 
 /*!
@@ -417,6 +425,7 @@ LOGICAL cItem::doDecay()
 		return false;
 }
 
+
 void cItem::explode(NXWSOCKET  s)
 {
 	if (s < 0 || s > now) return;	//Luxor
@@ -442,8 +451,8 @@ void cItem::explode(NXWSOCKET  s)
     }
 	//End Luxor recursive explosions
 
-	staticFX(0x36B0, 0x10, 0x80, 0);
-	playSFX(0x0207);
+	staticeffect2(this, 0x36, 0xB0, 0x10, 0x80, 0x00);
+	soundeffect3(this, 0x0207);
 
 	len=morex/250; //4 square max damage at 100 alchemy
 	switch (morez)
@@ -471,120 +480,6 @@ void cItem::explode(NXWSOCKET  s)
 
 	Delete();
 
-}
-
-/*!
- \author Akron
- \brief Play the specified sound to the item
- \param sound sound to play
- \param s socket that hear the sound, if INVALID, all the near players hear the sound
- \note replace old soundeffect3() and soundeffect5()
- */
-void cItem::playSFX(UI16 sound, NXWSOCKET s)
-{
-	Location pos = getPosition();
-	pos.z = 0;
-
-	if ( s != INVALID )
-	{
-		SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
-	} else {		
-		NxwSocketWrapper sw;
-		sw.fillOnline( this );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWCLIENT ps_i=sw.getClient();
-			if(ps_i==NULL) continue;
-			P_CHAR pc_j=ps_i->currChar();
-			if( ISVALIDPC(pc_j))
-			{
-				SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, pos);
-			}
-		}
-	}
-}
-
-/*!
- \author Akron
- \brief play the static effect for the item
- \note replace old staticeffect2()
- */
-void cItem::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx *str)
-{
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, 0x02, getSerial32(), getSerial32(), eff, getPosition(), getPosition(), speed, loop, 1, explode); 
-
-	if (!str) // no UO3D effect ? lets send old effect to all clients
-	{
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( this );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-				Xsend(j, effect, 28);
-//AoS				Network->FlushBuffer(j);
-			 }
-		}
-		return;
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( this );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-				if (clientDimension[j]==2) // 2D client, send old style'd
-				{
-					Xsend(j, effect, 28);
-//AoS/					Network->FlushBuffer(j);
-				}
-				else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-				{
-					UI08 particleSystem[49];
-					particles::itemeffectUO3D(this, str, particleSystem);
-					Xsend(j, particleSystem, 49);
-//AoS/					Network->FlushBuffer(j);
-				}
-				else
-					LogError("Invalid Client Dimension: %i\n",clientDimension[j]);
-			}
-		}
-	}
-}
-
-/*!
- \author Akron
- \param speech text the item has to "say"
- \note replace old itemtalk()
- */
-void cItem::talk(std::string speech)
-{
-	NxwSocketWrapper sw;
-	sw.fillOnline( this );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET s=sw.getSocket();
-		if(s==INVALID) continue;
-
-		UI08 unicodetext[512];
-		UI16 ucl = ( speech.length() * 2 ) + 2 ;
-
-		char2wchar(speech.c_str());
-		memcpy(unicodetext, Unicode::temp, ucl);
-
-		UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-		UI08 name[30]={ 0x00, };
-		strcpy((char *)name, getCurrentNameC());
-
-		SendUnicodeSpeechMessagePkt(s, getSerial32(), id(), 0, 0x0481, 0x0003, lang, name, unicodetext, ucl);
-	}
 }
 
 /*
@@ -632,7 +527,7 @@ void cItem::setAmount(const short amt)
 	Refresh();
 }
 
-#if 0
+/*
 // This method does not change the pointer arrays !!
 // should only be used in VERY specific situations like initItem... Duke, 6.4.2001
 void cItem::setContSerialOnly(SI32 contser)
@@ -652,7 +547,9 @@ void cItem::setContSerial(SI32 contser)
 	setContSerial(contser, false, false);
 	pointers::updContMap(this);	//Luxor
 }
+*/
 
+/*
 void cItem::setOwnSerialOnly(SI32 ownser)
 {
 	ownserial=ownser;
@@ -673,7 +570,8 @@ void cItem::SetOwnSerial(SI32 ownser)
 		setptr(&ownsp[ownserial%HASHMAX], DEREF_P_ITEM(this));
 
 }
-#endif
+*/
+
 
 void cItem::SetMultiSerial(SI32 mulser)
 {
@@ -690,12 +588,20 @@ void cItem::SetMultiSerial(SI32 mulser)
 /*!
 \author Anthalir
 */
+void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
+{
+	MoveTo( Loc(x, y, z) );
+}
+
+/*!
+\author Anthalir
+*/
 void cItem::MoveTo(Location newloc)
 {
-	regions::remove(this);
+	mapRegions->remove(this);
 	pointers::delItemFromLocationMap(this);
 	setPosition( newloc );
-	regions::add(this);
+	mapRegions->add(this);
 	pointers::addItemToLocationMap(this);
 }
 
@@ -810,6 +716,20 @@ bool cItem::ContainerPileItem( P_ITEM pItem)
 
 }
 
+
+int cItem::CountItems(short ID, short col, LOGICAL bAddAmounts)
+{
+	return pointers::containerCountItems(getSerial32(), ID, col, bAddAmounts);
+}
+
+/*!
+\author Anthalir
+*/
+int cItem::CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts)
+{
+	return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts);
+}
+
 /*!
 \author Juliunus
 \brief delete a determined amount of an item with determined color
@@ -885,6 +805,11 @@ void cItem::animSetId(SI16 id)
 }
 
 
+int cItem::getName(char* itemname)
+{
+	return item::getname(DEREF_P_ITEM(this),itemname);
+}
+
 /*!
 \brief the weight of the single item
 \return the weigth
@@ -933,7 +858,6 @@ R32 cItem::getWeightActual()
 {
 	return (amount>1)? getWeight()*amount : getWeight();
 }
-
 cItem::cItem( SERIAL ser )
 {
 
@@ -1094,11 +1018,6 @@ const char* cItem::getRealItemName()
     }
 }
 
-SI32 cItem::getName(char *itemname)
-{
-	return item::getname(DEREF_P_ITEM(this),itemname);
-}
-
 /*!
 \author Luxor
 \brief gets the combat skill of an item
@@ -1112,6 +1031,35 @@ Skill cItem::getCombatSkill()
     else if (IsFencingType())	return FENCING;
     else if (IsBowType())		return ARCHERY;
 	return WRESTLING;
+}
+
+/*!
+\brief check if item is a container
+\author Endymion
+\return LOGICAL
+\todo remove after cContainerClass work
+*/
+LOGICAL cItem::isContainer()
+{
+	if(type==1 || type==12 || type==63 ||
+		type==8 || type==13 || type==64)
+        return true;
+	else 
+		return false;
+}
+
+/*!
+\brief check if item is a secure container
+\author Endymion
+\return LOGICAL
+\todo remove after cContainerClass work
+*/
+LOGICAL cItem::isSecureContainer()
+{
+	if(type==8 || type==13 || type==64)
+        return true;
+	else 
+		return false;
 }
 
 /*!
@@ -1247,7 +1195,6 @@ void cItem::Refresh()
 	}
 }
 
-#if 0
 cContainerItem::cContainerItem(LOGICAL ser/*= true*/) : cItem(ser)
 {
 	ItemList.empty();
@@ -1352,7 +1299,7 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 
 		if (amount+pItem->amount>65535)
 		{
-			pItem->setPosition( getPosition().x, getPosition().y, 9);
+			pItem->setPosition( getPosition("x"), getPosition("y"), 9);
 			pItem->amount=(amount+pItem->amount)-65535;
 			amount=65535;
 			pItem->Refresh();
@@ -1371,40 +1318,40 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 
 void cContainerItem::setRandPos(P_ITEM pItem)
 {
-	pItem->setPosition(X, RandomNum(18, 118));
-	pItem->setPosition(Y, 9);
+	pItem->setPosition("x", RandomNum(18, 118));
+	pItem->setPosition("z", 9);
 
 	switch( getGumpType() )
 	{
 	case 1: 
-		pItem->setPosition(Y, RandomNum(50, 100));		
+		pItem->setPosition("y", RandomNum(50, 100));		
 		break;
 
 	case 2: 
-		pItem->setPosition(Y, RandomNum(30, 80));		
+		pItem->setPosition("y", RandomNum(30, 80));		
 		break;
 
 	case 3: 
-		pItem->setPosition(Y, RandomNum(100, 140));		
+		pItem->setPosition("y", RandomNum(100, 140));		
 		break;
 
 	case 4: 
-		pItem->setPosition(Y, RandomNum(60, 140));	
-		pItem->setPosition(X, RandomNum(60, 140));			
+		pItem->setPosition("y", RandomNum(60, 140));	
+		pItem->setPosition("x", RandomNum(60, 140));			
 		break;
 
 	case 5: 
-		pItem->setPosition(Y, RandomNum(85, 160));
-		pItem->setPosition(X, RandomNum(20, 70));		
+		pItem->setPosition("y", RandomNum(85, 160));
+		pItem->setPosition("x", RandomNum(20, 70));		
 		break;
 
 	default: 
-		pItem->setPosition(Y, RandomNum(30, 80));
+		pItem->setPosition("y", RandomNum(30, 80));
 		break;
 	}
 }
 
-UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts)
+UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts/*= false*/)
 {
 	UI32 count= 0;
 	vector<SI32>::iterator it= ItemList.begin();
@@ -1465,7 +1412,6 @@ void cContainerItem::dropItem(P_ITEM pi)
 	}
 	while( ++it!=ItemList.end() );
 }
-#endif
 
 /*!
 \brief Get the out most container
@@ -1565,6 +1511,11 @@ UI32 cItem::distFrom( P_ITEM pi )
 	}
 }
 
+LOGICAL cItem::canDecay()
+{
+	return priv&0x01;
+}
+
 void cItem::setDecay( const LOGICAL on )
 {
 	if( on )
@@ -1578,12 +1529,27 @@ void cItem::setDecayTime( const TIMERVAL delay )
 	decaytime = delay;
 }
 
+TIMERVAL cItem::getDecayTime()
+{
+	return decaytime;
+}
+
+LOGICAL cItem::isNewbie()
+{
+	return priv&0x02;
+}
+
 void cItem::setNewbie( const LOGICAL on )
 {
 	if( on )
 		priv |= 0x02;
 	else
 		priv &= ~0x02;
+}
+
+LOGICAL cItem::isDispellable()
+{
+	return priv&0x04;
 }
 
 void cItem::setDispellable( const LOGICAL on )

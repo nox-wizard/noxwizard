@@ -1898,7 +1898,7 @@ NATIVE(_chr_fish)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    fishing::Fish (DEREF_P_CHAR(pc));
+    Fishing->Fish (DEREF_P_CHAR(pc));
     return 0;
 }
 
@@ -2435,23 +2435,14 @@ NATIVE(_itm_delEventHandler)
 */
 NATIVE (_send_movingfx)
 {
-	P_CHAR pc; P_OBJECT po;
-	UI08 dir = 0x00;
-	if ( isItemSerial(params[1]) && isItemSerial(params[2]) )
-		return INVALID;
-	if ( isCharSerial(params[1]) )
-	{
-		pc = pointers::findCharBySerial(params[1]);
-		po = objects.findObject(params[2]);
-	} else {
-		pc = pointers::findCharBySerial(params[2]);
-		po = objects.findObject(params[1]);
-		dir = 0x01;
-	}
+    P_CHAR pc1 = pointers::findCharBySerial(params[1]);
+    VALIDATEPCR(pc1, INVALID);
+    P_CHAR pc2 = pointers::findCharBySerial(params[2]);
+    VALIDATEPCR(pc2, INVALID);
 
-	VALIDATEPCR(pc, INVALID); VALIDATEPOR(po, INVALID);
+    movingeffect(DEREF_P_CHAR(pc1), DEREF_P_CHAR(pc2), (params[3]>>8)&0xFF, params[3]&0xFF, params[4], params[5],
+		params[6]);
 
-	pc->movingFX(po, params[3]&0xFFFF, params[4], params[5], params[6], NULL, dir);
 	return 0;
 }
 
@@ -2538,7 +2529,7 @@ NATIVE (_rgn_setWeather)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if(ps!=NULL) {
-			weather(ps->toInt());
+			weather(ps->toInt(),0);
 			pweather(ps->toInt());
 		}
 	}
@@ -2743,7 +2734,7 @@ NATIVE (_send_boltfx)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    pc->boltFX(false);
+    bolteffect(DEREF_P_CHAR(pc), true);
 	return 0;
 }
 
@@ -2873,8 +2864,8 @@ NATIVE(_chr_sound)
 NATIVE(_itm_sound)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
-	VALIDATEPIR(pi, INVALID);
-	pi->playSFX(params[2]);
+    VALIDATEPIR(pi, INVALID);
+	soundeffect3(pi, params[2]);
 	return 0;
 }
 
@@ -3421,9 +3412,10 @@ NATIVE(_chr_updatechar)
 */
 NATIVE(_send_staticfx)
 {
-    P_OBJECT po = objects.findObject(params[1]);
-    VALIDATEPOR(po, INVALID);
-    po->staticFX(params[2], 0, 10);
+//Magic->doStaticEffect(params[1], params[2]);
+    P_CHAR pc = pointers::findCharBySerial(params[1]);
+    VALIDATEPCR(pc, INVALID);
+    pc->staticFX(params[2], 0, 10, NULL);
     return 0;
 }
 
@@ -3853,7 +3845,7 @@ NATIVE(_itm_speech)
 
 	if (params[1] == -1)
 	{
-		cur->talk(g_cAmxPrintBuffer);	//Numbersix: if socket = -1
+		itemtalk(cur,g_cAmxPrintBuffer);	//Numbersix: if socket = -1
 		return 0;							// =>item speaks to all in range
 	}
 
@@ -5189,7 +5181,7 @@ NATIVE ( _menu_create )
 	  return 0;
 	// TODO fix it!
 
-//	return ( menus::createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
+//	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
 }
 
 /*
@@ -5201,7 +5193,7 @@ NATIVE ( _menu_create )
 */
 NATIVE ( _menu_delete )
 {
-	return ( menus::deleteMenu( params[1] ) )? 1 : 0;
+	return ( menus.deleteMenu( params[1] ) )? 1 : 0;
 }
 
 /*
@@ -5214,11 +5206,11 @@ NATIVE ( _menu_delete )
 */
 NATIVE ( _menu_show )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL ) {
 		P_CHAR pc = pointers::findCharBySerial( params[2] );
 		VALIDATEPCR( pc, 0 );
-		return ( menus::showMenu( params[1], pc ) ? 1 : 0 );
+		return ( menus.showMenu( params[1], pc ) ? 1 : 0 );
 	}
 	return 0;
 }
@@ -5238,10 +5230,10 @@ NATIVE ( _menu_show )
 */
 NATIVE ( _menu_addButton )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-			((menus::cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
+			((cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
 			return 1;
 	}
 	return 0;
@@ -5257,10 +5249,10 @@ NATIVE ( _menu_addButton )
 */
 NATIVE ( _menu_addPage )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addPage( params[2] );
+		((cMenu*)menu)->addPage( params[2] );
 		return 1;
 	}
 	return 0;
@@ -5280,10 +5272,10 @@ NATIVE ( _menu_addPage )
 */
 NATIVE (  _menu_addResizeGump )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5303,10 +5295,10 @@ NATIVE (  _menu_addResizeGump )
 */
 NATIVE ( _menu_addPageButton )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5325,14 +5317,14 @@ NATIVE ( _menu_addPageButton )
 */
 NATIVE ( _menu_addText )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
 		cell *cstr;
 		amx_GetAddr(amx,params[4],&cstr);
 		wstring s;
 		amx_GetStringUnicode( &s, cstr );
-		((menus::cMenu*)menu)->addText( params[2], params[3], s, params[5] );
+		((cMenu*)menu)->addText( params[2], params[3], s, params[5] );
 		return 1;
 	}
 	return 0;

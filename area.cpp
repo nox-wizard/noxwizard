@@ -9,13 +9,23 @@
 
 #include "nxwcommn.h"
 
-areas::AREA_DB areas::allareas;
-SERIAL areas::currarea = INVALID;
-  
-SERIAL areas::insert( Area& newarea, SERIAL index )
+cAreas*	Areas;
+
+
+cAreas::cAreas() 
 {
-	AREA_DB::iterator iter( allareas.find( index ) );
-	if( iter==allareas.end() && index!=INVALID ) {
+	this->currarea=INVALID;
+};
+
+cAreas::~cAreas() 
+{
+}
+
+
+SERIAL cAreas::insert( Area& newarea, SERIAL index )
+{
+	AREA_DB::iterator iter( this->allareas.find( index ) );
+	if( iter==this->allareas.end() && index!=INVALID ) {
 		if( currarea<=index )
 			currarea=index;
 		allareas[index]=newarea;
@@ -29,7 +39,7 @@ SERIAL areas::insert( Area& newarea, SERIAL index )
 }
 
 
-void areas::loadareas()
+void cAreas::loadareas()
 {
 
 	cScpIterator*	iter = 0;
@@ -81,7 +91,7 @@ void areas::loadareas()
 			while ( lha[0] !='}' && ++loopexit < MAXLOOPS );
 
 			if( check==0xFFFF )
-				insert( area, current );
+				this->insert( area, current );
 		}
     }
 	while (  lha != "EOF" && ++loopexit < MAXLOOPS );

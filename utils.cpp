@@ -134,37 +134,37 @@ static void doorsfx(P_ITEM pi, int x, int y)
 	{
 		if (((x>=0x0695)&&(x<0x06C5))|| // Open wooden / ratan door
 			((x>=0x06D5)&&(x<=0x06F4)))
-			pi->playSFX(OPENWOOD);
+			soundeffect3(pi,OPENWOOD);
 
 		if (((x>=0x0839)&&(x<=0x0848))|| // Open gate
 			((x>=0x084C)&&(x<=0x085B))||
 			((x>=0x0866)&&(x<=0x0875)))
-			pi->playSFX(OPENGATE);
+			soundeffect3(pi,OPENGATE);
 
 		if (((x>=0x0675)&&(x<0x0695))|| // Open metal
 			((x>=0x06C5)&&(x<0x06D5)))
-			pi->playSFX(OPENSTEEL);
+			soundeffect3(pi,OPENSTEEL);
 
 		if ((x>=0x0314)&&(x<=0x0365)) // Open secret
-			pi->playSFX(OPENSECRET);
+			soundeffect3(pi,OPENSECRET);
 	}
 	else if (y==1) // Request close door sfx
 	{
 		if (((x>=0x0695)&&(x<0x06C5))|| // close wooden / ratan door
 			((x>=0x06D5)&&(x<=0x06F4)))
-			pi->playSFX(CLOSEWOOD);
+			soundeffect3(pi,CLOSEWOOD);
 
 		if (((x>=0x0839)&&(x<=0x0848))|| // close gate
 			((x>=0x084C)&&(x<=0x085B))||
 			((x>=0x0866)&&(x<=0x0875)))
-			pi->playSFX(CLOSEGATE);
+			soundeffect3(pi,CLOSEGATE);
 
 		if (((x>=0x0675)&&(x<0x0695))|| // close metal
 			((x>=0x06C5)&&(x<0x06D5)))
-			pi->playSFX(CLOSESTEEL);
+			soundeffect3(pi,CLOSESTEEL);
 
 		if ((x>=0x0314)&&(x<=0x0365)) // close secret
-			pi->playSFX(CLOSESECRET);
+			soundeffect3(pi,CLOSESECRET);
 	}
 
 } // doorsfx() END
@@ -196,7 +196,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		if (x==(db+0))
 		{
 			pi->id2++;
-			pi->setPosition(pi->getPosition().x - 1, pi->getPosition().y + 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -205,7 +206,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+1))
 		{
 			pi->id2--;
-			pi->setPosition(pi->getPosition().x + 1, pi->getPosition().y - 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -213,7 +215,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+2))
 		{
 			pi->id2++;
-			pi->setPosition(pi->getPosition().x + 1, pi->getPosition().y + 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -222,7 +225,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+3))
 		{
 			pi->id2--;
-			pi->setPosition(pi->getPosition().x - 1, pi->getPosition().y - 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -230,7 +234,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+4))
 		{
 			pi->id2++;
-			pi->setPosition(X, pi->getPosition().x - 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -239,7 +243,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+5))
 		{
 			pi->id2--;
-			pi->setPosition(X, pi->getPosition().x + 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -247,7 +251,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+6))
 		{
 			pi->id2++;
-			pi->setPosition(pi->getPosition().x + 1, pi->getPosition().y - 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -256,7 +261,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+7))
 		{
 			pi->id2--;
-			pi->setPosition(pi->getPosition().x - 1, pi->getPosition().y + 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -264,7 +270,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+8))
 		{
 			pi->id2++;
-			pi->setPosition(pi->getPosition().x + 1, pi->getPosition().y + 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -273,7 +280,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+9))
 		{
 			pi->id2--;
-			pi->setPosition(pi->getPosition().x - 1, pi->getPosition().y - 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -281,7 +289,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+10))
 		{
 			pi->id2++;
-			pi->setPosition(pi->getPosition().x + 1, pi->getPosition().y - 1);
+			pi->setPosition("x", pi->getPosition("x") + 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -290,7 +299,8 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+11))
 		{
 			pi->id2--;
-			pi->setPosition(pi->getPosition().x - 1, pi->getPosition().y + 1);
+			pi->setPosition("x", pi->getPosition("x") - 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -314,7 +324,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+14))
 		{
 			pi->id2++;
-			pi->setPosition(Y, pi->getPosition().y - 1);
+			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -323,7 +333,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		} else if (x==(db+15))
 		{
 			pi->id2--;
-			pi->setPosition(Y, pi->getPosition().y + 1);
+			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
@@ -443,11 +453,11 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		#ifndef __NEWMAKESYS
 		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
 		#endif
-			item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
+			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
 		#ifndef __NEWMAKESYS
 		}
 		else {
-			Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
+			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
 		}
 		#endif
 		return;
@@ -456,7 +466,7 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		return;
 	} else if ( script1 == "INFORMATION" ) {
 		sprintf(tstring, TRANSLATE("Connected players [%i out of %i accounts] Items [] Characters []"),
-			now,accounts::Count());
+			now,Accounts->Count());
 
 		sysmessage(s, tstring);
 		return;

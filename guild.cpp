@@ -199,19 +199,26 @@ cGuild::cGuild( SERIAL serial )
 	}  while( strcmp( script1, "}" ) );
 }
 
+/*!
+\brief Destructor of cGuild
+*/
+cGuild::~cGuild()
+{
+}
+
 void cGuild::create( SERIAL newSerial )
 {
-	serial=newSerial;
+	this->serial=newSerial;
 }
 
 void cGuild::setSerial( SERIAL newSerial )
 {
-	serial=newSerial;
+	this->serial=newSerial;
 }
 
 SERIAL cGuild::getSerial()
 {
-	return serial;
+	return this->serial;
 }
 
 #define MAX_NAME_LENGTH 41
@@ -489,6 +496,13 @@ cGuildMember::cGuildMember()
 }
 
 /*!
+\brief Destructor of cGuild
+*/
+cGuildMember::~cGuildMember()
+{
+}
+
+/*!
 \brief Set the new guilded title
 \author Endymion
 \param newTitle the new guilded title
@@ -527,6 +541,16 @@ void cGuildMember::setToggle( GUILD_TITLE_TOGGLE newToggle )
 GUILD_TITLE_TOGGLE cGuildMember::getToggle()
 {
 	return toggle;
+}
+
+
+
+cGuildz::cGuildz()
+{
+}
+
+cGuildz::~cGuildz()
+{
 }
 
 void cGuildz::archive()
@@ -663,14 +687,18 @@ cGuildRecruit::cGuildRecruit( P_CHAR recruit, P_CHAR recruiter )
 	setRecruiter( recruiter );
 }
 
+cGuildRecruit::~cGuildRecruit()
+{
+}
+
 SERIAL cGuildRecruit::getSerial()
 {
 	return serial;
 }
 
-void cGuildRecruit::setSerial( const SERIAL newSerial )
+void cGuildRecruit::setSerial( const SERIAL serial )
 {
-	serial = newSerial;
+	this->serial = serial;
 }
 
 SERIAL cGuildRecruit::getRecuiter()
@@ -687,4 +715,5 @@ void cGuildRecruit::setRecruiter( const P_CHAR pChar )
 {
 	setRecruiter( pChar->getSerial32() );
 }
+
 

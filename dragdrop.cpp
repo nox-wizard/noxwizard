@@ -43,15 +43,15 @@ typedef struct _PKGx08
 //Drop Item(s) (14 bytes)
 //* BYTE cmd
 //* BYTE[4] item id
-	SERIAL Iserial;
+	long Iserial;
 //* BYTE[2] xLoc
-	UI16 TxLoc;
+	short TxLoc;
 //* BYTE[2] yLoc
-	UI16 TyLoc;
+	short TyLoc;
 //* BYTE zLoc
-	SI08 TzLoc;
+	signed char TzLoc;
 //* BYTE[4] Move Into (FF FF FF FF if normal world)
-	SERIAL Tserial;
+	long Tserial;
 } PKGx08;
 
 void UpdateStatusWindow(NXWSOCKET socket, P_ITEM pi)
@@ -398,7 +398,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 			} // end if corpse
 
-			regions::remove( pi );
+			mapRegions->remove( pi );
 			pointers::delItemFromLocationMap( pi );
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
@@ -642,7 +642,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		{
 			NXWSOCKET j=sw.getSocket();
 			if( j!=INVALID )
-				pck->sendWornItems(j);
+				wornitems(j, pck );
 		}
 
 		pc->playSFX( itemsfx(pi->id()) );
@@ -1098,8 +1098,8 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 				P_ITEM pi_onground = si.getItem();
 				if(ISVALIDPI(pi_onground)) {
-                        if ( pi_onground->getPosition().x == pp->TxLoc &&
-                             pi_onground->getPosition().y == pp->TyLoc )
+                        if ( pi_onground->getPosition("x") == pp->TxLoc &&
+                             pi_onground->getPosition("y") == pp->TyLoc )
 							{
                                 itcount++;
                                 if (itcount >= 2) { //Only 2 items permitted
@@ -1138,7 +1138,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	if( pi->id1 == 0x1B && ( pi->id2 == 0xC3 || pi->id2 == 0xC4 ) )
 	{
 		pc->playSFX( 0x01FE);
-		pc->staticFX(0x372A, 9, 6);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x2A, 0x09, 0x06);
 		pi->Delete();
 		return;
 	}
@@ -1189,7 +1189,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
 
-		P_ITEM p_boat = boats::GetBoat(pi->getPosition());
+		P_ITEM p_boat = Boats->GetBoat(pi->getPosition());
 
 		if(ISVALIDPI(p_boat))
 		{
@@ -1495,7 +1495,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
 				{
-					regions::remove(pItem);
+					mapRegions->remove(pItem);
 					pointers::delItemFromLocationMap(pItem);
 				}
 
@@ -1540,7 +1540,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		else { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: invalid item EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, EVILDRAGG[s]); ConOut(temp); }
 	  #endif
 
-	  if  ( (pp->TxLoc==0xFFFF) && (pp->TyLoc==0xFFFF) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
+	  if  ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
 	  {
 		  EVILDRAGG[s]=0;
           #ifdef debug_dragg
@@ -1549,7 +1549,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  return;
 	  }	 // swallow! note: previous evildrag !
 
-	  else if ( (pp->TxLoc==0xFFFF) && (pp->TyLoc==0xFFFF) && (pp->Tserial==0)  && (EVILDRAGG[s]==0) )
+	  else if ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==0) )
 	  {
           #ifdef debug_dragg
 		    ConOut("Bounce & Swallow\n");
@@ -1558,7 +1558,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  item_bounce6(ps, pi);
 		  return;
 	  }
-	  else if ( ( (pp->TxLoc!=0xFFFF) && (pp->TyLoc!=0xFFFF) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) EVILDRAGG[s]=1; // calc new evildrag value
+	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) EVILDRAGG[s]=1; // calc new evildrag value
 	  else EVILDRAGG[s]=0;
 	}
 

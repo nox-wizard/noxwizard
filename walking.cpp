@@ -28,40 +28,43 @@
 \param dir initial direction
 \return the adjacent direction
 */
-inline UI08 getLeftDir(UI08 dir)
+int getLeftDir(int dir)
 {
-	return (dir+7)&0x7;
+	dir &= 7;	// make sure it's valid
+	return dir==0 ? 7 : dir-1;
 }
 /*!
 \brief Calculates the adjacent direction (clockwise)
-\author Duke, rewritten by Akron
+\author Duke
 \param dir initial direction
 \return the adjacent direction
 */
-inline UI08 getRightDir(UI08 dir)
+int getRightDir(int dir)
 {
-	return (dir+1)&0x7;
+	dir &= 7;
+	return dir==7 ? 0 : dir+1;
 }
 
 /*!
 \brief Calculats and changes the given coords one step into the given direction
 \author Duke
 \param dir the direction
-\param x reference to x coord
-\param y reference to y coord
+\param x pointer to the x coord
+\param y pointer to the y coord
+\todo use reference instead of pointer?
 */
-void getXYfromDir(int dir, UI16 &x, UI16 &y)
+void getXYfromDir(int dir, int *x, int *y)
 {
 	switch(dir&0x07)
 	{
-	case 0: y--;		break;
-	case 1: x++; y--;	break;
-	case 2: x++;		break;
-	case 3: x++; y++;	break;
-	case 4: y++;		break;
-	case 5: x--; y++;	break;
-	case 6: x--;		break;
-	case 7: x--; y--;	break;
+	case 0: (*y)--;		break;
+	case 1: (*x)++; (*y)--;	break;
+	case 2: (*x)++;		break;
+	case 3: (*x)++; (*y)++;	break;
+	case 4: (*y)++;		break;
+	case 5: (*x)--; (*y)++;	break;
+	case 6: (*x)--;		break;
+	case 7: (*x)--; (*y)--;	break;
 	}
 }
 
@@ -154,10 +157,11 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 }
 
 
-/*!
- \brief Handles stealth/hiding
- \author Xanathar (cut from WalkHandleRunning())
- */
+///////////////
+// Name:	WalkingHandleHiding
+// history:	cut from WalkHandleRunning() by Xanathar, 14.06.2001
+// Purpose:	handles stealth/hiding
+//
 bool WalkingHandleHiding (P_CHAR pc, int dir)
 {
 	VALIDATEPCR(pc, false);
@@ -184,11 +188,11 @@ bool WalkingHandleHiding (P_CHAR pc, int dir)
 	return true;
 
 }
-
-/*!
- \brief Handles running, stamina
- \author Duke (cut from walking())
- */
+///////////////
+// Name:	WalkHandleRunning
+// history:	cut from walking() by Duke, 27.10.2000
+// Purpose:	handles running, stamina
+//
 bool WalkHandleRunning(P_CHAR pc, int dir)
 {
 	VALIDATEPCR(pc, false);
@@ -240,33 +244,33 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 
 }
 
-/*!
- \brief Collects Landscape plus static and dynamic items in an array
- \author Duke (cut from walking())
- */
+///////////////
+// Name:	WalkCollectBlockers
+// history:	cut from walking() by Duke, 20.11.2000
+// Purpose:	Collects Landscape plus static and dynamic items in an array
+//
 UI32 WalkCollectBlockers(P_CHAR pc)
 {
 	VALIDATEPCR(pc, 0);
-	UI32 		blockers_count = 0;
-	unitile_st*	pUnitile = xyblock + blockers_count;
-	SI32		pcX = pc->getPosition().x,
-			pcY = pc->getPosition().y,
-			mapid = 0;
-	SI08		mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
+	UI32 blockers_count= 0;
 
+
+	int mapid = 0;
+	SI08 mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
 	if (mapz != illegal_z)
 	{
 		land_st land;
 		Map->SeekLand(mapid, &land);
-		pUnitile->type=0;
-		pUnitile->basez = mapz;
-		pUnitile->id = mapid;
-		pUnitile->flag1=land.flag1;
-		pUnitile->flag2=land.flag2;
-		pUnitile->flag3=land.flag3;
-		pUnitile->flag4=land.flag4;
-		pUnitile->height=0;
-		pUnitile->weight=255;
+
+		xyblock[blockers_count].type=0;
+		xyblock[blockers_count].basez = mapz;
+		xyblock[blockers_count].id = mapid;
+		xyblock[blockers_count].flag1=land.flag1;
+		xyblock[blockers_count].flag2=land.flag2;
+		xyblock[blockers_count].flag3=land.flag3;
+		xyblock[blockers_count].flag4=land.flag4;
+		xyblock[blockers_count].height=0;
+		xyblock[blockers_count].weight=255;
 		++blockers_count;
 	}
 
@@ -274,93 +278,90 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 	si.fillItemsNearXYZ( pc->getPosition() );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pi=si.getItem();
-		if( ISVALIDPI(pi) )
+		if(!ISVALIDPI(pi))
+			continue;
+		if (pi->id1<0x40) // Not a Multi
 		{
-			SI32	piX = pi->getPosition().x,
-				piY = pi->getPosition().y;
-
-			if (pi->id1<0x40) // Not a Multi
+			if ((pi->getPosition("x")== pc->getPosition("x")) && (pi->getPosition("y")==pc->getPosition("y")))
 			{
-				if ( piX == pcX && piY == pcY )
+				if (pi->trigger!=0)
 				{
-					if (pi->trigger!=0)
+					if ((pi->trigtype==1)&&(!pc->dead))
 					{
-						if ((pi->trigtype==1)&&(!pc->dead))
+						if ( TIMEOUT( pi->disabled ) )//AntiChrist
 						{
-							if ( TIMEOUT( pi->disabled ) )//AntiChrist
-							{
-								triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
-							}
+							triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
 						}
 					}
-					else
-					{
-						if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
-						{
-							pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
-							g_bByPass = false; //ndEndy ?? what is this?
-						}
-						/*
-						pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
-						g_bByPass = false;
-						*/
-					}
-					tile_st tile;
-					Map->SeekTile(pi->id(), &tile);
-					pUnitile = xyblock + blockers_count;
-					pUnitile->type=1;
-					pUnitile->basez= pi->getPosition().z;
-					pUnitile->id=pi->id();
-					pUnitile->flag1=tile.flag1;
-					pUnitile->flag2=tile.flag2;
-					pUnitile->flag3=tile.flag3;
-					pUnitile->flag4=tile.flag4;
-					pUnitile->height=tile.height;
-					pUnitile->weight=tile.weight;
-					++blockers_count;
 				}
-			}
-			else	// Multi Tile
-			{
-				if ( abs( piX - pcX ) <= BUILDRANGE && abs( piY - pcY ) <= BUILDRANGE )
+				else
 				{
-					MULFile *mfile = NULL;
-					SI32 length = 0;
-
-					Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
-					length=length/MultiRecordSize;
-					if ((length == INVALID) || (length>=17000000))//Too big... bug fix hopefully (Abaddon 13 Sept 1999)
+					
+					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
 					{
-						//ConOut("walking() - Bad length in multi file. Avoiding stall.\n");
-						length = 0;
+						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
+						g_bByPass = false; //ndEndy ?? what is this?
 					}
-					for (int j = 0; j < length; ++j)
+					/*
+					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
+					g_bByPass = false;
+					*/
+				}
+				tile_st tile;
+				Map->SeekTile(pi->id(), &tile);
+				xyblock[blockers_count].type=1;
+				xyblock[blockers_count].basez= pi->getPosition("z");
+				xyblock[blockers_count].id=pi->id();
+				xyblock[blockers_count].flag1=tile.flag1;
+				xyblock[blockers_count].flag2=tile.flag2;
+				xyblock[blockers_count].flag3=tile.flag3;
+				xyblock[blockers_count].flag4=tile.flag4;
+				xyblock[blockers_count].height=tile.height;
+				xyblock[blockers_count].weight=tile.weight;
+				++blockers_count;
+			}
+		}
+		else	// Multi Tile
+		{
+			if ( (abs(pi->getPosition("x") - (int)pc->getPosition("x"))<=BUILDRANGE) &&
+				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
+			{
+				MULFile *mfile = NULL;
+				SI32 length = 0;
+
+				Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
+				length=length/MultiRecordSize;
+				if ((length == INVALID) || (length>=17000000))//Too big... bug fix hopefully (Abaddon 13 Sept 1999)
+				{
+					//ConOut("walking() - Bad length in multi file. Avoiding stall.\n");
+					length = 0;
+				}
+				int j;
+				for (j = 0; j < length; ++j)
+				{
+					st_multi multi;
+					mfile->get_st_multi(&multi);
+					if (multi.visible && (pi->getPosition("x")+multi.x == pc->getPosition("x")) && (pi->getPosition("y")+multi.y == pc->getPosition("y")))
 					{
-						st_multi multi;
-						mfile->get_st_multi(&multi);
-						if (multi.visible && piX + multi.x == pcX && piY + multi.y == pcY )
-						{
-							tile_st tile;
-							Map->SeekTile(multi.tile, &tile);
-							pUnitile = xyblock + blockers_count;
-							pUnitile->type=2;
-							pUnitile->basez= multi.z+pi->getPosition().z;
-							pUnitile->id= multi.tile;
-							pUnitile->flag1= tile.flag1;
-							pUnitile->flag2= tile.flag2;
-							pUnitile->flag3= tile.flag3;
-							pUnitile->flag4= tile.flag4;
-							pUnitile->height= tile.height;
-							pUnitile->weight= 255;
-							++blockers_count;
-						}
+						tile_st tile;
+						Map->SeekTile(multi.tile, &tile);
+						xyblock[blockers_count].type=2;
+						xyblock[blockers_count].basez= multi.z+pi->getPosition("z");
+						xyblock[blockers_count].id= multi.tile;
+						xyblock[blockers_count].flag1= tile.flag1;
+						xyblock[blockers_count].flag2= tile.flag2;
+						xyblock[blockers_count].flag3= tile.flag3;
+						xyblock[blockers_count].flag4= tile.flag4;
+						xyblock[blockers_count].height= tile.height;
+						xyblock[blockers_count].weight= 255;
+						++blockers_count;
 					}
 				}
 			}
 		}
 	}
 
-	MapStaticIterator msi( pcX, pcY );
+    MapStaticIterator msi( pc->getPosition("x"), pc->getPosition("y") );
 	staticrecord *stat;
 	int loopexit=0;
 	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
@@ -368,36 +369,40 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		//ConOut("staticr[X] type=%d, id=%d\n", 2, stat->itemid);
 		tile_st tile;
 		msi.GetTile(&tile);
-		pUnitile = xyblock + blockers_count;
-		pUnitile->type= 2;
-		pUnitile->basez= stat->zoff;
-		pUnitile->id= stat->itemid;
-		pUnitile->flag1= tile.flag1;
-		pUnitile->flag2= tile.flag2;
-		pUnitile->flag3= tile.flag3;
-		pUnitile->flag4= tile.flag4;
-		pUnitile->height= tile.height;
-		pUnitile->weight= 255;
+		xyblock[blockers_count].type= 2;
+		xyblock[blockers_count].basez= stat->zoff;
+		xyblock[blockers_count].id= stat->itemid;
+		xyblock[blockers_count].flag1= tile.flag1;
+		xyblock[blockers_count].flag2= tile.flag2;
+		xyblock[blockers_count].flag3= tile.flag3;
+		xyblock[blockers_count].flag4= tile.flag4;
+		xyblock[blockers_count].height= tile.height;
+		xyblock[blockers_count].weight= 255;
 		++blockers_count;
 	}
 	return blockers_count;
+
+
 }
 
-/*!
- \brief Decides if something in the array blocks the walker
- \author Duke (cut from walking() )
- */
+///////////////
+// Name:	WalkEvaluateBlockers
+// history:	cut from walking() by Duke, 20.11.2000
+// Purpose:	Decides if something in the array blocks the walker
+//
 void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 {
 	VALIDATEPC(pc);
 	
 	if( blockers == 0 ) return;	// nothing to do since there is nothing on the way
 
-	SI08 z = -128, oldz, seekz,dispz = -128;
+	SI08 z, oldz, seekz,dispz = -128;
 	int num;
 	UI32 i;
 	char gmbody;
 	UI32 blockers_count= blockers;
+
+	z=-128;
 
 	Location pcpos= pc->getPosition();
 
@@ -585,10 +590,12 @@ void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 
 }
 
-/*!
- \brief Handles a 'real move' if the Char is not only changing direction
- \author Duke (cut from walking())
- */
+///////////////
+// Name:	WalkHandleBlocking
+// history:	cut from walking() by Duke, 27.10.2000
+// Purpose:	Handles a 'real move' if the Char is not only changing direction
+//
+
 bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 {
 	VALIDATEPCR(pc, false);
@@ -599,21 +606,21 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	switch(dir&0x0F)
 	{
-		case 0: pc->setPosition(Y, pcpos.y-1);
+		case 0: pc->setPosition("y", pcpos.y-1);
 			break;
-		case 1: pc->setPosition(pcpos.x+1, pcpos.y-1);
+		case 1: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
 			break;
-		case 2: pc->setPosition(X, pcpos.x+1);
+		case 2: pc->setPosition("x", pcpos.x+1);
 			break;
-		case 3: pc->setPosition(pcpos.x+1, pcpos.y+1);
+		case 3: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case 4: pc->setPosition(Y, pcpos.y+1);
+		case 4: pc->setPosition("y", pcpos.y+1);
 			break;
-		case 5: pc->setPosition(pcpos.x-1, pcpos.y+1);
+		case 5: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case 6: pc->setPosition(X, pcpos.x-1);
+		case 6: pc->setPosition("x", pcpos.x-1);
 			break;
-		case 7: pc->setPosition(pcpos.x-1, pcpos.y-1);
+		case 7: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
 			break;
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
@@ -649,7 +656,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			{
 				//xan : probably the plr has entered the boat walking!
 				pc->setMultiSerial32Only(INVALID);
-				P_ITEM boat = boats::GetBoat(pc->getPosition());
+				P_ITEM boat = Boats->GetBoat(pc->getPosition());
 				if (boat!=NULL) {
 					pc->setMultiSerial( boat->getSerial32() );
 					
@@ -659,7 +666,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					   
 						P_CHAR pc_b=pets.getChar();
 						if(ISVALIDPC(pc_b)) {
-							pc->MoveTo( boat->getPosition().x+1, boat->getPosition().y+1, boat->getPosition().z+2 );
+							pc->MoveTo( boat->getPosition("x")+1, boat->getPosition("y")+1, boat->getPosition("z")+2 );
 							pc->setMultiSerial( boat->getSerial32() );
 							pc_b->teleport();
 						}
@@ -704,7 +711,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		return false;
 	}
 
-	UI16 nowx2,nowy2;
+	int nowx2,nowy2;
 
 	//Char mapRegions
 	pcpos= pc->getPosition();
@@ -716,7 +723,8 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	pc->y= oldy; // we have to remove it with OLD x,y ... LB, very important
 	pc->MoveTo(nowx2,nowy2,z);
 	*/
-	pc->setPosition(oldx, oldy);
+	pc->setPosition("x", oldx);
+	pc->setPosition("y", oldy);
 	pc->MoveTo( nowx2, nowy2, z );
 	return true;
 }
@@ -738,7 +746,7 @@ void WalkingHandleRainSnow(P_CHAR pc)
 
 	// dynamics-check
 		int x=Map->DynamicElevation( pc->getPosition() );
-		if (x!=-127) if (boats::GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
+		if (x!=-127) if (Boats->GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB
 
@@ -748,13 +756,13 @@ void WalkingHandleRainSnow(P_CHAR pc)
 		else
 			noweather[s]=0; // no rain & snow in static buildings+dungeons;
 		if (kk-noweather[s]!=0)
-			weather(s); // iff outside-inside changes resend weather ...
+			weather(s, 0); // iff outside-inside changes resend weather ...
 	// needs to be de-rem'd if weather is available again
   }
 }
 
-#if 0
-void WalkingHandleGlowingItems(P_CHAR pc)
+
+/*void WalkingHandleGlowingItems(P_CHAR pc)
 {
 	VALIDATEPC(pc);
 	
@@ -777,8 +785,8 @@ void WalkingHandleGlowingItems(P_CHAR pc)
 		}
 	}
 
-}
-#endif
+}*/
+
 
 void walking(P_CHAR pc, int dir, int sequence)
 {
@@ -809,7 +817,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		//if (pc->hidden==1) walkok.notoriety=0x00;
 		//if (pc->isHidden()) walkok.notoriety=0x00;
 		walkok.send( pc->getClient() );
-
+		
 		walksequence[s]=sequence;
 		walksequence[s]%=255;
 	}
@@ -826,7 +834,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		ConOut("dir-screwed : %i\n",dir);
 
 
-	if( oldx!=newx || oldy!=newy )
+	if( oldx!=newx || oldy!=newy ) 
 	{
 		//Luxor: moved WalkHandleItemsAtNewPos before socket check.
 		handleItemsAtNewPos( pc, oldx, oldy, newx, newy );
@@ -860,8 +868,9 @@ void walking(P_CHAR pc, int dir, int sequence)
 
 } 
 
-//! Only for switching to combat mode
-void walking2(P_CHAR pc_s) 
+
+
+void walking2(P_CHAR pc_s) // Only for switching to combat mode
 {
 	VALIDATEPC(pc_s);
 	int sendit;
@@ -952,7 +961,7 @@ void walking2(P_CHAR pc_s)
 		}
 	}
 }
-
+//</XAN>
 int npcSelectDir(P_CHAR pc_i, int j)
 {
 	VALIDATEPCR(pc_i, -1);
@@ -1018,14 +1027,14 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 				bOk = true;
 				break;
 			}
-
+			
 			// West
 			loc = Loc( pos.x - i, pos.y, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
 				bOk = true;
 				break;
 			}
-
+                        
 			// South
 			loc = Loc( pos.x, pos.y + i, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
@@ -1240,11 +1249,7 @@ int checkBounds(P_CHAR pc, int newX, int newY, int type)
 	return move;
 }
 
-/*!
- \param type npcwalkmode (0 normal, 1 box, 2 circle)
- \todo Should be changed to npcwander - Sparhawk
- */
-void npcwalk( P_CHAR pc_i, int newDirection, int type)
+void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode (0 for normal, 1 for box, 2 for circle) // Sparhawk should be changed to npcwander
 {
 	VALIDATEPC(pc_i);
 
@@ -1271,8 +1276,9 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)
 	bool valid, move;
 	if ( pc_i->dir == newDirection )  // If we're moving, not changing direction
 	{
-		UI16 newX = charpos.x, newY = charpos.y;
-		getXYfromDir( pc_i->dir, newX, newY );	// get coords of the location we want to walk
+		int newX = charpos.x;
+		int newY = charpos.y;
+		getXYfromDir( pc_i->dir, &newX, &newY );	// get coords of the location we want to walk
                 //<Luxor>
 		Location newpos = Loc( newX, newY, charpos.z );
 		valid = ( isWalkable( newpos ) != illegal_z );
@@ -1286,8 +1292,8 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)
 			}
 			else 	// We're out of the boundary, so we need to get back
 			{
-				UI08 direction = getDirFromXY( pc_i, pc_i->fx1, pc_i->fy1 );
-				getXYfromDir( direction, newX, newY );
+				int direction = getDirFromXY( pc_i, pc_i->fx1, pc_i->fy1 );
+				getXYfromDir( direction, &newX, &newY );
 				//<Luxor>
 				newpos = Loc( newX, newY, charpos.z );
 				valid = ( isWalkable( newpos ) != illegal_z );
@@ -1295,7 +1301,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)
 				if ( !valid ) // try to bounce around obstacle
 				{
 					direction = pc_i->dir;
-					getXYfromDir( pc_i->dir, newX, newY );
+					getXYfromDir( pc_i->dir, &newX, &newY );
 					//<Luxor>
 					newpos = Loc( newX, newY, charpos.z );
 					valid = ( isWalkable( newpos ) != illegal_z );
@@ -1307,7 +1313,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)
 							direction = getRightDir( direction );
 						else
 							direction = getLeftDir( direction );
-						getXYfromDir( pc_i->dir, newX, newY );
+						getXYfromDir( pc_i->dir, &newX, &newY );
 						//<Luxor>
 						newpos = Loc( newX, newY, charpos.z );
 						valid = ( isWalkable( newpos ) != illegal_z );
@@ -1331,7 +1337,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)
 				direction = getLeftDir( pc_i->dir );
 			while( !valid && direction != pc_i->dir )
 			{
-				getXYfromDir( direction, newX, newY );
+				getXYfromDir( direction, &newX, &newY );
 				//<Luxor>
 				newpos = Loc( newX, newY, charpos.z );
 				valid = ( isWalkable( newpos ) != illegal_z );
@@ -1383,7 +1389,7 @@ void handleCharsAtNewPos( P_CHAR pc )
 
 	NxwCharWrapper sc;
 	P_CHAR pc_curr;
-	sc.fillCharsAtXY( pc->getPosition(), !pc->IsGM(), true );
+	sc.fillCharsAtXY( pc->getPosition(), !pc->IsGM(), false );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		pc_curr = sc.getChar();
@@ -1456,7 +1462,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 	NXWCLIENT ps = NULL;
 	NXWCLIENT cli = pc->getClient();
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 1, !pc->IsGM(), pc->npc );
+	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 5, !pc->IsGM() );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pc_curr = sc.getChar();
@@ -1495,6 +1501,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 				continue;
 		}
 
+		NXWSOCKET socket = ps->toInt();
 		UI08 flag, hi_color;
 
 		// If it's an npc, and it's fighting or following something let's show it running

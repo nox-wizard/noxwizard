@@ -24,12 +24,12 @@ extern server_st server_data;
 
 
 #ifdef __unix__
-extern UI32 oldtime, newtime;
+extern unsigned long int oldtime, newtime;
 #define SLPMULTI 1000
 #else
 extern WSADATA wsaData;
 extern WORD wVersionRequested;
-extern SI32 oldtime, newtime;
+extern long int oldtime, newtime;
 #endif
 
 extern bool g_nShowLayers;
@@ -39,12 +39,18 @@ extern int dummy__; //used for default parameters of type int& and int*
 extern repsys_st repsys;
 extern resource_st resource;
 
+extern class cBoat		*Boats;
 extern class CWorldMain		*cwmWorldState;
+extern class cAccounts		*Accounts;
 extern class cGuilds		*Guilds;
 extern class cMapStuff		*Map;
+extern class cFishing		*Fishing;
 extern class cTargets		*Targ;
+extern class cPartys		*Partys;
 extern struct teffect_st	*teffects;
+extern class cSpawns		*Spawns;
 extern class cAreas		*Areas;
+extern class cRestockMng	*Restocks;
 
 namespace Scripts {
 	extern class cScpScript* Advance;
@@ -92,6 +98,7 @@ namespace Scripts {
 	extern class cScpScript* Areas;
 };
 extern std::vector<std::string> clientsAllowed;
+extern class cRegion *mapRegions; //setup map regions Tauriel
 
 // - the below structure is for looking up items based on serial #
 // - item's serial, owner's serial, char's serial, and container's serial
@@ -154,26 +161,26 @@ extern int escortRegions;
 
 extern char firstpacket[MAXCLIENT+1];
 extern char noweather[MAXCLIENT+1]; //LB
-extern UI08 LSD[MAXCLIENT];
-extern UI08 DRAGGED[MAXCLIENT];
-extern UI08 EVILDRAGG[MAXCLIENT];
+extern unsigned char LSD[MAXCLIENT];
+extern unsigned char DRAGGED[MAXCLIENT];
+extern unsigned char EVILDRAGG[MAXCLIENT];
 
 extern int newclient[MAXCLIENT];
-extern UI08  buffer[MAXCLIENT][MAXBUFFER];
+extern unsigned char  buffer[MAXCLIENT][MAXBUFFER];
 extern char  outbuffer[MAXCLIENT][MAXBUFFER];
 extern int whomenudata [(MAXCLIENT)*10]; // LB, for improved whomenu, ( is important !!!
 extern int client[MAXCLIENT];
 extern short int walksequence[MAXCLIENT];
 extern signed char addid5[MAXCLIENT];
 extern int acctno[MAXCLIENT];
-extern UI08 clientip[MAXCLIENT][4];
+extern unsigned char clientip[MAXCLIENT][4];
 extern make_st itemmake[MAXCLIENT];
 extern int tempint[MAXCLIENT];
-extern UI08 addid1[MAXCLIENT];
-extern UI08 addid2[MAXCLIENT];
-extern UI08 addid3[MAXCLIENT];
-extern UI08 addid4[MAXCLIENT];
-extern UI08 dyeall[MAXCLIENT];
+extern unsigned char addid1[MAXCLIENT];
+extern unsigned char addid2[MAXCLIENT];
+extern unsigned char addid3[MAXCLIENT];
+extern unsigned char addid4[MAXCLIENT];
+extern unsigned char dyeall[MAXCLIENT];
 extern int addx[MAXCLIENT];
 extern int addy[MAXCLIENT];
 extern int addx2[MAXCLIENT];
@@ -181,18 +188,18 @@ extern int addy2[MAXCLIENT];
 extern signed char addz[MAXCLIENT];
 extern int addmitem[MAXCLIENT];
 extern char xtext[MAXCLIENT][31];
-extern UI08 perm[MAXCLIENT];
-extern UI08 cryptclient[MAXCLIENT];
-extern UI08 usedfree[MAXCLIENT];
+extern unsigned char perm[MAXCLIENT];
+extern unsigned char cryptclient[MAXCLIENT];
+extern unsigned char usedfree[MAXCLIENT];
 extern int binlength[MAXIMUM+1];
 extern int boutlength[MAXIMUM+1];
-extern UI08 clientDimension[MAXCLIENT]; // stores if the client is the new 3d or old 2d one
+extern unsigned char clientDimension[MAXCLIENT]; // stores if the client is the new 3d or old 2d one
 
 //extern int spattackValue[MAXCLIENT];
 extern int clickx[MAXCLIENT];
 extern int clicky[MAXCLIENT];
 extern int currentSpellType[MAXCLIENT]; // 0=spellcast, 1=scrollcast, 2=wand cast
-extern UI08 targetok[MAXCLIENT];
+extern unsigned char targetok[MAXCLIENT];
 
 //////////////////////////////////////////////
 //              MAxBuffer                  //
@@ -216,16 +223,16 @@ extern char serv[MAXSERV][3][30]; // Servers list
 extern char saveip[30];
 extern char start[MAXSTART][5][30]; // Startpoints list
 extern title_st title[ALLSKILLS+1];
-extern UI08 *comm[CMAX];
+extern unsigned char *comm[CMAX];
 extern int layers[MAXLAYERS];
 
 extern creat_st creatures[2048]; //LB, stores the base-sound+sound flags of monsters, animals
 extern location_st location[4000];
 extern logout_st logout[1024];//Instalog
-extern regions::region_st region[256];
+extern region_st region[256];
 extern advance_st wpadvance[1000];
 extern char spellname[71][25];
-extern UI32 metagm[256][7]; // for meta gm script
+extern unsigned int metagm[256][7]; // for meta gm script
 extern signed short int menupriv[64][256]; // for menu priv script
 extern int validEscortRegion[256];
 
@@ -277,7 +284,7 @@ extern char scpfilename[32];//AntiChrist
 //  small packet-arrays
 ///////////////////////////////
 
-extern UI08 w_anim[3];
+extern unsigned char w_anim[3];
 
 #ifdef __unix__
 extern termios termstate ;
@@ -286,8 +293,8 @@ extern int g_nCurrentSocket;
 
 
 // Global Variables
-extern UI32 uiCurrentTime;
-extern UI32 polyduration;
+extern unsigned int uiCurrentTime;
+extern unsigned int polyduration;
 
 
 extern int gDecayItem; //Last item that was checked for decay Tauriel 3/7/99
@@ -295,8 +302,8 @@ extern int gRespawnItem; //Last item that was checked for respawn Tauriel 3/7/99
 
 extern int save_counter;//LB, world backup rate
 
-extern UI32 fly_p; // flying probability = 1/fly_p each step (if it doesnt fly)
-extern UI08 fly_steps_max;
+extern unsigned int fly_p; // flying probability = 1/fly_p each step (if it doesnt fly)
+extern unsigned char fly_steps_max;
 
 extern int gatecount;
 //Time variables
@@ -307,23 +314,23 @@ extern UI32 uotickcount;
 extern int moon1update;
 extern int moon2update;
 
-extern UI08 moon1;
-extern UI08 moon2;
-extern UI08 dungeonlightlevel;
-extern UI08 worldfixedlevel;
-extern UI08 worldcurlevel;
-extern UI08 worldbrightlevel;
-extern UI08 worlddarklevel;
+extern unsigned char moon1;
+extern unsigned char moon2;
+extern unsigned char dungeonlightlevel;
+extern unsigned char worldfixedlevel;
+extern unsigned char worldcurlevel;
+extern unsigned char worldbrightlevel;
+extern unsigned char worlddarklevel;
 
 extern int goldamount;
 
 extern int defaultpriv1;
 extern int defaultpriv2;
 
-extern UI32 teffectcount; // No temp effects to start with
-extern UI32 nextfieldeffecttime;
-extern UI32 nextnpcaitime;
-extern UI32 nextdecaytime;
+extern unsigned int teffectcount; // No temp effects to start with
+extern unsigned int nextfieldeffecttime;
+extern unsigned int nextnpcaitime;
+extern unsigned int nextdecaytime;
 
 //extern int autosaved, saveinterval,dosavewarning;
 extern bool heartbeat;
@@ -343,23 +350,23 @@ extern int now;
 
 
 extern FILE *infile, *scpfile, *lstfile, *wscfile, *mapfile, *sidxfile, *statfile, *verfile, *tilefile, *multifile, *midxfile;
-extern UI32 servcount;
-extern UI32 startcount;
+extern unsigned int servcount;
+extern unsigned int startcount;
 
 
 
-extern UI08 xcounter;
-extern UI08 ycounter;        //x&y counter used for placing deleted items and chars
+extern unsigned char xcounter;
+extern unsigned char ycounter;        //x&y counter used for placing deleted items and chars
 extern int secure; // Secure mode
 
-extern UI08 season;
+extern unsigned char season;
 
 //extern int xycount;
 
 extern int locationcount;
-extern UI32 logoutcount;//Instalog
+extern unsigned int logoutcount;//Instalog
 
-extern UI32 updatepctime;
+extern unsigned long int updatepctime;
 
 
 
@@ -368,25 +375,31 @@ extern int global_lis;
 extern char *cline;
 
 extern int tnum;
-extern UI32 starttime, endtime, lclock;
+extern unsigned int starttime, endtime, lclock;
 extern bool overflow;
 
-//extern UI08 globallight;
-extern UI08 wtype;
+//extern unsigned char globallight;
+extern unsigned char wtype;
 
 extern int executebatch;
 extern int openings;
 
-extern UI32 respawntime;
-extern UI32 gatedesttime;
+extern unsigned int respawntime;
+extern unsigned int gatedesttime;
 
 extern int donpcupdate;
-extern UI32 hungerdamagetimer; // Used for hunger damage
+extern unsigned int hungerdamagetimer; // Used for hunger damage
 
-extern UI32 serverstarttime;
+extern unsigned long int serverstarttime;
 
-extern UI32 initialserversec ;
-extern UI32 initialservermill ;
+
+
+
+extern unsigned long initialserversec ;
+extern unsigned long initialservermill ;
+
+
+
+
 
 #endif //__GLOBALS_H__
-

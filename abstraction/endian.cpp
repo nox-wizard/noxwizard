@@ -28,15 +28,21 @@ eUI16& eUI16::operator =( UI16 v )
 
 eUI16& eUI16::operator=( eUI16 v )
 {
-	a=v.a;
+	this->a=v.a;
 	return (*this);
 }
 
 
 UI16 eUI16::get(  )
 {
-	return ntohs( a );
+	return ntohs( this->a );
+	//return this->a;
 }
+
+
+
+
+
 
 eUI32::eUI32()
 {
@@ -56,12 +62,12 @@ eUI32& eUI32::operator =( UI32 v )
 
 eUI32& eUI32::operator=( eUI32 v )
 {
-	a=v.a;
+	this->a=v.a;
 	return (*this);
 }
 
 UI32 eUI32::get(  )
 {
-	return ntohl( a );
+	return ntohl( this->a );
 }
 

@@ -12,58 +12,58 @@
 // SkillAdvancePoint
 //
 
-RaceSkillAdvancePoint::RaceSkillAdvancePoint()
+RaceSkillAdvancePoint::RaceSkillAdvancePoint( void )
 {
 	base = success = failure = 0;
 }
 
 RaceSkillAdvancePoint& RaceSkillAdvancePoint::operator=( const string& that )
 {
-	sscanf( that.c_str(), "%d %d %d", &base, &success, &failure );
+	sscanf( that.c_str(), "%d %d %d", &this->base, &this->success, &this->failure );
 	return *this;
 }
 
-UI32 RaceSkillAdvancePoint::getBase()
+UI32 RaceSkillAdvancePoint::getBase( void )
 {
-	return base;
+	return this->base;
 }
 
-UI32 RaceSkillAdvancePoint::getSuccess()
+UI32 RaceSkillAdvancePoint::getSuccess( void )
 {
-	return success;
+	return this->success;
 }
 
-UI32 RaceSkillAdvancePoint::getFailure()
+UI32 RaceSkillAdvancePoint::getFailure( void )
 {
-	return failure;
+	return this->failure;
 }
 
 //
 // RaceSkillAdvancePoints
 //
 
-RaceSkillAdvancePoints::RaceSkillAdvancePoints()
+RaceSkillAdvancePoints::RaceSkillAdvancePoints( void )
 {
 }
 
-UI32 RaceSkillAdvancePoints::getStrength()
+UI32 RaceSkillAdvancePoints::getStrength( void )
 {
-	return strength;
+	return this->strength;
 }
 
-UI32 RaceSkillAdvancePoints::getDexterity()
+UI32 RaceSkillAdvancePoints::getDexterity( void )
 {
-	return dexterity;
+	return this->dexterity;
 }
 
-UI32 RaceSkillAdvancePoints::getIntelligence()
+UI32 RaceSkillAdvancePoints::getIntelligence( void )
 {
-	return intelligence;
+	return this->intelligence;
 }
 
-bool RaceSkillAdvancePoints::getUnhideOnUse()
+bool RaceSkillAdvancePoints::getUnhideOnUse( void )
 {
-	return unhideOnUse;
+	return this->unhideOnUse;
 }
 
 RaceSkillAdvancePoint& RaceSkillAdvancePoints::getSkillAdvancePoint( UI32 baseSkill )
@@ -76,7 +76,7 @@ RaceSkillAdvancePoint& RaceSkillAdvancePoints::getSkillAdvancePoint( UI32 baseSk
 	return it->second;
 }
 
-void RaceSkillAdvancePoints::show()
+void RaceSkillAdvancePoints::show( void )
 {
 	ConOut("  Advance       :\n");
 	map< UI32, RaceSkillAdvancePoint >::iterator it( skillAdvancePoints.begin() ), end( skillAdvancePoints.end() );
@@ -114,11 +114,11 @@ RaceSkillAdvancePoints& RaceSkillAdvancePoints::operator=( RaceScriptEntry& that
 					break;
 				case 'D' :
 					if( lha == "DEX" )
-						dexterity = str2num( rha );
+						this->dexterity = str2num( rha );
 					break;
 				case 'I' :
 					if( lha == "INT" )
-						intelligence = str2num( rha );
+						this->intelligence = str2num( rha );
 					break;
 				case 'S' :
 					if( lha == "SKILLPOINT" )
@@ -127,11 +127,11 @@ RaceSkillAdvancePoints& RaceSkillAdvancePoints::operator=( RaceScriptEntry& that
 						*this += rsap;
 					}
 					else if ( lha == "STR" )
-						strength = str2num( rha );
+						this->strength = str2num( rha );
 					break;
 				case 'U' :
 					if ( lha == "UNHIDEONUSE" )
-						unhideOnUse = str2num( rha );
+						this->unhideOnUse = str2num( rha );
 					break;
 				default:
 					WarnOut("RaceSkillAdvancePoint unknown tag %s %s\n", lha.c_str(), rha.c_str() );
@@ -147,37 +147,37 @@ RaceSkillAdvancePoints& RaceSkillAdvancePoints::operator=( RaceScriptEntry& that
 // RaceSkillModifier
 //
 
-RaceSkillModifier::RaceSkillModifier()
+RaceSkillModifier::RaceSkillModifier( void )
 {
 }
 
 RaceSkillModifier& RaceSkillModifier::operator=( const string& that )
 {
-	sscanf( that.c_str(), "%d %f", &base, &modifier );
+	sscanf( that.c_str(), "%d %f", &this->base, &this->modifier );
 	return *this;
 }
 
-UI32 RaceSkillModifier::getBase()
+UI32 RaceSkillModifier::getBase( void )
 {
-	return base;
+	return this->base;
 }
 
-R32 RaceSkillModifier::getModifier()
+R32 RaceSkillModifier::getModifier( void )
 {
-	return modifier;
+	return this->modifier;
 }
 
 //
 // RaceSkillModifiers
 //
 
-RaceSkillModifiers::RaceSkillModifiers()
+RaceSkillModifiers::RaceSkillModifiers( void )
 {
 }
 
 RaceSkillModifiers& RaceSkillModifiers::operator+=( RaceSkillModifier& that )
 {
-	skillModifiers[ that.getBase() ] = that;
+	this->skillModifiers[ that.getBase() ] = that;
 	return *this;
 }
 
@@ -264,40 +264,40 @@ string RaceSkill::names[] = 	{
 					"INVALID_SKILL"
 				};
 
-RaceSkill::RaceSkill()
+RaceSkill::RaceSkill( void )
 {
 	canUseSkill = canUseModifier = canUseAdvance = unhideOnUse = false;
 	startValue = 0;
 }
 
-UI32 RaceSkill::getId()
+UI32 RaceSkill::getId( void )
 {
-	return id;
+	return this->id;
 }
 
-const string& RaceSkill::getName()
+const string& RaceSkill::getName( void )
 {
-	return names[ id ];
+	return names[ this->id ];
 }
 
-bool RaceSkill::getCanUseSkill()
+bool RaceSkill::getCanUseSkill( void )
 {
-	return canUseSkill;
+	return this->canUseSkill;
 }
 
-bool RaceSkill::getCanUseModifier()
+bool RaceSkill::getCanUseModifier( void )
 {
-	return canUseModifier;
+	return this->canUseModifier;
 }
 
-bool RaceSkill::getCanUseAdvance()
+bool RaceSkill::getCanUseAdvance( void )
 {
-	return canUseAdvance;
+	return this->canUseAdvance;
 }
 
-bool RaceSkill::getUnhideOnUse()
+bool RaceSkill::getUnhideOnUse( void )
 {
-	return unhideOnUse;
+	return this->unhideOnUse;
 }
 
 RaceSkillAdvancePoint& RaceSkill::getAdvance( UI32 baseSkill )
@@ -305,22 +305,22 @@ RaceSkillAdvancePoint& RaceSkill::getAdvance( UI32 baseSkill )
 	return advance.getSkillAdvancePoint( baseSkill );
 }
 
-UI32 RaceSkill::getAdvanceStrength()
+UI32 RaceSkill::getAdvanceStrength( void )
 {
 	return advance.getStrength();
 }
 
-UI32 RaceSkill::getAdvanceDexterity()
+UI32 RaceSkill::getAdvanceDexterity( void )
 {
 	return advance.getDexterity();
 }
 
-UI32 RaceSkill::getAdvanceIntelligence()
+UI32 RaceSkill::getAdvanceIntelligence( void )
 {
 	return advance.getIntelligence();
 }
 
-void RaceSkill::show()
+void RaceSkill::show( void )
 {
 	ConOut("Skill %d %s\n", id, names[id].c_str());
 	ConOut("  canUseSkill   : %s\n", canUseSkill ? "yes" : "no" );
@@ -358,20 +358,35 @@ RaceSkill& RaceSkill::operator=( RaceScriptEntry& that )
 						std::string section("SECTION RACESKILLADVANCE ");
 						section += rha;
 						RaceScriptEntry rse( that.script, section );
-						advance = rse;
+						this->advance = rse;
 					}
 					break;
 				case 'C' :
 					if ( lha == "CANUSEADVANCE" )
-						canUseAdvance = ( rha == "" || rha == "YES" );
+					{
+						if ( rha == "" || rha == "YES" )
+							this->canUseAdvance = true;
+						else
+							this->canUseAdvance = false;
+					}
 					else if ( lha == "CANUSEMODIFIER" )
-						canUseModifier = ( rha == "" || rha == "YES" );
-					else if ( lha == "CANUSESKILL" ) 
-						canUseSkill = ( rha == "" || rha == "YES" );
+					{
+						if ( rha == "" || rha == "YES" )
+							this->canUseModifier = true;
+						else
+							this->canUseModifier = false;
+					}
+					else if ( lha == "CANUSESKILL" )
+					{
+						if ( rha == "" || rha == "YES" )
+							this->canUseSkill = true;
+						else
+							this->canUseSkill = false;
+					}
 					break;
 				case 'I' :
 					if( lha == "ID" )
-						id = str2num( rha );
+						this->id = str2num( rha );
 					break;
 				case 'M' :
 					if( lha == "MODIFIER" )
@@ -379,13 +394,13 @@ RaceSkill& RaceSkill::operator=( RaceScriptEntry& that )
 						std::string section("SECTION RACESKILLMODIFIER ");
 						section += rha;
 						RaceScriptEntry rse( that.script, section );
-						modifier = rse;
+						this->modifier = rse;
 					}
 					break;
 				case 'U' :
 					if ( lha == "UNHIDEONUSE" )
 					{
-						unhideOnUse = str2num( rha );
+						this->unhideOnUse = str2num( rha );
 					}	unhideOnUseSet = true;
 					break;
 				default:
@@ -395,7 +410,7 @@ RaceSkill& RaceSkill::operator=( RaceScriptEntry& that )
 
 		} while ( ( lha[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 		if ( !unhideOnUseSet )
-			unhideOnUse = advance.getUnhideOnUse();
+			this->unhideOnUse = advance.getUnhideOnUse();
 	}
 	return *this;
 }
@@ -404,7 +419,7 @@ RaceSkill& RaceSkill::operator=( RaceScriptEntry& that )
 // RaceSkills
 //
 
-RaceSkills::RaceSkills()
+RaceSkills::RaceSkills( void )
 {
 }
 
@@ -418,7 +433,7 @@ RaceSkill&	RaceSkills::getSkill( UI32 skillId )
 		return dummy;
 }
 
-void RaceSkills::show()
+void RaceSkills::show( void )
 {
 	map< UI32, RaceSkill >::iterator it( skills.begin() ), end( skills.end() );
 	for(; it != end; ++it )
@@ -427,7 +442,7 @@ void RaceSkills::show()
 
 RaceSkills& RaceSkills::operator+=( RaceSkill& that )
 {
-	skills[that.getId()] = that;
+	this->skills[that.getId()] = that;
 	return *this;
 }
 

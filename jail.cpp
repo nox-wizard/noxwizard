@@ -20,11 +20,17 @@ JAILEDVECTOR prison::jailed;
 */
 cJailed::cJailed()
 {
-	sec = 0;
-	timer = 0;
-	why = "";
-	cell=INVALID;
+	this->sec = 0;
+	this->timer = 0;
+	this->why = "";
+	this->cell=INVALID;
 };
+
+/*!
+\brief Destructor of cJailed
+\author Endymion
+*/
+cJailed::~cJailed() { };
 
 /*!
 \brief Constructor of cPrisonCell
@@ -32,10 +38,16 @@ cJailed::cJailed()
 */
 cPrisonCell::cPrisonCell()
 {
-	pos.x=0; pos.y=0; pos.z=0; pos.dispz=0;
-	serial=INVALID;
-	free=true;
+	this->pos.x=0; this->pos.y=0; this->pos.z=0; this->pos.dispz=0;
+	this->serial=INVALID;
+	this->free=true;
 };
+
+/*!
+\brief Destructor of cJailed
+\author Endymion
+*/
+cPrisonCell::~cPrisonCell() { };
 
 namespace prison {
 /*!
@@ -218,7 +230,7 @@ void prison::freePrisonCell( SERIAL cell )
 }
 
 
-void prison::addCell( SERIAL serial, UI16 x, UI16 y, SI08 z )
+void prison::addCell( SERIAL serial, UI32 x, UI32 y, UI32 z )
 {
 	for( PRISONCELLVECTOR::iterator j = prison::cells.begin(); j!=prison::cells.end(); j++ )
 		if( (*j).serial == serial )

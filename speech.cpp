@@ -882,7 +882,7 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			give=58981;
 		}
 		if (give) { //Luxor
-			item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
+			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
 		}
 		sprintf(temp, TRANSLATE("Today's purchases total %i gold. I am keeping %i gold for my self. Here is the remaining %i gold. Have a nice day."),pc_vendor->holdg,pay,give);
 		pc_vendor->talk(s,temp,0);
@@ -969,7 +969,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 					target(s,0,1,0,224," ");
 					return; // lb bugfix
 				}
-				else if(targets::BuyShop(s, DEREF_P_CHAR(pc_vendor)))
+				else if(Targ->BuyShop(s, DEREF_P_CHAR(pc_vendor)))
 					return; // lb bugfix
 			}
 		}
@@ -1033,7 +1033,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 						return;
 					}
 					else
-						if(targets::BuyShop(s, DEREF_P_CHAR(pc)))
+						if(Targ->BuyShop(s, DEREF_P_CHAR(pc)))
 							return;
 				}
 			}
@@ -1467,7 +1467,7 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 					pc_pet->attackerserial= INVALID;
 					pc->war  	= 0;
 					pc->targserial	= INVALID;
-					regions::remove( pc_pet );
+					mapRegions->remove( pc_pet );
 					pointers::delCharFromLocationMap( pc_pet );
 					pc_pet->stable( pc_stablemaster );
 					// set timer for fee calculation
@@ -1614,7 +1614,7 @@ stabledPets.rewind();	// GH!
 					
 					pc_pet->timeused_last = getclock();
 					pc_pet->time_unused=0;
-					regions::add( pc_pet );
+					mapRegions->add( pc_pet );
 					pointers::addCharToLocationMap( pc_pet );
 					pc_pet->teleport();
 				}
@@ -1804,13 +1804,11 @@ static LOGICAL requestHelp( P_CHAR pc, NXWSOCKET socket, std::string &speech, Nx
 
 } // namespace Guards
 
-/*!
-\todo speakToVendor and buyFromVendor functions are not used, should be removed?
-*/
-
-#if 0
 static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCharWrapper &nearbyVendors );
 
+/*!
+\todo this function is not used, should be removed?
+*/
 static LOGICAL speakToVendor( P_CHAR pc, NXWSOCKET socket, string &speech )
 {
 	LOGICAL success = false;
@@ -1874,7 +1872,7 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 		success = true;
 	}
 	else
-		if( targets::BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
+		if( Targ->BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
 			success = true;
 	return success;
 	/*
@@ -1900,14 +1898,12 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 					target(s,0,1,0,224," ");
 					return; // lb bugfix
 				}
-				else if(targets::BuyShop(s, vendor))
+				else if(Targ->BuyShop(s, vendor))
 					return; // lb bugfix
 			}
 		}
 	*/
 }
-
-#endif
 
 }// namespace Speech
 
@@ -2187,7 +2183,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	if( callGuards( pc, socket, speech ) )
 		return;
 
-	if( boats::Speech( pc, socket, speech ) )
+	if( Boats->Speech( pc, socket, speech ) )
 		return;
 
 	if( house_speech( pc, socket, speech ) )
@@ -2249,7 +2245,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	if ( ISVALIDPC(pc_found) &&(pc_found->speech) )
 	{
 
-		if(abs(pc_found->getPosition().z-pc->getPosition().z) >3 ) return;
+		if(abs(pc_found->getPosition("z")-pc->getPosition("z")) >3 ) return;
 
 		responsevendor(socket, DEREF_P_CHAR(pc_found));
 

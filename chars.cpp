@@ -290,7 +290,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetAmxEvents();
 	prevX = prevY = prevZ = 0;
 	ResetGuildTraitor();
-	guildType = INVALID;
+	SetGuildType( INVALID );
 	magicsphere = 0;
 	resetResists();
 	lightdamaged = false;
@@ -302,13 +302,13 @@ cChar::cChar( SERIAL ser ) : cObject()
 	morphed=0;
 	resetLockSkills();
 
-	beardserial=INVALID;
-	oldbeardcolor=0;
-	oldbeardstyle=0;
+	this->beardserial=INVALID;
+	this->oldbeardcolor=0;
+	this->oldbeardstyle=0;
 	
-	hairserial=INVALID;
-	oldhaircolor=0;
-	oldhairstyle=0;
+	this->hairserial=INVALID;
+	this->oldhaircolor=0;
+	this->oldhairstyle=0;
 
 	possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
@@ -573,16 +573,40 @@ void cChar::resetLockSkills()
 
 
 /*!
+\brief return the guild type
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return short type of guild. INVALID = no guild 0 = standard guild 1 = order guild 2 = chaos guild
+*/
+short cChar::GetGuildType()
+{
+	return guildType;
+}
+
+/*!
 \brief set the guild type
 \author Sparhawk
 \date 31/08/2002
 \since 0.82
 \param newGuildType value must be between INVALID and MAX_GUILDTYPE
 */
-void cChar::SetGuildType(SI08 newGuildType)
+void cChar::SetGuildType(short newGuildType)
 {
 	if ( newGuildType >= INVALID && newGuildType <= MAX_GUILDTYPE )
 		guildType = newGuildType;
+}
+
+/*!
+\brief return guild traitor status
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return bool: true is traitor
+*/
+LOGICAL cChar::IsGuildTraitor()
+{
+	return guildTraitor;
 }
 
 /*!
@@ -608,6 +632,18 @@ void cChar::ResetGuildTraitor()
 }
 
 /*!
+\brief return guild title toggle status
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return true is show title
+*/
+LOGICAL	cChar::HasGuildTitleToggle()
+{
+	return guildToggle;
+}
+
+/*!
 \brief set guild title toggle
 \author Sparhawk
 \date 31/08/2002
@@ -630,6 +666,18 @@ void cChar::ResetGuildTitleToggle()
 }
 
 /*!
+\brief return the guild fealty
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return serial of guild fealty
+*/
+SERIAL cChar::GetGuildFealty()
+{
+	return guildFealty;
+}
+
+/*!
 \brief set the guild fealty
 \author Sparhawk
 \date 31/08/2002
@@ -642,6 +690,18 @@ void cChar::SetGuildFealty(SERIAL newGuildFealty)
 }
 
 /*!
+\brief return the guild number
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return guild number
+*/
+SI32 cChar::GetGuildNumber()
+{
+	return guildNumber;
+}
+
+/*!
 \brief set the guild number
 \author Sparhawk
 \date 31/08/2002
@@ -651,6 +711,18 @@ void cChar::SetGuildFealty(SERIAL newGuildFealty)
 void cChar::SetGuildNumber(SI32 newGuildNumber)
 {
 	guildNumber = newGuildNumber;
+}
+
+/*!
+\brief return the guild title
+\author Sparhawk
+\date 31/08/2002
+\since 0.82
+\return guild title
+*/
+TEXT* cChar::GetGuildTitle()
+{
+	return guildTitle;
 }
 
 /*!
@@ -669,6 +741,11 @@ void cChar::SetGuildTitle(TEXT* newGuildTitle)
 		strncpy( guildTitle, newGuildTitle, ( sizeof( guildTitle ) - 1 ) );
 		guildTitle[ sizeof( guildTitle ) - 1 ] = '\0';
 	}
+}
+
+SI32 cChar::getStrength()
+{
+	return str.value;
 }
 
 void cChar::setStrength(UI32 val, bool check/*= true*/)
@@ -691,6 +768,20 @@ void cChar::modifyStrength(SI32 mod, bool check)
 {
 	setStrength( str.value + mod, check );
 }
+
+
+
+/*!
+\brief return the day this was created
+\author punt
+\date 15/04/2001
+\return unsigned long: creation day in seconds since EPOCH time
+*/
+TIMERVAL cChar::GetCreationDay()
+{
+	return creationday;
+}
+
 
 /*!
 \brief set the day the char was created
@@ -747,7 +838,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 				if( banktype == BANK_GOLD && pi->morey == MOREY_GOLDONLYBANK )
 					return pi;
 				else // ware ( for item )
-					if ( banktype == BANK_ITEM && pi->morez == region )
+					if ( banktype == BANK_ITEM && pi->morez == this->region )
 						return pi; //correct region
 			}
 		}
@@ -774,7 +865,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 	if(SrvParms->usespecialbank) {
 		if(banktype == BANK_ITEM) {
 			pi->morey = 0;
-			pi->morez = region;
+			pi->morez = this->region;
 		} else {
 			pi->morey = MOREY_GOLDONLYBANK;
 			pi->morez = 0; // All Region
@@ -910,7 +1001,7 @@ void cChar::SetGrey()
 
 Searches the character recursively, counting the items of the given ID and (if given) color
 */
-const UI32 cChar::CountItems(short ID, short col) 
+UI32 cChar::CountItems(short ID, short col)
 {
 	P_ITEM pi= getBackpack();
 	return (ISVALIDPI(pi))? pi->CountItems(ID, col) : 0 ;
@@ -962,6 +1053,15 @@ P_ITEM cChar::getShield()
 }
 
 /*!
+\brief Show Backpack to player
+\author GHisha
+*/
+void cChar::showBackpack()
+{
+	showContainer( getBackpack() );
+}
+
+/*!
 \brief Show a container to player
 \author GHisha
 \param pCont the container
@@ -1003,8 +1103,8 @@ void cChar::showContainer(P_ITEM pCont)
 			continue;
 
 		//fix location of items if they mess up. (needs tweaked for container types)
-		if (pi->getPosition().x > 150) pi->setPosition(X, 150);
-		if (pi->getPosition().y > 140) pi->setPosition(Y, 140);
+		if (pi->getPosition("x") > 150) pi->setPosition("x", 150);
+		if (pi->getPosition("y") > 140) pi->setPosition("y", 140);
 		//end fix
 		LongToCharPtr(pi->getSerial32(), bpitem);
 		ShortToCharPtr(pi->animid(), bpitem +4);
@@ -1024,12 +1124,15 @@ P_ITEM cChar::getBackpack()
 {
 	P_ITEM pi=pointers::findItemBySerial(packitemserial);
 	if (ISVALIDPI(pi))
+	{
 		if ( pi->getContSerial() == getSerial32() && pi->layer == LAYER_BACKPACK )
 			return pi;
+	}
 
 
 // - For some reason it's not defined, so go look for it and
 // record it for next time
+
 
 	pi=GetItemOnLayer(LAYER_BACKPACK);
 	if( ISVALIDPI(pi) )
@@ -1066,7 +1169,7 @@ void cChar::setMultiSerial(long mulser)
 		pointers::addToMultiMap(this);
 }
 
-#if 0
+/*
 bool cChar::incDecDex(short val)
 {
 	dx2 += val;
@@ -1083,7 +1186,15 @@ bool cChar::incDecDex(short val)
 		return false;
 	}
 }
-#endif
+*/
+
+/*!
+\author Anthalir
+*/
+void cChar::MoveTo(SI32 x, SI32 y, SI08 z)
+{
+	MoveTo( Loc(x, y, z) );
+}
 
 /*!
 \author Anthalir
@@ -1094,10 +1205,10 @@ void cChar::MoveTo(Location newloc)
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
 
-	regions::remove(this);
+	mapRegions->remove(this);
 	pointers::delCharFromLocationMap( this );
 	setPosition( newloc );
-	regions::add(this);
+	mapRegions->add(this);
 	pointers::addCharToLocationMap( this );
 }
 
@@ -1149,11 +1260,21 @@ void cChar::sysmsg(TEXT *txt, ...)
 }
 
 /*!
+\author Xanathar, rewritten by Luxor
+\brief get the client
+\return the client
+*/
+NXWCLIENT cChar::getClient() const
+{
+	return m_client;
+}
+
+/*!
 \author Luxor
 \brief gets the character current socket
 \return the socket
 */
-const NXWSOCKET cChar::getSocket() const
+NXWSOCKET cChar::getSocket() const
 {
         if ( npc )
 		return INVALID;
@@ -1426,10 +1547,15 @@ LOGICAL const cChar::IsOnline() const
 
 	if (npc) return false;
 	
-	if(accounts::GetInWorld(account) == getSerial32())
+	if(Accounts->GetInWorld(account) == getSerial32())
 		return true;
 
 	return false;
+}
+
+LOGICAL const cChar::IsFrozen() const
+{
+	return ((priv2&CHRPRIV2_FROZEN)!=0);
 }
 
 /*!
@@ -1662,13 +1788,13 @@ UI32 cChar::distFrom(P_ITEM pi)
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
-	P_ITEM p_boat = boats::GetBoat(getPosition());
+	P_ITEM p_boat = Boats->GetBoat(getPosition());
 
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
-		setPosition( Z, boatpos.z+3 );
-		setPosition( DISPZ, boatpos.z+3 );
+		setPosition("z",boatpos.z+3 );
+		setPosition("dz",boatpos.z+3 );
 	} else
 		setMultiSerial(-1);
 
@@ -1727,14 +1853,14 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 				impowncreate( ps_i->toInt(), this, 1 );
 				//ndEndy not too sure of this
 				if ( flags&TELEFLAG_SENDWORNITEMS )
-					sendWornItems(ps_i->toInt());
+					wornitems( ps_i->toInt(), this );
 			}
 		}
 		sw.clear();
 	} else {
 		impowncreate( cli->toInt(), this, 1 );
 		if ( flags&TELEFLAG_SENDWORNITEMS )
-			sendWornItems(cli->toInt());
+			wornitems( cli->toInt(), this );
 	}
 
 
@@ -2095,6 +2221,34 @@ SI32 cChar::delItems(short id, SI32 amount, short color)
 }
 
 /*!
+\author Luxor
+\brief Makes the char casting a spell
+\param spellnumber Spell identifier
+\param dest target location of the spell
+\todo Document parameters
+*/
+void cChar::castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags, SI32 param)
+{
+	magic::castSpell(spellnumber, dest, this, flags, param);
+}
+
+/*!
+\author Luxor
+\brief checks a skill for success (with sparring check)
+\return true if success
+\param sk skill
+\param low low bound
+\param high high bound
+\todo document pcd parameter
+*/
+LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
+{
+	return (0!=Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd));
+}
+
+
+
+/*!
 \brief Get the amount of the given id, color
 \author Luxor, modified by Endymion for color and pack check
 \return amount
@@ -2190,83 +2344,19 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 
 
 /*!
-\author Xanathar & Akron
-\brief Plays a moving effect from this to target
-\param destination the target
+\author Xanathar
+\brief Plays a moving effect from this to target char
+\param destination the target char
 \param id id of the effect
 \param speed speed of the effect
 \param loop loops
 \param explode true if should do a final explosion
 \param part particle effects structure
 */
-void cChar::movingFX(P_OBJECT dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, particles::ParticleFx* part, UI08 dir)
+void cChar::movingFX(P_CHAR destination, short id, SI32 speed, SI32 loop, LOGICAL explode, ParticleFx* part)
 {
-	VALIDATEPO(dst);
-
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, dir, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
-
-	if (!part) // no UO3D effect ? lets send old effect to all clients
-	{
-		NxwSocketWrapper sw;
-		sw.fillOnline( dst );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWSOCKET j=sw.getSocket();
-			if ( char_inVisRange(this,MAKE_CHAR_REF(currchar[j])) )
-			{
-				Xsend(j, effect, 28);
-			}
-		}
-		return;
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-		NxwSocketWrapper sw;
-		sw.fillOnline( dst );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWSOCKET j=sw.getSocket();
-			if ( char_inVisRange(this,MAKE_CHAR_REF(currchar[j])) )
-			{
-				if (clientDimension[j]==2 ) // 2D client, send old style'd
-				{
-					Xsend(j, effect, 28);
-				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-				{
-					static UI08 particleSystem[49];
-					particles::movingeffectUO3D(this, dst, part, particleSystem);
-					Xsend(j, particleSystem, 49);
-				}
-				else
-					LogError("Invalid Client Dimension: %i\n", clientDimension[j]);
-			}
-		}
-	}
-}
-
-void cChar::movingFX3(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, UI08 explode, UI08 unk1, UI08 unk2, UI08 ajust, UI08 type)
-{
-	VALIDATEPC(dst);
-
-	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, type, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, ajust, explode); 
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-		{
-			Xsend(j, effect, 28);
-//AoS/			Network->FlushBuffer(j);
-		}
-	}
+	movingeffect(DEREF_P_CHAR(this), DEREF_P_CHAR(destination), id >> 8, id & 0xFF,
+		speed & 0xFF, loop & 0xFF, explode ? '\1' : '\0', part!=NULL, part);
 }
 
 /*!
@@ -2278,72 +2368,14 @@ void cChar::movingFX3(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, UI08 explode,
 \param part optional particles data
 \note if part == NULL then id, speed and loop MUST be >= 0
 */
-void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx* part)
+void cChar::staticFX(short id, SI32 speed, SI32 loop, ParticleFx* part)
 {
 	if (part!=NULL) {
-		if (id == 0xFF) id = (part->effect[0] << 8) + part->effect[1];
-		if (speed == 0xFF) speed = part->effect[2];
-		if (loop == 0xFF) loop = part->effect[3];
+		if (id<=-1) id = (part->effect[0] << 8) + part->effect[1];
+		if (speed<=-1) speed = part->effect[2];
+		if (loop<=-1) loop = part->effect[3];
 	}
-
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, 0x03, getSerial32(), 0, eff, getPosition(), Loc(0, 0, 0), speed, loop, 1, explode); 
-
-	if (!part) // no UO3D effect ? lets send old effect to all clients
-	{
-
-		NxwSocketWrapper sw;
-		sw.fillOnline( this, false );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWSOCKET s = sw.getSocket();
-			Xsend(s, effect, 28);
-//AoS/			Network->FlushBuffer(s);
-		}
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-		NxwSocketWrapper sw;
-		sw.fillOnline( this, false );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			 NXWSOCKET j=sw.getSocket();
-			 if(j==INVALID) continue;
-			 if (clientDimension[j]==2) // 2D client, send old style'd
-			 {
-				Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-			 {
-				static UI08 particleSystem[49];
-				particles::staticeffectUO3D(this, part, particleSystem);
-
-				// allow to fire up to 4 layers at same time (like on OSI servers)
-				UI08	a1 = part->effect[10] & 0xFF,
-					a2 = (part->effect[10] >> 8) & 0xFF,
-					a3 = (part->effect[10] >> 16) & 0xFF,
-					a4 = (part->effect[10] >> 24) & 0xFF;
-
-				if (a1!=0xff) { particleSystem[46] = a1; Xsend(j, particleSystem, 49); }
-				if (a2!=0xff) { particleSystem[46] = a2; Xsend(j, particleSystem, 49); }
-				if (a3!=0xff) { particleSystem[46] = a3; Xsend(j, particleSystem, 49); }
-				if (a4!=0xff) { particleSystem[46] = a4; Xsend(j, particleSystem, 49); }
-
-//AoS/				Network->FlushBuffer(j);
-			}
-			else 
-			{
-				 LogError("Invalid Client Dimension: %i\n",clientDimension[j]);
-			} // attention: a simple else is wrong !
-		 
-	   } // end for
-	} // end UO:3D effect
-
-	// remark: if a UO:3D effect is send and ALL clients are UO:3D ones, the pre-calculation of the 2-d packet
-	// is redundant. but we can never know, and probably it will take years till the 2d cliet dies.
-	// I think it's too infrequnet to consider this as optimization.
+	staticeffect(DEREF_P_CHAR(this), id >> 8, id & 0xFF, speed, loop, part!=NULL, part);
 }
 
 /*!
@@ -2353,50 +2385,7 @@ void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::P
 */
 void cChar::boltFX(LOGICAL bNoParticles)
 {
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	MakeGraphicalEffectPkt(effect, 0x01, getSerial32(), 0, 0, getPosition(), Loc(0, 0, 0), 0, 0, 1, 0); 
-
-	if (bNoParticles) // no UO3D effect ? lets send old effect to all clients
-	{
-		NxwSocketWrapper sw;
-		sw.fillOnline( this );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWSOCKET j=sw.getSocket();
-			if( j!=INVALID )
-			{
-				Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			}
-		}
-		return;
-	}
-	else
-	{
-		NxwSocketWrapper sw;
-		sw.fillOnline( this );
-		for( sw.rewind(); !sw.isEmpty(); sw++ )
-		{
-			NXWSOCKET j=sw.getSocket();
-			if( j!=INVALID )
-			{
-				if (clientDimension[j]==2) // 2D client, send old style'd
-				{
-					if (bNoParticles) Xsend(j, effect, 28);
-//AoS/					Network->FlushBuffer(j);
-				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-				{
-					UI08 particleSystem[49];
-					particles::bolteffectUO3D(this, particleSystem);
-					Xsend(j, particleSystem, 49);
-//AoS/					Network->FlushBuffer(j);
-			 	}
-				else
-					LogError("Invalid Client Dimension: %i\n",clientDimension[j]);
-			}
-		}
-	}
+	bolteffect(DEREF_P_CHAR(this), !bNoParticles);
 }
 
 /*!
@@ -2404,37 +2393,9 @@ void cChar::boltFX(LOGICAL bNoParticles)
 \author Xanathar
 \param id effect id
 */
-void cChar::circleFX(UI16 eff)
+void cChar::circleFX(short id)
 {
-	UI08 effect[28]={ 0x70, 0x00, };
-	UI16 y=rand()%36, x=rand()%36;
-
-	Location pos2, charpos = getPosition();
-
-	if (rand()%2==0) x=-x;
-	if (rand()%2==0) y=-y;
-	pos2.x = charpos.x + x;
-	pos2.y = charpos.y + y;
-
-	static const UI16 max_x = MapTileWidth  * 8, max_y = MapTileHeight * 8;
-	
-	if (pos2.x > max_x) pos2.x = max_x;
-	if (pos2.y > max_y) pos2.y = max_y;
-
-	charpos.z = 0; pos2.z = 127;
-	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
-
-	 NxwSocketWrapper sw;
-	 sw.fillOnline( this );
-	 for( sw.rewind(); !sw.isEmpty(); sw++ )
-	 {
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-		{
-			Xsend(j, effect, 28);
-//AoS/			Network->FlushBuffer(j);
-		}
-	}
+	bolteffect2(DEREF_P_CHAR(this),id >> 8,id & 0xFF);
 }
 
 /*!
@@ -2468,7 +2429,7 @@ void cChar::hideBySkill()
 
     	if ( IsGM() )
     	{
-		staticFX(0x3709, 0x09, 0x19);
+        	staticeffect( DEREF_P_CHAR(this), 0x37, 0x09, 0x09, 0x19);
         	playSFX( 0x0208 );
         	tempfx::add(this, this, tempfx::GM_HIDING, 1, 0, 0);
         	// immediate hiding overwrites the effect.
@@ -2575,6 +2536,18 @@ void cChar::resurrect( NXWCLIENT healer )
 		else
 			if( healer!=NULL )
 				healer->sysmsg( TRANSLATE("That person isn't dead") );
+}
+
+/*!
+\author Xanathar
+\brief Checks char weight
+\note this function modify the class variable, very bad...
+\return true if the char is over weight
+*/
+LOGICAL const cChar::IsOverWeight()
+{
+	if (IsGM()) return false;
+	return weights::CheckWeight2(this)!=0;
 }
 
 /*!
@@ -2805,16 +2778,26 @@ void cChar::possess(P_CHAR pc)
 	
 	//Set offline the old body, and online the new one
 	if ( bSwitchBack ) {
-		accounts::SetOffline( pc->account );
-		accounts::SetOnline( pc->account, pc );
+		Accounts->SetOffline( pc->account );
+		Accounts->SetOnline( pc->account, pc );
 
 	} else {
-		accounts::SetOffline( account );
-		accounts::SetOnline( account, pc );
+		Accounts->SetOffline( account );
+		Accounts->SetOnline( account, pc );
 	}
 	
 	//Let's go! :)
 	Network->enterchar( socket );
+}
+
+/*!
+\brief Jails a char
+\author Xanathar
+\param seconds second to jail the character for
+*/
+void cChar::jail (SI32 seconds)
+{
+	prison::jail( NULL, this, seconds );
 }
 
 /*!
@@ -3259,7 +3242,7 @@ void cChar::checkEquipement()
 			for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 				NXWCLIENT ps=sw.getClient();
 				if(ps!=NULL ) {
-					sendWornItems(ps->toInt());
+					wornitems(ps->toInt(), this );
 					senditem(ps->toInt(), pi);
 				}
 			}
@@ -3268,24 +3251,7 @@ void cChar::checkEquipement()
 }
 
 /*!
- \brief Send the worn items to the specified socket
- \author Unknown - rewritten by Akron
- \param s socket to send the items to
- */
-void cChar::sendWornItems(NXWSOCKET s)
-{
-	NxwItemWrapper si;
-	si.fillItemWeared( this, true, true, false );
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_ITEM pi=si.getItem();
-		if(ISVALIDPI(pi))
-			wearIt(s,pi);
-	}
-}
-
-/*!
-\author Anthalir
+\author ANthalir
 \brief Equip an item
 \return 0 if item equipped, 1 if not equipped (layer already used),
 2 if small function cancelled the equip
@@ -3408,14 +3374,84 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	return 0;
 }
 
+BODYTYPE cChar::GetBodyType() const
+{
+	return (BODYTYPE) id;
+}
+
 void cChar::SetBodyType(BODYTYPE newBody)
 {
 	id = newBody;
 }
 
+BODYTYPE cChar::GetOldBodyType() const
+{
+	return (BODYTYPE) xid;
+}
+
 void cChar::SetOldBodyType(BODYTYPE newBody)
 {
 	xid = newBody;
+}
+
+const LOGICAL cChar::HasHumanBody() const
+{
+	return ((id==BODY_MALE) || (id==BODY_FEMALE));
+}
+
+const LOGICAL cChar::IsTrueGM() const
+{
+	return (priv&CHRPRIV_GM);
+}
+
+const LOGICAL cChar::IsGM() const
+{
+	return (priv&CHRPRIV_GM && (!gmrestrict || (region==gmrestrict))) || (account == 0);
+}
+
+LOGICAL const cChar::IsCounselor() const
+{
+	return (priv&CHRPRIV_COUNSELOR);
+}
+
+const LOGICAL cChar::IsGMorCounselor() const
+{
+	return (priv&(CHRPRIV_COUNSELOR|CHRPRIV_GM));
+}
+
+const LOGICAL cChar::IsInvul() const
+{
+	return (priv&CHRPRIV_INVUL);
+}
+
+const LOGICAL cChar::CanSnoop() const
+{
+	return (priv&CHRPRIV_CANSNOOPALL);
+}
+
+const LOGICAL cChar::CanBroadcast() const
+{
+	return (priv&CHRPRIV_BROADCAST);
+}
+
+const LOGICAL cChar::CanSeeSerials() const
+{
+	return (priv&CHRPRIV_CANVIEWSERIALS);
+}
+
+const LOGICAL cChar::IsInnocent() const
+{
+	return (flag&CHRFLAG_INNOCENT);
+}
+
+const LOGICAL cChar::IsMurderer() const
+{
+	return (flag&CHRFLAG_MURDERER);
+}
+
+const LOGICAL cChar::IsCriminal() const
+{
+	return (flag&CHRFLAG_CRIMINAL);
 }
 
 const LOGICAL cChar::IsGrey() const
@@ -3427,6 +3463,16 @@ const LOGICAL cChar::IsGrey() const
 			return true;
 		else
 			return false;
+}
+
+const LOGICAL cChar::InGuardedArea() const
+{
+	return ::region[region].priv & RGNPRIV_GUARDED;
+}
+
+UI08 cChar::GetPriv() const
+{
+	return priv;
 }
 
 void cChar::SetPriv(UI08 p)
@@ -3442,6 +3488,11 @@ void cChar::MakeInvulnerable()
 void cChar::MakeVulnerable()
 {
 	priv &= ~CHRPRIV_INVUL;
+}
+
+SI08 cChar::GetPriv2() const
+{
+	return priv2;
 }
 
 void cChar::SetPriv2(SI08 p)
@@ -3485,14 +3536,44 @@ void cChar::SetPermaGrey()
 	nxwflags[0]|=NCF0_GREY+NCF0_PERMAGREY;
 }
 
+LOGICAL cChar::isBeingTrained()
+{
+	return (trainer != INVALID);
+}
+
+SERIAL	cChar::getTrainer()
+{
+	return trainer;
+}
+
+char cChar::getSkillTaught()
+{
+	return trainingplayerin;
+}
+
+LOGICAL cChar::canTrain()
+{
+	return cantrain;
+}
+
 void cChar::setCanTrain()
 {
 	cantrain = true;
 }
 
+LOGICAL	cChar::IsWearing(P_ITEM pi)
+{
+	return (getSerial32() == pi->getContSerial());
+}
+
 void cChar::resetCanTrain()
 {
 	cantrain = false;
+}
+
+LOGICAL cChar::HasAttackedFirst()
+{
+	return attackfirst;
 }
 
 void cChar::SetAttackFirst()
@@ -3503,6 +3584,26 @@ void cChar::SetAttackFirst()
 void cChar::ResetAttackFirst()
 {
 	attackfirst = false;
+}
+
+LOGICAL const cChar::IsHidden() const
+{
+	return (hidden != UNHIDDEN);
+}
+
+LOGICAL const cChar::IsHiddenBySpell() const
+{
+	return ( (hidden & HIDDEN_BYSPELL)!=0);
+}
+
+LOGICAL const cChar::IsHiddenBySkill() const
+{
+	return ((hidden & HIDDEN_BYSKILL)!=0);
+}
+
+UI32 cChar::CountGold()
+{
+	return CountItems(ITEMID_GOLD);
 }
 
 void cChar::doSingleClickOnCharacter( SERIAL serial )
@@ -3712,6 +3813,7 @@ void cChar::doGmEffect()
 		{
 		case 1:	// flamestrike
 			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
+			//soundeffect(s, 0x02, 0x08);
 			playSFX( 0x0802);
 			break;
 
@@ -3905,6 +4007,17 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 }
 
 /*!
+\brief return the karma of the char
+\author Anthalir
+\since 0.82a
+\return the karma of the char
+*/
+const SI32 cChar::GetKarma() const
+{
+	return karma;
+}
+
+/*!
 \brief set the karma of the char
 \author Anthalir
 \since 0.82a
@@ -3913,6 +4026,18 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 void cChar::SetKarma(SI32 newkarma)
 {
 	karma= newkarma;
+}
+
+
+/*!
+\brief return the fame of the char
+\author Endymion
+\since 0.82a
+\return fame of the char
+*/
+const SI32 cChar::GetFame() const
+{
+	return fame;
 }
 
 /*!
@@ -3924,6 +4049,12 @@ void cChar::SetKarma(SI32 newkarma)
 void cChar::SetFame(SI32 newfame)
 {
 	fame=newfame;
+}
+
+
+const LOGICAL cChar::isOwnerOf(const cObject *obj) const
+{
+	return (getSerial32() == obj->getOwnerSerial32());
 }
 
 /*!
@@ -3945,6 +4076,16 @@ void cChar::drink(P_ITEM pi)
 }
 
 /*!
+\brief check if guilded
+\author Endymion
+\return true if the char is guilded
+*/
+bool cChar::isGuilded()
+{
+	return ISVALIDGUILD( getGuild() );
+}
+
+/*!
 \brief set Guild
 \author Endymion
 \param newGuild the guild serial
@@ -3952,6 +4093,16 @@ void cChar::drink(P_ITEM pi)
 void cChar::setGuild( SERIAL newGuild )
 {
 	guild = newGuild;
+}
+
+/*!
+\brief get Guild
+\author Endymion
+\return guild serial
+*/
+SERIAL cChar::getGuild()
+{
+	return guild;
 }
 
 /*!
@@ -3998,14 +4149,33 @@ void cChar::openSpecialBank(P_CHAR pc)
 }
 
 
+UI16 cChar::getSkinColor()
+{
+	return (UI16) skin;
+}
+
 void cChar::setSkinColor( UI16 newColor )
 {
 	skin = newColor;
 }
 
+UI16 cChar::getOldSkinColor()
+{
+	return (UI16) xskin;
+}
+
 void cChar::setOldSkinColor( UI16 newColor )
 {
 	xskin = newColor;
+}
+
+/*!
+\author Luxor
+\brief tells if a character is running
+*/
+LOGICAL cChar::isRunning()
+{
+	return ( (uiCurrentTime - lastRunning) <= 100 );
 }
 
 /*!
@@ -4046,27 +4216,27 @@ void cChar::generic_heartbeat()
 	}
 
 	//HP REGEN
-	if( regenTimerOk( STAT_HP ) ) {
+	if( this->regenTimerOk( STAT_HP ) ) {
 		if (hp < getStrength() && (hunger > 3 || SrvParms->hungerrate == 0)) {
 			hp++;
 			update[ 0 ] = true;
 		}
 
-		updateRegenTimer( STAT_HP );
+		this->updateRegenTimer( STAT_HP );
 	}
 
 	//STAMINA REGEN
-	if( regenTimerOk( STAT_STAMINA )) {
+	if( this->regenTimerOk( STAT_STAMINA )) {
 		if (stm < dx) {
 			stm++;
 			update[ 2 ] = true;
 		}
 
-		updateRegenTimer( STAT_STAMINA );
+		this->updateRegenTimer( STAT_STAMINA );
 	}
 
 	//MANA REGEN
-	if( regenTimerOk( STAT_MANA ) )
+	if( this->regenTimerOk( STAT_MANA ) )
 	{
 		if (mn < in)
 		{
@@ -4080,7 +4250,7 @@ void cChar::generic_heartbeat()
 			med = 0;
 		}
 
-		UI32 manarate = getRegenRate( STAT_MANA, VAR_REAL );
+		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
@@ -4094,8 +4264,8 @@ void cChar::generic_heartbeat()
 				manarate -= UI32( skill[MEDITATION]/222.2 );
 		}
                 manarate = qmax( 1, manarate );
-		setRegenRate( STAT_MANA, manarate, VAR_EFF );
-		updateRegenTimer( STAT_MANA );
+		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
+		this->updateRegenTimer( STAT_MANA );
 
 	}
 	if ( hp <= 0 )
@@ -4110,9 +4280,9 @@ void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
 
 void cChar::pc_heartbeat()
 {
-	if ( accounts::GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
+	if ( Accounts->GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
 	{
-		accounts::SetOffline(account);
+		Accounts->SetOffline( account);
 		logout = INVALID;
 		teleport( TELEFLAG_NONE );
 		return;
@@ -4142,10 +4312,9 @@ void cChar::pc_heartbeat()
 
 	if ( SrvParms->hunger_system && TIMEOUT( hungertime ) && SrvParms->hungerrate > 1 )
 	{
-		if ( !IsGMorCounselor() )
+		if ( !IsGMorCounselor() && hunger )
 		{
-			if( hunger )
-				--hunger;
+			--hunger;
 
 			switch( hunger )
 			{
@@ -4166,7 +4335,6 @@ void cChar::pc_heartbeat()
 			hungertime = uiCurrentTime+(SrvParms->hungerrate*MY_CLOCKS_PER_SEC); // Bookmark
 		}
 	}
-	
 	if ( SrvParms->hunger_system && TIMEOUT( hungerdamagetimer ) && SrvParms->hungerdamage > 0 ) // Damage them if they are very hungry
 	{
 		hungerdamagetimer=uiCurrentTime+(SrvParms->hungerdamagerate*MY_CLOCKS_PER_SEC); /** set new hungertime **/
@@ -4209,7 +4377,7 @@ void cChar::pc_heartbeat()
 		if ( TIMEOUT( smokedisplaytimer ) )
 		{
 			smokedisplaytimer = uiCurrentTime + 5 * MY_CLOCKS_PER_SEC;
-			staticFX(0x3735, 0, 30);
+			staticeffect( DEREF_P_CHAR( this ), 0x37, 0x35, 0, 30 );
 			playSFX( 0x002B );
 			switch( RandomNum( 0, 6 ) )
 			{
@@ -4596,7 +4764,7 @@ void cChar::checkPoisoning()
 	}
 }
 
-#if 0
+/*NOT USED NOW IS NOT GOOD FOR BIG SHARD
 void cChar::restock()
 {
 	if ( npc && shopkeeper && TIMEOUT( shoprestocktime ) && SrvParms->shoprestock == 1 )
@@ -4634,8 +4802,7 @@ void cChar::restock()
 		}
 	}
 }
-#endif
-
+*/
 void cChar::do_lsd()
 {
 	if (rand()%15==0)
@@ -4695,18 +4862,23 @@ void cChar::do_lsd()
 
 		if (rand()%33==0)
 		{
-			if (rand()%10>3) playSFX(0x00F8, true); // lsd sound :)
+			if (rand()%10>3) soundeffect5(socket, 0x00F8); // lsd sound :)
 			else
 			{
 				int snd=rand()%19;
 				if (snd>9) 
-					playSFX((0x01<<8)|((snd-10)%256), true);
+					soundeffect5(socket,(0x01<<8)|((snd-10)%256));
 				else 
-					playSFX(246+snd, true);
+					soundeffect5(socket,246+snd);
 			}
 		}
 	}
 
+}
+
+bool cChar::isTargeting()
+{
+	return (this->current_target!=NULL);
 }
 
 void cChar::setTarget( P_TARGET newtarget )
@@ -4724,18 +4896,33 @@ void cChar::doTarget()
 	}
 }
 
-void cChar::setProfile( wstring* newProfile )
+wstring* cChar::getProfile()
 {
-	if( profile!=NULL )
-		safedelete(profile);
-	profile=newProfile;
+	return this->profile;
+}
+
+void cChar::setProfile( wstring* profile )
+{
+	if( this->profile!=NULL )
+		safedelete(this->profile);
+	this->profile=profile;
 }
 
 void cChar::resetProfile()
 {
-	profile=NULL;
+	this->profile=NULL;
 }
 	
+/*
+\brief Return current speech
+\author Endymion
+\return current speech
+*/
+wstring* cChar::getSpeechCurrent()
+{
+	return this->speechCurrent;
+}
+
 /*
 \brief Set current speech
 \author Endymion
@@ -4744,7 +4931,7 @@ void cChar::resetProfile()
 */
 void cChar::setSpeechCurrent( wstring* speech )
 {
-	speechCurrent=speech;
+	this->speechCurrent=speech;
 }
 
 /*
@@ -4805,8 +4992,7 @@ void cChar::updateRegenTimer( StatType stat )
 	if( stat>=ALL_STATS ) return;
 	regens[stat].timer= uiCurrentTime+ regens[stat].rate_eff*MY_CLOCKS_PER_SEC;
 }
-
-#if 0
+/*
 LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 {
 	if( eventId < ALLCHAREVENTS )
@@ -4814,7 +5000,16 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 	else
 		return false;
 }
-#endif
+*/
+/*
+\brief Check if char is stabled
+\author Endymion
+\return true if stabled
+*/
+bool cChar::isStabled()
+{
+	return (getStablemaster()!=INVALID);
+}
 
 /*
 \brief Stable the character
@@ -4824,8 +5019,8 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 void cChar::stable( P_CHAR stablemaster )
 {
 	VALIDATEPC(stablemaster);
-	if( !npc ) return;
-	stablemaster_serial=stablemaster->getSerial32();
+	if( !this->npc ) return;
+	this->stablemaster_serial=stablemaster->getSerial32();
 	pointers::addToStableMap( this );
 }
 
@@ -4837,6 +5032,15 @@ void cChar::unStable()
 {
 	if( !isStabled() ) return;
 	pointers::delFromStableMap( this );
-	stablemaster_serial=INVALID;
+	this->stablemaster_serial=INVALID;
 }
 
+/*
+\brief Get the character's stablemaster
+\author Endymion
+\return the stable master
+*/
+SERIAL cChar::getStablemaster()
+{
+	return stablemaster_serial;
+}

@@ -44,7 +44,7 @@ Tokenizer::Tokenizer( const char* initialLine )
 	index = 1;
 }
 
-UI32 Tokenizer::count()
+UI32 Tokenizer::count( void )
 {
 	return tokens.size();
 }
@@ -55,19 +55,19 @@ bool Tokenizer::setIndex( UI32 newValue )
 	if ( newValue > 1 && newValue <= tokens.size() )
 	{
 		returnValue = true;
-		index = newValue;
+		this->index = newValue;
 	}
 	return returnValue;
 }
 
-string* Tokenizer::first()
+string* Tokenizer::first( void )
 {
 	string* returnValue;
 
-	if ( count() )
+	if ( this->count() )
 	{
-		index = 1;
-		returnValue = tokens[index];
+		this->index = 1;
+		returnValue = tokens[this->index];
 	}
 	else
 		returnValue = new string( "" );
@@ -75,14 +75,14 @@ string* Tokenizer::first()
 	return returnValue;
 }
 
-string* Tokenizer::next()
+string* Tokenizer::next( void )
 {
 	string* returnValue;
 
-	if ( index < count() )
+	if ( this->index < this->count() )
 	{
-		++index;
-		returnValue = tokens[index];
+		++this->index;
+		returnValue = tokens[this->index];
 	}
 	else
 		returnValue = new string( "" );
@@ -90,14 +90,14 @@ string* Tokenizer::next()
 	return returnValue;
 }
 
-string* Tokenizer::previous()
+string* Tokenizer::previous( void )
 {
 	string* returnValue;
 
-	if ( index > 1 )
+	if ( this->index > 1 )
 	{
-		--index;
-		returnValue = tokens[index];
+		--this->index;
+		returnValue = tokens[this->index];
 	}
 	else
 		returnValue = new string( "" );
@@ -105,12 +105,12 @@ string* Tokenizer::previous()
 	return returnValue;
 }
 
-string* Tokenizer::current()
+string* Tokenizer::current( void )
 {
 	string* returnValue;
 
-	if ( index > 1 && index <= tokens.size() )
-		returnValue = tokens[index];
+	if ( this->index > 1 && this->index <= tokens.size() )
+		returnValue = tokens[this->index];
 	else
 		returnValue = new string( "" );
 

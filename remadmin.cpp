@@ -175,13 +175,16 @@ void RemoteAdmin::CheckConn ()
 	Printf(racnow, "%s %s.%s [%s]\r\n", PRODUCT, VERNUMB, HOTFIX, OS);
 	Printf(racnow, "Remote Administration Console\r\n");
 	Printf(racnow, "Program by Xanathar and Ummon\r\n");
-	Printf(racnow, "http://noxwizard.sourceforge.net/\r\n");
+	Printf(racnow, "http://nox-wizard.sunsite.dk\r\n");
 	Printf(racnow, "\r\n");
 	Printf(racnow, "INFO: character typed for login and password\r\n");
 	Printf(racnow, "are not echoed, this is not a bug.\r\n");
+/*	Printf(racnow, "%.4f Native Rate, %.4f AMX Rate\r\n\r\n", g_fNatRate, g_fAmxRate);
+*/
 
 	Printf(racnow, "\r\nLogin : ");
 	racnow++;
+
 }
 
 
@@ -436,7 +439,7 @@ void RemoteAdmin::ProcessInput(int s)
 
 	if (status[s]==RACST_CHECK_PWD)
 	{
-		if( !accounts::AuthenticateRAS(loginname[s], inp) ) 
+		if( !Accounts->AuthenticateRAS(loginname[s], inp) ) 
 		{
 			Printf(s, "\r\nAccess Denied.\r\nPress any key to get disconnected...");
 			ConOut("Access Denied on Remote Console for user '%s' with pass '%s'\n", loginname[s], inp);
@@ -680,7 +683,7 @@ void RemoteAdmin::ProcessInput(int s)
 			Printf(s,"Syntax is : ADDACCT <name>,<password>\r\nExample : ADDACCT administrator,password\r\n");
 			return;
 		}
-		int acc = accounts::CreateAccount(cmd, par2);
+		int acc = Accounts->CreateAccount(cmd, par2);
 		if ( acc != INVALID )
 		{
 			Printf(s, "Account %d created\r\n  Name : %s\r\n  Pass : %s\r\n", acc,cmd,par2);
@@ -701,7 +704,7 @@ void RemoteAdmin::ProcessInput(int s)
 			Printf(s,"Syntax is : REMACCT <name>\r\nExample : REMACCT administrator\r\n");
 			return;
 		}
-		if ( accounts::RemoveAccount(cmd) )
+		if ( Accounts->RemoveAccount(cmd) )
 		{
 			Printf(s, "Account %s deleted\r\n", cmd);
 			Printf(s, "[  OK  ]\r\n");
@@ -721,10 +724,10 @@ void RemoteAdmin::ProcessInput(int s)
 			Printf(s,"Syntax is: CHANGEACCTPWD <name>,<password>\r\nExample : CHANGEACCTPWD administrator,newpassword\r\n");
 			return;
 		}
-		ACCOUNT acc = accounts::GetAccountByName(cmd);
+		ACCOUNT acc = Accounts->GetAccountByName(cmd);
 		if ( acc != INVALID )
 		{
-			accounts::ChangePassword(acc, par2);
+			Accounts->ChangePassword(acc, par2);
 			Printf(s, "Account %d has new password\r\n  Password : %s\r\n", acc, par2);
 			Printf(s, "[  OK  ] \r\n");
 		}

@@ -102,11 +102,10 @@ void loadcontainers()
 
 SI16 cItem::getContGump()
 {
-#if 0
-	switch(id1)
+/*	switch(this->id1)
 	{
 		case 0x0E:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x75:			// Backpack
 				case 0x79: return 0x3C;	// Box/Pouch
@@ -150,7 +149,7 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x09:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x90: return 0x41; // Round Basket
 						break;
@@ -173,11 +172,11 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x20:
-			if (id2=='\x06') return 0x09; // Coffin
+			if (this->id2=='\x06') return 0x09; // Coffin
 			break;
 
 		case 0x0A:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x97:		// Bookcase
 				case 0x98:		// Bookcase
@@ -212,7 +211,7 @@ SI16 cItem::getContGump()
 				case 0x44:		// Dresser
 				case 0x35: return 0x51; // Dresser
 						break;
-				case 0xb2: if (morex==1) return 0x4a;
+				case 0xb2: if (this->morex==1) return 0x4a;
 						break;
 			}
 			break;
@@ -227,8 +226,8 @@ SI16 cItem::getContGump()
 
 	}
 	return 0x47;
-#endif
-	CONTINFOMAP::iterator iter( contInfo.find( id() ) );
+*/
+	CONTINFOMAP::iterator iter( contInfo.find( this->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end() )
 		return 0x47;
 	else 
@@ -249,7 +248,7 @@ void cItem::putInto( P_ITEM pi )
 	pi->AddItem( this );
 }
 
-#if 0
+
 // author: LB purpose: returns the type of pack
 // to handle its x,y coord system corretly.
 // interpretation of the result:
@@ -262,9 +261,9 @@ void cItem::putInto( P_ITEM pi )
 // x-range 18 .. 118 for 1,2,3
 //         40 .. 140 for 4
 //
-short cItem::GetContGumpType()
+/*short cItem::GetContGumpType()
 {
-	switch (id())
+*//*	switch (id())
 	{
 	case 0x09a8: return 1;
 	case 0x09a9: return 2;
@@ -301,22 +300,23 @@ short cItem::GetContGumpType()
 	case 0x2006: return 5;	// a corpse/coffin
 	default: return -1;
 	}
-}
-#endif
+}*/
 
 void cItem::SetRandPosInCont(P_ITEM pCont)
 {
+
+	setPosition("z", 9);
 	CONTINFOMAP::iterator iter( contInfo.find( pCont->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end()) {
-		setPosition(RandomNum(18, 118), RandomNum(50, 100), 9);
+		setPosition("x", RandomNum(18, 118));
+		setPosition("y", RandomNum(50, 100));
 		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->id());
 	}
 	else {
-		setPosition(
-				RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x),
-				RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y),
-				9
-			);
+		setPosition("x", RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x));
+		setPosition("y", RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y));
+		
 	}
+	
 }
 

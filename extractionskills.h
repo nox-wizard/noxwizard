@@ -25,7 +25,7 @@
 class cResource {
 public:
 
-	cResource( ) { consumed=0; timer=uiCurrentTime; }
+	cResource( ) { this->consumed=0; timer=uiCurrentTime; }
 
 	TIMERVAL timer; //!< timer for respawn
 	UI32 consumed; //!< amount of resource consumed
@@ -59,6 +59,7 @@ public:
 	UI32		area_height; //!< resource area height
 
 	cResources( UI32 areawidth = 10, UI32 areaheight = 10 );
+	~cResources();
 
 	void setDimArea( UI32 areawidth, UI32 areaheight );
 	

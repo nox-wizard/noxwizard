@@ -19,74 +19,70 @@
 #ifndef _OLDMENU_H_
 #define _OLDMENU_H_
 
-namespace menus
+/*!
+\brief an Old type menu
+*/
+class cOldMenu 
 {
 
-	/*!
-	\brief an Old type menu
-	*/
-	class cOldMenu 
-	{
+protected:
 
-	protected:
+	UI32 style; //!< style
+	UI32 color; //!< color
+	UI32 width; //!< width
+	wstring title; //!< title
 
-		UI32 style; //!< style
-		UI32 color; //!< color
-		UI32 width; //!< width
-		wstring title; //!< title
+	std::map< UI32, std::map< UI32, std::wstring >  > allPages; //!< all pages
 
-		std::map< UI32, std::map< UI32, std::wstring >  > allPages; //!< all pages
+public:
+	cOldMenu();
+	virtual ~cOldMenu();
 
-	public:
-		cOldMenu();
-		virtual ~cOldMenu() {}
+	void setParameters( int numPerPage, int numpages );
+	void	setCallBack( int fn );
+	virtual void addMenuItem( int page, int idx, std::wstring& desc );
+	void setTitle( wstring& str );
+	void setWidth( int width );
+	void setStyle( int style, int color = 0 );
+	void setColor( int color );
+	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
+	virtual void show( P_CHAR pc );
 
-		void setParameters( int numPerPage, int numpages );
-		void	setCallBack( int fn );
-		virtual void addMenuItem( int page, int idx, std::wstring& desc );
-		void setTitle( wstring& str );
-		void setWidth( int width );
-		void setStyle( int style, int color = 0 );
-		void setColor( int color );
-		virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
-		virtual void show( P_CHAR pc );
+};
 
-	};
+/*!
+\brief an Old type menu [ CLASSIC ]
+*/
+class cOldMenuClassic : public cMenu, public cOldMenu
+{
 
-	/*!
-	\brief an Old type menu [ CLASSIC ]
-	*/
-	class cOldMenuClassic : public cMenu, public cOldMenu
-	{
+private:
+	void buildOldMenu();
 
-	private:
-		void buildOldMenu();
+public:
+	cOldMenuClassic();
+	virtual ~cOldMenuClassic();
 
-	public:
-		cOldMenuClassic();
-		virtual ~cOldMenuClassic() {}
-
-		virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
-		virtual void show( P_CHAR pc );
+	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
+	virtual void show( P_CHAR pc );
 
 
-	};
+};
 
-	/*!
-	\brief an Old type menu [ ICONLIST ]
-	*/
-	class cOldMenuIconList : public cBasicMenu, public cOldMenu
-	{
+/*!
+\brief an Old type menu [ ICONLIST ]
+*/
+class cOldMenuIconList : public cBasicMenu, public cOldMenu
+{
 
-	public:
-		cOldMenuIconList();
-		virtual ~cOldMenuIconList() {}
+public:
+	cOldMenuIconList();
+	virtual ~cOldMenuIconList();
 
-		virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
-		virtual void show( P_CHAR pc );
+	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
+	virtual void show( P_CHAR pc );
 
-	};
+};
 
-} // namespace
 
 #endif

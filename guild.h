@@ -33,6 +33,7 @@ class cGuildRecruit
 	public:
 		cGuildRecruit();
 		cGuildRecruit( P_CHAR recruit, P_CHAR recruiter );
+		~cGuildRecruit();
 	private:
 		SERIAL		serial;
 	public:
@@ -64,6 +65,7 @@ class cGuildMember
 {
 	public:
 		cGuildMember();
+		~cGuildMember();
 	private:
 		std::string	title;	//!< title
 	public:
@@ -104,6 +106,7 @@ class cGuild
 	public:
 		cGuild( const P_ITEM pGuildStone, const P_CHAR pc );
 		cGuild( const SERIAL );
+		~cGuild();
 
 	private:
 		SERIAL serial;	//!< Guild Serial = equal to the guildstone serial
@@ -182,11 +185,17 @@ typedef enum
 class cGuildz
 {
 	public:
+		cGuildz();
+		~cGuildz();
+
+	public:
+
 		void archive();
 		void safeoldsave();
 		void load();
 		void save( FILE *worldfile );
 
+	public:
 		GUILDMAP guilds;
 
 		P_GUILD getGuild( SERIAL guild );

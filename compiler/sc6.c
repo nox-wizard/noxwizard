@@ -66,7 +66,7 @@ static short *align16(short *v)
   return v;
 }
 
-static int32_t *align32(int32_t *v)
+static long *align32(long *v)
 {
   unsigned char *s = (unsigned char *)v;
   unsigned char t;

@@ -106,9 +106,6 @@ enum {
 //! Directions
 enum Direction { NORTH = 0, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST };
 
-//! Coordinates
-enum Coords { X, Y, Z, DISPZ };
-
 //! for spinning wheel -vagrant
 enum { YARN, THREAD };
 
@@ -220,7 +217,7 @@ enum {	ITEM_TYPE_CHOICES = 6,
 		MAXMEMRECWAR=30, //!< max of max guildmembers, max recruits and max war
 	};
 	#define DEFAULTCHARTER "NoX-Wizard Guildstone"
-	#define DEFAULTWEBPAGE "http://noxwizard.sourceforge.net/"
+	#define DEFAULTWEBPAGE "http://www.noxwizard.com"
 //@}
 
 /*!

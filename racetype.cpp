@@ -21,14 +21,14 @@ string RaceType::raceTypeNames[RACETYPES] = { "PC", "NPC", "PCNPC" };
 // Note			: we could introduce unknown as racetype
 //			  and set value to this on construction
 // History		:
-RaceType::RaceType()
+RaceType::RaceType( void )
 {
-	value = PCNPCRACE;
+	this->value = PCNPCRACE;
 }
 
-RACETYPE RaceType::getValue()
+RACETYPE RaceType::getValue( void )
 {
-	return value;
+	return this->value;
 }
 
 RaceType& RaceType::operator=( const char* newRaceType )
@@ -36,13 +36,13 @@ RaceType& RaceType::operator=( const char* newRaceType )
 	string		str = newRaceType;
 	RaceType	rt;
 	rt = str;
-	value = rt.value;
+	this->value = rt.value;
 	return *this;
 }
 
 RaceType& RaceType::operator=( const RACETYPE newRaceType )
 {
-	value = newRaceType;
+	this->value = newRaceType;
 	return *this;
 }
 
@@ -50,12 +50,12 @@ RaceType& RaceType::operator=( const string& newRaceType )
 {
 	int		index;
 
-	value = DEFAULTRACETYPE;
+	this->value = DEFAULTRACETYPE;
 
 	for( index = FIRSTRACE; index < LASTRACE; index++ )
 		if ( raceTypeNames[index] == newRaceType )
 		{
-			value = static_cast< RACETYPE >(index);
+			this->value = static_cast< RACETYPE >(index);
 			break;
 		}
 
@@ -65,52 +65,52 @@ RaceType& RaceType::operator=( const string& newRaceType )
 RaceType& RaceType::operator=( const int newRaceType )
 {
 	if ( newRaceType >= int( FIRSTRACE ) && newRaceType <= int( LASTRACE ) )
-		value = static_cast< RACETYPE >( newRaceType );
+		this->value = static_cast< RACETYPE >( newRaceType );
 	else
-		value = static_cast< RACETYPE >( DEFAULTRACETYPE );
+		this->value = static_cast< RACETYPE >( DEFAULTRACETYPE );
 	return *this;
 }
 
 bool RaceType::operator==( RaceType a )
 {
-	return ( a.value == value );
+	return ( a.value == this->value );
 }
 
 
 bool RaceType::operator==( RACETYPE a )
 {
-	return ( a == value ) ;
+	return ( a == this->value ) ;
 }
 
 bool RaceType::operator==( int a )
 {
-	return ( a == int( value ) );
+	return ( a == int( this->value ) );
 }
 
 bool RaceType::operator==( char* a )
 {
-	return ( strcmp( raceTypeNames[ value ].c_str(), a ) == 0 );
+	return ( strcmp( raceTypeNames[ this->value ].c_str(), a ) == 0 );
 }
 
 RaceType::operator int() const
 {
-	return value;
+	return this->value;
 }
 
-#if 0
+/*
 RaceType::operator RACETYPE() const
 {
-	return value;
+	return this->value;
 }
-#endif
+*/
 
 RaceType::operator char*() const
 {
-	return const_cast< char * >( raceTypeNames[ value ].c_str() ) ;
+	return const_cast< char * >( raceTypeNames[ this->value ].c_str() ) ;
 }
 
 
 RaceType::operator string*() const
 {
-	return &raceTypeNames[ value ] ;
+	return &raceTypeNames[ this->value ] ;
 }

@@ -29,6 +29,7 @@ protected:
 
 public:
 	NxwWrapper();
+	~NxwWrapper();
 
 	bool isEmpty();
 	void clear();
@@ -51,6 +52,9 @@ protected:
 	void fillSerialInContainer( cObject* obj, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false );
 
 public:
+	NxwSerialWrapper();
+	~NxwSerialWrapper();
+
 	SERIAL getSerial();
 	void insertSerial( SERIAL s );
 	void insertSerial( cObject* obj );
@@ -62,9 +66,10 @@ public:
 class NxwCharWrapper : public NxwSerialWrapper {
 
 public:
+	NxwCharWrapper();
 	NxwCharWrapper( const NxwCharWrapper& that );
-	NxwCharWrapper() {}
-	
+	~NxwCharWrapper();
+
 	P_CHAR getChar();
 	void insertChar( P_CHAR pc );
 
@@ -85,8 +90,9 @@ public:
 class NxwItemWrapper : public NxwSerialWrapper {
 
 public:
-	NxwItemWrapper() {}
+	NxwItemWrapper();
 	NxwItemWrapper( const NxwItemWrapper& that );
+	~NxwItemWrapper();
 
 	P_ITEM getItem();
 	void insertItem( P_ITEM pi );
@@ -104,16 +110,18 @@ public:
 class NxwSocketWrapper : public NxwWrapper {
 
 public:
+	NxwSocketWrapper();
+	~NxwSocketWrapper();
+
 	SERIAL getSocket();
 	NXWCLIENT getClient();
 	void insertSocket( NXWSOCKET s );
 	void insertClient( NXWCLIENT ps );
 
 	void fillOnline( P_CHAR onlyNearThis, bool bExcludeThis = true, UI32 nDistance = VISRANGE );
-	void fillOnline( Location location, UI32 nDistance = VISRANGE );
-	void fillOnline( P_ITEM onlyNearThis, UI32 nDistance = VISRANGE );
-	void fillOnline( P_OBJECT onlyNearThis, UI32 nDistance = VISRANGE );	
-	void fillOnline();
+	void fillOnline( Location location, int nDistance = VISRANGE );
+	void fillOnline( P_ITEM onlyNearThis,int nDistance = VISRANGE );
+	void fillOnline( );
 
 };
 

@@ -115,6 +115,7 @@ void cTriggerContext::parseIAddCommand(char* par)
 	UI32 InBackpack = array[1];
 	UI32 itmamount = (array[2]<=0)? INVALID : array[2];
     
+	NXWSOCKET  ts = m_socket;
 	Location charpos= m_pcCurrChar->getPosition();
 
     switch (m_pcCurrChar->dir)
@@ -510,7 +511,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			break;
 		case 'B':
 			if (!(strcmp("BOLT", cmd))) { // bolts the player
-				m_pcCurrChar->boltFX(false);
+				bolteffect(currchar[m_socket], true);
 			}
 			break;
 
@@ -762,7 +763,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (m_pi==0) m_pi = m_piAdded;
 				if (m_piAdded==0) STOPTRIGGER;
 			} else if (!(strcmp("IDFX", cmd))) { // Makes an effect at players by ID
-				m_pcCurrChar->boltFX(false);
+				bolteffect(currchar[m_socket], true);
 				// TODO IDFX command needs to be changed
 			} else if (!(strcmp("INT", cmd))) { // Do math on players intelligence
 				int params[2];
@@ -894,10 +895,10 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				}
 			} else if (!(strcmp("NPCBOLT", cmd))) { // bolts the player
 				if ( m_pcNpc==0) return;
-				m_pcNpc->boltFX(true);
+				bolteffect(DEREF_P_CHAR(m_pcNpc), true);
 			} else if (!(strcmp("NEWNPCBOLT", cmd))) { // bolts the player
 				if ( m_pcAdded==0) return;
-				m_pcAdded->boltFX(false);
+				bolteffect(DEREF_P_CHAR(m_pcAdded), true);
 			} else if (!(strcmp("NPCACT", cmd))) { // Make npc perform an action
 				if (m_pcNpc!=0) m_pcNpc->playAction(hex2num(par));
 			} else if (!(strcmp("NADD", cmd))) {  // Add a NPC at given location - AntiChrist -- Fixed here by Magius(CHE) §
@@ -1106,9 +1107,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			y1 = charpos.y;
 					if (m_pi==0) return;
 
-			x2 = m_pi->getPosition().x;
-			y2 = m_pi->getPosition().y;
-			z2 = m_pi->getPosition().z;
+			x2 = m_pi->getPosition("x");
+			y2 = m_pi->getPosition("y");
+			z2 = m_pi->getPosition("z");
 			p = currchar[m_socket];
 			pack = (MAKE_CHAR_REF(currchar[m_socket]))->getBackpack();
 

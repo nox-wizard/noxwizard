@@ -143,7 +143,7 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-					regions::add(p_pet);
+					mapRegions->add(p_pet);
 					pointers::addCharToLocationMap( p_pet );
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
@@ -215,7 +215,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	int totalstats,totalskills;
 
 	NxwCharWrapper sc;
-	accounts::GetAllChars( acctno[s], sc );
+	Accounts->GetAllChars( acctno[s], sc );
 
 
 	if ( sc.size() >= ServerScp::g_nLimitRoleNumbers) {
@@ -226,7 +226,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	P_CHAR pc = archive::character::New();
 
 	pc->setCurrentName( (const char*)&buffer[s][10] );
-	accounts::AddCharToAccount( acctno[s], pc );
+	Accounts->AddCharToAccount( acctno[s], pc );
 
 	/*SERIAL currserial = pc->getSerial32();
 	vector<SERIAL>::iterator currCharIt( currchar.begin()), currCharEnd(currchar.end());
@@ -531,7 +531,7 @@ void callguards( CHARACTER p )
 				guard->summontimer = uiCurrentTime + MY_CLOCKS_PER_SEC * 25 ;
 
 				guard->playSFX( 0x01FE );
-				guard->staticFX(0x372A, 9, 6);
+				staticeffect( DEREF_P_CHAR( guard ), 0x37, 0x2A, 0x09, 0x06);
 
 				guard->teleport();
 				guard->talkAll( TRANSLATE("Don't fear, help is near"), 0 );
@@ -721,7 +721,7 @@ void checkkey ()
 			case 'A': //reload the accounts file
 			case 'a':
 				InfoOut("Reloading accounts file...");
-				accounts::LoadAccounts();
+				Accounts->LoadAccounts();
 				ConOut("[DONE]\n");
 				break;
 			case 'x':
@@ -845,7 +845,7 @@ void signal_handler(int signal)
 		break ;
 
 	case SIGUSR1:
-		accounts::LoadAccounts();
+		Accounts->LoadAccounts();
 		break ;
 	case SIGUSR2:
 		cwmWorldState->saveNewWorld();
@@ -1029,7 +1029,7 @@ void angelMode();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading accounts...");
-		accounts::LoadAccounts();
+		Accounts->LoadAccounts();
 		ConOut("[DONE]\n");
 
 		keeprun=(Network->kr); //LB. for some technical reasons global varaibles CANT be changed in constructors in c++.
@@ -1039,12 +1039,13 @@ void angelMode();
 		CIAO_IF_ERROR;
 
 		ConOut("Loading areas...");
-		areas::loadareas();
+		Areas->loadareas();
 		ConOut("[DONE]\n");
 
 
 		ConOut("Loading spawn regions...");
-		spawns::loadFromScript();
+		//loadspawnregions();
+		Spawns->loadFromScript();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading regions...");
@@ -1180,7 +1181,7 @@ void angelMode();
 
 	ConOut("%s %s %s.%s [%s] compiled by %s\nProgrammed by: %s", PRODUCT, VER, VERNUMB, HOTFIX, OS, NAME, PROGRAMMERS);
 	ConOut("\nBased on Wolfpack 12.5b1 (http://www.wpdev.org)");
-	ConOut("\nWeb-site : http://noxwizard.sourceforge.net/\n");
+	ConOut("\nWeb-site : http://nox-wizard.sunsite.dk/\n");
 	ConOut("\n");
 	ConOut("Copyright (C) 1997, 98 Marcus Rating (Cironian)\n\n");
 	ConOut("This program is free software; you can redistribute it and/or modify\n");
@@ -1319,7 +1320,7 @@ void angelMode();
 
 	InfoOut("Server started\n");
 
-	spawns::doSpawnAll();
+	Spawns->doSpawnAll();
 
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
@@ -1821,7 +1822,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 	switch(pi->morey)
 	{
 	case 1: // Agility Potion
-		pc->staticFX(0x373a, 0, 15);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3a, 0, 15);
 		switch(pi->morez)
 		{
 		case 1:
@@ -1877,7 +1878,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 				pc->sysmsg(TRANSLATE("The potion was not able to cure this poison."));
 			else
 			{
-				pc->staticFX(0x373A, 0, 15);
+				staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
 				pc->playSFX( 0x01E0); //cure sound - SpaceDog
 				pc->sysmsg(TRANSLATE("The poison was cured."));
 			}
@@ -1927,12 +1928,12 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		if (s!=INVALID)
 			pc->updateStats(0);
 
-		pc->staticFX(0x376A, 9, 6); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01F2); //Healing Sound - SpaceDog
 		break;
 
 	case 5: // Night Sight Potion
-		pc->staticFX(0x376A, 9, 6); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
 		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,(720*secondsperuominute*MY_CLOCKS_PER_SEC));
 		pc->playSFX(0x01E3);
 		break;
@@ -1967,12 +1968,12 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		}
 		if (s!=INVALID)
 			pc->updateStats(2);
-		pc->staticFX(0x376A, 9, 6); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01F2); //Healing Sound
 		break;
 
 	case 8: // Strength Potion
-		pc->staticFX(0x373A, 0, 15); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3a, 0, 15);
 		switch(pi->morez)
 		{
 		case 1:
@@ -2007,7 +2008,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		}
 		if (s!=INVALID)
 			pc->updateStats(1);
-		pc->staticFX(0x376A, 9, 6); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01E7); //agility sound - SpaceDog
 		break;
 
@@ -2020,7 +2021,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			return;
 		}
 		tempfx::add(pc, pc, tempfx::LSD, 60+RandomNum(1,120), 0, 0); // trigger effect
-		pc->staticFX(0x376A, 9, 6); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x00F8, true); // lsd sound :)
 		break;
 
@@ -3005,7 +3006,10 @@ void BuildPointerArray()
 */
 void InitMultis()
 {
+//	unsigned int i ; // unused variable
+
 	cAllObjectsIter objs;
+//	P_CHAR pc; // unused variable
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
 	/*for (i=0;i<charcount;i++)
@@ -3057,13 +3061,18 @@ void StartClasses()
 
 	// Classes nulled now, lets get them set up :)
 	cwmWorldState=new CWorldMain;
+	mapRegions=new cRegion;
+	Accounts = new cAccounts;
+	Boats=new cBoat;
 	Guilds=new cGuilds;
 	Map=new cMapStuff;
+	Targ=new cTargets;
 	Network=new cNetwork;
-
-	spawns::initialize();
-	restocks::initialize();
-	regions::initialize();
+	//Respawn=new cRespawn;
+	Partys=new cPartys;
+	Spawns=new cSpawns;
+	Areas=new cAreas;
+	Restocks= new cRestockMng();
 
 	ConOut(" [ OK ]\n");
 }
@@ -3071,13 +3080,19 @@ void StartClasses()
 void DeleteClasses()
 {
 	delete cwmWorldState;
+	delete mapRegions;
+	delete Accounts;
+	delete Boats;
 	delete Guilds;
 	delete Map;
+	delete Targ;
 	delete Network;
+	//delete Respawn;
+	delete Partys;
+	delete Spawns;
+	delete Areas;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
-
-	accounts::finalize();
-	
+	delete Restocks;
 	//objects.clear();
 }
 ////////////////////////////
@@ -3092,10 +3107,13 @@ void gcollect()
 }
 
 /*!
-\brief Remove items which were in deleted containers
+\brief remove all the item without any parents
+(not in any valid container)
+\author ?
+\since ?
 \remarks \remark rewritten by Anthalir
 */
-void checkGarbageCollect ()
+void checkGarbageCollect () // Remove items which were in deleted containers
 {
 	int removed, rtotal=0, corrected=0;
 	int loopexit=0;

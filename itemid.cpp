@@ -70,100 +70,102 @@ bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2, WEAPONTYPE type3
 	}
 }
 
-LOGICAL cItem::IsSword() const
+bool cItem::IsSword()
 {
-	return isWeaponLike( id(), SWORD1H );
+	return isWeaponLike( this->id(), SWORD1H );
 }
 
-LOGICAL cItem::IsAxe() const
+bool cItem::IsAxe()
 {
-	return isWeaponLike( id(), AXE1H);
+	return isWeaponLike( this->id(), AXE1H);
 }
 
-LOGICAL cItem::IsSwordType() const
+bool cItem::IsSwordType()
 {
-	return isWeaponLike( id(), SWORD1H, AXE1H );
+	return isWeaponLike( this->id(), SWORD1H, AXE1H );
 }
 
-LOGICAL cItem::IsMace1H() const
+bool cItem::IsMace1H()
 {
 
-	return isWeaponLike( id(), MACE1H);
-
-}
-
-LOGICAL cItem::IsMace2H() const
-{
-	return isWeaponLike( id(), MACE2H);
+	return isWeaponLike( this->id(), MACE1H);
 
 }
 
-LOGICAL cItem::IsMaceType() const
+bool cItem::IsMace2H()
 {
-	return isWeaponLike( id(), MACE1H, MACE2H );
-}
-
-LOGICAL cItem::IsFencing1H() const
-{
-	return isWeaponLike( id(), FENCING1H);
-}
-
-LOGICAL cItem::IsFencing2H() const
-{
-	return isWeaponLike( id(), FENCING2H);
-}
-
-LOGICAL cItem::IsFencingType() const
-{
-	return isWeaponLike( id(), FENCING1H, FENCING2H );
-}
-
-LOGICAL cItem::IsBow() const
-{
-	return isWeaponLike( id(), BOW );
-}
-LOGICAL cItem::IsCrossbow() const	
-{
-	return isWeaponLike( id(), CROSSBOW );
+	return isWeaponLike( this->id(), MACE2H);
 
 }
 
-LOGICAL cItem::IsHeavyCrossbow() const
+bool cItem::IsMaceType()
 {
-	return isWeaponLike( id(), HEAVYCROSSBOW );
+	return isWeaponLike( this->id(), MACE1H, MACE2H );
+}
+
+bool cItem::IsFencing1H()
+{
+	return isWeaponLike( this->id(), FENCING1H);
 
 }
 
-LOGICAL cItem::IsBowType() const
+bool cItem::IsFencing2H()
 {
-	return isWeaponLike( id(), BOW, CROSSBOW, HEAVYCROSSBOW );
+	return isWeaponLike( this->id(), FENCING2H);
 }
 
-LOGICAL cItem::IsStave() const // -Fraz- added
+bool cItem::IsFencingType()
 {
-	return isWeaponLike( id(), STAVE1H, STAVE2H );
+	return isWeaponLike( this->id(), FENCING1H, FENCING2H );
+}
+
+bool cItem::IsBow()
+{
+	return isWeaponLike( this->id(), BOW );
+}
+bool cItem::IsCrossbow()	
+{
+	return isWeaponLike( this->id(), CROSSBOW );
 
 }
 
-LOGICAL cItem::IsSpecialMace() const // -Fraz- The OSI macing weapons that do stamina and armor damage 2handed only
+bool cItem::IsHeavyCrossbow()
 {
-	return isWeaponLike( id(), STAVE1H, STAVE2H, MACE2H );
+	return isWeaponLike( this->id(), HEAVYCROSSBOW );
+
 }
 
-SI08 cItem::isFieldSpellItem() const //LB
+bool cItem::IsBowType()
+{
+	return isWeaponLike( this->id(), BOW, CROSSBOW, HEAVYCROSSBOW );
+}
+
+bool cItem::IsStave() // -Fraz- added
+{
+	return isWeaponLike( this->id(), STAVE1H, STAVE2H );
+
+}
+
+bool cItem::IsSpecialMace() // -Fraz- The OSI macing weapons that do stamina and armor damage 2handed only
+{
+	return isWeaponLike( this->id(), STAVE1H, STAVE2H, MACE2H );
+}
+
+SI08 cItem::isFieldSpellItem() //LB
 {
 	int a= 0;
+	UI16 id= this->id();
 
-	if( (id()==0x3996) || (id()==0x398C) ) a= 1; // fire field
-	if( (id()==0x3915) || (id()==0x3920) ) a= 2; // poison field
-	if( (id()==0x3979) || (id()==0x3967) ) a= 3; // paralyse field
-	if( (id()==0x3956) || (id()==0x3946) ) a= 4; // energy field;
+	if( (id==0x3996) || (id==0x398C) ) a= 1; // fire field
+	if( (id==0x3915) || (id==0x3920) ) a= 2; // poison field
+	if( (id==0x3979) || (id==0x3967) ) a= 3; // paralyse field
+	if( (id==0x3956) || (id==0x3946) ) a= 4; // energy field;
 
 	return a;
 }
 
 
-LOGICAL cItem::IsDagger() const
+bool cItem::IsDagger()
 {
     return ( id()==0x0F51 || id()==0x0F52 );
 }
@@ -173,14 +175,11 @@ bool itemById::IsCorpse( UI16 id )
 	return (id==0x2006);
 }
 
-LOGICAL cItem::IsCorpse() const
-{
-	return itemById::IsCorpse( id() );
-}
+bool cItem::IsCorpse() { return itemById::IsCorpse( this->id() ); }
 
 bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 {
-	return (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
+	if (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
 		id==0x0CD8 || id==0x0CDA || id==0x0CDD ||
 		id==0x0CE0 || id==0x0CE3 || id==0x0CE6 ||
 		(id>=0x0CCA && id<=0x0CCD) ||
@@ -188,60 +187,59 @@ bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 		id==0x0D42 || id==0x0D43 || id==0x0D58 ||
 		id==0x0D59 || id==0x0D70 || id==0x0D85 ||
 		id==0x0D94 || id==0x0D95 || id==0x0D98 ||
-		id==0x0Da4 || id==0x0Da8 || id==0x0D58);
+		id==0x0Da4 || id==0x0Da8 || id==0x0D58)
+		return true;
+	return false;
 }
 
-LOGICAL cItem::IsTree() const
-{
-	return itemById::IsTree( id() );
-}
+bool cItem::IsTree() { return itemById::IsTree( this->id() ); }
 
 bool itemById::IsTree2( UI16 id )	// this is used in SwordTarget() to give kindling. Donno why it's different
 {
-	return (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
+	if (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
 		id==0x0CD8 || id==0x0CDA || id==0x0CDD ||
 		id==0x0CE0 || id==0x0CE3 || id==0x0CE6 ||
 		(id>=0x0CCA && id<=0x0CCD) ||
-		(id>=0x12B8 && id<=0x12BB) );
+		(id>=0x12B8 && id<=0x12BB) )
+		return true;
+	return false;
 }
 
-LOGICAL cItem::IsTree2() const
-{
-	return itemById::IsTree2( id() );
-}
+bool cItem::IsTree2() { return itemById::IsTree2( this->id() ); }
 
-LOGICAL cItem::IsSpellScroll() const
+bool cItem::IsSpellScroll()
 {
 	return (id()>0x1F2C && id()<0x1F6D);
 }
 
-LOGICAL cItem::IsSpellScroll72() const
+bool cItem::IsSpellScroll72()
 {
 	return (id() >= 0x1F2D && id() <= 0x1F72);
 }
 
-LOGICAL cItem::IsInstrument() const
+bool cItem::IsInstrument()
 {
-	return (id()==0x0E9C || id()==0x0E9D || id()==0x0E9E || id()==0x0EB1 || id()==0x0EB2 || id()==0x0EB3 || id()==0x0EB4);
+	UI16 id= this->id();
+	return (id==0x0E9C || id==0x0E9D || id==0x0E9E || id==0x0EB1 || id==0x0EB2 || id==0x0EB3 || id==0x0EB4);
 }
 
-LOGICAL cItem::IsArrow() const
+bool cItem::IsArrow()
 {
 	return ((id()==0x0F3F)||(id()==0x0F42));
 }
 
-LOGICAL cItem::IsBolt() const
+bool cItem::IsBolt()
 {
 	return ((id()==0x1BFB)||(id()==0x1BFE));
 }
 
 
-LOGICAL cItem::IsChaosOrOrderShield() const
+bool cItem::IsChaosOrOrderShield()
 {
 	return (id()>=0x1BC3 && id()<=0x1BC5);
 }
 
-LOGICAL cItem::IsShield() const
+bool cItem::IsShield()
 {
 	return ((id()>=0x1B72 && id()<=0x1B7B) || IsChaosOrOrderShield());
 }
@@ -251,23 +249,18 @@ bool itemById::IsLog( UI16 id )
 	return ( id>=0x1BDD && id<=0x1BE2 );
 }
 
-LOGICAL cItem::IsLog() const
-{
-	return itemById::IsLog( id() );
-}
+bool cItem::IsLog() { return itemById::IsLog( this->id()); }
+
 
 bool itemById::IsShaft( UI16 id )
 {
 	return ( id>=0x1BD4 && id<=0x1BD6 );
 }
 
-LOGICAL cItem::IsShaft() const
-{
-	return itemById::IsShaft( id() );
-}
+bool cItem::IsShaft() { return itemById::IsShaft( this->id() ); }
 
 
-LOGICAL cItem::IsBoard() const
+bool cItem::IsBoard()
 {
 	return ( id()>=0x1BD7 && id()<=0x1BDC );
 }
@@ -277,124 +270,126 @@ bool itemById::IsFeather( UI16 id )
 	return ( id>=0x1BD1 && id<=0x1BD3 );
 }
 
-LOGICAL cItem::IsFeather() const
-{
-	return itemById::IsFeather( id() );
-}
+bool cItem::IsFeather() { return itemById::IsFeather( this->id() ); }
 
-LOGICAL cItem::IsCutLeather() const
+bool cItem::IsCutLeather()
 {
 	return ( id()==0x1067 || id()==0x1068 || id()==0x1081 || id()==0x1082 );
 }
 
-LOGICAL cItem::IsHide() const
+bool cItem::IsHide()
 {
 	return ( id()==0x1078 || id()==0x1079 );
 }
 
-LOGICAL cItem::IsForge() const
+bool cItem::IsForge()
 {
 	return ( id()==0x0FB1 || ( id()>=0x197A && id()<=0x19A9 ) );
 }
 
-LOGICAL cItem::IsAnvil() const
+bool cItem::IsAnvil()
 {
 	return ( id()==0x0FAF || id()==0x0FB0 );
 }
 
-LOGICAL cItem::IsCookingPlace() const
+bool cItem::IsCookingPlace()
 {
-	return ((id()>=0x0DE3 && id()<=0x0DE9)||
-			(id()==0x0FAC || id()==0x0FB1)||
-			(id()>=0x197A && id()<=0x19B6)||
-			(id()>=0x0461 && id()<=0x0480)||
-			(id()>=0x0E31 && id()<=0x0E33)||
-			(id()==0x19BB || id()==0x1F2B)||
-			(id()>=0x092B && id()<=0x0934)||
-			(id()>=0x0937 && id()<=0x0942)||
-			(id()>=0x0945 && id()<=0x0950)||
-			(id()>=0x0953 && id()<=0x095E)||
-			(id()>=0x0961 && id()<=0x096C) );
+	UI16 id= this->id();
+	return ((id>=0x0DE3 && id<=0x0DE9)||
+			(id==0x0FAC || id==0x0FB1)||
+			(id>=0x197A && id<=0x19B6)||
+			(id>=0x0461 && id<=0x0480)||
+			(id>=0x0E31 && id<=0x0E33)||
+			(id==0x19BB || id==0x1F2B)||
+			(id>=0x092B && id<=0x0934)||
+			(id>=0x0937 && id<=0x0942)||
+			(id>=0x0945 && id<=0x0950)||
+			(id>=0x0953 && id<=0x095E)||
+			(id>=0x0961 && id<=0x096C) );
 }
 
-LOGICAL cItem::IsCutCloth() const
+bool cItem::IsCutCloth()
 {
 	return ( id()>=0x1766 && id()<=0x1768 );
 }
 
-LOGICAL cItem::IsCloth() const
+bool cItem::IsCloth()
 {
 	return ((id()>=0x175D && id()<=0x1765)|| IsCutCloth() );
 }
 
-LOGICAL cItem::IsBoltOfCloth() const
+bool cItem::IsBoltOfCloth()
 {
 	return ( id()>=0x0F95 && id()<=0x0F9C );
 }
 
-LOGICAL cItem::IsChest() const
+bool cItem::IsChest()
 {
-	return (( id()>=0x09A8 && id()<=0x09AB) ||
-		    ( id()>=0x0E40 && id()<=0x0E43) ||
-		    ( id()==0x0E7C) || (id()==0x0E7D) ||
-		    ( id()==0x0E80));
+	UI16 id= this->id();
+	return (( id>=0x09A8 && id<=0x09AB) ||
+		    ( id>=0x0E40 && id<=0x0E43) ||
+		    ( id==0x0E7C) || (id==0x0E7D) ||
+		    ( id==0x0E80));
 }
 
-LOGICAL cItem::IsFishWater() const // -Fraz- needed water tiles for fishing
+bool cItem::IsFishWater() // -Fraz- needed water tiles for fishing
 {
-	return ((id()==0x1798) || (id()==0x179B) ||
-			(id()==0x179C) || (id()==0x1799) ||
-			(id()==0x1797) || (id()==0x179A) ||
-			(id()==0x346E) || (id()==0x346F) ||
-			(id()>=0x3470) && (id()<=0x3485) ||
-			(id()>=0x3494) && (id()<=0x349F) ||
-			(id()>=0x34A0) && (id()<=0x34AB) ||
-			(id()>=0x34B8) && (id()<=0x34BB) ||
-			(id()>=0x34BD) && (id()<=0x34BF) ||
-			(id()>=0x34C0) || (id()<=0x34C2) ||
-			(id()>=0x34C3) && (id()<=0x34C5) ||
-			(id()>=0x34C7) && (id()<=0x34CA) ||
-			(id()>=0x34D1) && (id()<=0x34D5));
+	UI16 id= this->id();
+	return ((id==0x1798) || (id==0x179B) ||
+			(id==0x179C) || (id==0x1799) ||
+			(id==0x1797) || (id==0x179A) ||
+			(id==0x346E) || (id==0x346F) ||
+			(id>=0x3470) && (id<=0x3485) ||
+			(id>=0x3494) && (id<=0x349F) ||
+			(id>=0x34A0) && (id<=0x34AB) ||
+			(id>=0x34B8) && (id<=0x34BB) ||
+			(id>=0x34BD) && (id<=0x34BF) ||
+			(id>=0x34C0) || (id<=0x34C2) ||
+			(id>=0x34C3) && (id<=0x34C5) ||
+			(id>=0x34C7) && (id<=0x34CA) ||
+			(id>=0x34D1) && (id<=0x34D5));
 }
 
-LOGICAL cItem::IsFish() const
+bool cItem::IsFish()
 {
 	return ( id()>=0x09CC && id()<=0x09CF );
 }
 
 
-LOGICAL cItem::IsSign() const 
+bool cItem::IsSign() 
 { 
-	return ((id()==0x0B95 || id()==0x0B96)|| (id()>=0x0BA3 && id()<=0x0C0E)|| (id()==0x0C43 || id()==0x0C44)); 
+	UI16 id= this->id();
+	return ((id==0x0B95 || id==0x0B96)|| (id>=0x0BA3 && id<=0x0C0E)|| (id==0x0C43 || id==0x0C44)); 
 } 
 
-LOGICAL cItem::IsWoodenSign() const 
+bool cItem::IsWoodenSign() 
 { 
 	return ((id()==0x0BCF || id()==0x0BD0)); 
 } 
 
-LOGICAL cItem::IsBrassSign() const 
+bool cItem::IsBrassSign() 
 { 
 	return ((id()==0x0BD1 || id()==0x0BD2)); 
 }
 
-LOGICAL cItem::IsGuildSign() const 
+bool cItem::IsGuildSign() 
 { 
 	return ((id() >= 0x0BD3 && id() <= 0x0C0A)); 
 } 
 
-LOGICAL cItem::IsTradeSign() const 
+bool cItem::IsTradeSign() 
 { 
-	return ((id()==0x0B95 || id()==0x0B96) || 
-			(id() >= 0x0BA3 && id() <= 0x0BCE)); 
+	UI16 id= this->id();
+	return ((id==0x0B95 || id==0x0B96) || 
+			(id >= 0x0BA3 && id <= 0x0BCE)); 
 } 
 
-LOGICAL cItem::IsBankSign() const 
+bool cItem::IsBankSign() 
 { 
 	return ((id() >= 0x0C0B && id() <= 0x0C0C)); 
 } 
 
-LOGICAL cItem::IsTheatreSign() const 
+bool cItem::IsTheatreSign() 
 { 
 	return ((id() >= 0x0C0D && id() <= 0x0C0E)); 
 } 
@@ -428,40 +423,55 @@ bool itemById::IsHouse( UI16 id )
   return false;
 }
 
-LOGICAL cItem::IsHouse() const
+bool cItem::IsHouse()
 {
-    return itemById::IsHouse( id() );
+    return itemById::IsHouse( this->id() );
 }
 
 /*!
 \author Luxor
 \brief Tells if an item is a dynamic spawner
 */
-LOGICAL cItem::isSpawner() const
+LOGICAL cItem::isSpawner()
 {
-	return type == 61 || type == 62 || type == 63 || type == 64 || type == 65 || type == 69 || type == 125;
+	switch(type)
+	{
+		case 61:
+		case 62:
+		case 63:
+		case 64:
+		case 65:
+		case 69:
+		case 125:
+			return true;
+		default:
+			return false;
+	}
+	return false;
 }
 
 
 void itemGetPopUpHelp(char *str, P_ITEM pi)
 {
+//	int id = (pi->id1<<8)+pi->id2;
+	int type = pi->type;
 	if (pi->IsInstrument()) 
 		sprintf(str, TRANSLATE("This item is a musical instrument. You can use it for bardic skills like enticement or provocation"));	
-	else if (pi->type == ITYPE_DOOR) 
+	else if (type == ITYPE_DOOR) 
 		sprintf(str, TRANSLATE("This a door. To open or close it, double click on it."));
-	else if (pi->type == ITYPE_LOCKED_DOOR) 
+	else if (type == ITYPE_LOCKED_DOOR) 
 		sprintf(str, TRANSLATE("This a locked door. To open or close it, click on the proper key and target it."));
-	else if (pi->type == ITYPE_FOOD)
+	else if (type == ITYPE_FOOD)
 		sprintf(str, TRANSLATE("This food you can eat when you're hungry. To eat, double click the food, but beware poisoned food!"));
-	else if (pi->type == ITYPE_RUNE)
+	else if (type == ITYPE_RUNE)
 		sprintf(str, TRANSLATE("This is a rune for use with recall, mark and gate travel spells"));
-	else if (pi->type == ITYPE_RESURRECT)
+	else if (type == ITYPE_RESURRECT)
 		sprintf(str, TRANSLATE("If you dye (or are dead) you can double click this item to resurrect!"));
-	else if (pi->type == ITYPE_KEY)
+	else if (type == ITYPE_KEY)
 		sprintf(str, TRANSLATE("This is a key you can use (double click) to open doors"));
-	else if (pi->type == ITYPE_SPELLBOOK)
+	else if (type == ITYPE_SPELLBOOK)
 		sprintf(str, TRANSLATE("This is the spellbook, where you can write down your own spells for later use"));
-	else if (pi->type == ITYPE_POTION)
+	else if (type == ITYPE_POTION)
 		sprintf(str, TRANSLATE("This is a potion! You can drink that when you need its effects... but beware of poison potions!"));
 }
 
@@ -485,4 +495,3 @@ void charGetPopUpHelp(char *str, P_CHAR pc)
 			sprintf(str, TRANSLATE("Run AWAY!!! It will kill you!!"));
 	}
 }
-

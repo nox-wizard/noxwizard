@@ -66,7 +66,7 @@ void buildhouse(int s, int i)
 	char itemsdecay = 0;            // set to 1 to make stuff decay in houses
 	static int looptimes=0;         //for targeting
 	int cx=0,cy=0,cz=8;             //where the char is moved to when they place the house (Inside, on the steps.. etc...)(Offset)
-	int boat=0;
+	int boat=0;//Boats
 	int hdeed=0;//deed id #
 	int norealmulti=0,nokey=0,othername=0;
 	char name[512];
@@ -131,7 +131,7 @@ void buildhouse(int s, int i)
 				{
 					hdeed=str2num(script2);
 				}
-				else if (!(strcmp(script1, "BOAT"))) boat=1;
+				else if (!(strcmp(script1, "BOAT"))) boat=1;//Boats
 
 				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
 				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
@@ -240,6 +240,7 @@ void buildhouse(int s, int i)
 			}
 		}
 
+		//Boats ->
 		if((id % 256)>=18)
 			sprintf(temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
 		else
@@ -270,7 +271,7 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-			regions::add(pHouse);
+			mapRegions->add(pHouse);
 			pointers::addItemToLocationMap(pHouse);
 		}
 		if (!hitem[0] && !boat)
@@ -281,14 +282,14 @@ void buildhouse(int s, int i)
 
 		if(boat) //Boats
 		{
-			if(!boats::Build(s,pHouse, id%256/*id2*/))
+			if(!Boats->Build(s,pHouse, id%256/*id2*/))
 			{
 				pHouse->Delete();
 				return;
 			}
 		}
 
-		if (i)
+		if (i)//Boats->.. Moved from up there ^
 		{
 			P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
 			if ( pFx1 != 0 )
@@ -423,9 +424,9 @@ void buildhouse(int s, int i)
 						if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(X, rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(Y, rand()%90+31);
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(Z, 9);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
 						}
 						if (!(strcmp(script1,"MOVEABLE")))
 						{
@@ -442,15 +443,15 @@ void buildhouse(int s, int i)
 						}
 						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(X, x+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
 						}
 						if (!(strcmp(script1,"Y")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(Y, y+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
 						}
 						if (!(strcmp(script1,"Z")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition(Z, z+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
 						}
 					}
 				}
@@ -459,7 +460,7 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-						regions::add(pi_l);
+						mapRegions->add(pi_l);
 						pointers::addItemToLocationMap(pi_l);
 					}
 				safedelete(iter);
@@ -567,8 +568,8 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
 		pc->setPosition( charpos );
 		*/
-		pc->setPosition(Z, Map->MapElevation(charpos.x, charpos.y));
-		pc->setPosition(DISPZ, Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition("z", Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition("dz", Map->MapElevation(charpos.x, charpos.y));
 		pc->teleport();
 		return;
 	}
@@ -610,10 +611,10 @@ void killhouse(ITEM i)
 	for (a = 0; a < itemcount; a++) // deleting itmes inside house
 	{
 		pi = MAKE_ITEM_REF(a);
-		if ((pi->getPosition().x >= x1) && 
-			(pi->getPosition().y >= y1) && 
-			(pi->getPosition().x <= x2) && 
-			(pi->getPosition().y <= y2) && 
+		if ((pi->getPosition("x") >= x1) && 
+			(pi->getPosition("y") >= y1) && 
+			(pi->getPosition("x") <= x2) && 
+			(pi->getPosition("y") <= y2) && 
 			(!pi->free))
 		{
 			if (pi->type != ITYPE_GUILDSTONE) // dont delete guild stones !
@@ -702,7 +703,7 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-		regions::add(pi);
+		mapRegions->add(pi);
 		pointers::addItemToLocationMap(pi);
 	}
 
@@ -786,11 +787,11 @@ int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsign
 	int cl=-1;
 	int ci=-1;
 
-	cc=regions::GetCell(items[h].x,items[h].y);
+	cc=mapRegions->GetCell(items[h].x,items[h].y);
 	do {
-		cl=regions::GetNextItem(cc, cl);
+		cl=mapRegions->GetNextItem(cc, cl);
 		if(cl==-1) break;
-		ci=regions::GetItem(cc, cl);
+		ci=mapRegions->GetItem(cc, cl);
 		if(ci<1000000) {
 			if((items[ci].contserial==items[h].serial)&&
 				(items[ci].more1==s1)&&(items[ci].more2==s2)&&
@@ -852,7 +853,7 @@ int add_hlist(int c, int h, int t)
 
 		pi->setPosition( pi_h->getPosition() );
 
-		regions::add(pi);
+		mapRegions->add(pi);
 		pointers::addItemToLocationMap(pi);
 		return 1;
 	}
@@ -880,7 +881,7 @@ int del_hlist(int c, int h)
 	if(hl) {
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
-			regions::remove(pli);
+			mapRegions->remove(pli);
 			pointers::delItemFromLocationMap(pli);
 			pli->Delete();
 		}

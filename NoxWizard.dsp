@@ -566,10 +566,6 @@ SOURCE=.\weight.cpp
 
 SOURCE=.\worldmain.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\ai.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -1049,10 +1045,6 @@ SOURCE=.\version.h
 # Begin Source File
 
 SOURCE=.\walking.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ai.h
 # End Source File
 # Begin Source File
 

@@ -241,7 +241,9 @@ void Skills::Carpentry(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
 }
 
-#if 0
+/*!
+\todo use or remove it!
+*/
 static bool ForgeInRange(NXWSOCKET s)
 {
     P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], false);
@@ -255,7 +257,6 @@ static bool ForgeInRange(NXWSOCKET s)
     }
     return false;
 }
-#endif
 
 static bool AnvilInRange(NXWSOCKET s)
 {
@@ -571,7 +572,7 @@ void Skills::TreeTarget(NXWSOCKET s)
             for(b=1;b<max_res_y;b++)
             {
                 logamount[a][b]=resource.logs;
-                SetTimerSec(logtime[a][b],static_cast<short>(resource.logtime));
+                SetTimerSec(&logtime[a][b],static_cast<short>(resource.logtime));
             }
         }
         LogMessage("[DONE]");
@@ -607,7 +608,7 @@ void Skills::TreeTarget(NXWSOCKET s)
                 logamount[a][b]+=resource.lograte;//AntiChrist
             else break;
         }
-        SetTimerSec(logtime[a][b],static_cast<short>(resource.logtime));
+        SetTimerSec(&logtime[a][b],static_cast<short>(resource.logtime));
     }
 
     if(logamount[a][b]>resource.logs) logamount[a][b]=resource.logs;
@@ -1472,7 +1473,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
             else
 				ph->sysmsg(TRANSLATE("You failed to resurrect the ghost"));
 
-			SetTimerSec(ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
+			SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
 			pib->ReduceAmount(1);
             return;
         }
@@ -1499,7 +1500,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 		}
 
 		pib->ReduceAmount(1);
-		SetTimerSec(ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
+		SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
 		return;
 	}
 
@@ -1546,7 +1547,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 		}
 	}
 
-	SetTimerSec(ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
+	SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
     pib->ReduceAmount(1);
 
 
@@ -1996,7 +1997,7 @@ void Skills::BeggingTarget(NXWSOCKET s)
                 sysmessage(s,TRANSLATE("They seem to ignore your begging plees."));
             else
             {
-                SetTimerSec(pc->begging_timer,begging_data.timer);
+                SetTimerSec(&pc->begging_timer,begging_data.timer);
                 x=pc->skill[BEGGING]/50;
 
                 if (x<1) x=1;
@@ -2355,9 +2356,9 @@ protected:
     short minskill;
     short id2;
 public:
-    cTinkerCombine(short newBadsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
+    cTinkerCombine(short badsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
     {
-        badsnd=newBadsnd;
+        this->badsnd=badsnd;
         failtext=failmsg;
         itembits=0;
         minskill=100;
@@ -2368,20 +2369,8 @@ public:
     virtual void failure(SOCK s)        {delonfail(s);playbad(s);failmsg(s);}
     */
     virtual void failmsg(NXWSOCKET s)         {sysmessage(s,failtext);}
-    virtual void playbad(NXWSOCKET s)
-    {
-	    P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	    VALIDATEPC(pc);
-	    pc->playSFX(badsnd);
-    }
-
-    virtual void playgood(NXWSOCKET s)
-    {
-	    P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	    VALIDATEPC(pc);
-	    pc->playSFX(0x002A);
-    }
-
+    virtual void playbad(NXWSOCKET s)         {soundeffect(s, badsnd);}
+    virtual void playgood(NXWSOCKET s)        {soundeffect(s, 0x002A);}
     virtual void checkPartID(short id)  {;}
     virtual bool decide()               {return (itembits == 3) ? true : false;}
     virtual void createIt(NXWSOCKET s)        {;}
@@ -2603,7 +2592,7 @@ void Skills::RepairTarget(NXWSOCKET  s)
     }
 }
 
-#if 0
+/*
 void Skills::SmeltItemTarget(NXWSOCKET  s)
 { // Ripper..Smelting items.
 
@@ -2713,4 +2702,4 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 		}
 	}
 }
-#endif
+*/

@@ -53,7 +53,8 @@ void gmyell(char *txt)
 }
 
 
-//! keep the target highlighted so that we know who we're attacking =)
+//keep the target highlighted so that we know who we're attacking =)
+//26/10/99//new packet
 void SndAttackOK(NXWSOCKET  s, int serial)
 {
 	UI08 attackok[5]={ 0xAA, 0x00, };
@@ -102,6 +103,63 @@ void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It i
 	ShortToCharPtr(0x0030, shopgumpopen +5);	// GumpID
 	Xsend(s, shopgumpopen, 7);
 //AoS/	Network->FlushBuffer(s);
+}
+
+
+/*!
+\brief play sound
+\param goldtotal ?
+\return soundsfx to play
+*/
+UI16 goldsfx(int goldtotal)
+{
+	UI16 sound;
+
+	if (goldtotal==1) 
+		sound = 0x0035;
+	else if (goldtotal<6)
+		sound = 0x0036;
+	else 
+		sound = 0x0037;
+
+	return sound;
+}
+
+/*!
+\brief play a sound based on item id
+
+added to do easy item sound effects based on an
+items id1 and id2 fields in struct items. Then just define the CASE statement
+with the proper sound function to play for a certain item as shown.
+
+\author Dupois Duke
+\date 09/10/1998 creation
+	  25/03/2001 new interface by duke
+\param item the item
+\return soundfx for the item
+\remarks \remark Use the DEFAULT case for ranges of items (like all ingots make the same thump).
+		 \remark Sounds: 
+			\li coins dropping (all the same no matter what amount because all id's equal 0x0EED
+			\li ingot dropping (makes a big thump - used the heavy gem sound)
+			\li gems dropping (two type broke them in half to make some sound different then others)
+*/
+UI16 itemsfx(UI16 item)
+{
+	UI16 sound = 0x0042;				// play default item move sfx // 00 48
+
+	if( item == ITEMID_GOLD )
+		sound = goldsfx(2);
+
+	else if( (item>=0x0F0F) && (item<=0x0F20) )	// Any gem stone (typically smaller)
+		sound = 0x0032;
+
+	else if( (item>=0x0F21) && (item<=0x0F30) )	// Any gem stone (typically larger)
+		sound = 0x0034;
+
+	else if( (item>=0x1BE3) && (item<=0x1BFA) )	// Any Ingot
+		sound = 0x0033;
+
+	return sound;
 }
 
 /*!
@@ -260,17 +318,68 @@ void dosocketmidi(NXWSOCKET s)
 	}
 }
 
+void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
+{
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
+	pc->playSFX(sound);
+}
+
+void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only to me
+{
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
+	pc->playSFX(sound, true);
+}
+
+
+void soundeffect3(P_ITEM pi, UI16 sound)
+{
+	VALIDATEPI(pi);
+	
+	Location pos = pi->getPosition();
+
+	pos.z = 0;
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pi );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWCLIENT ps_i=sw.getClient();
+		if(ps_i==NULL) continue;
+		P_CHAR pc_j=ps_i->currChar();
+		if( ISVALIDPC(pc_j))
+		{
+			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, pos);
+		}
+	}
+}
+
+void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound)
+{
+	VALIDATEPI(pi);
+
+	Location pos = pi->getPosition();
+
+	pos.z = 0;
+
+	SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
+}
+
 //xan : fast weather function.. maybe we should find a more complete system like the
 //old one below!
-void weather(NXWSOCKET  s)
+void weather(NXWSOCKET  s, unsigned char bolt)
 {
-	UI08 type = 0xFF, num = 0x40, temperature = 0x20;
+	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
 
-	if (wtype==0) num = 0x00;
-	if (wtype==1) type = 0x00;
-	if (wtype==2) { type = 0x02; temperature = 0xEC; }
+	if (wtype==0) packet[2] = 0x00;
+	if (wtype==1) packet[1] = 0x00;
+	if (wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
 
-	SendSetWeatherPkt(s, type, num, temperature);
+	Xsend(s, packet, 4);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void pweather(NXWSOCKET  s)
@@ -278,13 +387,14 @@ void pweather(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	UI08 type = 0xFF, num = 0x40, temperature = 0x20;
+	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
 
-	if (region[pc->region].wtype==0) num = 0x00;
-	if (region[pc->region].wtype==1) type = 0x00;
-	if (region[pc->region].wtype==2) { type = 0x02; temperature = 0xEC; }
+	if (region[pc->region].wtype==0) packet[2] = 0x00;
+	if (region[pc->region].wtype==1) packet[1] = 0x00;
+	if (region[pc->region].wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
 
-	SendSetWeatherPkt(s, type, num, temperature);
+	Xsend(s, packet, 4);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void sysbroadcast(char *txt, ...) // System broadcast in bold text
@@ -304,8 +414,7 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -339,8 +448,7 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, 0x0387 /* Color - Previous default was 0x0040 - 0x03E9*/, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -366,8 +474,7 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -395,8 +502,7 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 	color = 0x0481; // UOLBR patch to prevent client crash by Juliunus
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	SendUnicodeSpeechMessagePkt(s, serial, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -533,10 +639,7 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	weights::NewCalc(pc);	// Ison 2-20-99
 }
 
-/*!
- \author GHisha
- */
-void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
+void MakeGraphicalEffectPkt_PDPDPD(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
 {
 	pkt[1]=type;
 	LongToCharPtr(src_serial, pkt +2);
@@ -563,7 +666,7 @@ void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop
 
 Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
 
-MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
 
 pos1.z=0;
 	
@@ -717,7 +820,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 // used for LSd potions now, LB 5'th nov 1999
 void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, signed char z)
 {
-	PC_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
+	const P_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
@@ -820,7 +923,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 	P_CHAR TrashMeUp = NULL;
 	NxwCharWrapper sc;
 
-	accounts::GetAllChars( acctno[s], sc );
+	Accounts->GetAllChars( acctno[s], sc );
 
 	for ( i=0, sc.rewind(); !sc.isEmpty(); sc++)
 	{
@@ -862,7 +965,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 			
 			TrashMeUp->Delete();
 
-			accounts::GetAllChars( acctno[s], sc );
+			Accounts->GetAllChars( acctno[s], sc );
 			
 			delete_resend_char_1[3] = sc.size();
 
@@ -894,7 +997,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 //AoS/	Network->FlushBuffer(s);
 }
 
-//! Send targetting cursor to client
+// Send targetting cursor to client
 void sendTargetCursor(NXWSOCKET s, int a1, int a2, int a3, int a4) {
 	UI08 tarcrs[19]={ 0x6C, 0x00, };
 	SERIAL a = calcserial(a1, a2, a3, a4);
@@ -1295,7 +1398,353 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 		}
 }
 
-#if 0
+void itemtalk(P_ITEM pi, char *txt)
+// Item "speech"
+//Modified by N6 to use UNICODE packets
+{
+
+	VALIDATEPI(pi);
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pi );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWSOCKET s=sw.getSocket();
+		if(s==INVALID) continue;
+
+		UI08 unicodetext[512];
+		UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
+
+		char2wchar(txt);
+		memcpy(unicodetext, Unicode::temp, ucl);
+
+		UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, pi->getCurrentNameC());
+
+		SendUnicodeSpeechMessagePkt(s, pi->getSerial32(), pi->id(), 0, 0x0481, 0x0003, lang, name, unicodetext,  ucl);
+
+	}
+}
+
+// Last touch: LB 8'th April 2001 for particleSystem
+
+// if UO_3DonlyEffect is true, sta has to be valid and contain particleSystem data (if not, crash)
+// for particleSystem data layout see staticeffectUO3d and updated packetDoku
+// for old 2d staticeffect stuff , the new (3d client) pararamters UO_3Donlyeffect, sta and skip_old are defaulted in such a way that they behave like they did before
+// simply dont set them in that case
+// the last parameter is for particlesystem optimization only (dangerous). don't use unless you know 101% what you are doing.
+
+void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop,  bool UO3DonlyEffekt, ParticleFx *sta, bool skip_old)
+{
+	P_CHAR pc=MAKE_CHAR_REF(player);
+	VALIDATEPC(pc);
+
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+    	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	 int a0,a1,a2,a3,a4;
+	 Location charpos= pc->getPosition();
+
+	 if (!skip_old)
+	 {
+Location pos2;
+pos2.x = 0; pos2.y = 0; pos2.z = 0;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
+	 }
+
+	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
+	 {
+
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( pc, false );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			NXWSOCKET s = sw.getSocket();
+			Xsend(s, effect, 28);
+//AoS/			Network->FlushBuffer(s);
+		 }
+	   
+	   return;
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+	   unsigned char particleSystem[49];
+
+
+		NxwSocketWrapper sw;
+	    sw.fillOnline( pc, false );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			 NXWSOCKET j=sw.getSocket();
+			 if(j==INVALID) continue;
+			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
+			 {
+				 Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+			 {
+				staticeffectUO3D(player, sta);
+
+				// allow to fire up to 4 layers at same time (like on OSI servers)
+				a0 = sta->effect[10];
+
+				a1 = ( ( a0 & 0x000000ff )       );
+				a2 = ( ( a0 & 0x0000ff00 ) >> 8  );
+				a3 = ( ( a0 & 0x00ff0000 ) >> 16 );
+				a4 = ( ( a0 & 0xff000000 ) >> 24 );
+
+				if (a1!=0xff) { particleSystem[46] = a1; Xsend(j, particleSystem, 49); }
+				if (a2!=0xff) { particleSystem[46] = a2; Xsend(j, particleSystem, 49); }
+				if (a3!=0xff) { particleSystem[46] = a3; Xsend(j, particleSystem, 49); }
+				if (a4!=0xff) { particleSystem[46] = a4; Xsend(j, particleSystem, 49); }
+
+//AoS/				Network->FlushBuffer(j);
+				//sprintf(temp, "a0: %x a1: %x a2: %x a3: %x a4: %x \n",a0,a1,a2,a3,a4);
+				//ConOut(temp);
+			 }
+			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); } // attention: a simple else is wrong !
+		 
+	   } // end for
+	} // end UO:3D effect
+
+	// remark: if a UO:3D effect is send and ALL clients are UO:3D ones, the pre-calculation of the 2-d packet
+	// is redundant. but we can never know, and probably it will take years till the 2d cliet dies.
+	// I think it's too infrequnet to consider this as optimization.
+}
+
+
+void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt, ParticleFx *str, bool skip_old )
+{
+
+	P_CHAR src=MAKE_CHAR_REF(source);
+	VALIDATEPC(src);
+	P_CHAR dst=MAKE_CHAR_REF(dest);
+	VALIDATEPC(dst);
+
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+ 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	Location srcpos= src->getPosition();
+	Location destpos= dst->getPosition();
+
+	if (!skip_old)
+	{
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
+	}
+
+	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
+	 {
+	   
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			 {
+				Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 } 
+		 }
+	   return;
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+	   
+		NxwSocketWrapper sw;
+		sw.fillOnline();
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			 {
+				 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
+				 {
+					 Xsend(j, effect, 28);
+//AoS/					Network->FlushBuffer(j);
+				 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+				 {
+
+					movingeffectUO3D(source, dest, str);
+					unsigned char particleSystem[49];
+					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
+				}
+				else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
+			}
+		}
+	}
+}
+
+void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
+{
+
+	P_CHAR pc=MAKE_CHAR_REF(player);
+	VALIDATEPC(pc);
+
+	UI08 effect[28]={ 0x70, 0x00, };
+
+ 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	Location charpos= pc->getPosition();
+
+	if (!skip_old)
+	{
+Location pos2;
+pos2.x = 0; pos2.y = 0; pos2.z = 0;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0); 
+	}
+
+	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
+	 {
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( pc );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 }
+		 }
+	   return;
+	}
+	else
+	{
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( pc );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
+			 {
+				 Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+			 {
+
+				bolteffectUO3D(player);
+				unsigned char particleSystem[49];
+				Xsend(j, particleSystem, 49);
+//AoS/				Network->FlushBuffer(j);
+			 }
+			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
+		 }
+	   }
+	}
+}
+
+
+// staticeffect2 is for effects on items
+void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt,  ParticleFx *str, bool skip_old )
+{
+	VALIDATEPI(pi);
+
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+ 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+
+	Location pos = pi->getPosition();
+
+	if (!skip_old)
+	{
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
+	}
+
+	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
+	{
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( pi );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				Xsend(j, effect, 28);
+//AoS				Network->FlushBuffer(j);
+			 }
+		}
+		return;
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( pi );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
+				{
+					Xsend(j, effect, 28);
+//AoS/					Network->FlushBuffer(j);
+				}
+				else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+				{
+					itemeffectUO3D(pi, str);
+					unsigned char particleSystem[49];
+					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
+				}
+				else if (clientDimension[j] != 2 && clientDimension[j] !=3 )
+				{ sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
+			}
+		}
+	}
+}
+
+
+void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
+{
+	P_CHAR pc=MAKE_CHAR_REF(player);
+	VALIDATEPC(pc);
+
+	UI16 eff = (a1<<8)|(a2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	int x,y;
+	Location charpos = pc->getPosition(), pos2;
+
+	y=rand()%36;
+	x=rand()%36;
+
+	if (rand()%2==0) x=x*-1;
+	if (rand()%2==0) y=y*-1;
+	pos2.x = charpos.x + x;
+	pos2.y = charpos.y + y;
+	if (pos2.x<0) pos2.x=0;
+	if (pos2.y<0) pos2.y=0;
+	if (pos2.x>6144) pos2.x=6144;
+	if (pos2.y>4096) pos2.y=4096;
+
+charpos.z = 0; pos2.z = 127;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+
+	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
+
+	 NxwSocketWrapper sw;
+	 sw.fillOnline( pc );
+	 for( sw.rewind(); !sw.isEmpty(); sw++ )
+	 {
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
+}
+
 //	- Movingeffect3 is used to send an object from a char
 //    to another object (like purple potions)
 void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed char z, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode)
@@ -1309,7 +1758,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 
 	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
 
-	MakeGraphicalEffectPkt(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -1324,7 +1773,6 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 	 }
 
 }
-#endif
 
 // staticeffect3 is for effects on items
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode)
@@ -1332,12 +1780,76 @@ void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff
 	UI16 eff = (eff1<<8)|(eff2%256);
 	UI08 effect[28]={ 0x70, 0x00, };
 
-	Location pos = { x, y, z, 0};
-	MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
-	pos.z = 0;
+Location pos = { x, y, z, 0};
+
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
+
+pos.z = 0;
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( pos );
+	 for( sw.rewind(); !sw.isEmpty(); sw++ )
+	 {
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
+}
+
+void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode,unsigned char unk1,unsigned char unk2,unsigned char ajust,unsigned char type)
+{
+	P_CHAR src=MAKE_CHAR_REF(source);
+	VALIDATEPC(src);
+	P_CHAR dst=MAKE_CHAR_REF(dest);
+	VALIDATEPC(dst);
+
+
+	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	Location srcpos= src->getPosition();
+	Location destpos= dst->getPosition();
+
+MakeGraphicalEffectPkt_PDPDPD(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
+
+	 NxwSocketWrapper sw;
+	 sw.fillOnline( );
+	 for( sw.rewind(); !sw.isEmpty(); sw++ )
+	 {
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
+}
+
+
+
+//	- Movingeffect2 is used to send an object from a char
+//	to another object (like purple potions)
+void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode)
+{
+	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
+
+	const P_ITEM pi=MAKE_ITEMREF_LR(dest);	// on error return
+	P_CHAR pc_source = MAKE_CHAR_REF(source);
+	VALIDATEPC(pc_source);
+
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
+
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
+
+	 NxwSocketWrapper sw;
+	 sw.fillOnline( );
 	 for( sw.rewind(); !sw.isEmpty(); sw++ )
 	 {
 		NXWSOCKET j=sw.getSocket();
@@ -1420,10 +1932,10 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 	LongToCharPtr(pc->getSerial32(), deathact +1);
 	LongToCharPtr(pi->getSerial32(), deathact +5);
 
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc, true );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
+	 NxwSocketWrapper sw;
+	 sw.fillOnline( pc, true );
+	 for( sw.rewind(); !sw.isEmpty(); sw++ )
+	 {
 		NXWSOCKET i=sw.getSocket();
 		if( i!=INVALID )
 		{
@@ -1433,20 +1945,16 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 	}
 }
 
-//! Character sees death menu
-void deathmenu(NXWSOCKET s)
+void deathmenu(NXWSOCKET s) // Character sees death menu
 {
-	static const UI08 testact[2]={ 0x2C, 0x00 };
+	UI08 testact[2]={ 0x2C, 0x00 };
 	Xsend(s, testact, 2);
 //AoS/	Network->FlushBuffer(s);
 }
 
-/*!
- \param s socket to send the packet to
- \param flag 0=pause, 1=resume [uhm.... O_o ... or viceversa ? -_-;]
- */
 void SendPauseResumePkt(NXWSOCKET s, UI08 flag)
 {
+/* Flag: 0=pause, 1=resume */ // uhm.... O_o ... or viceversa ? -_-;
 	UI08 m2[2]={ 0x33, 0x00 };
 
 	m2[1]=flag;
@@ -1615,6 +2123,7 @@ void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 colo
 //AoS/	Network->FlushBuffer(s);
 }
 
+
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen)
 {
 	UI16 tl;
@@ -1650,18 +2159,6 @@ void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn,
 	ShortToCharPtr(pos.y, sfx +8);			//       Y
 	ShortToCharPtr(Z , sfx +10);			//       Z
 	Xsend(s, sfx, 12);
-//AoS/	Network->FlushBuffer(s);
-}
-
-void SendSetWeatherPkt(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature)
-{
-	UI08 packet[4] = { 0x65, 0x00, };
-
-	packet[1] = type;
-	packet[2] = num;
-	packet[3] = temperature;
-
-	Xsend(s, packet, 4);
 //AoS/	Network->FlushBuffer(s);
 }
 
@@ -1990,12 +2487,295 @@ void tellmessage(int i, int s, char *txt)
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl);
 	SendUnicodeSpeechMessagePkt(i, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl); //So Person who said it can see too
 
+}
+
+
+
+// particleSystem core functions, LB 2-April 2001
+
+// sta_str layout:
+
+// 0..3 already used in 2d-staticeffect
+// effect 4  -> tile1
+// effect 5  -> tile2
+// effect 6  -> speed1
+// effect 7  -> speed1
+// effect 8  -> effect1
+// effect 9  -> effect2
+// effect 10 -> reserved, dont use
+// effect 11 ->
+// effect 12 ->
+
+
+void staticeffectUO3D(CHARACTER player, ParticleFx *sta)
+{
+
+   PC_CHAR pc_cs=MAKE_CHAR_REF(player);
+   VALIDATEPC(pc_cs);
+   Location charpos= pc_cs->getPosition();
+
+   // please no optimization of p[...]=0's yet :)
+
+   unsigned char particleSystem[49];
+   particleSystem[0]= 0xc7;
+   particleSystem[1]= 0x3;
+
+   particleSystem[2]= pc_cs->getSerial().ser1;
+   particleSystem[3]= pc_cs->getSerial().ser2;
+   particleSystem[4]= pc_cs->getSerial().ser3;
+   particleSystem[5]= pc_cs->getSerial().ser4;
+
+   particleSystem[6]= 0x0; // always 0 for this type
+   particleSystem[7]= 0x0;
+   particleSystem[8]= 0x0;
+   particleSystem[9]= 0x0;
+
+   particleSystem[10]= sta->effect[4]; // tileid1
+   particleSystem[11]= sta->effect[5]; // tileid2
+
+   particleSystem[12]= (charpos.x)>>8;
+   particleSystem[13]= (charpos.x)%256;
+   particleSystem[14]= (charpos.y)>>8;
+   particleSystem[15]= (charpos.y)%256;
+   particleSystem[16]= (charpos.z);
+
+   particleSystem[17]= (charpos.x)>>8;
+   particleSystem[18]= (charpos.x)%256;
+   particleSystem[19]= (charpos.y)>>8;
+   particleSystem[20]= (charpos.y)%256;
+   particleSystem[21]= (charpos.z);
+
+   particleSystem[22]= sta->effect[6]; // unkown1
+   particleSystem[23]= sta->effect[7]; // unkown2
+
+   particleSystem[24]=0x0; // only non zero for type 0
+   particleSystem[25]=0x0;
+
+   particleSystem[26]=0x1;
+   particleSystem[27]=0x0;
+
+   particleSystem[28]=0x0;
+   particleSystem[29]=0x0;
+   particleSystem[30]=0x0;
+   particleSystem[31]=0x0;
+   particleSystem[32]=0x0;
+   particleSystem[33]=0x0;
+   particleSystem[34]=0x0;
+   particleSystem[35]=0x0;
+
+   particleSystem[36]=sta->effect[8]; // effekt #
+   particleSystem[37]=sta->effect[9];
+
+   particleSystem[38]=sta->effect[11];
+   particleSystem[39]=sta->effect[12];
+
+   particleSystem[40]=0x00;
+   particleSystem[41]=0x00;
+
+   particleSystem[42]=pc_cs->getSerial().ser1;
+   particleSystem[43]=pc_cs->getSerial().ser2;
+   particleSystem[44]=pc_cs->getSerial().ser3;
+   particleSystem[45]=pc_cs->getSerial().ser4;
+
+   particleSystem[46]=0; // layer, gets set afterwards for multi layering
+
+   particleSystem[47]=0x0; // has to be always 0 for all types
+   particleSystem[48]=0x0;
+
+
+}
+
+// ParticleFx layout:
+// 0..4 already used in 2d-move_effect
+
+// effect 5  -> tile1
+// effect 6  -> tile2
+// effect 7  -> speed1
+// effect 8  -> speed2
+// effect 9  -> effect1
+// effect 10 -> effect2
+// effect 11 -> impact effect1
+// effect 12 -> impact effect2
+// effect 13 -> unkown1, does nothing, but gets set on OSI shards
+// effect 14 -> unkown2
+// effect 15 -> adjust
+// effect 16 -> explode on impact
+
+void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta)
+{
+
+
+   PC_CHAR pc_cs=MAKE_CHARREF_LOGGED(source,err);
+   if (err) return;
+   PC_CHAR pc_cd=MAKE_CHARREF_LOGGED(dest, err);
+   if (err) return;
+
+   Location srcpos= pc_cs->getPosition();
+   Location destpos= pc_cd->getPosition();
+
+   unsigned char particleSystem[49];
+   particleSystem[0]=0xc7;
+   particleSystem[1]=0x0;
+
+   particleSystem[2]=pc_cs->getSerial().ser1;
+   particleSystem[3]=pc_cs->getSerial().ser2;
+   particleSystem[4]=pc_cs->getSerial().ser3;
+   particleSystem[5]=pc_cs->getSerial().ser4;
+
+   particleSystem[6]=pc_cd->getSerial().ser1;
+   particleSystem[7]=pc_cd->getSerial().ser2;
+   particleSystem[8]=pc_cd->getSerial().ser3;
+   particleSystem[9]=pc_cd->getSerial().ser4;
+
+   particleSystem[10]=sta->effect[5]; // tileid1
+   particleSystem[11]=sta->effect[6]; // tileid2
+
+   particleSystem[12]= (srcpos.x)>>8;
+   particleSystem[13]= (srcpos.x)%256;
+   particleSystem[14]= (srcpos.y)>>8;
+   particleSystem[15]= (srcpos.y)%256;
+   particleSystem[16]= (srcpos.z);
+
+   particleSystem[17]= (destpos.x)>>8;
+   particleSystem[18]= (destpos.x)%256;
+   particleSystem[19]= (destpos.y)>>8;
+   particleSystem[20]= (destpos.y)%256;
+   particleSystem[21]= (destpos.z);
+
+   particleSystem[22]= sta->effect[7]; // speed1
+   particleSystem[23]= sta->effect[8]; // speed2
+
+   particleSystem[24]=0x0;
+   particleSystem[25]=0x0;
+
+   particleSystem[26]=sta->effect[15]; // adjust
+   particleSystem[27]=sta->effect[16]; // explode
+
+   particleSystem[28]=0x0;
+   particleSystem[29]=0x0;
+   particleSystem[30]=0x0;
+   particleSystem[31]=0x0;
+   particleSystem[32]=0x0;
+   particleSystem[33]=0x0;
+   particleSystem[34]=0x0;
+   particleSystem[35]=0x0;
+
+   particleSystem[36]=sta->effect[9]; //  moving effekt
+   particleSystem[37]=sta->effect[10];
+   particleSystem[38]=sta->effect[11]; // effect on explode
+   particleSystem[39]=sta->effect[12];
+
+   particleSystem[40]=sta->effect[13]; // ??
+   particleSystem[41]=sta->effect[14];
+
+   particleSystem[42]=0x00;
+   particleSystem[43]=0x00;
+   particleSystem[44]=0x00;
+   particleSystem[45]=0x00;
+
+   particleSystem[46]=0xff; // layer, has to be 0xff in that modus
+
+   particleSystem[47]=sta->effect[17];
+   particleSystem[48]=0x0;
+
+
+}
+
+// same sta-layout as staticeffectuo3d
+void itemeffectUO3D(P_ITEM pi, ParticleFx *sta)
+{
+	// please no optimization of p[...]=0's yet :)
+
+	VALIDATEPI(pi);
+
+	unsigned char particleSystem[49];
+	particleSystem[0]=0xc7;
+	particleSystem[1]=0x2;
+
+	if ( !sta->effect[11] )
+	{
+		particleSystem[2]= pi->getSerial().ser1;
+		particleSystem[3]= pi->getSerial().ser2;
+		particleSystem[4]= pi->getSerial().ser3;
+		particleSystem[5]= pi->getSerial().ser4;
+	}
+	else
+	{
+		particleSystem[2]=0x00;
+		particleSystem[3]=0x00;
+		particleSystem[4]=0x00;
+		particleSystem[5]=0x00;
+	}
+
+	particleSystem[6]=0x0; // always 0 for this type
+	particleSystem[7]=0x0;
+	particleSystem[8]=0x0;
+	particleSystem[9]=0x0;
+
+	particleSystem[10]=sta->effect[4]; // tileid1
+	particleSystem[11]=sta->effect[5]; // tileid2
+
+	particleSystem[12]= pi->getPosition("x") >> 8;
+	particleSystem[13]= pi->getPosition("x") % 256;
+	particleSystem[14]= pi->getPosition("y") >> 8;
+	particleSystem[15]= pi->getPosition("y") % 256;
+	particleSystem[16]= pi->getPosition("z");
+
+	particleSystem[17]= pi->getPosition("x") >> 8;
+	particleSystem[18]= pi->getPosition("x") % 256;
+	particleSystem[19]= pi->getPosition("y") >> 8;
+	particleSystem[20]= pi->getPosition("y") % 256;
+	particleSystem[21]= pi->getPosition("z") ;
+
+	particleSystem[22]= sta->effect[6]; // unkown1
+	particleSystem[23]= sta->effect[7]; // unkown2
+
+	particleSystem[24]=0x0; // only non zero for type 0
+	particleSystem[25]=0x0;
+
+	particleSystem[26]=0x1;
+	particleSystem[27]=0x0;
+
+	particleSystem[28]=0x0;
+	particleSystem[29]=0x0;
+	particleSystem[30]=0x0;
+	particleSystem[31]=0x0;
+	particleSystem[32]=0x0;
+	particleSystem[33]=0x0;
+	particleSystem[34]=0x0;
+	particleSystem[35]=0x0;
+
+	particleSystem[36]=sta->effect[8]; // effekt #
+	particleSystem[37]=sta->effect[9];
+
+	particleSystem[38]=0; // unknown
+	particleSystem[39]=1;
+
+	particleSystem[40]=0x00;
+	particleSystem[41]=0x00;
+
+	particleSystem[42]= pi->getSerial().ser1;
+	particleSystem[43]= pi->getSerial().ser2;
+	particleSystem[44]= pi->getSerial().ser3;
+	particleSystem[45]= pi->getSerial().ser4;
+
+	particleSystem[46]=0xff;
+
+	particleSystem[47]=0x0;
+	particleSystem[48]=0x0;
+
+}
+
+void bolteffectUO3D(CHARACTER player)
+{
+
+/*	Magic->doStaticEffect(player, 30);
+*/
 }
 
 void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
@@ -2009,10 +2789,23 @@ void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[30]={ 0x00, };
-	strcpy((char *)sysname, "System");
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
+}
+
+void wornitems(NXWSOCKET  s, P_CHAR pc) // Send worn items of player
+{
+	VALIDATEPC(pc);
+
+	NxwItemWrapper si;
+	si.fillItemWeared( pc, true, true, false );
+	for( si.rewind(); !si.isEmpty(); si++ )
+	{
+		P_ITEM pi=si.getItem();
+		if(ISVALIDPI(pi))
+			wearIt(s,pi);
+	}
 }
 

@@ -101,7 +101,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 
 	if ((pc->advobj==0)||(allways==1))
 	{
-		pc->staticFX(0x373A, 0, 15);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
 		pc->playSFX( 0x01E9);
 		pc->advobj=x;
 		sprintf(sect, "SECTION ADVANCEMENT %i", x);
@@ -356,8 +356,8 @@ void objTeleporters(P_CHAR pc)
 		if(!ISVALIDPI(pmi))
 			continue;
 
-		if ((pmi->getPosition().x == charpos.x) && (pmi->getPosition().y == charpos.y) &&
-			((abs(pmi->getPosition().z) + 10) >= abs(charpos.z)) &&((abs(pmi->getPosition().z) - 10) <= abs(charpos.z)))
+		if (((UI32)pmi->getPosition("x") == charpos.x) && ((UI32)pmi->getPosition("y") == charpos.y) &&
+			((abs(pmi->getPosition("z")) + 10) >= abs(charpos.z)) &&((abs(pmi->getPosition("z")) - 10) <= abs(charpos.z)))
 			{
 				if ((pmi->type == 60) && (pmi->morex + pmi->morey + pmi->morez >0))
 				{
@@ -406,7 +406,7 @@ void objTeleporters(P_CHAR pc)
 				if (pmi->type == 86)
 				{
 					if ((UI32)RandomNum(1, 100) <= pmi->morez)
-						pmi->playSFX((pmi->morex << 8) + pmi->morey);
+						soundeffect3(pmi, (pmi->morex << 8) + pmi->morey);
 				}
 			}
 	}

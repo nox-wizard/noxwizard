@@ -14,6 +14,11 @@ nxwStringList::nxwStringList()
 	listItemSerial = INVALID;
 }
 
+nxwStringList::~nxwStringList()
+{
+	list.clear();
+}
+
 UI32 nxwStringList::append( const char* what )
 {
 	return append( nxwString( what ) );

@@ -295,7 +295,7 @@ void SpawnGuard(P_CHAR pc, P_CHAR pc_i, int x, int y, signed char z)
 		  pc_c->summontimer=(getclock()+(MY_CLOCKS_PER_SEC*25));
 
 		  pc_c->playSFX(0x01FE);
-		  pc_c->staticFX(0x372A, 9, 6);
+		  staticeffect(DEREF_P_CHAR(pc_c), 0x37, 0x2A, 0x09, 0x06);
 
 		  pc_c->teleport();
 		  pc_c->talkAll(TRANSLATE("Thou shalt regret thine actions, swine!"),1);
@@ -396,7 +396,7 @@ int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
 		if (spawnpoint==-1)
 		{
 			addmitem[s]=k;
-			return targets::NpcMenuTarget(s);
+			return Targ->NpcMenuTarget(s);
 			//return -1;
 		}
 		else
@@ -1314,7 +1314,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (k>=50) //this CAN be a bit laggy. adjust as nessicary
 									{
-										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition().x, pi_i->getPosition().y, pi_i->getPosition().z);
+										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition("x"), pi_i->getPosition("y"), pi_i->getPosition("z"));
 										xos=0;
 										yos=0;
 										break;
@@ -1324,7 +1324,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									//ConOut("AddNPC Spawning at Offset %i,%i (%i,%i,%i) [-%i,%i <-> -%i,%i]. [Loop #: %i]\n",xos,yos,items[i].x+xos,items[i].y+yos,items[i].z,items[i].more3,items[i].more3,items[i].more4,items[i].more4,k); /** lord binary, changed %s to %i, crash when uncommented ! **/
 									k++;
 
-									if ((pi_i->getPosition().x+xos<1) || (pi_i->getPosition().y+yos<1))
+									if ((pi_i->getPosition("x")+xos<1) || (pi_i->getPosition("y")+yos<1))
 										lb=0; /* lord binary, fixes crash when calling npcvalid with negative coordiantes */
 									else { //<Luxor>
 										Location newpos = Loc( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, pi_i->getPosition().z );
@@ -1332,7 +1332,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									MapStaticIterator msi(pi_i->getPosition().x + xos, pi_i->getPosition().y + yos);
+									MapStaticIterator msi(pi_i->getPosition("x") + xos, pi_i->getPosition("y") + yos);
 									staticrecord *stat;
 									loopexit=0;
 									while ( ((stat = msi.Next())!=NULL) && (++loopexit < MAXLOOPS) )
@@ -1433,8 +1433,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// End - Dupois
 
 					//Char mapRegions
-					regions::add(pc);
-					pointers::delCharFromLocationMap( pc ); // char may already have been added by previous MoveTo()
+					mapRegions->add(pc);
+					//	Sparhawk: The Need For Speed
 					pointers::addCharToLocationMap( pc );
 					//
 					safedelete(iter);

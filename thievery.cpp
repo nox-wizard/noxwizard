@@ -521,7 +521,7 @@ void Skills::LockPick(NXWCLIENT ps)
 					LogError("switch reached default");
 					return;
 			}
-			chest->playSFX(0x0241);
+			soundeffect3(chest, 0x0241);
 			pc->sysmsg(TRANSLATE("You manage to pick the lock."));
 		}
 		else

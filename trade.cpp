@@ -18,10 +18,6 @@
 #include "trade.h"
 #include "commands.h"
 
-TIMERVAL restocks::timer;
-std::queue< SERIAL > restocks::needrestock;
-std::queue< SERIAL > restocks::restocked;
-
 void buyaction(int s)
 {
 	if ( s < 0 || s >= now )
@@ -455,7 +451,7 @@ void clearalltrades()
         for (i = 0; i < itemcount; i++) {
                 pi = MAKE_ITEM_REF(i);
                 if (!ISVALIDPI(pi)) continue;
-                if ((pi->type==1) && (pi->getPosition().x==26) && (pi->getPosition().y==0) && (pi->getPosition().z==0) &&
+                if ((pi->type==1) && (pi->getPosition("x")==26) && (pi->getPosition("y")==0) && (pi->getPosition("z")==0) &&
 			(pi->id()==0x1E5E))
 		{
                         pc = pointers::findCharBySerial(pi->getContSerial());
@@ -646,13 +642,15 @@ void restock(bool total)
 
 
 
-void restocks::initialize()
+cRestockMng::cRestockMng()
 {
 	timer=uiCurrentTime;
 }
 
-void restocks::doRestock()
+void cRestockMng::doRestock()
 {
+
+
 	if( !TIMEOUT( timer ) )
 		return;
 
@@ -665,7 +663,7 @@ void restocks::doRestock()
 	while( ( --count>0 ) && ( !needrestock.empty() ) ) {
 
 		P_ITEM pi= pointers::findItemBySerial( needrestock.front() );
-		needrestock.pop();
+		this->needrestock.pop();
 		if( ISVALIDPI(pi) && pi->layer==LAYER_TRADE_RESTOCK  ) {
 
 			NxwItemWrapper si;
@@ -689,9 +687,11 @@ void restocks::doRestock()
 	}
 
 	updateTimer();
+
+
 }
 
-void restocks::doRestockAll()
+void cRestockMng::doRestockAll()
 {
 
 	rewindList();
@@ -699,7 +699,7 @@ void restocks::doRestockAll()
 	while( !needrestock.empty() ) {
 
 		P_ITEM pi= pointers::findItemBySerial( needrestock.front() );
-		needrestock.pop();
+		this->needrestock.pop();
 		if( ISVALIDPI(pi) && pi->layer==LAYER_TRADE_RESTOCK ) {
 
 			NxwItemWrapper si;
@@ -725,13 +725,13 @@ void restocks::doRestockAll()
 
 }
 
-void restocks::addNewRestock( P_ITEM pi )
+void cRestockMng::addNewRestock( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	needrestock.push( pi->getSerial32() );
+	this->needrestock.push( pi->getSerial32() );
 }
 
-void restocks::rewindList()
+void cRestockMng::rewindList()
 {
 	while( !restocked.empty() ) {
 		needrestock.push( restocked.front() );
@@ -739,13 +739,17 @@ void restocks::rewindList()
 	}
 }
 
-void restocks::updateTimer()
+void cRestockMng::updateTimer()
 {
 	if( needrestock.empty() ) //end restock.. next after much time
 		timer=uiCurrentTime+ServerScp::g_nRestockTimeRate*60*MY_CLOCKS_PER_SEC;
 	else
 		timer=uiCurrentTime+CHECK_RESTOCK_EVERY*MY_CLOCKS_PER_SEC;
 }
+
+
+
+cRestockMng* Restocks = NULL;
 
 
 

@@ -10,11 +10,11 @@
 CC	=	gcc
 CXX	=	g++
 
-CFLAGS	=	-pipe -D_REENTRANT -O2
-CXXFLAGS=	-pipe -funsigned-char -D_REENTRANT -O2
+CFLAGS	=	-pipe -D_REENTRANT -O
+CXXFLAGS=	-pipe -funsigned-char -D_REENTRANT -O
 INCPATH =	-I ./
 LINK	=	g++
-LFLAGS	=	-lc -lstdc++
+LFLAGS	=	-lc -lstdc++ -static
 LIBS	=	$(SUBLIBS) -lpthread
 MOC	=	$(QTDIR)/bin/moc
 UIC	=	$(QTDIR)/bin/uic
