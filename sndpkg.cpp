@@ -954,7 +954,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 			len = 20;
 		}
 
-		ShortToCharPtr(len, itmput +2);
+		ShortToCharPtr(len, itmput +1);
 		Xsend(s, itmput, len);
 //AoS/		Network->FlushBuffer(s);
 
