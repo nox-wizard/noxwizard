@@ -27,6 +27,11 @@ LOGICAL nxwGump::createGump(UI32 gump, UI32 x, UI32 y, bool canMove, bool canClo
 		nxwGump::gumpMap[ gump ] = new nxwGump( gump, x, y, canMove, canClose, canDispose, serial );
 		return true;
 	}
+
+	map< UI32, std::string >::iterator it( responseMap.find( gump ) );
+	if ( it != responseMap.end() )
+		responseMap.erase( it );
+
 	return false;
 }
 
@@ -37,6 +42,7 @@ LOGICAL	nxwGump::deleteGump( UI32 gump )
 		gumpMap.erase( gump );
 		return true;
 	}
+
 	return false;
 }
 
@@ -44,7 +50,7 @@ nxwGump* nxwGump::selectGump( UI32 gump )
 {
 	if( gumpMap.find( gump ) != gumpMap.end() )
 		return gumpMap[ gump ];
-	return 0;	
+	return NULL;	
 }
 
 LOGICAL nxwGump::showGump( UI32 gump, P_CHAR pc )
@@ -85,7 +91,6 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			fieldCount	= static_cast<int>(data[22]);
 			fieldOffset	= 23;
 		}
-		responseMap.clear();
 		while( fieldCount )
 		{
 			fieldId	  = static_cast<int>(data[fieldOffset]<<8) | static_cast<int>(data[++fieldOffset]);
@@ -107,7 +112,19 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			++fieldOffset;
 			--fieldCount;
 		}
-		newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
+                if ( gump < 1000 ) { // Luxor: NoX-Wizard small gumps
+			newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
+		} else { // Luxor: user defined small gumps
+                        map< UI32, std::string >::iterator it( responseMap.find( gump ) );
+                        if ( it == responseMap.end() )
+				return false;
+			string sCallback( it->second );
+			AmxEvent *callback;
+			callback = newAmxEvent( const_cast< char* >( sCallback.c_str() ) );
+			callback->Call( gump, gumpSerial, button, pc->getSerial32() );
+
+			responseMap.erase( it );
+		}			
 		return true;
 	}
 	else
@@ -146,7 +163,7 @@ nxwGump::nxwGump()
 	setDisposeAble( true );
 	setSerial( 0 );
 	setDirty();
-	packet = 0;
+	packet = NULL;
 }
 
 nxwGump::nxwGump( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
@@ -165,6 +182,14 @@ nxwGump::nxwGump( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool c
 nxwGump::~nxwGump()
 {
 	dropPacket();
+}
+
+/*!
+\author Luxor
+*/
+void nxwGump::setCallBack( const std::string& arg )
+{
+	responseMap[ gumpId ] = string( arg );
 }
 
 void nxwGump::addCommand( const std::string& command )
@@ -407,18 +432,13 @@ void nxwGump::setSerial( const UI32 arg )
 
 void nxwGump::handleButton( const NXWSOCKET socket, const UI32 button )
 {
-	callback->Call( socket, button );
+//	callback->Call( socket, button );
 }
 
 void nxwGump::print()
 {
 	commands.print();
 	strings.print();
-}
-
-void nxwGump::setCallBack( const std::string& arg )
-{
-	callback = newAmxEvent( const_cast< char* >( arg.c_str() ) );
 }
 
 void nxwGump::setMoveAble( const bool arg )
@@ -459,13 +479,17 @@ void nxwGump::setY( const UI32 arg )
 
 void nxwGump::show( P_CHAR pc )
 {
+	// <Luxor>
+	NXWSOCKET socket = pc->getSocket();
+	if ( socket == INVALID )
+		return;
+	// </Luxor>
 	if( isDirty() )
 	{
 		if( packet != 0 )
 			dropPacket();
 		createPacket();
 	}
-	NXWSOCKET socket = calcSocketFromChar( DEREF_P_CHAR( pc ) );
 	SI32 packetLength = ((packet[1] << 8) + packet[2]);
 	UI32 packetIndex	= 0;
 	while( packetLength > 0 )

@@ -76,7 +76,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 		//
 		// Sparhawk: new gump API, currently only activated for cstats, istats and tweak char & item
 		//
-		switch( type )
+		/*switch( type )
 		{
 			case   1	:	// character properties
 			case   2	:	// item properties
@@ -91,7 +91,11 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 				return;
 			default		:
 				break;
-		}
+		}*/
+		//
+		// Luxor: new gump API activated also for users
+		//
+		nxwGump::handleGump( pc, buffer[s] );
 	}
 
 	switch (type)

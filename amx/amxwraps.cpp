@@ -391,6 +391,29 @@ NATIVE ( _gui_show )
 	return ( nxwGump::showGump( params[1], pc ) ? 1 : 0 );
 }
 
+/*!
+\author Luxor
+\brief Set the callback function of a gump
+*/
+NATIVE ( _gui_setCallback )
+{
+	nxwGump *gump;
+	gump = nxwGump::selectGump( params[1] );
+        if ( gump == NULL )
+		return 0;
+	
+	cell *cstr;
+	amx_GetAddr( amx, params[2], &cstr );
+	printstring( amx, cstr, params+3, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+
+	string sCallback( g_cAmxPrintBuffer );
+	gump->setCallBack( sCallback );
+
+	g_nAmxPrintPtr = 0;
+	return 1;
+}
+
 NATIVE ( _gui_addButton )
 {
 	nxwGump* thisGump = nxwGump::selectGump( params[1] );
@@ -639,12 +662,14 @@ NATIVE(_sprintf)
 \param 1: socket
 \param 2: text
 \return
-\bug there are a  if (params[1] < 0) return 0; i think not 0 buy INVALID or not?
 */
 NATIVE(_nprintf)
 {
   cell *cstr;
-  if (params[1] < 0) return 0;
+
+  if ( params[1] < 0 || params[2] >= now ) // Luxor
+	  return 0;
+  
   NXWCLIENT s = getClientFromSocket(params[1]);
   if (s == NULL) return 0;
   amx_GetAddr(amx,params[2],&cstr);
@@ -5524,6 +5549,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "gui_create", _gui_create },
  { "gui_delete", _gui_delete },
  { "gui_show", _gui_show },
+ { "gui_setCallback", _gui_setCallback },
  { "gui_addButton", _gui_addButton },
  { "gui_addGump", _gui_addGump },
  { "gui_addPage", _gui_addPage },

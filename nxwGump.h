@@ -41,7 +41,6 @@ class nxwGump
 		UI32					serial;
 		UI32					x;
 		UI32					y;
-		class AmxEvent	*callback;
 
 	private:
 		void					createPacket();
