@@ -217,7 +217,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "DAMAGETYPE"))		{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
 			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
-			else if (!strcmp(script1, "DEXTERITY2"))		{ pc->dx2=qmax(0,str2num(script2)); }
+			else if (!strcmp(script1, "DEXTERITY2"))		{ pc->dx2=str2num(script2); }
 			else if (!strcmp(script1, "DEATHS"))			{ pc->deaths=str2num(script2);  }
 			else if (!strcmp(script1, "DEAD"))			{ pc->dead = true; } // dead only appears in file if it's true.
 			else if (!strcmp(script1, "DEF"))			{ pc->def=str2num(script2);}
@@ -303,7 +303,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'I':
 		case 'i':
 			if (!strcmp(script1, "INTELLIGENCE"))		{ pc->in=str2num(script2);pc->in3=pc->in;}
-			else if (!strcmp(script1, "INTELLIGENCE2"))	{ pc->in2=qmax(0,str2num(script2));}
+			else if (!strcmp(script1, "INTELLIGENCE2"))	{ pc->in2=str2num(script2);}
 		break;
 
 		case 'K':
@@ -429,7 +429,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 				pc->saycolor2=i%256;
 			}
 			else if (!strcmp(script1, "STRENGTH"))		{ pc->setStrength(str2num(script2), false);pc->st3=pc->getStrength();}
-			else if (!strcmp(script1, "STRENGTH2"))		{ pc->st2=qmax(0, str2num(script2));}
+			else if (!strcmp(script1, "STRENGTH2"))		{ pc->st2=str2num(script2);}
 			else if (!strcmp(script1, "STAMINA"))		{ pc->stm=str2num(script2);}
 			else if (!strcmp(script1, "SUMMONREMAININGSECONDS"))
 			{//AntiChrist - let's restore remaining seconds!
@@ -755,7 +755,7 @@ void loaditem (void) // Load an item from WSC
 			else if (!(strcmp(script1, "DX")))
 				pi->dx=str2num(script2);
 			else if (!(strcmp(script1, "DX2")))
-				pi->dx2=qmax(0,str2num(script2));
+				pi->dx2=str2num(script2);
   			else if (!strcmp("DAMAGETYPE", script1))
 				pi->damagetype = static_cast<DamageType>(str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
@@ -1430,11 +1430,11 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "EMOTE %i\n", DBYTE2WORD(pc->emotecolor1,pc->emotecolor2));
 
 			fprintf(cWsc, "STRENGTH %i\n", pc->st3);
-			fprintf(cWsc, "STRENGTH2 %i\n", pc->st2);
+			fprintf(cWsc, "STRENGTH2 %i\n", qmax(0, pc->st2) );
 			fprintf(cWsc, "DEXTERITY %i\n", pc->dx3);
 			fprintf(cWsc, "DEXTERITY2 %i\n", qmax(0,pc->dx2));
 			fprintf(cWsc, "INTELLIGENCE %i\n", pc->in3);
-			fprintf(cWsc, "INTELLIGENCE2 %i\n", pc->in2);
+			fprintf(cWsc, "INTELLIGENCE2 %i\n", qmax(0, pc->in2) );
 
 			if (pc->hp!=dummy.hp)
 				fprintf(cWsc, "HITPOINTS %i\n", pc->hp);
