@@ -554,10 +554,10 @@ namespace accounts
 
 	/*!
 	\brief Update account information
-	\param acct Account number
-	\param sck Socket
+	\param acctnum Account number
+	\param socket Socket
 	*/
-	void OnLogin(ACCOUNT acct, NXWSOCKET sck)
+	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket );
 	{
 		if(sck<=INVALID) 
 			return;
@@ -652,7 +652,7 @@ namespace accounts
 	\brief Get an account from his name
 	\author Akron
 	\return the account object, or INVALID if no accounts found
-	\param accname the account name
+	\param name the account name
 	*/
 	ACCOUNT GetAccountByName(std::string accname)
 	{
