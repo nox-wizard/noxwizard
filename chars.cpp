@@ -362,6 +362,7 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 		newAmxEvent(script2)->Call(getSerial32(), INVALID);
 	}
 	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONDEATH)
+	CASECHAREVENT("@ONDIED",EVENT_CHR_ONDIED)
 	CASECHAREVENT("@ONKILL",EVENT_CHR_ONKILL)
 	CASECHAREVENT("@ONWOUNDED",EVENT_CHR_ONWOUNDED)
 	CASECHAREVENT("@ONHIT",EVENT_CHR_ONHIT)
@@ -2776,7 +2777,7 @@ void cChar::Kill()
 
 	char murderername[128];
 	murderername[0] = '\0';
-	
+
 	if (amxevents[EVENT_CHR_ONDEATH]) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONDEATH]->Call(getSerial32(), s);
@@ -3076,6 +3077,12 @@ void cChar::Kill()
 		deathmenu(getClient()->toInt());
 	}
 	//</Luxor> 
+
+	if (amxevents[EVENT_CHR_ONDIED])
+	{
+		g_bByPass = false;
+		amxevents[EVENT_CHR_ONDIED]->Call(getSerial32(), pCorpse->getSerial32() );
+	}
 
 	if (npc)
 		deleteChar();
