@@ -57,6 +57,37 @@ void close( SERIAL iSet )
 		g_oSet.erase( iter );
 }
 
+bool end( SERIAL iSet )
+{
+	SERIAL ser = INVALID;
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter!=g_oSet.end() )
+		if( iter->second.p_set!=NULL ) {
+			return iter->second.p_set->isEmpty();
+		}
+	return true;
+}
+
+void rewind( SERIAL iSet )
+{
+	SERIAL ser = INVALID;
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter!=g_oSet.end() )
+		if( iter->second.p_set!=NULL ) {
+			iter->second.p_set->rewind();
+		}
+}
+
+void next( SERIAL iSet )
+{
+	SERIAL ser = INVALID;
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter!=g_oSet.end() )
+		if( iter->second.p_set!=NULL ) {
+			(*iter->second.p_set)++;
+		}
+}
+
 
 SERIAL get( SERIAL iSet)
 {

@@ -135,10 +135,14 @@ namespace nxwset {
 	
 	SERIAL open ();
 	void close( SERIAL iSet );
+	bool end( SERIAL iSet );
+	void rewind( SERIAL iSet );
+	void next( SERIAL iSet );
+	UI32 size( SERIAL iSet);
+
 	SERIAL get( SERIAL iSet);
 	void insert( SERIAL iSet, SERIAL nVal );
-	bool isEmpty( SERIAL iSet );
-	UI32 size( SERIAL iSet);
+
 
 
 	void fillItemsInContainer ( SERIAL iSet, P_ITEM pi, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont);
