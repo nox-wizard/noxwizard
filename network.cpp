@@ -1998,12 +1998,11 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						resp.title= new std::string;
 						(*resp.title)+= pc_currchar->getCurrentName();
 						resp.staticProfile = new cUnicodeString();
-						resp.profile = new cUnicodeString();
+						resp.profile = pc_currchar->profile;
 						resp.send( ps );
 
 						delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
 						delete resp.staticProfile;
-						delete resp.profile;
 					}
 					
 					}
