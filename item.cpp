@@ -434,8 +434,12 @@ namespace item
 		}
 		else
 		{
-			if( cont!=NULL )
+			if( cont!=NULL ) {
 				pi->setCont( cont );
+				if( isItemSerial( cont->getSerial32() ) )
+					pi->SetRandPosInCont( (P_ITEM)cont );
+				pi->Refresh();
+			}
 			else
 				if (pi->isInWorld())
 					mapRegions->add(pi);

@@ -150,13 +150,14 @@ void buyaction(int s)
 				{
 					if ((iter->item)->pileable)
 					{
-						Commands::DupeItem(s, DEREF_P_ITEM(iter->item), iter->amount);
+						P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+						pi->setAmount( iter->amount );
 					}
 					else
 					{
 						for (j=0;j<iter->amount;j++)
 						{
-							Commands::DupeItem(s, DEREF_P_ITEM(iter->item), 1);
+							P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 						}
 					}
 					(iter->item)->amount-=iter->amount;
@@ -170,13 +171,14 @@ void buyaction(int s)
 							if ((iter->item)->pileable)
 							{
 			
-								Commands::DupeItem(s, DEREF_P_ITEM(iter->item), iter->amount);
+								P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+								pi->setAmount( iter->amount );
 								
 							}
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									Commands::DupeItem(s, DEREF_P_ITEM(iter->item), 1);
+									P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 
 							}
 							(iter->item)->amount-=iter->amount;
@@ -188,7 +190,7 @@ void buyaction(int s)
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									Commands::DupeItem(s, DEREF_P_ITEM(iter->item), 1);
+									P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 
 								(iter->item)->setContSerial( pack->getSerial32() );
 								(iter->item)->amount=1;
