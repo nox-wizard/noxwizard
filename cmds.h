@@ -32,6 +32,11 @@ enum PrivLevel
 
 typedef class cCommand* P_COMMAND;
 
+
+void Command( NXWSOCKET , char * );
+
+
+
 /*
 \brief Declaration of cCommand Class
 */
@@ -48,6 +53,7 @@ class cCommand {
 
 		cCommand( std::string& cmd_name, SI08 cmd_number, AmxFunction* callback );
 		SI08 getCommandLevel(P_COMMAND cmd);
+		AmxFunction* getCommandCallback(P_COMMAND cmd);
 		void call( std::string params );
 
 };

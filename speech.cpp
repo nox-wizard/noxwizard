@@ -17,7 +17,8 @@
 #include "house.h"
 #include "npcai.h"
 #include "network.h"
-#include "commands.h"
+//#include "commands.h"
+#include "cmds.h"
 #include "packets.h"
 #include "boats.h"
 #include "scp_parser.h"
@@ -1991,7 +1992,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 	if ( speech[0] == SrvParms->commandPrefix )
 	{
-		Commands::Command(socket, const_cast<char*>(speech.c_str()) );
+		//Commands::Command(socket, const_cast<char*>(speech.c_str()) );
+		Command(socket, const_cast<char*>(speech.c_str()) );
 		return;
 	}
 

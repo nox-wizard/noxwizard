@@ -70,6 +70,10 @@ SI08 cCommand::getCommandLevel(P_COMMAND cmd) {
 }
 
 
+AmxFunction* cCommand::getCommandCallback(P_COMMAND cmd) {
+	return cmd->cmd_callback;
+}
+
 //Implementation of cCallCommand Class
 
 SERIAL cCallCommand::current_serial = 0;
@@ -233,12 +237,10 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 
 		SERIAL cmd_serial=called->addCallCommand(called);
 
-		
-		
-		// Frodo:
-		// NOW CALL AMX FUNCTION specified in cCommand.cmd_callback giving pc_currchar and 
-		// cmd_serial
-		
+	
+		AmxFunction* CommandFunction = NULL;      
+		if(CommandFunction == NULL ) CommandFunction = new AmxFunction("p_cmd->getCommandCallback"); 
+		CommandFunction->Call(pc_currchar->getSerial32(), cmd_serial);
 		
 		
 		//Let's delete the temp object		
