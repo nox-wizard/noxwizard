@@ -1770,7 +1770,7 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_REATTACKAT , pc->reattackat )  		//dec value: 270;
 		CHECK(  NXW_CP_I_REGENRATE, pc->getRegenRate( static_cast<StatType>(prop2), static_cast<VarType>(prop3) ); )
 		CHECK(  NXW_CP_I_SCRIPTID , pc->getScriptID() )  				//dec value: 272;
-		CHECK(	NXW_CP_I_GUILD, pc->getGuild() )			//dec value: 273
+		CHECK(	NXW_CP_I_GUILD, (pc->getGuild()!=NULL)? pc->getGuild()->serial : INVALID )			//dec value: 273
 		CHECK(  NXW_CP_I_ROBE , pc->robe )  				//dec value: 274;
 		CHECK(  NXW_CP_I_RUNNING , pc->running )  			//dec value: 275;
 		CHECK(  NXW_CP_I_SERIAL , pc->getSerial32() )  			//dec value: 276;
@@ -2048,12 +2048,12 @@ static void *getCalPropertyPtr(int i, int property, int prop2)
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
-///////////////////////// CALENDAR PROPERTY ///////////////////////////////
+///////////////////////////// GUILD PROPERTY ///////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-NATIVE2(_setGuildProperty)
+NATIVE2(_guild_setProperty)
 {
 	// params[1] = guild
 	// params[2] = property
@@ -2185,7 +2185,540 @@ NATIVE2(_setGuildProperty)
 	}
 }
 
-NATIVE2(_getGuildProperty)
+NATIVE2(_guild_getProperty)
+{
+
+	SERIAL guild = params[1];
+	P_GUILD pGuild = Guildz.getGuild( guild );
+	if( pGuild==NULL )
+	{
+		LogError( "guild_setProperty called with invalid guild %d", guild );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p; 
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case NXW_GP_STR_NAME:
+			  	strcpy(str, pGuild->getName().c_str());
+				break;
+			case NXW_GP_STR_WEBPAGE:
+			  	strcpy(str, pGuild->webpage.c_str());
+				break;
+			case NXW_GP_STR_ABBREVIATION:
+			  	strcpy(str, pGuild->getAbbreviation().c_str());
+				break;
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case NXW_GP_UNI_CHARTER :		
+				w = &pGuild->charter;
+				break;
+			default :
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////// GUILD MEMBER PROPERTY /////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+NATIVE2(_guildMember_setProperty)
+{
+	// params[1] = member
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	SERIAL member_serial = params[1];
+	
+	P_CHAR pc = pointers::findCharBySerial( member_serial );
+	VALIDATEPCR( pc, INVALID );
+
+	P_GUILD_MEMBER member = pc->getGuildMember();
+	if ( member==NULL )	
+	{
+		LogError( "guildMember_setProperty called with invalid member %d", member_serial );
+		return INVALID;
+	}
+
+	int tp = getPropertyType( params[2] );
+
+	cell *cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
+	switch( tp ) {
+	
+	case T_INT: {
+		int p = *cptr;
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+
+		return p;
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p = *cptr ? true : false;
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p = static_cast<short>(*cptr & 0xFFFF);
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p = static_cast<char>(*cptr & 0xFF);
+
+		switch( params[2] )
+		{
+			case NXW_GMP_C_RANK :				  		//dec value: 100;
+				member->rank = p;
+				break;
+			case NXW_GMP_C_TITLETOGGLE:
+				member->toggle = static_cast<GUILD_TITLE_TOGGLE>(p);
+				break;
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case NXW_GMP_STR_TITLE :			  				//dec value: 450;
+				member->title = g_cAmxPrintBuffer;
+				break;
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring w;
+		amx_GetStringUnicode( w, cptr );
+
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default: 
+		return INVALID;
+	}
+}
+
+NATIVE2(_guildMember_getProperty)
+{
+
+	SERIAL member_serial = params[1];
+	
+	P_CHAR pc = pointers::findCharBySerial( member_serial );
+	VALIDATEPCR( pc, INVALID );
+
+	P_GUILD_MEMBER member = pc->getGuildMember();
+	if ( member==NULL )	
+	{
+		LogError( "guildMember_getProperty called with invalid member %d", member_serial );
+		return INVALID;
+	}
+
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p; 
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[2]) {
+			case NXW_GMP_C_RANK :				  		//dec value: 100;
+				p = member->rank;
+				break;
+			case NXW_GMP_C_TITLETOGGLE:
+				p = member->toggle;
+				break;
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		cell i = p;
+		return i;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case NXW_GMP_STR_TITLE:
+			  	strcpy(str, member->title.c_str());
+				break;
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case INVALID :		
+			default :
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////// GUILD RECRUIT PROPERTY ///////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+NATIVE2(_guildRecruit_setProperty)
+{
+	// params[1] = recruit
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	SERIAL recruit_serial = params[1];
+
+	P_CHAR recruiter = pointers::findCharBySerial( recruit_serial );
+	VALIDATEPCR( recruiter, INVALID );
+
+	P_GUILD guild = recruiter->getGuild();
+	if ( guild == NULL )	return INVALID;
+
+	P_GUILD_RECRUIT recruit = guild->getRecruit( recruit_serial );
+	if( recruit==NULL )
+	{
+		LogError( "guildRecruit_setProperty called with invalid guild %d", recruit_serial );
+		return INVALID;
+	}
+
+
+	int tp = getPropertyType(params[2]);
+
+	cell *cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
+	switch( tp ) {
+	
+	case T_INT: {
+		int p = *cptr;
+
+		switch( params[2] )
+		{
+			case NXW_GRP_I_RECRUITER:
+				//todo
+				break;
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+
+		return p;
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p = *cptr ? true : false;
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p = static_cast<short>(*cptr & 0xFFFF);
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p = static_cast<char>(*cptr & 0xFF);
+
+		switch( params[2] )
+		{
+			case  INVALID:
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case INVALID :			  				//dec value: 450;
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring w;
+		amx_GetStringUnicode( w, cptr );
+
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default: 
+		return INVALID;
+	}
+}
+
+NATIVE2(_guildRecruit_getProperty)
 {
 
 	SERIAL guild = params[1];

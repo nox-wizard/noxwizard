@@ -441,7 +441,6 @@ const int NXW_SPEECH_EMOTE_ALL = 6;
 //const int NXW_GP_C = 100;
 const int NXW_GP_C_TYPE = 100;
 //const int NXW_GP_I = 200;
-const int NXW_GP_I_GUILDMASTER = 200;
 //const int NXW_GP_S = 400;
 //const int NXW_GP_STR = 450;
 const int NXW_GP_STR_NAME = 450;
@@ -449,6 +448,28 @@ const int NXW_GP_STR_WEBPAGE = 451;
 const int NXW_GP_STR_ABBREVIATION = 452;
 //const int NXW_GP_UNI = 500;
 const int NXW_GP_UNI_CHARTER = 500;
+
+//Endymion Guild Member Constant
+
+//const int NXW_GP_B = 0;
+//const int NXW_GP_C = 100;
+const int NXW_GMP_C_RANK = 100;
+const int NXW_GMP_C_TITLETOGGLE = 101;
+//const int NXW_GP_I = 200;
+//const int NXW_GP_S = 400;
+//const int NXW_GP_STR = 450;
+const int NXW_GMP_STR_TITLE = 450;
+//const int NXW_GP_UNI = 500;
+
+//Endymion Guild Recruit Constant
+
+//const int NXW_GP_B = 0;
+//const int NXW_GP_C = 100;
+//const int NXW_GP_I = 200;
+const int NXW_GRP_I_RECRUITER = 200;
+//const int NXW_GP_S = 400;
+//const int NXW_GP_STR = 450;
+//const int NXW_GP_UNI = 500;
 
 
 
