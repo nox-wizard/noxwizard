@@ -559,6 +559,30 @@ NATIVE(_ncprintf)
 }
 
 /*
+\brief Send a sysmessage to given socket using given color
+\author Endymion
+\param 1 socket
+\param 2 color
+\param 3 text
+\return 1 or 0 if error
+*/
+NATIVE(_sysmessage)
+{
+
+	NXWCLIENT ps = getClientFromSocket(params[1]);
+	if( ps==NULL )
+		return 0;
+
+	cell *cstr;
+	amx_GetAddr(amx,params[3],&cstr);
+	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	ps->sysmsg( params[2], g_cAmxPrintBuffer );
+	return 1;
+
+}
+/*
 \brief get the socket used by the given char
 \author Xanathar
 \since 0.60
@@ -1233,10 +1257,10 @@ NATIVE(_getCharFromSocket)
 \brief add given item at the given cantainer in the given position
 \author Xanathar
 \since 0.10
-\param 1: the container
-\param 2: the item
-\param 3: x location
-\param 4: y location
+\param 1 the container
+\param 2 the item
+\param 3 x location or INVALID if rand pos
+\param 4 y location or INVALID if rand pos
 \return true or false
 */
 NATIVE(_contAddItem)
@@ -1651,18 +1675,28 @@ NATIVE(_itm_isWeaponLike)
 
 /*
 \brief get the backpack of given character
-\author Xanathar
-\since 0.50
-\param 1 character
+\author Endymion
+\param 1 the character
+\param 2 if true backpack is created if not exist
 \return backpack item or INVALID if not valid char or haven't backpack
 */
-NATIVE(_itm_getCharBackPack)
+NATIVE(_chr_getBackpack)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR( pc, INVALID );
 	P_ITEM pi= pc->getBackpack();
-	VALIDATEPIR( pi, INVALID );
-	return pi->getSerial32();
+	if( !ISVALIDPI( pi ) ) {
+		P_ITEM bp = item::CreateFromScript( "$item_backpack", pc );
+		if( ISVALIDPI(bp) )
+		{
+			pc->packitemserial=bp->getSerial32();
+			return bp->getSerial32();
+		}
+		else
+			return INVALID;
+	}
+	else
+		return pi->getSerial32();
 }
 
 /*
@@ -3788,11 +3822,11 @@ NATIVE(_itm_speech)
 \brief given character equip specific item
 \author Anthalir
 \since 0.7
-\param 1: character
-\param 2: item
+\param 1 character
+\param 2 item
 \return equip or INVALID if not valid character or item
 */
-NATIVE(_ItemEquip)
+NATIVE(_chr_equip)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
@@ -5694,6 +5728,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "callFunction5P", _callFunction5P },
  { "nprintf", _nprintf },
  { "ncprintf", _ncprintf },
+ { "sysmessage", _sysmessage },
  { "ntprintf", _ntprintf },
  { "sprintf", _sprintf },
  { "bypass", _bypass },
@@ -5805,6 +5840,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_checkSkill", _chr_checkSkill },
  { "chr_unmountHorse", _chr_unmountHorse },
  { "chr_mountHorse", _chr_mountHorse },
+ { "chr_getBackpack", _chr_getBackpack },
  { "chr_getEventHandler", _chr_getEventHandler  },
  { "chr_setEventHandler", _chr_setEventHandler  },
  { "chr_delEventHandler", _chr_delEventHandler  },
@@ -5829,6 +5865,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_unmorph", _chr_unmorph },
  { "chr_skillMakeMenu", _chr_skillMakeMenu },
  { "chr_possess", _chr_possess },
+ { "chr_equip", _chr_equip},
 //
 // Local property functions
 //
@@ -5854,7 +5891,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_getProperty", _getItemProperty},
  { "itm_setProperty", _setItemProperty},
  { "itm_isWeaponLike", _itm_isWeaponLike},
- { "itm_getCharBackPack", _itm_getCharBackPack },
  { "itm_contAddItem", _contAddItem },
  { "itm_color", _color },
  { "itm_contPileItem", _contPileItem },
@@ -5886,7 +5922,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_sound", _itm_sound },
  { "itm_refresh", _itm_refresh},
  { "itm_speech", _itm_speech},
- { "itm_equip", _ItemEquip},
  { "itm_BounceToPack", _ItemBounceToPack},
  { "itm_getCombatSkill", _itm_getCombatSkill},
 //

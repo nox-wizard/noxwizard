@@ -618,6 +618,10 @@ void cItem::MoveTo(Location newloc)
 
 /*!
 \brief Add item to container
+\author Endymion
+\param pItem the item to add
+\param xx the x location or INVALID if use rand pos
+\param yy the y location or INVALID if use rand pos
 */
 LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 {
