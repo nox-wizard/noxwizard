@@ -102,7 +102,7 @@ void cChar::mounthorse( P_CHAR mount )
 			return;
 		}
 		
-		std::map<SI32,SI32>::iterator iter = mountinfo.find(mount->GetBodyType());
+		std::map<SI32,SI32>::iterator iter = mountinfo.find(mount->getId());
 		if( iter==mountinfo.end() ) { //not mountable creature
 			sysmsg( "This is not a mountable creature" );
 			return;
@@ -114,7 +114,7 @@ void cChar::mounthorse( P_CHAR mount )
 		VALIDATEPI(pi);
 
 		pi->setId( iter->second );
-		pi->color = mount->getSkinColor();
+		pi->setColor( mount->getColor() );
 		pi->setCurrentName( mount->getCurrentName() );
 
 		/*pi->id1 = 0x3E;

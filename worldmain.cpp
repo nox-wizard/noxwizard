@@ -237,8 +237,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!(strcmp(script1, "BODY")))
 			{
 				UI16 body = str2num(script2);
-				pc->SetBodyType( body );
-				pc->SetOldBodyType( body );
+				pc->setId( body );
+				pc->setOldId( body );
 			}
 		break;
 
@@ -497,7 +497,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "SKIN"))
 			{
-				pc->setSkinColor(str2num(script2));
+				pc->setColor(str2num(script2));
 
 			}
 			else if (!strcmp(script1, "SPATTACK"))		{ pc->spattack=str2num(script2);}
@@ -528,11 +528,11 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
-				pc->SetOldBodyType( str2num(script2) );
+				pc->setOldId( str2num(script2) );
 			}
 			else if (!strcmp(script1, "XSKIN"))
 			{
-				pc->setOldSkinColor( str2num(script2) );
+				pc->setOldColor( str2num(script2) );
 			}
 		break;
 
@@ -755,11 +755,11 @@ void loaditem()
 
 				if ( !((i&0x4000) || (i&0x8000)) || (i == 32767))
 				{
-					pi->color = static_cast<COLOR>(i);
+					pi->setColor( static_cast<COLOR>(i) );
 				}
 				else
 				{
-					pi->color = 0; // bugged color found, leave it undyed
+					pi->setColor( 0 ); // bugged color found, leave it undyed
 					WarnOut("item# %i with problematic hue corrected\n", pi->getSerial32());
 				}
 			}
@@ -841,7 +841,7 @@ void loaditem()
 				if( (i==0x1071) || (i==0x1075))
 					i--;
 				// elcabesa bugfigx end
-				pi->setId( i );
+				pi->setId( static_cast<UI16>(i) );
 
 				if (i>=0x4000)
 				{
@@ -1166,7 +1166,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
 		if ( isCharSerial( objs.getSerial() ) && ISVALIDPC( (pc=static_cast<P_CHAR>(objs.getObject())) ) ) {
 			if( pc->dead && pc->HasHumanBody() )
-				pc->morph( ((pc->GetBodyType() == BODY_FEMALE) ? BODY_DEADFEMALE : BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
+				pc->morph( ((pc->getId() == BODY_FEMALE) ? BODY_DEADFEMALE : BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->isSpawner() )
@@ -1429,27 +1429,27 @@ void CWorldMain::SaveChar( P_CHAR pc )
 
 			//Luxor: if the char is morphed, we have to save the original values.
 			if(pc->morphed) {
-				if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
-					fprintf(cWsc, "BODY %i\n", pc->GetOldBodyType());
+				if ( pc->getOldId() != dummy.getOldId() )
+					fprintf(cWsc, "BODY %i\n", pc->getOldId());
 			}
 			else {
-				if ( pc->GetBodyType() != dummy.GetBodyType() )
-						fprintf(cWsc, "BODY %i\n", pc->GetBodyType());
+				if ( pc->getId() != dummy.getId() )
+						fprintf(cWsc, "BODY %i\n", pc->getId());
 			}
-			if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
-				fprintf(cWsc, "XBODY %i\n", pc->GetOldBodyType());
+			if ( pc->getOldId() != dummy.getOldId() )
+				fprintf(cWsc, "XBODY %i\n", pc->getOldId());
 
 			//Luxor: if the char is morphed, we have to save the original values.
 			if(pc->morphed) {
-				if ( pc->getOldSkinColor() != dummy.getOldSkinColor() )
-					fprintf(cWsc, "SKIN %i\n", pc->getOldSkinColor());
+				if ( pc->getOldColor() != dummy.getOldColor() )
+					fprintf(cWsc, "SKIN %i\n", pc->getOldColor());
 			} else {
-				if ( pc->getSkinColor() != dummy.getSkinColor() )
-					fprintf(cWsc, "SKIN %i\n", pc->getSkinColor());
+				if ( pc->getColor() != dummy.getColor() )
+					fprintf(cWsc, "SKIN %i\n", pc->getColor());
 			}
 
-			if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
-				fprintf(cWsc, "XSKIN %i\n", pc->getOldSkinColor());
+			if ( pc->getOldColor() != dummy.getOldColor() )
+				fprintf(cWsc, "XSKIN %i\n", pc->getOldColor());
 			if (pc->GetPriv()!=dummy.GetPriv())
 				fprintf(cWsc, "PRIV %i\n", pc->GetPriv());
 
@@ -1821,18 +1821,18 @@ void CWorldMain::SaveItem( P_ITEM pi )
 					}
 				} else {
 					fprintf(iWsc, "ID %i\n", pi->getId());
-					if (pi->color!=dummy.color)
-						fprintf(iWsc, "COLOR %i\n", pi->color);
+					if (pi->getColor()!=dummy.getColor())
+						fprintf(iWsc, "COLOR %i\n", pi->getColor());
 				}
 			} else {
 				fprintf(iWsc, "ID %i\n", pi->getId());
-				if (pi->color!=dummy.color)
-					fprintf(iWsc, "COLOR %i\n", pi->color);
+				if (pi->getColor()!=dummy.getColor())
+					fprintf(iWsc, "COLOR %i\n", pi->getColor());
 			}
 		} else {
 			fprintf(iWsc, "ID %i\n", pi->getId());
-			if (pi->color!=dummy.color)
-				fprintf(iWsc, "COLOR %i\n", pi->color);
+			if (pi->getColor()!=dummy.getColor())
+				fprintf(iWsc, "COLOR %i\n", pi->getColor());
 		}
 		//</Luxor>
 		if( pi->getScriptID()!=dummy.getScriptID() )

@@ -398,7 +398,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if( ISVALIDPI(pi_n) )
 									{
-										pi_n->color = hex2num(script2);
+										pi_n->setColor( hex2num(script2) );
 									}
 								}
 								else if ( "CAMPING" == script1 )
@@ -415,7 +415,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (ISVALIDPI(pi_n) && haircolor != INVALID )
 									{
-										pi_n->color =haircolor;
+										pi_n->setColor( haircolor );
 									}
 								}
 								else if ( "COLORLIST" == script1 )
@@ -423,7 +423,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									if (ISVALIDPI(pi_n))
 									{
 										std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2)  );
-										pi_n->color = hex2num( value ) ;
+										pi_n->setColor( hex2num( value ) );
 									}
 									script1 = "DUMMY";
 								}
@@ -543,7 +543,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										haircolor = hex2num( value );
 										if (haircolor!=-1)
 										{
-											pi_n->color = haircolor;
+											pi_n->setColor( haircolor );
 										}
 									}
 									script1 = "DUMMY";
@@ -563,8 +563,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								if	( "ID" == script1 )
 								{
 									tmp=hex2num(script2);
-									pc->SetBodyType(tmp);
-									pc->SetOldBodyType(tmp);
+									pc->setId(tmp);
+									pc->setOldId(tmp);
 								}
 								else if ( "INSCRIPTION" == script1 )
 									pc->baseskill[INSCRIPTION] = getRangedValue(script2);
@@ -874,14 +874,14 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								else if ( "SKIN" == script1 )
 								{
 									tmp=hex2num(script2);
-									pc->setSkinColor(tmp);
-									pc->setOldSkinColor(tmp);
+									pc->setColor(tmp);
+									pc->setOldColor(tmp);
 								}
 								else if ( "SKINLIST" == script1 )
 								{
 									std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2 ) );
-									pc->setSkinColor( hex2num( value ) );
-									pc->setOldSkinColor( pc->getSkinColor() );
+									pc->setColor( hex2num( value ) );
+									pc->setOldColor( pc->getColor() );
 									script1 = "DUMMY";
 								}
 								else if ( "SNOOPING" == script1 )

@@ -174,7 +174,7 @@ void Fishing::target_fish( NXWCLIENT ps, P_TARGET t )
 	int px = whereFish.x;
 	int py = whereFish.y;
 
-	if( dist( charpos, whereFish ) >6 )	// too far away from target
+	if( dist( charpos, whereFish )>6.0 )	// too far away from target
 	{
 		ps->sysmsg(TRANSLATE("You are too far away to reach that"));
 		return;
@@ -358,7 +358,7 @@ void Fishing::Fish(CHARACTER i)
 			P_ITEM fish = item::CreateFromScript( "$item_fish" );
 			VALIDATEPI(fish);
 		
-			fish->color=color;
+			fish->setColor(color);
 			fish->setId( fish->getId() | idnum );
 		
 			if (ISVALIDPI(pc_bp))

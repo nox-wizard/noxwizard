@@ -322,7 +322,7 @@ void Skills::target_smith( NXWCLIENT ps, P_TARGET t )
 
         if (pi->getId()==0x1BEF || pi->getId()==0x1BF2)   // is it an ingot ?
         {
-			AnvilTarget( ps->toInt(), pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color), NULL);
+			AnvilTarget( ps->toInt(), pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->getColor()), NULL);
 			return;
         }
     }
@@ -683,7 +683,7 @@ void Skills::target_smeltOre( NXWCLIENT ps, P_TARGET t )
                 P_ITEM pix=pointers::findItemBySerial( t->buffer[0] );
 				VALIDATEPI( pix );
 
-                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color >> 8), (pix->color % 256), pix->getSerial32());
+                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->getColor() >> 8), (pix->getColor() % 256), pix->getSerial32());
             }
         }
     }
@@ -1203,7 +1203,7 @@ void Skills::target_healingSkill( NXWCLIENT ps, P_TARGET t )
 		return;
 	}
 
-	if( ((pp->GetBodyType() != BODY_MALE) || (pp->GetBodyType() != BODY_FEMALE)) && pp->tamed==false) //Used on non-human and controls if tamed
+	if( ((pp->getId() != BODY_MALE) || (pp->getId() != BODY_FEMALE)) && pp->tamed==false) //Used on non-human and controls if tamed
 
         if ((ph->IsInnocent()) &&(ph->getSerial32() != pp->getSerial32()))
         {
@@ -1572,9 +1572,9 @@ void Skills::target_tame( NXWCLIENT ps, P_TARGET t )
 		tamed=1;
 		target->setOwner(pc);
 
-		if((target->GetBodyType()==0x000C) || (target->GetBodyType()==0x003B))
+		if((target->getId()==0x000C) || (target->getId()==0x003B))
 		{
-			if(target->getSkinColor() != 0x0481)
+			if(target->getColor() != 0x0481)
 			{
 				target->npcaitype=NPCAI_TAMEDDRAGON;
 			}
@@ -1955,7 +1955,7 @@ void Skills::target_tinkering( NXWCLIENT ps, P_TARGET t )
             if (CheckInPack(s,pi))
             {
                 int amt;
-                amt=pc_currchar->CountItems(pi->getId(), pi->color);
+                amt=pc_currchar->CountItems(pi->getId(), pi->getColor());
                 if(amt<2)
                 {
                     sysmessage(s,TRANSLATE("You don't have enough ingots to make anything."));

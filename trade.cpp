@@ -235,7 +235,7 @@ static bool items_match(P_ITEM pi1,P_ITEM pi2)
 		pi1->type==pi2->type &&
 		!(pi1->getId()==0x14F0 && (pi1->morex!=pi2->morex)) &&	// house deeds only differ by morex
 		!(pi1->IsShield() && strcmp(pi1->getSecondaryNameC(),pi2->getSecondaryNameC())) &&	// magic shields only differ by secondary name
-		pi1->color==pi2->color)		// this enables color checking for armour, but disables dyed clothes :)
+		pi1->getColor()==pi2->getColor())		// this enables color checking for armour, but disables dyed clothes :)
 		return true;
 	return false;
 

@@ -210,7 +210,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						P_ITEM phair= hairobject;
 						if(ISVALIDPI(phair)) {
 
-							phair->color = hex2num(script2);
+							phair->setColor( hex2num(script2) );
 							phair->Refresh();
 							pc->teleport();
 						}
@@ -235,7 +235,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pbeard= beardobject;
 							if(ISVALIDPI(pbeard)) {
-								pbeard->color = hex2num(script2);
+								pbeard->setColor( hex2num(script2) );
 								pbeard->Refresh();
 								pc->teleport();
 							}
@@ -321,15 +321,15 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					else if ( script1 == "SKIN" )
 					{
 						i=hex2num(script2);
-						pc->setSkinColor(i);
-						pc->setOldSkinColor(i);
+						pc->setColor(i);
+						pc->setOldColor(i);
 						pc->teleport();
 					}
 					else if ( "POLY" == script1 )
 					{
 						x=hex2num(script2);
-						pc->SetBodyType(x);
-						pc->SetOldBodyType(x);
+						pc->setId(x);
+						pc->setOldId(x);
 						pc->teleport();
 					}
 					else if ( "ADVOBJ" == script1 )

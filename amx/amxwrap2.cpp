@@ -444,7 +444,7 @@ void setItemShortProperty(P_ITEM pi, int property, int prop2, short value )
 			pi->dir = value;
 			break;
 		case NXW_IP_S_COLOR :
-			pi->color = value;
+			pi->setColor( value ); 
 			break;
 		case NXW_IP_S_ID :
 			pi->setId( value );
@@ -700,7 +700,7 @@ short getItemShortProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_S_AMOUNT, pi->amount )   //dec value :  400;
 		CHECK(NXW_IP_S_AMOUNT2, pi->amount2 )   //dec value :  401;
 		CHECK(NXW_IP_S_DIR, pi->dir )   //dec value :  402;
-		CHECK(NXW_IP_S_COLOR, pi->color )
+		CHECK(NXW_IP_S_COLOR, pi->getColor() )
 		CHECK(NXW_IP_S_ID, pi->getId() )
 		default:
 			ErrOut("itm_getProperty called with invalid property %d!\n", property );
@@ -946,16 +946,16 @@ void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubp
 			pc->SetGuildType( value );
 			break;
 		case NXW_CP_S_ID :
-			pc->SetBodyType( value );
+			pc->setId( value );
 			break;
 		case NXW_CP_S_SKIN :
-			pc->setSkinColor( value );
+			pc->setColor( value );
 			break;
 		case NXW_CP_S_XID :
-			pc->SetOldBodyType( value );
+			pc->setOldId( value );
 			break;
 		case NXW_CP_S_XSKIN :
-			pc->setOldSkinColor( value );
+			pc->setOldColor( value );
 			break;
 		case NXW_CP_S_RACE :
 			pc->race = value;
@@ -1848,17 +1848,17 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_BASESKILL , pc->baseskill[prop2] )  		//dec value: 400;
 		CHECK(  NXW_CP_S_SKILL , pc->skill[prop2] )  			//dec value: 401;
 		CHECK(  NXW_CP_S_GUILDTYPE , pc->GetGuildType() )  		//dec value: 402;
-		CHECK(  NXW_CP_S_ID, pc->GetBodyType() )
-		CHECK(  NXW_CP_S_SKIN, pc->getSkinColor() )
-		CHECK(  NXW_CP_S_XID, pc->GetOldBodyType() )
-		CHECK(  NXW_CP_S_XSKIN, pc->getOldSkinColor() )
+		CHECK(  NXW_CP_S_ID, pc->getId() )
+		CHECK(  NXW_CP_S_SKIN, pc->getColor() )
+		CHECK(  NXW_CP_S_XID, pc->getOldId() )
+		CHECK(  NXW_CP_S_XSKIN, pc->getOldColor() )
 		case NXW_CP_S_ICON : {
-			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
 			return ( creature!=NULL )? creature->icon : INVALID;
 
 		}
 		case NXW_CP_S_SOUND : {
-			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
 			return ( creature!=NULL )? creature->getSound( static_cast<MonsterSound>(prop2) ) : INVALID;
 		}
 		CHECK(  NXW_CP_S_RACE, pc->race )

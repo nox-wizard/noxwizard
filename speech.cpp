@@ -216,7 +216,7 @@ int response(NXWSOCKET  s)
 				//
 				if ( !TIMEOUT( pc_map->disabled ) )
 				{
-					switch ( pc_map->GetBodyType() )
+					switch ( pc_map->getId() )
 					{
 						case BODY_MALE		:
 						case BODY_FEMALE	:
@@ -240,7 +240,7 @@ int response(NXWSOCKET  s)
 				{
 					if( pc_map->npcaitype != NPCAI_EVIL )
 					{
-						switch ( pc_map->GetBodyType() )
+						switch ( pc_map->getId() )
 						{
 							case BODY_MALE		:
 							case BODY_FEMALE	:
@@ -255,7 +255,7 @@ int response(NXWSOCKET  s)
 					}
 					else
 					{
-						switch ( pc_map->GetBodyType() )
+						switch ( pc_map->getId() )
 						{
 							case BODY_MALE		:
 							case BODY_FEMALE	:
@@ -300,7 +300,7 @@ int response(NXWSOCKET  s)
 				//
 				if ( requestTime )
 				{
-					if(pc_map->npcaitype!= NPCAI_EVIL && pc_map->npcaitype!= NPCAI_PLAYERVENDOR && (pc_map->GetBodyType()==0x0190 || pc_map->GetBodyType()==0x0191))
+					if(pc_map->npcaitype!= NPCAI_EVIL && pc_map->npcaitype!= NPCAI_PLAYERVENDOR && (pc_map->getId()==0x0190 || pc_map->getId()==0x0191))
 					{
 						int hour = Calendar::g_nHour % 12;
 						if (hour==0) hour = 12;
@@ -321,7 +321,7 @@ int response(NXWSOCKET  s)
 				//
 				if ( requestLocation )
 				{
-					if( pc_map->npcaitype!= NPCAI_EVIL && pc_map->npcaitype!= NPCAI_PLAYERVENDOR  && (pc_map->GetBodyType()==0x0190 || pc_map->GetBodyType()==0x0191))
+					if( pc_map->npcaitype!= NPCAI_EVIL && pc_map->npcaitype!= NPCAI_PLAYERVENDOR  && (pc_map->getId()==0x0190 || pc_map->getId()==0x0191))
 					{
 						if (strlen(region[pc->region].name)>0)
 							sprintf(temp, TRANSLATE("You are in %s"),region[pc->region].name);
@@ -2050,7 +2050,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	cPacketUnicodeSpeech talk;
 	talk.obj=pc->getSerial32();
-	talk.model=pc->GetBodyType();
+	talk.model=pc->getId();
 	talk.type= buffer[socket][3];
 	talk.color= DBYTE2WORD( buffer[socket][4], buffer[socket][5] );
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );

@@ -1286,10 +1286,10 @@ void command_poly( NXWCLIENT ps )
                 k = (strtonum(1)<<8) | strtonum(2);
                 if (k>=0x000 && k<=0x3E1) // lord binary, body-values >0x3e crash the client
 		{
-			pc_currchar->SetBodyType(k);
-			pc_currchar->SetOldBodyType(k);
+			pc_currchar->setId(k);
+			pc_currchar->setOldId(k);
 
-			c1= pc_currchar->getSkinColor();					// transparency for mosnters allowed, not for players,
+			c1= pc_currchar->getColor();	// transparency for mosnters allowed, not for players,
 											// if polymorphing from monster to player we have to switch from transparent to semi-transparent
 											// or we have that sit-down-client crash
 
@@ -1297,8 +1297,8 @@ void command_poly( NXWCLIENT ps )
 			{
 				if (c1!=0x8000)
 				{
-					pc_currchar->setSkinColor(0xF000);
-					pc_currchar->setOldSkinColor(0xF000);
+					pc_currchar->setColor(0xF000);
+					pc_currchar->setOldColor(0xF000);
 				}
 			}
 		}
@@ -1319,15 +1319,15 @@ void command_skin( NXWCLIENT ps )
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 
-		body = pc_currchar->GetBodyType();
+		body = pc_currchar->getId();
 		k = (strtonum(1,16) << 8) | strtonum(2,16);
 		if ((k & 0x4000) && (body >= BODY_MALE && body <= 0x03E1))
 			k = 0xF000;
 
 		if (k != 0x8000)
 		{
-			pc_currchar->setSkinColor(k);
-			pc_currchar->setOldSkinColor(k);
+			pc_currchar->setColor(k);
+			pc_currchar->setOldColor(k);
 			pc_currchar->teleport();
 		}
 	}
@@ -2224,10 +2224,10 @@ void target_addNpc( NXWCLIENT ps, P_TARGET t )
 		P_CHAR pc=archive::character::New();
 
 		pc->setCurrentName("Dummy");
-		pc->SetBodyType( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
-		pc->SetOldBodyType( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
-		pc->setSkinColor(0);
-		pc->setOldSkinColor(0);
+		pc->setId( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
+		pc->setOldId( DBYTE2WORD( t->buffer[0], t->buffer[1] ) );
+		pc->setColor(0);
+		pc->setOldColor(0);
 		pc->SetPriv(0x10);
 
 		Location loc = t->getLocation();
@@ -2631,7 +2631,7 @@ void command_gy( NXWCLIENT ps )
 	UI16 model, color, font;
 
 	id = pc->getSerial32();
-	model = pc->GetBodyType();
+	model = pc->getId();
 	color = ShortFromCharPtr(buffer[s] +4);
 	font = (buffer[s][6]<<8)|(pc->fonttype%256);
 
@@ -2676,7 +2676,7 @@ void command_yell( NXWCLIENT ps )
 	UI16 model, color, font;
 
 	id = pc->getSerial32();
-	model = pc->GetBodyType();
+	model = pc->getId();
 	color = ShortFromCharPtr(buffer[s] +4);
 	font = (buffer[s][6]<<8)|(pc->fonttype%256);
 
@@ -3138,12 +3138,12 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 			else {
 				if (! ((color & 0x4000) || (color & 0x8000)) )
 				{
-					pi->color=color;
+					pi->setColor( color );
 				}
 
 				if (color == 0x4631)
 				{
-					pi->color=color;
+					pi->setColor( color );
 				}
 
 				pi->Refresh();
@@ -3160,7 +3160,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 			}
 			else {
 				
-				UI16 body = pc->GetBodyType();
+				UI16 body = pc->getId();
 
 				if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
 
@@ -3168,8 +3168,8 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 
 				if (color != 0x8000)
 				{
-					pc->setSkinColor(color);
-					pc->setOldSkinColor(color);
+					pc->setColor(color);
+					pc->setOldColor(color);
 					pc->teleport( TELEFLAG_NONE );
 
 				}
@@ -3258,8 +3258,8 @@ void target_setid( NXWCLIENT ps, P_TARGET t )
 		P_CHAR pc=pointers::findCharBySerial( serial );
 		VALIDATEPC(pc);
 
-		pc->SetBodyType( value );
-		pc->SetOldBodyType( value );
+		pc->setId( value );
+		pc->setOldId( value );
 		pc->teleport();
 	}
 	else {
@@ -3597,10 +3597,10 @@ void target_makegm( NXWCLIENT ps, P_TARGET t )
 
     pc->unmountHorse();
     pc->gmrestrict = 0;
-    pc->SetBodyType(BODY_GMSTAFF);
-    pc->SetOldBodyType(BODY_GMSTAFF);
-    pc->setSkinColor(0x8021);
-    pc->setOldSkinColor(0x8021);
+    pc->setId(BODY_GMSTAFF);
+    pc->setOldId(BODY_GMSTAFF);
+    pc->setColor(0x8021);
+    pc->setOldColor(0x8021);
     pc->SetPriv(0xF7);
     pc->priv2 = (unsigned char) (0xD9);
 
@@ -3674,10 +3674,10 @@ void target_makecns( NXWCLIENT ps, P_TARGET t )
         if (pc->account==0) pc->priv3[u]=0xffffffff;
     }
 
-    pc->SetBodyType(BODY_GMSTAFF);
-    pc->SetOldBodyType(BODY_GMSTAFF);
-    pc->setSkinColor(0x8003);
-    pc->setOldSkinColor(0x8002);
+    pc->setId(BODY_GMSTAFF);
+    pc->setOldId(BODY_GMSTAFF);
+    pc->setColor(0x8003);
+    pc->setOldColor(0x8002);
     pc->SetPriv(0xB6);
     pc->SetPriv2(0x008D);
     pc->gmrestrict = 0;

@@ -187,7 +187,7 @@ void cTriggerContext::parseIAddCommand(char* par)
     // Added colormem token here! by Magius(CHE) §
     if( ISVALIDPI(pi) ) {
 		if( m_nColor1!=0xFF ) {
-			pi->color = DBYTE2WORD( m_nColor1, m_nColor2 );
+			pi->setColor( DBYTE2WORD( m_nColor1, m_nColor2 ) );
 			pi->Refresh();
 		}
     }
@@ -323,7 +323,7 @@ cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigt
 */
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_CHAR pc, int trigtype)
 {
-	init(number, s, trigtype, pc->GetBodyType());
+	init(number, s, trigtype, pc->getId());
 	m_pcNpc = pc;
 	if (trigtype==TRIGMODE_NPCENVOKE) {
 		P_ITEM pi = pointers::findItemBySerial(m_pcCurrChar->envokeitem);
@@ -758,7 +758,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 
 				pc->setId( DBYTE2WORD( array[0], array[1] ) );
 				if( m_nColor1 != 0xFF)
-					pc->color = DBYTE2WORD( m_nColor1, m_nColor2 );
+					pc->setColor( DBYTE2WORD( m_nColor1, m_nColor2 ) );
 
 				if( ISVALIDPC( m_pcCurrChar ) ) {
 					P_ITEM pack=m_pcCurrChar->getBackpack();
@@ -1241,8 +1241,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			fillIntArray(par, array, 2, 0, 16);
 
 			if ((ISNPC(m_nTriggerType))&&(m_pcNpc!=0)) {
-			m_pcNpc->SetBodyType((array[0]<<8)|(array[1]%256));
-			m_pcNpc->SetOldBodyType((array[0]<<8)|(array[1]%256));
+			m_pcNpc->setId( DBYTE2WORD( array[0], array[1] ) );
+			m_pcNpc->setOldId( DBYTE2WORD( array[0], array[1] ) );
 			for (int j = 0; j < now; j++)
 				if (perm[j] && char_inVisRange(m_pcNpc,MAKE_CHAR_REF(currchar[j])))
 				m_pcNpc->teleport();

@@ -638,7 +638,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 						pc_s->targserial=INVALID;
 					}
 
-					SendUpdatePlayerPkt(s, pc_s->getSerial32(), pc_s->GetBodyType(), charpos, dir, pc_s->getSkinColor(), flag, hi_color);
+					SendUpdatePlayerPkt(s, pc_s->getSerial32(), pc_s->getId(), charpos, dir, pc_s->getColor(), flag, hi_color);
 				}
 			}
 		}
@@ -790,7 +790,7 @@ void cChar::walkNextStep()
 	}
 
 
-	P_CREATURE_INFO creature = creatures.getCreature( GetBodyType() );
+	P_CREATURE_INFO creature = creatures.getCreature( getId() );
 	if( creature!=NULL ) {
 		if( creature->canFly() && ( fly_steps>0 ) )
 			if ( chance( 20 ) )
@@ -836,7 +836,7 @@ void cChar::follow( P_CHAR pc )
 			safedelete( path );
 		return;
 	}
-	if ( UI32(dist( getPosition(), pc->getPosition() )) <= 1 ) { // Target reached
+	if ( dist( getPosition(), pc->getPosition() ) <= 1.0f ) { // Target reached
 		if ( hasPath() )
 			safedelete( path );
 		facexy( pc->getPosition().x, pc->getPosition().y );
@@ -962,7 +962,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 
 	/////////// LB's flying creatures stuff, flying animation if they stand still ///////
 
-	P_CREATURE_INFO creature = creatures.getCreature( pc_i->GetBodyType() );
+	P_CREATURE_INFO creature = creatures.getCreature( pc_i->getId() );
 	if( creature!=NULL )
 		if( creature->canFly() && ( pc_i->fly_steps>0 ) )
 			if ( chance( 20 ) )
@@ -1203,7 +1203,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 
 		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
 			
-			P_CREATURE_INFO creature = creatures.getCreature( pc->GetBodyType() );
+			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
 			if( creature!=NULL )
 				if( creature->canFly() )
 					if( pc->fly_steps > 0 ) 
@@ -1247,7 +1247,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 		else
 			hi_color = 3;		// grey
 
-		SendUpdatePlayerPkt( ps->toInt(), pc->getSerial32(), pc->GetBodyType(), pc->getPosition(), dir, pc->getSkinColor(), flag, hi_color );
+		SendUpdatePlayerPkt( ps->toInt(), pc->getSerial32(), pc->getId(), pc->getPosition(), dir, pc->getColor(), flag, hi_color );
 	}
 }
 

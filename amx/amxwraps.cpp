@@ -1270,7 +1270,7 @@ NATIVE(_color)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( pi, INVALID );
-	return pi->color;
+	return pi->getColor();
 }
 
 /*
@@ -3324,7 +3324,7 @@ NATIVE( _chr_showMessage )
 		UI08 sysname[30]={ 0x00, };
 		strcpy((char *)sysname, "System");
 
-		SendSpeechMessagePkt(s, pc2->getSerial32(), pc2->GetBodyType(), 6, params[4], (UI16)pc1->fonttype, sysname, g_cAmxPrintBuffer);
+		SendSpeechMessagePkt(s, pc2->getSerial32(), pc2->getId(), 6, params[4], (UI16)pc1->fonttype, sysname, g_cAmxPrintBuffer);
 		return 0;
 	}
 	return INVALID;

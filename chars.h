@@ -273,24 +273,7 @@ class cChar : public cObject
 	//
 	//	Body Type
 	//
-	private:
-		UI16			xid;				//!< Backup of body type for ghosts
-	public:
-		UI16		GetBodyType();
-		void			SetBodyType(UI16 newBody);
-		UI16		GetOldBodyType();
-		void			SetOldBodyType(UI16 newBody);
 		const LOGICAL		HasHumanBody();
-	//
-	//	Skin Color
-	//
-	private:
-		UI16			xskin;				//!< Backup of skin color
-	public:
-		UI16			getSkinColor();
-		void			setSkinColor( UI16 newColor );
-		UI16			getOldSkinColor();
-		void			setOldSkinColor( UI16 newColor );
 
 		void 			showLongName( P_CHAR showToWho, LOGICAL showSerials );
 //@}

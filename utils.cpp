@@ -108,14 +108,14 @@ void cScriptCommand::execute( NXWSOCKET s )
 	    return;
 	} else if ( command == "POLY" ) {
 		int tmp=hex2num(param);
-		pc->SetBodyType(tmp);
-		pc->SetOldBodyType(tmp);
+		pc->setId(tmp);
+		pc->setOldId(tmp);
 		pc->teleport();
 		return;
 	} else if ( command == "SKIN" ) {
 		int tmp=hex2num(param);
-		pc->setSkinColor(tmp);
-		pc->setOldSkinColor(tmp);
+		pc->setColor(tmp);
+		pc->setOldColor(tmp);
 		pc->teleport();
 		return;
 	} else if ( command == "LIGHT" ) {

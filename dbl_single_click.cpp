@@ -637,12 +637,12 @@ void doubleclick(NXWCLIENT ps)
 			pi->ReduceAmount(1);
 			return;
 	case ITYPE_POLYMORPH: 
-			pc->SetBodyType( pi->morex );
+			pc->setId( pi->morex );
 			pc->teleport();
 			pi->type = ITYPE_POLYMORPH_BACK;
 			return;
 	case ITYPE_POLYMORPH_BACK:
-			pc->SetBodyType( pc->GetOldBodyType() );
+			pc->setId( pc->getOldId() );
 			pc->teleport();
 			pi->type = ITYPE_POLYMORPH;
 			return;
@@ -820,7 +820,7 @@ void target_dyevat( NXWCLIENT ps, P_TARGET t )
 
 		if( pc->getSerial32()==curr->getSerial32() || pi->isInWorld())
 		{
-			pi->color = t->buffer[0];
+			pi->setColor( t->buffer[0] );
 			pi->Refresh();
 			curr->playSFX(0x023E); // plays the dye sound, LB
 		} 
@@ -848,7 +848,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x0FAB:// dye vat
 			targ = clientInfo[s]->newTarget( new cItemTarget() );
 			targ->code_callback=target_dyevat;
-			targ->buffer[0]=pi->color;
+			targ->buffer[0]=pi->getColor();
 			targ->send( ps );
 			ps->sysmsg( TRANSLATE("Select the clothing to use this on.") );
 			return;// dye vat
@@ -1296,7 +1296,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 	P_ITEM pack	= target->getBackpack();
 
 
-	switch( target->GetBodyType() )
+	switch( target->getId() )
 	{
 		// Handle pack animals
 		case	0x0123	:
@@ -1387,7 +1387,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 		case 0x0319	:	//	skeletal mount
 		case 0x031a	:	//	swamp dragon
 		case 0x031f	:	//	armor dragon*/
-	std::map<SI32,SI32>::iterator iter = mountinfo.find(target->GetBodyType());
+	std::map<SI32,SI32>::iterator iter = mountinfo.find(target->getId());
 	if( iter!=mountinfo.end() ) {
 		if ( target->npc )	// riding a morphed player char is not allowed
 			{

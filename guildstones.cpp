@@ -70,7 +70,7 @@ void cGuilds::StonePlacement(int s)
 			}
 			pStone->setId( 0x0ED5 );
 			pStone->setCurrentName( "Guildstone for a unnamed guild" );
-			if ( pc->GetBodyType() == BODY_FEMALE )
+			if ( pc->getId() == BODY_FEMALE )
 				pc->SetGuildTitle("Guildmistress");
 			else
 				pc->SetGuildTitle("Guildmaster");

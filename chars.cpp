@@ -137,8 +137,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	setPosition( 100, 100, 0 );
 	setOldPosition( 0, 0, 0, 0 );
 	dir=0; //&0F=Direction
-	xid=0x0190; // Character body type
-	xskin=0x0000; // Skin color
+	setOldId( 0x0190 ); // Character body type
+	setOldColor( 0x0000 ); // Skin color
 	keyserial=INVALID;  // for renaming keys
 	SetPriv(0); // 1:GM clearance, 2:Broadcast, 4:Invulnerable, 8: single click serial numbers
 	// 10: Don't show skill titles, 20: GM Pagable, 40: Can snoop others packs, 80: Counselor clearance
@@ -957,7 +957,7 @@ void cChar::unHide()
 					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					SendDrawGamePlayerPkt(i, my_serial, getId(), 0x00, color, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
+					SendDrawGamePlayerPkt(i, my_serial, getId(), 0x00, getColor(), (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
 				}
 			}
 		}
@@ -1121,7 +1121,7 @@ void cChar::showContainer(P_ITEM pCont)
 		ShortToCharPtr(pi->getPosition().x, bpitem +9);
 		ShortToCharPtr(pi->getPosition().y, bpitem +11);
 		LongToCharPtr(pCont->getSerial32(), bpitem +13);
-		ShortToCharPtr(pi->color, bpitem +17);
+		ShortToCharPtr(pi->getColor(), bpitem +17);
 		//bpitem[19]=pi->decaytime=0;//HoneyJar // reseting the decaytimer in the backpack
 		bpitem[19]= 0;
 		Xsend(s, bpitem, 19);
@@ -1865,7 +1865,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		if ( IsHidden() )
 			flag |= 0x80;
 
-		SendDrawGamePlayerPkt(socket, getSerial32(), getId(), 0x00, color, flag, pos, 0x0000, dir | 0x80, true);
+		SendDrawGamePlayerPkt(socket, getSerial32(), getId(), 0x00, getColor(), flag, pos, 0x0000, dir | 0x80, true);
 
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -2537,8 +2537,8 @@ void cChar::resurrect( NXWCLIENT healer )
 		*/
 		modifyFame(0);
 		playSFX( 0x0214);
-		setId( xid );
-		color = xskin;
+		setId( getOldId() );
+		setColor( getOldColor() );
 		attackerserial=INVALID;
 		ResetAttackFirst();
 		war=0;
@@ -2672,7 +2672,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 			return;
 		}
 		morphed = false; //otherwise it will inf-loop
-		morph( xid, xskin, oldhairstyle, oldhaircolor, oldbeardstyle, oldbeardcolor,getRealNameC(), false);
+		morph( getOldId(), getOldColor(), oldhairstyle, oldhaircolor, oldbeardstyle, oldbeardcolor,getRealNameC(), false);
 		return;
 	}
 
@@ -2685,19 +2685,19 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 
 	if (bBackup)
 	{
-		xid = getId();
-		xskin = color;
+		setOldId( getId() );
+		setOldColor( getColor() );
 
 		setRealName( getCurrentNameC() );
 		if(ISVALIDPI(pbeard))
 		{
 			oldbeardstyle = pbeard->getId();
-			oldbeardcolor = pbeard->color;
+			oldbeardcolor = pbeard->getColor();
 		}
 		if(ISVALIDPI(phair))
 		{
 			oldhairstyle = phair->getId();
-			oldhaircolor = phair->color;
+			oldhaircolor = phair->getColor();
 		}
 	}
 
@@ -2705,7 +2705,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		setId( bodyid );
 
 	if(skincolor!=INVALID)
-		color = (UI16) skincolor;
+		setColor( skincolor );
 
 	if (newname!=NULL)
 		setCurrentName(newname);
@@ -2715,7 +2715,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		if (beardstyle!=INVALID)
 			pbeard->setId( beardstyle );
 		if (beardcolor!=INVALID)
-			pbeard->color = beardcolor;
+			pbeard->setColor( beardcolor );
 	}
 
 	if(ISVALIDPI(phair))
@@ -2723,7 +2723,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		if (hairstyle!=INVALID)
 			phair->setId( hairstyle );
 		if (haircolor!=INVALID)
-			phair->color = haircolor;
+			phair->setColor( haircolor );
 	}
 
 	morphed = bBackup;
@@ -2928,7 +2928,7 @@ void cChar::Kill()
 	poisoned = POISON_NONE;
 	poison = hp = 0;
 
-	if ( xid == BODY_FEMALE)
+	if( getOldId() == BODY_FEMALE)
 	{
 		switch(RandomNum(0, 3)) // AntiChrist - uses all the sound effects
 		{
@@ -2938,7 +2938,7 @@ void cChar::Kill()
 			case 3:	playSFX( 0x0153 ); break;// Female Death
 		}
 	}
-	else if ( xid  == BODY_MALE)
+	else if ( getOldId()  == BODY_MALE)
 	{
 		switch( RandomNum(0, 3) ) // AntiChrist - uses all the sound effects
 		{
@@ -2953,7 +2953,7 @@ void cChar::Kill()
 
 	if( polymorph )
 	{ // legacy code : should be cut when polymorph will be translated to morph
-		setId( xid );
+		setId( getOldId() );
 		polymorph=false;
 		teleport( TELEFLAG_SENDWORNITEMS );
 	}
@@ -3185,7 +3185,7 @@ void cChar::Kill()
 	char szCorpseName[128];
 	sprintf(szCorpseName, "corpse of %s", getCurrentNameC());
 
-	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, xskin, getPosition());
+	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, getOldColor(), getPosition());
 	if (!ISVALIDPI(pCorpse))
 	{
 	    // panic
@@ -3208,7 +3208,7 @@ void cChar::Kill()
 		pCorpse->more4 = char( SrvParms->playercorpsedecaymultiplier&0xff ); // how many times longer for the player's corpse to decay
 	}
 
-	pCorpse->amount = xid; // Amount == corpse type
+	pCorpse->amount = getOldId(); // Amount == corpse type
 	pCorpse->morey = hadHumanBody;
 
 	pCorpse->carve=carve;               //store carve section - AntiChrist
@@ -3502,26 +3502,6 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	sendbpitem(s, pi);
 
 	return 0;
-}
-
-UI16 cChar::GetBodyType()
-{
-	return getId();
-}
-
-void cChar::SetBodyType(UI16 newBody)
-{
-	setId( newBody );
-}
-
-UI16 cChar::GetOldBodyType()
-{
-	return xid;
-}
-
-void cChar::SetOldBodyType(UI16 newBody)
-{
-	xid = newBody;
 }
 
 const LOGICAL cChar::HasHumanBody()
@@ -4279,25 +4259,6 @@ void cChar::openSpecialBank(P_CHAR pc)
 }
 
 
-UI16 cChar::getSkinColor()
-{
-	return (UI16) color;
-}
-
-void cChar::setSkinColor( UI16 newColor )
-{
-	color = newColor;
-}
-
-UI16 cChar::getOldSkinColor()
-{
-	return (UI16) xskin;
-}
-
-void cChar::setOldSkinColor( UI16 newColor )
-{
-	xskin = newColor;
-}
 
 /*!
 \author Luxor
@@ -4960,7 +4921,7 @@ void cChar::do_lsd()
 			if(!ISVALIDPI(pi))
 				continue;
 
-			UI16 color=pi->color; // fetch item's color and covert to 16 bit
+			UI16 color=pi->getColor(); // fetch item's color and covert to 16 bit
 			if (rand()%44==0)
 				color+= pi->getPosition().x  - pi->getPosition().y;
 			else

@@ -318,21 +318,21 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	if (buffer[s][0x46] != 0x00)
 	{
-		pc->SetBodyType( BODY_FEMALE );
+		pc->setId( BODY_FEMALE );
 	}
 	else {
-		pc->SetBodyType( BODY_MALE );
+		pc->setId( BODY_MALE );
 	}
 
-	pc->setSkinColor(ShortFromCharPtr(buffer[s] + 0x50) | 0x8000);
+	pc->setColor(ShortFromCharPtr(buffer[s] + 0x50) | 0x8000);
 
-	if ( (pc->getSkinColor()<0x83EA) || (pc->getSkinColor()>0x8422) )
+	if ( (pc->getColor()<0x83EA) || (pc->getColor()>0x8422) )
 	{
-		pc->setSkinColor(0x83EA);
+		pc->setColor(0x83EA);
 	}
 
-	pc->SetOldBodyType(pc->GetBodyType());
-	pc->setOldSkinColor(pc->getSkinColor());
+	pc->setOldId( pc->getId() );
+	pc->setOldColor( pc->getColor() );
 	pc->SetPriv(defaultpriv1);
 	pc->priv2=defaultpriv2;
 
@@ -412,24 +412,24 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		P_ITEM pi = item::CreateFromScript( "$item_short_hair" );
 		VALIDATEPI(pi);
 		pi->setId( ShortFromCharPtr(buffer[s] + 0x52) );
-		pi->color = ShortFromCharPtr(buffer[s] + 0x54);
-		if ((pi->color<0x044E) || (pi->color>0x04AD) )
+		pi->setColor( ShortFromCharPtr(buffer[s] + 0x54) );
+		if ((pi->getColor()<0x044E) || (pi->getColor()>0x04AD) )
 		{
-			pi->color =0x044E;
+			pi->setColor( 0x044E );
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_HAIR;
 	}
 
-	if ( (validbeard(buffer[s][0x56],buffer[s][0x57])) && (pc->GetBodyType() == BODY_MALE) )
+	if ( (validbeard(buffer[s][0x56],buffer[s][0x57])) && (pc->getId() == BODY_MALE) )
 	{
 		P_ITEM pi = item::CreateFromScript( "$item_short_beard" );
 		VALIDATEPI(pi);
 		pi->setId( ShortFromCharPtr(buffer[s] + 0x56) );
-		pi->color = ShortFromCharPtr(buffer[s] + 0x58);
-		if ( (pi->color<0x044E) || (pi->color>0x04AD) )
+		pi->setColor( ShortFromCharPtr(buffer[s] + 0x58) );
+		if ( (pi->getColor()<0x044E) || (pi->getColor()>0x04AD) )
 		{
-			pi->color =0x044E;
+			pi->setColor( 0x044E );
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_BEARD;
@@ -446,14 +446,14 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 // - create pants
 	if( RandomNum(0, 1)==0 )
 	{
-		if( pc->GetBodyType() == BODY_MALE )
+		if( pc->getId() == BODY_MALE )
 			pi= item::CreateFromScript( "$item_long_pants");
 		else
 			pi= item::CreateFromScript( "$item_a_skirt");
 	}
 	else
 	{
-		if( pc->GetBodyType() == BODY_MALE  )
+		if( pc->getId() == BODY_MALE  )
 			pi= item::CreateFromScript( "$item_short_pants");
 		else
 			pi= item::CreateFromScript( "$item_a_kilt");
@@ -462,7 +462,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	VALIDATEPI(pi);
 
 	// pant/skirt color -> old client code, random color
-	pi->color = ShortFromCharPtr(buffer[s] +102);
+	pi->setColor( ShortFromCharPtr(buffer[s] +102) );
 	pi->setCont(pc);
 
 	if( !(rand()%2) )
@@ -471,7 +471,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pi= item::CreateFromScript( "$item_shirt");
 
 	VALIDATEPI(pi);
-	pi->color = ShortFromCharPtr(buffer[s] +100);
+	pi->setColor( ShortFromCharPtr(buffer[s] +100) );
 	pi->setCont(pc);
 
 // what is this ??? (Anthalir)
@@ -1588,7 +1588,7 @@ void impaction(int s, int act)
 		pc->playAction(0x1b);
 		return;
 	}
-	if ( pc->isMounting() || ( pc->GetBodyType() < 0x190 ) && act == 0x22 )
+	if ( pc->isMounting() || ( pc->getId() < 0x190 ) && act == 0x22 )
 		return;
 	pc->playAction(act);
 }

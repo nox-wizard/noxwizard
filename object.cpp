@@ -101,8 +101,9 @@ cObject::cObject()
 	old_position = Loc(0,0,0);
 	position = Loc(0,0,0);
 	ScriptID = 0;
-	color = 0;
-	id = 0;
+	
+	color = color_old = 0;
+	id = id_old = 0;
 
 	//amxEvents = 0;
 	tempfx = NULL;
@@ -1007,3 +1008,34 @@ UI16 cObject::getId()
 {
 	return this->id;
 }
+
+void cObject::setOldId( UI16 oldId )
+{
+	this->id_old = oldId;
+}
+
+UI16 cObject::getOldId()
+{
+	return this->id_old;
+}
+
+void cObject::setColor( COLOR newColor )
+{
+	this->color = newColor;
+}
+
+COLOR cObject::getColor()
+{
+	return this->color;
+}
+
+void cObject::setOldColor( COLOR oldId )
+{
+	this->color_old = oldId;
+}
+
+COLOR cObject::getOldColor()
+{
+	return this->color_old;
+}
+

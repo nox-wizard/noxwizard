@@ -493,7 +493,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		{
 			resetDragging = true;
 		}
-		else if ( (pc->GetBodyType() == BODY_MALE) && ( pi->getId()==0x1c00 || pi->getId()==0x1c02 || pi->getId()==0x1c04 || pi->getId()==0x1c06 || pi->getId()==0x1c08 || pi->getId()==0x1c0a || pi->getId()==0x1c0c ) ) // Ripper...so males cant wear female armor
+		else if ( (pc->getId() == BODY_MALE) && ( pi->getId()==0x1c00 || pi->getId()==0x1c02 || pi->getId()==0x1c04 || pi->getId()==0x1c06 || pi->getId()==0x1c08 || pi->getId()==0x1c0a || pi->getId()==0x1c0c ) ) // Ripper...so males cant wear female armor
 		{
 			ps->sysmsg(TRANSLATE("You cant wear female armor!"));
 			resetDragging = true;

@@ -141,7 +141,7 @@ namespace item
 					if	( lha == "COLOR" )
 					{
 						tmp = hex2num(rha);
-						pi->color=tmp;
+						pi->setColor(tmp);
 					}
 					else if ( lha == "CONTAINS" )
 					{
@@ -182,7 +182,7 @@ namespace item
 					else if ( lha == "COLORLIST" )
 					{
 						std::string value(cObject::getRandomScriptValue("RANDOMCOLOR", rha ));
-						pi->color= hex2num(value);
+						pi->setColor( hex2num(value) );
 					}
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
@@ -471,7 +471,7 @@ namespace item
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
    		VALIDATEPIR( pi, NULL );
     	pi->setId( id );
-		pi->color= color ;
+		pi->setColor( color );
     		pi->pileable = pile;
 
 		if(cName!=NULL)
@@ -758,7 +758,7 @@ namespace item
 						else if (!(strcmp("COLOR",script1)))
 						{
 							tmp=hex2num(script2);
-							pi->color=tmp;
+							pi->setColor( tmp );
 						}
 					break;
 

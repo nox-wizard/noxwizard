@@ -2068,7 +2068,7 @@ cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 {
 	VALIDATEPC( pc );
 	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL )
-		addIcon( 0x2106, 0, pc->GetOldBodyType(), string("Undo polymorph") );
+		addIcon( 0x2106, 0, pc->getOldId(), string("Undo polymorph") );
 	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
 	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
 	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
@@ -2113,7 +2113,7 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	pc->delTempfx( tempfx::SPELL_WEAKEN );
 
 
-	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->GetOldBodyType() ) {
+	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->getOldId() ) {
 		pc->delTempfx( tempfx::SPELL_POLYMORPH );
 		return;
 	}

@@ -485,7 +485,7 @@ void wearIt(const NXWSOCKET  s, const P_ITEM pi)
 	wearitem[7]= 0x00;
 	wearitem[8]= pi->layer;
 	LongToCharPtr(pi->getContSerial(),wearitem+9);
-	ShortToCharPtr(pi->color, wearitem +13);
+	ShortToCharPtr(pi->getColor(), wearitem +13);
 	Xsend(s, wearitem, 15);
 //AoS/	Network->FlushBuffer(s);
 }
@@ -547,7 +547,7 @@ void backpack2(NXWSOCKET s, SERIAL serial) // Send corpse stuff
 			ShortToCharPtr(pi->getPosition().x, bpitem +9);
 			ShortToCharPtr(pi->getPosition().y, bpitem +11);
 			LongToCharPtr(serial, bpitem +13);
-			ShortToCharPtr(pi->color, bpitem +17);
+			ShortToCharPtr(pi->getColor(), bpitem +17);
 			Xsend(s, bpitem, 19);
 		}
 	}
@@ -589,7 +589,7 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	}
 	else
 	{//else like a normal item
-		ShortToCharPtr(pi->color, bpitem +17);
+		ShortToCharPtr(pi->getColor(), bpitem +17);
 	}
 
 	// we need to find the topmost container that the item is in
@@ -718,7 +718,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 			ShortToCharPtr(0x00C6, itmput +16);
 		} else
 		{
-			ShortToCharPtr(pi->color, itmput +16);
+			ShortToCharPtr(pi->getColor(), itmput +16);
 		}
 
 		itmput[18]=0;
@@ -826,7 +826,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 		if (pi->visible==3)
 		{
-			if ((pc->GetBodyType() == BODY_GMSTAFF) || !pc->IsGM())
+			if ((pc->getId() == BODY_GMSTAFF) || !pc->IsGM())
 				itmput[18]|=0x80;
 		}
 
@@ -1068,7 +1068,7 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 	bool ghost;
 
 
-	if ((pc->GetBodyType() == BODY_DEADMALE) || (pc->GetBodyType() == BODY_DEADFEMALE)) ghost = true; else ghost = false;
+	if ((pc->getId() == BODY_DEADMALE) || (pc->getId() == BODY_DEADFEMALE)) ghost = true; else ghost = false;
 
 	LongToCharPtr(pc->getSerial32(), statstring +3);
 	strncpy((char *)&statstring[7], pc->getCurrentNameC(), 30); // can not be more than 30 at least no without changing packet lenght
@@ -1105,8 +1105,8 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 								//       0x03  like 1, extended info
 								//       0x04  even more extended info (client 4.0 and above)
 
-	if (pc->GetBodyType() == BODY_FEMALE) statstring[43]=1;
-	else if (pc->GetBodyType() == BODY_DEADFEMALE) statstring[43]=1;
+	if (pc->getId() == BODY_FEMALE) statstring[43]=1;
+	else if (pc->getId() == BODY_DEADFEMALE) statstring[43]=1;
 	else statstring[43]=0; // LB, prevents very female looking male players ... :-)
 
 	//Changed so ghosts can see their str, dex and int, their char haven't lost those attributes.
@@ -1301,7 +1301,7 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 			UI16 model,font, color;
 			
 			id = pc->getSerial32();
-			model = pc->GetBodyType();
+			model = pc->getId();
 			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
 			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
@@ -1328,7 +1328,7 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 			memcpy(unicodetext, Unicode::temp, ucl);
 
 			id = pc->getSerial32();
-			model = pc->GetBodyType();
+			model = pc->getId();
 			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
 			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
@@ -1966,7 +1966,7 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 	Location charpos = pc->getPosition();
 
 	LongToCharPtr(pc->getSerial32(), oc +3);
-	ShortToCharPtr(pc->GetBodyType(), oc +7); 	// Character art id
+	ShortToCharPtr(pc->getId(), oc +7); 	// Character art id
 	ShortToCharPtr(charpos.x, oc+9);
 	ShortToCharPtr(charpos.y, oc+11);
 	if (z)
@@ -1974,7 +1974,7 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 	else
 		oc[13]= charpos.z;
 	oc[14]= pc->dir; 				// Character direction
-	ShortToCharPtr(pc->getSkinColor(), oc +15);	// Character skin color
+	ShortToCharPtr(pc->getColor(), oc +15);	// Character skin color
 	oc[17]=0; 					// Character flags
 	if (pc->IsHidden() || !(pc->IsOnline()||pc->npc))
 		oc[17]|=0x80; 				// .... show hidden state correctly
@@ -2012,10 +2012,10 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 				ShortToCharPtr(pj->getId(), oc+k+4);
 				oc[k+6]=pj->layer;
 				k += 7;
-				if (pj->color != 0)
+				if (pj->getColor() != 0)
 				{
 					oc[k-3]|=0x80;
-					ShortToCharPtr(pj->color, oc+k);
+					ShortToCharPtr(pj->getColor(), oc+k);
 					k+= 2;
 				}
 				layers[pj->layer] = 1;
@@ -2177,7 +2177,7 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 				ShortToCharPtr(loopexit, m1+m1t+9); 
 				ShortToCharPtr(loopexit, m1+m1t+11);
 				LongToCharPtr(pi->getSerial32(), m1+m1t+13); //Container serial number
-				ShortToCharPtr(pj->color, m1+m1t+17);
+				ShortToCharPtr(pj->getColor(), m1+m1t+17);
 				m1[4]++; // Increase item count.
 				m1t += 19;
 				value=pj->value;
@@ -2277,7 +2277,7 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 						UI08 namelen;
 						LongToCharPtr(pj1->getSerial32(), m1+m1t+0);
 						ShortToCharPtr(pj1->getId(),m1+m1t+4);
-						ShortToCharPtr(pj1->color,m1+m1t+6);
+						ShortToCharPtr(pj1->getColor(),m1+m1t+6);
 						ShortToCharPtr(pj1->amount,m1+m1t+8);
 						value=pj->value;
 						value=calcValue(DEREF_P_ITEM(pj1), value);

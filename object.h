@@ -180,13 +180,22 @@ public:
 	virtual	void		Delete();
 
 private:
+	UI16 id_old;
 	UI16 id;
 public:
 	void setId( UI16 newId );
 	UI16 getId();
+	void setOldId( UI16 oldId );
+	UI16 getOldId();
 
-public:
+private:
 	COLOR color;
+	COLOR color_old;
+public:
+	void setColor( COLOR newColor );
+	COLOR getColor();
+	void setOldColor( COLOR oldColor );
+	COLOR getOldColor();
 
 } PACK_NEEDED;
 

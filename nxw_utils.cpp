@@ -171,7 +171,7 @@ void usehairdye(NXWSOCKET  s, P_ITEM piDye)	// x is the hair dye bottle object n
 		if(ISVALIDPI(pi))
 			if(pi->layer==LAYER_BEARD || pi->layer==LAYER_HAIR)
 			{
-				pi->color = piDye->color; //Now change the color to the hair dye bottle color!
+				pi->setColor( piDye->getColor() ); //Now change the color to the hair dye bottle color!
 				pi->Refresh();
 			}
 	}

@@ -63,7 +63,7 @@ cItem& cItem::operator=(cItem& b)
         setId( b.getId() );
         //setPosition(b.getPosition());
         //setOldPosition(b.getOldPosition());
-        color = b.color;
+        setColor( b.getColor() );
         setContSerial(INVALID);
         //setContSerial(b.getContSerial(true), true);
         layer = b.layer;
@@ -664,7 +664,7 @@ inline bool operator ==( cItem& a, cItem& b ) {
 			( a.getSerial32() != b.getSerial32() ) &&
 			( a.getScriptID() == b.getScriptID() ) &&
 			( a.getId() == b.getId() ) &&
-			( a.color == b.color ) &&
+			( a.getColor() == b.getColor() ) &&
 			( a.poisoned == b.poisoned );
 }
 
@@ -768,7 +768,7 @@ int cItem::DeleteAmount(int amount, short id, short color)
 		P_ITEM pi=si.getItem();
 		if(ISVALIDPI(pi) && (rest > 0) )
 		{
-			if (pi->getId()==id && (color==INVALID || (pi->color==color)))
+			if (pi->getId()==id && (color==INVALID || (pi->getColor()==color)))
 				rest=pi->ReduceAmount(rest);
 		}
 	}
@@ -889,7 +889,7 @@ cItem::cItem( SERIAL ser )
 	setId( 0x0001 ); // Item visuals as stored in the client
 	setPosition(100, 100, 0);
 	setOldPosition( getPosition() );
-	color = 0x0000; // Hue
+	setColor( 0x0000 ); // Hue
 	contserial.serial32= INVALID; // Container that this item is found in
 	oldcontserial.serial32= INVALID;
 	layer=oldlayer=0; // Layer if equipped on paperdoll
@@ -1285,7 +1285,7 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 
 		if (!(pileable && pItem->pileable &&
 			getId()==pItem->getId() &&
-			color==pItem->color ))
+			getColor()==pItem->getColor() ))
 			return false;	//cannot stack.
 
 		if (amount+pItem->amount>65535)

@@ -555,12 +555,12 @@ namespace Commands
 
 			if (! ((color & 0x4000) || (color & 0x8000)) )
 			{
-				pi->color=color;
+				pi->setColor( color );
 			}
 
 			if (color == 0x4631)
 			{
-				pi->color=color;
+				pi->setColor( color );
 			}
 
 			pi->Refresh();
@@ -575,7 +575,7 @@ namespace Commands
 			color = ShortFromCharPtr(buffer[s] +7);
 
 
-			body = pc->GetBodyType();
+			body = pc->getId();
 
 			if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
 
@@ -583,8 +583,8 @@ namespace Commands
 
 			if (color != 0x8000)
 			{
-				pc->setSkinColor(color);
-				pc->setOldSkinColor(color);
+				pc->setColor(color);
+				pc->setOldColor(color);
 				pc->teleport( TELEFLAG_NONE );
 
 				Me->playSFX(0x023E);

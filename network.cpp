@@ -848,7 +848,7 @@ void cNetwork::enterchar(int s)
 	Location charpos= pc->getPosition();
 
 	LongToCharPtr(pc->getSerial32(), startup +1);
-	ShortToCharPtr(pc->GetBodyType(), startup +9);
+	ShortToCharPtr(pc->getId(), startup +9);
 	ShortToCharPtr(charpos.x, startup +11);
 	ShortToCharPtr(charpos.y, startup +13);
 	startup[16]= charpos.z;

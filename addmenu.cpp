@@ -387,8 +387,8 @@ void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second 
 {
 
 	Skills::MakeMenu( 
-		pc, m, skill, ISVALIDPI(first)? first->getId() : 0, ISVALIDPI(first)? first->color : 0,
-		ISVALIDPI(second)? second->getId() : 0, ISVALIDPI(second)? second->color : 0 
+		pc, m, skill, ISVALIDPI(first)? first->getId() : 0, ISVALIDPI(first)? first->getColor() : 0,
+		ISVALIDPI(second)? second->getId() : 0, ISVALIDPI(second)? second->getColor() : 0 
 	);
 	
 }
