@@ -699,8 +699,9 @@ int cChar::calcDef(SI32 x)
 		if (pi->layer > LAYER_1HANDWEAPON && pi->layer < LAYER_MOUNT) {
 			if (pi->def>0)
 			{
-				int hpPerc = int(float(pi->hp)/float(pi->maxhp)*100.0);
-				armordef = int(pi->def/100.0*hpPerc);
+				//int hpPerc = int(float(pi->hp)/float(pi->maxhp)*100.0);
+				//armordef = int(pi->def/100.0*hpPerc);
+				armordef = pi->def;
 
 				switch (pi->layer)
 				{
