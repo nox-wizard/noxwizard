@@ -622,7 +622,7 @@ static void damage(P_CHAR pa, P_CHAR pd, SpellId spellnum, int spellflags = 0, i
 
 	if (resist > evint) {
 		mod = 1.0 + (evint - resist) / 200.0;
-	} else if (resist == evint) {
+	} else if (resist == evint || pd->nxwflags[0] & NCF0_PROTECTION) { //Luxor
 		mod = 1.0 + (evint - resist) / 300.0;
 	} else {
 		mod = 1.0 + (evint - resist) / 500.0;
@@ -744,12 +744,14 @@ void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pd = sc.getChar();
 		if ( ISVALIDPC(pd) ) {
-			//<Luxor>
-			if ( spellnum == SPELL_EARTHQUAKE ) {
-				if ( ISVALIDPC( pcaster ) ) {
+			if ( ISVALIDPC( pcaster ) ) {
+				if ( spellnum == SPELL_EARTHQUAKE || spellnum == SPELL_CHAINLIGHTNING ) {
 					if ( pd->getSerial32() == pcaster->getSerial32() )
 						continue;
 				}
+			}
+			//<Luxor>
+			if ( spellnum == SPELL_EARTHQUAKE ) {
 				if ( pd->isMounting() )
 					pd->unmountHorse();
 			}
@@ -1017,12 +1019,10 @@ SpellId spellNumberFromScrollId(int id)
 
 
 
-///////////////////////////////////////////////////////////////////
-// Function name	 : castStatPumper
-// Description		 : real casting function for stat pumping spells
-// Return type		 : void
-// Author			 : Xanathar
-// Changes			 : none yet
+/*!
+\author Xanathar & Luxor
+\brief Casting function for stat pumping spells
+*/
 static void castStatPumper(SpellId spellnumber, TargetLocation& dest, P_CHAR pa, int flags, int param)
 {
 	int bonus = 10; //default
@@ -1071,27 +1071,35 @@ static void castStatPumper(SpellId spellnumber, TargetLocation& dest, P_CHAR pa,
 	switch (spellnumber)
 	{
 		case SPELL_CLUMSY:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_CLUMSY, bonus, 0, 0, duration);
 			break;
 		case SPELL_FEEBLEMIND:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_FEEBLEMIND, bonus, 0, 0, duration);
 			break;
 		case SPELL_WEAKEN:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_WEAKEN, bonus, 0, 0, duration);
 			break;
 		case SPELL_CURSE:
+			duration = int( pa->skill[MAGERY] * 0.12 );
 			tempfx::add(pa, pd, tempfx::SPELL_CURSE, bonus, bonus, bonus, duration);
 			break;
 		case SPELL_CUNNING:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_CUNNING, bonus, 0, 0, duration);
 			break;
 		case SPELL_AGILITY:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_AGILITY, bonus, 0, 0, duration);
 			break;
 		case SPELL_STRENGHT:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_STRENGHT, bonus, 0, 0, duration);
 			break;
 		case SPELL_BLESS:
+			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
 			tempfx::add(pa, pd, tempfx::SPELL_BLESS, bonus, bonus, bonus, duration);
 			break;
 		default :
@@ -1185,7 +1193,7 @@ void castFieldSpell( P_CHAR pc, int x, int y, int z, int spellnumber)
 		{
 			pi->setDecay();
 			pi->setDispellable();
-			pi->setDecayTime( uiCurrentTime+((pc->skill[MAGERY]/15)*MY_CLOCKS_PER_SEC) );
+			pi->setDecayTime( (uiCurrentTime+(int(pc->skill[MAGERY]/20)+4)*MY_CLOCKS_PER_SEC) );
 			pi->morex=pc->skill[MAGERY]; // remember casters magery skill for damage, LB
 			pi->dir=29;
 			pi->magic=2;
@@ -1236,21 +1244,26 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 	switch (spellnumber)
 	{
-		case SPELL_CLUMSY:
-		case SPELL_FEEBLEMIND:
-		case SPELL_WEAKEN:
 		case SPELL_CUNNING:
 		case SPELL_AGILITY:
 		case SPELL_STRENGHT:
 		case SPELL_BLESS:
+			if (pd!=NULL) {
+				CHECKDISTANCE(src, pd);
+				spellFX(spellnumber, src, pd);
+				castStatPumper(spellnumber, dest, src, flags|SPELLFLAG_IGNORERESISTANCE, param);
+			}
+			break;
+		case SPELL_CLUMSY:
+		case SPELL_FEEBLEMIND:
+		case SPELL_WEAKEN:
 		case SPELL_CURSE:
 			if (pd!=NULL) {
 				CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
-				castStatPumper(spellnumber, dest, src, flags, param);
+				castStatPumper(spellnumber, dest, src, flags|SPELLFLAG_IGNORERESISTANCE, param);
 			}
 			break;
-
 		case SPELL_PARALYZE:
 			if (pd != NULL) {
 				CHECKDISTANCE(src, pd);
@@ -1453,7 +1466,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_TELEKINESYS: // Luxor
 			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 10 );
 			break;
-		case SPELL_POLYMORPH:{ // Luxor
+		case SPELL_POLYMORPH:
+			{ // Luxor
 			P_MENU menu = Menus.insertMenu( new cPolymorphMenu( src ) );
 			VALIDATEPM( menu );
 			menu->show( src );
@@ -1680,7 +1694,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_SUMMON:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				nTime = (nTime==INVALID) ? src->skill[nSkill] / 10 : nTime;
+				nTime = (nTime==INVALID) ? int(src->skill[nSkill] * 0.4) : nTime;
 				nValue = (nValue==INVALID) ? xss::getIntFromDefine("$npclist_summon_list") : nValue;
 				char buffer_list[20];
 				//itoa( nValue, buffer_list, 10 ); // Only works on win os Sparhawk so let's sprintf it
@@ -1699,49 +1713,49 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_SUMMON_AIR:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				nTime = (nTime==INVALID) ? (int)(src->skill[nSkill] / 10) : nTime;
+				nTime = (nTime==INVALID) ? (int)(src->skill[nSkill] * 0.4) : nTime;
 				summon (src, xss::getIntFromDefine("$npc_summoned_air_elemental"), nTime, true, x, y, z);
 			}
 			break;
 		case SPELL_SUMMON_DEAMON:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
 				summon (src, xss::getIntFromDefine("$npc_summoned_deamon"), nTime, true, x, y, z);
 			}
 			break;
 		case SPELL_SUMMON_EARTH:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
     			summon (src, xss::getIntFromDefine("$npc_summoned_earth_elemental"), nTime, true, x, y, z);
 			}
 			break;
 		case SPELL_SUMMON_FIRE:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
     			summon (src, xss::getIntFromDefine("$npc_summoned_fire_elemental"), nTime, true, x, y, z);
 			}
 			break;
 		case SPELL_SUMMON_WATER:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
 				summon (src, xss::getIntFromDefine("$npc_summoned_water_elemental"), nTime, true, x, y, z);
 			}
 			break;
 		case SPELL_BLADESPIRITS:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
 				summon (src, xss::getIntFromDefine("$npc_summoned_blade_spirit"), nTime, false, x, y, z);
 			}
 			break;
 		case SPELL_ENERGYVORTEX:
 			if (src!=NULL) {
 				spellFX(spellnumber, src, pd);
-				if (nTime==INVALID) nTime = (src->skill[nSkill] / 10);
+				if (nTime==INVALID) nTime = int(src->skill[nSkill] * 0.4);
 				summon (src, xss::getIntFromDefine("$npc_summoned_energy_vortex"), nTime, false, x, y, z);
 			}
 			break;
@@ -1782,13 +1796,12 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			break;
 
 		case SPELL_CREATEFOOD:
-			if (src!=NULL) {
-				if (nValue == INVALID)
-					nValue = xss::getIntFromDefine("$item_french_bread");
-				item::CreateFromScript( nValue, src->getBackpack() );
-				spellFX(spellnumber, src, pd);
+			{ // Luxor
+			P_MENU menu = Menus.insertMenu( new cCreateFoodMenu( src ) );
+			VALIDATEPM( menu );
+			menu->show( src );
 			}
-		break;
+			break;
 
 
 
@@ -2114,6 +2127,48 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 			pc->addTempfx( *pc, tempfx::SPELL_FEEBLEMIND, 20, 0, 0, polyduration );
 			break;
 	}
+
+	spellFX( SPELL_POLYMORPH, pc, pc );
+}
+
+
+/*
+\brief Constructor
+\author Luxor
+\since 0.82
+*/
+cCreateFoodMenu::cCreateFoodMenu( P_CHAR pc ) : cIconListMenu()
+{
+	VALIDATEPC( pc );
+
+	addIcon( 0x9D0, 0, xss::getIntFromDefine("$item_apples"), string("Apple") );
+	addIcon( 0x103C, 0, xss::getIntFromDefine("$item_bread_loaves"), string("Bread") );
+	addIcon( 0x97C, 0, xss::getIntFromDefine("$item_wedges_of_cheese"), string("Cheese") );
+	addIcon( 0x9F2, 0, xss::getIntFromDefine("$item_cuts_of_ribs"), string("Cut of ribs") );
+	addIcon( 0x97B, 0, xss::getIntFromDefine("$item_fish_steaks"), string("Fish steak") );
+	addIcon( 0x9D1, 0, xss::getIntFromDefine("$item_grape_bunches"), string("Grape bunch") );
+	addIcon( 0x9C9, 0, xss::getIntFromDefine("$item_hams"), string("Ham") );
+	addIcon( 0x9EA, 0, xss::getIntFromDefine("$item_muffins"), string("Muffin") );
+	addIcon( 0x9D2, 0, xss::getIntFromDefine("$item_peaches"), string("Peach") );
+	addIcon( 0x9C0, 0, xss::getIntFromDefine("$item_sausages"), string("Sausage") );
+
+	question = string( "Choose a food type" );
+}
+
+/*!
+\author Luxor
+*/
+void cCreateFoodMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
+{
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc );
+
+	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
+	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get()-1 ) );
+	UI16 data = ( iter!=iconData.end() )? iter->second : INVALID;
+
+	item::CreateFromScript( data, pc->getBackpack() );
+	spellFX( SPELL_CREATEFOOD, pc, pc );
 }
 
 

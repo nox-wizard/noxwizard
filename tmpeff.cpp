@@ -563,7 +563,7 @@ void cTempfx::start()
 			break;
 
 		case SPELL_PROTECTION:
-			dest->baseskill[PARRYING] += m_nMore1;
+			dest->nxwflags[0] |= NCF0_PROTECTION;
 			break;
 
 		case GM_HIDING:
@@ -827,7 +827,7 @@ void cTempfx::executeExpireCode()
 
 		case SPELL_PROTECTION:
 			VALIDATEPC(dest);
-			dest->baseskill[PARRYING] = max(0, dest->baseskill[PARRYING] - m_nMore1);
+			dest->nxwflags[0] &= ~NCF0_PROTECTION;
 			break;
 
 		case DRINK_EMOTE:

@@ -38,7 +38,7 @@
 #define NCF0_RPOISON			16	 // char resists poison (future use)
 #define NCF0_WATERWALK			32	 // char walks on water (npc only)
 #define NCF0_TELEKINESYS		64	//<! Luxor: telekinesys spell
-#define NCF0_BIT7			128
+#define NCF0_PROTECTION			128	//<! Luxor: protection spell
 
 #define NCF1_BIT0			1
 #define NCF1_BIT1			2

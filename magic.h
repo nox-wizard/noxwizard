@@ -77,6 +77,17 @@ namespace magic {
 		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
 	};
 
+	/*!
+	\author Luxor
+	\brief Create food menu
+	*/
+	class cCreateFoodMenu : public cIconListMenu {
+	public:
+		cCreateFoodMenu( P_CHAR pc );
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+	};
+
+
 
 	/*!
 	\brief Spells ID
