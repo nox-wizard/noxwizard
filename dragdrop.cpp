@@ -1354,9 +1354,10 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		if(pCont->morex==MOREX_BANK) pBank = pCont;
 		else {
 			P_ITEM pi = pCont;
-			while(pi!=NULL) {
+			while( ISVALIDPI(pi) ) {
 				pi = pointers::findItemBySerial( pi->getContSerial());
-				if ((pi->type == ITYPE_CONTAINER) && (pi->morex==MOREX_BANK)) {
+				if( !ISVALIDPI(pi) ) break; //in world
+				if ( (pi->type == ITYPE_CONTAINER) && (pi->morex==MOREX_BANK)) {
 					pBank = pi;
 					break;
 				}
