@@ -14,6 +14,12 @@ void ClientCrypt::decrypt(unsigned char *in, unsigned char *out, int length)
 	}
 }
 
+void ClientCrypt::preview(unsigned char *in, unsigned char *out, int length)
+{
+	if ( crypt_mode == CRYPT_LOGIN)
+		loginCrypter.preview( in, out, length);
+}
+
 void ClientCrypt::encrypt(unsigned char *in, unsigned char *out, int length)
 {
 	if ( crypt_mode == CRYPT_LOGIN)
@@ -32,6 +38,15 @@ void ClientCrypt::init(unsigned char *pseed)
 {
 	memcpy (clientSeed, pseed, 4);
 	loginCrypter.init(pseed, loginKey1, loginKey2);
+}
+
+void ClientCrypt::init(UI32 pseed)
+{
+	clientSeed[0]=(unsigned char)((pseed >> 24)&0xFF);
+	clientSeed[1]=(unsigned char)((pseed >> 16)&0xFF);
+	clientSeed[2]=(unsigned char)((pseed >> 8)&0xFF);
+	clientSeed[3]=(unsigned char)(pseed &0xFF);
+	loginCrypter.init(clientSeed, loginKey1, loginKey2);
 }
 
 void ClientCrypt::setCryptSeed(UI08 pseed[4])
@@ -54,6 +69,16 @@ void ClientCrypt::setGameEncryption(int version)
 // 	if ( gameCrypter != NULL)
 //		delete gameCrypter;
     cryptVersion = version;
+	if(gameCrypter != NULL )
+	{
+		delete gameCrypter;
+		gameCrypter=NULL;
+	}
+	if ( crypt203 != NULL )
+	{
+		delete crypt203;
+		crypt203=NULL;
+	}
 }
 
 void ClientCrypt::setCryptMode(UI08 mode)

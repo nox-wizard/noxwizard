@@ -236,7 +236,6 @@ char  outbuffer[MAXCLIENT][MAXBUFFER];
 int client[MAXCLIENT];
 short int walksequence[MAXCLIENT];
 int acctno[MAXCLIENT];
-unsigned char clientip[MAXCLIENT][4];
 int binlength[MAXIMUM+1];
 int boutlength[MAXIMUM+1];
 

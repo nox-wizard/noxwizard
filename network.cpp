@@ -243,14 +243,8 @@ void cNetwork::DoStreamCode( NXWSOCKET  socket )
 	int status ;
 	int len = Pack( outbuffer[socket], xoutbuffer, boutlength[socket] );
 	// ConOut("Packed %d bytes input to %d bytes out\n", boutlength[socket], len);
-	NXWCLIENT ps = getClientFromSocket(socket);
-// #ifdef ENCRYPTION
-	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
-	if ( clientCrypter[socket] != NULL && clientCrypter[socket]->getCryptVersion() >= CRYPT_3_0_0c )
-		clientCrypter[socket] ->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
-	else if (pc_currchar != NULL && pc_currchar->getCrypter() != NULL && pc_currchar->getCrypter()->getCryptVersion() >= CRYPT_3_0_0c )
-		pc_currchar->getCrypter()->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
-// #endif
+	if ( clientInfo[socket]->getCrypter() != NULL && clientInfo[socket]->getCrypter()->getCryptVersion() >= CRYPT_2_0_4 )
+		clientInfo[socket]->getCrypter()->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
 	if ((status = MTsend(socket, xoutbuffer, len, MSG_NOSIGNAL)) == SOCKET_ERROR)
 	{
    		LogSocketError("Socket Send error %s\n", errno) ;
@@ -424,13 +418,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 	FlushBuffer( socket );
 
 	closesocket( client[ socket ] ); //so it bombs and free the mutex :]
-// #ifdef ENCRYPTION
-	if ( clientCrypter[socket] != NULL && !clientCrypter[socket]->getEntering())
-	{
-		delete (ClientCrypt * ) clientCrypter[socket] ;
-		clientCrypter[socket]=NULL;
-	}
-// #endif
 #ifdef USE_MTHREAD_SEND
 	g_NT[ socket ]->mtxrun.enter();
 	NetThread* NT = g_NT[ socket ];
@@ -455,13 +442,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		client[j]=client[jj];
 		currchar[j]=currchar[jj];
 		cryptedClient[j]=cryptedClient[jj];
-// #ifdef ENCRYPTION
-		clientCrypter[jj] = clientCrypter[j];
-// #endif
-		clientip[j][0]=clientip[jj][0];
-		clientip[j][1]=clientip[jj][1];
-		clientip[j][2]=clientip[jj][2];
-		clientip[j][3]=clientip[jj][3];
 		acctno[j]=acctno[jj];
 		binlength[j]=binlength[jj];
 		boutlength[j]=boutlength[jj];
@@ -517,46 +497,40 @@ void cNetwork::LoginMain(int s)
 	unsigned char cryptPacket[MAXBUFFER+1];
 	ClientCrypt * crypter;
 	memcpy(&cryptPacket[0], &buffer[s][0],length);
-	if ( clientCrypter[s] != NULL )
+	if ( clientInfo[s]->getCrypter() != NULL )
 	{
-		crypter = clientCrypter[s] ;
-		for ( j = 0 ; j <= CRYPT_3_0_6j;++j)
+		crypter = clientInfo[s]->getCrypter() ;
+		UI32 seed = crypter->getCryptSeed();
+		// check unencrypted client
+		if ( ( buffer[s][0] == 0x80 ) && ( buffer[s][30] == 0x00 ) && ( buffer[s][60] == 0x00 ) ) 
 		{
-			memcpy(&cryptPacket[0], &buffer[s][0],length);
-			crypter->setLoginCryptKeys(loginKeys [j] [0], loginKeys [j] [1]);
-			crypter->setCryptMode(CRYPT_LOGIN);
-			crypter->setGameEncryption(j+1);
-			crypter->init(&clientSeed[s][0]);
-			crypter->decrypt(&cryptPacket[0], decryptPacket, length);
-			if ( ( decryptPacket[0] == 0x80 ) && ( decryptPacket[30] == 0x00 ) && ( decryptPacket[60] == 0x00 ) ) 
+			crypter->setCryptMode(CRYPT_NONE);
+		}
+		else
+		{
+			for ( j = 0 ; j < CRYPT_LAST;++j)
 			{
-				// crypt key is correct only if Authentication is ok
-				memcpy (&cryptPacket[0], decryptPacket, length);
-				pSplit((char*)&cryptPacket[31]);
-				i = Accounts->verifyPassword((char*)&cryptPacket[1], (char*)pass1);
-				if( i >= 0 )
+				memcpy(&cryptPacket[0], &buffer[s][0],length);
+				crypter->setLoginCryptKeys(loginKeys [j] [0], loginKeys [j] [1]);
+				crypter->setCryptMode(CRYPT_LOGIN);
+				crypter->setGameEncryption(j);
+				crypter->init(seed);
+				crypter->decrypt(&cryptPacket[0], decryptPacket, length);
+				if ( ( decryptPacket[0] == 0x80 ) && ( decryptPacket[30] == 0x00 ) && ( decryptPacket[60] == 0x00 ) ) 
 				{
-					memcpy(&buffer[s][0],&cryptPacket[0] ,length);
-					// is this client logged in already ?
-					if ( Accounts->IsOnline(i) )
-					{
-						// Look for accountno
-						for ( int j = 0;j < s;++j)
-						{
-							if ( acctno[j] == i )
-							{
-								// Found logged in account
-								Disconnect(acctno[j]);
-								break;
-							}
-						}
-					}
+					// crypt key is correct only if Authentication is ok
+					memcpy(&buffer[s][0], decryptPacket, length);
 					break;
 				}
 			}
 		}
 	}
 // #endif
+	if ( ( buffer[s][0] != 0x80 ) || ( buffer[s][30] != 0x00 ) || ( buffer[s][60] != 0x00 ) ) 
+	{
+		Disconnect(s);
+		return;
+	}
 	pSplit((char*)&buffer[s][31]);
 	i = Accounts->Authenticate((char*)&buffer[s][1], (char*)pass1);
 
@@ -701,20 +675,17 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	LongToCharPtr(ip, login03 +1);
 	ShortToCharPtr((unsigned short)port, login03 +5);
 	srand(ip+acctno[s]+now+uiCurrentTime); // Perform randomize
-// #ifdef ENCRYPTION
-	if ( clientCrypter[s] != NULL )
+
+	if ( clientInfo[s]->getCrypter() != NULL && clientInfo[s]->getCrypter()->getCryptMode() != CRYPT_NONE)
 	{
-		ClientCrypt *crypter = clientCrypter[s];
-		// unsigned int loginseed = clientip[s][3] + ( clientip[s][2] << 8) + (clientip[s][1] << 16) + ( clientip[s][0] << 24);
+		ClientCrypt *crypter = clientInfo[s]->getCrypter();
 		unsigned long loginseed = 1 + ( 127 << 24 )  ;
 		crypter->setCryptSeed(loginseed);
 		crypter->setCryptMode(CRYPT_GAME);
 		crypter->setEntering(true);
-		// memcpy(login03 +7, &clientip[s][0],4);
 		LongToCharPtr (loginseed, login03 +7); // set crypt key
 	}
 	else
-// #endif
 		LongToCharPtr( calcserial('a', 'K', 'E', 'Y'), login03 +7);	// New Server Key!
 	Xsend(s, login03, 11);
 	Network->FlushBuffer(s);
@@ -1013,28 +984,21 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 		return;
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-// #ifdef ENCRYPTION
-	pc->setCrypter(clientCrypter[s]);
-// #endif
 	//<Luxor>: possess stuff
 	if (pc->possessedSerial != INVALID) {
 		P_CHAR pcPos = pointers::findCharBySerial(pc->possessedSerial);
-		if (ISVALIDPC(pcPos)) {
+		if (ISVALIDPC(pcPos)) 
+		{
 			currchar[s] = pcPos->getSerial32();
 			pcPos->setClient(new cNxwClientObj(s));
-// #ifdef ENCRYPTION
-			pcPos->setCrypter(clientCrypter[s]);
-			pc->setCrypter(NULL);
-// #endif
 			pc->setClient(NULL);
 			Accounts->SetOffline(pc->account);
 			Accounts->SetOnline(pcPos);
-		} else pc->possessedSerial = INVALID;
+		} 
+		else 
+			pc->possessedSerial = INVALID;
 	}
 	//</Luxor>
-// #ifdef ENCRYPTION
-	clientCrypter[s]=NULL;
-// #endif
 	char zbuf[255];
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -1535,12 +1499,6 @@ void cNetwork::CheckMessage() // Check for messages from the clients
 cNetwork::cNetwork() // Initialize sockets
 {
     sockInit();
-#ifdef ENCRYPTION
-	for (int i = 0;i< MAXCLIENT+1;++i)
-	{
-		clientCrypter[i]=0;
-	}
-#endif
 }
 
 int cNetwork::Pack(void *pvIn, void *pvOut, int len)
@@ -1597,16 +1555,13 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 
 }
 
-// #ifdef ENCRYPTION
 unsigned char cNetwork::calculateLoginKey(unsigned char loginKey[4], unsigned char packetId)
 {
 	unsigned int seed;
 	int  m_key [2], index = -1;
 	unsigned char out;
-	bool found;
 	out=packetId;
 	seed = (loginKey[0] << 24 ) + (loginKey[1] << 16 ) + (loginKey[2] << 8 ) + (loginKey[3] );
-	found = true;
 	for ( int i = 0; i < 6; ++i)
 	{
 		index=i;
@@ -1620,7 +1575,6 @@ unsigned char cNetwork::calculateLoginKey(unsigned char loginKey[4], unsigned ch
 	    out = (unsigned char)(packetId ^ med);
 		if ( (out != 0x80) && (out != 0x91) )
 		{
-			found = false;
 			continue;
 		}
 		else
@@ -1628,26 +1582,14 @@ unsigned char cNetwork::calculateLoginKey(unsigned char loginKey[4], unsigned ch
 	}
 	return out;
 }
-// #endif
 
 void cNetwork::GetMsg(int s) // Receive message from client
 {
-// #ifdef ENCRYPTION
 	ClientCrypt *crypter=NULL;
-// #endif
 	NXWCLIENT ps = getClientFromSocket(s);
 	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
-// #ifdef ENCRYPTION
-	if ( pc_currchar != NULL )
-	{
-		crypter=pc_currchar->getCrypter();
-	}
-	else if ( clientCrypter[s] != NULL )
-	{
-		crypter=clientCrypter[s];
-	}
-// #endif
-
+	if ( clientInfo[s]->getCrypter() != NULL )
+		crypter=clientInfo[s]->getCrypter();
 	int count, book,length, dyn_length,loopexit=0, fb;
 	unsigned char nonuni[512];
 	unsigned char packet;
@@ -1667,18 +1609,20 @@ void cNetwork::GetMsg(int s) // Receive message from client
 		}
 		// an encrypted client sends its ip as a seed for the encryption
 
-// #ifdef ENCRYPTION
-		memcpy(&clientSeed[s][0], &buffer[s][0], 4);
-// #endif
+		crypter = new ClientCrypt();
+		crypter->init(&buffer[s][0]);
+		crypter->setCryptMode(CRYPT_NONE);
+		clientInfo[s]->setCrypter(crypter);
+
 		struct sockaddr_in tmp_addr;
 		socklen_t tmp_addr_len=sizeof(struct sockaddr_in);
 
-		if(getpeername(client[s],(struct sockaddr*)&tmp_addr,&tmp_addr_len)!=SOCKET_ERROR)
-			*(unsigned long*)&clientip[s]=tmp_addr.sin_addr.s_addr;
+		if ( getpeername (client[s],(struct sockaddr*)&tmp_addr,&tmp_addr_len) !=SOCKET_ERROR )
+			clientInfo[s]->setClientIp(tmp_addr.sin_addr.s_addr);
 		else
 		{
 			WarnOut("Unable to determine client's IP [s:%i]\n",s);
-			*(unsigned long*)&clientip[s]=0;
+			clientInfo[s]->setClientIp(0);;
 		}
 
 		clientInfo[s]->newclient=false;
@@ -1686,55 +1630,71 @@ void cNetwork::GetMsg(int s) // Receive message from client
 	}
 	else
 	{
-// #ifdef ENCRYPTION
 		int cryptBufferOffset=0;
-// #endif
 		fb = Receive(s, 1, 0);
 		if (fb >0)
 		{
-// #ifdef ENCRYPTION
 			if ( crypter != NULL )
 			{
 				crypter->decrypt( &buffer[s][0], &buffer[s][0], 1);
-				// crypter->preview( &buffer[s][0], &buffer[s][0], 1);
 				cryptBufferOffset++;
 			}
-// #endif
 			packet = buffer[s][0];
-
 			length = m_packetLen[packet];
 
 			// Lets assure the data is valid, this stops server freezes caused by receiving nonsense data
 			// (remark: useres that dont use ignition do that)
+			// for encrypted clients we have to distinguish between first login paket (0x80) 
+			// and the game server login
 			if ( clientInfo[s]->firstpacket && packet != 0x80 && packet !=0x91 )
 			{
-// #ifdef ENCRYPTION
 				// Let's see if the paket is encrypted
-				packet = calculateLoginKey(clientSeed[s], packet);
-// #endif
-				if (packet != 0x80 && packet !=0x91 )
+				crypter->setCryptMode(CRYPT_LOGIN);
+				crypter->preview(&packet, &packet, 1);
+				unsigned long loginseed = 1 + ( 127 << 24 )  ;
+				if (packet != 0x80 )
 				{
-// #ifdef ENCRYPTION
+					// It's not a first login package, but it might be game server login
+					packet = buffer[s][0];
+					crypter->setCryptSeed(loginseed);
+					crypter->setCryptMode(CRYPT_GAME);
+					crypter->decrypt(&packet, &packet, 1);
+					if ( packet != 0x91 )
+					{
+						packet = buffer[s][0];
+						crypter->setCryptSeed(loginseed);
+						crypter->setGameEncryption(CRYPT_2_0_3);
+						crypter->setCryptMode(CRYPT_GAME);
+						crypter->decrypt(&packet, &packet, 1);
+						if ( packet != 0x91 )
+						{
+							packet = buffer[s][0];
+							crypter->setCryptSeed(loginseed);
+							crypter->setGameEncryption(CRYPT_2_0_4);
+							crypter->setCryptMode(CRYPT_GAME);
+							crypter->decrypt(&packet, &packet, 1);
+						}
+					}
+					crypter->setCryptSeed(loginseed);
+					crypter->setCryptMode(CRYPT_GAME);
+					cryptBufferOffset=0;
+				}
+				else
+					crypter->setCryptMode(CRYPT_NONE);
+				if ( packet != 0x80 && packet !=0x91 )
+				{
 					// reset crypt memories
-					if ( clientCrypter[s] != NULL )
+					if ( crypter != NULL )
 					{
 						delete (ClientCrypt * ) crypter ;
-						clientCrypter[s]=NULL;
+						clientInfo[s]->setCrypter(NULL);
 					}
-// #endif
 					Disconnect(s);
 					InfoOut("received garbage from a client, disconnected it to prevent bad things.\n User probably didnt use ignition or UO-RICE\n");
 					return;
 				}
-// #ifdef ENCRYPTION
-				else
-				{
-					ClientCrypt * crypter = new ClientCrypt();
-					crypter->setCryptMode(CRYPT_NONE);
-					clientCrypter[s] = crypter;
-					length = m_packetLen[packet];
-				}
-// #endif
+//				buffer[s][0]=packet;
+				length = m_packetLen[packet];
 			}
 
 
@@ -1752,8 +1712,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			{
 				if ((readstat = Receive(s, 2, 1)) > 0)
 				{
-// #ifdef ENCRYPTION
-					if ( crypter != NULL )
+					if ( crypter != NULL && crypter->getCryptMode() != CRYPT_NONE )
 					{
 						unsigned char decryptPacket[3];
 						crypter->decrypt(&buffer[s][0]+cryptBufferOffset, decryptPacket, 2);
@@ -1761,7 +1720,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						buffer[s][1]=decryptPacket[0];
 						buffer[s][2]=decryptPacket[1];
 					}
-// #endif
 					dyn_length = (int) (  ( (int) buffer[s][1]<<8) + (int) buffer[s][2] );
 					length=dyn_length;
 					readstat = Receive(s, dyn_length-3, 3) ;
@@ -1783,22 +1741,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
         		    // LB, client activity-timestamp !!! to detect client crashes, ip changes etc and disconnect in that case
         		    // 0x73 (idle packet) also counts towards client idle time
 
-
-				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;
-// #ifdef ENCRYPTION
-				if ( packet == PACKET_LOGINREQUEST && clientCrypter[s] != NULL )
-				{
-					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, 4);
-					// clientCrypter[s]->setCryptSeed(&buffer[s][1]);
-					cryptBufferOffset+=4;
-				}
-
 				if ( crypter != NULL && crypter->getCryptMode() > 0 )
 				{
 					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, length-cryptBufferOffset);
 				}
-// #endif
-
 				if (ISVALIDPC(pc_currchar))
 					AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
 				switch(packet)
@@ -1830,26 +1776,21 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_FIRSTLOGINREQUEST:
-// #ifdef ENCRYPTION
-					if ( clientCrypter[s] != NULL )
-						clientCrypter[s]->setCryptMode(CRYPT_LOGIN) ;
-// #endif
+					if ( crypter != NULL )
+						crypter->setCryptMode(CRYPT_LOGIN) ;
 					clientInfo[s]->firstpacket=false;
 					LoginMain(s);
 					break;
 
 				case PACKET_SELECTSERVER:
 					Relay(s);
-					// Disconnect(s);
 					break;
 
 				case PACKET_LOGINREQUEST:
 					clientInfo[s]->firstpacket=false;
 					clientInfo[s]->compressOut=true;
-// #ifdef ENCRYPTION
-					if ( clientCrypter[s] != NULL )
-						clientCrypter[s]->setEntering(false);
-// #endif
+					if ( crypter != NULL )
+						crypter->setEntering(false);
 					CharList(s);
 					break;
 
@@ -2329,6 +2270,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 					char clientNumber[TEMP_STR_SIZE];
 					strcpy((char*)clientNumber,(char*) &buffer[s][3]); // copy client version data
+					clientInfo[s]->setClientVersion(clientNumber);
 					if ( strlen (clientNumber) > 10) clientDimension[s] = 3; else clientDimension[s] = 2;
 					sysmessage(s,TRANSLATE("You are using a %iD client, version %s"), clientDimension[s], clientNumber);
 
@@ -2421,13 +2363,11 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			else
 			{
 			// reset crypt memories
-// #ifdef ENCRYPTION
-				if ( clientCrypter[s] != NULL)
+				if ( crypter != NULL)
 				{
-					delete (ClientCrypt * ) clientCrypter[s] ;
-					clientCrypter[s]=NULL;
+					delete crypter ;
+					clientInfo[s]->setCrypter(NULL);
 				}
-// #endif
 				Disconnect(s) ; // Error on a read
 			}
   		} // end if recv >0

@@ -334,11 +334,15 @@ cClient::cClient()
 	firstpacket=true;
 	newclient=true;
 	ingame=false;
+	crypter=NULL;
 }
 
 cClient::~cClient()
 {
 	resetTarget();
+	if ( crypter != NULL )
+		safedelete(crypter);
+	crypter=NULL;
 }
 
 

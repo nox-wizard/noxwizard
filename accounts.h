@@ -50,7 +50,7 @@ public:
 	TIMERVAL tempblock; 		//!< Elcabesa tempblock
 	TIMERVAL blockeduntil;		//!< Elcabesa tempblock
 	unsigned long lastlogin;	//!< Last login time
-	struct in_addr lastip;		//!< Last ip
+	unsigned long lastIp;
 	ACCOUNT_STATE state;		//!< Account state
 	std::vector<SERIAL> pgs;	//!< list of pg of this account
 	SERIAL pc_online;		//!< the online player
@@ -67,6 +67,9 @@ public:
 	void changePassword( std::string password);
 	void getAllChars( NxwCharWrapper& sc );
 	void addCharToAccount( P_CHAR pc );
+	inline void setLastIp(UI32 ip)
+	{ lastIp=ip; };
+	std::string getLastIp();
 
 };
 

@@ -1022,17 +1022,6 @@ void OldGameCrypt::decrypt(unsigned char * in, unsigned char * out, int len)
 			L2N(values[1], seed);
 		}
 
-/*
-        // CFB (Cipher FeedBack) decrypt
-        unsigned char c = *in++;
-        *out++ = m_seed[m_block_pos] ^ c;
-        unsigned char c = (*in++) ^ m_seed[m_block_pos];
-        *out++ = c;
-		
-        m_seed[m_block_pos] = c;
-        m_block_pos = (m_block_pos + 1) % 8;
-
-*/
         // CFB (Cipher FeedBack) encrypt
         unsigned char c = in[i];
         out[i] = (unsigned char)(c  ^ m_seed[m_block_pos]);
@@ -1042,6 +1031,7 @@ void OldGameCrypt::decrypt(unsigned char * in, unsigned char * out, int len)
 
     m_stream_pos += len;
 }
+
 
 void OldGameCrypt::encrypt(unsigned char * in, unsigned char * out, int len)
 {

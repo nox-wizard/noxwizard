@@ -30,7 +30,6 @@
 #include "basics.h"
 #include "items.h"
 #include "cmds.h"
-#include "encryption/clientcrypt.h"
 
 #ifndef TIMEOUT
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
@@ -1315,24 +1314,6 @@ public:
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
 	*/
-// #ifdef ENCRYPTION
-//@{
-/*!
-\name crypt
-\brief  Encryption per client
-*/
-	public:
-		inline void setCrypter(ClientCrypt * crypt)
-		{ crypter=crypt; }
-
-		inline ClientCrypt * getCrypter() const
-		{ return crypter; }
-
-	private:
-		ClientCrypt * crypter;
-
-//@}
-// #endif
 } PACK_NEEDED;
 
 

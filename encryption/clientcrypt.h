@@ -32,10 +32,12 @@ enum {
 	, CRYPT_4_0_0
 	, CRYPT_4_0_1
 	, CRYPT_4_0_2
+	, CRYPT_LAST
 };
 
-const int loginKeys [CRYPT_4_0_2] [2]  = {
-	{ 0x32750719, 0x0a2d100b } // crypt 1.26.4
+const int loginKeys [CRYPT_LAST] [2]  = {
+	{0x0		, 0x0		 } // No encryption key
+	, {0x32750719, 0x0a2d100b } // crypt 1.26.4
 	, {0x2d13a5fd, 0xa39d527f } // crypt 2.0.0
 	, {0x2d2ba7ed, 0xa3817e7f } // crypt 2.0.1
 	, {0x2d63addd, 0xa3a5227f } // crypt 2.0.2
@@ -84,6 +86,7 @@ private:
 public:
 	void decrypt(unsigned char *in, unsigned char *out, int length);
 	void encrypt(unsigned char *in, unsigned char *out, int length);
+	void preview(unsigned char *in, unsigned char *out, int length);
 	void setLoginCryptKeys(UI32 key1, UI32 key2);
 	void setGameEncryption(int version);
 	int getCryptVersion() { return cryptVersion; };
@@ -92,8 +95,11 @@ public:
 	virtual ~ClientCrypt();
 	ClientCrypt();
 	void init (unsigned char seed[4]);
+	void ClientCrypt::init(UI32 pseed);
 	void setCryptSeed(UI08 pseed[4]);
 	void setCryptSeed(UI32 pseed);
+	inline UI32 getCryptSeed()
+	{ return (clientSeed[0]<< 24)+(clientSeed[1]<< 16)+(clientSeed[2]<< 8)+clientSeed[3]; };
 	void setEntering(bool state);
 	bool getEntering();
 };

@@ -44,11 +44,22 @@ cAccount::cAccount( ACCOUNT num ) {
 	tempblock=0;
 	blockeduntil=0;
 	lastlogin=0;
-	lastip.s_addr=0;
 	state=LOG_OUT;
 	pc_online=INVALID;
 }
 
+/*!
+\brief return ip in dotted notation as string
+\author Wintermute
+*/
+std::string cAccount::getLastIp()
+{
+	std::string temp;
+	char buf [16];
+	sprintf(buf, "%d.%d.%d.%d", (lastIp>>24)&0xFF, (lastIp>>16)&0xFF, (lastIp>>8)&0xFF, lastIp&0xFF);
+	temp=std::string(buf);
+	return temp;
+}
 /*!
 \brief Set Account in entering
 \author Endymion
@@ -131,7 +142,6 @@ void cAccount::onLogin( NXWSOCKET socket )
 {
 	if( socket!=INVALID ) {
 		lastlogin=time(0);
-		lastip.s_addr=*(unsigned long*)&clientip[socket];
 		state=LOG_ENTERING;
 	}
 	else 
@@ -246,7 +256,6 @@ void cAccounts::LoadAccount( ACCOUNT acctnumb, FILE* F )
 		else if (!strcmp(script1, "BAN"))	account.ban = true;
 		else if (!strcmp(script1, "REMOTEADMIN")) account.ras = true;
 		else if (!strcmp(script1, "LASTLOGIN")) account.lastlogin = atoi(script2);
-		else if (!strcmp(script1, "LASTIP")) account.lastip.s_addr = inet_addr(script2);
 	}
 	while ( (!feof(F))&&(strcmp(script1, "}")) && (strcmp(script1, "EOF")) && (++loopexit < MAXLOOPS) );
 	#ifdef WIN32
@@ -349,7 +358,7 @@ void cAccounts::SaveAccounts( void )
 			iter_account->second.name.c_str(), iter_account->second.pass.c_str() );
 
 		if (iter_account->second.lastlogin) fprintf(F,"LASTLOGIN %lu\n",iter_account->second.lastlogin);
-		if (iter_account->second.lastip.s_addr) fprintf(F,"LASTIP %s\n",inet_ntoa(iter_account->second.lastip));
+		if ( iter_account->second.getLastIp() != "0.0.0.0" ) fprintf(F,"LASTIP %s\n",(iter_account->second.getLastIp().c_str()));
 		if (iter_account->second.ban) fprintf(F, "BAN\n");
 		if (iter_account->second.ras) fprintf(F, "REMOTEADMIN\n");
 

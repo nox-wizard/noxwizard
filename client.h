@@ -18,6 +18,7 @@
 #include "cmdtable.h"
 #include "targeting.h"
 #include "target.h"
+#include "encryption/clientcrypt.h"
 
 typedef std::vector< std::string > td_cmdparams;
 
@@ -85,6 +86,7 @@ class cClient {
 
 private:
 	P_TARGET target;
+	ClientCrypt * crypter;
 public:
 
 	void resetTarget();
@@ -92,6 +94,9 @@ public:
 	P_TARGET getTarget();
 
 	SERIAL spyTo; //!< used for spy command
+	UI32 client_ip;
+	std::string client_version;
+
 	bool compressOut; //!< compress output with huffman coding
 	bool noweather; //!< not weather
 	bool lsd; //!< lsd stuff
@@ -100,7 +105,18 @@ public:
 	bool newclient; //!< is a new client
 	bool firstpacket; //!< fist packet sended
 	bool ingame; //!< is ingame
-
+	inline void setCrypter(ClientCrypt * crypt)
+	{ crypter=crypt; }
+	inline ClientCrypt * getCrypter() const
+	{ return crypter; }
+	inline void setClientIp(UI32 newIp)
+	{ client_ip= newIp; }
+	inline const UI32 getClientIp() const 
+	{ return client_ip; }
+	inline void setClientVersion(char *version)
+	{ client_version=std::string(version); }
+	inline const std::string getClientVersion() const 
+	{ return client_version; }
 	cClient();
 	~cClient();
 

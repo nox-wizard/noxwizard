@@ -369,10 +369,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	oldmenu=INVALID;
 	
 	commandLevel=0;
-	// initializing crypt
-// #ifdef ENCRYPTION
-	crypter = NULL;
-// #endif
 	// initializing amx
 	resetAmxEvents();
 }
@@ -388,10 +384,6 @@ cChar::~cChar()
 		safedelete( speechCurrent );
 	if ( path != NULL )
 		safedelete( path );
-// #ifdef ENCRYPTION
-	if ( crypter != NULL )
-		safedelete(crypter);
-// #endif
 }
 
 
