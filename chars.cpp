@@ -2816,6 +2816,8 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 		setColor( npcCopy->getColor());
 		phair = npcCopy->getHairItem();
 		pbeard = npcCopy->getBeardItem();
+		npcCopy->beardserial = -1;
+		npcCopy->hairserial=-1;
 		if ( phair != NULL )
 		{
 			phair->setContSerial(INVALID);
@@ -2826,6 +2828,7 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 			pbeard->setContSerial(INVALID);
 			this->Equip(pbeard, false);
 		}
+		npcCopy->Delete();
 	}
 	morphed = bBackup;
 
