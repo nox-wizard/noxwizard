@@ -248,7 +248,7 @@ static void cacheVerdata()
 }
 
 
-
+#define CHECKMUL( A, B ) if ( !A->isReady() ) { LogError( "ERROR: Mul File %s not found...\n", B ); return; }
 
 /*!
 \author Luxor
@@ -263,13 +263,26 @@ void init()
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 
 	maps.push_back( new cMULFile< map_st > ( map_path, "rb" ) );
+	CHECKMUL( maps[0], map_path.c_str() );
+
 	staticIdx = new cMULFile< staticIdx_st > ( staIdx_path, "rb" );
+	CHECKMUL( staticIdx, staIdx_path.c_str() );
+
 	statics = new cMULFile< static_st > ( statics_path, "rb" );
+	CHECKMUL( statics, statics_path.c_str() );
+
 	tdLand = new cMULFile< land_st > ( tiledata_path, "rb" );
+	CHECKMUL( tdLand, tiledata_path.c_str() );
 	tdTile = new cMULFile< tile_st > ( tiledata_path, "rb" );
+
 	multiIdx = new cMULFile< multiIdx_st > ( multiIdx_path, "rb" );
+	CHECKMUL( multiIdx, multiIdx_path.c_str() );
+
 	multi = new cMULFile< multi_st > ( multi_path, "rb" );
+	CHECKMUL( multi, multi_path.c_str() );
+
 	verIdx = new cMULFile< verdata_st > ( verdata_path, "rb" );
+	CHECKMUL( verIdx, verdata_path.c_str() );
 	verLand = new cMULFile< land_st > ( verdata_path, "rb" );
 	verTile = new cMULFile< tile_st > ( verdata_path, "rb" );
 
@@ -278,14 +291,13 @@ void init()
 	//
 	cacheVerdataIndex();
 
-	if ( ServerScp::g_nMapCache )
-		cacheStatics();
-
-	if( server_data.cache_tiledata ) {
-		cacheTileData();
+	if( LOGICAL( server_data.cache_tiledata ) ) {
 		cacheVerdata();
+		cacheTileData();
 	}
 
+	if ( ServerScp::g_nMapCache )
+		cacheStatics();
 	//
 	// MULs loaded, let's keep the server running
 	//
