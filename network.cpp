@@ -37,6 +37,8 @@
 #include "nox-wizard.h"
 #include "scripts.h"
 #include "house.h"
+#include "remadmin.h"
+#include "nox-wizard.h"
 
 // #ifdef ENCRYPTION
 #include "encryption/clientcrypt.h"
@@ -44,6 +46,7 @@
 //#define USE_MTHREAD_SEND
 
 cNetwork	*Network;
+extern RemoteAdmin TelnetInterface;	//!< remote administration
 
 #define PACKET_LEN_DYNAMIC		0x0000
 #define PACKET_LEN_NONE			0xffff
@@ -1360,6 +1363,8 @@ void cNetwork::SockClose () // Close all sockets for shutdown
 	for ( i = 0; i < MAXCLIENT; ++i )
 		closesocket(client[i]);
 
+	for ( i = 0; i < MAXRACLIENT;++i)
+		TelnetInterface.Disconnect(i);
 }
 
 void cNetwork::CheckConn() // Check for connection requests
