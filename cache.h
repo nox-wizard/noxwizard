@@ -42,18 +42,16 @@ class MULFile
   void rewind();
   void seek(long, int);
   inline int eof() { return (feof(theFile)); };
-  int wpgetch();
+  SI08 wpgetch();
   void refill();
   char *gets(char *, int);
   int puts(char *);
-  void getUChar(unsigned char *, unsigned int);
-  void getUChar(unsigned char *c) { getUChar((unsigned char *) c, 1); }
 
-  void getChar(signed char *, unsigned int);
-  void getChar(signed char *c) { getChar(c, 1); }
-
-  void getUShort(unsigned short *, unsigned int = 1);
-  void getShort(short *, unsigned int = 1);
+  void getUChar(UI08 *, unsigned int = 1);
+  void getChar(SI08 *, unsigned int = 1);
+  void getText(TEXT *, unsigned int = 1);
+  void getUShort(UI16 *, unsigned int = 1);
+  void getShort(SI16 *, unsigned int = 1);
   void getULong(UI32 *, unsigned int = 1);
   void getLong(SI32 *, unsigned int = 1);  
 

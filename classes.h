@@ -22,27 +22,27 @@ struct tile_st
 {
  SI32 unknown1;  //!< longs must go at top to avoid bus errors - fur
  SI32 animation;
- unsigned char flag1;
- unsigned char flag2;
- unsigned char flag3;
- unsigned char flag4;
- unsigned char weight;
- signed char layer;
- signed char unknown2;
- signed char unknown3;
- signed char height;
- signed char name[23];	//!< manually padded to long to avoid bus errors - fur | There is no negative letter.
+ UI08 flag1;
+ UI08 flag2;
+ UI08 flag3;
+ UI08 flag4;
+ UI08 weight;
+ SI08 layer;
+ SI08 unknown2;
+ SI08 unknown3;
+ SI08 height;
+ TEXT name[23];	//!< manually padded to long to avoid bus errors - fur | There is no negative letter.
 } PACK_NEEDED;
 
 struct land_st
 {
- char flag1;
- char flag2;
- char flag3;
- char flag4;
- char unknown1;
- char unknown2;
- char name[20];
+ UI08 flag1;
+ UI08 flag2;
+ UI08 flag3;
+ UI08 flag4;
+ UI08 unknown1;
+ UI08 unknown2;
+ TEXT name[20];
 };
 
 struct map_st

@@ -882,7 +882,7 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			give=58981;
 		}
 		if (give) { //Luxor
-			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
+			item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
 		}
 		sprintf(temp, TRANSLATE("Today's purchases total %i gold. I am keeping %i gold for my self. Here is the remaining %i gold. Have a nice day."),pc_vendor->holdg,pay,give);
 		pc_vendor->talk(s,temp,0);
