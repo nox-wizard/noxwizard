@@ -32,11 +32,11 @@ cObject::~cObject()
 {
 	if( amxEvents )
 	{
-		AmxEventMap::iterator it( amxEvents->begin() ), end( amxEvents->end() );
-		for( ; it!=end; it++ )
-		{
-			delete it->second;
-		}
+		//AmxEventMap::iterator it( amxEvents->begin() ), end( amxEvents->end() );
+		//for( ; it!=end; it++ )
+		//{
+		//	delete it->second;
+		//}
 		safedelete( amxEvents );
 	}
 }
@@ -677,31 +677,32 @@ LOGICAL cObject::isValidAmxEvent( UI32 eventId )
 
 AmxEvent* cObject::getAmxEvent( UI32 eventId )
 {
-	AmxEvent* event = 0;
+
 	if( isValidAmxEvent( eventId ) )
 	{
 		if( amxEvents != 0 )
 		{
 			AmxEventMap::iterator it = amxEvents->find( eventId );
 			if( it != amxEvents->end() )
-				event = it->second;
+				return it->second;
 		}
 	}
-	return event;
+	return NULL;
 }
 
 AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamicEvent )
 {
-	AmxEvent* event = 0;
+	AmxEvent* event = NULL;
 
 	if( isValidAmxEvent( eventId ) )
 	{
-		if( amxEvents == 0 )
+		if( amxEvents == NULL )
 			amxEvents = new AmxEventMap;
 		else
 			delAmxEvent( eventId );
 
-		(*amxEvents)[ eventId ] = newAmxEvent( amxFunction, dynamicEvent );
+		event = newAmxEvent( amxFunction, dynamicEvent );
+		amxEvents->insert( make_pair( eventId, event ) );
 	}
 
 	return event;
@@ -713,7 +714,7 @@ cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2, SI32 param3, 
 
 	g_bByPass = false;
 	
-	if( event != 0 )
+	if( event != NULL )
 		return event->Call( param1, param2, param3, param4 );
 
 	return INVALID;
