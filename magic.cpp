@@ -798,6 +798,9 @@ void castAreaAttackSpell (UI16 x, UI16 y, SpellId spellnum, P_CHAR pcaster)
 			//</Luxor>
 			spellFX(spellnum, pcaster, pd);
 			damage(pcaster, pd, spellnum, SPELLFLAG_PARAMISDAMAGE, damagetobedone);
+			if ( pd->npc && pd->hp <= 0 )
+				pd->Kill();
+			
 		}
 	}
 }

@@ -3533,8 +3533,6 @@ void cChar::Kill()
 
 	if ( !npc )
 		++deaths;
-	else
-		this->Delete();
 
 }
 
