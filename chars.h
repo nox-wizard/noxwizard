@@ -135,7 +135,7 @@ class cChar : public cObject
 		void			MoveTo(Location newloc);
 		void 			loadEventFromScript(TEXT *script1, TEXT *script2);
 
-		inline void		MoveTo(SI32 x, SI32 y, SI08 z)
+		inline void		MoveTo(SI32 x, SI32 y, SI32 z)
 		{ MoveTo( Loc(x, y, z) ); }
 	public:
 //@{

@@ -677,7 +677,7 @@ void checkkey ()
 			case 'T':
 			case 't':
 				endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*60*2);
-				endmessage(0);
+				endmessage();
 				break;
 			case '#':
 				if ( !cwmWorldState->Saving() )

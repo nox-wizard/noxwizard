@@ -205,6 +205,7 @@ int getIntFromDefine (char *szLine)
 	return atoi(evaluateAllDefines(buffer));
 }
 
+
 /*!
 \brief Evaluates ALL the defines, public and size safe
 \return the line with all defines evaluated

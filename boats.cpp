@@ -110,7 +110,7 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 
 	multiVector m;
 
-	data::seekMulti( pi->getId()-0x4000, m );
+	data::seekMulti( (short) (pi->getId()-0x4000), m );
 	Location itmpos= pi->getPosition();
 	for( UI32 i = 0; i < m.size(); i++ ) {
 		if(/*(multi.visible)&&*/((itmpos.x+m[i].x) == where.x) && ((itmpos.y+m[i].y) == where.y))

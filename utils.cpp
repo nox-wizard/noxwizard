@@ -108,18 +108,18 @@ void cScriptCommand::execute( NXWSOCKET s )
 	    return;
 	} else if ( command == "POLY" ) {
 		int tmp=hex2num(param);
-		pc->setId(tmp);
-		pc->setOldId(tmp);
+		pc->setId((unsigned short)tmp);
+		pc->setOldId((unsigned short)tmp);
 		pc->teleport();
 		return;
 	} else if ( command == "SKIN" ) {
 		int tmp=hex2num(param);
-		pc->setColor(tmp);
-		pc->setOldColor(tmp);
+		pc->setColor((unsigned short)tmp);
+		pc->setOldColor((unsigned short)tmp);
 		pc->teleport();
 		return;
 	} else if ( command == "LIGHT" ) {
-		worldfixedlevel=hex2num(param);
+		worldfixedlevel=(unsigned char)hex2num(param);
 		if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
 		else setabovelight(worldcurlevel);
 
@@ -362,7 +362,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 
 		if (x==(db+0))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -372,7 +372,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+1))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -381,7 +381,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+2))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -391,7 +391,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+3))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -400,7 +400,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+4))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1));
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->Refresh();
 			changed=1;
@@ -409,7 +409,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+5))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->Refresh();
 			changed=1;
@@ -417,7 +417,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+6))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -427,7 +427,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+7))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -436,7 +436,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+8))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -446,7 +446,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+9))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -455,7 +455,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=0;
 		} else if (x==(db+10))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("x", pi->getPosition("x") + 1);
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
@@ -465,7 +465,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+11))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("x", pi->getPosition("x") - 1);
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
@@ -475,7 +475,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		}
 		else if (x==(db+12))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 0);
@@ -483,14 +483,14 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+13))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->Refresh();
 			changed=1;
 			doorsfx(pi, x, 1);
 			pi->dooropen=0;
 		} else if (x==(db+14))
 		{
-			pi->setId( pi->getId()+1 );
+			pi->setId( (unsigned short)(pi->getId()+1) );
 			pi->setPosition("y", pi->getPosition("y") - 1);
 			pi->Refresh();
 			changed=1;
@@ -499,7 +499,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 			pi->dooropen=1;
 		} else if (x==(db+15))
 		{
-			pi->setId( pi->getId()-1 );
+			pi->setId( (unsigned short)(pi->getId()-1) );
 			pi->setPosition("y", pi->getPosition("y") + 1);
 			pi->Refresh();
 			changed=1;
@@ -552,7 +552,7 @@ void dooruse(NXWSOCKET  s, P_ITEM pi /* was ITEM item*/)
 		sysmessage(s, TRANSLATE("This doesnt seem to be a valid door type. Contact a GM."));
 }
 
-void endmessage(int x) // If shutdown is initialized
+void endmessage() // If shutdown is initialized
 {
 	UI32 igetclock = uiCurrentTime;
 

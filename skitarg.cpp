@@ -1508,7 +1508,7 @@ void Skills::target_tame( NXWCLIENT ps, P_TARGET t )
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-	if(line_of_sight(INVALID, pc->getPosition(), target->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)==0)
+	if(line_of_sight(pc->getPosition(), target->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)==0)
 		return;
 
 	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,TAMING,AMX_BEFORE);

@@ -44,7 +44,7 @@ char indungeon(P_CHAR pc);
 void setabovelight(unsigned char);
 
 void scriptcommand (NXWSOCKET s, std::string script1, std::string script2);
-void endmessage(int x);
+void endmessage();
 void delequan(int s, short id, int amount, int & not_deleted = dummy__);
 void donewithcall(int s, int type);
 void dooruse(NXWSOCKET s, P_ITEM pi/*int item*/);

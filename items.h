@@ -260,7 +260,7 @@ public:
 
 	void			MoveTo(Location newloc);
 
-	inline void		MoveTo(SI32 x, SI32 y, SI08 z)
+	inline void		MoveTo(SI32 x, SI32 y, SI32 z)
 	{ MoveTo( Loc(x, y, z) ); }
 //@}
 

@@ -835,7 +835,7 @@ void target_expPotion( NXWCLIENT ps, P_TARGET t )
 
 	NXWSOCKET s=ps->toInt();
 
-    if(line_of_sight(s, pc->getPosition(), loc, WALLS_CHIMNEYS + DOORS + ROOFING_SLANTED))
+    if(line_of_sight(pc->getPosition(), loc, WALLS_CHIMNEYS + DOORS + ROOFING_SLANTED))
     {
         P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
         if (ISVALIDPI(pi)) // crashfix LB

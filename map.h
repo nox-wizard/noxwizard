@@ -39,7 +39,7 @@ private:
 };
 
 SI08 isWalkable( Location pos, UI08 flags = WALKFLAG_ALL, P_CHAR pc = NULL );
-LOGICAL lineOfSight( Location pos1, Location pos2 );
+LOGICAL lineOfSight( Location pos1, Location pos2,SI32 checkfor=WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC );
 LOGICAL canNpcWalkHere( Location pos );
 SI08 staticTop( Location pos );
 SI08 tileHeight( UI16 id );
@@ -48,11 +48,11 @@ SI08 dynamicElevation( Location pos );
 SI08 getHeight( Location pos );
 void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 );
 
-inline SI32 line_of_sight( SI32 s, Location a, Location b, SI32 checkfor )
-{ return lineOfSight( a, b ); }
+inline SI32 line_of_sight( Location a, Location b  ,SI32 checkfor=WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC )
+{ return lineOfSight( a, b, checkfor ); }
 
-inline SI32 line_of_sight( SI32 s, SI32 x1, SI32 y1, SI32 z1, SI32 x2, SI32 y2, SI32 z2, SI32 checkfor )
-{ return lineOfSight( Loc( x1, y1, z1 ), Loc( x2, y2, z2 ) ); }
+inline SI32 line_of_sight( SI32 x1, SI32 y1, SI32 z1, SI32 x2, SI32 y2, SI32 z2, SI32 checkfor=WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC )
+{ return lineOfSight( Loc( x1, y1, z1 ), Loc( x2, y2, z2 ), checkfor); }
 
 
 #endif //__MAP_H__

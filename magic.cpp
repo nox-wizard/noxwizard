@@ -967,7 +967,7 @@ static bool checkDistance(P_CHAR caster, P_CHAR target)
 static bool checkLos(P_CHAR caster, Location destpos)
 {
 	VALIDATEPCR(caster, false);
-        if (!line_of_sight(INVALID, caster->getPosition(), destpos, INVALID)) {
+        if (!line_of_sight( caster->getPosition(), destpos)) {
 		caster->sysmsg(TRANSLATE("There is something between you and your target that makes the casting impossible."));
 		return false;
 	}

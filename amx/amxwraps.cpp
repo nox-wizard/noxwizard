@@ -3348,7 +3348,7 @@ NATIVE(_itm_refresh)
 */
 NATIVE(_chr_lineOfSight)
 {
-	return line_of_sight(params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8]);
+	return line_of_sight( params[2], params[3], params[4], params[5], params[6], params[7], params[8]);
 }
 
 
@@ -3773,6 +3773,25 @@ NATIVE(_sysbroadcast)
 \return the define number
 */
 NATIVE(_getIntFromDefine) {
+	cell *cstr;
+	amx_GetAddr(amx,params[1],&cstr);
+	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	int def = xss::getIntFromDefine( g_cAmxPrintBuffer );
+	g_nAmxPrintPtr=0;
+	return def;
+}
+
+
+/*
+\brief returns -1 if the object is not defined, xss define number otherwise
+\author Wintermute
+\since 0.82
+\param 1 xss section name
+\param 2 define name
+\return -1 if the object is not defined, define number otherwise
+*/
+NATIVE(_isDefined) {
 	cell *cstr;
 	amx_GetAddr(amx,params[1],&cstr);
 	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
@@ -6014,6 +6033,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "weblaunch", _weblaunch },
  { "broadcast", _sysbroadcast },
  { "getIntFromDefine", _getIntFromDefine },
+ { "isDefined", _isDefined },
 // Charachter functions :
  { "chr_message",  _chr_message },
  { "chr_addNPC",  _chr_addNPC},
@@ -6070,6 +6090,8 @@ AMX_NATIVE_INFO nxw_API[] = {
 //		To maintain backward compatability these will be implemented as stock functions that map to the new guild functions
 //
  { "chr_guildCompare", _chr_guildCompare },
+ { "chr_getGuild", _chr_getGuild },
+ { "chr_setGuild", _chr_setGuild },
  { "chr_getGuildType", _chr_getGuildType },
  { "chr_setGuildType", _chr_setGuildType },
  { "chr_isGuildTraitor", _chr_isGuildTraitor },

@@ -230,7 +230,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 \brief Tells if the line of sight between two locations is not interrupted
 \return True if the line of sight is clean, false if not
 */
-LOGICAL lineOfSight( Location A, Location B )
+LOGICAL lineOfSight( Location A, Location B ,SI32 checkfor)
 {
 	cLine line( A, B );
 

@@ -1955,7 +1955,7 @@ SI32 cChar::getCombatSkill()
 LOGICAL cChar::losFrom(P_CHAR pc)
 {
 	VALIDATEPCR(pc, false );
-	return lineOfSight( getPosition(), pc->getPosition() );
+	return lineOfSight( getPosition(), pc->getPosition()  );
 }
 
 /*!

@@ -288,13 +288,13 @@ void cSpawns::loadFromScript()
 				else if("MAX"==script1) 
 					dummy->max=str2num(script2);
 				else if("X1"==script1) 
-					{ area.x1=str2num(script2); check|=0x000F; }
+					{ area.x1=(unsigned short)str2num(script2); check|=0x000F; }
 				else if("Y1"==script1)
-					{ area.y1=str2num(script2); check|=0x00F0; }
+					{ area.y1=(unsigned short)str2num(script2); check|=0x00F0; }
 				else if("X2"==script1)
-					{ area.x2=str2num(script2); check|=0x0F00; }
+					{ area.x2=(unsigned short)str2num(script2); check|=0x0F00; }
 				else if("Y2"==script1)
-					{ area.y2=str2num(script2); check|=0xF000; }
+					{ area.y2=(unsigned short)str2num(script2); check|=0xF000; }
 				else if("MINTIME"==script1) 
 					dummy->mintime=str2num(script2);
 				else if("MAXTIME"==script1) 

@@ -142,55 +142,55 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						pc->in= getRangedValue(script2);
 						pc->in2 = pc->in;
 					}
-					else if ("ALCHEMY" == script1 ||"SKILL0" == script1 ) pc->baseskill[ALCHEMY] = getRangedValue(script2);
-					else if ("ANATOMY" == script1 ||"SKILL1" == script1 ) pc->baseskill[ANATOMY] = getRangedValue(script2);
-					else if ("ANIMALLORE" == script1 ||"SKILL2" == script1 ) pc->baseskill[ANIMALLORE] = getRangedValue(script2);
-					else if ("ITEMID" == script1 ||"SKILL3" == script1 ) pc->baseskill[ITEMID] = getRangedValue(script2);
-					else if ("ARMSLORE" == script1 ||"SKILL4" == script1 ) pc->baseskill[ARMSLORE] = getRangedValue(script2);
-					else if ("PARRYING" == script1 ||"SKILL5" == script1 ) pc->baseskill[PARRYING] = getRangedValue(script2);
-					else if ("BEGGING" == script1 ||"SKILL6" == script1 ) pc->baseskill[BEGGING] = getRangedValue(script2);
-					else if ("BLACKSMITHING" == script1 ||"SKILL7" == script1 ) pc->baseskill[BLACKSMITHING] = getRangedValue(script2);
-					else if ("BOWCRAFT" == script1 ||"SKILL8" == script1 ) pc->baseskill[BOWCRAFT] = getRangedValue(script2);
-					else if ("PEACEMAKING" == script1 ||"SKILL9" == script1 ) pc->baseskill[PEACEMAKING] = getRangedValue(script2);
-					else if ("CAMPING" == script1 ||"SKILL10" == script1 ) pc->baseskill[CAMPING] = getRangedValue(script2);
-					else if ("CARPENTRY" == script1 ||"SKILL11" == script1 ) pc->baseskill[CARPENTRY] = getRangedValue(script2);
-					else if ("CARTOGRAPHY" == script1 ||"SKILL12" == script1 ) pc->baseskill[CARTOGRAPHY] = getRangedValue(script2);
-					else if ("COOKING" == script1 ||"SKILL13" == script1 ) pc->baseskill[COOKING] = getRangedValue(script2);
-					else if ("DETECTINGHIDDEN" == script1 ||"SKILL14" == script1 ) pc->baseskill[DETECTINGHIDDEN] = getRangedValue(script2);
-					else if ("ENTICEMENT" == script1 ||"SKILL15" == script1 ) pc->baseskill[ENTICEMENT] = getRangedValue(script2);
-					else if ("EVALUATINGINTEL" == script1 ||"SKILL16" == script1 ) pc->baseskill[EVALUATINGINTEL] = getRangedValue(script2);
-					else if ("HEALING" == script1 ||"SKILL17" == script1 ) pc->baseskill[HEALING] = getRangedValue(script2);
-					else if ("FISHING" == script1 ||"SKILL18" == script1 ) pc->baseskill[FISHING] = getRangedValue(script2);
-					else if ("FORENSICS" == script1 ||"SKILL19" == script1 ) pc->baseskill[FORENSICS] = getRangedValue(script2);
-					else if ("HERDING" == script1 ||"SKILL20" == script1 ) pc->baseskill[HERDING] = getRangedValue(script2);
-					else if ("HIDING" == script1 ||"SKILL21" == script1 ) pc->baseskill[HIDING] = getRangedValue(script2);
-					else if ("PROVOCATION" == script1 ||"SKILL22" == script1 ) pc->baseskill[PROVOCATION] = getRangedValue(script2);
-					else if ("INSCRIPTION" == script1 ||"SKILL23" == script1 ) pc->baseskill[INSCRIPTION] = getRangedValue(script2);
-					else if ("LOCKPICKING" == script1 ||"SKILL24" == script1 ) pc->baseskill[LOCKPICKING] = getRangedValue(script2);
-					else if ("MAGERY" == script1 ||"SKILL25" == script1 ) pc->baseskill[MAGERY] = getRangedValue(script2);
-					else if ("MAGICRESISTANCE" == script1 ||"RESIST" == script1 ||"SKILL26" == script1 ) pc->baseskill[MAGICRESISTANCE] = getRangedValue(script2);
-					else if ("TACTICS" == script1 ||"SKILL27" == script1 ) pc->baseskill[TACTICS] = getRangedValue(script2);
-					else if ("SNOOPING" == script1 ||"SKILL28" == script1 ) pc->baseskill[SNOOPING] = getRangedValue(script2);
-					else if ("MUSICIANSHIP" == script1 ||"SKILL29" == script1 ) pc->baseskill[MUSICIANSHIP] = getRangedValue(script2);
-					else if ("POISONING" == script1 ||"SKILL30" == script1 ) pc->baseskill[POISONING] = getRangedValue(script2);
-					else if ("ARCHERY" == script1 ||"SKILL31" == script1 ) pc->baseskill[ARCHERY] = getRangedValue(script2);
-					else if ("SPIRITSPEAK" == script1 ||"SKILL32" == script1 ) pc->baseskill[SPIRITSPEAK] = getRangedValue(script2);
-					else if ("STEALING" == script1 ||"SKILL33" == script1 ) pc->baseskill[STEALING] = getRangedValue(script2);
-					else if ("TAILORING" == script1 ||"SKILL34" == script1 ) pc->baseskill[TAILORING] = getRangedValue(script2);
-					else if ("TAMING" == script1 ||"SKILL35" == script1 ) pc->baseskill[TAMING] = getRangedValue(script2);
-					else if ("TASTEID" == script1 ||"SKILL36" == script1 ) pc->baseskill[TASTEID] = getRangedValue(script2);
-					else if ("TINKERING" == script1 ||"SKILL37" == script1 ) pc->baseskill[TINKERING] = getRangedValue(script2);
-					else if ("TRACKING" == script1 ||"SKILL38" == script1 ) pc->baseskill[TRACKING] = getRangedValue(script2);
-					else if ("VETERINARY" == script1 ||"SKILL39" == script1 ) pc->baseskill[VETERINARY] = getRangedValue(script2);
-					else if ("SWORDSMANSHIP" == script1 ||"SKILL40" == script1 ) pc->baseskill[SWORDSMANSHIP] = getRangedValue(script2);
-					else if ("MACEFIGHTING" == script1 ||"SKILL41" == script1 )pc->baseskill[MACEFIGHTING] = getRangedValue(script2);
-					else if ("FENCING" == script1 ||"SKILL42" == script1 ) pc->baseskill[FENCING] = getRangedValue(script2);
-					else if ("WRESTLING" == script1 ||"SKILL43" == script1 ) pc->baseskill[WRESTLING] = getRangedValue(script2);
-					else if ("LUMBERJACKING" == script1 ||"SKILL44" == script1 ) pc->baseskill[LUMBERJACKING] = getRangedValue(script2);
-					else if ("MINING" == script1 ||"SKILL45" == script1 ) pc->baseskill[MINING] = getRangedValue(script2);
-					else if ("MEDITATION" == script1 ||"SKILL46" == script1 ) pc->baseskill[MEDITATION] = getRangedValue(script2);
-					else if ("STEALTH" == script1 ||"SKILL47" == script1 ) pc->baseskill[STEALTH] = getRangedValue(script2);
-					else if ("REMOVETRAPS" == script1 ||"SKILL48" == script1 ) pc->baseskill[REMOVETRAPS] = getRangedValue(script2);
+					else if ("ALCHEMY" == script1 ||"SKILL0" == script1 ) pc->baseskill[ALCHEMY] = (short) getRangedValue(script2);
+					else if ("ANATOMY" == script1 ||"SKILL1" == script1 ) pc->baseskill[ANATOMY] = (short) getRangedValue(script2);
+					else if ("ANIMALLORE" == script1 ||"SKILL2" == script1 ) pc->baseskill[ANIMALLORE] = (short) getRangedValue(script2);
+					else if ("ITEMID" == script1 ||"SKILL3" == script1 ) pc->baseskill[ITEMID] = (short) getRangedValue(script2);
+					else if ("ARMSLORE" == script1 ||"SKILL4" == script1 ) pc->baseskill[ARMSLORE] = (short) getRangedValue(script2);
+					else if ("PARRYING" == script1 ||"SKILL5" == script1 ) pc->baseskill[PARRYING] = (short) getRangedValue(script2);
+					else if ("BEGGING" == script1 ||"SKILL6" == script1 ) pc->baseskill[BEGGING] = (short) getRangedValue(script2);
+					else if ("BLACKSMITHING" == script1 ||"SKILL7" == script1 ) pc->baseskill[BLACKSMITHING] = (short) getRangedValue(script2);
+					else if ("BOWCRAFT" == script1 ||"SKILL8" == script1 ) pc->baseskill[BOWCRAFT] = (short) getRangedValue(script2);
+					else if ("PEACEMAKING" == script1 ||"SKILL9" == script1 ) pc->baseskill[PEACEMAKING] = (short) getRangedValue(script2);
+					else if ("CAMPING" == script1 ||"SKILL10" == script1 ) pc->baseskill[CAMPING] = (short) getRangedValue(script2);
+					else if ("CARPENTRY" == script1 ||"SKILL11" == script1 ) pc->baseskill[CARPENTRY] = (short) getRangedValue(script2);
+					else if ("CARTOGRAPHY" == script1 ||"SKILL12" == script1 ) pc->baseskill[CARTOGRAPHY] = (short) getRangedValue(script2);
+					else if ("COOKING" == script1 ||"SKILL13" == script1 ) pc->baseskill[COOKING] = (short) getRangedValue(script2);
+					else if ("DETECTINGHIDDEN" == script1 ||"SKILL14" == script1 ) pc->baseskill[DETECTINGHIDDEN] = (short) getRangedValue(script2);
+					else if ("ENTICEMENT" == script1 ||"SKILL15" == script1 ) pc->baseskill[ENTICEMENT] = (short) getRangedValue(script2);
+					else if ("EVALUATINGINTEL" == script1 ||"SKILL16" == script1 ) pc->baseskill[EVALUATINGINTEL] = (short) getRangedValue(script2);
+					else if ("HEALING" == script1 ||"SKILL17" == script1 ) pc->baseskill[HEALING] = (short) getRangedValue(script2);
+					else if ("FISHING" == script1 ||"SKILL18" == script1 ) pc->baseskill[FISHING] = (short) getRangedValue(script2);
+					else if ("FORENSICS" == script1 ||"SKILL19" == script1 ) pc->baseskill[FORENSICS] = (short) getRangedValue(script2);
+					else if ("HERDING" == script1 ||"SKILL20" == script1 ) pc->baseskill[HERDING] = (short) getRangedValue(script2);
+					else if ("HIDING" == script1 ||"SKILL21" == script1 ) pc->baseskill[HIDING] = (short) getRangedValue(script2);
+					else if ("PROVOCATION" == script1 ||"SKILL22" == script1 ) pc->baseskill[PROVOCATION] = (short) getRangedValue(script2);
+					else if ("INSCRIPTION" == script1 ||"SKILL23" == script1 ) pc->baseskill[INSCRIPTION] = (short) getRangedValue(script2);
+					else if ("LOCKPICKING" == script1 ||"SKILL24" == script1 ) pc->baseskill[LOCKPICKING] = (short) getRangedValue(script2);
+					else if ("MAGERY" == script1 ||"SKILL25" == script1 ) pc->baseskill[MAGERY] = (short) getRangedValue(script2);
+					else if ("MAGICRESISTANCE" == script1 ||"RESIST" == script1 ||"SKILL26" == script1 ) pc->baseskill[MAGICRESISTANCE] = (short) getRangedValue(script2);
+					else if ("TACTICS" == script1 ||"SKILL27" == script1 ) pc->baseskill[TACTICS] = (short) getRangedValue(script2);
+					else if ("SNOOPING" == script1 ||"SKILL28" == script1 ) pc->baseskill[SNOOPING] = (short) getRangedValue(script2);
+					else if ("MUSICIANSHIP" == script1 ||"SKILL29" == script1 ) pc->baseskill[MUSICIANSHIP] = (short) getRangedValue(script2);
+					else if ("POISONING" == script1 ||"SKILL30" == script1 ) pc->baseskill[POISONING] = (short) getRangedValue(script2);
+					else if ("ARCHERY" == script1 ||"SKILL31" == script1 ) pc->baseskill[ARCHERY] = (short) getRangedValue(script2);
+					else if ("SPIRITSPEAK" == script1 ||"SKILL32" == script1 ) pc->baseskill[SPIRITSPEAK] = (short) getRangedValue(script2);
+					else if ("STEALING" == script1 ||"SKILL33" == script1 ) pc->baseskill[STEALING] = (short) getRangedValue(script2);
+					else if ("TAILORING" == script1 ||"SKILL34" == script1 ) pc->baseskill[TAILORING] = (short) getRangedValue(script2);
+					else if ("TAMING" == script1 ||"SKILL35" == script1 ) pc->baseskill[TAMING] = (short) getRangedValue(script2);
+					else if ("TASTEID" == script1 ||"SKILL36" == script1 ) pc->baseskill[TASTEID] = (short) getRangedValue(script2);
+					else if ("TINKERING" == script1 ||"SKILL37" == script1 ) pc->baseskill[TINKERING] = (short) getRangedValue(script2);
+					else if ("TRACKING" == script1 ||"SKILL38" == script1 ) pc->baseskill[TRACKING] = (short) getRangedValue(script2);
+					else if ("VETERINARY" == script1 ||"SKILL39" == script1 ) pc->baseskill[VETERINARY] = (short) getRangedValue(script2);
+					else if ("SWORDSMANSHIP" == script1 ||"SKILL40" == script1 ) pc->baseskill[SWORDSMANSHIP] = (short) getRangedValue(script2);
+					else if ("MACEFIGHTING" == script1 ||"SKILL41" == script1 )pc->baseskill[MACEFIGHTING] = (short) getRangedValue(script2);
+					else if ("FENCING" == script1 ||"SKILL42" == script1 ) pc->baseskill[FENCING] = (short) getRangedValue(script2);
+					else if ("WRESTLING" == script1 ||"SKILL43" == script1 ) pc->baseskill[WRESTLING] = (short) getRangedValue(script2);
+					else if ("LUMBERJACKING" == script1 ||"SKILL44" == script1 ) pc->baseskill[LUMBERJACKING] = (short) getRangedValue(script2);
+					else if ("MINING" == script1 ||"SKILL45" == script1 ) pc->baseskill[MINING] = (short) getRangedValue(script2);
+					else if ("MEDITATION" == script1 ||"SKILL46" == script1 ) pc->baseskill[MEDITATION] = (short) getRangedValue(script2);
+					else if ("STEALTH" == script1 ||"SKILL47" == script1 ) pc->baseskill[STEALTH] = (short) getRangedValue(script2);
+					else if ("REMOVETRAPS" == script1 ||"SKILL48" == script1 ) pc->baseskill[REMOVETRAPS] = (short) getRangedValue(script2);
 					else if ("DYEHAIR" == script1 )
 					{
 						int serial;
@@ -210,7 +210,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						P_ITEM phair= hairobject;
 						if(ISVALIDPI(phair)) {
 
-							phair->setColor( hex2num(script2) );
+							phair->setColor( (unsigned short) hex2num(script2) );
 							phair->Refresh();
 							pc->teleport();
 						}
@@ -231,14 +231,12 @@ void advancementobjects(CHARACTER s, int x, int allways)
 									break;
 								}
 						}
-						if (true)
+						P_ITEM pbeard= beardobject;
+						if(ISVALIDPI(pbeard)) 
 						{
-							P_ITEM pbeard= beardobject;
-							if(ISVALIDPI(pbeard)) {
-								pbeard->setColor( hex2num(script2) );
-								pbeard->Refresh();
-								pc->teleport();
-							}
+							pbeard->setColor((unsigned short)  hex2num(script2) );
+							pbeard->Refresh();
+							pc->teleport();
 						}
 					}
 					else if( "KILLHAIR" == script1 )
@@ -321,15 +319,15 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					else if ( script1 == "SKIN" )
 					{
 						i=hex2num(script2);
-						pc->setColor(i);
-						pc->setOldColor(i);
+						pc->setColor((unsigned short) i);
+						pc->setOldColor((unsigned short) i);
 						pc->teleport();
 					}
 					else if ( "POLY" == script1 )
 					{
 						x=hex2num(script2);
-						pc->setId(x);
-						pc->setOldId(x);
+						pc->setId((unsigned short) x);
+						pc->setOldId((unsigned short) x);
 						pc->teleport();
 					}
 					else if ( "ADVOBJ" == script1 )
@@ -414,7 +412,7 @@ void objTeleporters(P_CHAR pc)
 				if (pmi->type == 86)
 				{
 					if ((UI32)RandomNum(1, 100) <= pmi->morez)
-						soundeffect3(pmi, (pmi->morex << 8) + pmi->morey);
+						soundeffect3(pmi, (unsigned short) ((pmi->morex << 8) + pmi->morey));
 				}
 			}
 	}

@@ -395,10 +395,10 @@ void command_gochar(NXWCLIENT ps )
 		case 5:	{
 
 			Serial serial;
-			serial.ser1=strtonum(1);
-			serial.ser2=strtonum(2);
-			serial.ser3=strtonum(3);
-			serial.ser4=strtonum(4);
+			serial.ser1=(unsigned char)strtonum(1);
+			serial.ser2=(unsigned char)strtonum(2);
+			serial.ser3=(unsigned char)strtonum(3);
+			serial.ser4=(unsigned char)strtonum(4);
 
 			pc_i = pointers::findCharBySerial( serial.serial32 );
 			break;
@@ -514,8 +514,8 @@ void command_poly( NXWCLIENT ps )
                 k = (strtonum(1)<<8) | strtonum(2);
                 if (k>=0x000 && k<=0x3E1) // lord binary, body-values >0x3e crash the client
 		{
-			pc_currchar->setId(k);
-			pc_currchar->setOldId(k);
+			pc_currchar->setId((UI16)k);
+			pc_currchar->setOldId((UI16)k);
 
 			c1= pc_currchar->getColor();	// transparency for mosnters allowed, not for players,
 											// if polymorphing from monster to player we have to switch from transparent to semi-transparent
@@ -525,8 +525,8 @@ void command_poly( NXWCLIENT ps )
 			{
 				if (c1!=0x8000)
 				{
-					pc_currchar->setColor(0xF000);
-					pc_currchar->setOldColor(0xF000);
+					pc_currchar->setColor((UI16)0xF000);
+					pc_currchar->setOldColor((UI16)0xF000);
 				}
 			}
 		}
@@ -551,8 +551,8 @@ void command_skin( NXWCLIENT ps )
 
 		if (k != 0x8000)
 		{
-			pc_currchar->setColor(k);
-			pc_currchar->setOldColor(k);
+			pc_currchar->setColor((UI16)k);
+			pc_currchar->setOldColor((UI16)k);
 			pc_currchar->teleport();
 		}
 	}
@@ -584,7 +584,7 @@ void command_setseason( NXWCLIENT ps )
 
 	if(tnum==2)
 	{
-		setseason[1]=strtonum(1);
+		setseason[1]=(unsigned char) strtonum(1);
 		season=(int)setseason[1];
 		NxwSocketWrapper sw;
 		sw.fillOnline();
@@ -690,7 +690,7 @@ void target_addTarget( NXWCLIENT ps, P_TARGET t )
     P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
     VALIDATEPI(pi);
 
-	UI16 id = DBYTE2WORD( t->buffer[0], t->buffer[1] );
+	UI16 id = (UI16) DBYTE2WORD( t->buffer[0], t->buffer[1] );
 
 	tile_st tile;
     data::seekTile( id, tile );
@@ -751,7 +751,7 @@ void command_addx( NXWCLIENT ps )
 
 	if (tnum==3)
 	{
-		Commands::AddHere(s, DBYTE2WORD( strtonum(1), strtonum(2) ), pc->getPosition("z"));
+		Commands::AddHere(s, (UI16)DBYTE2WORD( strtonum(1), strtonum(2) ), pc->getPosition("z"));
 	}
 	if (tnum==4)
 	{
@@ -931,7 +931,7 @@ void command_shutdown( NXWCLIENT ps )
 					endtime=0;
 					sysbroadcast(TRANSLATE("Shutdown has been interrupted."));
 				}
-				else endmessage(0);
+				else endmessage();
 			}
 			return;
 }
@@ -2267,7 +2267,7 @@ void target_tele( NXWCLIENT ps, P_TARGET t )
 	Location location = t->getLocation();
 	Location charpos= pc->getPosition();
 
-	if( line_of_sight( ps->toInt(), charpos.x, charpos.y, charpos.z, location.x, location.y, location.z, WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING ) ||
+	if( line_of_sight( charpos.x, charpos.y, charpos.z, location.x, location.y, location.z, WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING ) ||
 		pc->IsGM() )
 	{
 		pc->doGmEffect();
