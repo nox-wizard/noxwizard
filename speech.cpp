@@ -1908,21 +1908,12 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 }// namespace Speech
 
 
-inline void makeGhost( cUnicodeString* from, cUnicodeString* to ) {
-
+inline void makeGhost( wstring* from, wstring* to ) {
 	
-	std::vector<UI08>::iterator iter( from->s.begin() ), end( from->s.end() );
-	bool u=false; 
-	int v=0;
-	for( ; iter!=end; iter++, u!=u ) {
-		if( u ) {
-			v+=(*iter);
-			if( v!=32 && v!=0x0000 )
-				(*to) += (v%2)? 'O' : 'o';
-		}
-		else {
-			v=(*iter)<<8;
-		}
+	wstring::iterator iter( from->begin() ), end( from->end() );
+	for( ; iter!=end; iter++) {
+		if( (*iter)!=32 && (*iter)!=0x0000 )
+			(*to) += ( (*iter) %2)? L'O' : L'o';
 	}
 
 }
@@ -2047,10 +2038,10 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
-	
-	cUnicodeString* speechUni= new cUnicodeString( speech );
+	wstring* speechUni= new wstring();
+	string2wstring( speech, *speechUni );
 
-	cUnicodeString* speechGhostUni=NULL;
+	wstring* speechGhostUni=NULL;
 
 	int range;
 	switch ( buffer[socket][3] ) {
@@ -2087,14 +2078,14 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		bool ghost=false;
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
-				speechGhostUni=new cUnicodeString();
+				speechGhostUni=new wstring();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->setSpeechCurrent( new cUnicodeString(speechGhostUni) );
+			pc->setSpeechCurrent( new wstring( *speechGhostUni ) );
 			ghost=true;
 		}
 		else
-			pc->setSpeechCurrent( new cUnicodeString(speechUni) );
+			pc->setSpeechCurrent( new wstring( *speechUni ) );
 
 		/*
 		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
