@@ -324,6 +324,7 @@ class cChar : public cObject
 		void			doMissedSoundEffect();
 		SI32			combatHitMessage(SI32 damage);
 		void			doCombatSoundEffect(SI32 fightskill, P_ITEM pWeapon);
+		void			undoCombat();
 
 	public:
 		void			checkPoisoning();

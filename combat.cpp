@@ -367,9 +367,25 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 bool cChar::combatTimerOk()
 {
 	if ( TIMEOUT(timeout)/* || TIMEOUT(timeout2)*/ )
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
+}
+
+/*!
+\brief Abort combat sequence
+\author Sparhawk
+*/
+void cChar::undoCombat()
+{
+	timeout = 0;
+	attackerserial = INVALID;
+	targserial= INVALID;
+	ResetAttackFirst();
 }
 
 /*!
@@ -378,63 +394,59 @@ bool cChar::combatTimerOk()
 */
 void cChar::doCombat()
 {
-	
-	bool los;
-	int dist, fightskill, x = 0, j = 0, arrowsquant = 0;
-
-	if (targserial == INVALID || !war) return;
-
-	P_ITEM pWeapon = getWeapon();
-
-
-	P_CHAR pc_def = pointers::findCharBySerial(targserial);
-	if(!ISVALIDPC(pc_def)) {
-		//if (war) toggleCombat();
-		timeout = 0;
-		attackerserial = INVALID;
-		targserial= INVALID;
-		ResetAttackFirst();
+	if ( !war || dead || IsHiddenBySpell() || IsFrozen() || (!npc && !IsOnline()) )
+	{
+		undoCombat();
 		return;
 	}
 
-	los = losFrom(pc_def);
+	int	dist,
+		fightskill,
+		x = 0,
+		j = 0,
+		arrowsquant = 0;
+	P_ITEM	pWeapon = getWeapon();
+	bool	validWeapon = ISVALIDPI( pWeapon );
+	P_CHAR	pc_def = pointers::findCharBySerial(targserial);
 
-	if ((!pc_def->npc && !pc_def->IsOnline()) || pc_def->IsHidden() || !los || dead || pc_def->dead) {
-		targserial = INVALID;
-		attackerserial = INVALID;
-		timeout = 0;
-		ResetAttackFirst();
+	if(!ISVALIDPC(pc_def))
+	{
+		undoCombat();
 		return;
 	}
-	if (!los) return;
-	if (this->IsHiddenBySpell()) return;	//cannot attack if under invisible spell
-	if (IsFrozen()) return;
 
-	if (npc) npcs::npcMagicAttack(this, pc_def);
-
-	if ( !(npc || IsOnline()) ) return;
-	//if (dead || pc_def->dead) return;
-	if (pc_def->npc && pc_def->npcaitype==NPCAI_PLAYERVENDOR) return;
+	if ((!pc_def->npc && !pc_def->IsOnline()) || pc_def->IsHidden() || !losFrom(pc_def) || pc_def->dead || (pc_def->npc && pc_def->npcaitype==NPCAI_PLAYERVENDOR) )
+	{
+		undoCombat();
+		return;
+	}
 
 	dist = distFrom(pc_def);
 
 	if ( amxevents[EVENT_CHR_ONDOCOMBAT] ) {
 		g_bByPass = false;
-		amxevents[EVENT_CHR_ONDOCOMBAT]->Call( getSerial32(), pc_def->getSerial32(), dist, ISVALIDPI(pWeapon)? pWeapon->getSerial32() : INVALID );
+		amxevents[EVENT_CHR_ONDOCOMBAT]->Call( getSerial32(), pc_def->getSerial32(), dist, validWeapon ? pWeapon->getSerial32() : INVALID );
 		if( g_bByPass == true )
+		{
 			return;
+		}
 		if( dead )	// Killed as result of script action
+		{
+			undoCombat();
 			return;
+		}
 	}
 	/*
 	runAmxEvent( EVENT_CHR_ONDOCOMBAT, getSerial32(), pc_def->getSerial32(), dist, ISVALIDPI(pWeapon)? pWeapon->getSerial32() : INVALID );
 	if( g_bByPass == true )
 		return;
-	
+
 	if( dead )	// Killed as result of script action
 		return;
 	*/
 
+	if (npc)
+		npcs::npcMagicAttack(this, pc_def);
 
 	if (dist>15)
 	{
@@ -450,20 +462,24 @@ void cChar::doCombat()
 
 		attackerserial=INVALID;
 		ResetAttackFirst();
+
 		if (npc && npcaitype!=NPCAI_PLAYERVENDOR && !dead && war)
 			toggleCombat();
+	}
+	else if ( combatTimerOk() )
+	{
+		validWeapon ? fightskill = pWeapon->getCombatSkill() : fightskill = WRESTLING;
 
-	} else if (dist<=15 && combatTimerOk()) {
-
-		(ISVALIDPI(pWeapon)) ? fightskill = pWeapon->getCombatSkill() : fightskill = WRESTLING;
 		if (fightskill==ARCHERY)
 		{
 			if (pWeapon->ammo == 0)   //old ammo system
 			{
-				if (pWeapon->IsBow()) arrowsquant=getAmount(0x0F3F);
-				else arrowsquant=getAmount(0x1BFB);
-				if (arrowsquant>0) x=1;
-				else sysmsg(TRANSLATE("You are out of ammunitions!"));
+				pWeapon->IsBow() ? arrowsquant=getAmount(0x0F3F) : arrowsquant=getAmount(0x1BFB);
+
+				if (arrowsquant>0)
+					x=1;
+				else
+					sysmsg(TRANSLATE("You are out of ammunitions!"));
 			}
 			else   //new ammo system
 			{
@@ -473,28 +489,51 @@ void cChar::doCombat()
 					sysmsg(TRANSLATE("You are out of ammunitions!"));
 			}
 		}
-		if (dist<2 && fightskill!=ARCHERY ) x=1;
-		if (x) {
+		else if (dist < 2 )
+		{
+			x=1;
+		}
+
+		if (x)
+		{
 			//Stamina maths-----------------------------------
-			if(abs(SrvParms->attackstamina) > 0 && !IsGM()) {
-				if((SrvParms->attackstamina < 0) &&( stm < abs(SrvParms->attackstamina))) {
-       				sysmsg(TRANSLATE("You are too tired to attack."));
-					if (ISVALIDPI(pWeapon)) {
-						if (pWeapon->spd==0) pWeapon->spd=35;
+			if(abs(SrvParms->attackstamina) > 0 && !IsGM())
+			{
+				if((SrvParms->attackstamina < 0) &&( stm < abs(SrvParms->attackstamina)))
+				{
+       					sysmsg(TRANSLATE("You are too tired to attack."));
+					if ( validWeapon )
+					{
+						if (pWeapon->spd==0)
+							pWeapon->spd=35;
 						x = (15000 / ((stm+100) * pWeapon->spd)*MY_CLOCKS_PER_SEC);	//Calculate combat delay
-					} else {
-						if(skill[WRESTLING]>800) j = 50;
-						else if(skill[WRESTLING]>600) j = 45;
-						else if(skill[WRESTLING]>400) j = 40;
-						else if(skill[WRESTLING]>200) j = 35;
-						else j = 30;
+					}
+					else
+					{
+						unsigned short wrestling = skill[WRESTLING];
+						if(wrestling>800)
+							j = 50;
+						else if(wrestling>600)
+							j = 45;
+						else if(wrestling>400)
+							j = 40;
+						else if(wrestling>200)
+							j = 35;
+						else
+							j = 30;
+
 						x = (15000 / ((stm+100) * j)*MY_CLOCKS_PER_SEC);
 					}
 					timeout = uiCurrentTime+x;
        				}
+
         			stm += SrvParms->attackstamina;
-				if (stm > dx) stm = dx;
-				if (stm < 0) stm = 0;
+
+				if (stm > dx)
+					stm = dx;
+
+				if (stm < 0)
+					stm = 0;
         			updateStats(2);
 			}	//End stamina maths -----------------------
 
@@ -502,15 +541,35 @@ void cChar::doCombat()
 			//
 			// Calculate combat delay
 			//
-			if (ISVALIDPI(pWeapon)) {
-	    			if (pWeapon->spd==0) pWeapon->spd=35;
+			if ( validWeapon )
+			{
+	    			if (pWeapon->spd==0)
+					pWeapon->spd=35;
 				x = (15000 / ((dx+100) * pWeapon->spd)*MY_CLOCKS_PER_SEC);
-			} else {
-				if(skill[WRESTLING]>200) j = 35;
-				else if(skill[WRESTLING]>400) j = 40;
-				else if(skill[WRESTLING]>600) j = 45;
-				else if(skill[WRESTLING]>800) j = 50;
-				else j = 30;
+			}
+			else
+			{
+				unsigned short wrestling = skill[WRESTLING];
+				if(wrestling>200)
+				{
+					j = 35;
+				}
+				else if(wrestling>400)
+				{
+					j = 40;
+				}
+				else if(wrestling>600)
+				{
+					j = 45;
+				}
+				else if(wrestling>800)
+				{
+					j = 50;
+				}
+				else
+				{
+					j = 30;
+				}
 				x = (15000 / ((dx+100) * j)*MY_CLOCKS_PER_SEC);
 			}
        			timeout = uiCurrentTime+x;
@@ -521,56 +580,61 @@ void cChar::doCombat()
 
 			// New ammo system for bows and crossbows by Keldan
 			if (fightskill==ARCHERY)
-			{
 				if (pWeapon->ammo == 0)   //old ammo system
 				{
 					if (pWeapon->IsBow())
 					{
 						delItems(0x0F3F, 1);
-						movingeffect3(DEREF_P_CHAR(this), DEREF_P_CHAR(pc_def), 0x0F, 0x42, 0x08, 0x00, 0x00,0,0,0,0);
+						movingeffect3( getSerial32(), targserial, 0x0F, 0x42, 0x08, 0x00, 0x00,0,0,0,0);
 					}
 					else
 					{
 						delItems(0x1BFB, 1);
-						movingeffect3(DEREF_P_CHAR(this), DEREF_P_CHAR(pc_def), 0x1B, 0xFE, 0x08, 0x00, 0x00,0,0,0,0);
+						movingeffect3( getSerial32(), targserial, 0x1B, 0xFE, 0x08, 0x00, 0x00,0,0,0,0);
 					}
 				}
 				else   //new ammo system
 				{
 					(getBackpack())->DeleteAmountByID(1, pWeapon->ammo);
-					movingeffect3(DEREF_P_CHAR(this), DEREF_P_CHAR(pc_def), (pWeapon->ammoFx>>8)&0xFF, pWeapon->ammoFx & 0xFF, 0x08, 0x00, 0x00,0,0,0,0);
+					movingeffect3( getSerial32(), targserial, (pWeapon->ammoFx>>8)&0xFF, pWeapon->ammoFx & 0xFF, 0x08, 0x00, 0x00,0,0,0,0);
 				}
-			}
-			if ( dist < 2 || fightskill == ARCHERY ) {
-				npcsimpleattacktarget(DEREF_P_CHAR(this), DEREF_P_CHAR(pc_def));
-			}
 
-			//if ( timeout2 > uiCurrentTime ) return; // Sparhawk Hmmm what's this?
+			if ( dist < 2 || fightskill == ARCHERY )
+				npcsimpleattacktarget( getSerial32(), targserial);
+
 			if (fightskill == ARCHERY)
 				combatHit( pc_def );
 			else
 				swingtargserial=pc_def->getSerial32();
 		}	//End -> if (x)
 
-		if (fightskill != ARCHERY) combatHit( pc_def, x);
+		if (fightskill != ARCHERY)
+			combatHit( pc_def, x);
 		return;
 	}	//End -> else if (dist<=10 && combatTimerOk())
 
-	if (pc_def->hp < 1) {
+	if (pc_def->hp < 1)
+	{
 		pc_def->Kill();
-		if (!npc && !pc_def->npc) {	//Player vs Player
-			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 ) {
-				 kills++;
-				 sysmsg(TRANSLATE("You have killed %i innocent people."), kills);
-				 if (kills == repsys.maxkills+1)
+		if (!npc && !pc_def->npc)
+		{	//Player vs Player
+			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 )
+			{
+				++kills;
+				sysmsg(TRANSLATE("You have killed %i innocent people."), kills);
+				if (kills == repsys.maxkills+1)
 					sysmsg(TRANSLATE("You are now a murderer!"));
 			}
-			if (SrvParms->pvp_log) {
+			if (SrvParms->pvp_log)
+			{
 				LogFile pvplog("PvP.log");
 				pvplog.Write("%s was killed by %s!\n", pc_def->getCurrentNameC(), getCurrentNameC());
 			}
 		}
-		if (npc) toggleCombat();
+		if (npc)
+		{
+			toggleCombat();
+		}
 	}
 }
 
