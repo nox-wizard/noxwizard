@@ -176,7 +176,7 @@ void cTriggerContext::parseIAddCommand(char* par)
     // Added colormem token here! by Magius(CHE) §
     if( ISVALIDPI(pi) ) {
 		if( itmamount>1 ) {
-			pi->amount=itmamount;
+			pi->IncreaseAmount( itmamount -1 );
 		}
 		if( m_nColor1!=0xFF ) {
 			pi->setColor( (m_nColor1<<8)|(m_nColor2%256) );
