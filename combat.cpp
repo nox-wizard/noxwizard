@@ -57,7 +57,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	}
 
 	bool hit, los;
-	int dist, basedamage, damage, def, x, j;
+	int dist, basedamage, damage, def, x;
 	Skill fightskill, def_fightskill;
 	DamageType dmgtype;
 
@@ -66,6 +66,8 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	unHide();
 	disturbMed();
+
+	if( pc_def->IsHidden() ) return; //last-target bugfix
 
 	los = losFrom(pc_def);
 
