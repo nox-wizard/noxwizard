@@ -95,8 +95,6 @@ void checktempeffects()
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );
-			if ( tempfxCheck.empty() )
-				return;
 			it--;
 			continue;
 	        }
