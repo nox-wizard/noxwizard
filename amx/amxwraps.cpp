@@ -5094,10 +5094,12 @@ NATIVE( _chr_unStable )
 \param 2 is closeable
 \param 3 is disposeable
 \return the menu serial
+\todo Fix it!!! - Akron
 */
 NATIVE ( _menu_create )
 {
-	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0; 
+	// TODO fix it!
+//	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
 }
 
 /*!

@@ -176,8 +176,8 @@ LOGICAL cMenus::handleMenu( NXWCLIENT ps )
 
 cBasicMenu::cBasicMenu( )
 {
-	serial=INVALID;
-	id=INVALID;
+	serial=UINVALID;
+	id=UINVALID;
 }
 
 
@@ -220,8 +220,8 @@ void cBasicMenu::show( P_CHAR pc )
 
 cMenu::cMenu( ) : cBasicMenu( )
 {
-	setX(INVALID);
-	setY(INVALID);
+	setX(UINVALID);
+	setY(UINVALID);
 	setOptions( 0 );
 }
 
