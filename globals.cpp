@@ -302,6 +302,10 @@ char temp[TEMP_STR_SIZE];
 char temp2[TEMP_STR_SIZE];
 }
 
+// counter variables for html file
+unsigned long itemCount=0;
+unsigned long npcCount=0;
+unsigned long charCount=0;
 
 int dummy__; //!< dont touch ! nomen est omen !
 

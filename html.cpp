@@ -19,6 +19,7 @@
 #include "inlines.h"
 #include "basics.h"
 #include "scripts.h"
+#include "sregions.h"
 
 void offlinehtml()//HTML
 {
@@ -70,7 +71,7 @@ void updatehtml()//HTML
 	char sect[512],time_str[80],hfile[512] /*,sh[3],sm[3],ss[3]*/;
 	int a, n=0;
 	//unsigned long int ip;
-	int gm=0,cns=0,ccount=0,npccount=0,loopexit=0;
+	int gm=0,cns=0,loopexit=0;
 	unsigned long int total;
 	unsigned int hr,min,sec;
 	FILE *html;
@@ -127,6 +128,7 @@ void updatehtml()//HTML
 		}
 		else if( script1 == "WHOLIST" )
 		{
+			if (script2.find(" X") > 0 )
 			a=0;
 			for (n=0;n<now;n++)
 			{
@@ -135,8 +137,39 @@ void updatehtml()//HTML
 				//if (online(currchar[n])) // bugfix, LB
 				if( ISVALIDPC(pc) && pc->IsOnline() )
 				{
+					fprintf(html,"<TR><TD align=\"right\">\n");
 					a++;
-					fprintf(html,"%i) %s <BR>\n",a,pc->getCurrentNameC()); // bugfix lb
+					fprintf(html,"%i)</TD><TD> %s ",a,pc->getCurrentNameC()); // bugfix lb
+					std::string str_remains, str_keyword;
+					std::string strKeyList = script2;
+					fprintf(html,"</TD>\n");
+					do
+					{
+						fprintf(html,"<TD align=\"right\">\n");
+						str_keyword="";
+						str_remains="";
+						splitLine( strKeyList, str_keyword, str_remains );
+						if ( str_keyword == "P" )
+						{
+							fprintf(html,"%i,%i,%i ", pc->getPosition().x, pc->getPosition().y, pc->getPosition().z); 
+						}
+						else if ( str_keyword == "REGION" )
+						{
+							fprintf(html,"%s", region[pc->region].name); 
+						}
+						else if ( str_keyword == "ACCOUNT" )
+						{
+							fprintf(html,"%i", pc->account); 
+						}
+						else if ( str_keyword == "PRIVLEVEL" )
+						{
+							fprintf(html,"%i", pc->getPrivLevel()); 
+						}
+						strKeyList=str_remains;
+						fprintf(html,"</TD>\n");
+						
+					} while (strKeyList != "" );
+					fprintf(html,"</TR>\n");
 				}
 			}
 		}
@@ -146,39 +179,15 @@ void updatehtml()//HTML
 			fprintf(html,"%i",Accounts->Count());
 		else if( script1 == "CHARCOUNT" )
 		{
-			if(ccount==0)
-			{
-				npccount=0;
-				/*for(a=0;a<charcount;a++)
-				{
-					P_CHAR pc_a=MAKE_CHAR_REF(a);
-					if(ISVALIDPC(pc_a)) {
-						if(!pc_a->free) ccount++;
-						if(pc_a->npc && !pc_a->free) npccount++;
-					}
-				}*/
-			}
-			fprintf(html,"%i",ccount);
+			fprintf(html,"%i",charCount);
 		}
 		else if( script1 == "NPCS" )
 		{
-			if(npccount==0)
-			{
-				ccount=0;
-				/*for(a=0;a<charcount;a++)
-				{
-					P_CHAR pc_a=MAKE_CHAR_REF(a);
-					if(ISVALIDPC(pc_a)) {
-						if(!pc_a->free) ccount++;
-						if(pc_a->npc && !pc_a->free) npccount++; //bugfix LB
-					}
-				}*/
-			}
-			fprintf(html,"%i",npccount);
+			fprintf(html,"%i",npcCount);
 		}
 		else if( script1 == "ITEMCOUNT" )
 		{
-			//fprintf(html,"%i",itemcount);
+			fprintf(html,"%i",itemCount);
 		}
 		else if( script1 == "UPTIME" )
 		{

@@ -726,7 +726,13 @@ void CWorldMain::loadChar() // Load a character from WSC
 		pc->war=0;
 		if(pc->mounted)
 			pointers::pMounted[pc->getOwnerSerial32()]=pc;
-
+// counter variables for html
+		npcCount+=1;
+	}
+	else
+	{
+		// counter variables for html
+		charCount +=1;
 	}
 
 	UI32 max_x = map_width  * 8;
@@ -1237,6 +1243,7 @@ void loaditem()
 
 	if( pi->layer==LAYER_TRADE_RESTOCK )
 		Restocks->addNewRestock( pi );
+	itemCount +=1;
 
 }
 

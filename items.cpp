@@ -1074,6 +1074,9 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 */
 void cItem::Delete()
 {
+	itemCount-=1;
+	if ( itemCount < 0 )
+		itemCount = 0;
 	// call unequip before an item gets deleted, but don't allow bypassing it
 	if (amxevents[EVENT_IONUNEQUIP] != NULL)
 	{

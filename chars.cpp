@@ -2250,8 +2250,13 @@ UI32 cChar::getAmount(short id, short col, bool onlyPrimaryBackpack)
 */
 void cChar::Delete()
 {
-        NxwSocketWrapper sc;
-        sc.fillOnline( this );
+	if ( this->npc )
+		npcCount-=1;
+	if ( npcCount < 0 )
+		npcCount = 0;
+
+    NxwSocketWrapper sc;
+    sc.fillOnline( this );
 	for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		NXWCLIENT ps = sc.getClient();
 		if ( ps != NULL )

@@ -1646,7 +1646,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 	}
 #endif
 
-	int count, i, book,length, dyn_length,loopexit=0, fb;
+	int count, book,length, dyn_length,loopexit=0, fb;
 	unsigned char nonuni[512];
 	unsigned char packet;
 	int  myoffset,  myj, mysize, subcommand;//, subsubcommand ;

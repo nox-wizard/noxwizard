@@ -242,7 +242,9 @@ extern unsigned int servcount;
 extern unsigned int startcount;
 
 
-
+extern unsigned long itemCount;
+extern unsigned long npcCount;
+extern unsigned long charCount;
 extern int secure; // Secure mode
 
 extern unsigned char season;

@@ -505,7 +505,7 @@ namespace item
 			}
 			else
 				pi->setCont( cont );
-
+		itemCount +=1;
 		return pi;
 
 	}

@@ -957,6 +957,9 @@ void chardel (NXWSOCKET  s) // Deletion of character
 				Xsend(s, delete_resend_char_2, 60);
 			}
 //AoS/			Network->FlushBuffer(s);
+			charCount-=1;
+			if ( charCount < 0 )
+				charCount = 0;
 
 			return; // All done ;]
 		}
