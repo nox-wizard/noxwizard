@@ -643,7 +643,7 @@ static void damage(P_CHAR pa, P_CHAR pd, SpellId spellnum, int spellflags = 0, i
 	double evint = resist; //no bonus/malus if no attacker
 
 	if (ISVALIDPC(pa)) {
-		evint = static_cast<double>(pd->skill[EVALUATINGINTEL]) / 10.0;
+		evint = static_cast<double>(pa->skill[EVALUATINGINTEL]) / 10.0;
 	}
 
 	if (bResists) damage/=2.0;
