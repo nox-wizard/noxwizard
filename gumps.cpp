@@ -30,7 +30,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	P_CHAR pc_c;
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int j=-1,i,serhash;
+	int /*j=-1,*/i,serhash;
 
 	/*
 	ConOut("Button: datasize %i\n", ShortFromCharPtr(buffer[s] +1) );
@@ -45,7 +45,6 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	*/
 
 	P_ITEM pHouseSign, pHouse, pHouseKey;
-//	ITEM	house, house_sign, house_key;
 	SERIAL	serial, housesign_serial, house_serial;
 
 	// Sparhawk: 	race gumps, all race gumps are currently hardcoded
@@ -102,13 +101,13 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	switch (type)
 	{
 	case 1: //Tweaking an Item
-		j=calcItemFromSer( serial );
+//		j=calcItemFromSer( serial );
 		break;
 	case 2: //Tweaking a Character
-		j=calcCharFromSer( serial );
+//		j=calcCharFromSer( serial );
 		break;
 	case 4:
-		j = 1;
+//		j = 1;
 		break;
 	case 5: // House maintenance (Sparhawk)
 		housesign_serial = calcserial(addid1[s],addid2[s],addid3[s],addid4[s]);

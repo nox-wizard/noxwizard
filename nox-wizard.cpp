@@ -810,7 +810,7 @@ void start_glow()
 			{
 				if (!pi->isInWorld())
 				{
-					P_CHAR pc = MAKE_CHAR_REF( calcCharFromSer( pi->getContSerial() ) ); // find equipped glowing items
+					P_CHAR pc = pointers::findCharBySerial( pi->getContSerial() ); // find equipped glowing items
 					if ( !ISVALIDPC( pc )  ) 
 					{
 						P_ITEM cont = (P_ITEM)pi->getContainer();
@@ -1794,34 +1794,6 @@ void initque()
 
 }
 
-
-/*
-int GetPackOwner(int p)
-{
-	int a=0,b;
-
-	if (p==INVALID) return INVALID;
-	P_ITEM pix=MAKE_ITEMREF_LRV(p,INVALID);
-	if (pix->isInWorld()) return INVALID;
-	if (isCharSerial(pix->getContSerial())) 
-		return calcCharFromSer(pix->getContSerial());
-
-	do
-	{
-		if (a>=50) return INVALID;//Too many packs! must stop endless loop!
-		if (pix->getContSerial()==INVALID) return INVALID;
-
-		if (isItemSerial(pix->getContSerial()))
-			pix=FindItemBySerial(pix->getContSerial());
-		if (pix!=NULL)
-			b=pix->getContSerial();
-		else 
-			b=0x42000000;
-		a++;
-	} while ( isItemSerial(b) );
-	return calcCharFromSer(pix->getContSerial());
-}
-*/
 
 /*!
 \author Unknown, rewritten by Luxor

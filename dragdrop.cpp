@@ -87,7 +87,7 @@ static void item_bounce3(const P_ITEM pi)
 	pi->setPosition( pi->getOldPosition() );
 	pi->layer=pi->oldlayer;
 
-	P_CHAR pc = MAKE_CHAR_REF( calcCharFromSer( pi->getContSerial(true) ) );
+	P_CHAR pc = pointers::findCharBySerial( pi->getContSerial(true) );
 	if(pc==NULL)
 		return ;
 	VALIDATEPC( pc );

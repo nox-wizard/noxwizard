@@ -118,7 +118,7 @@ void cGuilds::StonePlacement(int s)
 // Ofcourse checks for membership before opening any gump ;)
 void cGuilds::Menu(int s, int page)
 {
-	int total,i,guildmaster,counter,guild,recruit,war,member;
+	int total,i/*,guildmaster*/,counter,guild,recruit,war,member;
 	int lentext;
 	int gumpnum;
 	char guildfealty[60],guildt[16],toggle[6];
@@ -165,8 +165,6 @@ void cGuilds::Menu(int s, int page)
 	if (guilds[guildnumber].master==0) 
 		Guilds->CalcMaster(guildnumber);
 
-	guildmaster = calcCharFromSer(guilds[guildnumber].master);
-
 	switch (guilds[guildnumber].type)
 	{
 		case 0:		strcpy(guildt, " Standard");	break;
@@ -181,7 +179,7 @@ void cGuilds::Menu(int s, int page)
 
 	UI08 gmprefix[9] = { 0x7C, 0x00, };
 
-	P_CHAR pguildmaster=pointers::findCharBySerial( guildmaster );
+	P_CHAR pguildmaster=pointers::findCharBySerial( guilds[guildnumber].master );
 
 	switch(page)
 	{
@@ -558,15 +556,14 @@ void cGuilds::EraseMember(int c)
 
 	if (guildnumber>=0 && guildnumber <MAXGUILDS)
 	{
-		int j,holding,member;
+		int j,member;
 		for(j=0;j<=guilds[guildnumber].members; ++j)
 		{
 			if (guilds[guildnumber].member[j] == pc->getSerial32())
 			{
-				holding=calcCharFromSer(guilds[guildnumber].member[j]);
-				if (holding>-1)
+				P_CHAR hold = pointers::findCharBySerial(guilds[guildnumber].member[j]);
+				if (ISVALIDPC(hold))
 				{
-					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
 				}
 			}
@@ -1337,7 +1334,6 @@ void cGuilds::SetType(int guildnumber, int type)
 {
 	int j;
 	int member;
-	int holding;
 
 	if (guildnumber<0 || guildnumber >=MAXGUILDS) return;
 
@@ -1353,10 +1349,9 @@ void cGuilds::SetType(int guildnumber, int type)
 		case 1:	//	Convert into a order guild
 			for(j=0;j<=guilds[guildnumber].members;j++)
 			{
-				holding=calcCharFromSer(guilds[guildnumber].member[j]);
-				if (holding>-1)
+				P_CHAR hold = pointers::findCharBySerial(guilds[guildnumber].member[j]);
+				if (ISVALIDPC(hold))
 				{
-					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
 					item::SpawnItemBackpack2( hold->getSocket(), 29, 1 );	// will not work for offline chars (Duke)
 				}
@@ -1367,10 +1362,9 @@ void cGuilds::SetType(int guildnumber, int type)
 		case 2:	//	Convert guild into an choas guild
 			for(j=0;j<=guilds[guildnumber].members;j++)
 			{
-				holding=calcCharFromSer(guilds[guildnumber].member[j]);
-				if (holding>-1)
+				P_CHAR hold = pointers::findCharBySerial(guilds[guildnumber].member[j]);
+				if (ISVALIDPC(hold))
 				{
-					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
 					item::SpawnItemBackpack2( hold->getSocket(), 28, 1 );
 				}
@@ -1383,10 +1377,9 @@ void cGuilds::SetType(int guildnumber, int type)
 			//	Idea is to remove the items from this guilds members(Im gonna use your item loop for clarity)
 			for(j = 0;j <= guilds[guildnumber].members; j++)
 			{
-				holding = calcCharFromSer(guilds[guildnumber].member[j]);
-				if(holding>-1)
+				P_CHAR hold = pointers::findCharBySerial(guilds[guildnumber].member[j]);
+				if (ISVALIDPC(hold))
 				{
-					P_CHAR hold=MAKE_CHAR_REF(holding);
 					RemoveShields(hold);
 				}
 			}
@@ -1505,7 +1498,7 @@ void cGuilds::CalcMaster(int guildnumber)
 
 	for ( member = 1; member < MAXGUILDMEMBERS; ++member )
 	{
-		P_CHAR pCurrentMember = MAKE_CHAR_REF( calcCharFromSer( guild->member[member]) );
+		P_CHAR pCurrentMember = pointers::findCharBySerial( guild->member[member] );
 
 		if( ISVALIDPC( pCurrentMember) )
 			currentfealty = pCurrentMember->GetGuildFealty();

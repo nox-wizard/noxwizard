@@ -576,8 +576,7 @@ void batchcheck(int s) // Do we have to run a batch file
 
 void npcact(int s)
 {
-	int i=calcCharFromPtr(buffer[s]+7);
-	P_CHAR pc = MAKE_CHAR_REF( i );
+	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC( pc );
 	pc->playAction(addid1[s]);
 }
