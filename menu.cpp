@@ -9,6 +9,9 @@
 
 #include "menu.h"
 
+#define OPTIONS2BITSET( MOVE, CLOSE, DISPOSE ) \
+	( MOVE*MOVEABLE | CLOSE*CLOSEABLE | DISPOSE*DISPOSEABLE  ) \
+
 
 LOGICAL cMenu::createGump(UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial)
 {
@@ -19,6 +22,12 @@ LOGICAL cMenu::createGump(UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial)
 	}
 	return false;
 }
+
+LOGICAL	cMenu::createGump(UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial)
+{
+	return createGump( gump, x, y, OPTIONS2BITSET(canMove, canClose, canDispose), serial );
+}
+
 
 LOGICAL	cMenu::deleteGump( UI32 gump )
 {
@@ -137,10 +146,7 @@ cMenu::cMenu()
 
 cMenu::cMenu( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
 {
-	cMenu( gump, x, y, 0, serial );
-	setOptions( MOVEABLE, canMove );
-	setOptions( CLOSEABLE, canClose );
-	setOptions( DISPOSEABLE, canDispose );
+	cMenu( gump, x, y, OPTIONS2BITSET(canMove, canClose, canDispose), serial );
 }
 
 cMenu::cMenu( UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial )
