@@ -427,12 +427,11 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 
 void cNetwork::LoginMain(int s)
 {
-
 	signed long int i;
-        unsigned char noaccount[3]="\x82\x00";
-	unsigned char acctused[3]="\x82\x01";
-	unsigned char nopass[3]="\x82\x03";
-	unsigned char acctblock[3]="\x82\x02";
+        unsigned char noaccount[2]={0x82, 0x00};
+	unsigned char acctused[2]={0x82, 0x01};
+	unsigned char acctblock[2]={0x82, 0x02};
+	unsigned char nopass[2]={0x82, 0x03};
 
 	SERIAL chrSerial;
 
@@ -490,7 +489,6 @@ void cNetwork::LoginMain(int s)
 	  currchar[s] = INVALID;
           return;
           //</Luxor>
-
 	}
 
 	//ndEndy now better
@@ -499,7 +497,6 @@ void cNetwork::LoginMain(int s)
 		Accounts->SetEntering(acctno[s]);
 		Login2(s);
 	}
-
 }
 
 
@@ -577,7 +574,8 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	WarnOut("relaying client to NoX-Sniffer!!!\n");
 #endif
 
-	unsigned char login03[12]="\x8C\x00\x00\x00\x00\x13\x88\x7B\x7B\x7B\x01";
+//	unsigned char login03[12]="\x8C\x00\x00\x00\x00\x13\x88\x7B\x7B\x7B\x01";
+	UI08 login03[11]={ 0x8C, 0x00, };
 	login03[4]=(unsigned char) (ip>>24);
 	login03[3]=(unsigned char) (ip>>16);
 	login03[2]=(unsigned char) (ip>>8);
@@ -590,15 +588,44 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	login03[9]='E';
 	login03[10]='Y';
 	Xsend(s, login03, 11);
+}
 
+void cNetwork::ActivateFeatures(int s)
+{
+UI08 feat[3] = {0xB9, 0x00, 0x00};
+UI16 features = 0;  //<-- BitMask ?
+// 0x0001 => Button Chat ( T2A ??? )
+// 0x0003 => LBR (+ T2A)
+// 0x801F => AoS and previous .... (AoS + LBR + T2A)
+// 0xFFFF => ... (*ALL* <grin>)
+enum {
+	T2A = 0x0001;
+	LBR = 0x0002;
+};
+
+	switch(server_data.feature) {
+		case 1:	// T2A Features, button chat, popup help .. 
+			features |= T2A;
+			break;
+		case 2: // LBR plus previous vers.
+			features |= LBR | T2A;
+			break;
+		default:  // I don't know, what you want :P
+			return;
+			break;
+	};
+
+	ShortToCharPtr(features, feat+1);
+	Xsend(s, feat, 3);
 }
 
 void cNetwork::GoodAuth(int s)
 {
 	UI32 j, tlen;
+	UI08 login04a[4]={ 0xA9, 0x09, 0x24, 0x02 }, n = startcount;
 
 	tlen=4+(5*60)+1+(startcount*63) +4;
-	unsigned char login04a[5]={0xA9, 0x09, 0x24, 0x02};
+
 	login04a[1]=tlen>>8;
 	login04a[2]=tlen%256;
 
@@ -608,13 +635,15 @@ void cNetwork::GoodAuth(int s)
 	NxwCharWrapper sc;
 	Accounts->GetAllChars( acctno[s], sc );
 
+	ActivateFeatures(s);
 
 	login04a[3] = sc.size(); //Number of characters found
 	Xsend(s, login04a, 4);
 
 	j=0;
 
-	unsigned char login04b[61]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 login04b[60]={ 0, };
+
 	for ( sc.rewind(); !sc.isEmpty(); sc++ )
 	{
 		P_CHAR pc_a=sc.getChar();
@@ -627,16 +656,16 @@ void cNetwork::GoodAuth(int s)
 	}
 
 	UI32 i=0;
-	for ( i=0;i<60;i++) login04b[i]=0;
+	memset(login04b, 0, 60);
 	for ( i=j;i<5;i++)
 	{
 		Xsend(s, login04b, 60);
 	}
 
-	buffer[s][0]=startcount;
-	Xsend(s, buffer[s], 1);
+	Xsend(s, &n, 1);  // startcount
 
-	unsigned char login04d[64]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 login04d[63]= { 0, };
+
 	for (i=0;i<startcount;i++)
 	{
 		login04d[0]=i;
@@ -645,15 +674,20 @@ void cNetwork::GoodAuth(int s)
 		Xsend(s, login04d, 63);
 	}
 
+	UI08 tail[4]={0, }; //Fix for new clients, else it stuck on "Connecting ..."
+
+	if(server_data.feature == 2) 	// LBR: NPC Popup Menu   (not currently impl.)
+		tail[3] = 0x08;
+	Xsend(s, tail, 4);
 }
 
 void cNetwork::CharList(int s) // Gameserver login and character listing
 {
 
 	signed long int i;
-	unsigned char noaccount[3]="\x82\x00";
-	unsigned char nopass[3]="\x82\x03";
-	unsigned char acctblock[3]="\x82\x02";
+	unsigned char noaccount[2]={0x82, 0x00};
+	unsigned char nopass[2]={0x82, 0x03};
+	unsigned char acctblock[2]={0x82, 0x02};
 
 	acctno[s]=-1;
 
@@ -680,6 +714,7 @@ void cNetwork::CharList(int s) // Gameserver login and character listing
 			return;
 		}
 	}
+
 	if (acctno[s] >= 0)
 		GoodAuth(s);
 }
@@ -729,9 +764,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 			SI32 nSer = pc_k->getSerial32();
 			for ( UI32 idx = 0; idx < now; idx++ ) {
 				if ( nSer == currchar[idx] ) {
-					char msg2[3];
-					msg2[0]=0x53;
-					msg2[1]=0x05;
+					UI08 msg2[2]={ 0x53, 0x05 };
 					Xsend(s, msg2, 2);
 					Disconnect(s);
 					Disconnect(idx);
@@ -750,9 +783,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 		}
 		else
 		{
-			char msg[3];
-			msg[0]=0x53;
-			msg[1]=0x05;
+			UI08 msg[2]={ 0x53, 0x05 };
 			Xsend(s, msg, 2);
 			Disconnect(s);
 		}
