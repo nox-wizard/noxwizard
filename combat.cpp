@@ -595,18 +595,18 @@ void cChar::doCombat()
 					if (pWeapon->IsBow())
 					{
 						delItems(0x0F3F, 1);
-						movingeffect3( getSerial32(), targserial, 0x0F, 0x42, 0x08, 0x00, 0x00,0,0,0,0);
+						movingFX3(pc_def, 0x0F42, 8, 0, 0, 0, 0, 0, 0);
 					}
 					else
 					{
 						delItems(0x1BFB, 1);
-						movingeffect3( getSerial32(), targserial, 0x1B, 0xFE, 0x08, 0x00, 0x00,0,0,0,0);
+						movingFX3(pc_def, 0x1BFE, 8, 0, 0, 0, 0, 0, 0);
 					}
 				}
 				else   //new ammo system
 				{
 					(getBackpack())->DeleteAmountByID(1, pWeapon->ammo);
-					movingeffect3( getSerial32(), targserial, (pWeapon->ammoFx>>8)&0xFF, pWeapon->ammoFx & 0xFF, 0x08, 0x00, 0x00,0,0,0,0);
+					movingFX3(pc_def, pWeapon->ammoFx, 8, 0, 0, 0, 0, 0, 0);					
 				}
 
 			if ( dist < 2 || fightskill == ARCHERY )

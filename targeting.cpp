@@ -1509,7 +1509,7 @@ static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and pla
             pi->MoveTo( x, y, z);
             pi->setContSerial(INVALID);
             pi->magic=2; //make item unmovable once thrown
-            movingeffect2(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), 0x0F, 0x0D, 0x11, 0x00, 0x00);
+	    pc->movingFX2(pi, 0x0F0D, 0x11, 0, 0);
             pi->Refresh();
         }
     }

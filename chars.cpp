@@ -2245,6 +2245,56 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 }
 
 /*!
+ \brief send an item from a char to another item
+ \author Akron
+ \note replaces the old movingeffect2()
+ */
+void cChar::movingFX2(P_ITEM pi, UI16 eff, UI08 speed, UI08 loop, UI08 explode)
+{
+	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
+
+	VALIDATEPI(pi);
+
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), pi->getSerial32(), eff, getPosition(), pi->getPosition(), speed, loop, 0, explode); 
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
+}
+
+void cChar::movingFX3(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, UI08 explode, UI08 unk1, UI08 unk2, UI08 ajust, UI08 type)
+{
+	VALIDATEPC(dst);
+
+	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	MakeGraphicalEffectPkt(effect, type, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, ajust, explode); 
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWSOCKET j=sw.getSocket();
+		if( j!=INVALID )
+		{
+			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
+	}
+}
+
+/*!
 \brief Plays a static effect on a char
 \author Xanathar
 \param id id of 2d effect; if -1, 2d effect is get from particles obj

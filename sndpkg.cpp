@@ -1324,14 +1324,7 @@ void itemtalk(P_ITEM pi, char *txt)
 	}
 }
 
-// Last touch: LB 8'th April 2001 for particleSystem
-
-// if UO_3DonlyEffect is true, sta has to be valid and contain particleSystem data (if not, crash)
-// for particleSystem data layout see staticeffectUO3d and updated packetDoku
-// for old 2d staticeffect stuff , the new (3d client) pararamters UO_3Donlyeffect, sta and skip_old are defaulted in such a way that they behave like they did before
-// simply dont set them in that case
-// the last parameter is for particlesystem optimization only (dangerous). don't use unless you know 101% what you are doing.
-
+#if 0
 //	- Movingeffect3 is used to send an object from a char
 //    to another object (like purple potions)
 void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed char z, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode)
@@ -1345,7 +1338,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 
 	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
 
-MakeGraphicalEffectPkt(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
+	MakeGraphicalEffectPkt(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -1360,6 +1353,7 @@ MakeGraphicalEffectPkt(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, s
 	 }
 
 }
+#endif
 
 // staticeffect3 is for effects on items
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode)
@@ -1367,76 +1361,12 @@ void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff
 	UI16 eff = (eff1<<8)|(eff2%256);
 	UI08 effect[28]={ 0x70, 0x00, };
 
-Location pos = { x, y, z, 0};
-
-MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
-
-pos.z = 0;
+	Location pos = { x, y, z, 0};
+	MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
+	pos.z = 0;
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( pos );
-	 for( sw.rewind(); !sw.isEmpty(); sw++ )
-	 {
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-		{
-			Xsend(j, effect, 28);
-//AoS/			Network->FlushBuffer(j);
-		}
-	}
-}
-
-void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode,unsigned char unk1,unsigned char unk2,unsigned char ajust,unsigned char type)
-{
-	P_CHAR src=MAKE_CHAR_REF(source);
-	VALIDATEPC(src);
-	P_CHAR dst=MAKE_CHAR_REF(dest);
-	VALIDATEPC(dst);
-
-
-	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
-	UI16 eff = (eff1<<8)|(eff2%256);
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	Location srcpos= src->getPosition();
-	Location destpos= dst->getPosition();
-
-	MakeGraphicalEffectPkt(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
-
-	 NxwSocketWrapper sw;
-	 sw.fillOnline( );
-	 for( sw.rewind(); !sw.isEmpty(); sw++ )
-	 {
-		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID )
-		{
-			Xsend(j, effect, 28);
-//AoS/			Network->FlushBuffer(j);
-		}
-	}
-}
-
-
-
-//	- Movingeffect2 is used to send an object from a char
-//	to another object (like purple potions)
-void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode)
-{
-	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
-
-	const P_ITEM pi=MAKE_ITEMREF_LR(dest);	// on error return
-	P_CHAR pc_source = MAKE_CHAR_REF(source);
-	VALIDATEPC(pc_source);
-
-	UI16 eff = (eff1<<8)|(eff2%256);
-	UI08 effect[28]={ 0x70, 0x00, };
-
-	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
-
-	MakeGraphicalEffectPkt(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
-
-	 NxwSocketWrapper sw;
-	 sw.fillOnline( );
 	 for( sw.rewind(); !sw.isEmpty(); sw++ )
 	 {
 		NXWSOCKET j=sw.getSocket();
