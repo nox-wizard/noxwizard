@@ -5902,7 +5902,17 @@ NATIVE ( _addGmPage )
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
     
-	P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
+	cell *cstr;
+
+	amx_GetAddr(amx,params[2],&cstr);
+
+	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+
+    g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,100)] = '\0';
+
+	P_GMPAGE page = new cGmpage(pc->getSerial32(), g_cAmxPrintBuffer);
+	g_nAmxPrintPtr=0;
+	
 	if (pages->addPage(page) == NULL )
 		return false;
 	return true;
@@ -5950,14 +5960,25 @@ NATIVE ( _chr_getGmPage )
 {
 	extern cGmpagesMap* pages;
 
-	
 	P_GMPAGE page=pages->findPage(params[1], params[2]);
 
 	if( pages==NULL )
 		return false;
 	
-	strcpy((char*)params[3], (page->getReason()).c_str());
-	strcpy((char*)params[4], (page->getTime()).c_str());
+	char str1[100];
+	char str2[100];
+
+	cell *cptr1;
+	cell *cptr2;
+
+	strcpy(str1, (page->getReason()).c_str());
+	strcpy(str2, (page->getTime()).c_str());
+
+    amx_GetAddr(amx,params[3],&cptr1);
+    amx_GetAddr(amx,params[4],&cptr2);
+
+	amx_SetString(cptr1,str1, g_nStringMode);
+	amx_SetString(cptr2,str2, g_nStringMode);
 
 	return true;
 
