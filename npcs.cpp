@@ -88,7 +88,9 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 
 int AddRandomNPC(NXWSOCKET s, char * npclist)
 {
-	int npc = str2num( cObject::getRandomScriptValue( "NPCLIST", std::string( npclist ) ) );
+	std::string list( npclist );
+	std::string sNpc = cObject::getRandomScriptValue( "NPCLIST", list );
+	int npc = str2num( sNpc );
 	return (npc!=0)? npc : INVALID;
 }
 

@@ -274,7 +274,6 @@ class cChar : public cObject
 	//	Body Type
 	//
 	private:
-		UI16			id;				//!< Character body type
 		UI16			xid;				//!< Backup of body type for ghosts
 	public:
 		BODYTYPE		GetBodyType() const;
@@ -286,7 +285,6 @@ class cChar : public cObject
 	//	Skin Color
 	//
 	private:
-		UI16			skin;				//!< Skin color
 		UI16			xskin;				//!< Backup of skin color
 	public:
 		UI16			getSkinColor();
@@ -735,9 +733,8 @@ public:
 		SI32			fleeat;
 		SI32			reattackat;
 		SI32			trigger; //Trigger number that character activates
-		std::string	trigword; //Word that character triggers on.
-		char			envokeid1; //ID1 of item user envoked
-		char			envokeid2; //ID2 of item user envoked
+		std::string		trigword; //Word that character triggers on.
+		UI16			envokeid;
 		SI32			envokeitem;
 		SI32			split;
 		SI32			splitchnc;

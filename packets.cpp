@@ -226,14 +226,14 @@ void cServerClientPacket::receive( NXWCLIENT ps ) {
 */
 
 #define CREATE( NAME, CMD, SIZE ) \
-cPacket##NAME##::cPacket##NAME##() { \
+cPacket##NAME::cPacket##NAME() { \
 	cmd = CMD; \
 	headerSize = SIZE; \
 };
 
-#define SEND( NAME ) void cPacket##NAME##::send( NXWCLIENT ps )
+#define SEND( NAME ) void cPacket##NAME::send( NXWCLIENT ps )
 
-#define RECEIVE( NAME ) void cPacket##NAME##::receive( NXWCLIENT ps )
+#define RECEIVE( NAME ) void cPacket##NAME::receive( NXWCLIENT ps )
 //@}
 
 

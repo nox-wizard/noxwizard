@@ -3131,7 +3131,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 		P_ITEM pi=pointers::findItemBySerial(serial);
 		if (ISVALIDPI(pi))
 		{
-			if( color==INVALID ) //open dye vat
+			if( color==UINVALID16 ) //open dye vat
 			{
 				SndDyevat( ps->toInt(), pi->getSerial32(), pi->id );
 			}	
@@ -3154,7 +3154,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 		P_CHAR pc=pointers::findCharBySerial(serial);
 		if(ISVALIDPC(pc))
 		{
-			if( color==INVALID ) //open dye vat
+			if( color==UINVALID16 ) //open dye vat
 			{
 				SndDyevat( ps->toInt(), pc->getSerial32(), 0x2106 );
 			}

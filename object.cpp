@@ -101,6 +101,8 @@ cObject::cObject()
 	old_position = Loc(0,0,0);
 	position = Loc(0,0,0);
 	ScriptID = 0;
+	color = 0;
+	id = 0;
 
 	//amxEvents = 0;
 	tempfx = NULL;

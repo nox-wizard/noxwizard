@@ -22,8 +22,6 @@ enum
 	MAXLOOPS=66666,		//!< max cycles in a loop
 	MaxZstep=9,
 
-	INVALID=-1,
-
 	MAX_GUILDTYPE = 2,	//!< Code to support the Chaos/order system
 	MAXIMUM = 1024,		//!< Maximum open connections to server
 	MAXCLIENT = MAXIMUM +1,
@@ -54,7 +52,10 @@ enum
 
 }; //enum
 
-#define UINVALID (UI08)INVALID
+#define INVALID -1
+#define UINVALID 0xFFFFFFFF
+#define UINVALID08 0xFF
+#define UINVALID16 0xFFFF
 
 //@{
 /*!

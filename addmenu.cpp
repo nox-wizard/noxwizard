@@ -179,7 +179,8 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 			}
 			case MAKE_NEED_RESOURCE: //RESOURCE 10
 		        if( lha!="RESOURCE" ) {
-					LogWarning("create.xss, MAKEMENU %i: Expected 'RESOURCE <num>' after '%s'!", section, names[item] );
+					if ( item > INVALID ) //Luxor
+						LogWarning("create.xss, MAKEMENU %i: Expected 'RESOURCE <num>' after '%s'!", section, names[item].c_str() );
 					error=true;
 				}
 				else {

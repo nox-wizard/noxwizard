@@ -136,8 +136,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	setPosition( 100, 100, 0 );
 	setOldPosition( 0, 0, 0, 0 );
 	dir=0; //&0F=Direction
-	id=xid=0x0190; // Character body type
-	skin=xskin=0x0000; // Skin color
+	xid=0x0190; // Character body type
+	xskin=0x0000; // Skin color
 	keyserial=INVALID;  // for renaming keys
 	SetPriv(0); // 1:GM clearance, 2:Broadcast, 4:Invulnerable, 8: single click serial numbers
 	// 10: Don't show skill titles, 20: GM Pagable, 40: Can snoop others packs, 80: Counselor clearance
@@ -245,8 +245,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	reattackat=0;
 	trigger=0; //Trigger number that character activates
 	trigword[0]='\x00'; //Word that character triggers on.
-	envokeid1=0x00; //ID1 of item user envoked
-	envokeid2=0x00; //ID2 of item user envoked
+	envokeid=0;
 	envokeitem=-1;
 	split=0;
 	splitchnc=0;
@@ -957,7 +956,7 @@ void cChar::unHide()
 					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					SendDrawGamePlayerPkt(i, my_serial, id, 0x00, skin, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
+					SendDrawGamePlayerPkt(i, my_serial, id, 0x00, color, (poisoned ? 0x04 : 0x00), my_pos, 0x0000, dir|0x80);
 				}
 			}
 		}
@@ -1121,7 +1120,7 @@ void cChar::showContainer(P_ITEM pCont)
 		ShortToCharPtr(pi->getPosition().x, bpitem +9);
 		ShortToCharPtr(pi->getPosition().y, bpitem +11);
 		LongToCharPtr(pCont->getSerial32(), bpitem +13);
-		ShortToCharPtr(pi->color(), bpitem +17);
+		ShortToCharPtr(pi->color, bpitem +17);
 		//bpitem[19]=pi->decaytime=0;//HoneyJar // reseting the decaytimer in the backpack
 		bpitem[19]= 0;
 		Xsend(s, bpitem, 19);
@@ -1865,7 +1864,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		if ( IsHidden() )
 			flag |= 0x80;
 
-		SendDrawGamePlayerPkt(socket, getSerial32(), id, 0x00, skin, flag, pos, 0x0000, dir | 0x80, true);
+		SendDrawGamePlayerPkt(socket, getSerial32(), id, 0x00, color, flag, pos, 0x0000, dir | 0x80, true);
 
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -2140,7 +2139,7 @@ LOGICAL const cChar::CanDoGestures() const
 			{
 				if ( pj->layer == LAYER_2HANDWEAPON || ( pj->layer == LAYER_1HANDWEAPON && pj->type!=ITYPE_SPELLBOOK ) )
 				{
-					if (!(pj->id()==0x13F9 || pj->id()==0x0E8A || pj->id()==0x0DF0 || pj->id()==0x0DF2
+					if (!(pj->id==0x13F9 || pj->id==0x0E8A || pj->id==0x0DF0 || pj->id==0x0DF2
 						|| pj->IsChaosOrOrderShield() ))
 					{
 						return false;
@@ -2538,7 +2537,7 @@ void cChar::resurrect( NXWCLIENT healer )
 		modifyFame(0);
 		playSFX( 0x0214);
 		id = xid;
-		skin = xskin;
+		color = xskin;
 		attackerserial=INVALID;
 		ResetAttackFirst();
 		war=0;
@@ -2686,18 +2685,18 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	if (bBackup)
 	{
 		xid = id;
-		xskin = skin;
+		xskin = color;
 
 		setRealName( getCurrentNameC() );
 		if(ISVALIDPI(pbeard))
 		{
-			oldbeardstyle = pbeard->id();
-			oldbeardcolor = pbeard->color();
+			oldbeardstyle = pbeard->id;
+			oldbeardcolor = pbeard->color;
 		}
 		if(ISVALIDPI(phair))
 		{
-			oldhairstyle = phair->id();
-			oldhaircolor = phair->color();
+			oldhairstyle = phair->id;
+			oldhaircolor = phair->color;
 		}
 	}
 
@@ -2705,7 +2704,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		id = (BODYTYPE) bodyid;
 
 	if(skincolor!=INVALID)
-		skin = (UI16) skincolor;
+		color = (UI16) skincolor;
 
 	if (newname!=NULL)
 		setCurrentName(newname);
@@ -2713,17 +2712,17 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	if(ISVALIDPI(pbeard))
 	{
 		if (beardstyle!=INVALID)
-			pbeard->setId(beardstyle);
+			pbeard->id = beardstyle;
 		if (beardcolor!=INVALID)
-			pbeard->setColor(beardcolor);
+			pbeard->color = beardcolor;
 	}
 
 	if(ISVALIDPI(phair))
 	{
 		if (hairstyle!=INVALID)
-			phair->setId(hairstyle);
+			phair->id = hairstyle;
 		if (haircolor!=INVALID)
-			phair->setColor(haircolor);
+			phair->color = haircolor;
 	}
 
 	morphed = bBackup;
@@ -3151,7 +3150,7 @@ void cChar::Kill()
 			continue;
 
 		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition().x==26) && (pi_j->getPosition().y==0) &&
-			(pi_j->getPosition().z==0) && (pi_j->id()==0x1E5E) )
+			(pi_j->getPosition().z==0) && (pi_j->id==0x1E5E) )
 		{
 			endtrade(pi_j->getSerial32());
 		}
@@ -3354,7 +3353,7 @@ void cChar::checkEquipement()
 				strcpy(temp2,pi->getCurrentNameC());
 
 			if( pi->st > getStrength()) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
-			playSFX( itemsfx(pi->id()) );
+			playSFX( itemsfx(pi->id) );
 
 			//Subtract stats bonus and poison
 			modifyStrength(-pi->st2,false);
@@ -3425,7 +3424,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 	if (drag)
 		return 0;
 
-	data::seekTile( pi->id(), item );
+	data::seekTile( pi->id, item );
 	
 	NxwItemWrapper si;
 	si.fillItemWeared( this, true, true, false );
@@ -4281,12 +4280,12 @@ void cChar::openSpecialBank(P_CHAR pc)
 
 UI16 cChar::getSkinColor()
 {
-	return (UI16) skin;
+	return (UI16) color;
 }
 
 void cChar::setSkinColor( UI16 newColor )
 {
-	skin = newColor;
+	color = newColor;
 }
 
 UI16 cChar::getOldSkinColor()
@@ -4960,7 +4959,7 @@ void cChar::do_lsd()
 			if(!ISVALIDPI(pi))
 				continue;
 
-			UI16 color=pi->color(); // fetch item's color and covert to 16 bit
+			UI16 color=pi->color; // fetch item's color and covert to 16 bit
 			if (rand()%44==0)
 				color+= pi->getPosition().x  - pi->getPosition().y;
 			else

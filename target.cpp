@@ -33,7 +33,7 @@ void cTarget::send( NXWCLIENT ps )
 
 bool cTarget::isValid()
 {
-	if( pkg.type=1 && ( ( pkg.x.get()==INVALID ) || ( pkg.y.get()==INVALID ) ) )
+	if( pkg.type=1 && ( ( pkg.x.get()==UINVALID16 ) || ( pkg.y.get()==UINVALID16 ) ) )
 		return false;
 	if( pkg.type=0 && ( ( pkg.clicked.get()==0 ) && ( pkg.model.get()== 0 ) ) )
 		return false;
@@ -124,7 +124,7 @@ cLocationTarget::~cLocationTarget()
 
 bool cLocationTarget::isValid()
 {
-	return ( pkg.type==1 ) && ( ( pkg.x.get()!=INVALID ) && ( pkg.y.get()!=INVALID ) );
+	return ( pkg.type==1 ) && ( ( pkg.x.get()!=UINVALID16 ) && ( pkg.y.get()!=UINVALID16 ) );
 }
 
 void cLocationTarget::error( NXWCLIENT ps )

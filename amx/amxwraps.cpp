@@ -5721,9 +5721,6 @@ NATIVE( _target_getProperty )
 {
 }
 
-NATIVE( _target_getProperty )
-{
-}
 
 
 /*!
