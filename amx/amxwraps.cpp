@@ -2142,13 +2142,13 @@ NATIVE(_tempfx_isActive)
 	if ( isCharSerial(params[1]) )
 	{
 		src = (P_OBJECT)pointers::findCharBySerial(params[1]);
-		if ( ! ISVALIDPC(src) )
+		if ( ! ISVALIDPC( (P_CHAR) src) )
 			return 0;
 	}
 	else if ( isItemSerial(params[1]) )
 	{
 		src = (P_OBJECT)pointers::findItemBySerial(params[1]);
-		if ( ! ISVALIDPI(src) )
+		if ( ! ISVALIDPI((P_ITEM) src) )
 			return 0;
 	}
 
@@ -3404,7 +3404,8 @@ NATIVE(_chr_resurrect)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc,INVALID);
-	if (pc->dead && pc->IsOnline() ) {
+	if (pc->dead && ( pc->IsOnline() || pc->npc ) ) 
+	{
 		pc->resurrect();
 		return 0;
 	}
@@ -3422,10 +3423,13 @@ NATIVE(_chr_kill)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc,INVALID);
-	if (!pc->dead && pc->IsOnline() ) 
+	if (!pc->dead && ( pc->IsOnline() || pc->npc ) )
 	{
 		pc->attackerserial=INVALID;
 		pc->Kill();
+		if ( pc->npc )
+			pc->Delete();
+
 		return 0;
 	}
 	else
@@ -7520,9 +7524,14 @@ NATIVE ( _chr_getCmdSpeech )
 
 NATIVE (_recompileSmall )
 {
+	UI32 tempStringMode=g_nStringMode;
 	initAmxEvents();
 	LoadOverrides ();
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
+	g_nAmxPrintPtr=0;
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nStringMode=tempStringMode;
+	params[0]=params[1]=params[2]=params[3]=params[4]=params[5]=params[6]=params[7]=params[8]=0;
 	return true;
 }
 // resource map functions
@@ -7531,6 +7540,8 @@ NATIVE (_createResourceMap)
 	ResourceMapType type=(ResourceMapType)params[1];
 	cResourceMap *map;	
 	cell *cstr;
+	g_nAmxPrintPtr=0;	
+ 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	amx_GetAddr(amx, params[3], &cstr);
 	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
  	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
