@@ -51,12 +51,11 @@ public:
 //stonedz :Maybe, if Small supports it, we can use an array dynamically allocated(?).
  
 
-class cCallCommand : public cCommand {
+class cCallCommand {
 
 public:
 
-	cCallCommand(/*...*/);
-	~cCallCommand();
+	cCallCommand(/*parameters to be defined*/);
 
 }
  

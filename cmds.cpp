@@ -105,11 +105,7 @@ P_COMMAND cCommandMap::addGmCommand(P_COMMAND cmd) {
 } */
 
 
-P_COMMAD cCommandMap::findCommand(std::string name) {
-	return command_map[name];
-}
 
-/*
 P_COMMAND cCommandMap::findCommand(std::string name) {
 	
 CMDMAP::iterator iter( command_map.find( "name" ) );
@@ -119,7 +115,7 @@ if ( iter != command_map.end() )	//command exists
 else
     return NULL;					//command doesnt exist
 }
-*/
+
 
 
 cCommandMap* commands = new cCommandMap();
@@ -154,6 +150,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 	{
 		unsigned char *comm;
 		unsigned char nonuni[512];
+		cCallCommand* command; 
 
 		cmd_offset = 1;
 
@@ -180,12 +177,19 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 		}
 		
 		
-		  //Here there must be a control between cCommand privilege and cChar privilege.
+		//Here there must be a control between cCommand privilege and cChar privilege.
 
-		  //To be continued...
-		
+		//Here there must be the construction of command's parameters that will be put
+		//in cCallCommand object(If the char has the permission to xecute command).
 
+		called_command=new cCallCommand(); 
 		
+		//Here there must be the call to small function specified in cCommand.cmd_callback.
+
+		delete called_command; 			
+			  
+			
+			  //To be finished...
 		
 
 	}
