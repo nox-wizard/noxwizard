@@ -1400,6 +1400,7 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 	nrBits = bit_table[256][0];
 	value = bit_table[256][1];
 
+	if ( nrBits <= 0 ) return 0;
 	while(nrBits--)
 	{
 		pOut[actByte] = (pOut[actByte] << 1) | (unsigned char)((value >> nrBits) & 0x1);
