@@ -98,14 +98,14 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 {
 	VALIDATEPIR(pi,false);
 	
-	multiVector m_vec;
+	NxwMulWrapperMulti sm( pi->id()-0x4000 );
 
-	data::seekMulti( pi->id()-0x4000, m_vec );
-
-	for ( int j=0; j<m_vec.size();j++)
+	Location itmpos= pi->getPosition();
+	for( sm.rewind(); !sm.end(); sm++ )
 	{
-		Location itmpos= pi->getPosition();
-		if (/*(multi.visible)&&*/((itmpos.x+m_vec[j].x) == where.x) && ((itmpos.y+m_vec[j].y) == where.y))
+		
+		multi_st m = sm.get();
+		if(/*(multi.visible)&&*/((itmpos.x+m.x) == where.x) && ((itmpos.y+m.y) == where.y))
 		{
 			return true;
 		}
@@ -803,7 +803,6 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 
 LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
 {
-	land_st land;
 	int dx,dy;
 	switch(dir)
 		{
@@ -828,26 +827,19 @@ LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,in
 
 			break;
 		}
-	staticVector s;
-	data::collectStatics( dx, dy, s );
-	tile_st tile;
-	for ( UI32 i = 0; i < s.size(); i++ ) {
-		data::seekTile( s[i].id, tile );
-		if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
-		{
-			data::seekLand( map.id, land );
-			if (!(land.flags&TILEFLAG_WET))//not a "wet" tile
+
+	NxwMulWrapperStatics sm( dx, dy );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+		tile_st tile;
+		if( data::seekTile( sm.get().id, tile ) ) {
+			if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
 			{
-				return false;
+				land_st land;
+				if( data::seekLand( map.id, land ) )
+					return !(land.flags&TILEFLAG_WET);	//not a "wet" tile
 			}
 			else
-			{
 				return true;
-			}
-		}
-		else
-		{
-			return true;
 		}
 
 	}
@@ -868,34 +860,30 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 {
 	UI32 x= where.x, y= where.y;
 	LOGICAL good_pos=false;
-	map_st map;
-	multiVector m_vec;
 
-	data::seekMulti(pBoat->id()-0x4000, m_vec);
+	NxwMulWrapperMulti sm( pBoat->id()-0x4000 );
+	for( sm.rewind(); !sm.end(); sm++ ) {	
 
-	for(int j=0;j<m_vec.size();j++)
-	{
-
-/*		if (m_vec[j].visible)
+		multi_st m = sm.get();
+		map_st map;
+/*		if (m.visible)
 		{*/
 			switch(dir)
 			{
 			case -1:
-				data::seekMap(x-m_vec[j].y,y+m_vec[j].x, map);
+				data::seekMap(x-m.y,y+m.x, map);
 				break;
 			case 0:
-				data::seekMap(x+m_vec[j].x,y+m_vec[j].y, map);
+				data::seekMap(x+m.x,y+m.y, map);
 				break;
 			case 1:
-				data::seekMap(x+m_vec[j].y,y-m_vec[j].x, map);
+				data::seekMap(x+m.y,y-m.x, map);
 				break;
-
 			case 2:
-
-				data::seekMap(x-m_vec[j].x,y-m_vec[j].y, map);
-
+				data::seekMap(x-m.x,y-m.y, map);
 				break;
 			}
+
 			switch(map.id)
 			{
 	//water tiles:
@@ -918,7 +906,7 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 					break;
 				default:// we are in default if we are nearer coast
 					{
-						good_pos=tile_check( m_vec[j],pBoat,map,x,y,dir );
+						good_pos=tile_check( m,pBoat,map,x,y,dir );
 						if (good_pos==false)
 							return false;
 					}
@@ -1133,20 +1121,16 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 {
 
 	int x,y;
-	multi_st multi1,multi2;
-	multiVector m1, m2;
 
-	data::seekMulti( pBoat1->id()-0x4000, m1 );
+	NxwMulWrapperMulti sm1( pBoat1->id()-0x4000 );
+	NxwMulWrapperMulti sm2( pBoat2->id()-0x4000 );
 
-	data::seekMulti( pBoat2->id()-0x4000, m2 );
-
-	for(int i=0;i<m1.size();i++)
+	for( sm1.rewind(); !sm1.end(); sm1++ )
 	{
-		for(int j=0;j<m2.size();j++)
+		for( sm2.rewind(); !sm2.end(); sm2++ )
 		{
-			multi1 = m1[i];
-			multi2 = m2[j];
-
+			multi_st multi1 = sm1.get();
+			multi_st multi2 = sm2.get();
 
 			switch(dir)
 			{
@@ -1226,14 +1210,11 @@ P_ITEM cBoat::GetBoat(Location pos)
 			continue;
 		if( dist( pos, pBoat->getPosition() ) < 10.0 )
 		{
-			multi_st multi;
-			multiVector m;
+			NxwMulWrapperMulti sm( pBoat->id()-0x4000 );
 
-			data::seekMulti(pBoat->id()-0x4000, m);
-
-			for(int i=0;i<m.size();i++)
+			for( sm.rewind(); !sm.end(); sm++ )
 			{
-				multi = m[i];
+				multi_st multi = sm.get();
 				if( ((multi.x + pBoat->getPosition().x) == pos.x) && ((multi.y + pBoat->getPosition().y) == pos.y) )
 				{
 					return  pBoat;
