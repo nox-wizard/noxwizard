@@ -64,7 +64,7 @@ void statwindow(P_CHAR pc_to, P_CHAR pc);
 	//!< Opens the status window
 void updates(NXWSOCKET  s);
 	//!< Update Window
-void tips(int s, int i);
+void tips(NXWSOCKET s, UI16 i);
 	//!< Tip of the day window
 void deny(NXWSOCKET  k,P_CHAR pc, int sequence);
 void weblaunch(int s, const char *txt);

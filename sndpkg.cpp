@@ -779,34 +779,39 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	weights::NewCalc(pc);	// Ison 2-20-99
 }
 
+void MakeGraphicalEffectPkt_PDPDPD(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
+{
+	pkt[1]=type;
+	LongToCharPtr(src_serial, pkt +2);
+	LongToCharPtr(dst_serial, pkt +6);
+	ShortToCharPtr(model_id, pkt +10);
+	ShortToCharPtr(src_pos.x, pkt +12);
+	ShortToCharPtr(src_pos.y, pkt +14);
+	pkt[16]=src_pos.z;
+	ShortToCharPtr(dst_pos.x, pkt +17);
+	ShortToCharPtr(dst_pos.y, pkt +19);
+	pkt[21]=dst_pos.z;
+	pkt[22]=speed;
+	pkt[23]=duration;
+	ShortToCharPtr(0, pkt +24);		//[24] to [25] are not applicable here.
+	pkt[26]=adjust; // LB possible client crashfix
+	pkt[27]=explode;
+}
+
 void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop)
 {//AntiChrist
 
 	UI16 eff = (eff1<<8)|(eff2%256);
 	UI08 effect[28]={ 0x70, 0x00, };
 
-	effect[1]=0x02; 			// Direction type: 0x02 - Stay at x, y, z effect
-	LongToCharPtr(0, effect +2);		//[2] to [9] are not applicable here. (CharID)
-	LongToCharPtr(0, effect +6);		//[2] to [9] are not applicable here. (TargetID)
-	ShortToCharPtr(eff, effect +10);	// Object id of the effect
-	ShortToCharPtr(x, effect +12);
-	ShortToCharPtr(y, effect +14);
-	effect[16]=z;
-	ShortToCharPtr(0, effect +17);		//[17] to [21] are not applicable here. (Target X)
-	ShortToCharPtr(0, effect +19);		//[17] to [21] are not applicable here. (Target Y)
-	effect[21]=0;				//[17] to [21] are not applicable here. (Target Z)
-	effect[22]=speed;
-	effect[23]=loop; 			// 0 is really long.	1 is the shortest.
-	ShortToCharPtr(0, effect +24);		//[24] to [25] are not applicable here.
-	effect[26]=1; // LB possible client crashfix
-	effect[27]=0;
+Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
 
-	Location location;
-	location.x=x;
-	location.y=y;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
+
+pos1.z=0;
 	
 	NxwSocketWrapper sw;
-	sw.fillOnline( location );
+	sw.fillOnline( pos1 );
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
 		NXWSOCKET sock=sw.getSocket();
@@ -1331,8 +1336,6 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 
 void updates(NXWSOCKET  s) // Update Window
 {
-
-
 	int x, y, j;
 	char temp[512];
     cScpIterator* iter = NULL;
@@ -1374,7 +1377,7 @@ void updates(NXWSOCKET  s) // Update Window
 //AoS/	Network->FlushBuffer(s);
 }
 
-void tips(int s, int i) // Tip of the day window
+void tips(NXWSOCKET s, UI16 i) // Tip of the day window
 {
 	int x, y, j;
 	char temp[512];
@@ -1480,15 +1483,12 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 		if(!(pc->unicode))
 		{
 			tl=44+strlen((char*)&buffer[s][8])+1;
-			unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-			talk[1]=tl>>8;
-			talk[2]=tl%256;
-			talk[3]=pc->getSerial().ser1;
-			talk[4]=pc->getSerial().ser2;
-			talk[5]=pc->getSerial().ser3;
-			talk[6]=pc->getSerial().ser4;
-			talk[7]=pc->id1;
-			talk[8]=pc->id2;
+
+			UI08 talk[14]={ 0x1C, 0x00, };
+
+			ShortToCharPtr(tl, talk +1);
+			LongToCharPtr(pc->getSerial32(), talk +3);
+			ShortToCharPtr(pc->GetBodyType(), talk +7);
 			talk[9]=1;
 			talk[10]=buffer[s][4];
 			talk[11]=buffer[s][5];
@@ -1500,56 +1500,46 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 			for( sw.rewind(); !sw.isEmpty(); sw++ )
 			{
 				NXWSOCKET i=sw.getSocket();
-				{
-					Xsend(i, talk, 14);
-					Xsend(i, pc->getCurrentNameC(), 30);
-					Xsend(i, (void *)&buffer[s][8], strlen((const char*)&buffer[s][8])+1);
-				}
+
+				Xsend(i, talk, 14);
+				Xsend(i, pc->getCurrentNameC(), 30);
+				Xsend(i, (void *)&buffer[s][8], strlen((const char*)&buffer[s][8])+1);
+//AoS/				Network->FlushBuffer(i);
 			}
 		} // end unicode IF
 		else
 		{
-			unsigned char talk2[19];
+			UI16 font, color;
 			char unicodetext[512];
 			int ucl = ( strlen ( &nonuni[0] ) * 2 ) + 2 ;
 			tl=tl = ucl + 48 ;
 			char2wchar(&nonuni[0]);
 			memcpy(unicodetext, Unicode::temp, ucl);
 
+			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
+			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
-			talk2[0] = (char)0xAE;
-			talk2[1] = tl >> 8;
-			talk2[2] = tl&0xFF;
-			talk2[3]=pc->getSerial().ser1;
-			talk2[4]=pc->getSerial().ser2;
-			talk2[5]=pc->getSerial().ser3;
-			talk2[6]=pc->getSerial().ser4;
-			talk2[7]=pc->id1;
-			talk2[8]=pc->id2;
+			UI08 talk2[18]={ 0xAE, 0x00, };
+
+			ShortToCharPtr(tl, talk2 +1);
+			LongToCharPtr(pc->getSerial32(), talk2 +3);
+			ShortToCharPtr(pc->GetBodyType(), talk2 +7);	// Model
 			talk2[9]=1;
-			talk2[10]=buffer[s][4];
-			talk2[11]=buffer[s][5];
-			talk2[12]=buffer[s][6];
-			talk2[13]=pc->fonttype;
-
-			talk2[14] = buffer[s][8];
-			talk2[15] = buffer[s][9];
-			talk2[16] = buffer[s][10];
-			talk2[17] = buffer[s][11];
+			ShortToCharPtr(color, talk2 +10);
+			ShortToCharPtr(font, talk2 +12);
+			LongToCharPtr( LongFromCharPtr(buffer[s] +9), talk2 +14);
 
 			NxwSocketWrapper sw;
 			sw.fillOnline();
 			for( sw.rewind(); !sw.isEmpty(); sw++ )
 			{
 				NXWSOCKET i=sw.getSocket();
-				{
-					Xsend(i, talk2, 18);
-					Xsend(i, pc->getCurrentNameC(), 30);
-					Xsend(i, unicodetext, ucl);
-				}
+				Xsend(i, talk2, 18);
+				Xsend(i, pc->getCurrentNameC(), 30);
+				Xsend(i, unicodetext, ucl);
+//AoS/				Network->FlushBuffer(i);
 			}
 		}
-
 }
 
 void itemtalk(P_ITEM pi, char *txt) // Item "speech"
@@ -1565,24 +1555,20 @@ void itemtalk(P_ITEM pi, char *txt) // Item "speech"
 		NXWSOCKET s=sw.getSocket();
 		if(s==INVALID) continue;
 
-		unsigned char talk2[19];
 		char unicodetext[512];
 		int ucl = ( strlen ( txt ) * 2 ) + 2 ;
 		int tl = ucl + 48 ;
 		char2wchar(txt);
 		memcpy(unicodetext, Unicode::temp, ucl);
 
-		
-		talk2[0] = (char)0xAE;
-		talk2[1] = tl >> 8;
-		talk2[2] = tl&0xFF;
-		LongToCharPtr(pi->getSerial32(),talk2+3);
-		ShortToCharPtr(pi->id(),talk2+7);
+		UI08 talk2[18]={ 0xAE, 0x00, };
+
+		ShortToCharPtr(tl, talk2 +1);
+		LongToCharPtr(pi->getSerial32(), talk2 +3);
+		ShortToCharPtr(pi->id(), talk2 +7);	// Model
 		talk2[9]=0; // Type
-		talk2[10]=0x04;
-		talk2[11]='\x81';
-		talk2[12]=0;
-		talk2[13]=3;
+		ShortToCharPtr(0x0481, talk2 +10);
+		ShortToCharPtr(0x0003, talk2 +12);
 
 		talk2[14] = server_data.Unicodelanguage[0];
 		talk2[15] = server_data.Unicodelanguage[1];
@@ -1592,6 +1578,7 @@ void itemtalk(P_ITEM pi, char *txt) // Item "speech"
 		Xsend(s, talk2, 18);
 		Xsend(s, pi->getCurrentNameC(), 30);
 		Xsend(s, unicodetext, ucl);
+//AoS/		Network->FlushBuffer(s);
 	}
 }
 
@@ -1605,40 +1592,21 @@ void itemtalk(P_ITEM pi, char *txt) // Item "speech"
 
 void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop,  bool UO3DonlyEffekt, ParticleFx *sta, bool skip_old)
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(player);
 	VALIDATEPC(pc);
 
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
     	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	 int a0,a1,a2,a3,a4;
-	 char effect[29];
 	 Location charpos= pc->getPosition();
 
 	 if (!skip_old)
 	 {
-	    memset(&effect[0], 0, 29);
-	    effect[0]= 0x70; // Effect message
-	    effect[1]= 0x03; // Static effect
-	    effect[2]= pc->getSerial().ser1;
-	    effect[3]= pc->getSerial().ser2;
-	    effect[4]= pc->getSerial().ser3;
-	    effect[5]= pc->getSerial().ser4;
-	    //[6] to [9] are the target ser, not applicable here.
-	    effect[10]= eff1;// Object id of the effect
-	    effect[11]= eff2;
-	    effect[12]= charpos.x >> 8;
-	    effect[13]= charpos.x % 256;
-	    effect[14]= charpos.y >> 8;
-	    effect[15]= charpos.y % 256;
-	    effect[16]= charpos.z;
-	    //[17] to [21] are the target's position, not applicable here.
-	    effect[22]= speed;
-	    effect[23]= loop; // 0 is really long. 1 is the shortest.
-	    effect[24]= 0; // This value is unknown
-	    effect[25]= 0; // This value is unknown
-	    effect[26]= 1; // CLient side crashfix
-	    effect[27]= 0; // This value is used for moving effects that explode on impact.
+Location pos2;
+pos2.x = 0; pos2.y = 0; pos2.z = 0;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
 	 }
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1648,7 +1616,9 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 		 sw.fillOnline( pc, false );
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
 		 {
-			Xsend(sw.getSocket(), effect, 28);
+			NXWSOCKET s = sw.getSocket();
+			Xsend(s, effect, 28);
+//AoS/			Network->FlushBuffer(s);
 		 }
 	   
 	   return;
@@ -1668,10 +1638,9 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
 			 {
 				 Xsend(j, effect, 28);
-
+//AoS/				Network->FlushBuffer(j);
 			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 			 {
-
 				staticeffectUO3D(player, sta);
 
 				// allow to fire up to 4 layers at same time (like on OSI servers)
@@ -1687,6 +1656,7 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 				if (a3!=0xff) { particleSystem[46] = a3; Xsend(j, particleSystem, 49); }
 				if (a4!=0xff) { particleSystem[46] = a4; Xsend(j, particleSystem, 49); }
 
+//AoS/				Network->FlushBuffer(j);
 				//sprintf(temp, "a0: %x a1: %x a2: %x a3: %x a4: %x \n",a0,a1,a2,a3,a4);
 				//ConOut(temp);
 			 }
@@ -1698,7 +1668,6 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 	// remark: if a UO:3D effect is send and ALL clients are UO:3D ones, the pre-calculation of the 2-d packet
 	// is redundant. but we can never know, and probably it will take years till the 2d cliet dies.
 	// I think it's too infrequnet to consider this as optimization.
-
 }
 
 
@@ -1710,43 +1679,17 @@ void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned
 	P_CHAR dst=MAKE_CHAR_REF(dest);
 	VALIDATEPC(dst);
 
-	char effect[29];
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
 	if (!skip_old)
 	{
-	   effect[0]= 0x70; // Effect message
-	   effect[1]= 0x00; // Moving effect
-	   effect[2]= src->getSerial().ser1;
-	   effect[3]= src->getSerial().ser2;
-	   effect[4]= src->getSerial().ser3;
-	   effect[5]= src->getSerial().ser4;
-	   effect[6]= dst->getSerial().ser1;
-	   effect[7]= dst->getSerial().ser2;
-	   effect[8]= dst->getSerial().ser3;
-	   effect[9]= dst->getSerial().ser4;
-	   effect[10]= eff1;// Object id of the effect
-	   effect[11]= eff2;
-	   effect[12]= srcpos.x >> 8;
-	   effect[13]= srcpos.x % 256;
-	   effect[14]= srcpos.y >> 8;
-	   effect[15]= srcpos.y % 256;
-	   effect[16]= srcpos.z;
-	   effect[17]= destpos.x >> 8;
-	   effect[18]= destpos.x % 256;
-	   effect[19]= destpos.y >> 8;
-	   effect[20]= destpos.y % 256;
-	   effect[21]= destpos.z;
-	   effect[22]= speed;
-	   effect[23]= loop; // 0 is really long. 1 is the shortest.
-	   effect[24]= 0; // This value is unknown
-	   effect[25]= 0; // This value is unknown
-	   effect[26]= 0; //1; // LB, potential crashfix
-	   effect[27]= explode; // This value is used for moving effects that explode on impact.
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
 	}
-
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
 	 {
@@ -1759,6 +1702,7 @@ void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned
 			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
 			 {
 				Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
 			 } 
 		 }
 	   return;
@@ -1777,20 +1721,19 @@ void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned
 				 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
 				 {
 					 Xsend(j, effect, 28);
-	
+//AoS/					Network->FlushBuffer(j);
 				 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 				 {
 
 					movingeffectUO3D(source, dest, str);
 					unsigned char particleSystem[49];
 					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
 				}
 				else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
 			}
 		}
 	}
-
-
 }
 
 void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
@@ -1799,29 +1742,16 @@ void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 	P_CHAR pc=MAKE_CHAR_REF(player);
 	VALIDATEPC(pc);
 
+	UI08 effect[28]={ 0x70, 0x00, };
 
-	char effect[29];
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	Location charpos= pc->getPosition();
 
 	if (!skip_old)
 	{
-	  memset(&effect[0], 0, 29);
-	  effect[0]= 0x70; // Effect message
-	  effect[1]= 0x01; // Bolt effect
-	  effect[2]= pc->getSerial().ser1;
-	  effect[3]= pc->getSerial().ser2;
-	  effect[4]= pc->getSerial().ser3;
-	  effect[5]= pc->getSerial().ser4;
-	  //[6] to [11] are not applicable here.
-	  effect[12]= charpos.x >> 8;
-	  effect[13]= charpos.x % 256;
-	  effect[14]= charpos.y >> 8;
-	  effect[15]= charpos.y % 256;
-	  effect[16]= charpos.z;
-	  //[17] to [27] are not applicable here.
-	  effect[26]=1; // LB possible client crashfix
-	  effect[27]=0;
+Location pos2;
+pos2.x = 0; pos2.y = 0; pos2.z = 0;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0); 
 	}
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1834,8 +1764,9 @@ void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 			 if( j!=INVALID )
 			 {
 				Xsend(j, effect, 28);
-			}
-	   }
+//AoS/				Network->FlushBuffer(j);
+			 }
+		 }
 	   return;
 	}
 	else
@@ -1850,64 +1781,37 @@ void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
 			 {
 				 Xsend(j, effect, 28);
-
+//AoS/				Network->FlushBuffer(j);
 			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 			 {
 
 				bolteffectUO3D(player);
 				unsigned char particleSystem[49];
 				Xsend(j, particleSystem, 49);
+//AoS/				Network->FlushBuffer(j);
 			 }
 			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
 		 }
 	   }
 	}
-
 }
 
 
 // staticeffect2 is for effects on items
 void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt,  ParticleFx *str, bool skip_old )
 {
-
 	VALIDATEPI(pi);
 
-	char effect[29];
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+
+	Location pos = pi->getPosition();
 
 	if (!skip_old)
 	{
-		memset(&effect[0], 0, 29);
-		effect[0]=0x70; // Effect message
-		effect[1]=0x02; // Static effect
-		effect[2]= pi->getSerial().ser1;
-		effect[3]= pi->getSerial().ser2;
-		effect[4]= pi->getSerial().ser3;
-		effect[5]= pi->getSerial().ser4;
-		effect[6]= pi->getSerial().ser1;
-		effect[7]= pi->getSerial().ser2;
-		effect[8]= pi->getSerial().ser3;
-		effect[9]= pi->getSerial().ser4;
-		//[6] to [9] are the target ser, not applicable here.
-		effect[10]=eff1;// Object id of the effect
-		effect[11]=eff2;
-		effect[12]= pi->getPosition("x") >> 8;
-		effect[13]= pi->getPosition("x") % 256;
-		effect[14]= pi->getPosition("y") >> 8;
-		effect[15] =pi->getPosition("y") % 256;
-		effect[16]= pi->getPosition("z");
-		effect[17]= pi->getPosition("x") >> 8;
-		effect[18]= pi->getPosition("x") % 256;
-		effect[19]= pi->getPosition("y") >> 8;
-		effect[20]= pi->getPosition("y") % 256;
-		effect[21]= pi->getPosition("z");
-		//[17] to [21] are the target's position, not applicable here.
-		effect[22]=speed;
-		effect[23]=loop; // 0 is really long. 1 is the shortest.
-		effect[24]=0; // This value is unknown
-		effect[25]=0; // This value is unknown
-		effect[26]=1; // LB, client side crashfix
-		effect[27]=explode; // This value is used for moving effects that explode on impact.
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
 	}
 
 	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1919,8 +1823,9 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 			 NXWSOCKET j=sw.getSocket();
 			 if( j!=INVALID )
 			 {
-					Xsend(j, effect, 28);
-			}
+				Xsend(j, effect, 28);
+//AoS				Network->FlushBuffer(j);
+			 }
 		}
 		return;
 	}
@@ -1937,77 +1842,50 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 				if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
 				{
 					Xsend(j, effect, 28);
+//AoS/					Network->FlushBuffer(j);
 				}
 				else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 				{
 					itemeffectUO3D(pi, str);
 					unsigned char particleSystem[49];
 					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
 				}
 				else if (clientDimension[j] != 2 && clientDimension[j] !=3 )
 				{ sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
 			}
 		}
 	}
-
 }
 
 
 void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(player);
 	VALIDATEPC(pc);
 
-	char effect[29];
-	int i, x2,x,y2,y;
-	Location charpos= pc->getPosition();
+	UI16 eff = (a1<<8)|(a2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
-
-	for (i=0;i<29;i++)
-	{
-		effect[i]=0;
-	}
-	effect[0]=0x70; // Effect message
-	effect[1]=0x00; // effect from source to dest
-	effect[2]=pc->getSerial().ser1;
-	effect[3]=pc->getSerial().ser2;
-	effect[4]=pc->getSerial().ser3;
-	effect[5]=pc->getSerial().ser4;
-
-	effect[10]=a1;
-	effect[11]=a2;
+	int x,y;
+	Location charpos = pc->getPosition(), pos2;
 
 	y=rand()%36;
 	x=rand()%36;
 
 	if (rand()%2==0) x=x*-1;
 	if (rand()%2==0) y=y*-1;
-	x2= charpos.x + x;
-	y2= charpos.y + y;
-	if (x2<0) x2=0;
-	if (y2<0) y2=0;
-	if (x2>6144) x2=6144;
-	if (y2>4096) y2=4096;
+	pos2.x = charpos.x + x;
+	pos2.y = charpos.y + y;
+	if (pos2.x<0) pos2.x=0;
+	if (pos2.y<0) pos2.y=0;
+	if (pos2.x>6144) pos2.x=6144;
+	if (pos2.y>4096) pos2.y=4096;
+
+charpos.z = 0; pos2.z = 127;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
 
 	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
-
-	effect[12]= charpos.x >> 8; // source coordinates
-	effect[13]= charpos.x % 256;
-	effect[14]= charpos.y >> 8;
-	effect[15]= charpos.y % 256;
-	effect[16]= 0;
-
-	effect[17]= x2 >> 8;	//target coordiantes
-	effect[18]= x2 % 256;
-	effect[19]= y2 >> 8;
-	effect[20]= y2 % 256;
-	effect[21]= 127;
-
-	//[22] to [27] are not applicable here.
-
-	effect[26]= 1; // client crash bugfix
-	effect[27]= 0;
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( pc );
@@ -2017,9 +1895,9 @@ void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
 		if( j!=INVALID )
 		{
 			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
 		}
 	}
-
 }
 
 //	- Movingeffect3 is used to send an object from a char
@@ -2030,38 +1908,12 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 	P_CHAR src=MAKE_CHAR_REF(source);
 	VALIDATEPC(src);
 
-	char effect[29];
-	Location srcpos= src->getPosition();
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
-	memset (&effect, 0, 29);
-	effect[0]= 0x70; // Effect message
-	effect[1]= 0x00; // Moving effect
-	effect[2]= src->getSerial().ser1;
-	effect[3]= src->getSerial().ser2;
-	effect[4]= src->getSerial().ser3;
-	effect[5]= src->getSerial().ser4;
-	effect[6]= 0;
-	effect[7]= 0;
-	effect[8]= 0;
-	effect[9]= 0;
-	effect[10]= eff1;// Object id of the effect
-	effect[11]= eff2;
-	effect[12]= srcpos.x >> 8;
-	effect[13]= srcpos.x % 256;
-	effect[14]= srcpos.y >> 8;
-	effect[15]= srcpos.y % 256;
-	effect[16]= srcpos.z;
-	effect[17]= x >> 8;
-	effect[18]= x % 256;
-	effect[19]= y >> 8;
-	effect[20]= y % 256;
-	effect[21]= z;
-	effect[22]= speed;
-	effect[23]= loop; // 0 is really long.  1 is the shortest.
-	effect[24]= 0; // This value is unknown
-	effect[25]= 0; // This value is unknown
-	effect[26]= 0; // This value is unknown
-	effect[27]= explode; // This value is used for moving effects that explode on impact.
+	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
+
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -2071,7 +1923,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 		if( j!=INVALID )
 		{   
 			Xsend(j, effect, 28);
-		
+//AoS/			Network->FlushBuffer(j);
 		}
 	 }
 
@@ -2080,52 +1932,30 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 // staticeffect3 is for effects on items
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode)
 {
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
+Location pos = { x, y, z, 0};
 
-	char effect[29];
-	memset (&effect, 0, 29);
-	effect[0]=0x70; // Effect message
-	effect[1]=0x02; // Static effect
-	//[6] to [9] are the target ser, not applicable here.
-	effect[10]=eff1;// Object id of the effect
-	effect[11]=eff2;
-	effect[12]=x>>8;
-	effect[13]=x%256;
-	effect[14]=y>>8;
-	effect[15]=y%256;
-	effect[16]=z;
-	effect[17]=x>>8;
-	effect[18]=x%256;
-	effect[19]=y>>8;
-	effect[20]=y%256;
-	effect[21]=z;
-	//[17] to [21] are the target's position, not applicable here.
-	effect[22]=speed;
-	effect[23]=loop; // 0 is really long.  1 is the shortest.
-	effect[24]=0; // This value is unknown
-	effect[25]=0; // This value is unknown
-	effect[26]=1; // LB changed to 1
-	effect[27]=explode; // This value is used for moving effects that explode on impact.
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
 
-
-	Location location;
-	location.x=x;
-	location.y=y;
+pos.z = 0;
 
 	 NxwSocketWrapper sw;
-	 sw.fillOnline( location );
+	 sw.fillOnline( pos );
 	 for( sw.rewind(); !sw.isEmpty(); sw++ )
 	 {
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
+		{
 			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
 	}
-
 }
 
 void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode,unsigned char unk1,unsigned char unk2,unsigned char ajust,unsigned char type)
 {
-
 	P_CHAR src=MAKE_CHAR_REF(source);
 	VALIDATEPC(src);
 	P_CHAR dst=MAKE_CHAR_REF(dest);
@@ -2133,38 +1963,13 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 
 
 	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
-	char effect[29];
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
+
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
-	effect[0]= 0x70; // Effect message
-	effect[1]= type; // Moving effect
-	effect[2]= src->getSerial().ser1;
-	effect[3]= src->getSerial().ser2;
-	effect[4]= src->getSerial().ser3;
-	effect[5]= src->getSerial().ser4;
-	effect[6]= dst->getSerial().ser1;
-	effect[7]= dst->getSerial().ser2;
-	effect[8]= dst->getSerial().ser3;
-	effect[9]= dst->getSerial().ser4;
-	effect[10]= eff1;// Object id of the effect
-	effect[11]= eff2;
-	effect[12]= srcpos.x >> 8;
-	effect[13]= srcpos.x%256;
-	effect[14]= srcpos.y>>8;
-	effect[15]= srcpos.y%256;
-	effect[16]= srcpos.z;
-	effect[17]= destpos.x>>8;
-	effect[18]= destpos.x%256;
-	effect[19]= destpos.y>>8;
-	effect[20]= destpos.y%256;
-	effect[21]= destpos.z;
-	effect[22]=speed;
-	effect[23]=loop; // 0 is really long. 1 is the shortest.
-	effect[24]=unk1; // This value is unknown
-	effect[25]=unk2; // This value is unknown
-	effect[26]=ajust; // LB, potential crashfix
-	effect[27]=explode; // This value is used for moving effects that explode on impact.
+MakeGraphicalEffectPkt_PDPDPD(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -2172,9 +1977,11 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 	 {
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
+		{
 			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
 	}
-
 }
 
 
@@ -2189,31 +1996,12 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 	P_CHAR pc_source = MAKE_CHAR_REF(source);
 	VALIDATEPC(pc_source);
 
-	UI08 effect[29];
-	Location srcpos= pc_source->getPosition();
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
-	effect[0]= 0x70; // Effect message
-	effect[1]= 0x00; // Moving effect
-	LongToCharPtr(pc_source->getSerial32(), effect+2);
-	LongToCharPtr(pi->getSerial32(), effect+6);
-	effect[10]= eff1;// Object id of the effect
-	effect[11]= eff2;
-	effect[12]= srcpos.x>>8;
-	effect[13]= srcpos.x%256;
-	effect[14]= srcpos.y>>8;
-	effect[15]= srcpos.y%256;
-	effect[16]= srcpos.z;
-	effect[17]= pi->getPosition("x") >> 8;
-	effect[18]= pi->getPosition("x") % 256;
-	effect[19]= pi->getPosition("y") >> 8;
-	effect[20]= pi->getPosition("y") % 256;
-	effect[21]= pi->getPosition("z");
-	effect[22]= speed;
-	effect[23]= loop; // 0 is really long. 1 is the shortest.
-	effect[24]= 0; // This value is unknown
-	effect[25]= 0; // This value is unknown
-	effect[26]= 0; //1; // LB potential crashfix
-	effect[27]=explode; // This value is used for moving effects that explode on impact.
+	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
+
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -2221,19 +2009,19 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 	 {
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
+		{
 			Xsend(j, effect, 28);
+//AoS/			Network->FlushBuffer(j);
+		}
 	}
-
 }
 
 void dolight(NXWSOCKET s, char level)
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-
-	char light[3]="\x4F\x00";
+	UI08 light[2]={ 0x4F, 0x00 };
 
 	if ((s==INVALID)||(!perm[s])) return;
 
@@ -2258,7 +2046,7 @@ void dolight(NXWSOCKET s, char level)
 	}
 
 	Xsend(s, light, 2);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 void updateskill(NXWSOCKET s, int skillnum) // updated for client 1.26.2b by LB
@@ -2267,21 +2055,19 @@ void updateskill(NXWSOCKET s, int skillnum) // updated for client 1.26.2b by LB
 	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
 
-	char update[11];
+	UI16 len;
+	UI08 update[11]={ 0x3A, 0x00, };
 	char x;
 
+	len = 11; // Length of message
 
-	update[0] = 0x3A; // Skill Update Message
-	update[1] = 0x00; // Length of message
-	update[2] = 0x0B; // Length of message
-	update[3] = '\xFF'; // single list
+	update[3] = 0xFF; // single list
 
 	update[4] = 0x00;
 	update[5] = (char)skillnum;
-	update[6] = pc_currchar->skill[skillnum] >> 8;
-	update[7] = pc_currchar->skill[skillnum]%256;
-	update[8] = pc_currchar->baseskill[skillnum] >> 8;
-	update[9] = pc_currchar->baseskill[skillnum]%256;
+	ShortToCharPtr(pc_currchar->skill[skillnum], update +6);
+	ShortToCharPtr(pc_currchar->baseskill[skillnum], update +8);
+
 	x = pc_currchar->lockSkill[skillnum];
 	if (x != 0 && x != 1 && x != 2)
 		x = 0;
@@ -2289,8 +2075,9 @@ void updateskill(NXWSOCKET s, int skillnum) // updated for client 1.26.2b by LB
 
 	// CRASH_IF_INVALID_SOCK(s);
 
+	ShortToCharPtr(len, update +1);
 	Xsend(s, update, 11);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 void deathaction(P_CHAR pc, P_ITEM pi)
