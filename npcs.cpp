@@ -1092,6 +1092,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 
 	amxVS.setUserMode();
 
+	pc->setScriptID( npcNum );
+
 
    // Now that we have created the NPC, lets place him
    switch (postype)
