@@ -1604,6 +1604,27 @@ NATIVE(_chr_addNPC) //addNPC npcnum, x,y,z
 }
 
 /*
+\brief Add a new NPC from an npc list
+\author Wintermute
+\since 0.82
+\param 1: npc
+\param 2: x location
+\param 3: y location
+\param 4: z location
+\return npc or INVALID if not valid npc
+*/
+NATIVE(_chr_addRandomNPC) //addNPC npcnum, x,y,z
+{
+	char temp[34];
+	sprintf(temp, "%lu", params[1]);
+	int npcnum = npcs::AddRandomNPC(INVALID, &temp[0]);
+    P_CHAR pc = npcs::AddNPC(INVALID, NULL, npcnum, params[2], params[3], params[4]);
+    VALIDATEPCR(pc, INVALID);
+    return pc->getSerial32();
+}
+
+
+/*
 \brief Remove a character
 \author Xanathar
 \since 0.50
@@ -4550,6 +4571,25 @@ NATIVE(_guild_resignMember)
 }
 
 /*
+\brief Find the index of the member within the guild
+\author Wintermute
+\since 0.82
+\param 1 the guild
+\param 2 the member
+\return integer, index of member
+*/
+NATIVE(_guild_getMemberIndex)
+{
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return INVALID;
+
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+
+	return guild->getMemberPosition(pc->getSerial32());
+}
+
+/*
 \brief Add a recuit to a guild
 \author Endymion
 \since 0.82
@@ -5770,6 +5810,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 // Charachter functions :
  { "chr_message",  _chr_message },
  { "chr_addNPC",  _chr_addNPC},
+ { "chr_addRandomNPC",  _chr_addRandomNPC},
  { "chr_canBroadcast", _canBroadcast },
  { "chr_canSeeSerials", _canSeeSerials},
  { "chr_canSnoop", _canSnoop},
@@ -6080,6 +6121,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_create", _guild_create },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
+ { "guild_getMemberIndex", _guild_getMemberIndex },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
 // Guild member function and properties - Endymion
