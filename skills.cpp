@@ -168,15 +168,15 @@ void Skills::Zero_Itemmake(NXWSOCKET s)
 
 }
 
-void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
+P_ITEM Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount)
 {
 	if ( s < 0 || s >= now ) //Luxor
-		return;
+		return NULL;
 	
 	NXWCLIENT ps = getClientFromSocket( s );
-	if(ps==NULL) return;
+	if(ps==NULL) return NULL;
     P_CHAR pc = ps->currChar();
-	VALIDATEPC(pc);
+	VALIDATEPCR(pc, NULL);
 	
 	Location charpos= pc->getPosition();
     int rank=10; // For Rank-System --- Magius§(çhe)
@@ -190,7 +190,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
     {
         pc->sysmsg(TRANSLATE("You do not have enough resources anymore!!"));
 		//delete targ;
-        return;
+        return NULL;
     }
 
     if(itemmake[s].Mat2id>0) {
@@ -199,7 +199,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 		{
 	        pc->sysmsg(TRANSLATE("You do not have enough resources anymore!!"));
 			//delete targ;
-			return;
+			return NULL;
 		}
 	}
 
@@ -213,7 +213,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
         {
             pc->sysmsg(TRANSLATE("You don't have your blank map anymore!!"));
 			//delete targ;
-            return;
+            return NULL;
         }
     }
 //  END OF: By Polygon
@@ -290,7 +290,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 			case CARTOGRAPHY:	
 				if (!DelEmptyMap(DEREF_P_CHAR(pc))) {
 					//delete targ;
-					return; 
+					return NULL; 
 				}
 			
 			/*
@@ -308,13 +308,16 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 		}
 		itemmake[s].Mat1id=0;
 		itemmake[s].Mat2id=0;
-        const P_ITEM pi=item::SpawnItemBackpack2(s, x, 0);
+		P_ITEM pi = item::CreateFromScript( x );
         if (!ISVALIDPI(pi))
         {
             LogWarning("bad script item # %d(Item Not found).", x);
 			//delete targ;
-            return; //invalid script item
+            return NULL; //invalid script item
         }
+		if( amount!=INVALID )
+			pi->amount=amount;
+		pack->AddItem( pi );
 		//int c=DEREF_P_ITEM(pi);
         // Starting Rank System Addon, Identify Item and Store the Creator Name- by Magius(CHE)
 
@@ -491,7 +494,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 			if(!ISVALIDPI(key))
 			{
 				//delete targ;
-				return;
+				return NULL;
 			}
 			//int c=DEREF_P_ITEM(key);
             key->type = ITYPE_KEY;              // Item is a key
@@ -574,7 +577,9 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
             pi->moreb4= (lry)%256;   //  --- " ---
         }
 //      END OF: By Polygon
+		return pi;
 	}
+	return NULL;
 }
 
 /*!

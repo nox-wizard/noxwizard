@@ -444,21 +444,24 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		sysmessage(s, idname);
 		return;
 	} else if ( script1 == "ADDITEM" ) {
+
+		std::string itemnum, amount;
+		splitLine( script2, itemnum, amount );
+		int am = ( amount != "" )?  str2num( amount ) : INVALID; //ndEndy defined amount
+		
+
 		#ifndef __NEWMAKESYS
 		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
 		#endif
-			std::string itemnum, amount;
-			splitLine( script2, itemnum, amount );
 			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack() );
-			if( ISVALIDPI(pi) ) {
-				if( amount != "" ) //ndEndy defined amount
-					pi->amount=str2num( amount );
-				pi->Refresh();
+			if( ISVALIDPI(pi) && (am!=INVALID) ) {
+				pi->setAmount( am );
 			}
 		#ifndef __NEWMAKESYS
 		}
-		else
-			Skills::MakeMenuTarget(s,str2num(script2),pc->making);
+		else {
+			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
+		}
 		#endif
 		return;
 	} else if ( script1 == "BATCH" ) {
