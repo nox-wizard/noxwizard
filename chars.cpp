@@ -4098,14 +4098,14 @@ void cChar::generic_heartbeat()
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
-				manarate += calcDef(0) -((skill[MEDITATION]/100)*4.5);
+				manarate += UI32(calcDef(0) - ((skill[MEDITATION]/100)*4.5));
 			else
 				manarate += calcDef(0)*2;
 		}
 		else
 		{
 			if(med)
-				manarate -= ((skill[MEDITATION]/100)*4.5); 
+				manarate -= UI32((skill[MEDITATION]/100)*4.5);
 		}
 		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
 		this->updateRegenTimer( STAT_MANA );
