@@ -23,7 +23,7 @@ cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 
 void cNxwClientObj::sysmsg(short color, char* txt, ...)
 {
-	unsigned char talk2[19];
+	UI08 talk2[19]={ 0xAE, 0x00, };
 	char unicodetext[512];
 
 	va_list argptr;
@@ -37,9 +37,7 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = (char)0xAE;
-	talk2[1] = tl >> 8;
-	talk2[2] = tl&0xFF;
+	ShortToCharPtr(tl, talk2 +1);
 	talk2[3] = 1;
 	talk2[4] = 1;
 	talk2[5] = 1;
@@ -48,8 +46,7 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	talk2[8] = 1;
 	talk2[9] =  0;
 
-	talk2[10]=color>>8;
-	talk2[11]=color%256;
+	ShortToCharPtr(color, talk2 +10);
 	talk2[12]=0;
 	talk2[13]=3;
 
@@ -62,11 +59,12 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
+//AoS/	Network->FlushBuffer(m_sck);
 }
 
 void cNxwClientObj::sysmsg(char* txt, ...)
 {
-	unsigned char talk2[19];
+	UI08 talk2[19]={ 0xAE, 0x00, };
 	char unicodetext[512];
 
 	va_list argptr;
@@ -81,9 +79,7 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = 0xAE;
-	talk2[1] = tl >> 8;
-	talk2[2] = tl&0xFF;
+	ShortToCharPtr(tl, talk2 +1);
 	talk2[3] = 1;
 	talk2[4] = 1;
 	talk2[5] = 1;
@@ -92,8 +88,7 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	talk2[8] = 1;
 	talk2[9] = 6;
 
-	talk2[10]=0x03;	//Color1  - Previous default was 0x0040 - 0x03E9
-	talk2[11]=0x87; //Color2
+	ShortToCharPtr(0x0387, talk2 +10); //Color  - Previous default was 0x0040 - 0x03E9
 	talk2[12]=0;
 	talk2[13]=3;
 
@@ -106,7 +101,8 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
-}	
+//AoS/	Network->FlushBuffer(m_sck);
+}
 
 NXWSOCKET cNxwClientObj::toLegacySocket() 
 { 
@@ -170,33 +166,6 @@ int cNxwClientObj::toInt()
 {
 	return m_sck;
 }
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : cNxwClientObj::sendAccessDenied
-// Description       : sends an access denied
-// Return type       : void
-// Author            : Xanathar
-// Argument          : int reason -> 0:noaccount, 1:inuse, 2:nopwd, 3:blocked
-// Changes           : none yet
-/*void cNxwClientObj::sendAccessDenied(int reason)
-{
-	unsigned char pkt[3]="\x82\x00";
-	pkt[1] = reason & 0xFF;
-	send(pkt, 2);
-}
-
-void cNxwClientObj::sendRemoveObj(P_OBJ* po)
-{
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-	removeitem[1]=po->ser1;
-	removeitem[2]=po->ser2;
-	removeitem[3]=po->ser3;
-	removeitem[4]=po->ser4;
-	send(removeitem, 5);
-}
-*/
-
 
 void cNxwClientObj::sendSpellBook(P_ITEM pi)
 {
@@ -453,13 +422,10 @@ void cNxwClientObj::sendRemoveObject(P_OBJECT po)
 {
 	VALIDATEPO(po);
 
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-	removeitem[1] = po->getSerial().ser1;
-	removeitem[2] = po->getSerial().ser2;
-	removeitem[3] = po->getSerial().ser3;
-	removeitem[4] = po->getSerial().ser4;
-
+	UI08 removeitem[5]={ 0x1D, 0x00, };
+	LongToCharPtr(po->getSerial32(), removeitem +1);
 	send(removeitem, 5);
+//AoS/	Network->FlushBuffer(m_sck);
 }
 
 SERIAL currchar[MAXCLIENT];

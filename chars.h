@@ -300,10 +300,10 @@ class cChar : public cObject
 		UI08			xskin1;				//!< Backup of skin color
 		UI08			xskin2;				//!< Backup of skin color
 	public:
-		UI32			getSkinColor();
-		void			setSkinColor( UI32 newColor );
-		UI32			getOldSkinColor();
-		void			setOldSkinColor( UI32 newColor );
+		UI16			getSkinColor();
+		void			setSkinColor( UI16 newColor );
+		UI16			getOldSkinColor();
+		void			setOldSkinColor( UI16 newColor );
 
 		void 			showLongName( P_CHAR showToWho, LOGICAL showSerials );
 //@}

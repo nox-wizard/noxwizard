@@ -184,7 +184,7 @@ void showAddMenu(P_CHAR pc, int menu)
 	pc->customMenu = new cAddMenu();
 	cAddMenu *m = (cAddMenu*)pc->customMenu;
 	m->loadFromScript(menu, pc);
-	m->showMenu( calcSocketFromChar( DEREF_P_CHAR( pc ) ) );
+	m->showMenu( pc->getSocket() );
 }
 
 

@@ -100,11 +100,8 @@ void DeleItem( P_ITEM pi )
 
 	amxVS.deleteVariable( pi->getSerial32() );
 
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-	removeitem[1]= pi->getSerial().ser1; // used to send data to client
-	removeitem[2]= pi->getSerial().ser2;
-	removeitem[3]= pi->getSerial().ser3;
-	removeitem[4]= pi->getSerial().ser4;
+	UI08 removeitem[5]={ 0x1D, 0x00, };
+	LongToCharPtr(pi->getSerial32(), removeitem +1);
 
 	if (pi->spawnregion!=INVALID )
 	{
@@ -122,7 +119,10 @@ void DeleItem( P_ITEM pi )
 	{
 		NXWSOCKET j=sw.getSocket();			
 		if (j!=INVALID)
+		{
 			Xsend(j, removeitem, 5);
+///			Network->FlushBuffer(j);
+		}
 	}
 
 	// - remove from pointer arrays
@@ -143,7 +143,7 @@ void DeleItem( P_ITEM pi )
 
 }
 
-void DeleItem( int i )
+void DeleItem( SERIAL i )
 {
 	DeleItem( MAKE_ITEM_REF(i) );
 }
@@ -168,11 +168,8 @@ void DeleteChar( P_CHAR pc )
 
 	amxVS.deleteVariable( pc->getSerial32() );
 
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-	removeitem[1]= pc->getSerial().ser1;
-	removeitem[2]= pc->getSerial().ser2;
-	removeitem[3]= pc->getSerial().ser3;
-	removeitem[4]= pc->getSerial().ser4;
+	UI08 removeitem[5]={ 0x1D, 0x00, };
+	LongToCharPtr(pc->getSerial32(), removeitem +1);
 
 	if( pc->spawnregion!=INVALID )
 	{
@@ -191,8 +188,11 @@ void DeleteChar( P_CHAR pc )
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
 		NXWSOCKET j=sw.getSocket();
-		if( j!=INVALID ) 
+		if( j!=INVALID )
+		{
 			Xsend(j, removeitem, 5);
+///			Network->FlushBuffer(j);
+		}
 	}
 
 	safedelete(pc);

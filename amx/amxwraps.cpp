@@ -2983,32 +2983,28 @@ NATIVE( _chr_showMessage )
 		amx_GetString(g_cAmxPrintBuffer, cstr);
 
 		int length = 44 + strlen(g_cAmxPrintBuffer) + 1;
-		unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-		talk[0]= 0x1C;
+		UI08 talk[14] = { 0x1C, 0x00, };
+
 		// Block size
-		talk[1]= length >>8;
-		talk[2]= length %256;
+		ShortToCharPtr(length, talk +1);
 		// char serial
-		talk[3]= pc2->getSerial().ser1;
-		talk[4]= pc2->getSerial().ser2;
-		talk[5]= pc2->getSerial().ser3;
-		talk[6]= pc2->getSerial().ser4;
+		LongToCharPtr(pc2->getSerial32(), talk +3);
 		// Model ID
-		talk[7]= pc2->id1;
-		talk[8]= pc2->id2;
+		ShortToCharPtr(pc2->GetBodyType(), talk +7);
 		// Speech Type
 		talk[9]= 6;
 		// Speech color
-		talk[10]= params[4] >> 8;
-		talk[11]= params[4] % 256;
+		ShortToCharPtr(params[4], talk +10);
 		// Speech font
 		talk[12]= 0;
 		talk[13]= pc1->fonttype;
 
 		Xsend(pc1->getClient()->toInt(), talk, 14);
-		unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+		UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 		Xsend(pc1->getClient()->toInt(), sysname, 30);
 		Xsend(pc1->getClient()->toInt(), g_cAmxPrintBuffer, length-44);
+///Network->FlushBuffer(pc1->getClient()->toInt());
 		return 0;
 	}
 	return INVALID;
@@ -3553,7 +3549,6 @@ NATIVE(_itm_speech)
 	P_ITEM cur = pointers::findItemBySerial(params[2]);
 	VALIDATEPIR(cur,INVALID);
 
-	unsigned char talk[15];
 	int tl;
 
 	cell *cstr;
@@ -3568,32 +3563,32 @@ NATIVE(_itm_speech)
 		return 0;							// =>item speaks to all in range
 	}
 	tl=44+strlen( g_cAmxPrintBuffer )+1;
-	talk[0]= 0x1C;
+
+	UI08 talk[15] = { 0x1C, 0x00, };
+
 	// Block size
-	talk[1]= tl>>8;
-	talk[2]= tl%256;
+	ShortToCharPtr(tl, talk +1);
 
 	// Item ID
-	talk[3]= cur->getSerial().ser1;
-	talk[4]= cur->getSerial().ser2;
-	talk[5]= cur->getSerial().ser3;
-	talk[6]= cur->getSerial().ser4;
+	LongToCharPtr(cur->getSerial32(), talk +3);
+
 	// Model ID
-	talk[7]= 1;
-	talk[8]= 1;
+	ShortToCharPtr(0x0101, talk +7);
+
 	// Speech Type
 	talk[9]= 6;
+
 	// Speech color
-	talk[10]= 0x04;
-	talk[11]= 0x81;
+	ShortToCharPtr(0x0481, talk +10);
+
 	// Speech font
-	talk[12]= 0;
-	talk[13]= 3;//cur->fonttype;
+	ShortToCharPtr(0x0003, talk +12); //cur->fonttype;
 
 	Xsend(params[1], talk, 14);
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	Xsend(params[1], sysname, 30);
 	Xsend(params[1], g_cAmxPrintBuffer, strlen( g_cAmxPrintBuffer ) + 1 );
+///Network->FlushBuffer(params[1]);
 
 	return 0;
 }

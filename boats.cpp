@@ -347,10 +347,11 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 			
 			//////////////FOR ELCABESA VERY WARNING BY ENDYMION
 			//////TI PACKET PAUSE THE CLIENT
-			unsigned char wppause[3]="\x33\x01";
+			UI08 wppause[2]= { 0x33, 0x01 };
 			//////////////FOR ELCABESA VERY WARNING BY ENDYMION
 			//////TI PACKET PAUSE THE CLIENT
 			Xsend(ps_i->toInt(),wppause,2);
+//AoS/			Network->FlushBuffer(ps_i->toInt());
 			d++;
 		}
 	}
@@ -539,8 +540,9 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	for (int a=0;a<d;a++) {
 		/////////FOR ELCABESA VERY IMPORTAT BY ENDY 
 		///////THIS PACKET RESUME CLIENT
-		unsigned char restart[3]="\x33\x00";
+		UI08 restart[2] = { 0x33, 0x00 };
 		Xsend(Send[a],restart,2);
+//AoS/		Network->FlushBuffer(Send[a]);
 	}
 }
 
@@ -846,13 +848,13 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 
 	if( !ISVALIDPI(pBoat) )
 	{
-		sysmessage(s,TRANSLATE("There was an error creating that boat."));
+		pc_cs->sysmsg(TRANSLATE("There was an error creating that boat."));
 		return false;
 	}
 
 	if(id2!=0x00 && id2!=0x04 && id2!=0x08 && id2!=0x0C && id2!=0x10 && id2!=0x14)//Valid boat ids (must start pointing north!)
 	{
-		sysmessage(s, TRANSLATE("The deed is broken, please contact a Game Master."));
+		pc_cs->sysmsg(TRANSLATE("The deed is broken, please contact a Game Master."));
 		return false;
 	}
 	//Start checking for a valid position:
@@ -1103,7 +1105,6 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 void cBoat::OpenPlank(P_ITEM pi)
 {
-	char temp[TEMP_STR_SIZE];
 	switch(pi->id2)
 	{
 		//Open plank->
@@ -1117,7 +1118,7 @@ void cBoat::OpenPlank(P_ITEM pi)
 		case (unsigned char)0xD5: pi->id2=(unsigned char)0xB1; break;
 		case (unsigned char)0xD4: pi->id2=(unsigned char)0xB2; break;
 		case (unsigned char)0x89: pi->id2=(unsigned char)0x8A; break;
-		default: { sprintf(temp,"WARNING: Invalid plank ID called! Plank %i '%s' [%x %x]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id1,pi->id2); LogWarning( temp ); break; }
+		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id()); break;
 	}
 }
 
@@ -1143,7 +1144,6 @@ P_ITEM cBoat::GetBoat(Location pos)
 		double dist=hypot(xx, yy);
 		if(dist<10)
 		{
-			char temp[TEMP_STR_SIZE];
 			int i;
 			SI32 length;			// signed long int on Intel
 			st_multi multi;
@@ -1153,8 +1153,7 @@ P_ITEM cBoat::GetBoat(Location pos)
 			length=length/sizeof(st_multi);
 			if (length == -1 || length>=17000000)//Too big...
 			{
-				sprintf(temp,"GetBoat() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
-				LogError( temp ); // changed by Magius(CHE) (1)
+				LogError("GetBoat() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
 				length = 0;
 			}
 			for(i=0;i<length;i++)
@@ -1193,7 +1192,6 @@ void cBoat::Move(NXWSOCKET  s, int dir, P_ITEM pBoat)
 
 void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 {
-	char temp[TEMP_STR_SIZE];
 	int tx=0,ty=0;
 	int serial;
 
@@ -1209,45 +1207,45 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 	//////////////FOR ELCABESA VERY WARNING BY ENDYMION
 	//////TI PACKET PAUSE THE CLIENT
-	unsigned char wppause[3]="\x33\x01";
+	UI08 wppause[2] ={ 0x33, 0x01 };
 	Xsend(s,wppause,2);
+//AoS/	Network->FlushBuffer(s);
 	//////////////FOR ELCABESA VERY WARNING BY ENDYMION
 	//////TI PACKET PAUSE THE CLIENT
 
 	switch(dir&0x0F)//Which DIR is it going in?
 	{
-	case '\x00' :
+	case 0:
 		ty--;
 		break;
-	case '\x01' :
+	case 1:
 		tx++;
 		ty--;
 		break;
-	case '\x02' :
+	case 2:
 		tx++;
 		break;
-	case '\x03' :
+	case 3:
 		tx++;
 		ty++;
 		break;
-	case '\x04' :
+	case 4:
 		ty++;
 		break;
-	case '\x05' :
+	case 5:
 		tx--;
 		ty++;
 		break;
-	case '\x06' :
+	case 6:
 		tx--;
 		break;
-	case '\x07' :
+	case 7:
 		tx--;
 		ty--;
 		break;
 	default:
 		{
-		  sprintf(temp,"warning: Boat direction error: %i int boat %i\n", pBoat->dir&0x0F, pBoat->getSerial32());
-		  LogWarning(temp);
+		  LogWarning("Warning: Boat direction error: %i int boat %i\n", pBoat->dir&0x0F, pBoat->getSerial32());
 		  break;
 		}
 	}
@@ -1259,7 +1257,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	Location boatpos= pBoat->getPosition();
 	/////////FOR ELCABESA VERY IMPORTAT BY ENDY
 	///////THIS PACKET RESUME CLIENT
-	unsigned char restart[3]="\x33\x00";
+	UI08 restart[2]={ 0x33, 0x00 };
 
 	if( (boatpos.x+tx<=XBORDER || boatpos.x+tx>=((MapTileWidth*8)-XBORDER))
 		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=((MapTileHeight*8)-YBORDER))) //bugfix LB
@@ -1267,6 +1265,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		pBoat->type2=0;
 		itemtalk(tiller,TRANSLATE("Arr, Sir, we've hit rough waters!"));
 		Xsend(s,restart,2);
+//AoS/		Network->FlushBuffer(s);
 		return;
 	}
 
@@ -1279,6 +1278,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		pBoat->type2=0;
 		itemtalk(tiller, TRANSLATE("Arr, somethings in the way!"));
 		Xsend(s,restart,2);
+//AoS/		Network->FlushBuffer(s);
 		return;
 	}
 	if(collision(pBoat, boatpos,0)==true)
@@ -1286,6 +1286,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		pBoat->type2=0;
 		itemtalk(tiller, TRANSLATE("Arr, another ship in the way"));
 		Xsend(s,restart,2);
+//AoS/		Network->FlushBuffer(s);
 		return;
 	}
 
@@ -1355,6 +1356,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 */
 
 	Xsend(s,restart,2);
+//AoS/	Network->FlushBuffer(s);
 	pBoat->Refresh();
 	tiller->Refresh();
 	p1->Refresh();

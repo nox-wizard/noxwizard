@@ -916,7 +916,7 @@ void cChar::unHide()
 
 		// unhidesendchar port by Akron
 		setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-		UI08 removeitem[5]= {0x1D, 0x00, 0x00, 0x00, 0x00};
+		UI08 removeitem[5]={ 0x1D, 0x00, };
 		UI08 goxyz[20]="\x20\x00\x05\xA8\x90\x01\x90\x00\x83\xFF\x00\x06\x08\x06\x49\x00\x00\x02\x00";
 
 		NxwSocketWrapper sw;
@@ -933,19 +933,19 @@ void cChar::unHide()
 				if (pj->getSerial32() != getSerial32()) { //to other players : recreate player object
 					LongToCharPtr(getSerial32(), removeitem+1);
 					Xsend(i, removeitem, 5);
+//AoS/					Network->FlushBuffer(i);
 					impowncreate(i, this, 0);
 				} else {
-					LongToCharPtr(getSerial32(), goxyz+1);
-					goxyz[5]=id1;
-					goxyz[6]=id2;
-					goxyz[8]=skin1;
-					goxyz[9]=skin2;
+					LongToCharPtr(getSerial32(), goxyz +1);
+					ShortToCharPtr(GetBodyType(), goxyz +5);
+					ShortToCharPtr(getSkinColor(), goxyz +8);
 					goxyz[10] = poisoned ? 0x04 : 0x00;
-					ShortToCharPtr(getPosition().x, goxyz+11);
-					ShortToCharPtr(getPosition().y, goxyz+13);
+					ShortToCharPtr(getPosition().x, goxyz +11);
+					ShortToCharPtr(getPosition().y, goxyz +13);
 					goxyz[17]= dir|0x80;
 					goxyz[18]= getPosition().z;
 					Xsend(i, goxyz, 19);
+//AoS/					Network->FlushBuffer(i);
 				}
 			}
 		}
@@ -1065,7 +1065,6 @@ void cChar::showBackpack()
 */
 void cChar::showContainer(P_ITEM pCont)
 {
-	
 	VALIDATEPI(pCont);
 	NXWCLIENT ps=getClient();
 	if(ps==NULL) return;
@@ -1075,19 +1074,23 @@ void cChar::showContainer(P_ITEM pCont)
 	si.fillItemsInContainer( pCont, false, false ); 
 	SI32 count=si.size();
 		
-	unsigned char bpopen[12]= { 0x24, 0x40, 0x0B, 0x00, 0x1A, 0x00, 0x3C, 0x3C, 0x00, 0x05, 0x00, 0x00 };
-	
-	ShortToCharPtr(count, bpopen+10);
-	count=(count*19)+5;
-	ShortToCharPtr(count, bpopen+8);
-	LongToCharPtr(pCont->getSerial32(), bpopen+1);
-
+	UI08 bpopen[7]= { 0x24, 0x40, 0x0B, 0x00, 0x1A, 0x00, 0x3C };
 	UI16 gump= pCont->getContGump();
+
+	LongToCharPtr(pCont->getSerial32(), bpopen+1);
 	ShortToCharPtr(gump, bpopen+5);
 
-	Xsend(s, bpopen, 12);
+	Xsend(s, bpopen, 7);
+///	Network->FlushBuffer(s);
 
-	unsigned char bpitem[19]= { 0x40,0x0D,0x98,0xF7,0x0F,0x4F,0x00,0x00,0x09,0x00,0x30,0x00,0x52,0x40,0x0B,0x00,0x1A,0x00,0x00 };
+	UI08 bpopen2[5]= { 0x3C, 0x00, 0x05, 0x00, 0x00 };
+	
+	ShortToCharPtr(count, bpopen2+3);
+	count=(count*19)+5;
+	ShortToCharPtr(count, bpopen2+1);
+	Xsend(s, bpopen2, 5);
+
+	UI08 bpitem[19]= { 0x40,0x0D,0x98,0xF7,0x0F,0x4F,0x00,0x00,0x09,0x00,0x30,0x00,0x52,0x40,0x0B,0x00,0x1A,0x00,0x00 };
 
 
 	for( si.rewind(); !si.isEmpty(); si++ )
@@ -1100,18 +1103,18 @@ void cChar::showContainer(P_ITEM pCont)
 		if (pi->getPosition("x") > 150) pi->setPosition("x", 150);
 		if (pi->getPosition("y") > 140) pi->setPosition("y", 140);
 		//end fix
-		LongToCharPtr(pi->getSerial32(),bpitem);
-		ShortToCharPtr(pi->animid(),bpitem+4);
-		ShortToCharPtr(pi->amount,bpitem+7);
-		ShortToCharPtr(pi->getPosition().x,bpitem+9);
-		ShortToCharPtr(pi->getPosition().y,bpitem+11);
-		LongToCharPtr(pCont->getSerial32(),bpitem+13);
-		bpitem[17]=pi->color1;
-		bpitem[18]=pi->color2;
+		LongToCharPtr(pi->getSerial32(), bpitem);
+		ShortToCharPtr(pi->animid(), bpitem +4);
+		ShortToCharPtr(pi->amount, bpitem +7);
+		ShortToCharPtr(pi->getPosition().x, bpitem +9);
+		ShortToCharPtr(pi->getPosition().y, bpitem +11);
+		LongToCharPtr(pCont->getSerial32(), bpitem +13);
+		ShortToCharPtr(pi->color(), bpitem +17);
 		//bpitem[19]=pi->decaytime=0;//HoneyJar // reseting the decaytimer in the backpack
 		bpitem[19]= 0;
 		Xsend(s, bpitem, 19);
 	}
+/// Network->FlushBuffer(s);
 }
 
 P_ITEM cChar::getBackpack()
@@ -1505,9 +1508,9 @@ void cChar::playAction(SI32 action)
 			break;
 	}
 
-	unsigned char doact[15]="\x6E\x01\x02\x03\x04\x01\x02\x00\x05\x00\x01\x00\x00\x01";
-	LongToCharPtr(getSerial32(), doact+1);
-	ShortToCharPtr(action, doact+5);
+	UI08 doact[14]={ 0x0E, 0x01, 0x02, 0x03, 0x04, 0x01, 0x02, 0x00, 0x05, 0x00, 0x01, 0x0, 0x00, 0x01 };
+	LongToCharPtr(getSerial32(), doact +1);
+	ShortToCharPtr(action, doact +5);
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
@@ -1515,7 +1518,10 @@ void cChar::playAction(SI32 action)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if(ps!=NULL)
+		{
 			Xsend(ps->toInt(), doact, 14);
+//AoS/			Network->FlushBuffer(ps->toInt());
+		}
 	}
 }
 
@@ -1572,7 +1578,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 {
 	SI32 tl;
 	LOGICAL machwas= true;
-	unsigned char talk[15];
+	UI08 talk[15] = { 0x1C, 0x00, };
 
 	if( s < 0 || s >= now ) 
 		return;
@@ -1589,15 +1595,9 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 	{
 		tl= 44+strlen(txt)+1;	// packet size
 
-		talk[0]= 0x1C;
-		talk[1]= tl>>8;
-		talk[2]= tl%256;
-		talk[3]= getSerial().ser1;
-		talk[4]= getSerial().ser2;
-		talk[5]= getSerial().ser3;
-		talk[6]= getSerial().ser4;
-		talk[7]= id1;
-		talk[8]= id2;
+		ShortToCharPtr(tl, talk +1);
+		LongToCharPtr(getSerial32(), talk +3);
+		ShortToCharPtr(GetBodyType(), talk +7);
 		talk[9]= 0; // Type
 		talk[10]= saycolor1=0x04;
 		talk[11]= saycolor2=0x81;
@@ -1620,6 +1620,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		Xsend(s, talk, 14);
 		Xsend(s, getCurrentNameC(), 30);
 		Xsend(s, txt, strlen(txt)+1);
+///		Network->FlushBuffer(s);
 	}
 }
 
@@ -1652,18 +1653,13 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		vsnprintf( msg, sizeof( msg ) - 1, txt, argptr );
 		va_end( argptr );
 
-		BYTE talk[15];
+		UI08 talk[15] ={ 0x1C, 0x00, };
 
 		SI32 tl=44+strlen(txt)+1;
-		talk[0]= 0x1C;
-		talk[1]= tl>>8;
-		talk[2]= tl%256;
-		talk[3]= getSerial().ser1;
-		talk[4]= getSerial().ser2;
-		talk[5]= getSerial().ser3;
-		talk[6]= getSerial().ser4;
-		talk[7]= id1;
-		talk[8]= id2;
+
+		ShortToCharPtr(tl, talk +1);
+		LongToCharPtr(getSerial32(), talk +3);
+		ShortToCharPtr(GetBodyType(), talk +7);
 		talk[9]= 2; // Type
 		talk[10]= emotecolor1=0x00;
 		talk[11]= emotecolor2=0x26;
@@ -1672,6 +1668,7 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		Xsend(socket,talk, 14);
 		Xsend(socket,getCurrentNameC(), 30);
 		Xsend(socket, msg, strlen( msg ) + 1 );
+///		Network->FlushBuffer(socket);
 	}
 }
 
@@ -1740,31 +1737,23 @@ void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 	else
 		machwas = true;
 
-	BYTE talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
+	UI08 talk[14]={ 0x1C, 0x00, };
+
 	if (machwas)
 	{
 		tl=44+strlen(txt)+1;
-		talk[1]= tl>>8;
-		talk[2]= tl%256;
-		talk[3]= getSerial().ser1;
-		talk[4]= getSerial().ser2;
-		talk[5]= getSerial().ser3;
-		talk[6]= getSerial().ser4;
-		talk[7]= id1;
-		talk[8]= id2;
-		talk[9]= 0;
 
-		// color here
-
-		talk[10]=0;
-		talk[11]=1; // black
-
-		talk[12]=0;
-		talk[13]=8;
+		ShortToCharPtr(tl, talk +1);
+		LongToCharPtr(getSerial32(), talk +3);
+		ShortToCharPtr(GetBodyType(), talk +7);
+		talk[9]= 0; // Type
+		ShortToCharPtr(0x0001, talk +10); // color: black
+		ShortToCharPtr(0x0008, talk +12); // Font type
 
 		Xsend(s, talk, 14);
 		Xsend(s, getCurrentNameC(), 30);
 		Xsend(s, txt, strlen(txt)+1);
+//AoS/		Network->FlushBuffer(s);
 	}
 }
 
@@ -1843,16 +1832,13 @@ void cChar::teleport()
 	}
 
 	setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-//	UI08 removeitem[5]={0x1D, 0x00, 0x00, 0x00, 0x00};
-//	NXWCLIENT ps = getClient();
+
 	NXWSOCKET socket = getSocket();
 
 	if ( socket!=INVALID )
 	{
 		UI08 goxyz[19]={0x20, 0x00, 0x05, 0xA8, 0x90, 0x01, 0x90, 0x00, 0x83, 0xFF, 0x00, 0x06, 0x08, 0x06, 0x49, 0x00, 0x00, 0x02, 0x00};
 		Location pos = getPosition();
-
-//		LongToCharPtr(getSerial32(), removeitem +1);
 
 		LongToCharPtr(getSerial32(), goxyz +1);
 		ShortToCharPtr(GetBodyType(), goxyz +5);
@@ -1871,6 +1857,9 @@ void cChar::teleport()
 		goxyz[18]= pos.dispz;
 
 		Xsend(socket, goxyz, 19);
+//AoS/		Network->FlushBuffer(socket);
+
+
 		weights::NewCalc(this);
 		statwindow( this, this );
 		walksequence[socket] = INVALID;
@@ -2067,7 +2056,10 @@ void cChar::playSFX(SI16 sound)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if(ps!=NULL)
+		{
 			Xsend(ps->toInt(), sfx, 12);
+//AoS/			Network->FlushBuffer(ps->toInt());
+		}
 	}
 }
 
@@ -2847,24 +2839,24 @@ void cChar::Kill()
 	poisoned = POISON_NONE;
 	poison = hp = 0;
 
-	if (xid1==0x01 && xid2==0x91)
+	if (GetOldBodyType() == BODY_FEMALE)
 	{
 		switch(RandomNum(0, 3)) // AntiChrist - uses all the sound effects
 		{
-			case 0:		playSFX( 0x0150 );	break;// Female Death
-			case 1:		playSFX( 0x0151 );	break;// Female Death
-			case 2:		playSFX( 0x0152 );	break;// Female Death
-			case 3:		playSFX( 0x0153 );	break;// Female Death
+			case 0:	playSFX( 0x0150 ); break;// Female Death
+			case 1:	playSFX( 0x0151 ); break;// Female Death
+			case 2:	playSFX( 0x0152 ); break;// Female Death
+			case 3:	playSFX( 0x0153 ); break;// Female Death
 		}
 	}
-	else if (xid1==0x01 && xid2==0x90)
+	else if (GetOldBodyType() == BODY_MALE)
 	{
 		switch( RandomNum(0, 3) ) // AntiChrist - uses all the sound effects
 		{
-			case 0:		playSFX( 0x015A );	break;// Male Death
-			case 1:		playSFX( 0x015B );	break;// Male Death
-			case 2:		playSFX( 0x015C );	break;// Male Death
-			case 3:		playSFX( 0x015D );	break;// Male Death
+			case 0:	playSFX( 0x015A ); break;// Male Death
+			case 1:	playSFX( 0x015B ); break;// Male Death
+			case 2:	playSFX( 0x015C ); break;// Male Death
+			case 3:	playSFX( 0x015D ); break;// Male Death
 		}
 	}
 	else
@@ -2872,8 +2864,9 @@ void cChar::Kill()
 
 	if( polymorph )
 	{ // legacy code : should be cut when polymorph will be translated to morph
-		id1=xid1;
-		id2=xid2;
+/*		id1=xid1;
+		id2=xid2;   */
+		SetBodyType( GetOldBodyType());
 		polymorph=false;
 		teleport();
 	}
@@ -2983,7 +2976,7 @@ void cChar::Kill()
 	//--------------------- corpse & ghost stuff
 
 	bool hadHumanBody=HasHumanBody();
-	SI32 corpseid = (id2 == 0x91) ? 0x0193 : 0x0192;
+	SI32 corpseid = (GetBodyType() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
@@ -3008,7 +3001,7 @@ void cChar::Kill()
 	char szCorpseName[128];
 	sprintf(szCorpseName, "corpse of %s", getCurrentNameC());
 
-	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, (xskin1<<8)+xskin2, getPosition());
+	P_ITEM pCorpse = item::addByID( ITEMID_CORPSEBASE, 1, szCorpseName, getOldSkinColor(), getPosition());
 	if (!ISVALIDPI(pCorpse))
 	{
 	    // panic
@@ -3031,8 +3024,8 @@ void cChar::Kill()
 		pCorpse->more4 = char( SrvParms->playercorpsedecaymultiplier&0xff ); // how many times longer for the player's corpse to decay
 	}
 
-	pCorpse->amount = (xid1<<8) + xid2; // Amount == corpse type
-	pCorpse->morey=hadHumanBody;
+	pCorpse->amount = GetOldBodyType(); // Amount == corpse type
+	pCorpse->morey = hadHumanBody;
 
 	pCorpse->carve=carve;               //store carve section - AntiChrist
 
@@ -3316,7 +3309,7 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 
 BODYTYPE cChar::GetBodyType() const
 {
-	return (BODYTYPE)((id1<<8)+id2);
+	return (BODYTYPE)((id1<<8)|id2);
 }
 
 void cChar::SetBodyType(BODYTYPE newBody)
@@ -3327,7 +3320,7 @@ void cChar::SetBodyType(BODYTYPE newBody)
 
 BODYTYPE cChar::GetOldBodyType() const
 {
-	return (BODYTYPE)((xid1<<8)+xid2);
+	return (BODYTYPE)((xid1<<8)|xid2);
 }
 
 void cChar::SetOldBodyType(BODYTYPE newBody)
@@ -3785,7 +3778,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	char temp[TEMP_STR_SIZE];
  	char temp1[TEMP_STR_SIZE];
 //        extern title_st title[ALLSKILLS +1]; // unused variable
-	unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
+	unsigned char talk[14]={ 0x1C, 0x00, };
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	*(temp1)='\0';
@@ -3910,52 +3903,49 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	}
 
 	Guilds->Title( socket, DEREF_P_CHAR(this) );
+////"\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
 
 	SI32 tl,guild;
 	tl=44+strlen(temp1)+1;
-	talk[1]= tl>>8;
-	talk[2]= tl%256;
-	talk[3]= getSerial().ser1;
-	talk[4]= getSerial().ser2;
-	talk[5]= getSerial().ser3;
-	talk[6]= getSerial().ser4;
-	talk[7]= 1;
-	talk[8]= 1;
+
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(getSerial32(), talk +3);
+	ShortToCharPtr(0x0101, talk +7);
 	talk[9]= 6; // Mode: "You see"
 	guild=Guilds->Compare(showToWho,this);
 	if (guild==1) //Same guild (Green)
 	{
-		talk[10]=0x00;
-		talk[11]=0x43;
+		ShortToCharPtr(0x0043, talk +10);
 	}
 	else if (guild==2) //enemy (Orange)
 	{
-		talk[10]=0x00;
-		talk[11]=0x30;
+		ShortToCharPtr(0x0030, talk +10);
 	}
-	else if( IsGM() && account==0 )
+	else if( IsGM() && account==0 ) //Admin & GM get yellow names
 	{
-		talk[10]=0x04;
-		talk[11]=0x81;//Admin & GM get yellow names ..Ripper
+		ShortToCharPtr(0x0481, talk +10);
 	}
-	else if (IsGrey()) {talk[10]=0x03; talk[11]=0xB2;}
+	else if (IsGrey())
+	{
+		ShortToCharPtr(0x03B2, talk +10);
+	}
 	else
 	{
 		switch(flag)
 		{
-		case 0x01:	talk[10]=0x00; talk[11]=0x26;break;//red
-		case 0x04:	talk[10]=0x00; talk[11]=0x5A;break;//blue
-		case 0x08:	talk[10]=0x00; talk[11]=0x49;break;//green
-		case 0x10:	talk[10]=0x00; talk[11]=0x30;break;//orange
-		default:		talk[10]=0x03; talk[11]='\xB2';		//grey
+		case 0x01:	ShortToCharPtr(0x0026, talk +10); break;//red
+		case 0x04:	ShortToCharPtr(0x005A, talk +10); break;//blue
+		case 0x08:	ShortToCharPtr(0x0049, talk +10); break;//green
+		case 0x10:	ShortToCharPtr(0x0030, talk +10); break;//orange
+		default:	ShortToCharPtr(0x03B2, talk +10);	//grey
 		}
 	}
-	talk[12]=0;
-	talk[13]=3;
+	ShortToCharPtr(0x0003, talk +12);
 	
 	Xsend(socket, talk, 14);
 	Xsend(socket, sysname, 30);
 	Xsend(socket, temp1, tl - 44);
+//AoS/	Network->FlushBuffer(socket);
 }
 
 /*!
@@ -4101,23 +4091,23 @@ void cChar::openSpecialBank(P_CHAR pc)
 }
 
 
-UI32 cChar::getSkinColor()
+UI16 cChar::getSkinColor()
 {
-	return (UI32)((skin1<<8)+skin2);
+	return (UI16)((skin1<<8)|skin2);
 }
 
-void cChar::setSkinColor( UI32 newColor )
+void cChar::setSkinColor( UI16 newColor )
 {
 	skin1 = newColor >> 8;
 	skin2 = newColor % 256;
 }
 
-UI32 cChar::getOldSkinColor()
+UI16 cChar::getOldSkinColor()
 {
-	return (UI32)((xskin1<<8)+xskin2);
+	return (UI16)((xskin1<<8)|xskin2);
 }
 
-void cChar::setOldSkinColor( UI32 newColor )
+void cChar::setOldSkinColor( UI16 newColor )
 {
 	xskin1 = newColor >> 8;
 	xskin2 = newColor % 256;
@@ -4411,10 +4401,11 @@ void cChar::pc_heartbeat()
 				Location targpos= target->getPosition();
 
 				trackingtimer = 0;
-				unsigned char arrow[6] = { 0xBA, 0x00, 0x00, 0x00, 0x00, 0x00 };
+				UI08 arrow[6] = { 0xBA, 0x00, };
 				ShortToCharPtr(targpos.x-1, arrow+2);
 				ShortToCharPtr(targpos.y, arrow+4);
 				Xsend( socket, arrow, 6 );
+//AoS/				Network->FlushBuffer(socket);
 			}
 		}
 	}

@@ -84,9 +84,6 @@ bool BountyCreate( P_CHAR pc, int nRewardAmount )
 	VALIDATEPCR(pc,false);
 
   int   nPostSerial = 0;
-  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-  
 
   // Check that we have a reward amount greater than zero
   if( nRewardAmount > 0 )
@@ -114,11 +111,10 @@ bool BountyCreate( P_CHAR pc, int nRewardAmount )
   }
 
   // Failed to post bounty
-  sprintf(temp, "BountyCreate():  FAILED to place a bounty of %i on %s (PostSerial=%x)\n",
+  LogWarning("BountyCreate():  FAILED to place a bounty of %i on %s (PostSerial=%x)\n",
           nRewardAmount,
           pc->getCurrentNameC(),
           nPostSerial );
-  LogWarning(temp);
 
   // Post must have failed
   return false;

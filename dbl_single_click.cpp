@@ -28,7 +28,7 @@
 \note only used on Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 \todo merge whit Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 */
-static bool Item_ToolWearOut(P_ITEM pi)
+/*static bool Item_ToolWearOut(P_ITEM pi)
 {
 	if(chance(5))
 		pi->hp--; //Take off a hit point
@@ -39,7 +39,7 @@ static bool Item_ToolWearOut(P_ITEM pi)
 	}
 	else
 		return false;
-}
+}*/
 
 /*!
 \brief apply wear out to item, delete if necessary

@@ -96,7 +96,9 @@ void setSeason(int nSeason)
 void commitSeason(P_CHAR pc)
 {
 	VALIDATEPC(pc);
-	char setseason[3]={0xBC, 0x00, 0x01};
+	NXWSOCKET s = pc->getSocket();
+
+	UI08 setseason[3]={ 0xBC, 0x00, 0x01 };
 	
 	if (region[pc->region].forcedseason>=0) 
 		setseason[1] = region[pc->region].forcedseason;
@@ -106,7 +108,8 @@ void commitSeason(P_CHAR pc)
 			setseason[1] = g_nWinterOverride;
 		}
 	}
-	Xsend(pc->getSocket(),setseason,3);
+	Xsend(s,setseason,3);
+///	Network->FlushBuffer(s);
 }
 
 
