@@ -56,7 +56,8 @@ LOGICAL checkMagicalSpeech( P_CHAR pc, char* speech )
 		return false;
 
 	strupr( speech );
-	std::map< std::string, SpellId >::iterator it( speechMap.find( speech ) );
+	string sSpeech( speech );
+	std::map< std::string, SpellId >::iterator it( speechMap.find( sSpeech ) );
 	if ( it == speechMap.end() )
 		return false;
 	SpellId spell = it->second;
