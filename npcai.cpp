@@ -705,7 +705,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		break;
 		case NPCAI_SMALL:
 		{
-			if( pc->npcai_func==NULL ) {
+			/*if( pc->npcai_func==NULL ) {
 				pc->npc_type = NPCAI_GOOD;
 				return;
 			}
@@ -714,10 +714,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
 			SERIAL set = amxSet::create();
 			amxSet::copy( set, sc );
-
 			pc->npcai_func->Call( pc->getSerial32(), uiCurrentTime, set );
 			
-			amxSet::deleteSet( set );
+			amxSet::deleteSet( set );*/
 
 		}
 		break;
