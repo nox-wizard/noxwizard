@@ -4444,6 +4444,28 @@ NATIVE(_map_getFloorTileID)
     return map.id;
 }
 
+
+
+/*
+\brief Get Height of a Map Location
+\author Frodo
+\since 0.82
+\param 1: x of the location
+\param 2: y of the location
+\return INVALID or z of the location 
+*/
+NATIVE(_map_getZ)
+{
+	map_st m;
+	if ( !data::seekMap( param[1], param[2], m ) )
+		return INVALID;
+	return m.z;
+}
+
+
+
+
+
 ////////////////////////////////////////////////////////////
 /////////////////////// GUILD //////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -6027,6 +6049,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "map_isUnderStatic", _map_isUnderStatic}, //Keldan 2003/02/09
  { "map_getTileID", _map_getTileID}, //Keldan, posted 2003/01/27 - added 2003/03/01
  { "map_getFloorTileID", _map_getFloorTileID}, // Keldan, posted 2003/01/27 - added 2003/03/01
+ { "map_getZ", _map_getZ}, // Frodo 2003/12/27
 // Guild function and properties - Endymion
  { "guild_setProperty", _guild_setProperty },
  { "guild_getProperty", _guild_getProperty },
