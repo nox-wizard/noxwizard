@@ -4578,7 +4578,7 @@ NATIVE(_guild_resignMember)
 \param 2 the member
 \return integer, index of member
 */
-NATIVE(_guild_getMemberIndex)
+NATIVE(_guild_getMemberIdx)
 {
 	P_GUILD guild = Guildz.getGuild( params[1] );
 	if ( guild==NULL )	return INVALID;
@@ -6121,7 +6121,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_create", _guild_create },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
- { "guild_getMemberIndex", _guild_getMemberIndex },
+ { "guild_getMemberIdx", _guild_getMemberIdx },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
 // Guild member function and properties - Endymion
