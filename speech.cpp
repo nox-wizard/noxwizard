@@ -1907,12 +1907,19 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 }// namespace Speech
 
 
-inline void makeGhost( wstring* from, wstring* to ) {
+void makeGhost( wstring* from, wstring* to )
+{
+	to->erase();
+
+	if ( from == NULL || to == NULL )
+		return;
 
 	wstring::iterator iter( from->begin() ), end( from->end() );
-	for( ; iter!=end; iter++) {
-		if( (*iter)!=32 )
-			(*to)+= ((*iter) %2)? L'O' : L'o';
+	for( ; iter != end; iter++ ) {
+		/*if( (*iter)!=32 )
+			(*to)+= ((*iter) %2)? L'O' : L'o';*/
+
+		(*to) += ( (RandomNum(1,2) == 2) ? L'O' : L'o' );
 	}
 
 }
@@ -2053,7 +2060,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		default:
 			range=VISRANGE;
 	}
-	
+
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc, false, range );
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -2083,14 +2090,14 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			//ndEndy not set speechGhostUni because want send true speech to event
 			ghost=true;
 		}
-		else 
+		else
 			ghost=false;
-		
+
 		pc->setSpeechCurrent( &speechUni );
 
 		a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
-		
-		bool modifiedInEvent;
+
+		bool modifiedInEvent = false;
 		if( pc->getSpeechCurrent()==&speechUni ) { //so not was modified in event
 			modifiedInEvent=false;
 			if( ghost )
@@ -2099,8 +2106,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		else
 			modifiedInEvent=true;
 
-			
-		talk.msg=pc->getSpeechCurrent();
+
+		talk.msg = pc->getSpeechCurrent();
 		talk.send( a_pc->getClient() );
 
 		if( modifiedInEvent )
