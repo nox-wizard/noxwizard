@@ -672,7 +672,7 @@ AmxEvent* cObject::getAmxEvent( UI32 eventId )
 {
 	if( isValidAmxEvent( eventId ) )
 	{
-		if( amxEvents != 0 )
+		if( amxEvents != NULL )
 		{
 			AmxEventMap::iterator it = amxEvents->find( eventId );
 			if( it != amxEvents->end() )
