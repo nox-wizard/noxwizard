@@ -1551,20 +1551,20 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	  P_ITEM pi = pointers::findItemBySerial(pp->Iserial);
 
 	  #ifdef debug_dragg
-	    if (ISVALIDPI(pi)) { sprintf(temp, "%04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
-		else { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: invalid item EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, EVILDRAGG[s]); ConOut(temp); }
+	    if (ISVALIDPI(pi)) { sprintf(temp, "%04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, clientInfo[s]->evilDrag); ConOut(temp); }
+		else { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: invalid item EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, clientInfo[s]->evilDrag); ConOut(temp); }
 	  #endif
 
-	  if  ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
+	  if  ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (clientInfo[s]->evilDrag) )
 	  {
-		  EVILDRAGG[s]=0;
+		  clientInfo[s]->evilDrag=false;
           #ifdef debug_dragg
 		    ConOut("Swallow only\n");
           #endif
 		  return;
 	  }	 // swallow! note: previous evildrag !
 
-	  else if ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==0) )
+	  else if ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (!clientInfo[s]->evilDrag) )
 	  {
           #ifdef debug_dragg
 		    ConOut("Bounce & Swallow\n");
@@ -1573,8 +1573,9 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  item_bounce6(ps, pi);
 		  return;
 	  }
-	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) EVILDRAGG[s]=1; // calc new evildrag value
-	  else EVILDRAGG[s]=0;
+	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) 
+		  clientInfo[s]->evilDrag=true; // calc new evildrag value
+	  else clientInfo[s]->evilDrag=false;
 	}
 
 	#ifdef debug_dragg
@@ -1582,7 +1583,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	  {
 		P_ITEM pi = pointers::findItemBySerial(pp->Iserial);
 
-	     if (ISVALIDPI(pi)) { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
+	     if (ISVALIDPI(pi)) { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, clientInfo[s]->evilDrag); ConOut(temp); }
 	  }
 	#endif
 

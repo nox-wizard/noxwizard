@@ -229,14 +229,10 @@ cGuilds		*Guilds;
 /////////////////////////////////////////////
 // maximum too cause maxclient = maximum +1
 
-char noweather[MAXCLIENT+1]; //LB
-unsigned char LSD[MAXCLIENT];
-unsigned char DRAGGED[MAXCLIENT];
-unsigned char EVILDRAGG[MAXCLIENT]; //!< we need this for UO3D clients to save dragging history , LB
-
 char firstpacket[MAXCLIENT+1];
-
 int newclient[MAXCLIENT];
+bool cryptedClient[MAXCLIENT];
+
 char unsigned buffer[MAXCLIENT][MAXBUFFER];
 char  outbuffer[MAXCLIENT][MAXBUFFER];
 int client[MAXCLIENT];
@@ -244,7 +240,6 @@ short int walksequence[MAXCLIENT];
 int acctno[MAXCLIENT];
 unsigned char clientip[MAXCLIENT][4];
 unsigned char perm[MAXCLIENT];
-unsigned char cryptclient[MAXCLIENT];
 int binlength[MAXIMUM+1];
 int boutlength[MAXIMUM+1];
 

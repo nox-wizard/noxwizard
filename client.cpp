@@ -115,17 +115,17 @@ void cNxwClientObj::setLegacySocket(NXWSOCKET s)
 
 bool cNxwClientObj::isDragging() 
 { 
-	return (DRAGGED[m_sck]>0); 
+	return clientInfo[m_sck]->dragging;
 }
 
 void cNxwClientObj::setDragging() 
 { 
-	DRAGGED[m_sck]=1; 
+	clientInfo[m_sck]->dragging=true; 
 }
 
 void cNxwClientObj::resetDragging() 
 { 
-	DRAGGED[m_sck]=0; 
+	clientInfo[m_sck]->dragging=false; 
 }
 
 bool cNxwClientObj::inGame()
@@ -411,7 +411,10 @@ cClient::cClient()
 {
 	spyTo=INVALID;
 	target=NULL;
-
+	compressOut=false;
+	noweather=true;
+	lsd=false;
+	dragging=false;
 }
 
 cClient::~cClient()

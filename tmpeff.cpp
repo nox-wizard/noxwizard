@@ -556,7 +556,7 @@ void cTempfx::start()
 			/*if (dest->getClient() == NULL) return;
 			index = dest->getClient()->toInt();
 			dest->sysmsg(TRANSLATE("Hmmm, tasty, LSD"));
-			LSD[index] = 1;
+			clientInfo[index]->lsd = true;
 			dest->hp = dest->st;
 			dest->mn = dest->in;
 			impowncreate(index, dest, 0);*/
@@ -810,7 +810,7 @@ void cTempfx::executeExpireCode()
 		case LSD:
 			/*if (dest->getClient() == NULL) return;
 			index = dest->getClient()->toInt();
-			LSD[index] = 0;
+			clientInfo[index]->lsd = false;
 			dest->sysmsg(TRANSLATE("LSD has worn off"));
 			dest->stm = 3;
 			dest->mn = 3;

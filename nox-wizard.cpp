@@ -2020,7 +2020,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 	case 10: //LB's LSD potion, 5'th november 1999
 		if (pi->getId()!=0x1841) return; // only works with an special flask
 		if (s==INVALID) return;
-		if (LSD[s]==1)
+		if( clientInfo[s]->lsd )
 		{
 			pc->sysmsg(TRANSLATE("no,no,no,cant you get enough ?"));
 			return;
@@ -2425,7 +2425,7 @@ void SetGlobalVars()
 
 	for (i=0; i>ALLSKILLS; i++) { strcpy(title[i].other, "old titles.scp error"); }
 	completetitle = new char[1024];
-	for (i=0;i<(MAXCLIENT);i++) { LSD[i]=0; DRAGGED[i]=0; EVILDRAGG[i]=0; clientDimension[i]=2; noweather[i]=1; } // LB
+	for (i=0;i<(MAXCLIENT);i++) { clientDimension[i]=2; } // LB
 	for (i=0;i<MAXLAYERS;i++) layers[i]=0;
 
 	save_counter=0;

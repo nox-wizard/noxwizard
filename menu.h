@@ -38,6 +38,7 @@ enum MENU_TYPE {
 
 #define MENU_CLOSE 0
 
+typedef void ( *menu_callback )	( P_MENU, NXWCLIENT, SI32 );
 
 /*!
 \brief an Basic Menu
@@ -63,6 +64,7 @@ class cBasicMenu {
 	public:
 
 		MENU_TYPE id; //!< gump id
+		menu_callback hard; //!< hard code callback
 
 		cBasicMenu( MENU_TYPE id );
 		~cBasicMenu();
@@ -78,8 +80,6 @@ class cBasicMenu {
 
 };
 
-
-typedef cBasicMenu* P_MENU;
 
 #define ISVALIDPM( M )	( M!=NULL ) 
 #define VALIDATEPM( M )	if( !ISVALIDPM(M) )	return;

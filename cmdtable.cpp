@@ -1960,6 +1960,25 @@ void target_additem( NXWCLIENT ps, P_TARGET t )
 
 }
 
+void menu_additem( P_MENU menu, NXWCLIENT ps, SERIAL button )
+{
+	if( button<=MENU_CLOSE )
+		return;
+
+	if( button!=1 )
+		return;
+
+	cMenu* m = (cMenu*)menu;
+
+	std::wstring* w = m->getText( 6 );
+	if( w!=NULL ) {
+		string define;
+		wstring2string( *w, define );
+	}
+
+
+}
+
 // (d) Adds the specified item from ITEMS.XSS
 void command_additem( NXWCLIENT ps )
 {
@@ -1991,6 +2010,20 @@ void command_additem( NXWCLIENT ps )
 		targ->code_callback=target_additem;
 		targ->send( getClientFromSocket(s) );
 		sysmessage( s, "Select location for item. [Number: %i]", item);
+	}
+	else {
+
+		cMenu* menu = (cMenu*)Menus.insertMenu( new cMenu( MENUTYPE_CUSTOM, 50, 50, true, true, true ) );
+		VALIDATEPM( menu );
+
+		menu->hard = menu_additem;
+
+		menu->addText( 10, 10, wstring( L"Search for" ) );
+		menu->addInputField( 30, 30, 80, 80, 6, wstring( L"write here name" ) );
+		menu->addButton( 5, 5, 0x0850, 0x0851, 1, true );
+
+		menu->show( pc );
+
 	}
 }
 

@@ -114,18 +114,20 @@ extern SERIAL currchar[MAXCLIENT];
 
 class cClient {
 
-public:
-
-	SERIAL spyTo;
-
 private:
 	P_TARGET target;
 public:
+
 	void resetTarget();
 	P_TARGET newTarget( P_TARGET newTarget );
 	P_TARGET getTarget();
 
-public:
+	SERIAL spyTo; //!< used for spy command
+	bool compressOut; //!< compress output with huffman coding
+	bool noweather; //!< not weather
+	bool lsd; //!< lsd stuff
+	bool dragging; //!< true if is dragging
+	bool evilDrag; //!< evil dragging, we need this for UO3D clients to save dragging history
 
 	cClient();
 	~cClient();

@@ -92,6 +92,42 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Group "encryption"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\encryption\aes.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\ClientCrypt.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\clientCrypt.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\common.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\crypt.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\crypt.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\platform.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\encryption\table.h
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=.\accounts.cpp

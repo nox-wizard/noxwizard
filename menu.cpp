@@ -167,6 +167,7 @@ cBasicMenu::cBasicMenu( MENU_TYPE id )
 	serial=INVALID;
 	this->id=id;
 	callback=NULL;
+	hard=NULL;
 }
 
 cBasicMenu::~cBasicMenu()
@@ -474,7 +475,10 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 		}
 	}
 	
-	callback->Call( ps->toInt(), serial, buttonReturnCode );
+	if( callback!=NULL )
+		callback->Call( ps->toInt(), serial, buttonReturnCode );
+	else
+		hard( this, ps, buttonReturnCode );
 }
 
 

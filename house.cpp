@@ -1209,7 +1209,7 @@ void target_houseLockdown( NXWCLIENT ps, P_TARGET t )
                 return;
             }
             pi->magic = 4;  // LOCKED DOWN!
-            DRAGGED[s]=0;
+            clientInfo[s]->dragging=false;
             pi->setOwnerSerial32Only(pc->getSerial32());
             pi->Refresh();
             return;
@@ -1261,7 +1261,7 @@ void target_houseSecureDown( NXWCLIENT ps, P_TARGET t )
         {
             pi->magic = 4;  // LOCKED DOWN!
             pi->secureIt = 1;
-            DRAGGED[s]=0;
+            clientInfo[s]->dragging=false;
             pi->setOwnerSerial32Only(pc->getSerial32());
             pi->Refresh();
             return;

@@ -254,7 +254,7 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 	int status ;
 	if ( boutlength[ socket ] > 0 )
 	{
-		if ( cryptclient[ socket ] )
+		if ( clientInfo[ socket ]->compressOut )
 		{
 			DoStreamCode( socket );
 		}
@@ -414,7 +414,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		client[j]=client[jj];
 		currchar[j]=currchar[jj];
 		newclient[j]=newclient[jj];
-		cryptclient[j]=cryptclient[jj];
+		cryptedClient[j]=cryptedClient[jj];
 		clientip[j][0]=clientip[jj][0];
 		clientip[j][1]=clientip[jj][1];
 		clientip[j][2]=clientip[jj][2];
@@ -425,10 +425,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		boutlength[j]=boutlength[jj];
 		clientInfo[j]=clientInfo[jj];
 		walksequence[j]=walksequence[jj];
-		DRAGGED[j]=DRAGGED[jj];
-		EVILDRAGG[j]=EVILDRAGG[jj];
-		LSD[j]=LSD[jj];
-		noweather[j]=noweather[jj];
 		firstpacket[j]=firstpacket[jj];
 		clientDimension[j]=clientDimension[jj];
 
@@ -1300,18 +1296,13 @@ void cNetwork::CheckConn() // Check for connection requests
 
 				currchar[now] = INVALID;
 				newclient[now]=1;
+				cryptedClient[now]=true;
 				acctno[now]=-1;
 				perm[now]=0;
 				binlength[now]=0;
 				boutlength[now]=0;
-				cryptclient[now]=0;
 				clientInfo[now]= new cClient();
 				walksequence[now]=-1;
-
-				noweather[now]=1;
-				LSD[now]=0;
-				DRAGGED[now]=0;
-				EVILDRAGG[now]=0;
 
 				clientDimension[now]=2;
 
@@ -1478,6 +1469,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 	std::string cpps;
 	std::vector<std::string>::const_iterator viter;
 
+	newclient[s]=0; 
 	if (newclient[s])
 	{
 		if((count=recv(client[s], (char*)buffer[s], 4, MSG_NOSIGNAL))==SOCKET_ERROR)
@@ -1496,7 +1488,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			*(unsigned long*)&clientip[s]=0;
 		}
 
-		newclient[s]=0;
+		newclient[s]=0; 
 		firstpacket[s]=1;
 
 	}
@@ -1595,7 +1587,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_LOGINREQUEST:
 					firstpacket[s]=0;
-					cryptclient[s]=1;
+					clientInfo[s]->compressOut=true;
 					CharList(s);
 					break;
 

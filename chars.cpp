@@ -4489,7 +4489,8 @@ void cChar::pc_heartbeat()
 		}
 	}
 
-	if ( LSD[ socket ] ) do_lsd(); //LB's LSD potion-stuff
+	if ( clientInfo[socket]->lsd ) 
+		do_lsd(); //LB's LSD potion-stuff
 
 	if ( TIMEOUT( mutetime ) && squelched == 2 )
 	{

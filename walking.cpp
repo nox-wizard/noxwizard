@@ -426,12 +426,12 @@ void WalkingHandleRainSnow(P_CHAR pc)
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB
 
-		int kk=noweather[s];
+		bool old_weather=clientInfo[s]->noweather;
 		if (j || i || x!=-127 )
-			noweather[s]=1;
+			clientInfo[s]->noweather=true;
 		else
-			noweather[s]=0; // no rain & snow in static buildings+dungeons;
-		if (kk-noweather[s]!=0)
+			clientInfo[s]->noweather=false; // no rain & snow in static buildings+dungeons;
+		if( old_weather != clientInfo[s]->noweather )
 			weather(s, 0); // iff outside-inside changes resend weather ...
 	// needs to be de-rem'd if weather is available again
   }
