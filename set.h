@@ -77,6 +77,8 @@ public:
 	void fillCharsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillPartyFriend( P_CHAR pc, UI32 nDistance = VISRANGE, bool bExcludeThis = false );
 	void fillNpcsNearXY( UI16 x, UI16 y, int nDistance = VISRANGE );
+	void fillNpcsNear( P_CHAR pc, int nDistance = VISRANGE );
+	void fillNpcsNear( P_ITEM pi, int nDistance = VISRANGE );
 
 };
 

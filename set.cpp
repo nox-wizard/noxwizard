@@ -627,6 +627,42 @@ void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 }
 
 /*!
+\brief Fills a set with a list of npcs near char
+\author Endymion
+\param pc the char
+\param nDistance the distance requested
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillNpcsNear( P_CHAR pc, int nDistance )
+{
+	VALIDATEPC(pc)
+	fillNpcsNearXY(pc->getPosition().x, pc->getPosition().y, nDistance );
+}
+
+/*!
+\brief Fills a set with a list of npcs near item
+\author Endymion
+\param pi the item
+\param nDistance the distance requested
+\warning this function ADD new char to current list
+\note location is true, of the in world container
+*/
+void NxwCharWrapper::fillNpcsNear( P_ITEM pi, int nDistance )
+{
+	VALIDATEPI(pi)
+
+	P_ITEM out=pi->getOutMostCont();
+	if( out->isInWorld() ) {
+		fillNpcsNearXY( out->getPosition().x, out->getPosition().y, nDistance );
+	}
+	else {
+		fillNpcsNear( pointers::findCharBySerial( out->getContSerial() ), nDistance );
+	}
+
+}
+
+
+/*!
 \brief Fills a set with a list of char in same party of given char
 \author Endymion
 \param pc the player
