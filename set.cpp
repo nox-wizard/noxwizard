@@ -832,7 +832,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 		P_ITEM pi=pointers::findItemBySerial( *iter );
 		if( ISVALIDPI( pi ) && pi->isInWorld() )
 		{
-			if ( type == INVALID || pi->type==type )
+			if ( type == INVALID || pi->type==(UI32)type )
 				if ( id == INVALID || pi->id() == id )
 					insertItem(pi);
 		}
