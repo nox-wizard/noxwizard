@@ -18,17 +18,6 @@
 \author Luxor
 \brief Returns distance between two points.
 */
-R64 dist( Location a, Location b, LOGICAL countZ )
-{
-        SI32 xDiff = a.x - b.x;
-        SI32 yDiff = a.y - b.y;
-	R64 distance = hypot( abs( xDiff ), abs( yDiff ) );
-	if ( !countZ || a.z == b.z )
-		return distance;
-
-	R64 distZ = abs( a.z - b.z );
-	return hypot( distance, distZ );
-}
 
 LOGICAL inRange(Location a, Location b, UI32 range)
 {

@@ -741,7 +741,7 @@ void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 							if( !pc->npc )
 								continue;
 							if(  !pc->isStabled() && !pc->mounted ) {
-								int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
+								int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y, 0);
 								if (iDist <= nDistance)
 									this->insertSerial(pc->getSerial32());
 							}
