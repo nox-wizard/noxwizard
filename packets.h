@@ -1726,4 +1726,51 @@ public:
 
 //@}
 
+//@{
+/*!
+\name client options packets
+\brief client options related packets
+*/
+
+
+
+#define PKG_FEATURES 0xB9;
+
+/*!
+\brief Features
+\author Endymion
+\since 0.83
+\note 0xB9
+*/
+class cPacketFeatures : public cServerPacket {
+
+public:
+	eUI16 feature;
+
+	cPacketFeatures();
+};
+
+#define FEATURE_T2A 0x0001 //!< enable chat button
+#define FEATURE_LBR 0x0002 //!< plays MP3 instead of midis, 2D LBR client shows new LBR monsters
+#define FEATURE_LBR_WITHOUT_CHAT 0x0004 //!< lbr without chat
+
+/*if (MSB not set)
+Bit# 1 T2A upgrade, enables chatbutton, 
+Bit# 2 enables LBR update.  (of course LBR installation is required)
+(plays MP3 instead of midis, 2D LBR client shows new LBR monsters,…)
+
+if (MSB set)
+Bit# 3 T2A upgrade, enables chatbutton, 
+Bit# 4 enables LBR update.  
+Bit#5  enables AOS update (Aos monsters/map (AOS installation required for that) , 
+AOS skills/necro/paladin/fight book stuff  – works for ALL clients 4.0 and above)
+
+Note1: this message is send immediately after login.
+Note2: on OSI  servers this controls features OSI enables/disables via “upgrade codes.”
+Note3: a 3 doesn’t seem to “hurt” older (NON LBR) clients.
+*/
+
+
+//@}
+
 #endif

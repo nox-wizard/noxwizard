@@ -371,3 +371,5 @@ SEND( CharProfile ) {
 	Xsend( ps->toInt(), this->profile->s.begin(), this->profile->s.end() );
 }
 
+CREATE( Features, PKG_FEATURES, 0x03 )
+
