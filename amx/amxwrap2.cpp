@@ -74,7 +74,9 @@ static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
 static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
 static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
 static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 );
-
+static int 	setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value );
+static LOGICAL 	setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value );
+static char	setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value );
 
 static bool  	getItemBoolProperty(P_ITEM pi, int property, int prop2);
 static int   	getItemIntProperty(P_ITEM pi, int property, int prop2);
@@ -212,6 +214,7 @@ NATIVE2(_getCharProperty)
   	return INVALID;
 }
 
+
 NATIVE2(_setCharProperty)
 {
 	// params[1] = chr
@@ -220,559 +223,26 @@ NATIVE2(_setCharProperty)
 	// params[4] = value to set property to
 	// params[5] = another sub property
 
+	int tp = getPropertyType(params[2]);
+	cell *cptr;
+
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	if (!ISVALIDPC( pc ))
 		return INVALID;
 
-	int tp = getPropertyType(params[2]);
-
-	cell *cptr;
 	amx_GetAddr(amx,params[4],&cptr);
 
 	if (tp==T_INT) {
 		int p = *cptr;
-
-		switch( params[2] )
-		{
-			case NXW_CP_I_ACCOUNT :		  				//dec value: 200;
-				pc->account = p;
-				break;
-			case NXW_CP_I_ADVOBJ :			  			//dec value: 201;
-				pc->advobj = p;
-				break;
-			case NXW_CP_I_ATT :		  				//dec value: 202;
-				pc->att = p;
-				break;
-			case NXW_CP_I_ATTACKER :		  			//dec value: 203;
-				pc->attackerserial = p;
-				break;
-			case NXW_CP_I_BEARDCOLOR :					//dec value: 204;
-				// obsolete
-				break;
-			case NXW_CP_I_BEARDSERIAL :			  		//dec value: 205;
-				pc->beardserial = p;
-				break;
-			case NXW_CP_I_BEARDSTYLE :					//dec value: 206;
-				//obsolete
-				break;
-			case NXW_CP_I_CALLNUM :			  			//dec value: 207;
-				pc->callnum = p;
-				break;
-			case NXW_CP_I_CARVE :		  				//dec value: 208;
-				pc->carve = p;
-				break;
-			case NXW_CP_I_CASTING :			  			//dec value: 209;
-				pc->casting = p;
-				break;
-			case NXW_CP_I_CLIENTIDLETIME :				  	//dec value: 210;
-				pc->clientidletime = p;
-				break;
-			case NXW_CP_I_COMBATHITMESSAGE :			  	//dec value: 211;
-				pc->combathitmessage = p;
-				break;
-			case NXW_CP_I_CREATIONDAY :			  		//dec value: 212;
-				pc->SetCreationDay(p);
-				break;
-			case NXW_CP_I_CRIMINALFLAG :			  		//dec value: 213;
-				pc->crimflag = p;
-				break;
-			case NXW_CP_I_DEATHS :			  			//dec value: 214;
-				pc->deaths = p;
-				break;
-			case NXW_CP_I_DEF :		  				//dec value: 215;
-				pc->def = p;
-				break;
-			case NXW_CP_I_DEXTERITY:					//dec value: 216
-				switch( params[3] )
-				{
-					case NXW_CP2_DEC :
-						pc->dx2 = p;
-					case NXW_CP2_REAL :
-						pc->dx3 = p;
-					case NXW_CP2_ACT :
-						pc->stm = p;
-					case NXW_CP2_EFF:
-						pc->dx = p;
-				}
-				break;
-			case NXW_CP_I_DISABLED :		  			//dec value: 217;
-				pc->disabled = p;
-				break;
-			case NXW_CP_I_FAME :		  				//dec value: 218;
-				pc->SetFame( p );
-				break;
-			case NXW_CP_I_FLEEAT :			  			//dec value: 219;
-				pc->fleeat = p;
-				break;
-			case NXW_CP_I_FOODPOSITION:					//dec value: 220;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->foodloc.x = p;
-						break;
-					case NXW_CP2_Y :
-						pc->foodloc.y = p;
-						break;
-					case NXW_CP2_Z :
-						pc->foodloc.z = p;
-				}
-				break;
-			case NXW_CP_I_FPOS1_NPCWANDER:					//dec value: 221;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->fx1 = p;
-						break;
-					case NXW_CP2_Y :
-						pc->fy1 = p;
-						break;
-					case NXW_CP2_Z :
-						pc->fz1 = p;
-						break;
-				}
-				break;
-			case NXW_CP_I_FPOS2_NPCWANDER:					//dec value 222;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->fx2 = p;
-						break;
-					case NXW_CP2_Y :
-						pc->fy2 = p;
-					case NXW_CP2_Z :
-						break;
-				}
-				break;
-			case NXW_CP_I_FTARG :			  				//dec value: 223;
-				pc->ftargserial = p;
-				break;
-			case NXW_CP_I_GMMOVEEFF :			  			//dec value: 224;
-				pc->gmMoveEff = p;
-				break;
-			case NXW_CP_I_GUILDFEALTY :				  		//dec value: 225;
-				pc->SetGuildFealty( p );
-				break;
-			case NXW_CP_I_GUILDNUMBER :				  		//dec value: 226;
-				pc->SetGuildNumber( p );
-				break;
-			case NXW_CP_I_HAIRCOLOR :						//dec value: 228;
-				//obsolete
-				break;
-			case NXW_CP_I_HAIRSERIAL :				  		//dec value: 229;
-				pc->hairserial = p;
-				break;
-			case NXW_CP_I_HAIRSTYLE :						//dec value: 230;
-				//obsolete
-				break;
-			case NXW_CP_I_HIDAMAGE :			  			//dec value: 231;
-				pc->hidamage = p;
-				break;
-			case NXW_CP_I_HOLDGOLD :			  			//dec value: 232;
-				pc->holdg = p;
-				break;
-			case NXW_CP_I_HOMELOCPOS :						//dec value: 233
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->homeloc.x = p;
-						break;
-					case NXW_CP2_Y :
-						pc->homeloc.y = p;
-						break;
-					case NXW_CP2_Z :
-						pc->homeloc.z = p;
-						break;
-				}
-				break;
-			case NXW_CP_I_HUNGER :				  			//dec value: 234;
-				pc->hunger = p;
-				break;
-			case NXW_CP_I_HUNGERTIME :				  		//dec value: 235;
-				pc->hungertime = p;
-				break;
-			case NXW_CP_I_INTELLIGENCE:						//dec value: 236;
-				switch( params[3] )
-				{
-					case NXW_CP2_DEC  :
-						pc->in2 = p;
-						break;
-					case NXW_CP2_REAL :
-						pc->in3 = p;
-						break;
-					case NXW_CP2_ACT  :
-						pc->mn = p;
-						break;
-					case NXW_CP2_EFF  :
-						pc->in = p;
-						break;
-				}
-				break;
-			case NXW_CP_I_KARMA : 				 			//dec value: 237;
-				pc->SetKarma( p );
-				break;
-			case NXW_CP_I_KEYNUMBER :			  			//dec value: 238;
-				pc->keyserial = p;
-				break;
-			case NXW_CP_I_KILLS :			  				//dec value: 239;
-				pc->kills = p;
-				break;
-			case NXW_CP_I_LODAMAGE :			  			//dec value: 240;
-				pc->lodamage = p;
-				break;
-			case NXW_CP_I_LOGOUT :				  			//dec value: 241;
-				pc->logout = p;
-				break;
-			case NXW_CP_I_MAKING :				  			//dec value: 242;
-				pc->making = p;
-				break;
-			case NXW_CP_I_MEDITATING :			  			//dec value: 243;
-				pc->med = p;
-				break;
-			case NXW_CP_I_MENUPRIV :			  			//dec value: 244;
-				pc->menupriv = p;
-				break;
-			case NXW_CP_I_MULTISERIAL :						//dec value: 245;
-				pc->setMultiSerial( p );
-				break;
-			case NXW_CP_I_MURDERERSER :				  		//dec value: 246;
-				pc->murdererSer = p;
-				break;
-			case NXW_CP_I_MURDERRATE :				  		//dec value: 247;
-				pc->murderrate = p;
-				break;
-			case NXW_CP_I_MUTETIME :			  			//dec value: 248;
-				pc->mutetime = p;
-				break;
-			case NXW_CP_I_NAMEDEED :			  			//dec value: 249;
-				pc->namedeedserial = p;
-				break;
-			case NXW_CP_I_NEXTACT :				  			//dec value: 250;
-				pc->nextact = p;
-				break;
-			case NXW_CP_I_NPCAI :				  			//dec value: 251;
-				pc->npcaitype = p;
-				break;
-			case NXW_CP_I_NPCMOVETIME :				  		//dec value: 252;
-				pc->npcmovetime = p;
-				break;
-			case NXW_CP_I_OBJECTDELAY :				  		//dec value: 253;
-				pc->objectdelay = p;
-				break;
-			case NXW_CP_I_OLDPOS:						//dec value: 254;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->setOldPosition("x",p);
-						break;
-					case NXW_CP2_Y :
-						pc->setOldPosition("y",p);
-						break;
-					case NXW_CP2_Z :
-						pc->setOldPosition("z",p);
-						break;
-				}
-				break;
-			case NXW_CP_I_OWNSERIAL :				  		//dec value: 255;
-				pc->setOwnerSerial32( p );
-				break;
-			case NXW_CP_I_PACKITEM :			  			//dec value: 256;
-				pc->packitemserial = p;
-				break;
-			case NXW_CP_I_POISON :				  			//dec value: 257;
-				pc->poison = p;
-				break;
-			case NXW_CP_I_POISONED :			  			//dec value: 258;
-				pc->poisoned = (PoisonType)p;
-				break;
-			case NXW_CP_I_POISONTIME :				  		//dec value: 259;
-				pc->poisontime = p;
-				break;
-			case NXW_CP_I_POISONTXT :			  			//dec value: 260;
-				pc->poisontxt = p;
-				break;
-			case NXW_CP_I_POISONWEAROFFTIME :				  	//dec value: 261;
-				pc->poisonwearofftime = p;
-				break;
-			case NXW_CP_I_POSITION:						//dec value: 262;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->setPosition("x",p);
-						break;
-					case NXW_CP2_Y :
-						pc->setPosition("y",p);
-						break;
-					case NXW_CP2_Z :
-						pc->setPosition("z",p);
-				} break;
-			case NXW_CP_I_POSTTYPE :			  			//dec value: 263;
-				pc->postType = (MsgBoards::PostType)p;
-				break;
-			case NXW_CP_I_PREVPOS:						//dec value: 264
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->prevX = p;
-					case NXW_CP2_Y :
-						pc->prevY = p;
-					case NXW_CP2_Z :
-						pc->prevZ = p;
-				} break;
-			case NXW_CP_I_PRIV3 :				  			//dec value: 265;
-				pc->priv3[params[3]] = p;
-				break;
-			case NXW_CP_I_QUESTBOUNTYPOSTSERIAL :					  //dec value: 266;
-				pc->questBountyPostSerial = p;
-				break;
-			case NXW_CP_I_QUESTBOUNTYREWARD :				  	//dec value: 267;
-				pc->questBountyReward = p;
-				break;
-			case NXW_CP_I_QUESTDESTREGION :					  	//dec value: 268;
-				pc->questDestRegion = p;
-				break;
-			case NXW_CP_I_QUESTORIGREGION :					  	//dec value: 269;
-				pc->questOrigRegion = p;
-				break;
-			case NXW_CP_I_REATTACKAT :				  		//dec value: 270;
-				pc->reattackat = p;
-				break;
-			case NXW_CP_I_REGENRATE :				  		//dec value: 271;
-				pc->setRegenRate( static_cast<StatType>(params[3]), p, static_cast<VarType>(params[5]) );
-				break;
-			case NXW_CP_I_SCRIPTID :			  				//dec value: 272;
-				pc->setScriptID( p );
-				break;
-			case NXW_CP_I_GUILD:							//dec value: 273
-				//todo
-				break;
-			case NXW_CP_I_ROBE :			  				//dec value: 274;
-				pc->robe = p;
-				break;
-			case NXW_CP_I_RUNNING :				  			//dec value: 275;
-				pc->running = p;
-				break;
-			case NXW_CP_I_SERIAL :				  			//dec value: 276;
-				pc->setSerial32(p);
-				break;
-			case NXW_CP_I_SKILLDELAY :				  		//dec value: 277;
-				pc->skilldelay = p;
-				break;
-			case NXW_CP_I_SMELTITEM :			  			//dec value: 278;
-				pc->smeltserial = p;
-				break;
-			case NXW_CP_I_SMOKEDISPLAYTIME :			  		//dec value: 279;
-				pc->smokedisplaytimer = p;
-				break;
-			case NXW_CP_I_SMOKETIMER :				  		//dec value: 280;
-				pc->smoketimer = p;
-				break;
-			case NXW_CP_I_SPADELAY :			  			//dec value: 281;
-				pc->spadelay = p;
-				break;
-			case NXW_CP_I_SPATIMER :			  			//dec value: 282;
-				pc->spatimer = p;
-				break;
-			case NXW_CP_I_SPATTACK :			  			//dec value: 283;
-				pc->spattack = p;
-				break;
-			case NXW_CP_I_SPAWNREGION :				  		//dec value: 284;
-				pc->spawnregion = p;
-				break;
-			case NXW_CP_I_SPAWNSERIAL :				  		//dec value: 285;
-				pc->spawnserial = p;
-				break;
-			case NXW_CP_I_SPELL :			  				//dec value: 286;
-				pc->spell = static_cast<enum magic::SpellId>(p);
-				break;
-			case NXW_CP_I_SPELLACTION :				  		//dec value: 287;
-				pc->spellaction = p;
-				break;
-			case NXW_CP_I_SPELLTIME :			  			//dec value: 288;
-				pc->spelltime = p;
-				break;
-			case NXW_CP_I_SPLIT :			  				//dec value: 290;
-				pc->split = p;
-				break;
-			case NXW_CP_I_SPLITCHNC :			  			//dec value: 291;
-				pc->splitchnc = p;
-				break;
-			case NXW_CP_I_SQUELCHED :			  			//dec value: 292;
-				pc->squelched = p;
-				break;
-			case NXW_CP_I_STEALTH :				  			//dec value: 294;
-				pc->stealth = p;
-				break;
-			case NXW_CP_I_STRENGHT:							//dec value: 295;
-				switch( params[3] )
-				{
-					case NXW_CP2_DEC :
-						pc->st2 = p;
-						break;
-					case NXW_CP2_REAL:
-						pc->st3 = p;
-						break;
-					case NXW_CP2_ACT :
-						pc->hp = p;
-						break;
-					case NXW_CP2_EFF :
-						pc->setStrength(p);
-				}
-				break;
-			case NXW_CP_I_SUMMONTIMER :				  		//dec value: 296;
-				pc->summontimer = p;
-				break;
-			case NXW_CP_I_SWINGTARG :			  			//dec value: 297;
-				pc->swingtargserial = p;
-				break;
-			case NXW_CP_I_TAILITEM :			  			//dec value: 298;
-				pc->tailserial = p;
-				break;
-			case NXW_CP_I_TAMING :				  			//dec value: 299;
-				pc->taming = p;
-				break;
-			case NXW_CP_I_TARG :			  				//dec value: 300;
-				pc->targserial = p;
-				break;
-			case NXW_CP_I_TARGTRIG :			  			//dec value: 301;
-				pc->targtrig = p;
-				break;
-			case NXW_CP_I_TEMPFLAGTIME :				  		//dec value: 302;
-				pc->tempflagtime = p;
-				break;
-			case NXW_CP_I_TIME_UNUSED :				  		//dec value: 303;
-				pc->time_unused = p;
-				break;
-			case NXW_CP_I_TIMEOUT :				 			//dec value: 304;
-				pc->timeout = p;
-				break;
-			case NXW_CP_I_TIMEUSED_LAST :				  		//dec value: 305;
-				pc->timeused_last = p;
-				break;
-			case NXW_CP_I_TRACKINGDISPLAYTIMER :					  //dec value: 306;
-				pc->trackingdisplaytimer = p;
-				break;
-			case NXW_CP_I_TRACKINGTARGET :					  	//dec value: 307;
-				pc->trackingtarget_serial = p;
-				break;
-			case NXW_CP_I_TRACKINGTIMER :				  		//dec value: 308;
-				pc->trackingtimer = p;
-				break;
-			case NXW_CP_I_TRAINER :				  			//dec value: 309;
-				break;
-			case NXW_CP_I_TRIGGER :				  			//dec value: 311;
-				pc->trigger = p;
-				break;
-			case NXW_CP_I_WEIGHT :				  			//dec value: 312;
-				pc->weight = p;
-				break;
-			case NXW_CP_I_WORKLOCPOS:					//dec value: 313;
-				switch( params[3] )
-				{
-					case NXW_CP2_X :
-						pc->workloc.x = p;
-						break;
-					case NXW_CP2_Y :
-						pc->workloc.y = p;
-						break;
-					case NXW_CP2_Z :
-						pc->workloc.z = p;
-						break;
-				}
-				break;
-			case NXW_CP_I_AMXFLAGS :					//dec value: 314;
-				//
-				// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
-				//
-				//pc->amxflags[params[3]] = p;
-				if ( params[3] >= 0 && params[3] <= 15 )
-					amxVS.updateVariable( pc->getSerial32(), params[3], p );
-				break;
-			case NXW_CP_I_RACE :		 				//dec value: 315
-				pc->race = p;
-				break;
-			case NXW_CP_I_CX :			 			//dec value: 316
-				pc->setPosition("x",p);
-				break;
-			case NXW_CP_I_CY :			 			//dec value: 317
-				pc->setPosition("y",p);
-				break;
-			case NXW_CP_I_CZ :			 			//dec value: 318
-				pc->setPosition("z",p);
-				break;
-			case NXW_CP_I_LASTMOVETIME :					//dec value: 319
-				pc->LastMoveTime = p;
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-
-		if (params[2]==NXW_CP_I_DEXTERITY) pc->updateStats(2);
-		else if (params[2]==NXW_CP_I_INTELLIGENCE) pc->updateStats(1);
-		else if (params[2]==NXW_CP_I_STRENGHT) pc->updateStats(0);
-
-		return p;
+		return setCharIntProperty( pc, params[2], params[3], params[5], p );
 	}
+
 	if (tp==T_BOOL)
 	{
-		bool p = *cptr ? true : false;
-
-		switch( params[2] )
-		{
-			case NXW_CP_B_CANTRAIN :						//dec value: 0;
-				if ( p )
-					pc->setCanTrain();
-				else
-					pc->resetCanTrain();
-				break;
-			case NXW_CP_B_DEAD :							//dec value: 1;
-				break;
-			case NXW_CP_B_FREE :							//dec value: 2;
-				break;
-			case NXW_CP_B_GUARDED :							//dec value: 3;
-				pc->guarded = p;
-				break;
-			case NXW_CP_B_GUILDTRAITOR :						//dec value: 4;
-				if (p)
-					pc->SetGuildTraitor();
-				else
-					pc->ResetGuildTraitor();
-				break;
-			case NXW_CP_B_INCOGNITO :						//dec value: 6;
-				pc->guarded = p;
-				break;
-			case NXW_CP_B_POLYMORPH :						//dec value: 8;
-				pc->polymorph = p;						//Candidate for removal
-				break;
-			case NXW_CP_B_TAMED :							//dec value: 9;
-				pc->tamed = p;
-				break;
-			case NXW_CP_B_UNICODE :							//dec value: 10;
-				pc->unicode = p;
-				break;
-			case NXW_CP_C_SHOPKEEPER :						// dec value 11;
-				pc->shopkeeper = p;
-				break;
-			case NXW_CP_B_ATTACKFIRST :						//dec value: 12;
-				if (p)
-					pc->SetAttackFirst();
-				else
-					pc->ResetAttackFirst();
-				break;
-			case NXW_CP_B_ISBEINGTRAINED :						//dec value: 13;
-				break;
-			case NXW_CP_B_GUILDTOGGLE :						//dec value: 14;
-				if ( p )
-					pc->SetGuildTitleToggle();
-				else
-					pc->ResetGuildTitleToggle();
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
+		LOGICAL p = *cptr ? true : false;
+		return setCharBoolProperty( pc, params[2], params[3], params[5], p );
 	}
+
 	if (tp==T_SHORT) {
 		short p = static_cast<short>(*cptr & 0xFFFF);
 		switch( params[2] )
@@ -792,142 +262,13 @@ NATIVE2(_setCharProperty)
 		}
 		return p;
 	}
+
 	if (tp==T_CHAR) {
 		char p = static_cast<char>(*cptr & 0xFF);
-
-		switch( params[2] )
-		{
-			case NXW_CP_C_BLOCKED :							//dec value: 101;
-				pc->blocked = p;
-				break;
-			case NXW_CP_C_COMMANDLEVEL :				  		//dec value: 103;
-				pc->commandLevel = p;
-				break;
-			case NXW_CP_C_DIR :	  						//dec value: 104;
-				pc->dir = p;
-				break;
-			case NXW_CP_C_DIR2 :			  				//dec value: 105;
-				pc->dir2 = p;
-				break;
-			case NXW_CP_C_FIXEDLIGHT :				  		//dec value: 106;
-				pc->fixedlight = p;
-				break;
-			case NXW_CP_C_FLAG :			  				//dec value: 107;
-				pc->flag = p;
-				break;
-			case NXW_CP_C_FLY_STEPS :			  			//dec value: 108;
-				pc->fly_steps = p;
-				break;
-			case NXW_CP_C_GMRESTRICT :				  		//dec value: 109;
-				pc->gmrestrict = p;
-				break;
-			case NXW_CP_C_HIDDEN :				  			//dec value: 110;
-				pc->hidden = p;
-				break;
-			case NXW_CP_C_ID :							//dec value: 111;
-				{
-				  UI16 id = pc->GetBodyType();
-				if ( params[3] > 1 )
-					pc->SetBodyType((id & 0x00FF) | ( p << 8));
-				else
-					pc->SetBodyType((id & 0xFF00) | ( p %256));
-				}
-				break;
-			case NXW_CP_C_LOCKSKILL : 						//dec value: 112;
-				pc->lockSkill[params[3]] = p;
-				break;
-			case NXW_CP_C_MULTISERIAL2 :						//dec value: 113;
-				if ( params[3] >=1 && params[3] <= 4 )
-					pc->setMultiSerialByte( static_cast<UI32>(params[3]), p );
-				break;
-			case NXW_CP_C_NPC :							//dec value: 114;
-				pc->npc = p;
-				break;
-			case NXW_CP_C_NPCTYPE : 		  				//dec value: 115;
-				pc->npc_type = p;
-				break;
-			case NXW_CP_C_NPCWANDER :						//dec value: 116;
-				pc->npcWander = p;
-				break;
-			case NXW_CP_C_OLDNPCWANDER : 			  			//dec value: 117;
-				pc->oldnpcWander = p;
-				break;
-			//case NXW_CP_C_ORGSKIN : (prop2>1) ? &chars[i].orgskin1 : &chars[i].orgskin2 )  //dec value: 118;
-			case NXW_CP_C_OWNSERIAL2 :						//dec value: 119;
-				if ( params[3] >=1 && params[3] <= 4 )
-					pc->setOwnerSerialByte( static_cast<UI32>(params[3]), p );
-				break;
-			case NXW_CP_C_PRIV2 :				  			//dec value: 121;
-				pc->SetPriv2(p);
-				break;
-			case NXW_CP_C_REACTIVEARMORED : 		  			//dec value: 122;
-				pc->ra = p;
-				break;
-			case NXW_CP_C_REGION : 				  			//dec value: 123;
-				pc->region = p;							//candidate for removal
-				break;
-			case NXW_CP_C_SERIAL2 :
-				if ( params[3] >=1 && params[3] <= 4 )
-					pc->setSerialByte( static_cast<UI32>(params[3]), p );
-				break;
-			case NXW_CP_C_SHOP :				 			//dec value: 125; Sparhawk: DEPRECIATED, use case NXW_CP_B_SHOPKEEPER : pc->shopkeeper )
-				pc->shopkeeper = p;
-				break;
-			case NXW_CP_C_SKIN : 							//dec value: 126;
-				{
-				  UI16 color = pc->getSkinColor();
-				if ( params[3] > 1 )
-					pc->setSkinColor((color & 0x00FF) | (p << 8));
-				else
-					pc->setSkinColor((color & 0xFF00) | (p %256));
-				}
-				break;
-			case NXW_CP_C_SPEECH : 				  			//dec value: 127;
-				pc->speech = p;
-				break;
-			case NXW_CP_C_WAR :			  				//dec value: 128;
-				pc->war = p;
-				break;
-			case NXW_CP_C_XID :							//dec value: 129;
-				{
-				  UI16 oldbody = pc->GetOldBodyType();
-				if ( params[3] > 1 )
-					pc->SetOldBodyType((oldbody & 0x00FF) | ( p << 8));
-				else
-					pc->SetOldBodyType((oldbody & 0xFF00) | ( p %256));
-				}
-				break;
-			case NXW_CP_C_XSKIN : 							//dec value: 130;
-				{
-				  UI16 oldcolor = pc->getOldSkinColor();
-				if ( params[3] > 1 )
-					pc->setOldSkinColor((oldcolor & 0x00FF) | (p << 8));
-				else
-					pc->setOldSkinColor((oldcolor & 0xFF00) | (p %256));
-				}
-				break;
-			case NXW_CP_C_NXWFLAGS :						//dec value: 131;
-				pc->nxwflags[params[3]] = p;
-				break;
-			case NXW_CP_I_RESISTS : 						//dec value: 132;
-				pc->resists[params[3]] = p;
-				break;
-			case NXW_CP_C_TRAININGPLAYERIN : 					//dec value: 133;
-				pc->trainingplayerin = p;
-				break;
-			case NXW_CP_C_PRIV : 				  			//dec value: 134;
-				pc->SetPriv(p);
-				break;
-			case NXW_CP_C_DAMAGETYPE :						//dec value: 319;
-				pc->damagetype = static_cast<DamageType>(p);
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
+		return setCharCharProperty( pc, params[2], params[3], params[5], p );
 	}
-	if (tp==T_STRING) {	
+
+	if (tp==T_STRING) {
 		//we're here so we should get a ConOut format string, params[4] is the str format
 
 		cell *cstr;
@@ -971,19 +312,27 @@ NATIVE2(_setCharProperty)
 	  	g_nAmxPrintPtr=0;
 		return 0;
 	}
-	if (tp==T_UNICODE) {	
+
+	if (tp==T_UNICODE) {
 		cell *cstr;
 		amx_GetAddr(amx,params[4],&cstr);
 
 		switch( params[2] )
 		{
-			case NXW_CP_UNI_SPEECH_CURRENT :		
-				pc->setSpeechCurrent( new wstring() );
+			case NXW_CP_UNI_SPEECH_CURRENT :
+				{
+				wstring* wstr = new wstring();
+				pc->deleteSpeechCurrent();
+				pc->setSpeechCurrent( wstr );
 				amx_GetStringUnicode( pc->getSpeechCurrent(), cstr );
+				}
 				break;
-			case NXW_CP_UNI_PROFILE :				
-				pc->setProfile( new wstring() );
+			case NXW_CP_UNI_PROFILE :
+				{
+				wstring* wstr = new wstring();
+				pc->setProfile( wstr );
 				amx_GetStringUnicode( pc->getProfile(), cstr );
+				}
 				break;
 			default :
 				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
@@ -998,6 +347,692 @@ NATIVE2(_setCharProperty)
   	return 0;
 }
 
+static char setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value )
+{
+	switch( property )
+	{
+		case NXW_CP_C_BLOCKED :							//dec value: 101;
+			pc->blocked = value;
+			break;
+		case NXW_CP_C_COMMANDLEVEL :				  		//dec value: 103;
+			pc->commandLevel = value;
+			break;
+		case NXW_CP_C_DIR :	  						//dec value: 104;
+			pc->dir = value;
+			break;
+		case NXW_CP_C_DIR2 :			  				//dec value: 105;
+			pc->dir2 = value;
+			break;
+		case NXW_CP_C_FIXEDLIGHT :				  		//dec value: 106;
+			pc->fixedlight = value;
+			break;
+		case NXW_CP_C_FLAG :			  				//dec value: 107;
+			pc->flag = value;
+			break;
+		case NXW_CP_C_FLY_STEPS :			  			//dec value: 108;
+			pc->fly_steps = value;
+			break;
+		case NXW_CP_C_GMRESTRICT :				  		//dec value: 109;
+			pc->gmrestrict = value;
+			break;
+		case NXW_CP_C_HIDDEN :				  			//dec value: 110;
+			pc->hidden = value;
+			break;
+		case NXW_CP_C_ID :							//dec value: 111;
+			{
+			UI16 id = pc->GetBodyType();
+			if ( subproperty > 1 )
+				pc->SetBodyType((id & 0x00FF) | ( value << 8));
+			else
+				pc->SetBodyType((id & 0xFF00) | ( value %256));
+			}
+			break;
+		case NXW_CP_C_LOCKSKILL : 						//dec value: 112;
+			pc->lockSkill[subproperty] = value;
+			break;
+		case NXW_CP_C_MULTISERIAL2 :						//dec value: 113;
+			if ( subproperty >=1 && subproperty <= 4 )
+				pc->setMultiSerialByte( static_cast<UI32>(subproperty), value );
+			break;
+		case NXW_CP_C_NPC :							//dec value: 114;
+			pc->npc = value;
+			break;
+		case NXW_CP_C_NPCTYPE : 		  				//dec value: 115;
+			pc->npc_type = value;
+			break;
+		case NXW_CP_C_NPCWANDER :						//dec value: 116;
+			pc->npcWander = value;
+			break;
+		case NXW_CP_C_OLDNPCWANDER : 			  			//dec value: 117;
+			pc->oldnpcWander = value;
+			break;
+		//case NXW_CP_C_ORGSKIN : (prop2>1) ? &chars[i].orgskin1 : &chars[i].orgskin2 )  //dec value: 118;
+		case NXW_CP_C_OWNSERIAL2 :						//dec value: 119;
+			if ( subproperty >=1 && subproperty <= 4 )
+				pc->setOwnerSerialByte( static_cast<UI32>(subproperty), value );
+			break;
+		case NXW_CP_C_PRIV2 :				  			//dec value: 121;
+			pc->SetPriv2(value);
+			break;
+		case NXW_CP_C_REACTIVEARMORED : 		  			//dec value: 122;
+			pc->ra = value;
+			break;
+		case NXW_CP_C_REGION : 				  			//dec value: 123;
+			pc->region = value;							//candidate for removal
+			break;
+		case NXW_CP_C_SERIAL2 :
+			if ( subproperty >=1 && subproperty <= 4 )
+				pc->setSerialByte( static_cast<UI32>(subproperty), value );
+			break;
+		case NXW_CP_C_SHOP :				 			//dec value: 125; Sparhawk: DEPRECIATED, use case NXW_CP_B_SHOPKEEPER : pc->shopkeeper )
+			pc->shopkeeper = value;
+			break;
+		case NXW_CP_C_SKIN : 							//dec value: 126;
+			{
+			UI16 color = pc->getSkinColor();
+			if ( property > 1 )
+				pc->setSkinColor((color & 0x00FF) | (value << 8));
+			else
+				pc->setSkinColor((color & 0xFF00) | (value %256));
+			}
+			break;
+		case NXW_CP_C_SPEECH : 				  			//dec value: 127;
+			pc->speech = value;
+			break;
+		case NXW_CP_C_WAR :			  				//dec value: 128;
+			pc->war = value;
+			break;
+		case NXW_CP_C_XID :							//dec value: 129;
+			{
+			UI16 oldbody = pc->GetOldBodyType();
+			if ( subproperty > 1 )
+				pc->SetOldBodyType((oldbody & 0x00FF) | ( value << 8));
+			else
+				pc->SetOldBodyType((oldbody & 0xFF00) | ( value %256));
+			}
+			break;
+		case NXW_CP_C_XSKIN : 							//dec value: 130;
+			{
+			UI16 oldcolor = pc->getOldSkinColor();
+			if ( subproperty > 1 )
+				pc->setOldSkinColor((oldcolor & 0x00FF) | (value << 8));
+			else
+				pc->setOldSkinColor((oldcolor & 0xFF00) | (value %256));
+			}
+			break;
+		case NXW_CP_C_NXWFLAGS :						//dec value: 131;
+			pc->nxwflags[subproperty] = value;
+			break;
+		case NXW_CP_I_RESISTS : 						//dec value: 132;
+			pc->resists[subproperty] = value;
+			break;
+		case NXW_CP_C_TRAININGPLAYERIN : 					//dec value: 133;
+			pc->trainingplayerin = value;
+			break;
+		case NXW_CP_C_PRIV : 				  			//dec value: 134;
+			pc->SetPriv(value);
+			break;
+		case NXW_CP_C_DAMAGETYPE :						//dec value: 319;
+			pc->damagetype = static_cast<DamageType>(value);
+			break;
+		default :
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return value;
+}
+
+static LOGICAL setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value )
+{
+	switch( property )
+	{
+		case NXW_CP_B_CANTRAIN :						//dec value: 0;
+			if ( value )
+				pc->setCanTrain();
+			else
+				pc->resetCanTrain();
+			break;
+		case NXW_CP_B_DEAD :							//dec value: 1;
+			break;
+		case NXW_CP_B_FREE :							//dec value: 2;
+			break;
+		case NXW_CP_B_GUARDED :							//dec value: 3;
+			pc->guarded = value;
+			break;
+		case NXW_CP_B_GUILDTRAITOR :						//dec value: 4;
+			if ( value )
+				pc->SetGuildTraitor();
+			else
+				pc->ResetGuildTraitor();
+			break;
+		case NXW_CP_B_INCOGNITO :						//dec value: 6;
+			pc->guarded = value;
+			break;
+		case NXW_CP_B_POLYMORPH :						//dec value: 8;
+			pc->polymorph = value;						//Candidate for removal
+			break;
+		case NXW_CP_B_TAMED :							//dec value: 9;
+			pc->tamed = value;
+			break;
+		case NXW_CP_B_UNICODE :							//dec value: 10;
+			pc->unicode = value;
+			break;
+		case NXW_CP_C_SHOPKEEPER :						// dec value 11;
+			pc->shopkeeper = value;
+			break;
+		case NXW_CP_B_ATTACKFIRST :						//dec value: 12;
+			if (value)
+				pc->SetAttackFirst();
+			else
+				pc->ResetAttackFirst();
+			break;
+		case NXW_CP_B_ISBEINGTRAINED :						//dec value: 13;
+			break;
+		case NXW_CP_B_GUILDTOGGLE :						//dec value: 14;
+			if ( value )
+				pc->SetGuildTitleToggle();
+			else
+				pc->ResetGuildTitleToggle();
+			break;
+		default :
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+	return value;
+}
+
+static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value )
+{
+	switch( property )
+	{
+		case NXW_CP_I_ACCOUNT :		  				//dec value: 200;
+			pc->account = value;
+			break;
+		case NXW_CP_I_ADVOBJ :			  			//dec value: 201;
+			pc->advobj = value;
+			break;
+		case NXW_CP_I_ATT :		  				//dec value: 202;
+			pc->att = value;
+			break;
+		case NXW_CP_I_ATTACKER :		  			//dec value: 203;
+			pc->attackerserial = value;
+			break;
+		case NXW_CP_I_BEARDCOLOR :					//dec value: 204;
+			// obsolete
+			break;
+		case NXW_CP_I_BEARDSERIAL :			  		//dec value: 205;
+			pc->beardserial = value;
+			break;
+		case NXW_CP_I_BEARDSTYLE :					//dec value: 206;
+			//obsolete
+			break;
+		case NXW_CP_I_CALLNUM :			  			//dec value: 207;
+			pc->callnum = value;
+			break;
+		case NXW_CP_I_CARVE :		  				//dec value: 208;
+			pc->carve = value;
+			break;
+		case NXW_CP_I_CASTING :			  			//dec value: 209;
+			pc->casting = value;
+			break;
+		case NXW_CP_I_CLIENTIDLETIME :				  	//dec value: 210;
+			pc->clientidletime = value;
+			break;
+		case NXW_CP_I_COMBATHITMESSAGE :			  	//dec value: 211;
+			pc->combathitmessage = value;
+			break;
+		case NXW_CP_I_CREATIONDAY :			  		//dec value: 212;
+			pc->SetCreationDay(value);
+			break;
+		case NXW_CP_I_CRIMINALFLAG :			  		//dec value: 213;
+			pc->crimflag = value;
+			break;
+		case NXW_CP_I_DEATHS :			  			//dec value: 214;
+			pc->deaths = value;
+			break;
+		case NXW_CP_I_DEF :		  				//dec value: 215;
+			pc->def = value;
+			break;
+		case NXW_CP_I_DEXTERITY:					//dec value: 216
+			switch( subproperty )
+			{
+				case NXW_CP2_DEC :
+					pc->dx2 = value;
+				case NXW_CP2_REAL :
+					pc->dx3 = value;
+				case NXW_CP2_ACT :
+					pc->stm = value;
+				case NXW_CP2_EFF:
+					pc->dx = value;
+			}
+			break;
+		case NXW_CP_I_DISABLED :		  			//dec value: 217;
+			pc->disabled = value;
+			break;
+		case NXW_CP_I_FAME :		  				//dec value: 218;
+			pc->SetFame( value );
+			break;
+		case NXW_CP_I_FLEEAT :			  			//dec value: 219;
+			pc->fleeat = value;
+			break;
+		case NXW_CP_I_FOODPOSITION:					//dec value: 220;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->foodloc.x = value;
+					break;
+				case NXW_CP2_Y :
+					pc->foodloc.y = value;
+					break;
+				case NXW_CP2_Z :
+					pc->foodloc.z = value;
+			}
+			break;
+		case NXW_CP_I_FPOS1_NPCWANDER:					//dec value: 221;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->fx1 = value;
+					break;
+				case NXW_CP2_Y :
+					pc->fy1 = value;
+					break;
+				case NXW_CP2_Z :
+					pc->fz1 = value;
+					break;
+			}
+			break;
+		case NXW_CP_I_FPOS2_NPCWANDER:					//dec value 222;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->fx2 = value;
+					break;
+				case NXW_CP2_Y :
+					pc->fy2 = value;
+				case NXW_CP2_Z :
+					break;
+			}
+			break;
+		case NXW_CP_I_FTARG :			  				//dec value: 223;
+			pc->ftargserial = value;
+			break;
+		case NXW_CP_I_GMMOVEEFF :			  			//dec value: 224;
+			pc->gmMoveEff = value;
+			break;
+		case NXW_CP_I_GUILDFEALTY :				  		//dec value: 225;
+			pc->SetGuildFealty( value );
+			break;
+		case NXW_CP_I_GUILDNUMBER :				  		//dec value: 226;
+			pc->SetGuildNumber( value );
+			break;
+		case NXW_CP_I_HAIRCOLOR :						//dec value: 228;
+			//obsolete
+			break;
+		case NXW_CP_I_HAIRSERIAL :				  		//dec value: 229;
+			pc->hairserial = value;
+			break;
+		case NXW_CP_I_HAIRSTYLE :						//dec value: 230;
+			//obsolete
+			break;
+		case NXW_CP_I_HIDAMAGE :			  			//dec value: 231;
+			pc->hidamage = value;
+			break;
+		case NXW_CP_I_HOLDGOLD :			  			//dec value: 232;
+			pc->holdg = value;
+			break;
+		case NXW_CP_I_HOMELOCPOS :						//dec value: 233
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->homeloc.x = value;
+					break;
+				case NXW_CP2_Y :
+					pc->homeloc.y = value;
+					break;
+				case NXW_CP2_Z :
+					pc->homeloc.z = value;
+					break;
+			}
+			break;
+		case NXW_CP_I_HUNGER :				  			//dec value: 234;
+			pc->hunger = value;
+			break;
+		case NXW_CP_I_HUNGERTIME :				  		//dec value: 235;
+			pc->hungertime = value;
+			break;
+		case NXW_CP_I_INTELLIGENCE:						//dec value: 236;
+			switch( subproperty )
+			{
+				case NXW_CP2_DEC  :
+					pc->in2 = value;
+					break;
+				case NXW_CP2_REAL :
+					pc->in3 = value;
+					break;
+				case NXW_CP2_ACT  :
+					pc->mn = value;
+					break;
+				case NXW_CP2_EFF  :
+					pc->in = value;
+					break;
+			}
+			break;
+		case NXW_CP_I_KARMA : 				 			//dec value: 237;
+			pc->SetKarma( value );
+			break;
+		case NXW_CP_I_KEYNUMBER :			  			//dec value: 238;
+			pc->keyserial = value;
+			break;
+		case NXW_CP_I_KILLS :			  				//dec value: 239;
+			pc->kills = value;
+			break;
+		case NXW_CP_I_LODAMAGE :			  			//dec value: 240;
+			pc->lodamage = value;
+			break;
+		case NXW_CP_I_LOGOUT :				  			//dec value: 241;
+			pc->logout = value;
+			break;
+		case NXW_CP_I_MAKING :				  			//dec value: 242;
+			pc->making = value;
+			break;
+		case NXW_CP_I_MEDITATING :			  			//dec value: 243;
+			pc->med = value;
+			break;
+		case NXW_CP_I_MENUPRIV :			  			//dec value: 244;
+			pc->menupriv = value;
+			break;
+		case NXW_CP_I_MULTISERIAL :						//dec value: 245;
+			pc->setMultiSerial( value );
+			break;
+		case NXW_CP_I_MURDERERSER :				  		//dec value: 246;
+			pc->murdererSer = value;
+			break;
+		case NXW_CP_I_MURDERRATE :				  		//dec value: 247;
+			pc->murderrate = value;
+			break;
+		case NXW_CP_I_MUTETIME :			  			//dec value: 248;
+			pc->mutetime = value;
+			break;
+		case NXW_CP_I_NAMEDEED :			  			//dec value: 249;
+			pc->namedeedserial = value;
+			break;
+		case NXW_CP_I_NEXTACT :				  			//dec value: 250;
+			pc->nextact = value;
+			break;
+		case NXW_CP_I_NPCAI :				  			//dec value: 251;
+			pc->npcaitype = value;
+			break;
+		case NXW_CP_I_NPCMOVETIME :				  		//dec value: 252;
+			pc->npcmovetime = value;
+			break;
+		case NXW_CP_I_OBJECTDELAY :				  		//dec value: 253;
+			pc->objectdelay = value;
+			break;
+		case NXW_CP_I_OLDPOS:						//dec value: 254;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->setOldPosition("x",value);
+					break;
+				case NXW_CP2_Y :
+					pc->setOldPosition("y",value);
+					break;
+				case NXW_CP2_Z :
+					pc->setOldPosition("z",value);
+					break;
+			}
+			break;
+		case NXW_CP_I_OWNSERIAL :				  		//dec value: 255;
+			pc->setOwnerSerial32( value );
+			break;
+		case NXW_CP_I_PACKITEM :			  			//dec value: 256;
+			pc->packitemserial = value;
+			break;
+		case NXW_CP_I_POISON :				  			//dec value: 257;
+			pc->poison = value;
+			break;
+		case NXW_CP_I_POISONED :			  			//dec value: 258;
+			pc->poisoned = (PoisonType)value;
+			break;
+		case NXW_CP_I_POISONTIME :				  		//dec value: 259;
+			pc->poisontime = value;
+			break;
+		case NXW_CP_I_POISONTXT :			  			//dec value: 260;
+			pc->poisontxt = value;
+			break;
+		case NXW_CP_I_POISONWEAROFFTIME :				  	//dec value: 261;
+			pc->poisonwearofftime = value;
+			break;
+		case NXW_CP_I_POSITION:						//dec value: 262;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->setPosition("x",value);
+					break;
+				case NXW_CP2_Y :
+					pc->setPosition("y",value);
+					break;
+				case NXW_CP2_Z :
+					pc->setPosition("z",value);
+			} break;
+		case NXW_CP_I_POSTTYPE :			  			//dec value: 263;
+			pc->postType = (MsgBoards::PostType)value;
+			break;
+		case NXW_CP_I_PREVPOS:						//dec value: 264
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->prevX = value;
+				case NXW_CP2_Y :
+					pc->prevY = value;
+				case NXW_CP2_Z :
+					pc->prevZ = value;
+			} break;
+		case NXW_CP_I_PRIV3 :				  			//dec value: 265;
+			pc->priv3[subproperty] = value;
+			break;
+		case NXW_CP_I_QUESTBOUNTYPOSTSERIAL :					  //dec value: 266;
+			pc->questBountyPostSerial = value;
+			break;
+		case NXW_CP_I_QUESTBOUNTYREWARD :				  	//dec value: 267;
+			pc->questBountyReward = value;
+			break;
+		case NXW_CP_I_QUESTDESTREGION :					  	//dec value: 268;
+			pc->questDestRegion = value;
+			break;
+		case NXW_CP_I_QUESTORIGREGION :					  	//dec value: 269;
+			pc->questOrigRegion = value;
+			break;
+		case NXW_CP_I_REATTACKAT :				  		//dec value: 270;
+			pc->reattackat = value;
+			break;
+		case NXW_CP_I_REGENRATE :				  		//dec value: 271;
+			pc->setRegenRate( static_cast<StatType>(subproperty), value, static_cast<VarType>(subsubproperty) );
+			break;
+		case NXW_CP_I_SCRIPTID :			  				//dec value: 272;
+			pc->setScriptID( value );
+			break;
+		case NXW_CP_I_GUILD:							//dec value: 273
+			//todo
+			break;
+		case NXW_CP_I_ROBE :			  				//dec value: 274;
+			pc->robe = value;
+			break;
+		case NXW_CP_I_RUNNING :				  			//dec value: 275;
+			pc->running = value;
+			break;
+		case NXW_CP_I_SERIAL :				  			//dec value: 276;
+			pc->setSerial32(value);
+			break;
+		case NXW_CP_I_SKILLDELAY :				  		//dec value: 277;
+			pc->skilldelay = value;
+			break;
+		case NXW_CP_I_SMELTITEM :			  			//dec value: 278;
+			pc->smeltserial = value;
+			break;
+		case NXW_CP_I_SMOKEDISPLAYTIME :			  		//dec value: 279;
+			pc->smokedisplaytimer = value;
+			break;
+		case NXW_CP_I_SMOKETIMER :				  		//dec value: 280;
+			pc->smoketimer = value;
+			break;
+		case NXW_CP_I_SPADELAY :			  			//dec value: 281;
+			pc->spadelay = value;
+			break;
+		case NXW_CP_I_SPATIMER :			  			//dec value: 282;
+			pc->spatimer = value;
+			break;
+		case NXW_CP_I_SPATTACK :			  			//dec value: 283;
+			pc->spattack = value;
+			break;
+		case NXW_CP_I_SPAWNREGION :				  		//dec value: 284;
+			pc->spawnregion = value;
+			break;
+		case NXW_CP_I_SPAWNSERIAL :				  		//dec value: 285;
+			pc->spawnserial = value;
+			break;
+		case NXW_CP_I_SPELL :			  				//dec value: 286;
+			pc->spell = static_cast<enum magic::SpellId>(value);
+			break;
+		case NXW_CP_I_SPELLACTION :				  		//dec value: 287;
+			pc->spellaction = value;
+			break;
+		case NXW_CP_I_SPELLTIME :			  			//dec value: 288;
+			pc->spelltime = value;
+			break;
+		case NXW_CP_I_SPLIT :			  				//dec value: 290;
+			pc->split = value;
+			break;
+		case NXW_CP_I_SPLITCHNC :			  			//dec value: 291;
+			pc->splitchnc = value;
+			break;
+		case NXW_CP_I_SQUELCHED :			  			//dec value: 292;
+			pc->squelched = value;
+			break;
+		case NXW_CP_I_STEALTH :				  			//dec value: 294;
+			pc->stealth = value;
+			break;
+		case NXW_CP_I_STRENGHT:							//dec value: 295;
+			switch( subproperty )
+			{
+				case NXW_CP2_DEC :
+					pc->st2 = value;
+					break;
+				case NXW_CP2_REAL:
+					pc->st3 = value;
+					break;
+				case NXW_CP2_ACT :
+					pc->hp = value;
+					break;
+				case NXW_CP2_EFF :
+					pc->setStrength(value);
+			}
+			break;
+		case NXW_CP_I_SUMMONTIMER :				  		//dec value: 296;
+			pc->summontimer = value;
+			break;
+		case NXW_CP_I_SWINGTARG :			  			//dec value: 297;
+			pc->swingtargserial = value;
+			break;
+		case NXW_CP_I_TAILITEM :			  			//dec value: 298;
+			pc->tailserial = value;
+			break;
+		case NXW_CP_I_TAMING :				  			//dec value: 299;
+			pc->taming = value;
+			break;
+		case NXW_CP_I_TARG :			  				//dec value: 300;
+			pc->targserial = value;
+			break;
+		case NXW_CP_I_TARGTRIG :			  			//dec value: 301;
+			pc->targtrig = value;
+			break;
+		case NXW_CP_I_TEMPFLAGTIME :				  		//dec value: 302;
+			pc->tempflagtime = value;
+			break;
+		case NXW_CP_I_TIME_UNUSED :				  		//dec value: 303;
+			pc->time_unused = value;
+			break;
+		case NXW_CP_I_TIMEOUT :				 			//dec value: 304;
+			pc->timeout = value;
+			break;
+		case NXW_CP_I_TIMEUSED_LAST :				  		//dec value: 305;
+			pc->timeused_last = value;
+			break;
+		case NXW_CP_I_TRACKINGDISPLAYTIMER :					  //dec value: 306;
+			pc->trackingdisplaytimer = value;
+			break;
+		case NXW_CP_I_TRACKINGTARGET :					  	//dec value: 307;
+			pc->trackingtarget_serial = value;
+			break;
+		case NXW_CP_I_TRACKINGTIMER :				  		//dec value: 308;
+			pc->trackingtimer = value;
+			break;
+		case NXW_CP_I_TRAINER :				  			//dec value: 309;
+			break;
+		case NXW_CP_I_TRIGGER :				  			//dec value: 311;
+			pc->trigger = value;
+			break;
+		case NXW_CP_I_WEIGHT :				  			//dec value: 312;
+			pc->weight = value;
+			break;
+		case NXW_CP_I_WORKLOCPOS:					//dec value: 313;
+			switch( subproperty )
+			{
+				case NXW_CP2_X :
+					pc->workloc.x = value;
+					break;
+				case NXW_CP2_Y :
+					pc->workloc.y = value;
+					break;
+				case NXW_CP2_Z :
+					pc->workloc.z = value;
+					break;
+			}
+			break;
+		case NXW_CP_I_AMXFLAGS :					//dec value: 314;
+			//
+			// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
+			//
+			//pc->amxflags[params[3]] = p;
+			if ( subproperty >= 0 && subproperty <= 15 )
+				amxVS.updateVariable( pc->getSerial32(), subproperty, value );
+			break;
+		case NXW_CP_I_RACE :		 				//dec value: 315
+			pc->race = value;
+			break;
+		case NXW_CP_I_CX :			 			//dec value: 316
+			pc->setPosition("x",value);
+			break;
+		case NXW_CP_I_CY :			 			//dec value: 317
+			pc->setPosition("y",value);
+			break;
+		case NXW_CP_I_CZ :			 			//dec value: 318
+			pc->setPosition("z",value);
+			break;
+		case NXW_CP_I_LASTMOVETIME :					//dec value: 319
+			pc->LastMoveTime = value;
+			break;
+		default :
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+
+	switch( property )
+	{
+		case NXW_CP_I_DEXTERITY:
+			pc->updateStats(2);
+			break;
+		case NXW_CP_I_INTELLIGENCE:
+			pc->updateStats(1);
+			break;
+		case NXW_CP_I_STRENGHT:
+			pc->updateStats(0);
+			break;
+	}
+
+	return value;
+}
 
 NATIVE2(_getItemProperty)
 {
