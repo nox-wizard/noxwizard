@@ -3016,7 +3016,6 @@ namespace Scripts {
 	cScpScript* Spells = NULL; //cScpScript("spells.scp");
 	cScpScript* Teleport = NULL; //cScpScript("teleport.scp");
 	cScpScript* Titles = NULL; //cScpScript("titles.scp");
-	cScpScript* Tracking = NULL; //cScpScript("tracking.scp");
 	cScpScript* Triggers = NULL; //cScpScript("triggers.scp");
 	cScpScript* WTrigrs = NULL; //cScpScript("wtrigrs.scp");
 	cScpScript* Mountable = NULL; //cScpScript("mount.xss");
@@ -3064,7 +3063,6 @@ void newScriptsInit()
 	Scripts::Spells = new cScpScript("scripts/spells.xss");
 //	Scripts::Teleport = new cScpScript("teleport.scp");
 	Scripts::Titles = new cScpScript("scripts/titles.xss");
-	Scripts::Tracking = new cScpScript("scripts/tracking.xss");
 	Scripts::Triggers = new cScpScript("scripts/triggers.xss");
 //	Scripts::WTrigrs = new cScpScript("wtrigrs.scp");
 	Scripts::Mountable = new cScpScript("scripts/mounts.xss");
@@ -3113,7 +3111,6 @@ void deleteNewScripts()
 	safedelete(Scripts::Spells);// = new cScpScript("spells.scp");
 	safedelete(Scripts::Teleport);// = new cScpScript("teleport.scp");
 	safedelete(Scripts::Titles);// = new cScpScript("titles.scp");
-	safedelete(Scripts::Tracking);// = new cScpScript("tracking.scp");
 	safedelete(Scripts::Triggers);// = new cScpScript("triggers.scp");
 //	safedelete(Scripts::WTrigrs);// = new cScpScript("wtrigrs.scp");
 	safedelete(Scripts::Mountable);

@@ -2643,6 +2643,28 @@ NATIVE (_send_boltfx)
 	return 0;
 }
 
+/*
+\brief Send a quest arrow
+\author Endymion
+\param 1 character
+\param 2 active
+\param 3 x location
+\param 4 y location
+\return 0 or INVALID if not valid character
+*/
+NATIVE (_send_questArrow)
+{
+    P_CHAR pc = pointers::findCharBySerial(params[1]);
+    VALIDATEPCR(pc, INVALID);
+
+	cPacketQuestArrow pkg;
+	pkg.active=params[2];
+	pkg.x=params[3];
+	pkg.y=params[4];
+	pkg.send( pc->getClient() );
+	return 0;
+}
+
 NATIVE (_direct_castSpell)
 {
 //	Magic->NewCastSpell( params[1] );
@@ -5585,7 +5607,60 @@ NATIVE( _menu_addPageButton )
 	menu->addPageButton( params[2], params[3], params[4], params[5], params[6] );
 	return 1;
 }
- 
+
+/*!
+\brief Create a new icon list menu
+\author Endymion
+\since 0.82
+\param 1 function callback
+\param 2 question
+\return the menu serial
+*/
+NATIVE( _menu_createIconList )
+{
+	cIconListMenu* menu = (cIconListMenu*)Menus.insertMenu( new cIconListMenu() );
+	VALIDATEPMR( menu, INVALID );
+
+	cell *cstr;
+	amx_GetAddr(amx, params[1], &cstr);
+	amx_GetString(g_cAmxPrintBuffer, cstr);
+	menu->setCallBack( std::string( g_cAmxPrintBuffer ) );
+	g_nAmxPrintPtr=0;
+
+	amx_GetAddr(amx,params[2],&cstr);
+	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	menu->question = g_cAmxPrintBuffer;
+	g_nAmxPrintPtr=0;
+	
+	return menu->serial;
+}
+
+/*!
+\brief Add a new icon at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 model
+\param 3 color
+\param 4 response
+\return false if error, true else
+*/
+NATIVE( _menu_addIcon )
+{
+	cIconListMenu* menu = static_cast<cIconListMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[4],&cstr);
+	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+
+	menu->addIcon( params[2], params[3], std::string( g_cAmxPrintBuffer ) );
+	return 1;
+}
+
 /*!
 \file
 
@@ -5869,6 +5944,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "send_staticfx", _send_staticfx },
  { "send_statUpdate", _send_statUpdate },
  { "send_boltfx", _send_boltfx },
+ { "send_questArrow", _send_questArrow },
 //
 // Receive functions
 //
@@ -5913,6 +5989,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "menu_addPage", _menu_addPage },
  { "menu_addPageButton", _menu_addPageButton },
 
+ { "menu_createIconList", _menu_createIconList },
+ { "menu_addIcon", _menu_addIcon },
 // Region functions :
  { "rgn_setWeather", _rgn_setWeather },
  { "rgn_getWeather", _rgn_getWeather },

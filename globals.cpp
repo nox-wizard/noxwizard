@@ -284,6 +284,7 @@ int clicky[MAXCLIENT];
 int currentSpellType[MAXCLIENT]; //!< 0=spellcast, 1=scrollcast, 2=wand cast
 unsigned char targetok[MAXCLIENT];
 unsigned char clientDimension[MAXCLIENT];
+SERIAL spyTo[MAXCLIENT];
 //int spattackValue[MAXCLIENT];
 
 //////////////////////////////////////////////

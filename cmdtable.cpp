@@ -126,9 +126,9 @@ TARGET_S target_newy = { 0, 1, 0, 252, "Select item to reposition." };
 TARGET_S target_incx = { 0, 1, 0, 253, "Select item to reposition." };
 TARGET_S target_incy = { 0, 1, 0, 254, "Select item to reposition." };
 TARGET_S target_incz = { 0, 1, 0, 255, "Select item to reposition." };
-//TARGET_S target_glow = { 0, 1, 0, 255, "Select item to make glowing." };
+//TARGET_S target_glow = { 0, 1, 0, 247, "Select player to glow..." };
 //TARGET_S target_unglow = { 0, 1, 0, 249, "Select item to deactivate glowing." };
-TARGET_S target_showskills = { 0, 1, 0, 247, "Select char to see skills" };
+TARGET_S target_spy = { 0, 1, 0, 247, "Select player to spy..." };
 TARGET_S target_sethome = { 0,1,0,256, "Set home location for a npc."};
 TARGET_S target_setwork = { 0,1,0,257, "Set work location for a npc."};
 TARGET_S target_setfood = { 0,1,0,258, "Set food location for a npc."};
@@ -506,7 +506,7 @@ cCommandTable::cCommandTable() {
     addGmCommand("SETFONT",         1, 31, CMD_TARGETHID1,  (CMD_DEFINE)&target_setfont);
     addGmCommand("APPETITE",        1, 6,  CMD_FUNC,        (CMD_DEFINE)&command_appetite);
 //BYTE-2
-//    addGmCommand("WHOLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
+//    addGmCommand("WHOLIST",				2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
     addGmCommand("SKILLS",          2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_skills);
     addGmCommand("PLAYERLIST",      2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_playerlist); // other dupes
     addGmCommand("PL",              2, 0,	 CMD_FUNC,        (CMD_DEFINE)&command_playerlist);
@@ -661,7 +661,7 @@ addGmCommand("RELOADCACHEDSCRIPTS", 5, 23, CMD_FUNC,        (CMD_DEFINE)&command
 //{"UNGLOW",      5,  25, CMD_TARGET,		(CMD_DEFINE)&target_unglow},
     addGmCommand("SETMURDER",       5, 26, CMD_FUNC,        (CMD_DEFINE)&command_setmurder);//taken from 6904t2(5/10/99) - AntiChrist
     addGmCommand("SETMENUPRIV",     5, 27, CMD_FUNC,        (CMD_DEFINE)&command_setmenupriv);
-    addGmCommand("SHOWSKILLS",      5, 28, CMD_TARGETX,     (CMD_DEFINE)&target_showskills);
+    addGmCommand("SPY",				5, 28, CMD_TARGET,      (CMD_DEFINE)&target_spy);
     addGmCommand("DELID",           5, 29, CMD_FUNC,        (CMD_DEFINE)&command_delid);
     addGmCommand("DELTYPE",         5, 30, CMD_FUNC,        (CMD_DEFINE)&command_deltype);
     addGmCommand("SYSM",            5, 31, CMD_FUNC,        (CMD_DEFINE)&command_sysm);

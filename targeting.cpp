@@ -4060,7 +4060,15 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 
         case 245: buildhouse(s,addid3[s]);   break;
 
-        case 247: Targ->ShowSkillTarget(s);break; //showskill target
+        case 247: {
+			if( Cready ) {
+				NXWCLIENT victim = pc->getClient();
+				if( victim!=NULL ) {
+					spyTo[victim->toInt()]=curr->getSerial32();
+				}
+			}
+			}
+			break; //showskill target
         case 248: Targ->MenuPrivTarg(s);break; // menupriv target
         //case 249: Targ->UnglowTaget(s);break; // unglow
         case 250: if ((Cready)&&(ISVALIDPC(pc))) Priv3Target(s,pc); break; // meta gm target

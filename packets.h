@@ -129,17 +129,17 @@ public:
 	UI08	skill2value; //!< value of second skill
 	UI08	skill3; //!< third skill
 	UI08	skill3value; //!< value of third skill
-	Color	skin; //!< skin color
+	eCOLOR	skin; //!< skin color
 	UI16	hairstyle; //!< hair style
-	Color	hair; //!< hair color
+	eCOLOR	hair; //!< hair color
 	UI16	facialhairstyle; //!< facial hair style
-	Color	facialhair; //!< facial hair color
+	eCOLOR	facialhair; //!< facial hair color
 	UI16	location; //!<// starting location from starting list
 	UI16	unknown; //!< unknow
 	UI16	slot; //!< account slot
 	UI32	clientIP; //!< the IP of client
-	Color	shirt; //!< shirt color
-	Color	pants; //!< pants color
+	eCOLOR	shirt; //!< shirt color
+	eCOLOR	pants; //!< pants color
 
 	cPacketCreateCharacter();
 	void receive( NXWCLIENT ps  );
@@ -181,7 +181,7 @@ private:
 public:
 
 	UI08	type; //!< Text type
-	Color	color; //!< Text color
+	eCOLOR	color; //!< Text color
 	UI16	font; //!< Text font
 	string	msg; //!< Message ( Null Terminated String )
 
@@ -217,7 +217,7 @@ class cPacketAttackRequest : public cClientPacket {
 
 public:
 
-	Serial	att;	//!< serial of to be attacked
+	eSERIAL	att;	//!< serial of to be attacked
 
 	cPacketAttackRequest();	
 
@@ -413,7 +413,7 @@ public:
 	Serial	obj;		//!< from ( 0xFFFFFFFF=system message)
 	UI16	model;		//!< item hex number | 0xFFFF=system
 	UI08	type;		//!< text type
-	Color	color;		//!< text color
+	eCOLOR	color;		//!< text color
 	UI16	font;		//!< text font
 	string	name;		//!< name of who speech ( 30 character )
 	string*	msg;		//!< message  Null-Terminated Message (? = blockSize - 44)
@@ -454,7 +454,7 @@ public:
 	Serial	chr;		//!< serial of the character
 	UI16	body;		//!< body type
 	UI08	unk1;		//!< unknow 1 ( is 0 )
-	Color	skin;		//!< skin color
+	eCOLOR	skin;		//!< skin color
 	UI08	flag;		//!< flag
 	UI16	x;			//!< x Location
 	UI16	y;			//!< y Location
@@ -586,7 +586,7 @@ public:
 	UI16	x;			//!< x Location in container
 	UI16	y;			//!< y Location in container
 	Serial	cont;		//!< serial of container
-	Color	color;		//!< color
+	eCOLOR	color;		//!< color
 
 	cPacketAddItemIntoCont();	
 
@@ -716,7 +716,7 @@ public:
 	UI08	unk ;		//!< unknow (0x00)
 	UI08	layer;		//!< layer
 	Serial	player;		//!< player id
-	Color	color;		//!< color
+	eCOLOR	color;		//!< color
 
 	cPacketWornItem();	
 
@@ -820,7 +820,7 @@ typedef struct {
 	UI16	x;		//!< x Location in container
 	UI16	y;		//!< y Location in container
 	Serial	cont;		//!< serial of container
-	Color	color;		//!< color of item
+	eCOLOR	color;		//!< color of item
 } itemincont_st;
 
 #define PKG_CONTAINER 0x3C;
@@ -1338,7 +1338,7 @@ public:
 	UI16	y;			//!< y location
 	SI08	z;			//!< z location
 	UI08	dir;		//!< direction
-	Color	color;		//!< color
+	eCOLOR	color;		//!< color
 	UI08	flag;		//!< flag ( bitset )
 	UI08	highcolor;	//!< highlight color
 
@@ -1890,5 +1890,25 @@ public:
 };
 
 //@}
+
+#define PKG_QUEST_ARROW 0xBA;
+
+/*!
+\brief Show a quest arrow
+\author Endymion
+\since 0.83
+\note 0xBA
+*/
+class cPacketQuestArrow : public cServerPacket {
+
+public:
+
+	eBool active; //<! active
+	eUI16 x; //!< x location
+	eUI16 y; //!< y location
+
+	cPacketQuestArrow();
+
+};
 
 #endif

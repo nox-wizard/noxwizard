@@ -81,7 +81,6 @@ namespace Scripts {
 	extern class cScpScript* Spells;
 	extern class cScpScript* Teleport;
 	extern class cScpScript* Titles;
-	extern class cScpScript* Tracking;
 	extern class cScpScript* Triggers;
 	extern class cScpScript* WTrigrs;
 	extern class cScpScript* Mountable;
@@ -186,6 +185,7 @@ extern unsigned char usedfree[MAXCLIENT];
 extern int binlength[MAXIMUM+1];
 extern int boutlength[MAXIMUM+1];
 extern unsigned char clientDimension[MAXCLIENT]; // stores if the client is the new 3d or old 2d one
+extern SERIAL spyTo[MAXCLIENT];
 
 //extern int spattackValue[MAXCLIENT];
 extern int clickx[MAXCLIENT];

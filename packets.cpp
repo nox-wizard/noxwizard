@@ -543,3 +543,5 @@ SEND( IconListMenu ) {
 	}
 
 }
+
+CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )

@@ -52,9 +52,6 @@ enum
 				//!< polymorph spell menu offset
 	MAKEMENUOFFSET = 2048,
 	TRACKINGMENUOFFSET = 4096,
-				//!< menu offset
-	ITEMMENUOFFSET = 256,
-	CUSTOMICONLISTVALUE = 16384,
 
 }; //enum
 

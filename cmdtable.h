@@ -402,6 +402,6 @@ TAR_HANDLER(target_incz);
 TAR_HANDLER(target_ban);
 //TAR_HANDLER(target_glow);
 //TAR_HANDLER(target_unglow);
-TAR_HANDLER(target_showskills);
+TAR_HANDLER(target_spy);
 
 #endif /* __CMDTABLE_H */

@@ -414,6 +414,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		binlength[j]=binlength[jj];
 		boutlength[j]=boutlength[jj];
 		usedfree[j]=usedfree[jj];
+		spyTo[j]=spyTo[jj];
 		itemmake[j]=itemmake[jj];
 		walksequence[j]=walksequence[jj];
 		DRAGGED[j]=DRAGGED[jj];
@@ -1312,6 +1313,7 @@ void cNetwork::CheckConn() // Check for connection requests
 				boutlength[now]=0;
 				cryptclient[now]=0;
 				usedfree[now]=0;
+				spyTo[now]=INVALID;
 				walksequence[now]=-1;
 
 				noweather[now]=1;
@@ -1326,7 +1328,7 @@ void cNetwork::CheckConn() // Check for connection requests
 				//priv3d[now]=0;priv3e[now]=0;priv3f[now]=0;
 				//priv3g[now]=0;
 				addid5[now]=0;
-	   		        tempint[now]=0;
+	   		    tempint[now]=0;
 				addid1[now]=0;addid2[now]=0;addid3[now]=0;addid4[now]=0;
 				dyeall[now]=0;
 				addx[now]=0;addy[now]=0;
