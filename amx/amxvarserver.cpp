@@ -71,6 +71,10 @@ amxIntegerVector::amxIntegerVector( const SI32 size, const SI32 initialValue )
 
 amxIntegerVector::~amxIntegerVector()
 {
+	//
+	//	Sparhawk: Dumb gcc 3.3 bug, bogus statement else internal compiler error
+	//
+	value.clear();
 }
 
 AMXVARSRV_DATATYPE amxIntegerVector::getType()
