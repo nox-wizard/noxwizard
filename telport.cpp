@@ -92,7 +92,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 	VALIDATEPC( pc );
 	char sect[512];
 	int loopexit=0;
-	char script1[1024], script2[1024];
+	std::string script1, script2;
 	cScpIterator* iter = NULL;
 	int i;
 
@@ -118,7 +118,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 				iter->parseLine(script1, script2);
 				if ((script1[0]!='}')&&(script1[0]!='{'))
 				{
-					if	(script1[0]=='@') pc->loadEventFromScript(script1, script2);
+					if	(script1[0]=='@') pc->loadEventFromScript( const_cast< char* >(script1.c_str()), const_cast< char* >(script2.c_str()));
 					else if ("STR" == script1 || "STRENGTH" == script1 )
 					{
 						pc->setStrength( getRangedValue(script2) );
@@ -287,7 +287,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					else if ( "ITEM" == script1 )
 					{
 						char itmnum[1024], amount[1024];
-						splitLine( script2, itmnum, amount );
+						splitLine( const_cast< char* >(script2.c_str()), itmnum, amount );
 						int amt = str2num( amount );
 						if( amt == 0 )
 							amt=INVALID;

@@ -20,7 +20,7 @@ void splitLine( const std::string& source, std::string& head, std::string& tail 
 void gettokennum(std::string s, int num);
 void readFullLine ();
 int getRangedValue(char *stringguy);
-
+int getRangedValue( std::string str );
 void readw2();
 void readw3();
 

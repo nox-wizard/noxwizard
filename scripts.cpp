@@ -188,6 +188,10 @@ void gettokennum(std::string s, int num)
 */
 }
 
+int getRangedValue( std::string str )
+{
+	getRangedValue( str.c_str() );
+}
 // Added by Krozy on 7-Sep-98
 // New getstatskillvalue function.
 // Takes a string, gets the tokens.
