@@ -72,23 +72,33 @@ namespace item
 					finished = true;
 					break;
 				case '@':
-					if( !LoadItemEventsFromScript( pi, const_cast<char*>(lha.c_str()), const_cast<char*>(rha.c_str()) ) )
+					if	( !LoadItemEventsFromScript( pi, const_cast<char*>(lha.c_str()), const_cast<char*>(rha.c_str()) ) )
 						WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'A':
-					if ( lha == "AMOUNT" )	 pi->amount = str2num(rha);
-					else if ( lha == "ATT" ) pi->att = getRangedValue(const_cast<char*>(rha.c_str()));
+					if	( lha == "AMOUNT" )
+						pi->amount = str2num(rha);
+					else if ( lha == "ATT" )
+						pi->att = getRangedValue(const_cast<char*>(rha.c_str()));
 					//
 					// Old style user variables
 					//
-					else if ( lha == "AMXFLAG0" ) amxVS.insertVariable( pi->getSerial32(), 0, str2num( rha ) );
-					else if ( lha == "AMXFLAG1" ) amxVS.insertVariable( pi->getSerial32(), 1, str2num( rha ) );
-					else if ( lha == "AMXFLAG2" ) amxVS.insertVariable( pi->getSerial32(), 2, str2num( rha ) );
-					else if ( lha == "AMXFLAG3" ) amxVS.insertVariable( pi->getSerial32(), 3, str2num( rha ) );
-					else if ( lha == "AMXFLAG4" ) amxVS.insertVariable( pi->getSerial32(), 4, str2num( rha ) );
-					else if ( lha == "AMXFLAG5" ) amxVS.insertVariable( pi->getSerial32(), 5, str2num( rha ) );
-					else if ( lha == "AMXFLAG6" ) amxVS.insertVariable( pi->getSerial32(), 6, str2num( rha ) );
-					else if ( lha == "AMXFLAG7" ) amxVS.insertVariable( pi->getSerial32(), 7, str2num( rha ) );
+					else if ( lha == "AMXFLAG0" )
+						amxVS.insertVariable( pi->getSerial32(), 0, str2num( rha ) );
+					else if ( lha == "AMXFLAG1" )
+						amxVS.insertVariable( pi->getSerial32(), 1, str2num( rha ) );
+					else if ( lha == "AMXFLAG2" )
+						amxVS.insertVariable( pi->getSerial32(), 2, str2num( rha ) );
+					else if ( lha == "AMXFLAG3" )
+						amxVS.insertVariable( pi->getSerial32(), 3, str2num( rha ) );
+					else if ( lha == "AMXFLAG4" )
+						amxVS.insertVariable( pi->getSerial32(), 4, str2num( rha ) );
+					else if ( lha == "AMXFLAG5" )
+						amxVS.insertVariable( pi->getSerial32(), 5, str2num( rha ) );
+					else if ( lha == "AMXFLAG6" )
+						amxVS.insertVariable( pi->getSerial32(), 6, str2num( rha ) );
+					else if ( lha == "AMXFLAG7" )
+						amxVS.insertVariable( pi->getSerial32(), 7, str2num( rha ) );
 					//
 					// New style user variables
 					//
@@ -106,20 +116,60 @@ namespace item
 						splitLine( rha, rha1, rha2 );
 						amxVS.insertVariable( pi->getSerial32(), str2num( rha1 ), rha2 );
 					}
-					else if ( lha == "ANIMID" )   pi->animSetId(hex2num(rha));
-					else if ( lha == "AUXDAMAGE" )       pi->auxdamage = str2num(rha);
-					else if ( lha == "AUXDAMAGETYPE" )   pi->auxdamagetype = static_cast<DamageType>(str2num(rha));
-					else if ( lha == "AMMO" )	pi->ammo = str2num(rha);
-					else if ( lha == "AMMOFX" )	pi->ammoFx = hex2num(rha);
+					else if ( lha == "ANIMID" )
+						pi->animSetId(hex2num(rha));
+					else if ( lha == "AUXDAMAGE" )
+						pi->auxdamage = str2num(rha);
+					else if ( lha == "AUXDAMAGETYPE" )
+						pi->auxdamagetype = static_cast<DamageType>(str2num(rha));
+					else if ( lha == "AMMO" )
+						pi->ammo = str2num(rha);
+					else if ( lha == "AMMOFX" )
+						pi->ammoFx = hex2num(rha);
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'C':
-					if ( lha == "COLOR" )
+					if	( lha == "COLOR" )
 					{
 						tmp = hex2num(rha);
 						pi->setColor(tmp);
 					}
-					else if ( lha == "CREATOR" )		pi->creator = rha;
+					else if ( lha == "CONTAINS" )
+					{
+						//
+						// Sparhawk: 	for containers only, an easy way to fill a container with items
+						//		Original idea by Pier Sotto Jox
+						//
+						switch( pi->type )
+						{
+							case ITYPE_CONTAINER		:
+							case ITYPE_UNLOCKED_CONTAINER	:
+							case ITYPE_LOCKED_CONTAINER	:
+								{
+									std::string	str_scriptId,
+											str_itemAmount;
+
+									splitLine( rha, str_scriptId, str_itemAmount );
+
+									SCRIPTID	scriptId = str2num( str_scriptId );
+									SI32		itemAmount = str2num( str_itemAmount );
+
+									if ( itemAmount < 1 )
+										itemAmount = 1;
+
+									P_ITEM pItem = CreateFromScript( scriptId, pi, itemAmount );
+
+									if( !ISVALIDPI( pItem ) )
+										WarnOut( "CreateFromScript: invalid attribute %s %s", lha.c_str(), rha.c_str() );
+								}
+								break;
+							default				:
+								WarnOut( "CreateFromScript: %s attribute in non container item %i", lha.c_str(), itemnum );
+						}
+						break;
+					}
+					else if ( lha == "CREATOR" )
+						pi->creator = rha;
 					else if ( lha == "COLORLIST" )
 					{
 						tmp = addrandomcolor(pi, const_cast<char*>(rha.c_str()));
@@ -130,7 +180,8 @@ namespace item
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'D':
-					if ( lha == "DAMAGE" )		pi->att = getRangedValue( const_cast<char*>(rha.c_str()) );
+					if	( lha == "DAMAGE" )
+						pi->att = getRangedValue( const_cast<char*>(rha.c_str()) );
 					else if ( lha == "DAMAGETYPE" )
 						pi->damagetype = static_cast<DamageType>(str2num(rha));
 					else if ( lha == "DEX" )
@@ -138,7 +189,7 @@ namespace item
 					else if ( lha == "DISABLED" )
 						pi->disabled = uiCurrentTime + (str2num(rha)*MY_CLOCKS_PER_SEC);// AntiChrist
 					else if ( lha == "DISABLEMSG" ) {
-						if( pi->disabledmsg!=NULL )
+						if( pi->disabledmsg )
 							(*pi->disabledmsg) = rha;
 						else
 							pi->disabledmsg= new std::string( rha );
@@ -200,10 +251,7 @@ namespace item
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'L':
-					// Sparhawk -> altered so that chars may get items on race enlistment
-					// Anthalir -> why && ( so==-1 || Race::isRaceSystemActive() ) ???
-					// this result that created item won't have layer set
-					if ( lha == "LAYER"  /*&& ( so==-1 || Race::isRaceSystemActive() )*/ )
+					if ( lha == "LAYER" )
 						pi->layer = pi->scriptlayer = str2num(rha);	//Luxor
 					else if ( lha == "LODAMAGE" )
 						pi->lodamage = str2num(rha);
@@ -350,8 +398,9 @@ namespace item
 			pi->amount=amount;
 
 		//Luxor: put it in the container
-        if ( ISVALIDPO( cont ) )
-			if( isItemSerial( cont->getSerial32() ) ) {
+		if ( ISVALIDPO( cont ) )
+			if( isItemSerial( cont->getSerial32() ) )
+			{
 				((P_ITEM)cont)->AddItem(pi);
 			}
 			else
