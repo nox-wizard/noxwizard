@@ -277,11 +277,7 @@ void profileStuff( NXWCLIENT ps, cPacketCharProfileReq& p )
 	if( p.update ) { //update profile
 		if( ( who->getSerial32()!=pc->getSerial32() ) && !pc->IsGMorCounselor() ) 
 			return; //lamer fix
-		if( who->getProfile()==NULL ) 
-			who->setProfile( new wstring( p.profile ) );
-		else 
-			who->getProfile()->copy( p.profile.begin(), p.profile.length() );
-
+		who->setProfile( new wstring( p.profile ) );
 	}
 	else { //only send
 		cPacketCharProfile resp;
