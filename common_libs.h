@@ -133,7 +133,6 @@ warnings/errors/issues.
 #ifdef  _MSC_VER
 	#ifndef STLPORT
 		#pragma pack(pop)
-		#pragma warning (pop)
 		#pragma warning(disable: 4103)
 		#pragma warning(disable: 4786)
 	#endif
