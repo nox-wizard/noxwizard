@@ -2304,9 +2304,9 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "SOUNDFX %i\n", pi->itemSoundEffect);
 		// Spawns
 		if (pi->getSpawnSerial() != dummy.getSpawnSerial())
-			fprintf(cWsc, "SPAWNSERIAL %i\n", pi->getSpawnSerial());
+			fprintf(iWsc, "SPAWNSERIAL %i\n", pi->getSpawnSerial());
 		if (pi->getSpawnRegion() != dummy.getSpawnRegion())
-			fprintf(cWsc, "SPAWNREGION %i\n", pi->getSpawnRegion());
+			fprintf(iWsc, "SPAWNREGION %i\n", pi->getSpawnRegion());
 		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 		if (!pi->vendorDescription.empty())
 			fprintf(iWsc, "DESC %s\n", pi->vendorDescription.c_str() );
