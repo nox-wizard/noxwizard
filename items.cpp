@@ -126,8 +126,8 @@ cItem& cItem::operator=(cItem& b)
         disabled = b.disabled;
         strcpy(disabledmsg, b.disabledmsg);
         tuses = b.tuses;
-        poisoned = b.poisoned;        
-        strcpy(murderer, b.murderer);
+        poisoned = b.poisoned;
+        murderer = b.murderer;
         murdertime = b.murdertime;
         time_unused = b.time_unused;
         timeused_last = b.timeused_last;
@@ -835,6 +835,7 @@ cItem::cItem( SERIAL ser )
 	setCurrentName("#");
 	setSecondaryName("#");
 	setScriptID( 0 );
+	murderer = string("");
 	creator[0] = '\0';
 	incognito=false;//AntiChrist - incognito
 	madewith=0; // Added by Magius(CHE)
@@ -915,7 +916,6 @@ cItem::cItem( SERIAL ser )
 	disabledmsg[0] = 0; //Item disabled message. -- by Magius(CHE) §
 	tuses=0;    //Number of uses for trigger
 	poisoned=POISON_NONE; //AntiChrist -- for poisoning skill
-	murderer[0]=0x00; //AntiChrist -- for corpse -- char's name who kille the char (forensic ev.)
 	murdertime=0; //AntiChrist -- for corpse -- when the people has been killed
 //	glow=0;
 //	glow_effect=0;

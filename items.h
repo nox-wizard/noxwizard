@@ -301,7 +301,7 @@ public:
 \name Corpse related
 */
 	LOGICAL		corpse;		//!< Is item a corpse
-	char		murderer[50];	//!< char's name who kille the char (forensic ev.)
+	string		murderer;	//!< char's name who kille the char (forensic ev.)
 	SI32		murdertime;	//!< when the people has been killed
 //@}
 

@@ -2945,7 +2945,7 @@ void cChar::Kill()
 	pCorpse->corpse = 1;
 	pCorpse->setDecayTime();
 
-	strncpy(pCorpse->murderer, murderername, 48);
+	pCorpse->murderer = string(murderername);
 	pCorpse->murdertime = uiCurrentTime;
 	pCorpse->Refresh();
 

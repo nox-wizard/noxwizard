@@ -2207,7 +2207,7 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 
     if(pc_currchar->IsGM())
     {
-        sprintf((char*)temp,TRANSLATE("The %s is %i seconds old and the killer was %s."), pi->getCurrentNameC(), (curtim-pi->murdertime)/MY_CLOCKS_PER_SEC, pi->murderer);
+        sprintf((char*)temp,TRANSLATE("The %s is %i seconds old and the killer was %s."), pi->getCurrentNameC(), (curtim-pi->murdertime)/MY_CLOCKS_PER_SEC, pi->murderer.c_str());
         sysmessage(s, (char*)temp);
     }
     else
@@ -2220,9 +2220,9 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
             if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy((char*)temp2,TRANSLATE("many many"));
             sprintf((char*)temp,TRANSLATE("The %s is %s seconds old."), pi->getCurrentNameC(), temp2);
             sysmessage(s,(char*)temp);
-            if (!pc_currchar->checkSkill( FORENSICS, 500, 1000) || *(pi->murderer)=='\0') sysmessage(s,TRANSLATE("You can't say who was the killer.")); else
+            if (!pc_currchar->checkSkill( FORENSICS, 500, 1000) || *(pi->murderer.c_str())=='\0') sysmessage(s,TRANSLATE("You can't say who was the killer.")); else
             {
-                sprintf((char*)temp,TRANSLATE("The killer was %s."),pi->murderer);
+                sprintf((char*)temp,TRANSLATE("The killer was %s."),pi->murderer.c_str());
                 sysmessage(s,(char*)temp);
             }
         }

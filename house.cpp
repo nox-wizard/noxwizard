@@ -704,29 +704,25 @@ void addthere(int s, int xx, int yy, int zz, int t)
 }
 
 /*!
- \todo should be removed or rewrite, now is commented out (!!!! THIS CREATE THE BUG OF CLONED KEYS!!!! - Akron)
- */
+\author Luxor
+\note This function use a BAD method based on cAllObjects, will be substituted with a map system.
+*/
 void killkeys(SERIAL serial) // Crackerjack 8/11/99
 {
-/*	unsigned int i;
-	if (serial == -1)
+	if ( serial <= INVALID )
 		return;
-	for (i = 0; i < itemcount; i++)
-	{
 
-		P_ITEM pi=MAKE_ITEM_REF(i);
+	cAllObjectsIter objs;
+	P_ITEM pi = NULL;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
+		if ( !isItemSerial( objs.getSerial() ) )
+			continue;
 
-		if(ISVALIDPI(pi))
-
-		{
-			if (pi->type == ITYPE_KEY && calcserial(pi->more1, pi->more2, pi->more3, pi->more4) == serial)
-			{
+		if ( ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
+			if ( pi->type == ITYPE_KEY && calcserial(pi->more1, pi->more2, pi->more3, pi->more4) == serial )
 				pi->deleteItem();
-			}
-
 		}
-	}*/
-	return;
+	}
 }
 
 /*!
