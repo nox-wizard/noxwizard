@@ -190,7 +190,21 @@ void gettokennum(std::string s, int num)
 
 int getRangedValue( std::string str )
 {
-	getRangedValue( str.c_str() );
+	int	lovalue ,
+		hivalue ,
+		retcode = 0;
+
+	gettokennum( str, 0);
+	lovalue=str2num(gettokenstr);
+	gettokennum( str, 1);
+	hivalue=str2num(gettokenstr);
+
+	if (hivalue) {
+		retcode = RandomNum(lovalue, hivalue);
+	} else {
+		retcode = lovalue;
+	}
+	return retcode;
 }
 // Added by Krozy on 7-Sep-98
 // New getstatskillvalue function.
@@ -198,7 +212,6 @@ int getRangedValue( std::string str )
 // If its one value - It returns that value.
 // If its two values - It gets a random number between the values
 int getRangedValue(char *stringguy) {
-
 
 	char values[512];
 	int lovalue,hivalue,retcode;
