@@ -55,12 +55,13 @@ nxwGump* nxwGump::selectGump( UI32 gump )
 
 LOGICAL nxwGump::showGump( UI32 gump, P_CHAR pc )
 {
-	if( gumpMap.find( gump ) != gumpMap.end() )
+	nxwGump* pGump = selectGump( gump );
+	if( pGump )
 	{
-		gumpMap[ gump ]->show( pc );
+		pGump->show( pc );
 		return 1;
 	}
-	return 0;	
+	return 0;
 }
 
 LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
