@@ -1256,6 +1256,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) 
 		{
 			g_bByPass = false;
+			pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 			pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
 			if (g_bByPass) {
 				pi->Refresh();
