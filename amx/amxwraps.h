@@ -441,6 +441,7 @@ const int NXW_SPEECH_EMOTE_ALL = 6;
 //const int NXW_GP_B = 0;
 //const int NXW_GP_C = 100;
 const int NXW_GP_C_TYPE = 100;
+const int NXW_GP_C_STONE = 101;
 //const int NXW_GP_I = 200;
 //const int NXW_GP_S = 400;
 //const int NXW_GP_STR = 450;

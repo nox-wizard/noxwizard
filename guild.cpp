@@ -157,6 +157,16 @@ void cGuild::save( FILE* file )
 #define MAX_NAME_LENGTH 41
 
 /*!
+\brief Get the guild serial/stone id
+\author Wintermute
+\return the guild serial which is also the serial of the guildstone
+*/
+SERIAL cGuild::getSerial()
+{
+	return serial;
+}
+
+/*!
 \brief Set the new guild name
 \author Endymion
 \param newName the new name
@@ -621,7 +631,7 @@ bool cGuildz::load()
 			{
 				P_GUILD guild = new cGuild( str2num( c ) );
 				guild->load( file );
-				guilds.insert( make_pair( guild->serial, guild ) );
+				guilds.insert( make_pair( guild->getSerial(), guild ) );
 			}
 		}
 	} 
@@ -632,13 +642,28 @@ bool cGuildz::load()
 
 }
 
+/*!
+\brief add a new guild to the list of guilds
+\author Endymion
+\param stone, the serial of the guildstone
+\return pointer to guild object
+*/
+
 P_GUILD cGuildz::addGuild( SERIAL stone ) {
 
 	P_GUILD guild = new cGuild( stone );
-	guilds.insert( make_pair( guild->serial, guild ) );
+	guilds.insert( make_pair( guild->getSerial(), guild ) );
 	return guild;
 
 }
+
+/*!
+\brief get a guild pointer for a given guild
+\author Endymion
+\param guild, the serial of the guildstone
+\return pointer to guild object
+*/
+
 
 P_GUILD cGuildz::getGuild( SERIAL guild )
 {
@@ -649,4 +674,16 @@ P_GUILD cGuildz::getGuild( SERIAL guild )
 		return NULL;
 }
 
+/*!
+\brief remove a guild from the list of guilds
+\author Wintermute
+\param guild, the serial of the guildstone
+
+*/
+
+
+void cGuildz::removeGuild( SERIAL guild )
+{
+	guilds.erase(guild);
+}
 

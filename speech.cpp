@@ -542,7 +542,8 @@ int response(NXWSOCKET  s)
 						strcpy( search1, pc_map->getCurrentNameC() );
 						strupr( search1 );
 						bool requestPetname = ( strstr( comm, search1) != NULL );
-						if ( requestPetname )
+						bool allName = ( strstr( comm, "ALL ") != NULL );
+						if ( requestPetname || allName)
 						{
 							pc->guarded = false; // Hmmm still not very nice needs to be changed <sparhawk>
 							if ( pc_map->npcaitype == NPCAI_PLAYERVENDOR )
@@ -662,7 +663,8 @@ int response(NXWSOCKET  s)
 						strcpy(search1, pc_map->getCurrentNameC());
 						strupr(search1);
 						bool requestPetname = (strstr( comm, search1) != NULL);
-						if ( requestPetname )
+						bool allName = ( strstr( comm, "ALL ") != NULL );
+						if ( requestPetname || allName)
 						{
 							pc->guarded = false;
 							pc_map->ftargserial=pc->getSerial32();
@@ -683,7 +685,8 @@ int response(NXWSOCKET  s)
 						strcpy(search1, pc_map->getCurrentNameC());
 						strupr(search1);
 						bool requestPetname = ( strstr( comm, search1) != NULL);
-						if (requestPetname)
+						bool allName = ( strstr( comm, "ALL ") != NULL );
+						if ( requestPetname || allName)
 						{
 							P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
 							targ->code_callback=target_guard;
@@ -710,7 +713,9 @@ int response(NXWSOCKET  s)
 					{
 						strcpy( search1, pc_map->getCurrentNameC());
 						strupr( search1 );
-						if ( strstr( comm, search1) != NULL ) //if petname is in
+						bool requestPetname = ( strstr( comm, search1) != NULL);
+						bool allName = ( strstr( comm, "ALL ") != NULL );
+						if ( requestPetname || allName)
 						{
 							pc->guarded = false; // Sparhawk	How about when more than 1 pets is guarding me??
 							//pet stop code here
@@ -1204,8 +1209,10 @@ static LOGICAL renameRune( P_CHAR pc, NXWSOCKET socket, string &name )
 	P_ITEM pi = pointers::findItemBySerial( pc->runeserial );
 	if( ISVALIDPI( pi ) )
 	{
-		pi->setCurrentName( TRANSLATE("Rune to %s"), name.c_str() );
-		sysmessage( socket, TRANSLATE("Rune renamed to: Rune to %s"), name.c_str() );
+		// pi->setCurrentName( TRANSLATE("Rune to %s"), name.c_str() );
+		// sysmessage( socket, TRANSLATE("Rune renamed to: Rune to %s"), name.c_str() );
+		pi->setCurrentName( name.c_str() );
+		sysmessage( socket, TRANSLATE("Rune renamed to: %s"), name.c_str() );
 		pc->runeserial = INVALID;
 		success = true;
 	}
@@ -1326,12 +1333,17 @@ static LOGICAL resignFromGuild( P_CHAR pc, NXWSOCKET socket, string &resign )
 	LOGICAL success = false;
 	if (!resign.compare("I RESIGN FROM MY GUILD"))
 	{
-		Guilds->Resign( pc, socket );
+		P_GUILD guild = Guildz.getGuild((SERIAL) pc->getGuild());
+		if ( guild != NULL )
+		{
+			guild->resignMember(pc);
+		}
 		pc->ResetGuildTitleToggle();		// Toggle for Guildtitle								(DasRaetsel)
 		pc->SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
 		pc->SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
 		pc->SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
-
+		pc->setGuild(NULL, NULL);
+		// pc->setGuildBlockTime(		// Block player for server configured time to join another guild
 		success = true; // just to make sure this speech is not processed further
 	}
 	return success;

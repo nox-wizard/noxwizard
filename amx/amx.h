@@ -122,7 +122,7 @@ typedef struct {
 } AMX_NATIVE_INFO;
 
 #define AMX_USERNUM     4
-#define sEXPMAX         19
+#define sEXPMAX         30
 typedef struct {
   cell address;
   char name[sEXPMAX+1];

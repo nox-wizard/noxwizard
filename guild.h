@@ -115,6 +115,9 @@ typedef enum {
 */
 class cGuild
 {
+private:
+	SERIAL serial;	//!< guild serial, is equal to the guildstone serial
+	GUILD_TYPE type;	//!< guild type
 
 	public:
 
@@ -123,8 +126,6 @@ class cGuild
 
 	public:
 
-		SERIAL serial;	//!< guild serial, is equal to the guildstone serial
-		GUILD_TYPE type;	//!< guild type
 
 
 	private:
@@ -146,11 +147,15 @@ class cGuild
 		cGuild( SERIAL guildstone );
 		~cGuild();
 		void load();
+		SERIAL getSerial();
 
 		void setName( std::string &newName );
 		std::string getName();
 		void setAbbreviation( std::string &newAbbr );
 		std::string getAbbreviation();
+		inline const	GUILD_TYPE	getGuildType() const { return type; };
+		inline void		setGuildType(GUILD_TYPE newGuildType)  
+		{ if ( newGuildType >= GUILD_TYPE_NORMAL && newGuildType <=  GUILD_TYPE_CHAOS) type = newGuildType; };
 
 		// Helper functions for 
 		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };
@@ -211,6 +216,7 @@ class cGuildz
 
 		P_GUILD getGuild( SERIAL guild );
 		P_GUILD addGuild( SERIAL stone );
+		void removeGuild( SERIAL guild );
 
 };
 

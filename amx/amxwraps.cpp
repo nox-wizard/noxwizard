@@ -1696,7 +1696,7 @@ NATIVE( _chr_getGuild )
 	VALIDATEPCR( pChar, INVALID);
 
 	P_GUILD guild = pChar->getGuild();
-	return ( guild!=NULL )? guild->serial : INVALID;
+	return ( guild!=NULL )? guild->getSerial() : INVALID;
 }
 
 /*
@@ -4504,7 +4504,20 @@ NATIVE(_guild_create)
 {
 
 	P_GUILD guild = Guildz.addGuild( params[1] );
-	return ( guild!=NULL )? guild->serial : INVALID;
+	return ( guild!=NULL )? guild->getSerial() : INVALID;
+}
+
+/*
+\brief Remove a guild
+\author Wintermute
+\since 0.82
+\param 1 the serial
+\note serial is same of guildstone
+*/
+NATIVE(_guild_remove)
+{
+	Guildz.removeGuild( params[1] );
+	return true;
 }
 
 /*
@@ -6146,6 +6159,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_setProperty", _guild_setProperty },
  { "guild_getProperty", _guild_getProperty },
  { "guild_create", _guild_create },
+ { "guild_remove", _guild_remove },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
  { "guild_memberAtIndex", _guild_memberAtIndex },
