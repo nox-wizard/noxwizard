@@ -81,7 +81,7 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 */
 void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, cUnicodeString* c, int& from, int size )
 {
-	c->copy( (char*)&buffer[from], size );
+	c->copy( (char*)&buffer[s][from], size );
 	if( size==INVALID )
 		from+=c->size();
 	else
@@ -363,10 +363,10 @@ RECEIVE( CharProfileReq ) {
 	
 	int offset=1;
 	
-	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize, offset );
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
 	if( update ) { //complete packet so
 		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
-		getUnicodeStringFromSocket( s, &this->profile, offset, len.get() );
+		getUnicodeStringFromSocket( s, &this->profile, offset, len.get()*2 );
 	}
 }
 
