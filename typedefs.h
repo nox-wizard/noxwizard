@@ -52,10 +52,6 @@ typedef bool				LOGICAL;	//!< boolean type
 typedef char				TEXT;		//!< character type
 
 
-typedef UI16 uchar_t;
-typedef basic_string <uchar_t> ustring;
-
-
 typedef UI08				ARMORCLASS;
 typedef UI16				BODYTYPE;
 typedef SI32				CHARACTER;
@@ -78,7 +74,9 @@ typedef std::vector<SERIAL>		SERIAL_VECTOR;	//!< vector of serials
 
 typedef std::set<SERIAL>		SERIAL_SET;	//!< set of serials
 
-
+#if defined __GNUC__ && __GNUC__ < 3
+typedef basic_string <wchar_t> wstring;
+#endif
 
 #ifdef __BORLANDC__
 	#include <stlport/hash_map>
