@@ -1604,7 +1604,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 			saycolor2=0x5B;
 		}
 
-		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, (saycolor1<<8)|(saycolor2%256), fonttype, name, &buffer[s][8]);
+		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, (saycolor1<<8)|(saycolor2%256), fonttype, name, (UI08 *)txt);
 	}
 }
 
