@@ -388,6 +388,88 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 }
 
 /*!
+\brief calls an amx function with 7 integer parameters
+\author Endymion
+\return cell
+\param idx function index (as returned by funcidx())
+\param param1 parameter 1
+\param param2 parameter 2
+\param param3 parameter 3
+\param param4 parameter 4
+\param param5 parameter 5
+\param param6 parameter 6
+\param param7 parameter 7
+*/
+cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4, int param5, int param6, int param7)
+{
+	CHECKAMX;
+	try {
+	  cell ret = 0;
+	  cell par1 = param1;
+	  cell par2 = param2;
+	  cell par3 = param3;
+	  cell par4 = param4;
+	  cell par5 = param5;
+   	  cell par6 = param6;
+   	  cell par7 = param7;
+	  int err;
+
+	  if (m_nSize==0) return -2;
+
+	  err = amx_Exec(m_AMX, &ret, idx, 7, par1, par2, par3, par4, par5, par6, par7);
+  	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 7, par1, par2, par3, par4, par5, par6, par7);
+
+	  return ret;
+
+	} catch(...) {
+		ConOut("Exception Handled during AMX Script Execution : skipping script\n");
+		return -1;
+	}
+}
+
+/*!
+\brief calls an amx function with 7 integer parameters
+\author Endymion
+\return cell
+\param idx function index (as returned by funcidx())
+\param param1 parameter 1
+\param param2 parameter 2
+\param param3 parameter 3
+\param param4 parameter 4
+\param param5 parameter 5
+\param param6 parameter 6
+\param param7 parameter 7
+\param param8 parameter 8
+*/
+cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4, int param5, int param6, int param7, int param8)
+{
+	CHECKAMX;
+	try {
+	  cell ret = 0;
+	  cell par1 = param1;
+	  cell par2 = param2;
+	  cell par3 = param3;
+	  cell par4 = param4;
+	  cell par5 = param5;
+   	  cell par6 = param6;
+   	  cell par7 = param7;
+   	  cell par8 = param8;
+	  int err;
+
+	  if (m_nSize==0) return -2;
+
+	  err = amx_Exec(m_AMX, &ret, idx, 8, par1, par2, par3, par4, par5, par6, par7, par8);
+  	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 8, par1, par2, par3, par4, par5, par6, par7, par8);
+
+	  return ret;
+
+	} catch(...) {
+		ConOut("Exception Handled during AMX Script Execution : skipping script\n");
+		return -1;
+	}
+}
+
+/*!
 \brief calls an amx function with 5 integer parameters
 \author Luxor
 \return cell
@@ -1193,6 +1275,40 @@ cell AmxFunction::Call( int param1, int param2, int param3, int param4, int para
 	return g_prgOverride->CallFn( function, param1, param2, param3, param4, param5, param6 );
 }
 
+/*
+\brief Call the function wih 7 params
+\author Endymion
+\return the function return
+\param param1 the 1 param
+\param param2 the 2 param
+\param param3 the 3 param
+\param param4 the 4 param
+\param param5 the 5 param
+\param param6 the 6 param
+\param param7 the 7 param
+*/
+cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5, int param6, int params7 )
+{
+	return g_prgOverride->CallFn( function, param1, param2, param3, param4, param5, param6, params7 );
+}
+
+/*
+\brief Call the function wih 8 params
+\author Endymion
+\return the function return
+\param param1 the 1 param
+\param param2 the 2 param
+\param param3 the 3 param
+\param param4 the 4 param
+\param param5 the 5 param
+\param param6 the 6 param
+\param param7 the 7 param
+\param param8 the 8 param
+*/
+cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5, int param6, int params7, int params8 )
+{
+	return g_prgOverride->CallFn( function, param1, param2, param3, param4, param5, param6, params7, params8 );
+}
 
 
 

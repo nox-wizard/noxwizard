@@ -214,7 +214,7 @@ NATIVE(_cfgServerOption)
 NATIVE(_getTarget)
 {
 	
-	NXWCLIENT ps = getClientFromSocket( params[2] );
+	NXWCLIENT ps = getClientFromSocket( params[1] );
 	if( ps==NULL ) return 0;
 	
 	cell *cstr;
@@ -5698,11 +5698,39 @@ NATIVE( _gui_addIcon )
 \brief Create a new target
 \author Endymion
 \since 0.82
-\param 1 the menu serial
+\param 1 chr
+\param 2 param
+\param 3 param
+\param 4 doNow
+\param 5 func callback
 \return the target serial
 */
 NATIVE( _target_create )
 {
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, INVALID );
+
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )
+		return INVALID;
+
+	P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cTarget() );
+	targ->code_callback=amxCallback;
+	targ->buffer[0]=params[2];
+	targ->buffer[1]=params[3];
+
+	cell *cstr;
+	amx_GetAddr(amx,params[5],&cstr);
+	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	
+	targ->amx_callback = new AmxFunction( g_cAmxPrintBuffer );
+
+	if( params[4] )
+		targ->send( ps );
+
+	return targ->serial;
 
 }
 
@@ -5710,16 +5738,30 @@ NATIVE( _target_create )
 \brief Send target to character
 \author Endymion
 \since 0.82
-\param 1 the menu serial
+\param 1 the target serial
+\param 2 the chr
 \return true if sender, false if error
 */
 NATIVE( _target_do )
 {
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )
+		return false;
+
+	P_TARGET targ = clientInfo[ps->toInt()]->getTarget();
+	if( ( targ!=NULL ) && ( targ->serial=params[1] ) ) {
+		targ->send( ps );
+		return true;
+	}
+	else 
+		return false;
+
+	
 }
 
-NATIVE( _target_getProperty )
-{
-}
 
 
 
@@ -6134,8 +6176,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "race_getProperty",	_getRaceProperty },
  { "race_getGlobalProp",	_getRaceGlobalProp },
 // target functions - Endymion
-// { "target_create",	_target_create },
-// { "target_do",	_target_do },
+ { "target_create",	_target_create },
+ { "target_do",	_target_do },
 // { "target_getProperty", _target_getProperty },
 // { "target_setProperty", _target_getProperty },
 // Terminator :

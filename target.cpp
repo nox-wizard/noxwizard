@@ -12,6 +12,7 @@
 #include "client.h"
 #include "inlines.h"
 #include "network.h"
+#include "archive.h"
 
 
 SERIAL cTarget::serial_current = 0;
@@ -155,6 +156,27 @@ void amxCallbackOld( NXWCLIENT ps, P_TARGET t )
 	t->amx_callback->Call( ps->toInt(), INVALID, INVALID, loc.x, loc.y, loc.z );
 }
 
+void amxCallback( NXWCLIENT ps, P_TARGET t )
+{
+	if( t->amx_callback==NULL) 
+		return;
+
+	UI16 model = t->getModel();
+	if( model == 0 ) 
+		model = INVALID;
+
+	/// targ_serial, chr, obj, x, y, z, model, param
+	
+	P_OBJECT po = objects.findObject( t->getClicked() );
+	if( ISVALIDPO(po) ) {
+        t->amx_callback->Call( t->serial, ps->currCharIdx(), po->getSerial32(), INVALID, INVALID, INVALID, model, t->buffer[0] );
+        return;
+    }
+	else {
+	    Location loc = t->getLocation();
+        t->amx_callback->Call( t->serial, ps->currCharIdx(), INVALID, loc.x, loc.y, loc.z, model, t->buffer[0] );
+	}
+}
 
 
 P_TARGET createTarget( TARG_TYPE type )

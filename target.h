@@ -95,7 +95,7 @@ public:
 
 
 void amxCallbackOld( NXWCLIENT ps, P_TARGET t );
-
+void amxCallback( NXWCLIENT ps, P_TARGET t );
 
 
 typedef enum {

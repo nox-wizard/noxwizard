@@ -58,8 +58,10 @@ public:
 	cell CallFn (int fn, int param1, int param2);
 	cell CallFn (int fn, int param1, int param2, int param3 );
 	cell CallFn (int fn, int param1, int param2, int param3, int param4 );
-	cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5); //Luxor
-    cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5, int param6); //Luxor
+	cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5);
+    cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5, int param6);
+	cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5, int param6, int param7);
+	cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5, int param6, int param7, int param8);
 	int getFnOrdinal (char *fn);
 	explicit AmxProgram (const char *filename) { Load(filename); };
 	AmxProgram () { m_ptrCode = NULL; }
@@ -100,6 +102,8 @@ public:
 	cell Call( int param1, int param2, int param3, int param4 );
 	cell Call( int param1, int param2, int param3, int param4, int param5 );
     cell Call( int param1, int param2, int param3, int param4, int param5, int param6 );
+    cell Call( int param1, int param2, int param3, int param4, int param5, int param6, int params7 );
+    cell Call( int param1, int param2, int param3, int param4, int param5, int param6, int params7, int params8 );
 
 
 };
