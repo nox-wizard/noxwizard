@@ -524,9 +524,6 @@ const int RP_C_TYPE = 100;
 const int RP_C_LAYER_PERMITTED = 101;
 
 const int RP_I_STARTLOCATION = 200;
-const int RSP_I_LOCATION_X = 201;
-const int RSP_I_LOCATION_Y = 202;
-const int RSP_I_LOCATION_Z = 203;
 
 const int RP_S_SKIN = 400;
 

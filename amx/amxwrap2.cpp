@@ -3408,20 +3408,27 @@ NATIVE2(_getRaceGlobalProp)
 	case T_INT: {
 
 		int p;
+		
 		switch(params[1]) {
-			
-		case RP_I_STARTLOCATION: {
 
-			switch(params[2]) {
-
-			case RSP_I_LOCATION_X : p = Race::startLocation[1];
-
-			case RSP_I_LOCATION_Y :	p = Race::startLocation[2];
-
-			case RSP_I_LOCATION_Z : p = Race::startLocation[3];
+		case RP_I_STARTLOCATION:					//dec value: 200;
+			switch( params[2] )
+			{
+				case NXW_CP2_X :
+					p = Race::startLocation[0];
+					break;
+				case NXW_CP2_Y :
+					p = Race::startLocation[1];
+					break;
+				case NXW_CP2_Z :
+					p = Race::startLocation[2];
+					break;
+				default:
+				ErrOut("race_getGlobalProp called with invalid sub-property %d!\n", params[2] );
+				return INVALID;
 			}
-		}
-
+			break;
+			
 		case INVALID:
 			
 		default:
