@@ -49,7 +49,7 @@ namespace item
 						SI32 nAmount, char* cName, LOGICAL pileable,
 						SI16 id, SI16 color, LOGICAL nPack);*/
 
-	P_ITEM		SpawnItemBank(CHARACTER ch, int nItem);
+	P_ITEM		SpawnItemBank(CHARACTER ch, int nItem, int amount=INVALID);
 	P_ITEM		SpawnItemBackpack2(NXWSOCKET  s, int nItem, int nDigging);
 
 	void		AddRespawnItem(int s, int x, int y);

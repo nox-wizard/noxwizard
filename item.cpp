@@ -545,7 +545,7 @@ namespace item
 		return pi;
 	}*/
 
-	P_ITEM SpawnItemBank(CHARACTER ch, int nItem)
+	P_ITEM SpawnItemBank(CHARACTER ch, int nItem, int amount)
 	{
 
 		if (ch < 0)
@@ -564,7 +564,7 @@ namespace item
 		}
 
 		NXWSOCKET  s = pc->getSocket();
-		P_ITEM pi = item::CreateFromScript( nItem, backbox );
+		P_ITEM pi = item::CreateFromScript( nItem, bankbox, amount );
 		VALIDATEPIR(pi,NULL);
 		item::GetScriptItemSetting(pi);
 		statwindow(pc,pc);

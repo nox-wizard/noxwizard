@@ -105,11 +105,10 @@ void newbieitems(P_CHAR pc)
 				{
 					std::string itemnum, amount;
 					splitLine( script2, itemnum, amount );
-					P_ITEM pi = item::SpawnItemBank( DEREF_P_CHAR(pc), str2num( itemnum ) ); // Tauriel 11-24-98
+					int amt= (amount!="")? str2num( amount ) : INVALID;
+					P_ITEM pi = item::SpawnItemBank( DEREF_P_CHAR(pc), str2num( itemnum ), amt ); // Tauriel 11-24-98
 					if (ISVALIDPI(pi)) {
 						pi->priv |= 0x02; // Mark as a newbie item
-						if( strcmp( script3, "" ) ) //ndEndy defined amount
-							pi->amount=str2num( script3 );
 					}
 					strcpy(script1, "DUMMY");
 				}
