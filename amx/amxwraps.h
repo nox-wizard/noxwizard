@@ -391,6 +391,7 @@ const int NXW_IP_S_AMOUNT2 = 401;
 const int NXW_IP_S_DIR = 402;
 const int NXW_IP_S_COLOR = 403;
 const int NXW_IP_S_ID = 404;
+const int NXW_IP_S_SFX = 405;
 
 const int NXW_IP_STR_CREATOR = 450;
 const int NXW_IP_STR_DESCRIPTION = 451;

@@ -7617,6 +7617,163 @@ NATIVE (_isItem )
 		return 1;
 }
 
+NATIVE ( _chr_disconnect )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	else
+		if ( pc->IsOnline() )
+			Network->Disconnect(pc->getSocket());
+	return 1;
+}
+
+NATIVE ( _chr_ban )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	else
+	{
+		cAccount *acc = Accounts->GetAccount(pc->account);
+		if ( acc != NULL ) 
+		{
+			acc->ban=true;
+			if ( pc->IsOnline() )
+				Network->Disconnect(pc->getSocket());
+		}
+	}
+	return 1;
+}
+
+NATIVE ( _chr_unban )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	else
+	{
+		cAccount *acc = Accounts->GetAccount(pc->account);
+		if ( acc != NULL ) 
+			acc->ban=false;
+	}
+	return 1;
+		
+}
+
+/*
+\brief returns the current ip of the account
+\param 1 account number
+*/
+
+NATIVE ( _chr_getIP )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc) || ! pc->IsOnline())
+		return 0;
+	else
+	{
+		cell *cptr;
+		amx_GetAddr(amx, params[2], &cptr);
+		UI32 ip = clientInfo[pc->getSocket()]->getClientIp();
+		char buf [16];
+		sprintf(buf, "%d.%d.%d.%d", ip&0xFF, (ip>>8)&0xFF, (ip>>16)&0xFF, (ip>>24)&0xFF);
+		amx_SetString(cptr, buf	, g_nStringMode);
+	}
+	return 1;
+}
+
+
+/*
+\brief Deletes the account number denoted by param 1
+\param 1 account number to be deleted
+*/
+
+NATIVE ( _account_delete )
+{
+	cell *cstr;
+	amx_GetAddr(amx, params[1], &cstr);
+	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;	
+	std::string accname = g_cAmxPrintBuffer;
+
+	return Accounts->RemoveAccount(accname);
+}
+
+/*
+\brief Blocks the account number denoted by param 1
+\param 1 account number to be blocked
+*/
+
+NATIVE ( _account_block )
+{
+	cAccount *acc = Accounts->GetAccount(params[1]);
+	if ( acc != NULL ) 
+		acc->ban=true;
+	return 1;
+		
+}
+
+/*
+\brief changes the password for the account
+\param 1 account number to be changed
+\param 2 new password
+*/
+
+NATIVE ( _account_changePW )
+{
+	cell *cstr;
+	amx_GetAddr(amx, params[2], &cstr);
+	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;	
+	std::string accpassword = g_cAmxPrintBuffer;
+	cAccount *acc = Accounts->GetAccount(params[1]);
+	if ( acc != NULL ) 
+		acc->changePassword(accpassword);
+	return 1;
+		
+}
+
+/*
+\brief returns the current ip of the account
+\param 1 account number
+*/
+NATIVE ( _account_getLastIP )
+{
+	cAccount *acc = Accounts->GetAccount(params[1]);
+	cell *cptr;
+	amx_GetAddr(amx, params[2], &cptr);
+	amx_SetString(cptr,	(char * )(acc->getLastIp().c_str()), g_nStringMode);
+	if ( acc != NULL ) 
+		return 0;
+	return 1;
+}
+
+NATIVE ( _chr_showSellGump )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	P_CHAR buyer=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	if ( !ISVALIDPC(buyer) || !buyer->IsOnline())
+		return 0;
+	sellstuff(buyer->getSocket(), params[1] );
+	return 1;
+}
+
+NATIVE ( _chr_showBuyGump )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	P_CHAR buyer=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	if ( !ISVALIDPC(buyer) || !buyer->IsOnline())
+		return 0;
+	sellstuff(buyer->getSocket(), params[1] );
+	return 1;
+}
 
 /*!
 \file
@@ -7776,6 +7933,12 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_equip", _chr_equip},
  { "chr_kill", _chr_kill},
  { "chr_showStatus", _chr_showStatus},
+ { "chr_getIP", _chr_getIP},
+ { "chr_disconnect", _chr_disconnect},
+ { "chr_ban", _chr_ban},
+ { "chr_unban", _chr_unban},
+ { "chr_showSellGump", _chr_showSellGump},
+ { "chr_showBuyGump", _chr_showBuyGump},
 //
 // Local property functions
 //
@@ -8107,6 +8270,11 @@ AMX_NATIVE_INFO nxw_API[] = {
 
 // speech APIs
  { "chr_getSpeech", _chr_getCmdSpeech },
+// accounts
+ { "account_delete", _account_delete },
+ { "account_block", _account_block },
+ { "account_changePW", _account_changePW },
+ { "account_getLastIP", _account_getLastIP },
 
 // Terminator :
  { NULL, NULL }

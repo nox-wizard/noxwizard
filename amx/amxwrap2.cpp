@@ -470,6 +470,9 @@ void setItemShortProperty(P_ITEM pi, int property, int prop2, short value )
 		case NXW_IP_S_ID :
 			pi->setId( value );
 			break;
+		case NXW_IP_S_SFX :
+			pi->setSound(value);
+			break;
 		default :
 			ErrOut("itm_setProperty called with invalid property %d!\n", property );
 			break;
@@ -724,6 +727,7 @@ short getItemShortProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_S_DIR, pi->dir )   //dec value :  402;
 		CHECK(NXW_IP_S_COLOR, pi->getColor() )
 		CHECK(NXW_IP_S_ID, pi->getId() )
+		CHECK(NXW_IP_S_SFX, pi->getSound() )
 		default:
 			ErrOut("itm_getProperty called with invalid property %d!\n", property );
 			return INVALID;
