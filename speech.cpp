@@ -1907,15 +1907,15 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 }// namespace Speech
 
 
-/*inline void makeGhost( wstring* from, wstring* to ) {
+inline void makeGhost( wstring* from, wstring* to ) {
 
 	wstring::iterator iter( from->begin() ), end( from->end() );
 	for( ; iter!=end; iter++) {
-		if( (*iter)!=32 && (*iter)!=0x0000 )
-			(*to) += ( (*iter) %2)? L'O' : L'o';
+		if( (*iter)!=32 )
+			(*to)+= ((*iter) %2)? L'O' : L'o';
 	}
 
-}*/
+}
 
 
 void talking( NXWSOCKET socket, string speech) // PC speech
@@ -2037,10 +2037,10 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
-	wstring* speechUni= new wstring();
-	string2wstring( speech, *speechUni );
+	wstring speechUni;
+	string2wstring( speech, speechUni );
 
-	//wstring* speechGhostUni=NULL;
+	wstring* speechGhostUni=NULL;
 
 	int range;
 	switch ( buffer[socket][3] ) {
@@ -2074,37 +2074,42 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			talk.language = calcserial( 'E', 'N', 'U',  0 );
 		}
 
-		bool ghost=false;
+		bool ghost;
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
-			/*if( speechGhostUni==NULL ) {
+			if( speechGhostUni==NULL ) {
 				speechGhostUni=new wstring();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->setSpeechCurrent( new wstring( *speechGhostUni ) );*/
-			pc->deleteSpeechCurrent();
-			pc->emote( a_pc->getSocket(), "*Speaks in an uncomprehensible way*", true );
+			//ndEndy not set speechGhostUni because want send true speech to event
 			ghost=true;
 		}
-		else
-			pc->setSpeechCurrent( new wstring( *speechUni ) );
+		else 
+			ghost=false;
+		
+		pc->setSpeechCurrent( &speechUni );
 
-		/*
-		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
-			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
-		}
-		*/
 		a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
+		
+		bool modifiedInEvent;
+		if( pc->getSpeechCurrent()==&speechUni ) { //so not was modified in event
+			modifiedInEvent=false;
+			if( ghost )
+				pc->setSpeechCurrent( speechGhostUni );
+		}
+		else
+			modifiedInEvent=true;
+
+			
 		talk.msg=pc->getSpeechCurrent();
 		talk.send( a_pc->getClient() );
 
-		if( ( pc->getSpeechCurrent()!=speechUni ) /*&& ( pc->getSpeechCurrent()!=speechGhostUni )*/ ) //so was modified in event
+		if( modifiedInEvent )
 			pc->deleteSpeechCurrent();
 	}
 
-	safedelete(speechUni);
 	pc->resetSpeechCurrent();
-	/*if( speechGhostUni!=NULL )
-		safedelete(speechGhostUni);*/
+	if( speechGhostUni!=NULL )
+		safedelete(speechGhostUni);
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
 	{
