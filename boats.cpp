@@ -64,7 +64,8 @@ UI08 cShipItems[4][6]=
 */
 P_ITEM findmulti(Location where)
 {
-/*	int lastdist=30;
+#if 0
+	int lastdist=30;
 	P_ITEM pmulti=NULL;
 	
 	NxwItemWrapper si;
@@ -91,12 +92,13 @@ P_ITEM findmulti(Location where)
 		}
 	}
 
-	return pmulti;*/
+	return pmulti;
+#endif
 	return NULL;
 }
 
-bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these chords (Z is NOT checked right now)
-// PARAM WARNING: z is unreferenced
+//! see if they are in the multi at these chords (Z is NOT checked right now)
+bool inmulti(Location where, P_ITEM pi)
 {
 	VALIDATEPIR(pi,false);
 	
@@ -126,7 +128,8 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 	return false;
 }
 
-void boats::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double click Will send them here
+//! If the plank is opened, double click Will send them here
+void boats::PlankStuff(P_CHAR pc , P_ITEM pi)
 {
 	VALIDATEPC(pc);
 
@@ -178,7 +181,8 @@ void boats::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double cl
 
 }
 
-void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open plank while on the boat.
+//! Get off a boat (dbl clicked an open plank while on the boat.
+void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)
 {
 	VALIDATEPC(pc);
 	VALIDATEPI(pi);
@@ -261,8 +265,8 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
 }
 
-
-void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+//! Turn an item that was on the boat when the boat was turned.
+void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, SI08 dir, int type)
 {
 
 	VALIDATEPI(pi);
@@ -292,8 +296,8 @@ void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 	pi->Refresh();
 }
 
-
-void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item that was on the boat when the boat was turned.
+//! Turn an item that was on the boat when the boat was turned.
+void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, SI08 dir, int type)
 
 {
 
@@ -328,7 +332,8 @@ void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 
 }
 
-void boats::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the people/items on the boat to turnboatstuff()
+//! Turn the boat item, and send all the people/items on the boat to turnboatstuff()
+void boats::Turn(P_ITEM pi, int turn)
 {
 
 	VALIDATEPI(pi);
@@ -547,7 +552,8 @@ void boats::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	}
 }
 
-LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if they said a command.
+//! See if they said a command.
+LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 {
 	/*
 		pc & socket validation done in talking()
@@ -678,23 +684,11 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 	return false;
 }
 
-
-////////////////////////////////////////////////////////////////
-////						NEW BOAT-SYSTEM					////
-////////////////////////////////////////////////////////////////
-
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : tile_check ( helper function for good_position )
-// Description       : check if all the boats tile are in water
-// Return type       : bool
-// Author            : Elcabesa
-// Changes           : none yet
-// Called form		 : boats::good_position()
-
-
-LOGICAL boats::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
+/*!
+ \brief Check if all the boats tile are in water
+ \author Elcabesa
+ */
+LOGICAL boats::tile_check(st_multi multi,P_ITEM pBoat,map_st map, UI16 x, UI16 y, SI08 dir)
 {
 	land_st land;
 	int dx,dy;
@@ -827,15 +821,10 @@ LOGICAL boats::good_position(P_ITEM pBoat, Location where, SI08 dir)
 	return good_pos;
 }
 
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : Build
-// Description       : build a boat
-// Return type       : void
-// Author            : Elcabesa
-// Changes           : none yet
-// Called form	     : buildhouse()
+/*!
+ \brief Build a boat
+ \author Elcabesa
+ */
 LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 {
 	if ( s < 0 || s >= now )
@@ -994,12 +983,15 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : collision
-// Description       : handle if at these coord there is another boat
-// Return type       : bool TRUE boat collision,FALSE not obat collision
-// Author            : Elcabesa
-LOGICAL boats::collision(P_ITEM pi,Location where,int dir)
+/*!
+ \brief Handle if at these coord ther is another boat
+ \return true if boat collison, else false
+ \author Elcabesa
+ \param pi boat
+ \param where location to check for
+ \param dir direction
+ */
+LOGICAL boats::collision(P_ITEM pi, Location where, SI08 dir)
 {
 	int x= where.x, y= where.y;
 	std::map<int,boat_db>::iterator iter_boat;
@@ -1104,28 +1096,25 @@ LOGICAL boats::boat_collision(P_ITEM pBoat1,UI16 x1, UI16 y1,SI08 dir,P_ITEM pBo
 	return false;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : OpenPlank
-// Description       : Open, or close the plank (called from keytarget() )
-// Return type       : void
-// Author            : unknow
-// Changes           : none yet
-
+/*!
+ \brief Open, or close the plank (called from keytarget() )
+ \param pi plank
+ */
 void boats::OpenPlank(P_ITEM pi)
 {
 	switch(pi->id2)
 	{
 		//Open plank->
-		case (unsigned char)0xE9: pi->id2=(unsigned char)0x84; break;
-		case (unsigned char)0xB1: pi->id2=(unsigned char)0xD5; break;
-		case (unsigned char)0xB2: pi->id2=(unsigned char)0xD4; break;
-		case (unsigned char)0x8A: pi->id2=(unsigned char)0x89; break;
-		case (unsigned char)0x85: pi->id2=(unsigned char)0x84; break;
+		case 0xE9: pi->id2=0x84; break;
+		case 0xB1: pi->id2=0xD5; break;
+		case 0xB2: pi->id2=0xD4; break;
+		case 0x8A: pi->id2=0x89; break;
+		case 0x85: pi->id2=0x84; break;
 		//Close Plank->
-		case (unsigned char)0x84: pi->id2=(unsigned char)0xE9; break;
-		case (unsigned char)0xD5: pi->id2=(unsigned char)0xB1; break;
-		case (unsigned char)0xD4: pi->id2=(unsigned char)0xB2; break;
-		case (unsigned char)0x89: pi->id2=(unsigned char)0x8A; break;
+		case 0x84: pi->id2=0xE9; break;
+		case 0xD5: pi->id2=0xB1; break;
+		case 0xD4: pi->id2=0xB2; break;
+		case 0x89: pi->id2=0x8A; break;
 		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id()); break;
 	}
 }
@@ -1185,16 +1174,14 @@ void boats::Move(NXWSOCKET  s, SI08 dir, P_ITEM pBoat)
 	iMove(s,dir,pBoat,false);
 }
 
-
-///////////////////////////////////////////////////////////////////
-// Function name     : iMove
-// Description       : really move a boat, not turn it, and move all the items on a boat
-// Return type       : int
-// Parameter		 : bool forced TRUE the boat is forced to go, it doesn't check block
-// Author            : Elcabesa
-// Changes           : none yet
-
-void boats::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
+/*!
+ \brief Really move a boat, not turn it, and move all the items on a boat
+ \param s socket of the mover
+ \param pBoat the boat
+ \param forced if true the boat is forced to go, it doesn't check block
+ \author Elcabesa
+ */
+void boats::iMove(NXWSOCKET s, SI08 dir, P_ITEM pBoat, LOGICAL forced)
 {
 	int tx=0,ty=0;
 	int serial;
@@ -1402,3 +1389,4 @@ P_ITEM search_boat_by_plank(P_ITEM pl)
 	boat_db*  boat=search_boat(ser.serial32);
 	return boat->p_serial;
 }
+
