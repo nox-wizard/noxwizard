@@ -150,9 +150,9 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 	P_CHAR pc_currchar = client->currChar();
 	VALIDATEPC( pc_currchar );
-	
+
 	NXWSOCKET s = client->toInt();
-	
+
 	P_ITEM pi = pointers::findItemBySerPtr(buffer[s]+1);
 	VALIDATEPI(pi);
 
@@ -173,7 +173,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		pi->Refresh();
 		return;
 	}*/
-	
+
 	pc_currchar->disturbMed(); // Meditation
 
 	tile_st item;
@@ -235,16 +235,16 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		}
 	}
 
-	if ( ISVALIDPI( container ) ) 
+	if ( ISVALIDPI( container ) )
 	{
-			
+
 		if ( container->layer == 0 && container->id() == 0x1E5E)
 		{
 			// Trade window???
 			SERIAL serial = calcserial( pi->moreb1, pi->moreb2, pi->moreb3, pi->moreb4);
 			if ( serial == INVALID )
 				return;
-					
+
 			P_ITEM piz = pointers::findItemBySerial(serial );
 			if ( ISVALIDPI( piz ) )
 				if ( piz->morez || container->morez )
@@ -253,8 +253,8 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					container->morez = 0;
 					sendtradestatus( piz, container );
 				}
-			
-			
+
+
 			//<Luxor>
 			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
 			{
@@ -276,7 +276,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
                 		}
 			}
 			//</Luxor>
-			
+
 			/*
 			//<Luxor>
 			g_bByPass = false;
@@ -352,7 +352,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 			// AntiChrist bugfix for the bad bouncing bug ( disappearing items when bouncing )
 			client->setDragging();
 			pi->setOldPosition( pi->getPosition() ); // first let's save the position
-			
+
 			pi->oldlayer = pi->layer;	// then the layer
 			pi->layer = 0;
 
@@ -366,7 +366,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					amount = pi->amount;
 				else if (amount < pi->amount)
 				{ //get not all but a part of item ( piled? ), but anyway make a new one item
-				
+
 					P_ITEM pin =archive::getNewItem();
 					(*pin)=(*pi);
 
@@ -395,14 +395,14 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				}
 
 				pi->amount = amount;
-			
+
 			} // end if corpse
 
 			mapRegions->remove( pi );
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
 		}
-	} 
+	}
 
 	int amt = 0, wgt;
 	wgt = (int)weights::LockeddownWeight( pi, &amt);
@@ -524,7 +524,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
  		P_CHAR pc_currchar= pck;
 // 		P_ITEM pack= pc_currchar->getBackpack();
                 //<Luxor>
-        
+
 		P_ITEM pW = pc_currchar->getWeapon();
 		if (tile.layer == 1 || tile.layer == 2)
 		{ //weapons layers
@@ -634,7 +634,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				}
 			}
 		}
-		
+
 		if (!(pc->IsGM())) //Ripper..players cant equip items on other players or npc`s paperdolls.
 		{
 			if ((pck->getSerial32() != pc->getSerial32())/*&&(chars[s].npc!=k)*/) //-> really don't understand this! :|, xan
@@ -706,7 +706,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		}
 
 		std::string itmname;
-		if( pi->getCurrentName() == "#" ) 
+		if( pi->getCurrentName() == "#" )
 		{
 			char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 			pi->getName(temp2);
@@ -725,7 +725,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		{
 			ps->resetDragging();
 			item_bounce5(s,pi);
-			
+
 		}
 	}
 	return true;
@@ -733,7 +733,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
-	if (ps == NULL) 
+	if (ps == NULL)
 		return false;
 	VALIDATEPIR(pi, false);
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -784,17 +784,17 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
-	if (ps == NULL) 
+	if (ps == NULL)
 		return false;
 
 	VALIDATEPIR(pi, false);
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	
+
 	NXWSOCKET  s=ps->toInt();
 	P_CHAR pc=ps->currChar();
 	VALIDATEPCR(pc,false);
-	
+
 	P_CHAR pc_t=pointers::findCharBySerial(pp->Tserial); //beggar
 	VALIDATEPCR(pc_t,false);
 
@@ -842,7 +842,7 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 	if( pi->id() == ITEMID_GOLD )
 	{ // They gave the NPC gold
-		char sk=pc_t->trainingplayerin;
+		UI08 sk=pc_t->trainingplayerin;
 		pc_t->talk( s, TRANSLATE("I thank thee for thy payment. That should give thee a good start on thy way. Farewell!"),0);
 
 		int sum = pc->getSkillSum();
@@ -1046,7 +1046,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
-	
+
 	P_ITEM pi=pointers::findItemBySerial(pp->Iserial);
 
 
@@ -1112,11 +1112,11 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 			si.fillItemsAtXY( pp->TxLoc, pp->TyLoc );
 			UI16 itcount = 0;
 			for( si.rewind(); !si.isEmpty(); si++ ) {
-				
+
 				P_ITEM pi_onground = si.getItem();
 				if(ISVALIDPI(pi_onground)) {
                         if ( pi_onground->getPosition("x") == pp->TxLoc &&
-                             pi_onground->getPosition("y") == pp->TyLoc ) 
+                             pi_onground->getPosition("y") == pp->TyLoc )
 							{
                                 itcount++;
                                 if (itcount >= 2) { //Only 2 items permitted
@@ -1143,7 +1143,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
         }
         //</Luxor>
 
-        
+
         if(pi!=NULL)
 	{
 		weights::NewCalc(pc);
@@ -1160,16 +1160,16 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		return;
 	}
 
-	
+
 	//test UOP blocking Tauriel 1-12-99
 	if (!pi->isInWorld())
 	{
-		item_bounce6(ps,pi);	
+		item_bounce6(ps,pi);
 		return;
 	}
 
 
-	
+
 
 	Map->SeekTile(pi->id(), &tile);
 	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
@@ -1182,7 +1182,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	if (buffer[s][5]!=(unsigned char)'\xFF')
 	{
 
-        
+
         if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) {
 	       	g_bByPass = false;
         	pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
@@ -1207,7 +1207,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		pi->setContSerial(-1);
 
 		P_ITEM p_boat = Boats->GetBoat(pi->getPosition());
-	
+
 		if(ISVALIDPI(p_boat))
 		{
 			pi->SetMultiSerial(p_boat->getSerial32());
@@ -1293,11 +1293,11 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 //		   abort=true;
 		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
 		}
-	
+
 	if (pCont->amxevents[EVENT_IONPUTITEM]!=NULL) {
 		g_bByPass = false;
 		pCont->amxevents[EVENT_IONPUTITEM]->Call( pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
-		if (g_bByPass) 
+		if (g_bByPass)
 		{
 			item_bounce6(ps,pItem);
 			return;
@@ -1306,7 +1306,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	/*
 	g_bByPass = false;
 	pCont->runAmxEvent( EVENT_IONPUTITEM, pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
-	if (g_bByPass) 
+	if (g_bByPass)
 	{	//AntiChrist to preview item disappearing
 		item_bounce6(ps,pItem);
 		return;
@@ -1360,14 +1360,14 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			n -= contOutMost->CountItems( ITEMID_GOLD, INVALID, false);
 			if( pItem->type == ITYPE_CONTAINER )
 				n += pItem->CountItems( INVALID, INVALID, false);
-			else 
+			else
 				++n;
 			if( n > ServerScp::g_nBankLimit ) {
 				ps->sysmsg(TRANSLATE("You exceeded the number of maximimum items in bank of %d"), ServerScp::g_nBankLimit);
 				item_bounce6(ps,pItem);
 				return;
 			}
-			
+
 		}
 	}
 
@@ -1523,7 +1523,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 void drop_item(NXWCLIENT ps) // Item is dropped
 {
-	
+
 	if (ps == NULL) return;
 
 	NXWSOCKET  s=ps->toInt();
@@ -1584,9 +1584,9 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	  }
 	#endif
 
-	  
+
 //	if ( (buffer[s][10]>=0x40) && (buffer[s][10]!=0xff) )
-	if ( isItemSerial(pp->Tserial) && (pp->Tserial != INVALID)  ) // Invalid target => invalid container => put inWorld !!! 
+	if ( isItemSerial(pp->Tserial) && (pp->Tserial != INVALID)  ) // Invalid target => invalid container => put inWorld !!!
 		pack_item(ps,pp);
 	else
 		dump_item(ps,pp);

@@ -102,7 +102,7 @@ static void item_char_test()
 
 
 	cAllObjectsIter objs;
-	for( objs.rewind(); !objs.IsEmpty(); objs++ ) 
+	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
 		SERIAL ser=objs.getSerial();
 
@@ -150,7 +150,7 @@ static void item_char_test()
 			 }
 		}
 	}
-	ConOut("[DONE]\n"); 
+	ConOut("[DONE]\n");
 }
 
 int validhair(int a, int b) // Is selected hair type valid
@@ -198,7 +198,7 @@ int validbeard(int a, int b) // Is selected beard type valid
 
 
 /*!
-\brief called when a player creates a new character 
+\brief called when a player creates a new character
 \author ?
 \param s the player's socket
 */
@@ -206,7 +206,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 {
 
 	if (s < 0) return; //Luxor
-	
+
 	unsigned int i ;
 	signed int ii ;
 	int totalstats,totalskills;
@@ -260,13 +260,13 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	} else if (s > nSize) {
 		for (i = 0; i < (s - nSize); i++)
 			currchar.push_back(-1);
-			
+
 		currchar.push_back(pc->getSerial32());
 	}*/
 	currchar[s] = pc->getSerial32();
-	
+
 	pc->setClient(new cNxwClientObj(s));
-	
+
 	/*nSize = currchar.size();
 	ConOut("Player Connected - currchar status:");
 	P_CHAR pj = NULL;
@@ -274,7 +274,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pj = MAKE_CHAR_REF(currchar[i]);
 		ConOut("currchar[%i] = %s\n", i, pj->getCurrentNameC());
 	}*/
-	
+
 	//allclients.insert( make_pair( pc->getSerial32(), cNxwClientObj( s ) ) );
 
 	pc->npc=false;
@@ -329,13 +329,13 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	pc->st3 = pc->hp = buffer[s][0x47];
 	pc->setStrength(buffer[s][0x47]);
 
-	if ( pc->st3 > 60 ) 
+	if ( pc->st3 > 60 )
 	{
 		pc->st3 = pc->hp = 60; // fix for hack exploit
 		pc->setStrength(60);
 	}
 
-	if ( pc->st3 < 10 ) 
+	if ( pc->st3 < 10 )
 	{
 		pc->st3 = pc->hp = 10;
 		pc->setStrength(10);
@@ -508,7 +508,7 @@ void callguards( CHARACTER p )
 	NxwCharWrapper sc;
 	sc.fillCharsNearXYZ( caller->getPosition(), VISRANGE, true, false  );
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-	
+
 		P_CHAR character=sc.getChar();
 		if(!ISVALIDPC(character))
 			continue;
@@ -572,7 +572,7 @@ void checkkey ()
 
 	// Akron: borland c++ builder doesn't accept kbhit() in windows mode
 	// Also to force only remote admin under unix, we can remove the kbhit() test
-	
+
 #if !defined __BORLANDC__ && !defined __unix__
 	if ((kbhit())||(INKEY!='\0'))
 #else
@@ -589,7 +589,7 @@ void checkkey ()
 			c = toupper(getch());
 		}
 	#endif
-		
+
 		if (c=='S')
 		{
 			if (secure)
@@ -811,7 +811,7 @@ void start_glow()
 				if (!pi->isInWorld())
 				{
 					P_CHAR pc = pointers::findCharBySerial( pi->getContSerial() ); // find equipped glowing items
-					if ( !ISVALIDPC( pc )  ) 
+					if ( !ISVALIDPC( pc )  )
 					{
 						P_ITEM cont = (P_ITEM)pi->getContainer();
 						if(ISVALIDPI( cont )) {
@@ -990,17 +990,17 @@ void angelMode();
 	Map->Cache=ServerScp::g_nMapCache;
 	commitserverscript(); // second phase setup
 /*
-	if ( (argc>1) && (strstr(argv[1], "-syra")) ) 
+	if ( (argc>1) && (strstr(argv[1], "-syra")) )
 	{
-	
-	} 
-	else 
+
+	}
+	else
 */
 	{
 		ConOut("\nLoading scripts with new method...\n");
 		newScriptsInit();
 
-		
+
 		//Now lets load the custom scripts, if they have them defined...
 		i=0;
 
@@ -1206,7 +1206,7 @@ void angelMode();
 	//ConOut("NoX-Wizard: Startup Complete.\n\n");
 
 
-	if (SrvParms->server_log) 
+	if (SrvParms->server_log)
 		ServerLog.Write("-=Server Startup=-\n=======================================================================\n");
 
 	uiCurrentTime=getclock();
@@ -1324,7 +1324,7 @@ void angelMode();
 
 	InfoOut("Server started\n");
 
-	Spawns->doSpawnAll();	
+	Spawns->doSpawnAll();
 
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
@@ -1490,12 +1490,12 @@ void angelMode();
 	if (error) {
 		ConOut("ERROR: Server terminated by error!\n");
 
-		if (SrvParms->server_log) 
+		if (SrvParms->server_log)
 			ServerLog.Write("Server Shutdown by Error!\n=======================================================================\n\n\n");
 
 	} else {
 		ConOut("NoX-Wizard: Server shutdown complete!\n");
-		if (SrvParms->server_log) 
+		if (SrvParms->server_log)
 			ServerLog.Write("Server Shutdown!\n=======================================================================\n\n\n");
 
 	}
@@ -1648,11 +1648,11 @@ int fielddir(CHARACTER s, int x, int y, int z)
 		switch(pc->dir) //crashfix, LB
 		{
 		case 0:
-		case 4: 
+		case 4:
 			return 0;
 
 		case 2:
-		case 6: 
+		case 6:
 			return 1;
 
 		case 1:
@@ -1660,7 +1660,7 @@ int fielddir(CHARACTER s, int x, int y, int z)
 		case 5:
 		case 7:
 			return 1;
-			
+
 		default:
 			LogError("Switch fallout. NoX-Wizard.cpp, fielddir()\n"); //Morrolan
 			return 0;
@@ -1681,16 +1681,16 @@ void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 {
 	VALIDATEPC(pc);
 	VALIDATEPC(pc_target);
-	
+
 	if ( !pc->npc )
 		return;
-		
+
 	if ( pc->dead || pc_target->dead )
 		return;
-		
+
 	if ( pc->getSerial32() == pc_target->getSerial32() )
 		return;
-		
+
 	if ( !pc->losFrom(pc_target) )
 		return;
 
@@ -1699,7 +1699,7 @@ void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 		if (g_bByPass==true)
 			return;
 	}
-	/*	
+	/*
 	pc->runAmxEvent( EVENT_CHR_ONBEGINATTACK, pc->getSerial32(), pc_target->getSerial32() );
 	if (g_bByPass==true)
 		return;
@@ -1716,15 +1716,15 @@ void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 	*/
 
 	pc->playMonsterSound(SND_STARTATTACK);
-	
+
 	pc->targserial = pc_target->getSerial32();
 	pc->attackerserial = pc_target->getSerial32();
 	pc->SetAttackFirst();
-	
+
 	if ( !pc->war )
 		pc->toggleCombat();
 	pc->setNpcMoveTime();
-	
+
 	P_CHAR pc_target_targ = pointers::findCharBySerial(pc_target->targserial);
 	if ( !ISVALIDPC(pc_target_targ) || pc_target_targ->dead || pc_target->distFrom(pc_target_targ) > 15 ) {
 		if (!pc_target->npc && pc_target->war) {
@@ -1733,7 +1733,7 @@ void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 		} else if (pc_target->npc) {
 			if ( !pc_target->war )
 				pc_target->toggleCombat();
-				
+
 			pc_target->targserial = pc->getSerial32();
 			pc_target->attackerserial = pc->getSerial32();
 			pc_target->setNpcMoveTime();
@@ -1841,7 +1841,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			return;
 		}
 		pc->playSFX(0x01E7);
-		if (s!=INVALID) 
+		if (s!=INVALID)
 			pc->updateStats(2);
 		break;
 
@@ -1877,8 +1877,8 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 				ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n"); //Morrolan
 				return;
 			}
-			if (pc->poisoned) 
-				pc->sysmsg(TRANSLATE("The potion was not able to cure this poison.")); 
+			if (pc->poisoned)
+				pc->sysmsg(TRANSLATE("The potion was not able to cure this poison."));
 			else
 			{
 				staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
@@ -1927,10 +1927,10 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n"); //Morrolan
 			return;
 		}
-		
-		if (s!=INVALID) 
+
+		if (s!=INVALID)
 			pc->updateStats(0);
-		
+
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01F2); //Healing Sound - SpaceDog
 		break;
@@ -1944,7 +1944,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 	case 6: // Poison Potion
 		if(pc->poisoned < (PoisonType)pi->morez)
 			pc->poisoned=(PoisonType)pi->morez;
-		if(pi->morez>4) 
+		if(pi->morez>4)
 			pi->morez=4;
 		pc->poisonwearofftime=uiCurrentTime+(MY_CLOCKS_PER_SEC*SrvParms->poisontimer); // lb, poison wear off timer setting
 		impowncreate(s,pc,1); //Lb, sends the green bar !
@@ -1959,12 +1959,12 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 				pc->stm=qmin(pc->stm+20+RandomNum(1,10), pc->dx);
 				pc->sysmsg(TRANSLATE("You feel more energetic!"));
 				break;
-		
+
 			case 2:
 				pc->stm=qmin(pc->stm+40+RandomNum(1,30), pc->dx);
 				pc->sysmsg(TRANSLATE("You feel much more energetic!"));
 				break;
-		
+
 			default:
 				ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n"); //Morrolan
 				return;
@@ -2009,7 +2009,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n");
 			return;
 		}
-		if (s!=INVALID) 
+		if (s!=INVALID)
 			pc->updateStats(1);
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01E7); //agility sound - SpaceDog
@@ -2038,13 +2038,13 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		pc->playAction(0x22);
 
 	pi->ReduceAmount( 1 );
-	
+
 	if (pi->morey!=3)
 	{
 		int lsd=pi->morey; // save morey before overwritten
 
 		pi = archive::getNewItem();
-                
+
 		pi->setId(0x0F0E);
 
 		if (lsd==10) // empty Lsd potions
@@ -2057,7 +2057,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		P_ITEM pack=pc->getBackpack();
 		if (ISVALIDPI(pack)) {
 			pack->AddItem( pi );
-		} 
+		}
 		else {
 			pi->MoveTo( pc->getPosition() );
 			pi->setDecay();
@@ -2102,7 +2102,7 @@ void StoreItemRandomValue(P_ITEM pi,int tmpreg)
 /*!
 \brief Load metaGM permission
 
-Load metaGM permission from metagm.scp script and add them to metagm array used 
+Load metaGM permission from metagm.scp script and add them to metagm array used
 for makeGM, makeCNS and SetPriv3
 
 \author Lord Binary Ummon
@@ -2579,7 +2579,7 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 	//the nKilledID==INVALID check and the chars[nKilledID] check were in the same line
 	//That may cause some crash with some compilator caus there's no a defined
 	//order in executing these if checks
-	if(nCurKarma>nKarma) 
+	if(nCurKarma>nKarma)
 		if ( !ISVALIDPC(killed) )
 		{
 			nChange=((nCurKarma-nKarma)/50);
@@ -2587,7 +2587,7 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 			pc->karma += nChange;
 			nEffect=0;
 		}
-		else 
+		else
 			if( killed->GetKarma()>0 )
 			{
 				nChange=((nCurKarma-nKarma)/50);
@@ -2599,7 +2599,7 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 	if( (nChange==0) )
 		return;
 
-	
+
 	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
@@ -2706,7 +2706,7 @@ void cChar::modifyFame( SI32 value )
 	if( nChange==0 )
 		return;
 
-	
+
 	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
@@ -2802,7 +2802,7 @@ void criminal(P_CHAR pc)
 	{//Not an npc, not grey, not red
 		tempfx::add(pc, pc, tempfx::CRIMINAL, 0, 0, 0); //Luxor
 		if(region[pc->region].priv&0x01 && SrvParms->guardsactive) { //guarded
-			if (ServerScp::g_nInstantGuard == 1) 
+			if (ServerScp::g_nInstantGuard == 1)
 				npcs::SpawnGuard( pc, pc, pc->getPosition() ); // LB bugfix
 		}
 	}
@@ -2828,13 +2828,13 @@ LOGICAL setcharflag2(P_CHAR pc)// repsys ...Ripper
 			if( !pc->IsMurderer() )
 				flagHasChanged = true;
 			//
-			//	Sparhawk	TODO check out logic of next 2 statements
+			//! \todo - TODO check out logic of next 2 statements (Sparhawk)
 			//
 			pc->SetMurderer();
 			pc->murderrate = (repsys.murderdecay*MY_CLOCKS_PER_SEC)+uiCurrentTime;
 		}
 		/*else
-			
+
 			if ( pc->crimflag == 0 )
 			{
 				if( !pc->IsInnocent() )
@@ -3007,7 +3007,7 @@ void BuildPointerArray()
 void InitMultis()
 {
 //	unsigned int i ; // unused variable
-	
+
 	cAllObjectsIter objs;
 //	P_CHAR pc; // unused variable
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
@@ -3018,7 +3018,7 @@ void InitMultis()
 		P_CHAR pc_i = (P_CHAR)(objs.getObject());
 		if(!ISVALIDPC(pc_i))
 			continue;
-		
+
 		P_ITEM multi=findmulti( pc_i->getPosition() );
 		if (ISVALIDPI(multi))
 		{
@@ -3102,12 +3102,12 @@ static bool s_bGarbageCollect = false;			//! garbage must be checked ?
 
 //! request garbage collecting
 void gcollect()
-{ 
-	s_bGarbageCollect = true; 
+{
+	s_bGarbageCollect = true;
 }
 
 /*!
-\brief remove all the item without any parents 
+\brief remove all the item without any parents
 (not in any valid container)
 \author ?
 \since ?
@@ -3128,12 +3128,12 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 
 	do
 	{
-	
+
 		removed=0;
 
 		for( objs.rewind(); !objs.IsEmpty(); objs++ )
 		{
-			
+
 			if( isCharSerial( objs.getSerial() ) )
 			{
 				if( first ) {
@@ -3148,10 +3148,10 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 				}
 			}
 			else {
-			
+
 				P_ITEM pi=(P_ITEM)(objs.getObject());
 
-				if( pi->isInWorld() ) 
+				if( pi->isInWorld() )
 					continue;
 
 				// find the container if theres one.
@@ -3159,7 +3159,7 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 				P_ITEM pi_j= pointers::findItemBySerial(pi->getContSerial());
 
 				// if container serial is invalid
-				if( ((pc_j==NULL) ) && 
+				if( ((pc_j==NULL) ) &&
 					((pi_j==NULL) ) )
 				{
 					pi->deleteItem();
@@ -3171,7 +3171,7 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 		first=false;
 	} while (removed>0 && (++loopexit < MAXLOOPS) );
 
-	if(rtotal>0) 
+	if(rtotal>0)
 	{
 		LogMessage("Gargbage Collector removed %i items",rtotal);
 		WarnOut("Gargbage Collector removed %i items\n",rtotal);

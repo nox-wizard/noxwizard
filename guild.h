@@ -23,7 +23,7 @@ typedef enum {
 	GUILD_WAR = 0,
 	GUILD_ALLIED
 } GUILD_POLITICAL;
- 
+
 /*
 \note a candidate for membership of a guild
 \author Sparhawk
@@ -131,7 +131,7 @@ class cGuild
 		std::wstring	charter;	//!< Guild Charter
 	public:
 		void setCharter( const std::wstring& newCharter );
-		std::wstring	getCharter();
+		std::wstring	getCharter() const;
 
 	private:
 		GUILD_TYPE type;	//!< guild type

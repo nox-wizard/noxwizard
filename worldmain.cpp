@@ -70,7 +70,7 @@ wstring* HexVector2UnicodeString( char* s )
 	wchar_t baffer=0;
 	do {
 		memcpy( &temp[2], &s[i], 4 );
-		char* dummy; 
+		char* dummy;
 		baffer = static_cast<wchar_t>( strtol( temp, &dummy, 0 ) );
 		if( baffer!=0 )
 			(*w) += baffer;
@@ -274,7 +274,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "FOODZ"))			{pc->foodloc.z=str2num(script2);}
 			else if (!strcmp( script1, "FOLLOWSPEED" ) ){ pc->npcFollowSpeed = (float)atof( script2 ); }
 
-			
+
 		break;
 
 		case 'G':
@@ -532,7 +532,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			{
 				pc->setPosition("z", str2num(script2));
 				pc->setPosition("dZ", str2num(script2));
-				
+
 			}
 		break;
 		}
@@ -581,7 +581,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 		}
 
-		if ( pc->account==ADMIN_ACCOUNT) 
+		if ( pc->account==ADMIN_ACCOUNT)
 			pc->menupriv=INVALID;
 
 	}
@@ -603,7 +603,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		else
 			pc->deleteChar();
 	}
-	
+
 	setcharflag2(pc);//AntiChrist
 
 	amxVS.moveVariable( INVALID, pc->getSerial32() );
@@ -702,15 +702,15 @@ void loaditem()
 				splitLine( script2, script1, script3 );
 				amxVS.insertVariable( INVALID, str2num( script1 ), script3 );
 			}
-			else if (!(strcmp(script1, "AMOUNT"))) 
+			else if (!(strcmp(script1, "AMOUNT")))
 				pi->amount=str2num(script2);
-			else if (!(strcmp(script1, "ATT"))) 
+			else if (!(strcmp(script1, "ATT")))
 				pi->att=str2num(script2);
 			else if (!strcmp("ANIMID", script1))
 				pi->animSetId(str2num(script2));
-  			else if (!strcmp("AUXDAMAGE", script1))      
+  			else if (!strcmp("AUXDAMAGE", script1))
 				pi->auxdamage = str2num(script2);
-  			else if (!strcmp("AUXDAMAGETYPE", script1))  
+  			else if (!strcmp("AUXDAMAGETYPE", script1))
 				pi->auxdamagetype = static_cast<DamageType>(str2num(script2));
 			else if (!strcmp("AMMO", script1))
 				pi->ammo = str2num(script2);
@@ -737,7 +737,7 @@ void loaditem()
 			}
 			else if (!(strcmp(script1, "CONT")))
 				pi->setContSerial(str2num(script2), false, false);
-			else if (!(strcmp(script1, "CORPSE"))) 
+			else if (!(strcmp(script1, "CORPSE")))
 				pi->corpse=str2num(script2);
 			else if (!(strcmp(script1, "CARVE")))
 				pi->carve=str2num(script2);
@@ -752,13 +752,13 @@ void loaditem()
 				pi->disabledmsg = new std::string( script2 );
 			else if (!(strcmp(script1, "DISABLED")))
 				pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);
-			else if (!(strcmp(script1, "DIR"))) 
+			else if (!(strcmp(script1, "DIR")))
 				pi->dir=str2num(script2);
-			else if (!(strcmp(script1, "DOORFLAG"))) 
+			else if (!(strcmp(script1, "DOORFLAG")))
 				pi->doordir=str2num(script2);
-			else if (!(strcmp(script1, "DYEABLE"))) 
+			else if (!(strcmp(script1, "DYEABLE")))
 				pi->dye=str2num(script2);
-			else if (!(strcmp(script1, "DEF"))) 
+			else if (!(strcmp(script1, "DEF")))
 				pi->def=str2num(script2);
 			else if (!(strcmp(script1, "DESC")))
 				//strcpy(pi->desc,script2);
@@ -774,7 +774,7 @@ void loaditem()
 
 		case 'g':
 		case 'G':
-			if (!(strcmp(script1, "GOOD"))) 
+			if (!(strcmp(script1, "GOOD")))
 				pi->good=str2num(script2);
 			/*else if (!(strcmp(script1, "GLOW")))
 				pi->glow=str2num(script2);
@@ -784,7 +784,7 @@ void loaditem()
 				pi->glow_c1=static_cast<char>((i>>8));
 				pi->glow_c2=static_cast<char>(i%256);
 			}
-			else if (!(strcmp(script1, "GLOWTYPE"))) 
+			else if (!(strcmp(script1, "GLOWTYPE")))
 				pi->glow_effect=str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);*/
 			break;
@@ -834,7 +834,7 @@ void loaditem()
 
 		case 'l':
 		case 'L':
-			if (!(strcmp(script1, "LAYER"))) 
+			if (!(strcmp(script1, "LAYER")))
 				pi->layer=str2num(script2);
 			else if (!(strcmp(script1, "LODAMAGE")))
 				pi->lodamage=str2num(script2);
@@ -861,7 +861,7 @@ void loaditem()
 			}
 			else if (!(strcmp(script1, "MOVABLE")))
 				pi->magic=str2num(script2);
-			else if (!(strcmp(script1, "MAXHP"))) 
+			else if (!(strcmp(script1, "MAXHP")))
 				pi->maxhp=str2num(script2);
 			else if (!(strcmp(script1, "MOREX")))
 				pi->morex=str2num(script2);
@@ -923,7 +923,7 @@ void loaditem()
 			else if (!(strcmp(script1, "SERIAL")))
 			{
 				i=str2num(script2);
-				//if (itemcount2<=i) 
+				//if (itemcount2<=i)
 				//	itemcount2=i+1;
 				pi->setSerial32(i);
 				objects.updateItemSerial( i );
@@ -949,7 +949,7 @@ void loaditem()
 				pi->type2=str2num(script2);
 			else if (!(strcmp(script1, "TRIGGER")))
 				pi->trigger=str2num(script2);
-			else if (!(strcmp(script1, "TIME_UNUSED"))) 
+			else if (!(strcmp(script1, "TIME_UNUSED")))
 				pi->time_unused=str2num(script2);
 			else if (!(strcmp(script1, "TRIGTYPE")))
 				pi->trigtype=str2num(script2);
@@ -1006,7 +1006,7 @@ void loaditem()
 		loops++;
 	} while (strcmp(script1, "}") && loops<=200);
 
-	if (bad) 
+	if (bad)
 		pi->deleteItem();
 
 	amxVS.setUserMode();
@@ -1098,12 +1098,12 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		int loopexit=0;
 		UI32 iitem=0;
 
-		do  
+		do
 		{
 			readw3();
 			if (!strcmp(script1, "SECTION"))
 			{
-				if (!strcmp(script2, "WORLDITEM")) 
+				if (!strcmp(script2, "WORLDITEM"))
 				{
 					loaditem();
 				}
@@ -1238,7 +1238,7 @@ void CWorldMain::saveNewWorld()
 	fprintf(gWsc, "// || Generated by NoX-Wizard version %s %s               ||\n", VERNUMB, OSFIX);
 	fprintf(gWsc, "// || Requires NoX-Wizard version 0.82 to be read correctly               ||\n");
 	fprintf(gWsc, "// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n\n\n");
-	Guildz.save(gWsc);	
+	Guildz.save(gWsc);
 	fclose(gWsc); gWsc=NULL;
 //Endymion End Save Guild System
 ////END
@@ -1280,7 +1280,7 @@ bool CWorldMain::Saving()
 
 
 /*
-\brief save on file a wstring 
+\brief save on file a wstring
 \author Endymion
 \note save output is like 00E000123215, hex output
 \param f the file
@@ -1341,9 +1341,9 @@ void CWorldMain::SaveChar( P_CHAR pc )
 #ifndef DESTROY_REFERENCES
 				fprintf(cWsc, "NAME %s\n", pc->getRealNameC());
 #else
-				if (pc->npc) 
+				if (pc->npc)
 					fprintf(cWsc, "NAME %s\n", pc->name);
-				else 
+				else
 					fprintf(cWsc, "NAME C%x\n", pc->serial);
 #endif
 			} else
@@ -1351,9 +1351,9 @@ void CWorldMain::SaveChar( P_CHAR pc )
 #ifndef DESTROY_REFERENCES
 				fprintf(cWsc, "NAME %s\n", pc->getCurrentNameC());
 #else
-				if (pc->npc) 
+				if (pc->npc)
 					fprintf(cWsc, "NAME %s\n", pc->name);
-				else 
+				else
 					fprintf(cWsc, "NAME C%x\n", pc->serial);
 #endif
 			}
@@ -1374,7 +1374,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if(pc->IsGuildTraitor())
 				fprintf(cWsc,"GUILDTRAITOR YES\n");
 
-			// commented by Anthalir, we need to always save them			
+			// commented by Anthalir, we need to always save them
 //			if (pcpos.x)
 				fprintf(cWsc, "X %i\n", pcpos.x);
 //			if (pcpos.y)
@@ -1401,14 +1401,14 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if(pc->morphed) {
 				if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
 					fprintf(cWsc, "BODY %i\n", pc->GetOldBodyType());
-			} 
+			}
 			else {
 				if ( pc->GetBodyType() != dummy.GetBodyType() )
 						fprintf(cWsc, "BODY %i\n", pc->GetBodyType());
 			}
 			if ( pc->GetOldBodyType() != dummy.GetOldBodyType() )
 				fprintf(cWsc, "XBODY %i\n", pc->GetOldBodyType());
-			
+
 			//Luxor: if the char is morphed, we have to save the original values.
 			if(pc->morphed) {
 				if ( pc->getOldSkinColor() != dummy.getOldSkinColor() )
@@ -1472,12 +1472,12 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "STAMINA %i\n", pc->stm);
 			if (pc->mn!=dummy.mn)
 				fprintf(cWsc, "MANA %i\n", pc->mn);
-			
+
                         if (pc->possessorSerial == INVALID) //Luxor
                                 fprintf(cWsc, "NPC %i\n", pc->npc);
                         else
                                 fprintf(cWsc, "NPC %i\n", 1);
-				
+
 			if (pc->possessedSerial != INVALID) //Luxor
                                 fprintf(cWsc, "POSSESSEDSERIAL %i\n", pc->possessedSerial);
 
@@ -1753,7 +1753,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	if (pi->getSerial32()<0) return;
 
-	if (pi->spawnregion!=INVALID || pi->spawnserial!=INVALID ) 
+	if (pi->spawnregion!=INVALID || pi->spawnserial!=INVALID )
 		return;
 
 	if( pi->isInWorld() ) {
@@ -1768,7 +1768,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 		if( pi->doDecay() )
 			return;
-		
+
 	}
 
 	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
@@ -1873,7 +1873,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "AUXDAMAGE %i\n", pi->auxdamage);
 		if (pi->damagetype!=dummy.damagetype)
 			fprintf(iWsc, "DAMAGETYPE %i\n", pi->damagetype);
-		if (pi->auxdamagetype!=dummy.auxdamagetype) 
+		if (pi->auxdamagetype!=dummy.auxdamagetype)
 			fprintf(iWsc, "AUXDAMAGETYPE %i\n", pi->auxdamagetype);
 		if (pi->ammo !=dummy.ammo )
 			fprintf(iWsc, "AMMO %i\n", pi->ammo);
@@ -2007,7 +2007,7 @@ void CWorldMain::savePrison()
 void CWorldMain::loadjailed()
 {
 
-	cJailed j; 
+	cJailed j;
 
 	do
 	{
@@ -2018,7 +2018,7 @@ void CWorldMain::loadjailed()
 			case 'c':
 				if (!(strcmp(script1, "CELL")))
 					j.cell=str2num(script2);
-				break;	
+				break;
 			case 'O':
 			case 'o':
 				if (!(strcmp(script1, "OLDX")))
@@ -2034,16 +2034,16 @@ void CWorldMain::loadjailed()
 			case 'w':
 				if (!strcmp(script1, "WHY"))
 					j.why=script2;
-				break;	
+				break;
 			case 'S':
 			case 's':
-				if(!(strcmp(script1, "SERIAL"))) 
+				if(!(strcmp(script1, "SERIAL")))
 					j.serial=str2num(script2);
 				else if(!(strcmp(script1, "SECS")))
 					j.sec=str2num(script2);
-				break;	
+				break;
 		}
-		
+
 	}  while (strcmp(script1, "}"));
 	P_CHAR pc = pointers::findCharBySerial( j.serial );
 	if(ISVALIDPC(pc) && (j.sec > 0)) {
@@ -2069,8 +2069,8 @@ void CWorldMain::loadPrison()
 	{
 		WarnOut("%s not found.\n", fileName.c_str());
 		return;
-	} 
-	else 
+	}
+	else
 	{
 
 		ConOut("Loading prison ");

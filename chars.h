@@ -517,7 +517,7 @@ class cChar : public cObject
 	public:
 		SERIAL			trainer;
 			//!< Serial of the NPC training the char, -1 if none.
-		char			trainingplayerin;
+		UI08			trainingplayerin;
 			//!< Index in skillname of the skill the NPC is training the player in
 		LOGICAL			cantrain;
 
@@ -594,11 +594,11 @@ public:
 \name Npc Vendor
 \note fist draft.. need to make map with id used in recive for make faster
 */
-		
+
 public:
 	std::vector<vendor_item>*	vendorItemsSell; //!< all items sell by vendor
 	std::vector<vendor_item>*	vendorItemsBuy; //!< all items sell by vendor
-		
+
 //@}
 
 	/********************************/
@@ -659,7 +659,7 @@ public:
 		wstring* getProfile();
 		void setProfile( wstring* profile );
 		void resetProfile();
-	
+
 	private:
 		wstring* speechCurrent;
 	public:
@@ -675,7 +675,7 @@ public:
 		SERIAL getStablemaster();
 		void stable( P_CHAR stablemaster );
 		void unStable();
-	
+
 	public:
 		SI32		npcaitype; //!< NPC ai
 
@@ -988,7 +988,7 @@ public:
 
 	public:
 		std::vector< UI32 >	lootVector;
-	
+
 	/*
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );

@@ -64,14 +64,14 @@ void Skills::RemoveTraps(NXWSOCKET s)
 	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
-	
+
 	if (pi->amxevents[EVENT_IONREMOVETRAP]==NULL)
 	{
 		sysmessage(s, TRANSLATE("There are no traps on this object"));
 		if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750); //ndEny is good?
 		return;
 	}
-	
+
 	pi->amxevents[EVENT_IONREMOVETRAP]->Call(pi->getSerial32(), s);
 	/*
 
@@ -140,7 +140,7 @@ void Skills::Fletching(NXWSOCKET s)
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -236,10 +236,13 @@ void Skills::Carpentry(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
 }
 
+/*!
+\todo use or remove it!
+*/
 static bool ForgeInRange(NXWSOCKET s)
 {
     P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], false);
-    
+
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( pc->getPosition(), 3, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
@@ -614,7 +617,7 @@ void Skills::TreeTarget(NXWSOCKET s)
     packnum = pc->getBackpack();
     	if (!packnum) {
     		pc->sysmsg(TRANSLATE("No backpack to store logs"));
-		return; 
+		return;
 	}
 
     pc->playAction( pc->isMounting() ? 0x1C : 0x0D );
@@ -709,7 +712,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
             npcs::SpawnRandomMonster(pc,"UNDEADLIST","1001"); // Med level Undead - Random
         pc->sysmsg(TRANSLATE("You have disturbed the rest of a vile undead creature."));
         break;
-    case 8: 
+    case 8:
 		{
 			P_ITEM pi=item::SpawnRandomItem(s,"ITEMLIST","1000");
 			if(ISVALIDPI(pi))
@@ -916,7 +919,7 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
             tailme=1;
         }
     }
-    
+
     pc_currchar->tailserial=INVALID;
     if(!tailme) pc_currchar->sysmsg(TRANSLATE("You cant tailor here."));
 }
@@ -929,7 +932,7 @@ void Skills::Loom(NXWSOCKET s)
 
 	int tailme=0;
 
-    	
+
 	if (pi->magic!=4) // Ripper
 	{
 		if ( pi->id() >= 0x105F && pi->id() <= 0x1066 )
@@ -958,7 +961,7 @@ void Skills::Loom(NXWSOCKET s)
 				{
 					case 0x0E1E: // Yarn
 					case 0x0E1D:
-					case 0x0E1F:	
+					case 0x0E1F:
 						pc_currchar->sysmsg(TRANSLATE("You have made your cloth."));
 						pti->setCurrentName("#");
 						pti->setId(0x175D);
@@ -974,14 +977,14 @@ void Skills::Loom(NXWSOCKET s)
 						pti->amount=(UI16)(pti->amount*0.25);
 						break;
 				}
-				
+
 				pti->Refresh();
 
 				tailme=1;
 			}
 		}
 	}
-	
+
 	pc_currchar->tailserial=INVALID;
 	if(!tailme) pc_currchar->sysmsg(TRANSLATE("You can't tailor here."));
 }
@@ -993,10 +996,10 @@ void Skills::Loom(NXWSOCKET s)
 //
 void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
 {
-    
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -1019,7 +1022,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                     {
                         P_ITEM pi=item::CreateFromScript( "$item_raw_fish" );
                         VALIDATEPI(pi);
-                        
+
                         pi->setAmount( piRaw->amount );
                         pi->setCurrentName( "#" );
                         pi->setId( id );
@@ -1039,7 +1042,7 @@ void Skills::MakeDough(NXWSOCKET s)
     P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
-    
+
 	int tailme=0;
 
     if ( pi->magic!=4) // Ripper
@@ -1077,9 +1080,9 @@ void Skills::MakePizza(NXWSOCKET s)
     P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     VALIDATEPI(pi);
-	
+
 	int tailme=0;
-	
+
 	if ( pi->magic!=4) // Ripper
 	{
         	if(pi->id()==0x103D)
@@ -1107,7 +1110,7 @@ void Skills::MakePizza(NXWSOCKET s)
 			}
 		}
 	}
-    	
+
 	pc->tailserial=INVALID;
 	if(!tailme) pc->sysmsg(TRANSLATE("You cant mix here."));
 }
@@ -1338,7 +1341,7 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 
 		char temp[500];
 		sprintf(temp, TRANSLATE("* You see %s attacking %s *"), Victim1->getCurrentNameC(), Victim2->getCurrentNameC());
-		
+
 		NxwSocketWrapper sw;
 		sw.fillOnline( Victim1, false );
 		for( sw.rewind(); !sw.isEmpty(); sw++ )
@@ -1368,7 +1371,7 @@ void Skills::AlchemyTarget(NXWSOCKET s)
 
 	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
-    
+
 	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -1523,7 +1526,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 		ph->sysmsg(TRANSLATE("You are not close enough to apply the bandages."));
 		return;
 	}
-        
+
 	if( ((pp->GetBodyType() != BODY_MALE) || (pp->GetBodyType() != BODY_FEMALE)) && pp->tamed==false) //Used on non-human and controls if tamed
 
         if ((ph->IsInnocent()) &&(ph->getSerial32() != pp->getSerial32()))
@@ -1567,9 +1570,9 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 			}
 			else
 				ph->sysmsg(TRANSLATE("You fail to counter the poison"));
-         
+
 		}
-		
+
 		pib->ReduceAmount(1);
 		SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
 		return;
@@ -1617,7 +1620,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 			ph->sysmsg(TRANSLATE("You apply the bandages and the creature looks a bit healthier."));
 		}
 	}
-        
+
 	SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
     pib->ReduceAmount(1);
 
@@ -1884,10 +1887,10 @@ void Skills::AnatomyTarget(NXWSOCKET s)
 {
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(target);
-	
+
 
 	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_BEFORE);
 
@@ -1902,7 +1905,7 @@ void Skills::AnatomyTarget(NXWSOCKET s)
 		return;
 	}
 
-    
+
 	if (!target->checkSkill( ANATOMY, 0, 1000))
 	{
 		pc->sysmsg(TRANSLATE("You are not certain.."));
@@ -1951,18 +1954,18 @@ void Skills::TameTarget(NXWSOCKET s)
 	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
 	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(target);
-	
+
 	int tamed=0;
-    
+
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	if(line_of_sight(INVALID, pc->getPosition(), target->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)==0)
 		return;
-	
+
 	AMXEXECSV(s,AMXT_SKITARGS,TAMING,AMX_BEFORE);
 
 	if(buffer[s][7]==0xFF) return;
-	
+
 	if (target->npc==1 && ( pc->distFrom(target) <= 3))
 	{
 		if ( (target->taming > 1000) || (target->taming ==0) )//Morrolan default is now no tame
@@ -1970,13 +1973,13 @@ void Skills::TameTarget(NXWSOCKET s)
 			pc->sysmsg(TRANSLATE("You can't tame that creature."));
 			return;
 		}
-		
+
 		if( (target->tamed) && pc->isOwnerOf(target) )
 		{
 			pc->sysmsg(TRANSLATE("You already control that creature!" ));
 			return;
 		}
-		
+
 		if( target->tamed )
 		{
 			pc->sysmsg(TRANSLATE("That creature looks tame already." ));
@@ -1995,13 +1998,13 @@ void Skills::TameTarget(NXWSOCKET s)
 					LogError("switch reached default");
 			}
 		}
-		
+
 		if ( (!pc->checkSkill(TAMING, 0, 1000)) || (pc->skill[TAMING] < target->taming) )
 		{
 			pc->sysmsg(TRANSLATE("You were unable to tame it."));
 			return;
 		}
-		
+
 		pc->talk(s, TRANSLATE("It seems to accept you as it's master!"),0);
 		tamed=1;
 		target->setOwner(pc);
@@ -2014,26 +2017,26 @@ void Skills::TameTarget(NXWSOCKET s)
 			}
 		}
 	}
-	
+
 	if (tamed==0) pc->sysmsg(TRANSLATE("You can't tame that!"));
-	
+
 	AMXEXECSV(s,AMXT_SKITARGS,TAMING,AMX_AFTER);
 }
 
 
 void Skills::BeggingTarget(NXWSOCKET s)
 {
-    
+
 	P_CHAR pcc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pcc);
-    
+
     P_CHAR pc = pointers::findCharBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
 	VALIDATEPC(pc);
-	
+
     int gold,x,y,realgold;
     char abort;
 
-	
+
 
     addid1[s]=buffer[s][7];
     addid2[s]=buffer[s][8];
@@ -2143,7 +2146,7 @@ void Skills::AnimalLoreTarget(NXWSOCKET s)
 
 	P_CHAR target = pointers::findCharBySerPtr(buffer[s] + 7);
 	VALIDATEPC(target);
-	
+
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     // blackwind distance fix
@@ -2188,7 +2191,7 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
 	P_ITEM pi = pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
-	
+
 	AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_BEFORE);
 
 	int curtim=uiCurrentTime;
@@ -2211,7 +2214,7 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy(temp2,TRANSLATE("many many"));
 
 			pc->sysmsg(TRANSLATE("The %s is %s seconds old."), pi->getCurrentNameC(), temp2);
-			
+
 			if (!pc->checkSkill( FORENSICS, 500, 1000) || pi->murderer.empty())
 				pc->sysmsg(TRANSLATE("You can't say who was the killer."));
 			else
@@ -2221,7 +2224,7 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 
 	AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_AFTER);
 }
-   	
+
 
 /*!
 \brief Poison target
@@ -2246,13 +2249,13 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 		pc->objectdelay = 0;
         return;
     }
-    
+
     if ( ! CheckInPack( s, poison) )
     {
 	pc->objectdelay = 0;
 	return;
     }
-    
+
 
     pc->poisonserial=0;
 
@@ -2268,7 +2271,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 	pc->objectdelay = 0;
 	return;
     }
-	
+
 	if (!pi->IsFencing1H() && !pi->IsSword() && !pi->IsArrow() && !pi->IsBolt())
 	{
 		pc->sysmsg(TRANSLATE("You cannot poison that item"));
@@ -2282,7 +2285,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 		pc->objectdelay = 0;
 		return;
 	}
-	
+
 	if (pi->amxevents[EVENT_IONPOISONED]!=NULL) {
 		g_bByPass = false;
 		poison->morez = pi->amxevents[EVENT_IONPOISONED]->Call(pi->getSerial32(), s, poison->morez);
@@ -2323,7 +2326,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
             LogError("switch reached default");
             return;
 	}
-        
+
 	if (poison->morez!=0) {
 		pc->playSFX( 0x0247);
 		if(success!=0)
@@ -2340,7 +2343,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 			{
 				pc->sysmsg(TRANSLATE("Your weapon has been destroyed"));
 				pi->deleteItem();
-				pi->Refresh();		
+				pi->Refresh();
 			}
 		}
 	}
@@ -2354,7 +2357,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 	emptybottle->MoveTo( pc->getPosition() );
 	emptybottle->priv|=0x01;
 	emptybottle->Refresh();
-    
+
     pc->poisonserial=0;
 
     AMXEXECSV(s,AMXT_SKITARGS,POISONING,AMX_AFTER);
@@ -2543,8 +2546,8 @@ public:
 		return;
 	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
 	VALIDATEPC( pc );
-        
-        
+
+
     if (id2 == 0x4F)
           item::CreateFromScript( "$item_clock_parts", pc->getBackpack() );
         else
@@ -2567,7 +2570,7 @@ public:
         if ( s < 0 || s >= now )
 		return;
 	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
-	VALIDATEPC( pc );	
+	VALIDATEPC( pc );
         item::CreateFromScript( "$item_clock", pc->getBackpack() );
     }
 };
@@ -2668,11 +2671,11 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 
     P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-    
+
 	P_ITEM pack= pc->getBackpack();
     if (!ISVALIDPI(pack)) {
-		pc->sysmsg(TRANSLATE("Time to buy a backpack")); 
-		return; 
+		pc->sysmsg(TRANSLATE("Time to buy a backpack"));
+		return;
 	}
 
     if (pc->skill[MINING] < 300)
@@ -2686,8 +2689,8 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 	VALIDATEPI(pi);
 
 	//int i=DEREF_P_ITEM(pi);
-    
-	if (pi->isInWorld()||(pi->magic==4) ) 
+
+	if (pi->isInWorld()||(pi->magic==4) )
 		return;
 
     int col1=pi->color1;
@@ -2703,7 +2706,7 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 		pc->sysmsg(TRANSLATE("You cant smelt that item!"));
 		return;
 	}
-       
+
 	if (pi->getContSerial()!=pack->getSerial32())
 	{
 		pc->sysmsg(TRANSLATE("The item must be in your backpack"));
@@ -2715,7 +2718,7 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 		pc->sysmsg(TRANSLATE(" Must be closer to the forge."));
 		return;
 	}
-       
+
 	if(pc->skill[MINING]>300 && pc->skill[MINING]<500 && pi->smelt==1)
 	{
 		if (pc->checkSkill( MINING, 0, 1000))

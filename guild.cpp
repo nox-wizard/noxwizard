@@ -154,7 +154,7 @@ cGuild::cGuild( SERIAL serial )
 				{
 					SERIAL recruitSerial = str2num( script2 );
 					P_CHAR pChar = pointers::findCharBySerial( recruitSerial );
-					if( ISVALIDPC( pChar ) ) 
+					if( ISVALIDPC( pChar ) )
 					{
 						cGuildRecruit* recruit = new cGuildRecruit();
 
@@ -175,7 +175,7 @@ cGuild::cGuild( SERIAL serial )
 					}
 					else // Skip recruit properties
 					{
-						do 
+						do
 						{
 							readw2();
 						}
@@ -195,7 +195,7 @@ cGuild::cGuild( SERIAL serial )
 					setWebPage(script2);
 				break;
 		}
-		
+
 	}  while( strcmp( script1, "}" ) );
 }
 
@@ -280,7 +280,7 @@ void cGuild::setCharter( const std::wstring &newCharter )
 \author Endymion
 \return the guild charter
 */
-std::wstring cGuild::getCharter()
+std::wstring cGuild::getCharter() const
 {
 	return charter;
 }
@@ -417,7 +417,7 @@ void cGuild::refuseRecruit( P_CHAR pc )
 void cGuild::declareWar( SERIAL guild )
 {
 	if( !isInWar( guild ) )	{
-		war.push_back( guild );		
+		war.push_back( guild );
 	}
 }
 
@@ -534,7 +534,7 @@ void cGuildMember::setToggle( GUILD_TITLE_TOGGLE newToggle )
 }
 
 /*!
-\brief Get the guilded title show mode 
+\brief Get the guilded title show mode
 \author Endymion
 \return the guilded title show mode
 */
@@ -614,7 +614,7 @@ void cGuildz::save( FILE *gWsc )
 			fprintf(gWsc, "}\n");
 			++mIter;
 		}
-		
+
 		GUILDRECRUITMAP::iterator rIter( pGuild->recruits.begin() ), rEnd( pGuild->recruits.end() );
 		for( ; rIter!=rEnd; rIter++ )
 		{
@@ -640,7 +640,6 @@ void cGuildz::load()
 	else
 	{
 		ConOut("Loading guilds ");
-		cGuild *guild = 0;
 		do
 		{
 			readw3();
@@ -652,14 +651,14 @@ void cGuildz::load()
 					guilds.insert( make_pair( sGuild, cGuild( sGuild ) ) );
 				}
 			}
-		}	while (strcmp(script1,"EOF") && !feof(wscfile) );
+		} while (strcmp(script1,"EOF") && !feof(wscfile) );
 		fclose(wscfile);
 		ConOut("[DONE]\n"); // Magius(CHE)
 	}
 }
 
 P_GUILD cGuildz::addGuild( P_ITEM stone, P_CHAR master ) {
-	
+
 	P_GUILD guild = new cGuild( stone, master );
 	guilds.insert( make_pair( stone->getSerial32(), *guild ) );
 	return guild;

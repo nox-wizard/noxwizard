@@ -22,7 +22,7 @@ void buyaction(int s)
 {
 	if ( s < 0 || s >= now )
 		return;
-		
+
 	char clearmsg[8];
 	int i, j;
 	std::vector< buyeditem > allitemsbuyed;
@@ -33,7 +33,7 @@ void buyaction(int s)
 
 	int tmpvalue=0; // Fixed for adv trade system -- Magius(CHE) §
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	
+
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
@@ -42,9 +42,9 @@ void buyaction(int s)
 
 	P_CHAR npc = pointers::findCharBySerPtr(&buffer[s][3]);
 	VALIDATEPC( npc );
-	
+
 	int itemtotal=(((256*(buffer[s][1]))+buffer[s][2])-8)/7;
-	if (itemtotal>256) 
+	if (itemtotal>256)
 		return; //LB
 
 	int clear=0;
@@ -56,7 +56,7 @@ void buyaction(int s)
 	for(i=0;i<itemtotal;i++)
 	{
 		int pos=8+(7*i);
-	
+
 		buyeditem b;
 
 		b.layer=buffer[s][pos];
@@ -70,11 +70,11 @@ void buyaction(int s)
 		// Fixed for adv trade system -- Magius(CHE) §
 		tmpvalue=b.item->value;
 		tmpvalue=calcValue(DEREF_P_ITEM(b.item), tmpvalue);
-		if (SrvParms->trade_system==1) 
+		if (SrvParms->trade_system==1)
 			tmpvalue=calcGoodValue(s,DEREF_P_ITEM(b.item),tmpvalue,0);
 		goldtotal+=b.amount*tmpvalue;
 		// End Fix for adv trade system -- Magius(CHE) §
-		
+
 		allitemsbuyed.push_back( b );
 
 	}
@@ -92,7 +92,7 @@ void buyaction(int s)
 		npc->talkAll( TRANSLATE("Alas, thou dost not possess sufficient gold for this purchase!"),0);
 	}
 	else {
-		
+
 		std::vector<buyeditem>::iterator iter( allitemsbuyed.begin()), end( allitemsbuyed.end() );
 		for (; iter!=end; iter++)
 		{
@@ -138,7 +138,7 @@ void buyaction(int s)
 					bank->DeleteAmount(goldtotal, ITEMID_GOLD, 0);
 				}
 				else
-				{ 
+				{
 					pack->DeleteAmount( goldtotal, ITEMID_GOLD);
 				}
 			}
@@ -156,9 +156,7 @@ void buyaction(int s)
 					else
 					{
 						for (j=0;j<iter->amount;j++)
-						{
-							P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
-						}
+							item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 					}
 					(iter->item)->amount-=iter->amount;
 					(iter->item)->restock+=iter->amount;
@@ -170,16 +168,16 @@ void buyaction(int s)
 						case LAYER_TRADE_RESTOCK:
 							if ((iter->item)->pileable)
 							{
-			
+
 								P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
                                                                 if ( ISVALIDPI(pi) ) //Luxor
 									pi->setAmount( iter->amount );
-								
+
 							}
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+									item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 
 							}
 							(iter->item)->amount-=iter->amount;
@@ -191,7 +189,7 @@ void buyaction(int s)
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+									item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
 
 								(iter->item)->setContSerial( pack->getSerial32() );
 								(iter->item)->amount=1;
@@ -247,8 +245,8 @@ void sellaction(NXWSOCKET s)
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
-	P_ITEM npa=NULL, npb=NULL, npc=NULL; 
+
+	P_ITEM npa=NULL, npb=NULL, npc=NULL;
 	int i, amt, value=0, totgold=0;
 
 	if (buffer[s][8]!=0)
@@ -418,7 +416,7 @@ P_ITEM tradestart(P_CHAR pc1, P_CHAR pc2)
 	cont1->moreb4= cont2->getSerial().ser4;
 	cont2->morez=0;
 	cont1->morez=0;
-        
+
         UI08 msg[90];
         msg[0]=0x6F;    //Header Byte
 	msg[1]=0;       //Size
@@ -494,7 +492,7 @@ void trademsg(int s)
 
 		if (cont1) cont2 = pointers::findItemBySerial(calcserial(cont1->moreb1, cont1->moreb2, cont1->moreb3, cont1->moreb4));
 		else cont2=NULL;
-		
+
 		if (cont2)
 		{
 			cont1->morez=buffer[s][11];
@@ -546,9 +544,9 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi = si.getItem();
-		if( ISVALIDPI(pi)) 
+		if( ISVALIDPI(pi))
 		{
-			
+
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
 				g_bByPass = false;
 				pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s1, s2);
@@ -575,7 +573,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 		P_ITEM pi = si.getItem();
 		if( ISVALIDPI(pi))
 		{
-			
+
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
         		g_bByPass = false;
         		pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s2, s1);
@@ -600,16 +598,16 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 void restock(bool total)
 {
         //Luxor: new cAllObjects system -> this should be changed soon... too slow!!
-	
+
 	cAllObjectsIter objs;
 	P_ITEM pi;
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
 		if( isCharSerial( objs.getSerial() ) )
 			continue;
-		
+
 		pi = (P_ITEM)(objs.getObject());
-		
+
 		if(!ISVALIDPI(pi) || pi->layer!=0x1A )
 			continue;
 
@@ -655,7 +653,7 @@ cRestockMng::cRestockMng()
 
 void cRestockMng::doRestock()
 {
-	
+
 
 	if( !TIMEOUT( timer ) )
 		return;
@@ -675,7 +673,7 @@ void cRestockMng::doRestock()
 			NxwItemWrapper si;
 			si.fillItemsInContainer( pi, false ); //ndEndy We don't need subcontainer right?
 			for( si.rewind(); !si.isEmpty(); si++ ) {
-			
+
 				P_ITEM pj=si.getItem();
 				if( !ISVALIDPI(pj) || ( pj->restock <= 0 ) )
 					continue;
@@ -711,7 +709,7 @@ void cRestockMng::doRestockAll()
 			NxwItemWrapper si;
 			si.fillItemsInContainer( pi, false ); //ndEndy We don't need subcontainer right?
 			for( si.rewind(); !si.isEmpty(); si++ ) {
-			
+
 				P_ITEM pj=si.getItem();
 				if( !ISVALIDPI(pj) || ( pj->restock <= 0 ) )
 					continue;
@@ -720,7 +718,7 @@ void cRestockMng::doRestockAll()
 				pj->restock=0;
 
 			}
-			
+
 			restocked.push( pi->getSerial32() );
 
 		}

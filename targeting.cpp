@@ -167,7 +167,7 @@ void cTargets::AllAttackTarget(NXWSOCKET s)
     P_CHAR pc_target = pointers::findCharBySerPtr(buffer[s] +7);
     VALIDATEPC(pc_target);
 
-    
+
 	NxwCharWrapper sc;
     sc.fillOwnedNpcs( pc, false, true );
     pc->attackStuff(pc_target);
@@ -197,7 +197,7 @@ void cTargets::PlVBuy(NXWSOCKET s)//PlayerVendors
     if (pi->isInWorld()) return;
     int price=pi->value;
 
-    
+
 	P_ITEM thepack=(P_ITEM)pi->getContainer();
 	VALIDATEPI(thepack);
 	P_CHAR pNpc= thepack->getPackOwner();               // the vendor
@@ -341,7 +341,7 @@ static void AddTarget(NXWSOCKET s, PKGx6C *pp)
 
     P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
     VALIDATEPI(pi);
-    pi->setId( id );        
+    pi->setId( id );
     pi->pileable = pileable;
     pi->setDecay( false );
     pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc+Map->TileHeight(pp->model));
@@ -408,11 +408,11 @@ public:
     void CharSpecific()
     {
     	if (!ISVALIDPC(pc)) return;
-	
+
 	if (pc->amxevents[EVENT_CHR_ONDISPEL]) {
 		pc->amxevents[EVENT_CHR_ONDISPEL]->Call(pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
 	}
-	
+
 	//pc->runAmxEvent( EVENT_CHR_ONDISPEL, pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
 
         if (pc->account>-1 && !pc->npc) // player check added by LB
@@ -425,7 +425,7 @@ public:
     }
     void ItemSpecific()
     {
-		if (!ISVALIDPI(pi)) return;	
+		if (!ISVALIDPI(pi)) return;
 
 		sysmessage(s, TRANSLATE("Removing item."));
         if (pi->amxevents[EVENT_IONDECAY])
@@ -622,7 +622,7 @@ static void PrivTarget(NXWSOCKET s, P_CHAR pc)
 	VALIDATEPC(pc);
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(curr);
-	
+
 	if (SrvParms->gm_log)   //Logging
 		WriteGMLog(curr, "%s as given %s Priv [%x][%x]\n", curr->getCurrentNameC(), pc->getCurrentNameC(), addid1[s], addid2[s]);
 
@@ -635,10 +635,10 @@ static void PrivTarget(NXWSOCKET s, P_CHAR pc)
 
 static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
 {
-    
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	if (ISVALIDPI(pi))
     {
         if ((pi->more1==0)&&(pi->more2==0)&&
@@ -748,9 +748,9 @@ void cTargets::IstatsTarget(NXWSOCKET s)
         PC_ITEM pi=pointers::findItemBySerial(serial);
         if (pi!=NULL)
         {
-	    P_CHAR pc = MAKE_CHAR_REF( currchar[s] );   
-	    VALIDATEPC( pc );   
-	    newAmxEvent("gui_itemProps")->Call( pi->getSerial32(), pc->getSerial32(), 0 ); 
+	    P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	    VALIDATEPC( pc );
+	    newAmxEvent("gui_itemProps")->Call( pi->getSerial32(), pc->getSerial32(), 0 );
         }
     }
 }
@@ -807,10 +807,11 @@ static void CstatsTarget(NXWCLIENT client, P_CHAR pc_stats )
 	}
 }
 
+/*!
+\todo MoveBelongingsToBp is written stupid and for what?
+*/
 static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
 {
-
-#pragma message( "MoveBelongingsToBp is written stupid and for what?" )
     P_ITEM pPack= pc->getBackpack();
     if (!pPack)
     {
@@ -852,14 +853,14 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
 
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
-	
+
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     int i;
     if (pc->dead) return;
     if (SrvParms->gm_log)
 		WriteGMLog(curr, "%s as made %s a GM.\n", curr->getCurrentNameC(), pc->getCurrentNameC());
- 
+
     pc->unmountHorse();    //AntiChrist bugfix
     pc->gmrestrict = 0;
     pc->SetBodyType(BODY_GMSTAFF);
@@ -940,7 +941,7 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
 void KillTarget(P_CHAR pc, int ly)
 {
     VALIDATEPC(pc);
-	
+
 	P_ITEM pi=pc->GetItemOnLayer( ly );
 	if(ISVALIDPI(pi))
 		pi->deleteItem();
@@ -1026,7 +1027,7 @@ int cTargets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
 
     if (x)
 		pi->Refresh();
-    
+
     return DEREF_P_ITEM(pi);
 }
 
@@ -1144,9 +1145,9 @@ static void OwnerTarget(NXWCLIENT ps, P_ITEM pi)
 
 void cTargets::DvatTarget(NXWSOCKET s)
 {
-	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);   
-	VALIDATEPC(Me); 
-    
+	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(Me);
+
 	P_ITEM pi=pointers::findItemBySerPtr(buffer[s] +7);
 
 	if (pi && pi->dye==1)//if dyeable
@@ -1340,8 +1341,8 @@ void cTargets::TweakTarget(NXWSOCKET s)//Lag fix -- Zippy
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if (serial == 0) //Client sends zero if invalid!
         return;
-	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );   
-    VALIDATEPC( pc ); 
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+    VALIDATEPC( pc );
 
     if (isCharSerial(serial))//Char
     {
@@ -1864,7 +1865,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
     if(deletecorpse)//if corpse has to be deleted
     {
-        
+
 		NxwItemWrapper si;
 		si.fillItemsInContainer( pi3, false );
 		for( si.rewind(); !si.isEmpty(); si++ )
@@ -2198,7 +2199,7 @@ void cTargets::SellStuffTarget(NXWSOCKET s)
 
 void cTargets::ReleaseTarget(NXWSOCKET s, int c)
 {
-    
+
 	P_CHAR pc = NULL;
 	if (c==INVALID)
 		pc = pointers::findCharBySerPtr(buffer[s] + 7);
@@ -2220,7 +2221,7 @@ void cTargets::GmOpenTarget(NXWSOCKET s)
 	P_CHAR pc_target = pointers::findCharBySerPtr(buffer[s]+7);
 	VALIDATEPC(pc);
 	VALIDATEPC(pc_target);
-    
+
 	NxwItemWrapper si;
 	si.fillItemWeared(pc_target);
 	for (si.rewind(); !si.isEmpty(); si++) {
@@ -2291,7 +2292,7 @@ void cTargets::JailTarget(NXWSOCKET s, int c)
 	//note Additem array used for jail time here..
 	prison::jail( jai, pc, addmitem[s] );
     addmitem[s] = 0; // clear it
-		
+
 	/*    if (pc==NULL)
         return; // lb
 
@@ -2375,7 +2376,7 @@ void cTargets::TransferTarget(NXWSOCKET s)
 	VALIDATEPC(pc2);
 
 	//Araknesh Call OnTransfer Event Passing Animal,NewOwner
-	
+
 	if (pc1->amxevents[EVENT_CHR_ONTRANSFER])
 	{
 		g_bByPass = false;
@@ -2457,7 +2458,7 @@ void cTargets::permHideTarget(NXWSOCKET s)
 	int i = calcCharFromSer(serial);
 	P_CHAR pc = MAKE_CHARREF_LR(i);
 	Location pcpos= pc->getPosition();
-    
+
 	if (i!=-1)
 	{
 		if (pc->hidden == HIDDEN_BYSKILL)
@@ -2468,7 +2469,7 @@ void cTargets::permHideTarget(NXWSOCKET s)
 				sysmessage(s, TRANSLATE("He is already hiding."));
 			return;
 		}
-        
+
 		pc->priv2 |= CHRPRIV2_PERMAHIDDEN;
 		staticeffect3(pcpos.x + 1, pcpos.y + 1, pcpos.z + 10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
@@ -2493,7 +2494,7 @@ void cTargets::unHideTarget(NXWSOCKET s)
 	P_CHAR pc = MAKE_CHARREF_LR(i);
 
 	Location pcpos= pc->getPosition();
-    
+
 	if (i!=-1)
 	{
 		if (pc->hidden == UNHIDDEN)
@@ -2504,9 +2505,9 @@ void cTargets::unHideTarget(NXWSOCKET s)
 				sysmessage(s, TRANSLATE("He is not hiding."));
 			return;
 		}
-        
+
 		pc->priv2 &= ~CHRPRIV2_PERMAHIDDEN;
-		
+
 		staticeffect3(pcpos.x + 1, pcpos.y + 1, pcpos.z + 10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_UNHIDING, 1, 0, 0);
@@ -2911,7 +2912,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 {
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(curr);
-	
+
 	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
 	VALIDATEPC(pc);
 
@@ -2934,7 +2935,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 
 	killkeys( pHouse->getSerial32() );
 
-	
+
 	NXWCLIENT osc=pc->getClient();
 	NXWSOCKET os= (osc!=NULL)? osc->toInt() : INVALID;
 
@@ -2962,7 +2963,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
-	for( sw.rewind(); !sw.isEmpty(); sw++ ) 
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
 		NXWSOCKET k=sw.getSocket();
 		if(k!=INVALID)
@@ -3015,17 +3016,17 @@ void cTargets::HouseBanTarget(NXWSOCKET s) // crackerjack 8/12/99 - ban someobdy
 	P_ITEM pi=pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
 	if(ISVALIDPI(pi))
 	{
-		if(pc->getSerial32() == curr->getSerial32()) 
+		if(pc->getSerial32() == curr->getSerial32())
 			return;
 		int r=add_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), H_BAN);
 		if(r==1)
 		{
 			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
-		} 
+		}
 		else if(r==2)
 		{
 			sysmessage(s, "That player is already on a house register.");
-		} 
+		}
 		else
 			sysmessage(s, "That player is not on the property.");
 	}
@@ -3051,11 +3052,11 @@ void cTargets::HouseFriendTarget(NXWSOCKET s) // crackerjack 8/12/99 - add someb
 		if(r==1)
 		{
 			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
-		} 
+		}
 		else if(r==2)
 		{
 			sysmessage(s, "That player is already on a house register.");
-		} 
+		}
 		else
 			sysmessage(s, "That player is not on the property.");
 	}
@@ -3089,7 +3090,7 @@ void cTargets::HouseLockdown( NXWSOCKET  s ) // Abaddon
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     if(ISVALIDPI(pi))
     {
-        
+
         /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
         house = calcItemFromSer(houseSer);*/
 
@@ -3289,9 +3290,9 @@ void cTargets::SetMurderCount( NXWSOCKET s )
 		P_ITEM pj= (P_ITEM)pi1->getContainer(); // in bp ?
 		P_CHAR pl= (P_CHAR)pi1->getContainer(); // equipped ?
 
-        if ( !ISVALIDPC(pl) ) 
+        if ( !ISVALIDPC(pl) )
 			pc= pj->getPackOwner();
-		else 
+		else
 			pc= pl;
 
         if ( !(ISVALIDPC(pc) && pc->getSerial32()==chars[cc].getSerial32()))  // creation only allowed in the creators pack/char otherwise things could go wrong
@@ -3368,9 +3369,9 @@ void cTargets::UnglowTaget(NXWSOCKET s) // LB 4/9/99, removes the glow-effect fr
         P_ITEM pj= (P_ITEM)pi->getContainer(); // in bp ?
         P_CHAR pl= (P_CHAR)pi->getContainer(); // equipped ?
 
-        if ( !ISVALIDPC(pl) ) 
-			pc= pj->getPackOwner(); 
-		else 
+        if ( !ISVALIDPC(pl) )
+			pc= pj->getPackOwner();
+		else
 			pc= pl;
 
         if (pc->getSerial32()!=chars[currchar[s]].getSerial32()) // creation only allowed in the creators pack/char otherwise things could go wrong
@@ -3422,7 +3423,7 @@ void cTargets::MenuPrivTarg(NXWSOCKET s)//LB's menu privs
 	sprintf(temp,"Menupriv %i set by %s", i, curr->getCurrentNameC());
 	pc->sysmsg(temp);
 	pc->menupriv=i;
-    
+
 }
 
 void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
@@ -3494,7 +3495,7 @@ void cTargets::GuardTarget( NXWSOCKET  s )
 {
     P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	P_CHAR pPet = pointers::findCharBySerial(addx[s]);
     if (!ISVALIDPC(pPet)) LogError("Lost pet serial");
 
@@ -3838,10 +3839,10 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 27: Targ->NpcMenuTarget(s); break;
         case 28: ItemTarget(ps,pt); break;//MovableTarget
         case 29: Skills::ArmsLoreTarget(s); break;
-        case 30: if (Cready) 
-				    OwnerTarget(ps,pc); 
-				 else if (Iready) 
-				 	OwnerTarget(ps,pi); 
+        case 30: if (Cready)
+				    OwnerTarget(ps,pc);
+				 else if (Iready)
+				 	OwnerTarget(ps,pi);
 				 break;
         case 31: ItemTarget(ps,pt); break;//ColorsTarget
         case 32: Targ->DvatTarget(s); break;
@@ -4160,15 +4161,15 @@ void TargetLocation::revalidate()
 // Changes           : none yet
 void TargetLocation::extendItemTarget()
 {
-	if (m_pc!=NULL) 
+	if (m_pc!=NULL)
 		return;
-	if (m_pi==NULL) 
+	if (m_pi==NULL)
 		return;
 	if (m_pi->isInWorld()) {
 		m_x = m_pi->getPosition("x");
 		m_y = m_pi->getPosition("y");
 		m_z = m_pi->getPosition("z");
-	} 
+	}
 	else {
 		int it, ch;
 		getWorldCoordsFromSerial (m_pi->getSerial32(), m_x, m_y, m_z, ch, it);
