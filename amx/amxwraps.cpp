@@ -7528,6 +7528,18 @@ NATIVE (_createResourceMap)
 		newMap->setType(RESOURCEMAP_LOCATION);
 		map=newMap;
 	}
+	else if ( type == RESOURCEMAP_STRINGSTRING )
+	{
+		cResourceStringStringMap *newMap=new cResourceStringStringMap(filename, params[2]);
+		newMap->setType(RESOURCEMAP_STRINGSTRING);
+		map=newMap;
+	}
+	else if ( type == RESOURCEMAP_LOCATIONSTRING )
+	{
+		cResourceLocationStringMap *newMap=new cResourceLocationStringMap(filename, params[2]);
+		newMap->setType(RESOURCEMAP_LOCATIONSTRING);
+		map=newMap;
+	}
 	return cResourceMap::addMap(map);
 
 }
@@ -7573,7 +7585,7 @@ NATIVE (_getResourceStringValue )
 	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
 	{
 		cell *cstr=NULL;
-		amx_GetAddr(amx, params[2], &cstr);
+		amx_GetAddr(amx, params[5], &cstr);
 		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
  		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 		g_nAmxPrintPtr=0;	
@@ -7594,10 +7606,52 @@ NATIVE (_setResourceStringValue )
  		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 		g_nAmxPrintPtr=0;	
 		std::string key = g_cAmxPrintBuffer;
-		myMap->setValue(key, params[2]);
+		myMap->setValue(key, params[5]);
 	}
 	return 0;
 }
+
+NATIVE (_getResourceStringString )
+{
+	UI32 resourceIndex = params[1];
+	cResourceStringStringMap * myMap = (cResourceStringStringMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
+	{
+		cell *cstr=NULL;
+		amx_GetAddr(amx, params[2], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;	
+		std::string key = g_cAmxPrintBuffer;
+		std::string value = myMap->getValue(key);
+		amx_GetAddr(amx,params[3],&cstr);
+		amx_SetString(cstr,(char *) value.c_str(), g_nStringMode);
+		return true;
+	}
+	return 0;
+}
+NATIVE (_setResourceStringString )
+{
+	UI32 resourceIndex = params[1];
+	cResourceStringStringMap * myMap = (cResourceStringStringMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
+	{
+		cell *cstr;
+		amx_GetAddr(amx, params[2], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;	
+		std::string key = g_cAmxPrintBuffer;
+		amx_GetAddr(amx, params[3], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;	
+		std::string value = g_cAmxPrintBuffer;
+		myMap->setValue(key, value);
+	}
+	return 0;
+}
+
 
 NATIVE (_isChar )
 {
@@ -8278,6 +8332,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setResourceLocationValue", _setResourceLocationValue },
  { "getResourceStringValue", _getResourceStringValue },
  { "setResourceStringValue", _setResourceStringValue },
+ { "getResourceStringString", _getResourceStringString },
+ { "setResourceStringString", _setResourceStringString },
 
 // speech APIs
  { "chr_getSpeech", _chr_getCmdSpeech },

@@ -391,7 +391,7 @@ void cResourceStringStringMap::deserialize(ifstream *myStream)
 	{
 		*myStream >> tempKey;
 		*myStream >> value;
-		this->setValue(tempKey, 1);
+		this->setValue(tempKey, value);
 	}
 	return ;
 }
@@ -412,11 +412,11 @@ void cResourceStringStringMap::serialize(ofstream *myStream)
 	return ;
 }
 
-void cResourceStringStringMap::setValue(std::string key, SI32 value)
+void cResourceStringStringMap::setValue(std::string key, std::string value)
 {
 	if ( isInMemory() )
 	{
-		resourceMap.insert(make_pair(key, std::string("")));
+		resourceMap.insert(make_pair(key, value));
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
@@ -430,7 +430,7 @@ void cResourceStringStringMap::setValue(std::string key, SI32 value)
 			datafile.write((char *)&tempType, sizeof(tempType)) ;
 			datafile.write((char *)&tempInMemory, sizeof(tempInMemory));
 			datafile << key << ends;
-			datafile.write((char *)&value, sizeof(value));
+			datafile << value << ends;
 		}
 		else
 		{
@@ -451,7 +451,7 @@ void cResourceStringStringMap::setValue(std::string key, SI32 value)
 					// the value has been previously used and needs to be updated now
 					datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
 					datafile << key << ends;
-					datafile.write((char *)&value, sizeof(value));
+					datafile << value << ends;
 					break;
 				}
 			}
@@ -488,7 +488,7 @@ void cResourceStringStringMap::setValue(std::string key, SI32 value)
 				}
 				// now we can finally write the new key
 				datafile << key << ends;
-				datafile.write((char *)&value, sizeof(value));
+				datafile << value << ends;
 				// and now the rest of the datafile
 				while ( !datafile.eof() )
 				{
@@ -509,19 +509,19 @@ void cResourceStringStringMap::setValue(std::string key, SI32 value)
 	}
 }
 
-SI32 cResourceStringStringMap::getValue(std::string key)
+std::string cResourceStringStringMap::getValue(std::string key)
 {
 	if ( isInMemory() )
 	{
 		std::map<std::string, std::string>::iterator iter = resourceMap.find(key);
 		if ( iter != resourceMap.end())
-			return -1;
+			return iter->second;
 		else
-			return -1;
+			return "";
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
-		SI32 value;
+		std::string value;
 		// since we have a sorted file get Operations should be much faster using a binary sort
 		// but we have to find the correct offset first
 		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
@@ -530,7 +530,7 @@ SI32 cResourceStringStringMap::getValue(std::string key)
 		{ 
 			// file didn't exist until now
 			datafile.close();
-			return -1;
+			return "";
 		}
 		ResourceMapType tempType=getType();
 		LOGICAL tempInMemory=isInMemory();
@@ -540,7 +540,7 @@ SI32 cResourceStringStringMap::getValue(std::string key)
 		do
 		{
 			datafile >> tempKey;
-			datafile.read((char *)&value, sizeof(value));
+			datafile >> value;
 			// ignore data and end line sign
 			if ( tempKey == key )
 			{
@@ -550,9 +550,13 @@ SI32 cResourceStringStringMap::getValue(std::string key)
 		}
 		while ( !datafile.eof() && tempKey > key );
 		datafile.close();
-		return -1;
+		return "";
 	}
-	return -1;
+	return "";
+}
+
+cResourceLocationMap::cResourceLocationMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
+{
 }
 
 void cResourceLocationMap::deserialize(ifstream *myStream)
@@ -572,11 +576,6 @@ void cResourceLocationMap::deserialize(ifstream *myStream)
 	}
 	return ;
 }
-
-cResourceLocationMap::cResourceLocationMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
-{
-}
-
 
 void cResourceLocationMap::serialize(ofstream *myStream)
 {
@@ -812,6 +811,266 @@ SI32 cResourceLocationMap::getValue(cCoord key)
 			return iter->second;
 		else
 			return -1;
+	}
+}
+
+cResourceLocationStringMap::cResourceLocationStringMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
+{
+}
+
+void cResourceLocationStringMap::deserialize(ifstream *myStream)
+{
+	UI16 x,y;
+	SI08 z;
+	std::string value;
+	while (! myStream->eof() && !myStream->fail())
+	{
+		myStream->read((char *)&x,sizeof(x));
+		myStream->read((char *)&y,sizeof(y));
+		myStream->read((char *)&z,sizeof(z));
+		*myStream >> value;
+		myStream->read((char *)&value,sizeof(value));
+		// myStream->ignore(1);
+		cCoord tempKey(x,y,z);
+		this->setValue(tempKey, value);
+	}
+	return ;
+}
+
+void cResourceLocationStringMap::serialize(ofstream *myStream)
+{
+	std::map<cCoord, std::string>::iterator iter = resourceMap.begin();
+	ResourceMapType tempType=getType();
+	LOGICAL tempInMemory=isInMemory();
+	myStream->write((char *)&tempType, sizeof(tempType)) ;
+	myStream->write((char *)&tempInMemory, sizeof(tempInMemory));
+
+	for ( ; iter !=  resourceMap.end();iter++)
+	{
+		myStream->write((char *)&iter->first.x, sizeof(iter->first.x)) ;
+		myStream->write((char *)&iter->first.y, sizeof(iter->first.y)) ;
+		myStream->write((char *)&iter->first.z, sizeof(iter->first.z)) ;
+		*myStream << (std::string)iter->second;
+	}
+	return ;
+}
+
+void cResourceLocationStringMap::setValue(cCoord key, std::string value)
+{
+	if ( isInMemory() )
+	{
+		std::map<cCoord, std::string>::iterator iter = resourceMap.find(key);
+		if ( iter != resourceMap.end())
+			resourceMap.erase(iter);
+		resourceMap.insert(make_pair(key, value));
+	}
+	if ( !isInMemory() && getFile() != "" )
+	{
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
+		if (!datafile.is_open()) 
+		{ 
+			// file didn't exist until now
+			datafile.write((char *)&key.x, sizeof(key.x)) ;
+			datafile.write((char *)&key.y, sizeof(key.y)) ;
+			datafile.write((char *)&key.z, sizeof(key.z)) ;
+			datafile << value;
+		}
+		else
+		{
+// now the complicated part begins
+// search for the key binary, so start at half the file records
+			const UI32 recordSize=sizeof(key.x)+sizeof(key.y)+sizeof(key.z)+sizeof(value)+1;
+			UI16 x,y;
+			SI08 z;
+			SI08 direction=1;
+			UI32 numberOfRecordsToSeek;
+			// put pointer to end of file
+			datafile.seekg(0, ios::end);
+			// seek first in the mid of the file
+			numberOfRecordsToSeek=datafile.tellg();
+			numberOfRecordsToSeek-=2;
+			numberOfRecordsToSeek/= (recordSize * 2);
+			// rewind to the beginning
+			datafile.seekg(0, ios::beg);
+			// read over the first two header bytes
+			datafile.ignore(2);
+
+			// now read the key at the position, if lower than new key, than go forward in file, else go backward
+			while (!datafile.eof())
+			{
+				datafile.seekg(numberOfRecordsToSeek*recordSize*direction, ios::cur);	
+				datafile.read((char *)&x,sizeof(x));
+				datafile.read((char *)&y,sizeof(y));
+				datafile.read((char *)&z,sizeof(z));
+				datafile << (std::string)value;
+				cCoord tempKey(x,y,z);
+				datafile.ignore(sizeof(value)+1);
+				if ( tempKey == key ) 
+				{
+					// the value has been previously used and needs to be updated now
+					datafile.seekp(-(SI32)recordSize, ios::cur);
+					datafile.write((char *)&key.x, sizeof(key.x)) ;
+					datafile.write((char *)&key.y, sizeof(key.y)) ;
+					datafile.write((char *)&key.z, sizeof(key.z)) ;
+					datafile << (std::string)value;
+					return;
+				}
+				// we have to go forward in file
+				else if ( tempKey < key )
+				{
+					numberOfRecordsToSeek=numberOfRecordsToSeek/2;
+					// let's see there is only two possibilities
+					// there is only one record in file
+					// or we have searched into the direction and the new key has to be copied after the current key
+					// in both situations the new key has to be written at the current position
+					if ( numberOfRecordsToSeek == 0 )
+					{
+						break;
+					}
+					direction=1;
+				}
+				else
+				{
+					// now the temp key is bigger than the new key, so it has to be inserted before the current position
+					numberOfRecordsToSeek=numberOfRecordsToSeek/2;
+					// let's see there is only two possibilities
+					// there is only one record in file
+					// or we have searched into the direction and the new key has to be copied after the current key
+					// in both situations the new key has to be written at the current position
+					if ( numberOfRecordsToSeek == 0 )
+					{
+						break;
+					}
+					direction=-1;
+				}
+			}
+			// now we are at the correct position
+			std::string backupFilename=SrvParms->savePath+resourceFilename+".new";
+			ofstream backupFile(backupFilename.c_str(), ios::out);
+			UI32 currOffset=datafile.tellg();
+			datafile.seekg(0, ios::beg);
+			// Since there does not seem to be a way to push data into the stream without destroying the content 
+			// all data from the current offset is moved to the end
+			char buffer[4096];
+
+			while ( datafile.tellg() < currOffset-4096 )
+			{
+				UI32 readBytes;
+				datafile.read(buffer, 4096);
+				readBytes=datafile.gcount();
+				backupFile.write(buffer, readBytes);
+			}
+			// if the current offset is still lower than the old offset, then write the remaining bytes
+			if ( datafile.tellg() < currOffset)
+			{
+				UI32 offset;
+				datafile.read(buffer, currOffset-datafile.tellg());
+				offset=datafile.gcount();
+				backupFile.write(buffer, offset);
+			}
+			// now we can finally write the new key
+			datafile.write((char *)&key.x, sizeof(key.x)) ;
+			datafile.write((char *)&key.y, sizeof(key.y)) ;
+			datafile.write((char *)&key.z, sizeof(key.z)) ;
+			datafile << (std::string)value;
+			// and now the rest of the datafile
+			while ( !datafile.eof() )
+			{
+				UI32 readBytes;
+				datafile.read(buffer, 4096);
+				readBytes=datafile.gcount();
+				backupFile.write(buffer, readBytes);
+			}
+			backupFile.flush();
+			backupFile.close();
+			datafile.close();
+			remove( getFile().c_str() );
+			rename( backupFilename.c_str(), resourceFilename.c_str() );
+		}
+	}
+
+}
+
+std::string cResourceLocationStringMap::getValue(cCoord key)
+{
+	if ( !isInMemory() && getFile() != "" )
+	{
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
+		if (!datafile.is_open()) 
+		{ 
+			return "";
+		}
+		std::string value;
+		const UI32 recordSize=sizeof(key.x)+sizeof(key.y)+sizeof(key.z)+sizeof(value)+1;
+		UI16 x,y;
+		SI08 z;
+		SI08 direction=1;
+		UI32 numberOfRecordsToSeek;
+		// put pointer to end of file
+		datafile.seekg(0, ios::end);
+		// seek first in the mid of the file
+		numberOfRecordsToSeek=datafile.tellg();
+		numberOfRecordsToSeek-=2;
+		numberOfRecordsToSeek/= (recordSize * 2);
+		// rewind to the beginning
+		datafile.seekg(0, ios::beg);
+		datafile.ignore(2);
+		// now read the key at the position, if lower than new key, than go forward in file, else go backward
+		while (!datafile.eof())
+		{
+			datafile.seekg(numberOfRecordsToSeek*recordSize*direction, ios::cur);	
+			datafile.read((char *)&x,sizeof(x));
+			datafile.read((char *)&y,sizeof(y));
+			datafile.read((char *)&z,sizeof(z));
+			datafile >> value;
+			cCoord tempKey(x,y,z);
+			datafile.ignore(sizeof(value)+1);
+			if ( tempKey == key ) 
+			{
+				datafile.close();
+				return value;
+			}
+			// we have to go forward in file
+			else if ( tempKey < key )
+			{
+				numberOfRecordsToSeek=numberOfRecordsToSeek/2;
+				// let's see there is only two possibilities
+				// there is only one record in file
+				// or we have searched into the direction and the new key has to be copied after the current key
+				// in both situations the new key has to be written at the current position
+				if ( numberOfRecordsToSeek == 0 )
+				{
+					break;
+				}
+				direction=1;
+			}
+			else
+			{
+				// now the temp key is bigger than the new key, so it has to be inserted before the current position
+				numberOfRecordsToSeek=numberOfRecordsToSeek/2;
+				// let's see there is only two possibilities
+				// there is only one record in file
+				// or we have searched into the direction and the new key has to be copied after the current key
+				// in both situations the new key has to be written at the current position
+				if ( numberOfRecordsToSeek == 0 )
+				{
+					break;
+				}
+				direction=-1;
+			}
+		}
+		datafile.close();
+		return "";
+	}
+	else
+	{
+		std::map<cCoord, std::string>::iterator iter = resourceMap.find(key);
+		if ( iter != resourceMap.end())
+			return iter->second;
+		else
+			return "";
 	}
 }
 
