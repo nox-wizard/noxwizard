@@ -961,7 +961,7 @@ void command_letusin(NXWSOCKET  s)
 	{
 		if ( acctno[a]>=0 )
 		{
-			accounts::SetOffline(acctno[a]);
+			Accounts->SetOffline(acctno[a]);
 			x++;
 		}
 	}
@@ -974,7 +974,7 @@ void command_readaccounts(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	accounts::LoadAccounts();
+	Accounts->LoadAccounts();
 	pc->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 
@@ -1455,7 +1455,6 @@ void command_fix(NXWSOCKET  s)
 	}
 
 	pc_cs->setPosition( charpos );
-	pc_cs->teleport();
 	return;
 }
 
@@ -1594,7 +1593,7 @@ void command_xtele(NXWSOCKET  s)
 // under that slot to you.</LI>
 // </UL>
 {
-			if (tnum==5 || tnum==2) targets::XTeleport(s, tnum);
+			if (tnum==5 || tnum==2) Targ->XTeleport(s, tnum);
 			else
 			{
 				target(s, 0, 1, 0, 136, "Select char to teleport to your position.");
@@ -1685,7 +1684,7 @@ void command_wipe(NXWSOCKET  s)
 				clicky[s]=strtonum(2);
 				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
 				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				targets::Wiping(s);
+				Targ->Wiping(s);
 			}
 
 			return;
@@ -1713,7 +1712,7 @@ void command_iwipe(NXWSOCKET  s)
 				clicky[s]=strtonum(2);
 				buffer[s][11]=strtonum(3)>>8;buffer[s][12]=strtonum(3)%256; // Do NOT try this at home, kids!
 				buffer[s][13]=strtonum(4)>>8;buffer[s][14]=strtonum(4)%256;
-				targets::Wiping(s);
+				Targ->Wiping(s);
 			}
 
 			return;
@@ -1785,7 +1784,7 @@ void command_addx(NXWSOCKET  s)
 	{
 		addid1[s] = (unsigned char) strtonum(1);
 		addid2[s] = (unsigned char) strtonum(2);
-		Commands::AddHere(s, pc->getPosition().z);
+		Commands::AddHere(s, pc->getPosition("z"));
 	}
 	if (tnum==4)
 	{
@@ -2457,14 +2456,14 @@ void command_restock(NXWSOCKET  s)
 // Forces a manual vendor restock.
 {
 	sysmessage(s, "Manual shop restock has occurred.");
-	restocks::doRestock();
+	Restocks->doRestock();
 }
 
 void command_restockall(NXWSOCKET  s)
 // Forces a manual vendor restock to maximum values.
 {
 	sysmessage(s, "Restocking all shops to their maximums");
-	restocks::doRestockAll();
+	Restocks->doRestockAll();
 }
 
 void command_setshoprestockrate(NXWSOCKET  s)
@@ -3045,7 +3044,7 @@ void command_regspawnall(NXWSOCKET  s)
 {
 	sysbroadcast(TRANSLATE("ALL Regions Spawning to MAX, this will cause some lag."));
 
-	spawns::doSpawnAll();
+	Spawns->doSpawnAll();
 	
 	sysmessage(s, "[DONE] All NPCs/items spawned in regions");
 }
@@ -3241,7 +3240,7 @@ void command_password(NXWSOCKET  s)
 			return;
 		}
 
-		ret = accounts::ChangePassword(pc->account, pwd);
+		ret = Accounts->ChangePassword(pc->account, pwd);
 
 		if (ret==0) 
 			sprintf(pwd, "Password changed to %s", &tbuffer[Commands::cmd_offset+9]);

@@ -60,8 +60,8 @@ using namespace std ;
 
 typedef struct 
 {
-	UI32 address;
-	UI32 mask;
+	unsigned long address;
+	unsigned long mask;
 }ip_block_st;
 
 class NetThread 

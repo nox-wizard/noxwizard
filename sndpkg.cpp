@@ -923,7 +923,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 	P_CHAR TrashMeUp = NULL;
 	NxwCharWrapper sc;
 
-	accounts::GetAllChars( acctno[s], sc );
+	Accounts->GetAllChars( acctno[s], sc );
 
 	for ( i=0, sc.rewind(); !sc.isEmpty(); sc++)
 	{
@@ -965,7 +965,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 			
 			TrashMeUp->deleteChar();
 
-			accounts::GetAllChars( acctno[s], sc );
+			Accounts->GetAllChars( acctno[s], sc );
 			
 			delete_resend_char_1[3] = sc.size();
 
@@ -1703,8 +1703,10 @@ MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, pi->getSerial32(), pi->getSerial32()
 	}
 }
 
-void bolteffect2(P_CHAR pc, UI08 a1, UI08 a2)	// experimenatal, lb
+
+void bolteffect2(CHARACTER player,char a1,char a2)	// experimenatal, lb
 {
+	P_CHAR pc=MAKE_CHAR_REF(player);
 	VALIDATEPC(pc);
 
 	UI16 eff = (a1<<8)|(a2%256);
@@ -1720,14 +1722,13 @@ void bolteffect2(P_CHAR pc, UI08 a1, UI08 a2)	// experimenatal, lb
 	if (rand()%2==0) y=y*-1;
 	pos2.x = charpos.x + x;
 	pos2.y = charpos.y + y;
+	if (pos2.x<0) pos2.x=0;
+	if (pos2.y<0) pos2.y=0;
+	if (pos2.x>6144) pos2.x=6144;
+	if (pos2.y>4096) pos2.y=4096;
 
-	const UI16 max_x = MapTileWidth  * 8, max_y = MapTileHeight * 8;
-	
-	if (pos2.x > max_x) pos2.x = max_x;
-	if (pos2.y > max_y) pos2.y = max_y;
-
-	charpos.z = 0; pos2.z = 127;
-	MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+charpos.z = 0; pos2.z = 127;
+MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
 
 	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
 
@@ -2717,17 +2718,17 @@ void itemeffectUO3D(P_ITEM pi, ParticleFx *sta)
 	particleSystem[10]=sta->effect[4]; // tileid1
 	particleSystem[11]=sta->effect[5]; // tileid2
 
-	particleSystem[12]= pi->getPosition().x >> 8;
-	particleSystem[13]= pi->getPosition().x % 256;
-	particleSystem[14]= pi->getPosition().y >> 8;
-	particleSystem[15]= pi->getPosition().y % 256;
-	particleSystem[16]= pi->getPosition().z;
+	particleSystem[12]= pi->getPosition("x") >> 8;
+	particleSystem[13]= pi->getPosition("x") % 256;
+	particleSystem[14]= pi->getPosition("y") >> 8;
+	particleSystem[15]= pi->getPosition("y") % 256;
+	particleSystem[16]= pi->getPosition("z");
 
-	particleSystem[17]= pi->getPosition().x >> 8;
-	particleSystem[18]= pi->getPosition().x % 256;
-	particleSystem[19]= pi->getPosition().y >> 8;
-	particleSystem[20]= pi->getPosition().y % 256;
-	particleSystem[21]= pi->getPosition().z;
+	particleSystem[17]= pi->getPosition("x") >> 8;
+	particleSystem[18]= pi->getPosition("x") % 256;
+	particleSystem[19]= pi->getPosition("y") >> 8;
+	particleSystem[20]= pi->getPosition("y") % 256;
+	particleSystem[21]= pi->getPosition("z") ;
 
 	particleSystem[22]= sta->effect[6]; // unkown1
 	particleSystem[23]= sta->effect[7]; // unkown2

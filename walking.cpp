@@ -110,7 +110,6 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 		return false;
 	
 	Location pcpos=pc->getPosition();
-	Location opos=po->getPosition();
 
 	UI16 start_x, scan_y, scan_x;
 	switch (pc->dir)
@@ -122,9 +121,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if ((opos.x==scan_x) || (opos.x==scan_x+1u))
+				if ((po->getPosition("x")==scan_x) || (po->getPosition("x")==scan_x+1))
 				{
-					if (opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -139,9 +138,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if((opos.x==scan_x) || (opos.x==scan_x+1u))
+				if (po->getPosition("x")==scan_x || po->getPosition("x")==scan_x+1)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -156,9 +155,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if((opos.y==scan_y) || (opos.y==scan_y+1u))
+					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
 					{
 						return true;
 					}
@@ -172,11 +171,11 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 			start_x= pcpos.x + 2;
 			scan_y= pcpos.y - 14;
 
-			for(scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
+			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if((opos.y==scan_y) || (opos.y==scan_y+1u))
+					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
 					{
 						return true;
 					}
@@ -192,9 +191,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -207,9 +206,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -225,9 +224,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -240,9 +239,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -258,9 +257,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -273,9 +272,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -290,9 +289,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -305,9 +304,9 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if(opos.x==scan_x)
+				if (po->getPosition("x")==scan_x)
 				{
-					if(opos.y==scan_y)
+					if (po->getPosition("y")==scan_y)
 					{
 						return true;
 					}
@@ -509,7 +508,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 			continue;
 		if (pi->id1<0x40) // Not a Multi
 		{
-			if ((pi->getPosition().x== pc->getPosition().x) && (pi->getPosition().y==pc->getPosition().y))
+			if ((pi->getPosition("x")== pc->getPosition("x")) && (pi->getPosition("y")==pc->getPosition("y")))
 			{
 				if (pi->trigger!=0)
 				{
@@ -537,7 +536,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				tile_st tile;
 				Map->SeekTile(pi->id(), &tile);
 				xyblock[blockers_count].type=1;
-				xyblock[blockers_count].basez= pi->getPosition().z;
+				xyblock[blockers_count].basez= pi->getPosition("z");
 				xyblock[blockers_count].id=pi->id();
 				xyblock[blockers_count].flag1=tile.flag1;
 				xyblock[blockers_count].flag2=tile.flag2;
@@ -550,8 +549,8 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 		else	// Multi Tile
 		{
-			if ( (abs((SI32)pi->getPosition().x - (SI32)pc->getPosition().x) <=BUILDRANGE) &&
-				 (abs((SI32)pi->getPosition().y - (SI32)pc->getPosition().y)<=BUILDRANGE) )
+			if ( (abs(pi->getPosition("x") - (int)pc->getPosition("x"))<=BUILDRANGE) &&
+				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
 			{
 				MULFile *mfile = NULL;
 				SI32 length = 0;
@@ -568,12 +567,12 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				{
 					st_multi multi;
 					mfile->get_st_multi(&multi);
-					if (multi.visible && (pi->getPosition().x+multi.x == pc->getPosition().x) && (pi->getPosition().y+multi.y == pc->getPosition().y))
+					if (multi.visible && (pi->getPosition("x")+multi.x == pc->getPosition("x")) && (pi->getPosition("y")+multi.y == pc->getPosition("y")))
 					{
 						tile_st tile;
 						Map->SeekTile(multi.tile, &tile);
 						xyblock[blockers_count].type=2;
-						xyblock[blockers_count].basez= multi.z+pi->getPosition().z;
+						xyblock[blockers_count].basez= multi.z+pi->getPosition("z");
 						xyblock[blockers_count].id= multi.tile;
 						xyblock[blockers_count].flag1= tile.flag1;
 						xyblock[blockers_count].flag2= tile.flag2;
@@ -588,7 +587,7 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 	}
 
-    MapStaticIterator msi( pc->getPosition().x, pc->getPosition().y );
+    MapStaticIterator msi( pc->getPosition("x"), pc->getPosition("y") );
 	staticrecord *stat;
 	int loopexit=0;
 	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
@@ -829,37 +828,32 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	if (pc->npc)
 		pc->setNpcMoveTime(); //reset move timer
 
-	
 	Location pcpos= pc->getPosition();
-	Location oldpos = pcpos;
 
 	switch(dir&0x0F)
 	{
-		case 0: pcpos.y -= 1;
+		case 0: pc->setPosition("y", pcpos.y-1);
 			break;
-		case 1: pcpos.x += 1; pcpos.y -= 1;
+		case 1: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y-1); }
 			break;
-		case 2: pcpos.x += 1;
+		case 2: pc->setPosition("x", pcpos.x+1);
 			break;
-		case 3: pcpos.x += 1; pcpos.y += 1;
+		case 3: { pc->setPosition("x", pcpos.x+1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case 4: pcpos.y +=1;
+		case 4: pc->setPosition("y", pcpos.y+1);
 			break;
-		case 5: pcpos.x -= 1; pcpos.y += 1;
+		case 5: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y+1);}
 			break;
-		case 6: pcpos.x -= 1;
+		case 6: pc->setPosition("x", pcpos.x-1);
 			break;
-		case 7: pcpos.x -=1; pcpos.y -=1;
+		case 7: { pc->setPosition("x", pcpos.x-1); pc->setPosition("y", pcpos.y-1);}
 			break;
 		default:
 			ErrOut("Switch fallout. walking.cpp, walking()\n"); //Morrolan
 			ErrOut("\tcaused by chr %s. dir: %i dir&0x0f: %i dir-passed : %i dp&0x0f : %i\n", pc->getCurrentNameC(), pc->dir, pc->dir&0x0f, dir, dir&0x0f);
-			if (pc->getSocket() != INVALID) 
-				deny(pc->getSocket(), pc, sequence); // lb, crashfix
+			if (pc->getSocket() != INVALID) deny(pc->getSocket(), pc, sequence); // lb, crashfix
 			return false;
 	}
-
-	pc->setPosition( pcpos );
 
 	UI32 blockers = WalkCollectBlockers(pc);
 
@@ -868,6 +862,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
 	// check if player is banned from a house - crackerjack 8/12/99
+	int j;
 
 	if (pc->npc==0) // this is also called for npcs .. LB ?????? Sparhawk Not if you're excluding npc's
 	{
@@ -878,7 +873,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			//xan : probably the plr has exited the boat walking!
 			//pc->multi1 = pc->multi2 = pc->multi3 = pc->multi4 = 0xFF;
-			pc->setMultiSerial32Only(INVALID);
+			pc->setMultiSerial32Only(-1);
 		}
 
 		if(ISVALIDPI(pi_multi))
@@ -887,7 +882,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			{
 				//xan : probably the plr has entered the boat walking!
 				pc->setMultiSerial32Only(INVALID);
-				P_ITEM boat = boats::GetBoat(pc->getPosition());
+				P_ITEM boat = Boats->GetBoat(pc->getPosition());
 				if (boat!=NULL) {
 					pc->setMultiSerial( boat->getSerial32() );
 					
@@ -897,7 +892,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					   
 						P_CHAR pc_b=pets.getChar();
 						if(ISVALIDPC(pc_b)) {
-							pc->MoveTo( boat->getPosition().x+1, boat->getPosition().y+1, boat->getPosition().z+2 );
+							pc->MoveTo( boat->getPosition("x")+1, boat->getPosition("y")+1, boat->getPosition("z")+2 );
 							pc->setMultiSerial( boat->getSerial32() );
 							pc_b->teleport();
 						}
@@ -908,13 +903,16 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
 				int sx, sy, ex, ey;
-				int j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
+				j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
 
 				if(j==H_BAN)
 				{
 					Map->MultiArea(pi_multi,&sx,&sy,&ex,&ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));
-					pc->setPosition( oldpos );
+					Location pcpos= pc->getPosition();
+					pcpos.x= ex;
+					pcpos.y= ey+1;
+					pc->setPosition( pcpos );
 					pc->teleport();
 					return false;
 				}
@@ -927,7 +925,10 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	if ( z == -128 )
 	{
-		pc->setPosition( oldpos );
+		Location pcpos= pc->getPosition();
+		pcpos.x= oldx;
+		pcpos.y= oldy;
+		pc->setPosition( pcpos );
 		NXWSOCKET socket = pc->getSocket();
 		if ( socket != INVALID )
 			deny( socket, pc, sequence );
@@ -936,11 +937,21 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		return false;
 	}
 
+	int nowx2,nowy2;
+
 	//Char mapRegions
 	pcpos= pc->getPosition();
-	pc->setPosition( oldpos ); //ndEndy set old position for have current value in oldposition
-	pc->MoveTo( pcpos.x, pcpos.y, z );
 
+	nowx2= pcpos.x;
+	nowy2= pcpos.y;
+	/*
+	pc->x= oldx;
+	pc->y= oldy; // we have to remove it with OLD x,y ... LB, very important
+	pc->MoveTo(nowx2,nowy2,z);
+	*/
+	pc->setPosition("x", oldx);
+	pc->setPosition("y", oldy);
+	pc->MoveTo( nowx2, nowy2, z );
 	return true;
 }
 
@@ -1199,7 +1210,7 @@ void WalkingHandleRainSnow(P_CHAR pc)
 
 	// dynamics-check
 		int x=Map->DynamicElevation( pc->getPosition() );
-		if (x!=-127) if (boats::GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
+		if (x!=-127) if (Boats->GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB
 
@@ -1724,7 +1735,7 @@ int validNPCMove(int x, int y, signed char z, P_CHAR pc_s )
 			tile_st tile;
 			Map->SeekTile( pi->id(), &tile);
 			/*
-			if ( (pi->getPosition().x==x) && (pi->getPosition().y == y) && (pi->getPosition().z + tile.height > z + 1) && (pi->getPosition().z < z + MaxZstep) )
+			if ( (pi->getPosition("x")==x) && (pi->getPosition("y") == y) && (pi->getPosition("z") + tile.height > z + 1) && (pi->getPosition("z") < z + MaxZstep) )
 			{
 	        	if ( pi->type == 12 && pc_s->doorUse )
         		{

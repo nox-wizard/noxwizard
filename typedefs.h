@@ -35,10 +35,10 @@ typedef float				R32;	//< 32 bits floating point
 	typedef unsigned __int16	UI16;
 	typedef unsigned __int32	UI32;
 	typedef unsigned __int64	UI64;
-	typedef signed __int8		SI08;
-	typedef signed __int16		SI16;
-	typedef signed __int32		SI32;
-	typedef signed __int64		SI64;
+	typedef __int8			UI08;
+	typedef __int16			UI16;
+	typedef __int32			UI32;
+	typedef __int64			UI64;
 #else
 	#ifdef _MSC_VER
 		#if _MSC_VER<=1200
@@ -104,7 +104,7 @@ template < class T >
 class cPoint{
 public:
 
-	cPoint( T na=0, T nb=0 ) { a=na; b=nb; }; 
+	cPoint( T a=0, T b=0 ) { this->a=a; this->b=b; }; 
 
 	T a;
 	T b;
@@ -129,8 +129,8 @@ struct lookuptr_st //Tauriel  used to create pointers to the items dynamically a
 };
 
 struct path_st {
-	UI16 x;
-	UI16 y;
+	UI32 x;
+	UI32 y;
 };
 
 
@@ -174,6 +174,7 @@ struct versionrecord
 struct staticrecord
 {
  SI16 itemid;
+// short int extra; // Unknown yet --Zippy unknown thus not used thus taking up mem.
  UI08 xoff;
  UI08 yoff;
  SI08 zoff;
@@ -197,7 +198,7 @@ struct unitile_st
 struct st_multiidx
 {
  SI32 start;
- UI32 length;
+ SI32 length;
  SI32 unknown;
 } PACK_NEEDED;
 
@@ -243,11 +244,37 @@ struct location_st
 
 struct logout_st//Instalog
 {
-	UI16 x1;
-	UI16 y1;
-	UI16 x2;
-	UI16 y2;
+	UI32 x1;
+	UI32 y1;
+	UI32 x2;
+	UI32 y2;
 };
+
+/*
+	Sparhawk	-- moved to regions.h
+	
+struct region_st
+{
+	LOGICAL inUse;
+ 	TEXT name[50];
+ 	SI32 midilist;
+ 	UI08 priv;	// 0x01 guarded, 0x02, mark allowed, 0x04, gate allowed, 0x08, recall
+			// 0x10 raining, 0x20, snowing, 0x40 magic damage reduced to 0
+	TEXT guardowner[50];
+	UI08 snowchance;
+	UI08 rainchance;
+	UI08 drychance;
+	UI08 keepchance;
+	UI08 wtype;
+	SI32 guardnum[10];
+	SI32 goodsell[256]; // Magius(CHE)
+	SI32 goodbuy[256]; // Magius(CHE)
+	SI32 goodrnd1[256]; // Magius(CHE) (2)
+	SI32 goodrnd2[256]; // Magius(CHE) (2)
+	SI32 forcedseason;
+	LOGICAL ignoreseason;
+};
+*/
 
 struct skill_st
 {
@@ -415,11 +442,10 @@ struct title_st
 \brief Represent a point on the map
 \author Anthalir
 \since 0.82a
-\todo change x and y to UI16, they are not longs
 */
 struct Location{
-	UI16 x, y;
-	SI08 z, dispz;		// dispz is used for the char location
+	UI32			x, y;
+	signed char		z, dispz;		// dispz is used for the char location
 };
 
 

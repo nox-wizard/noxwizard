@@ -32,12 +32,12 @@
 CWorldMain::CWorldMain()
 {
 	isSaving = false;
-	cWsc=NULL;
-	gWsc=NULL;
-	iWsc=NULL;
-	jWsc=NULL;
-	chr_curr=0;
-	itm_curr=0;
+	this->cWsc=NULL;
+	this->gWsc=NULL;
+	this->iWsc=NULL;
+	this->jWsc=NULL;
+	this->chr_curr=0;
+	this->itm_curr=0;
 }
 
 CWorldMain::~CWorldMain()
@@ -200,7 +200,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					//
 					hasInvalidAccount = true;
 				else
-					accounts::AddCharToAccount( str2num(script2), pc );
+					Accounts->AddCharToAccount( str2num(script2), pc );
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
 				pc->priv2=str2num(script2);
@@ -237,17 +237,17 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'D':
 		case 'd':
-			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition(DISPZ, str2num(script2));}
-			else if (!strcmp(script1, "DAMAGETYPE"))	{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
+			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition("dZ", str2num(script2));}
+			else if (!strcmp(script1, "DAMAGETYPE"))		{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
 			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
-			else if (!strcmp(script1, "DEXTERITY2"))	{ pc->dx2=str2num(script2); }
-			else if (!strcmp(script1, "DEATHS"))		{ pc->deaths=str2num(script2);  }
+			else if (!strcmp(script1, "DEXTERITY2"))		{ pc->dx2=str2num(script2); }
+			else if (!strcmp(script1, "DEATHS"))			{ pc->deaths=str2num(script2);  }
 			else if (!strcmp(script1, "DEAD"))			{ pc->dead = true; } // dead only appears in file if it's true.
 			else if (!strcmp(script1, "DEF"))			{ pc->def=str2num(script2);}
 			else if (!strcmp(script1, "DISABLED"))		{ pc->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);}//AntiChrist
 			else if (!strcmp(script1, "DISABLEMSG"))	{ pc->disabledmsg = new std::string( script2 );}
-			else if (!strcmp(script1, "DOORUSE"))		{ pc->doorUse=str2num(script2);}
+			else if (!strcmp(script1, "DOORUSE"))			{ pc->doorUse=str2num(script2);}
 		break;
 
 		case 'E':
@@ -387,9 +387,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'O':
 		case 'o':
 			if (!strcmp(script1, "OLDNPCWANDER"))		{ pc->oldnpcWander=str2num(script2);}
-			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition('x', str2num(script2)); }
-			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition('y', str2num(script2)); }
-			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition('z', str2num(script2)); }
+			else if (!strcmp(script1, "OLDX"))			{ pc->setOldPosition("x", str2num(script2)); }
+			else if (!strcmp(script1, "OLDY"))			{ pc->setOldPosition("y", str2num(script2)); }
+			else if (!strcmp(script1, "OLDZ"))			{ pc->setOldPosition("z", str2num(script2)); }
 			else if (!strcmp(script1, "OWN"))			{ pc->setOwnerSerial32Only(str2num(script2)); }
 		break;
 
@@ -502,7 +502,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'X':
 		case 'x':
-			if (!strcmp(script1, "X")) pc->setPosition(X, str2num(script2));
+			if (!strcmp(script1, "X"))					{ pc->setPosition("x", str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
 				pc->SetOldBodyType( str2num(script2) );
@@ -523,15 +523,15 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'Y':
 		case 'y':
-			if (!strcmp(script1, "Y"))					{ pc->setPosition(Y, str2num(script2)); }
+			if (!strcmp(script1, "Y"))					{ pc->setPosition("y", str2num(script2)); }
 		break;
 
 		case 'Z':
 		case 'z':
 			if (!strcmp(script1, "Z"))
 			{
-				pc->setPosition(Z, str2num(script2));
-				pc->setPosition(DISPZ, str2num(script2));
+				pc->setPosition("z", str2num(script2));
+				pc->setPosition("dZ", str2num(script2));
 
 			}
 		break;
@@ -565,7 +565,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 	pc->region=static_cast<unsigned char>(calcRegionFromXY( pc->getPosition() )); //LB bugfix
 
  // lord binarys body/skin autocorrection code
-	regions::add(pc);
+	mapRegions->add(pc);
  // begin of meta gm stuff
 
 	if (!pc->npc)
@@ -592,9 +592,11 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 	}
 
+	UI32 max_x = MapTileWidth  * 8;
+	UI32 max_y = MapTileHeight * 8;
 	Location pcpos= pc->getPosition();
 
-	if( ((pcpos.x<100) && (pcpos.y<100)) || !regions::isValidCoord(pcpos) )
+	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y) || (pcpos.x<0) || (pcpos.y<0)))
 	{
 		if( !pc->npc )
 			pc->MoveTo( 900,300,30 ); //player in an invalid location
@@ -614,7 +616,7 @@ void loaditem()
 	P_ITEM pi=archive::getItemForCopy();
 	if( pi==NULL ) return;
 
-	UI32 i;
+	unsigned long int i;
 	int loops=0;
 	char bad=0;
 
@@ -973,14 +975,14 @@ void loaditem()
 		case 'x':
 		case 'X':
 			if (!(strcmp(script1, "X")))
-				pi->setPosition(X, str2num(script2));
+				pi->setPosition("x", str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
 		case 'y':
 		case 'Y':
 			if (!(strcmp(script1, "Y")))
-				pi->setPosition(Y, str2num(script2));
+				pi->setPosition("y", str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -996,7 +998,7 @@ void loaditem()
 		case 'z':
 		case 'Z':
 			if (!(strcmp(script1, "Z")))
-				pi->setPosition(Z, str2num(script2));
+				pi->setPosition("z", str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 		}
@@ -1022,29 +1024,33 @@ void loaditem()
 
 	if (pi->isInWorld())
 	{
-		regions::add(pi);
+		int max_x = MapTileWidth  * 8;
+		int max_y = MapTileHeight * 8;
+		mapRegions->add(pi);
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{
 			insert_boat(pi);
 		}
 
-		if ( !regions::isValidCoord(pi->getPosition()) )	// lord bianry
+		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
 			pi->deleteItem();
 	}
 
 	amxVS.moveVariable( INVALID, pi->getSerial32() );
 
 	if( pi->layer==LAYER_TRADE_RESTOCK )
-		restocks::addNewRestock( pi );
+		Restocks->addNewRestock( pi );
 
 }
 
-//! Load world from NXW*.WSC
-void CWorldMain::loadNewWorld()
+void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 {
 	std::string fileName;
+//	unsigned char memerr=0; // unused variable
 	char outper[4];
+//	unsigned int i=0; // unused variable
+//	unsigned int percent=0,a=0,pred=0,maxm=0; // unused variable
 	*outper='\0';
 
 
@@ -1122,7 +1128,7 @@ void CWorldMain::loadNewWorld()
 
 
 	//Luxor: reload dynamic spawners here.
-	spawns::clearDynamic();
+	Spawns->clearDynamic();
 	cAllObjectsIter objs;
 	P_CHAR pc = NULL;
 	P_ITEM pi = NULL;
@@ -1133,7 +1139,7 @@ void CWorldMain::loadNewWorld()
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->isSpawner() )
-				spawns::loadFromItem(pi);
+				Spawns->loadFromItem(pi);
 		}
 	}
 	return;
@@ -1162,7 +1168,7 @@ void CWorldMain::saveNewWorld()
 	if (SrvParms->server_log)
 		ServerLog.Write("Server data save\n");
 
-	accounts::SaveAccounts();
+	Accounts->SaveAccounts();
 
 	sysbroadcast(TRANSLATE("World data saving..."));
 
@@ -1326,7 +1332,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 	if (pc->spawnregion!=INVALID || pc->spawnserial!=INVALID ) valid=0;
 	if (valid)
 	{
-			fprintf(cWsc, "SECTION CHARACTER %i\n", chr_curr++);
+			fprintf(cWsc, "SECTION CHARACTER %i\n", this->chr_curr++);
 			fprintf(cWsc, "{\n");
 			fprintf(cWsc, "SERIAL %i\n", pc->getSerial32());
 			//Luxor: if the char is morphed, we have to save the original values.
@@ -1378,12 +1384,12 @@ void CWorldMain::SaveChar( P_CHAR pc )
 //			if (pcpos.dispz)
 				fprintf(cWsc, "DISPZ %i\n", pcpos.dispz);
 
-			if (pc->getOldPosition().x!=dummy.getOldPosition().x)
-				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition().x);
-			if (pc->getOldPosition().y!=dummy.getOldPosition().y)
-				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition().y);
-			if (pc->getOldPosition().z!=dummy.getOldPosition().z)
-				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition().z);
+			if (pc->getOldPosition("x")!=dummy.getOldPosition("x"))
+				fprintf(cWsc, "OLDX %i\n", pc->getOldPosition("x"));
+			if (pc->getOldPosition("y")!=dummy.getOldPosition("y"))
+				fprintf(cWsc, "OLDY %i\n", pc->getOldPosition("y"));
+			if (pc->getOldPosition("z")!=dummy.getOldPosition("z"))
+				fprintf(cWsc, "OLDZ %i\n", pc->getOldPosition("z"));
 
 			if (pc->dir!=dummy.dir)
 				fprintf(cWsc, "DIR %i\n", pc->dir);
@@ -1689,10 +1695,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			SAVECHAREVENT("@ONBEGINATTACK", EVENT_CHR_ONBEGINATTACK);
 			SAVECHAREVENT("@ONBEGINDEFENSE", EVENT_CHR_ONBEGINDEFENSE);
 			SAVECHAREVENT("@ONCASTSPELL", EVENT_CHR_ONCASTSPELL);
-			SAVECHAREVENT("@ONDEATH", EVENT_CHR_ONBEFOREDEATH);
-			SAVECHAREVENT("@ONDIED", EVENT_CHR_ONAFTERDEATH);
-			SAVECHAREVENT("@ONBEFOREDEATH", EVENT_CHR_ONBEFOREDEATH);
-			SAVECHAREVENT("@ONAFTERDEATH", EVENT_CHR_ONAFTERDEATH);
+			SAVECHAREVENT("@ONDEATH", EVENT_CHR_ONDEATH);
 			SAVECHAREVENT("@ONKILL", EVENT_CHR_ONKILL);
 			SAVECHAREVENT("@ONDISMOUNT", EVENT_CHR_ONDISMOUNT); //Unavowed
 			SAVECHAREVENT("@ONDISPEL", EVENT_CHR_ONDISPEL);
@@ -1768,9 +1771,9 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 	}
 
-	if ( ( !pi->isInWorld() || ((pi->getPosition().x > 1) && (pi->getPosition().x < 6144) && (pi->getPosition().y < 4096))))
+	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
 	{
-		fprintf(iWsc, "SECTION WORLDITEM %i\n", itm_curr++);
+		fprintf(iWsc, "SECTION WORLDITEM %i\n", this->itm_curr++);
 		fprintf(iWsc, "{\n");
 		fprintf(iWsc, "SERIAL %i\n", pi->getSerial32());
 		fprintf(iWsc, "NAME %s\n", pi->getCurrentNameC());
@@ -2097,10 +2100,10 @@ void CWorldMain::loadPrison()
 void CWorldMain::realworldsave ()
 {
 	//Luxor: reload dynamic spawners here.
-	spawns::clearDynamic();
+	Spawns->clearDynamic();
 	cAllObjectsIter objs;
-	chr_curr=0;
-	itm_curr=0;
+	this->chr_curr=0;
+	this->itm_curr=0;
 	P_ITEM pi = NULL;
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
@@ -2109,7 +2112,7 @@ void CWorldMain::realworldsave ()
 		else {
 			pi = static_cast<P_ITEM>(objs.getObject());
 			if ( pi->isSpawner() )
-				spawns::loadFromItem(pi);
+				Spawns->loadFromItem(pi);
 			SaveItem( pi );
 		}
 	}

@@ -50,6 +50,15 @@ cOldMenu::cOldMenu()
 /*
 \brief Destructor
 \author Endymion
+\since 0.82
+*/
+cOldMenu::~cOldMenu()
+{
+}
+
+/*
+\brief Destructor
+\author Endymion
 \param numPerPage number of item for page
 \param numpages the page count
 \attention is useless now
@@ -89,35 +98,35 @@ void cOldMenu::setTitle( wstring& str )
 \brief Set width
 \author Endymion
 \since 0.82
-\param newWidth the width
+\param width the width
 */
-void cOldMenu::setWidth( int newWidth )
+void cOldMenu::setWidth( int width )
 {
-	width=newWidth;
+	this->width=width;
 }
 
 /*!
 \brief Set style
 \author Endymion
 \since 0.82
-\param newStyle the style
-\param newColor the color
+\param style the style
+\param color the color
 */
-void cOldMenu::setStyle( int newStyle, int newColor )
+void cOldMenu::setStyle( int style, int color )
 {
-	style=newStyle;
-	setColor( newColor );
+	this->style=style;
+	setColor( color );
 }
 
 /*!
 \brief Set color
 \author Endymion
 \since 0.82
-\param newColor the color
+\param color the color
 */
-void cOldMenu::setColor( int newColor )
+void cOldMenu::setColor( int color )
 {
-	color=newColor;
+	this->color=color;
 }
 
 /*!
@@ -137,6 +146,10 @@ void cOldMenu::show( P_CHAR pc )
 
 
 cOldMenuClassic::cOldMenuClassic() : cMenu()
+{
+}
+
+cOldMenuClassic::~cOldMenuClassic()
 {
 }
 
@@ -273,6 +286,10 @@ void cOldMenuClassic::show( P_CHAR pc )
 
 
 cOldMenuIconList::cOldMenuIconList()
+{
+}
+
+cOldMenuIconList::~cOldMenuIconList()
 {
 }
 

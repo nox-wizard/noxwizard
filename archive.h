@@ -34,6 +34,9 @@ protected:
 
 public:
 
+	cAllObjects();
+	~cAllObjects();
+
 	void insertObject( P_OBJECT obj );
 	void eraseObject( P_OBJECT obj );
 	P_OBJECT findObject(SERIAL nSerial);
@@ -56,6 +59,9 @@ public:
 	OBJECT_MAP::iterator next; //next for save delete of current
 
 public:
+
+	cAllObjectsIter( );
+	~cAllObjectsIter();
 
 	void rewind();
 	bool IsEmpty();

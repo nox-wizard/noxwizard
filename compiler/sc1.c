@@ -5,7 +5,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc1.c,v 1.5 2003/07/14 18:31:52 dgp85 Exp $
+ *  Version: $Id: sc1.c,v 1.6 2003/07/17 22:21:57 sparhawksf Exp $
  */
 #include <assert.h>
 #include <ctype.h>
@@ -935,8 +935,8 @@ static void setconstants(void)
     add_constant("cellmin",SHRT_MIN,sGLOBAL,0);
   #else
     add_constant("cellbits",32,sGLOBAL,0);
-    add_constant("cellmax",INT_MAX,sGLOBAL,0);
-    add_constant("cellmin",INT_MIN,sGLOBAL,0);
+    add_constant("cellmax",LONG_MAX,sGLOBAL,0);
+    add_constant("cellmin",LONG_MIN,sGLOBAL,0);
   #endif
   add_constant("charbits",charbits,sGLOBAL,0);
   add_constant("charmin",0,sGLOBAL,0);
@@ -3176,7 +3176,7 @@ static void test(int label,int parens,int invert)
     error(33,ptr);              /* array must be indexed */
   } /* if */
   if (lval.ident==iCONSTEXPR) { /* constant expression */
-    intest=(int)popstk(); /* restore stack */
+    intest=(int)(long)popstk(); /* restore stack */
     stgdel(index,cidx);
     if (lval.constval) {        /* code always executed */
       error(206);               /* redundant test: always non-zero */

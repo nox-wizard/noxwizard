@@ -37,7 +37,7 @@ class cTimer
 {
 public:
 	cTimer(SERIAL serial, UI32 secs, UI08 flags=TIMER_PAUSE, SI32 n=INVALID, UI32 more1=0, UI32 more2=0 );
-	virtual ~cTimer() {}
+	virtual ~cTimer();
 
 	UI32 timer;		//!< timer count
 	SERIAL serial;	//!< serial of char or item

@@ -265,9 +265,9 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
         py = charpos.y;
         pz = charpos.z;
     } else if ( ISVALIDPI(pi) && (pi->getContSerial()==INVALID)) {
-        px = pi->getPosition().x;
-        py = pi->getPosition().y;
-        pz = pi->getPosition().z;
+        px = pi->getPosition("x");
+        py = pi->getPosition("y");
+        pz = pi->getPosition("z");
     } else {
         px = 0;
         py = 0;

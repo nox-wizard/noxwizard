@@ -23,17 +23,14 @@ extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 
 void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char tser4, UI32 type, char radio)
 {
-	if (s < 0)
-		return; //Luxor
-
+	if (s < 0) return; //Luxor
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC( pc );
+	
+	P_CHAR pc_c;
 
-	P_CHAR	pc_c;
-
-	char	temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int	i,
-		serhash;
+	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	int /*j=-1,*/i,serhash;
 
 	/*
 	ConOut("Button: datasize %i\n", ShortFromCharPtr(buffer[s] +1) );
@@ -75,6 +72,25 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	else
 	{
 		serial=calcserial(tser1,tser2,tser3,tser4);
+		//
+		// Sparhawk: new gump API, currently only activated for cstats, istats and tweak char & item
+		//
+		/*switch( type )
+		{
+			case   1	:	// character properties
+			case   2	:	// item properties
+			case  20	:	// region choice list
+			case  21	:	// region properties
+			case  50	:	// guild stone menu
+			case  51	:	// guild members
+			case  52	:	// guild recruits
+			case  53	:	// guild properties
+			case 999	:
+				nxwGump::handleGump( pc, buffer[s] );
+				return;
+			default		:
+				break;
+		}*/
 		//
 		// Luxor: new gump API activated also for users
 		//
@@ -233,11 +249,11 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 				}
 				else
 				{
-					targets::JailTarget (s,pc->getSerial32());
+					Targ->JailTarget (s,pc->getSerial32());
 					break;
 				}
 			case 203://release
-				targets::ReleaseTarget(s,pc_c->getSerial32());
+				Targ->ReleaseTarget(s,pc_c->getSerial32());
 				break;
 			case 204:
 				if(pc_c->getSerial32()==pc->getSerial32())
@@ -282,7 +298,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 					buffer[s][10] = addid4[s];
 					addx[s] = buffer[s][21];
 					addy[s] = buffer[s][22];
-					targets::IDtarget(s);
+					Targ->IDtarget(s);
 					sysmessage(s, TRANSLATE("House sign changed."));
 				}
 				return;
@@ -342,14 +358,21 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 
 void gumps::Input(int s)
 {
+	
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	
 	char type, index ;
+//	unsigned char tser1, tser2, tser3, tser4;
 	char *text;
 	int c1,body,b,k;
 	SERIAL serial;
 
+/*	tser1=buffer[s][3];
+	tser2=buffer[s][4];
+	tser3=buffer[s][5];
+	tser4=buffer[s][6];
+	serial=calcserial(tser1,tser2,tser3,tser4); */
 	serial = LongFromCharPtr(buffer[s] +3);
 	type=buffer[s][7];
 	index=buffer[s][8];
@@ -372,24 +395,24 @@ void gumps::Input(int s)
 		case 2:		pj->setCurrentName(text);	break;
 		case 3:		pj->setId( hex2num(text) );	break;	 // ID
 		case 4:		pj->setColor( hex2num(text) );	break;	// Hue
-		case 5:		pj->setPosition(X, str2num(text) );	break;	// X
-		case 6:		pj->setPosition(Y, str2num(text) );	break;	// Y
-		case 7:		pj->setPosition(Z, str2num(text) );	break;	// Z
+		case 5:		pj->setPosition("x", str2num(text) );	break;	// X
+		case 6:		pj->setPosition("y", str2num(text) );	break;	// Y
+		case 7:		pj->setPosition("z", str2num(text) );	break;	// Z
 		case 8:		pj->type = str2num(text);	break;	 // Type
 		case 9:		pj->itmhand = str2num(text);	break;	// Itemhand - added by Xuri
 		case 10:	pj->layer = str2num(text);	break;	// Layer
 		case 11:	pj->amount = str2num(text);	break;	// Amount
 		case 12:	k = hex2num( text );	// More
-					pj->more1 = (k>>24)&0xFF;
-					pj->more2 = (k>>16)&0xFF;
-					pj->more3 = (k>>8)&0xFF;
-					pj->more4 = k&0xFF;
+					pj->more1 = (unsigned char)(k>>24);
+					pj->more2 = (unsigned char)(k>>16);
+					pj->more3 = (unsigned char)(k>>8);
+					pj->more4 = (unsigned char)(k%256);
 					break;
 		case 13: 	k = hex2num( text );	// MoreB
-					pj->moreb1 = (k>>24)&0xFF;
-					pj->moreb2 = (k>>16)&0xFF;
-					pj->moreb3 = (k>>8)&0xFF;
-					pj->moreb4 = k&0xFF;
+					pj->moreb1 = (unsigned char)(k>>24);
+					pj->moreb2 = (unsigned char)(k>>16);
+					pj->moreb3 = (unsigned char)(k>>8);
+					pj->moreb4 = (unsigned char)(k%256);
 					break;
 		case 14: 	pj->pileable = str2num(text);	break;	// Pileable
 		case 15:	pj->dye = str2num(text);	break;	// Dye
@@ -428,10 +451,10 @@ void gumps::Input(int s)
 		{
 		case 2:		pc_j->setCurrentName( text );			break;  // Name
 		case 3:		pc_j->title = text;				break;	// Title
-		case 4:		pc_j->setPosition(X, str2num(text) );		break;	// X
-		case 5:		pc_j->setPosition(Y, str2num(text) );		break;	// Y
-		case 6:	 	pc_j->setPosition(Z, str2num(text) );
-					pc_j->setPosition(DISPZ, str2num(text) );	break;	// Z
+		case 4:		pc_j->setPosition("x", str2num(text) );		break;	// X
+		case 5:		pc_j->setPosition("y", str2num(text) );		break;	// Y
+		case 6:	 	pc_j->setPosition("z", str2num(text) );
+				pc_j->setPosition("dz", str2num(text) );	break;	// Z
 		case 7:		pc_j->dir = str2num(text) & 0x0F;		break;  // make sure the high-bits are clear // Dir
 		case 8: // Body
 			k = hex2num( text );
@@ -490,17 +513,20 @@ void gumps::Input(int s)
 
 void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 {
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
 	P_ITEM pi_j;
+
+
 	char sect[512];
 	int loopexit=0;
 	short int length, length2, textlines=0;
 	UI32 i;
 	bool house_gump=false, new_decay=false;
 	bool new_houseName = false; // House maintenance (Sparhawk)
-	int is,ds;
+	int is,j=-1,ds;
 	char tt[255];
 	char tt2[255];
 
@@ -666,7 +692,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 			/*sprintf(tt,"pos3: %s\n",script1);
 			LogMessage(tt);*/
 
-			if (house_gump && pi_j)
+			if (house_gump && ISVALIDPI(pi_j))
 			{
 				if (!strcmp(script1,"Decay Status :"))
 				{
@@ -1216,11 +1242,11 @@ void ttext(int line, SERIAL serial)
 		if( --line == 0 ) strcpy( script1, "Hue");
 		if( --line == 0 ) sprintf( script1,"0x%x (%i)", pi->color(), pi->color());
 		if( --line == 0 ) strcpy( script1, "X");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().x, pi->getPosition().x);
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("x"), pi->getPosition("x"));
 		if( --line == 0 ) strcpy( script1, "Y");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().y, pi->getPosition().y);
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("y"), pi->getPosition("y"));
 		if( --line == 0 ) strcpy( script1, "Z");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().z, pi->getPosition().z);
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("z"), pi->getPosition("z"));
 		if( --line == 0 ) strcpy( script1, "Type");
 		if( --line == 0 ) sprintf( script1,"%i", pi->type);
 		if( --line == 0 ) strcpy( script1,  "ItemHand" );

@@ -335,6 +335,45 @@ Location cObject::getPosition() const
 }
 
 /*!
+\brief return one coord of the object position
+\author Anthalir
+\since 0.82a
+\param what what to return ?	\li "x" = return the x position
+								\li "y" = return the y position
+								\li "z" = return the z position
+								\li "dz"= return the dispz position (used in cChar)
+\return signed int
+*/
+SI32 cObject::getPosition( const char *what ) const
+{
+
+	switch( what[0] )
+	{
+	case 'x':
+	case 'X':
+		return position.x;
+
+	case 'y':
+	case 'Y':
+		return position.y;
+
+	case 'z':
+	case 'Z':
+		return position.z;
+
+	case 'd':
+	case 'D':
+		if( (what[1] == 'z') || (what[1] == 'Z') )
+			return position.dispz;
+	}
+
+	WarnOut("getPosition called with wrong parameter: '%s' !!", what);
+	return -1;
+
+
+}
+
+/*!
 \brief Set the position of the object
 \author Anthalir
 \since 0.82a
@@ -356,7 +395,7 @@ void cObject::setPosition(Location where)
 \param y new Y-coord of the object
 \param z new Z-coord of the object
 */
-void cObject::setPosition(UI16 x, UI16 y, SI08 z)
+void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 {
 	position.x= x;
 	position.y= y;
@@ -368,31 +407,36 @@ void cObject::setPosition(UI16 x, UI16 y, SI08 z)
 \author Anthalir
 \since 0.82a
 \param what what to set ?
-	\li 'x' = set the x position
-	\li 'y' = set the y position
-	\li 'z' = set the z position
-	\li 'd'"= set the dispz position (used in cChar)
+	\li "x" = set the x position
+	\li "y" = set the y position
+	\li "z" = set the z position
+	\li "dz"= set the dispz position (used in cChar)
 \param value the value to set
 \todo change from string to a simpler enum
 */
-void cObject::setPosition(Coords what, SI32 value)
+void cObject::setPosition( const char *what, SI32 value)
 {
-	switch( what )
+	switch( what[0] )
 	{
-	case X:
+	case 'x':
+	case 'X':
 		position.x= value;
 		break;
 
-	case Y:
+	case 'y':
+	case 'Y':
 		position.y= value;
 		break;
 
-	case Z:
+	case 'z':
+	case 'Z':
 		position.z= value;
 		break;
 
-	case DISPZ:
-		position.dispz= value;
+	case 'd':
+	case 'D':
+		if( (what[1] == 'z') || (what[1] == 'Z') )
+			position.dispz= value;
 		break;
 	}
 }
@@ -402,9 +446,9 @@ Location cObject::getOldPosition() const
 	return old_position;
 }
 
-SI32 cObject::getOldPosition( const char what) const
+SI32 cObject::getOldPosition( const char *what) const
 {
-	switch( what )
+	switch( what[0] )
 	{
 	case 'x':
 	case 'X':
@@ -417,18 +461,15 @@ SI32 cObject::getOldPosition( const char what) const
 	case 'z':
 	case 'Z':
 		return old_position.z;
-	case 'd':
-	case 'D':
-		return old_position.dispz;
 	}
 
 	WarnOut("getPosition called with wrong parameter: '%s' !!", what);
-	return INVALID;
+	return -1;
 }
 
-void cObject::setOldPosition( const char what, SI32 value)
+void cObject::setOldPosition( const char *what, SI32 value)
 {
-	switch( what )
+	switch( what[0] )
 	{
 	case 'x':
 	case 'X':
@@ -443,11 +484,6 @@ void cObject::setOldPosition( const char what, SI32 value)
 	case 'z':
 	case 'Z':
 		old_position.z= value;
-		break;
-
-	case 'd':
-	case 'D':
-		old_position.dispz = value;
 		break;
 	}
 }

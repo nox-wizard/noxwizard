@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc6.c,v 1.3 2003/07/13 23:26:58 dgp85 Exp $
+ *  Version: $Id: sc6.c,v 1.4 2003/07/17 22:21:57 sparhawksf Exp $
  */
 #include <assert.h>
 #include <stdio.h>
@@ -68,7 +68,7 @@ static short *align16(short *v)
   return v;
 }
 
-static int32_t *align32(int32_t *v)
+static long *align32(long *v)
 {
   unsigned char *s = (unsigned char *)v;
   unsigned char t;

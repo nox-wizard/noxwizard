@@ -302,13 +302,13 @@ cChar::cChar( SERIAL ser ) : cObject()
 	morphed=0;
 	resetLockSkills();
 
-	beardserial=INVALID;
-	oldbeardcolor=0;
-	oldbeardstyle=0;
+	this->beardserial=INVALID;
+	this->oldbeardcolor=0;
+	this->oldbeardstyle=0;
 	
-	hairserial=INVALID;
-	oldhaircolor=0;
-	oldhairstyle=0;
+	this->hairserial=INVALID;
+	this->oldhaircolor=0;
+	this->oldhairstyle=0;
 
 	possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
@@ -325,6 +325,9 @@ cChar::cChar( SERIAL ser ) : cObject()
 	lastRunning = 0; //Luxor
 	resetProfile();
 	staticProfile=NULL;
+
+	vendorItemsSell = NULL;
+	vendorItemsBuy = NULL;
 
 	oldmenu=INVALID;
 
@@ -358,10 +361,7 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 		amxevents[EVENT_CHR_ONSTART] = newAmxEvent(script2);
 		newAmxEvent(script2)->Call(getSerial32(), INVALID);
 	}
-	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONBEFOREDEATH)
-	CASECHAREVENT("@ONBEFOREDEATH",EVENT_CHR_ONBEFOREDEATH)		// SYNONYM OF ONDEATH EVENT
-	CASECHAREVENT("@ONDIED",EVENT_CHR_ONAFTERDEATH)
-	CASECHAREVENT("@ONDIED",EVENT_CHR_ONAFTERDEATH)			// SYNONYM OF ONDIED EVENT
+	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONDEATH)
 	CASECHAREVENT("@ONKILL",EVENT_CHR_ONKILL)
 	CASECHAREVENT("@ONWOUNDED",EVENT_CHR_ONWOUNDED)
 	CASECHAREVENT("@ONHIT",EVENT_CHR_ONHIT)
@@ -831,7 +831,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 				if( banktype == BANK_GOLD && pi->morey == MOREY_GOLDONLYBANK )
 					return pi;
 				else // ware ( for item )
-					if ( banktype == BANK_ITEM && pi->morez == region )
+					if ( banktype == BANK_ITEM && pi->morez == this->region )
 						return pi; //correct region
 			}
 		}
@@ -858,7 +858,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 	if(SrvParms->usespecialbank) {
 		if(banktype == BANK_ITEM) {
 			pi->morey = 0;
-			pi->morez = region;
+			pi->morez = this->region;
 		} else {
 			pi->morey = MOREY_GOLDONLYBANK;
 			pi->morez = 0; // All Region
@@ -1096,10 +1096,8 @@ void cChar::showContainer(P_ITEM pCont)
 			continue;
 
 		//fix location of items if they mess up. (needs tweaked for container types)
-		Location li = pi->getPosition();
-		if( li.x > 150) li.x = 150;
-		if( li.y > 140) li.y = 140;
-		pi->setPosition( li );
+		if (pi->getPosition("x") > 150) pi->setPosition("x", 150);
+		if (pi->getPosition("y") > 140) pi->setPosition("y", 140);
 		//end fix
 		LongToCharPtr(pi->getSerial32(), bpitem);
 		ShortToCharPtr(pi->animid(), bpitem +4);
@@ -1200,9 +1198,9 @@ void cChar::MoveTo(Location newloc)
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
 
-	regions::remove(this);
+	mapRegions->remove(this);
 	setPosition( newloc );
-	regions::add(this);
+	mapRegions->add(this);
 }
 
 UI32 cChar::getSkillSum()
@@ -1537,7 +1535,7 @@ LOGICAL const cChar::IsOnline() const
 
 	if (npc) return false;
 	
-	if(accounts::GetInWorld(account) == getSerial32())
+	if(Accounts->GetInWorld(account) == getSerial32())
 		return true;
 
 	return false;
@@ -1778,15 +1776,13 @@ UI32 cChar::distFrom(P_ITEM pi)
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
-	P_ITEM p_boat = boats::GetBoat(getPosition());
+	P_ITEM p_boat = Boats->GetBoat(getPosition());
 
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
-		//ndEndy using setPosition we lose old position
-		setPosition( Z, boatpos.z+3 ); 
-		setPosition( DISPZ, boatpos.z+3 );
-
+		setPosition("z",boatpos.z+3 );
+		setPosition("dz",boatpos.z+3 );
 	} else
 		setMultiSerial(-1);
 
@@ -1814,13 +1810,13 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		walksequence[socket] = INVALID;
 	}
 
+	NxwSocketWrapper sw;
 
-    //
-    // Send the object remove packet
-    //
+        //
+        // Send the object remove packet
+        //
 	if ( cli == NULL ) {
-		NxwSocketWrapper sw;
-		sw.fillOnline( this, false, VISRANGE );
+		sw.fillOnline();
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_w = sw.getClient();
 			if ( ps_w != NULL )
@@ -1833,7 +1829,6 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         // Send worn items and the char itself to the char (if online) and other players
         //
 	if ( cli == NULL ) {
-		NxwSocketWrapper sw;
 		sw.fillOnline( this, false );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_i = sw.getClient();
@@ -1856,8 +1851,8 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         //
         if ( cli == NULL || cli == getClient() )
 	if ( socket != INVALID ) {
-		if ( flags&TELEFLAG_SENDNEARCHARS ) {
-			NxwCharWrapper sc;
+                if ( flags&TELEFLAG_SENDNEARCHARS ) {
+                        NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pc=sc.getChar();
@@ -2313,7 +2308,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 */
 void cChar::circleFX(short id)
 {
-	bolteffect2(this,id >> 8,id & 0xFF);
+	bolteffect2(DEREF_P_CHAR(this),id >> 8,id & 0xFF);
 }
 
 /*!
@@ -2691,12 +2686,12 @@ void cChar::possess(P_CHAR pc)
 	
 	//Set offline the old body, and online the new one
 	if (bSwitchBack) {
-		accounts::SetOffline(pc->account);
-		accounts::SetOnline(pc->account, pc);
+		Accounts->SetOffline(pc->account);
+		Accounts->SetOnline(pc->account, pc);
 
 	} else {
-		accounts::SetOffline(account);
-		accounts::SetOnline(account, pc);
+		Accounts->SetOffline(account);
+		Accounts->SetOnline(account, pc);
 	}
 	
 	//Let's go! :)
@@ -2781,10 +2776,10 @@ void cChar::Kill()
 
 	char murderername[128];
 	murderername[0] = '\0';
-
-	if (amxevents[EVENT_CHR_ONBEFOREDEATH]) {
+	
+	if (amxevents[EVENT_CHR_ONDEATH]) {
 		g_bByPass = false;
-		amxevents[EVENT_CHR_ONBEFOREDEATH]->Call(getSerial32(), s);
+		amxevents[EVENT_CHR_ONDEATH]->Call(getSerial32(), s);
 		if (g_bByPass==true) return;
 	}
 	
@@ -2935,8 +2930,8 @@ void cChar::Kill()
 		if(!ISVALIDPI(pi_j))
 			continue;
 
-		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition().x==26) && (pi_j->getPosition().y==0) &&
-			(pi_j->getPosition().z==0) && (pi_j->id()==0x1E5E) )
+		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition("x")==26) && (pi_j->getPosition("y")==0) &&
+			(pi_j->getPosition("z")==0) && (pi_j->id()==0x1E5E) )
 		{
 			endtrade(pi_j->getSerial32());
 		}
@@ -3066,10 +3061,8 @@ void cChar::Kill()
 		
 		pi_j->setContSerial( pCorpse->getSerial32() );	
 		//General Lee
-		Location lj = pi_j->getPosition();
-		lj.y = RandomNum(85,160);
-		lj.x = RandomNum(20,70);
-		pi_j->setPosition( lj );
+		pi_j->setPosition("y", RandomNum(85,160));
+		pi_j->setPosition("x", RandomNum(20,70));
 		pi_j->Refresh();
 		//General Lee
 		
@@ -3083,12 +3076,6 @@ void cChar::Kill()
 		deathmenu(getClient()->toInt());
 	}
 	//</Luxor> 
-
-	if (amxevents[EVENT_CHR_ONAFTERDEATH])
-	{
-		g_bByPass = false;
-		amxevents[EVENT_CHR_ONAFTERDEATH]->Call(getSerial32(), pCorpse->getSerial32() );
-	}
 
 	if (npc)
 		deleteChar();
@@ -4128,27 +4115,27 @@ void cChar::generic_heartbeat()
 	}
 
 	//HP REGEN
-	if( regenTimerOk( STAT_HP ) ) {
+	if( this->regenTimerOk( STAT_HP ) ) {
 		if (hp < getStrength() && (hunger > 3 || SrvParms->hungerrate == 0)) {
 			hp++;
 			update[ 0 ] = true;
 		}
 
-		updateRegenTimer( STAT_HP );
+		this->updateRegenTimer( STAT_HP );
 	}
 
 	//STAMINA REGEN
-	if( regenTimerOk( STAT_STAMINA )) {
+	if( this->regenTimerOk( STAT_STAMINA )) {
 		if (stm < dx) {
 			stm++;
 			update[ 2 ] = true;
 		}
 
-		updateRegenTimer( STAT_STAMINA );
+		this->updateRegenTimer( STAT_STAMINA );
 	}
 
 	//MANA REGEN
-	if( regenTimerOk( STAT_MANA ) )
+	if( this->regenTimerOk( STAT_MANA ) )
 	{
 		if (mn < in)
 		{
@@ -4162,7 +4149,7 @@ void cChar::generic_heartbeat()
 			med = 0;
 		}
 
-		UI32 manarate = getRegenRate( STAT_MANA, VAR_REAL );
+		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
@@ -4176,8 +4163,8 @@ void cChar::generic_heartbeat()
 				manarate -= UI32( skill[MEDITATION]/222.2 );
 		}
                 manarate = qmax( 1, manarate );
-		setRegenRate( STAT_MANA, manarate, VAR_EFF );
-		updateRegenTimer( STAT_MANA );
+		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
+		this->updateRegenTimer( STAT_MANA );
 
 	}
 	if ( hp <= 0 )
@@ -4192,9 +4179,9 @@ void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
 
 void cChar::pc_heartbeat()
 {
-	if ( accounts::GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
+	if ( Accounts->GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
 	{
-		accounts::SetOffline(account);
+		Accounts->SetOffline( account);
 		logout = INVALID;
 		teleport( TELEFLAG_NONE );
 		return;
@@ -4790,7 +4777,7 @@ void cChar::do_lsd()
 
 bool cChar::isTargeting()
 {
-	return (current_target!=NULL);
+	return (this->current_target!=NULL);
 }
 
 void cChar::setTarget( P_TARGET newtarget )
@@ -4810,19 +4797,19 @@ void cChar::doTarget()
 
 wstring* cChar::getProfile()
 {
-	return profile;
+	return this->profile;
 }
 
-void cChar::setProfile( wstring* newProfile )
+void cChar::setProfile( wstring* profile )
 {
-	if( profile!=NULL )
-		safedelete(profile);
-	profile=newProfile;
+	if( this->profile!=NULL )
+		safedelete(this->profile);
+	this->profile=profile;
 }
 
 void cChar::resetProfile()
 {
-	profile=NULL;
+	this->profile=NULL;
 }
 	
 /*
@@ -4832,7 +4819,7 @@ void cChar::resetProfile()
 */
 wstring* cChar::getSpeechCurrent()
 {
-	return speechCurrent;
+	return this->speechCurrent;
 }
 
 /*
@@ -4843,7 +4830,7 @@ wstring* cChar::getSpeechCurrent()
 */
 void cChar::setSpeechCurrent( wstring* speech )
 {
-	speechCurrent=speech;
+	this->speechCurrent=speech;
 }
 
 /*
@@ -4931,8 +4918,8 @@ bool cChar::isStabled()
 void cChar::stable( P_CHAR stablemaster )
 {
 	VALIDATEPC(stablemaster);
-	if( !npc ) return;
-	stablemaster_serial=stablemaster->getSerial32();
+	if( !this->npc ) return;
+	this->stablemaster_serial=stablemaster->getSerial32();
 	pointers::addToStableMap( this );
 }
 
@@ -4944,7 +4931,7 @@ void cChar::unStable()
 {
 	if( !isStabled() ) return;
 	pointers::delFromStableMap( this );
-	stablemaster_serial=INVALID;
+	this->stablemaster_serial=INVALID;
 }
 
 /*

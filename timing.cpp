@@ -29,7 +29,6 @@
 extern bool g_bMustExecAICode;
 
 static SI32 linInterpolation (SI32 ix1, SI32 iy1, SI32 ix2, SI32 iy2, SI32 ix);
-static LOGICAL checkLight();
 
 void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 {
@@ -97,103 +96,15 @@ void checktimers() // Check shutdown timers
 
 }
 
-static LOGICAL checkLight()
-{
-	static TIMERVAL lighttime=0;
-	
-	LOGICAL lightChanged = false;
-
-	if( TIMEOUT( lighttime ) )
-	{
-		SI32 lightLevel = worldcurlevel;
-
-		SI32 timenow = (Calendar::g_nHour * 60) + Calendar::g_nMinute;
-		SI32 dawntime = (Calendar::g_nCurDawnHour * 60) + Calendar::g_nCurDawnMin;
-		SI32 sunsettime = (Calendar::g_nCurSunsetHour * 60) + Calendar::g_nCurSunsetMin;
-		SI32 nighttime = qmin((sunsettime+120), (1439));
-		SI32 morntime = qmax((dawntime-120), (0));
-		SI32 const middaytime = 750;
-		SI32 dawnlight = (((worlddarklevel - worldbrightlevel))/3) + worldbrightlevel;
-		//
-		// default lights at dawn and sunset
-		//
-		if ( 	timenow == dawntime || timenow==sunsettime )
-		{
-			lightLevel = dawnlight;
-		}
-		//
-		// highest light at midday
-		//
-		else if( timenow == middaytime )
-		{
-			lightLevel = qmax(worldbrightlevel-1, 0);
-		}
-		//
-		// darkest light during night
-		//
-		else if( timenow >= nighttime )
-		{
-			lightLevel = worlddarklevel;
-		}
-		//
-		else if( timenow <= morntime )
-		{
-			lightLevel = worlddarklevel;
-		}
-		//
-		// fading light slight before dawn
-		//
-		else if( timenow > morntime && timenow < dawntime )
-		{
-			lightLevel = linInterpolation(morntime, worlddarklevel, dawntime, dawnlight, timenow);
-		}
-		//
-		// fading light slight from dawn to midday
-		else if( timenow > dawntime &&  timenow < middaytime )
-		{
-			lightLevel = linInterpolation(dawntime, dawnlight, middaytime, worldbrightlevel, timenow);
-		}
-		//
-		// fading light slight from midday to sunset
-		//
-		else if( timenow > middaytime && timenow < sunsettime )
-		{
-			lightLevel = linInterpolation(middaytime, worldbrightlevel, sunsettime, dawnlight, timenow);
-		}
-		//
-		// fading light slight from sunset to night
-		//
-		else if( timenow > sunsettime && timenow < nighttime )
-		{
-			lightLevel = linInterpolation(sunsettime, dawnlight, nighttime, worlddarklevel, timenow);
-		}
-
-		if (wtype)
-			lightLevel += 2;
-
-		if (moon1+moon2<4)
-			++lightLevel;
-		if (moon1+moon2<10)
-			++lightLevel;
-
-		if (lightLevel != worldcurlevel)
-		{
-			worldcurlevel = lightLevel;
-			lightChanged  = true;
-		}
-		lighttime=uiCurrentTime+secondsperuominute*5*MY_CLOCKS_PER_SEC;
-	}
-
-	return lightChanged;
-}
-
 void checkauto() // Check automatic/timer controlled stuff (Like fighting and regeneration)
 {
+//	static TIMERVAL checkspawnregions=0;
        	static TIMERVAL checktempfx=0;
 	static TIMERVAL checknpcs=0;
 	static TIMERVAL checktamednpcs=0;
 	static TIMERVAL checknpcfollow=0;
 	static TIMERVAL checkitemstime=0;
+	static TIMERVAL lighttime=0;
 	static TIMERVAL htmltime=0;
 	static TIMERVAL housedecaytimer=0;
 
@@ -202,8 +113,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Accounts
 	//
-	if (SrvParms->auto_a_reload > 0 && TIMEOUT( accounts::lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
-		accounts::CheckAccountFile();
+	if (SrvParms->auto_a_reload > 0 && TIMEOUT( Accounts->lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
+		Accounts->CheckAccountFile();
 	//
 	// Weather (change is handled by crontab)
 	//
@@ -222,7 +133,70 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Light
 	//
-	lightChanged = checkLight();
+	if( TIMEOUT( lighttime ) )
+	{
+		SI32 lightLevel = worldcurlevel;
+
+		SI32 timenow = (Calendar::g_nHour * 60) + Calendar::g_nMinute;
+		SI32 dawntime = (Calendar::g_nCurDawnHour * 60) + Calendar::g_nCurDawnMin;
+		SI32 sunsettime = (Calendar::g_nCurSunsetHour * 60) + Calendar::g_nCurSunsetMin;
+		SI32 nighttime = qmin((sunsettime+120), (1439));
+		SI32 morntime = qmax((dawntime-120), (0));
+		SI32 const middaytime = 750;
+//		SI32 const midnighttime = 0; // unused variable
+		SI32 dawnlight = (((worlddarklevel - worldbrightlevel))/3) + worldbrightlevel;
+		//
+		// default lights at dawn and sunset
+		//
+		if ( timenow == dawntime || timenow==sunsettime )
+			lightLevel = dawnlight;
+		//
+		// highest light at midday
+		//
+		else if( timenow == middaytime )
+			lightLevel = qmax(worldbrightlevel-1, 0);
+		//
+		// darkest light during night
+		//
+		else if( timenow >= nighttime )
+			lightLevel = worlddarklevel;
+		//
+		else if( timenow <= morntime )
+			lightLevel = worlddarklevel;
+		//
+		// fading light slight before dawn
+		//
+		else if( timenow > morntime && timenow < dawntime )
+			lightLevel = linInterpolation(morntime, worlddarklevel, dawntime, dawnlight, timenow);
+		//
+		// fading light slight from dawn to midday
+		else if( timenow > dawntime &&  timenow < middaytime )
+			lightLevel = linInterpolation(dawntime, dawnlight, middaytime, worldbrightlevel, timenow);
+		//
+		// fading light slight from midday to sunset
+		//
+		else if( timenow > middaytime && timenow < sunsettime )
+			lightLevel = linInterpolation(middaytime, worldbrightlevel, sunsettime, dawnlight, timenow);
+		//
+		// fading light slight from sunset to night
+		//
+		else if( timenow > sunsettime && timenow < nighttime )
+			lightLevel = linInterpolation(sunsettime, dawnlight, nighttime, worlddarklevel, timenow);
+
+		if (wtype)
+			lightLevel += 2;
+		if (moon1+moon2<4)
+			++lightLevel;
+		if (moon1+moon2<10)
+			++lightLevel;
+
+		if (lightLevel != worldcurlevel)
+		{
+			worldcurlevel = lightLevel;
+			lightChanged  = true;
+		}
+		lighttime=uiCurrentTime+secondsperuominute*5*MY_CLOCKS_PER_SEC;
+	}
 	//
 	// Do Eclipse stuff.. /blackwind
 	//
@@ -251,28 +225,69 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		/////////////////////
 		if( SrvParms->housedecay_secs != UINVALID )
 			check_house_decay();
+
+		//
+		//	Sparhawk:	let's switch to a seperate timer in the future
+		//
+		////////////////////
+		// check stabling
+		///////////////////
+
+		//UI32 diff;
+		//Luxor: new cAllObjects system... really slow, must change this.
+/*		cAllObjectsIter objs;
+		P_CHAR pc;
+		for( objs.rewind(); !objs.IsEmpty(); objs++ )
+		{*/
+		/*for (UI32 k=0; k<charcount; ++k)
+		{*/
+		/*	if ( !isCharSerial(objs.getSerial()) ) continue;
+			
+			pc = (P_CHAR)(objs.getObject());
+			if(!ISVALIDPC(pc))
+				continue;
+
+			if (pc->npc_type==1)
+			{
+				SI32 ii = 0;
+				P_CHAR pj = NULL;
+				while ( ((pj=StableSearch(pc->getSerial32(),&ii)) != NULL) )
+				{
+					if ( ISVALIDPC(pj))
+					{
+						diff = (getclock() - pj->timeused_last) / MY_CLOCKS_PER_SEC;
+						pj->time_unused	+= diff;
+					}
+				}
+			}
+		}*/
+
 		housedecaytimer = uiCurrentTime+MY_CLOCKS_PER_SEC*60*60; // check only each hour
 	}
 	//
 	// Spawns
 	//
-	if( TIMEOUT( spawns::check ) )
+	if( TIMEOUT( Spawns->check ) )
 	{
-		spawns::doSpawn();
+		Spawns->doSpawn();
 	}
+
 	//
 	// Shoprestock
 	//
-	restocks::doRestock();
+	Restocks->doRestock();
+
 	//
 	// Prison release
 	//
 	prison::checkForFree();
+
 	//
 	// Temporary effects
 	//
         if( TIMEOUT( checktempfx ) )
 		tempfx::checktempeffects();
+	
 	//
 	// Characters & items
 	//
@@ -390,12 +405,12 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 							if( TIMEOUT( pi->gatetime ) )
 							{
 								if (pi->type2==1)
-									boats::Move(ps->toInt(),pi->dir,pi);
+									Boats->Move(ps->toInt(),pi->dir,pi);
 								else
 								{
 									int dir=pi->dir+4;
 									dir%=8;
-									boats::Move(ps->toInt(),dir,pi);
+									Boats->Move(ps->toInt(),dir,pi);
 								}
 								pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
 							}

@@ -75,6 +75,8 @@
 #include "tmpeff.h"
 #include "layer.h"
 
+#include "ai.h"
+
 #ifdef _WINDOWS
 	#include "nxwgui.h"
 #endif
@@ -141,7 +143,7 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-					regions::add(p_pet);
+					mapRegions->add(p_pet);
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
 					LogMessage("Stabled animal got freed because stablemaster died");
@@ -212,7 +214,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	int totalstats,totalskills;
 
 	NxwCharWrapper sc;
-	accounts::GetAllChars( acctno[s], sc );
+	Accounts->GetAllChars( acctno[s], sc );
 
 
 	if ( sc.size() >= ServerScp::g_nLimitRoleNumbers) {
@@ -223,7 +225,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	P_CHAR pc=archive::getNewChar();
 
 	pc->setCurrentName( (const char*)&buffer[s][10] );
-	accounts::AddCharToAccount( acctno[s], pc );
+	Accounts->AddCharToAccount( acctno[s], pc );
 
 	/*SERIAL currserial = pc->getSerial32();
 	vector<SERIAL>::iterator currCharIt( currchar.begin()), currCharEnd(currchar.end());
@@ -718,7 +720,7 @@ void checkkey ()
 			case 'A': //reload the accounts file
 			case 'a':
 				InfoOut("Reloading accounts file...");
-				accounts::LoadAccounts();
+				Accounts->LoadAccounts();
 				ConOut("[DONE]\n");
 				break;
 			case 'x':
@@ -842,7 +844,7 @@ void signal_handler(int signal)
 		break ;
 
 	case SIGUSR1:
-		accounts::LoadAccounts();
+		Accounts->LoadAccounts();
 		break ;
 	case SIGUSR2:
 		cwmWorldState->saveNewWorld();
@@ -1026,7 +1028,7 @@ void angelMode();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading accounts...");
-		accounts::LoadAccounts();
+		Accounts->LoadAccounts();
 		ConOut("[DONE]\n");
 
 		keeprun=(Network->kr); //LB. for some technical reasons global varaibles CANT be changed in constructors in c++.
@@ -1036,12 +1038,13 @@ void angelMode();
 		CIAO_IF_ERROR;
 
 		ConOut("Loading areas...");
-		areas::loadareas();
+		Areas->loadareas();
 		ConOut("[DONE]\n");
 
 
 		ConOut("Loading spawn regions...");
-		spawns::loadFromScript();
+		//loadspawnregions();
+		Spawns->loadFromScript();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading regions...");
@@ -1316,7 +1319,7 @@ void angelMode();
 
 	InfoOut("Server started\n");
 
-	spawns::doSpawnAll();
+	Spawns->doSpawnAll();
 
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
@@ -1366,7 +1369,7 @@ void angelMode();
 		loopTimeCount++;
 
 		StartMilliTimer(loopSecs, loopMilli);
-
+                //testAI();
 		if(networkTimeCount >= 1000)
 		{
 			networkTimeCount = 0;
@@ -1411,6 +1414,7 @@ void angelMode();
 		TelnetInterface.CheckInp();
 
 		tempTime = CheckMilliTimer(tempSecs, tempMilli);
+
 		networkTime += tempTime;
 		networkTimeCount++;
 
@@ -1799,8 +1803,11 @@ void addgold(int s, int totgold)
 		return;
 
 	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
-	VALIDATEPC( pc );
-	item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), totgold );
+	P_ITEM pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack() );
+	if ( ISVALIDPI( pi ) ) {
+		pi->setAmount( totgold );
+		pi->Refresh();
+	}
 }
 
 void usepotion(P_CHAR pc, P_ITEM pi)
@@ -2998,7 +3005,10 @@ void BuildPointerArray()
 */
 void InitMultis()
 {
+//	unsigned int i ; // unused variable
+
 	cAllObjectsIter objs;
+//	P_CHAR pc; // unused variable
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
 	/*for (i=0;i<charcount;i++)
@@ -3050,13 +3060,18 @@ void StartClasses()
 
 	// Classes nulled now, lets get them set up :)
 	cwmWorldState=new CWorldMain;
+	mapRegions=new cRegion;
+	Accounts = new cAccounts;
+	Boats=new cBoat;
 	Guilds=new cGuilds;
 	Map=new cMapStuff;
+	Targ=new cTargets;
 	Network=new cNetwork;
-
-	spawns::initialize();
-	restocks::initialize();
-	regions::initialize();
+	//Respawn=new cRespawn;
+	Partys=new cPartys;
+	Spawns=new cSpawns;
+	Areas=new cAreas;
+	Restocks= new cRestockMng();
 
 	ConOut(" [ OK ]\n");
 }
@@ -3064,13 +3079,19 @@ void StartClasses()
 void DeleteClasses()
 {
 	delete cwmWorldState;
+	delete mapRegions;
+	delete Accounts;
+	delete Boats;
 	delete Guilds;
 	delete Map;
+	delete Targ;
 	delete Network;
+	//delete Respawn;
+	delete Partys;
+	delete Spawns;
+	delete Areas;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
-
-	accounts::finalize();
-	
+	delete Restocks;
 	//objects.clear();
 }
 ////////////////////////////
@@ -3085,10 +3106,13 @@ void gcollect()
 }
 
 /*!
-\brief Remove items which were in deleted containers
+\brief remove all the item without any parents
+(not in any valid container)
+\author ?
+\since ?
 \remarks \remark rewritten by Anthalir
 */
-void checkGarbageCollect ()
+void checkGarbageCollect () // Remove items which were in deleted containers
 {
 	int removed, rtotal=0, corrected=0;
 	int loopexit=0;

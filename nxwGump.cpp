@@ -12,10 +12,15 @@
 #include "amx/amxcback.h"
 #include "nxwGump.h"
 
-nxwGump::GUMPMAP nxwGump::gumpMap;
+map<UI32, class nxwGump* > nxwGump::gumpMap;
 map<UI32, std::string > nxwGump::responseMap;
 
-LOGICAL nxwGump::createGump( GUMPID gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial)
+//LOGICAL nxwGump::createGump(UI32 gump, UI32 x, UI32 y, UI32 noMove, UI32 noClose, UI32 noDispose, std::string amxCallBack)
+//{
+//	return nxwGump( gump, x, y, noMove == 0 ? false : true, noClose == 0 ? false : true, noDispose == 0 ? false : true, amxCallBack );
+//}
+
+LOGICAL nxwGump::createGump(UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial)
 {
 	if( gumpMap.find( gump ) == gumpMap.end() )
 	{
@@ -30,7 +35,7 @@ LOGICAL nxwGump::createGump( GUMPID gump, UI32 x, UI32 y, bool canMove, bool can
 	return false;
 }
 
-LOGICAL	nxwGump::deleteGump( GUMPID gump )
+LOGICAL	nxwGump::deleteGump( UI32 gump )
 {
 	if( gumpMap.find( gump ) != gumpMap.end() )
 	{
@@ -41,14 +46,14 @@ LOGICAL	nxwGump::deleteGump( GUMPID gump )
 	return false;
 }
 
-nxwGump* nxwGump::selectGump( GUMPID gump )
+nxwGump* nxwGump::selectGump( UI32 gump )
 {
 	if( gumpMap.find( gump ) != gumpMap.end() )
 		return gumpMap[ gump ];
-	return 0;
+	return NULL;	
 }
 
-LOGICAL nxwGump::showGump( GUMPID gump, P_CHAR pc )
+LOGICAL nxwGump::showGump( UI32 gump, P_CHAR pc )
 {
 	nxwGump* pGump = selectGump( gump );
 	if( pGump )
@@ -75,9 +80,6 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 		UI32		fieldOffset;
 		UI32		fieldLength;
 		UI32		fieldId;
-
-		responseMap.clear();
-
 		if( hasRadio )
 		{
 			radioButton = static_cast<int>(data[22]); // probably data[19]...data[22]
@@ -138,8 +140,7 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			callback = newAmxEvent( const_cast< char* >( sCallback.c_str() ) );
 			callback->Call( gump, gumpSerial, button, pc->getSerial32() );
 
-			// Commented out to have concurrent gump controll
-			//responseMap.erase( it );
+			responseMap.erase( it );
 		}			
 		return true;
 	}
@@ -160,7 +161,7 @@ LOGICAL nxwGump::selectResponse( UI32 fieldId, std::string &value )
 
 LOGICAL	nxwGump::addResponse( UI32 fieldId, std::string value )
 {
-	if(  responseMap.find( fieldId ) != responseMap.end() )
+	if( responseMap.find( fieldId ) != responseMap.end() )
 		return false;
 	else
 	{
@@ -179,10 +180,10 @@ nxwGump::nxwGump()
 	setDisposeAble( true );
 	setSerial( 0 );
 	setDirty();
-	packet = 0;
+	packet = NULL;
 }
 
-nxwGump::nxwGump( GUMPID gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
+nxwGump::nxwGump( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
 {
 	setGumpId( gump );
 	setX( x );
@@ -232,7 +233,7 @@ void nxwGump::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
 	setDirty();
 	commands.append( nxwString( nxwString::format( "{button %d %d %d %d 0 %d 0}", x, y, up, down, page )  ) );
 }
-void nxwGump::addGump( UI32 x, UI32 y, GUMPID gump, UI32 hue )
+void nxwGump::addGump( UI32 x, UI32 y, UI32 gump, UI32 hue )
 {
 	setDirty();
 	commands.append( nxwString( nxwString::format( "{gumppic %d %d %d hue=%d}", x, y, gump, hue )  ) );
@@ -259,7 +260,7 @@ void nxwGump::addTiledGump( UI32 x, UI32 y, UI32 gump, SI32 hue, SI32 width, SI3
 }
 */
 
-void nxwGump::addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, GUMPID gump, UI32 hue )
+void nxwGump::addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI32 hue )
 {
 	setDirty();
 	commands.append( nxwString( nxwString::format( "{gumppictiled %d %d %d %d %d %d}", x, y, width, height, gump, hue )  ) );
@@ -310,13 +311,13 @@ void nxwGump::addText( UI32 x, UI32 y, const char* data, UI32 hue )
 	commands.append( nxwString( nxwString::format( "{text %d %d %d %d}", x, y, hue, strings.append(data) )  ) );
 }
 
-void nxwGump::addBackground( GUMPID gump, UI32 width, UI32 height )
+void nxwGump::addBackground( UI32 gump, UI32 width, UI32 height )
 {
 	setDirty();
 	addResizeGump( 0, 0, gump, width, height );
 }
 
-void nxwGump::addResizeGump( UI32 x, UI32 y, GUMPID gump, UI32 width, UI32 height )
+void nxwGump::addResizeGump( UI32 x, UI32 y, UI32 gump, UI32 width, UI32 height )
 {
 	setDirty();
 	commands.append( nxwString( nxwString::format( "{resizepic %d %d %d %d %d}", x, y, gump, width, height )  ) );

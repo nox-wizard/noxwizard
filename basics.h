@@ -26,7 +26,7 @@
 */
 inline SI32 LongFromCharPtr(const unsigned char *p)
 {
-	return (p[0]<<24) | (p[1]<<16) | (p[2]<<8) | p[3];
+	return (*p<<24) | (*(p+1)<<16) | (*(p+2)<<8) | *(p+3);
 }
 
 /*!
@@ -38,7 +38,7 @@ inline SI32 LongFromCharPtr(const unsigned char *p)
 */
 inline SI16 ShortFromCharPtr(const unsigned char *p)
 {
-	return (p[0]<<8) | p[1];
+	return static_cast<short>((*p<<8) | *(p+1));
 }
 
 /*!
@@ -50,10 +50,10 @@ inline SI16 ShortFromCharPtr(const unsigned char *p)
 */
 inline void LongToCharPtr(const UI32 i, unsigned char *p)
 {
-	p[0]=(i>>24)&0xFF;
-	p[1]=(i>>16)&0xFF;
-	p[2]=(i>>8)&0xFF;
-	p[3]=i&0xFF;
+	*p=static_cast<unsigned char>(i>>24); 
+	*(p+1)=static_cast<unsigned char>(i>>16); 
+	*(p+2)=static_cast<unsigned char>(i>>8); 
+	*(p+3)=static_cast<unsigned char>(i);
 }
 
 /*!
@@ -65,8 +65,8 @@ inline void LongToCharPtr(const UI32 i, unsigned char *p)
 */
 inline void ShortToCharPtr(const UI16 i, unsigned char *p)
 {
-	p[0]=(i>>8)&0xFF;
-	p[1]=i&0xFF;	// no %256 for 2nd byte, truncation will occur anyway
+	*p=static_cast<unsigned char>(i>>8);
+	*(p+1)=static_cast<unsigned char>(i);	// no %256 for 2nd byte, truncation will occur anyway
 }
 
 //@{

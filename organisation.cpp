@@ -130,6 +130,14 @@ LOGICAL Guild::parse()
 	return success;
 }
 
+Guild::Guild()
+{
+}
+
+Guild::~Guild()
+{
+}
+
 GUILDID	Guild::getId()
 {
 	return id;

@@ -95,20 +95,15 @@ void MULFile::seek(long offset, int whence)
   }
 }
 
-SI08 MULFile::wpgetch()
+int MULFile::wpgetch()
 {
 	if (qRefill())
 		refill();
 	
 	if (bSize != 0)
-		return ioBuff[bIndex++];
+		return ioBuff[(int)bIndex++];
 	else 
 		return -1;
-}
-
-UI08 MULFile::wpgetchu()
-{
-	return static_cast<UI08>(wpgetch());
 }
 
 void MULFile::refill()
@@ -132,15 +127,15 @@ char *MULFile::gets(char *lnBuff, int lnSize)
 				refill();
 			
 			loopexit = 0;
-			while (i < lnSize && bIndex != bSize && ioBuff[bIndex] != 0x0A &&(++loopexit < MAXLOOPS))
+			while (i < lnSize && bIndex != bSize && ioBuff[(int)bIndex] != 0x0A &&(++loopexit < MAXLOOPS))
 			{
-				if (ioBuff[bIndex] == 0x0D)
+				if (ioBuff[(int)bIndex] == 0x0D)
 					bIndex++;
 				else 
-					lnBuff[i++] = ioBuff[bIndex++];
+					lnBuff[i++] = ioBuff[(int)bIndex++];
 			}
 			
-			if (ioBuff[bIndex] == 0x0A) 
+			if (ioBuff[(int)bIndex] == 0x0A) 
 			{
 				bIndex++;
 				if (i != lnSize)
@@ -176,39 +171,33 @@ int MULFile::puts(char *lnBuff)
   return -1;
 }
 
-void MULFile::getUChar(UI08 *buff, unsigned int number)
+void MULFile::getUChar(unsigned char *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
-    buff[i] = wpgetchu();
+    buff[i] = static_cast<unsigned char>(this->wpgetch());
 }
 
-void MULFile::getChar(SI08 *buff, unsigned int number)
+void MULFile::getChar(signed char *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
-    buff[i] = wpgetch();
+    buff[i] = static_cast<signed char>(this->wpgetch());
 }
 
-void MULFile::getText(TEXT *buff, unsigned int number)
-{
-  for(unsigned int i = 0; i < number; i++)
-    buff[i] = static_cast<TEXT>(wpgetch());
-}
-
-void MULFile::getUShort(UI16 *buff, unsigned int number)
+void MULFile::getUShort(unsigned short *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
-    buff[i] = wpgetchu();
-    buff[i] |= wpgetchu() << 8;
+    buff[i] = static_cast<unsigned short>((this->wpgetch() &0xFF));
+    buff[i] |= static_cast<unsigned short>((this->wpgetch() &0xFF) << 8);
   }
 }
 
-void MULFile::getShort(SI16 *buff, unsigned int number)
+void MULFile::getShort(short *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
-    buff[i] = wpgetch();
-    buff[i] |= wpgetch() << 8;
+    buff[i] = static_cast< short>((this->wpgetch() &0xFF));
+    buff[i] |= static_cast< short>((this->wpgetch() &0xFF) << 8);
   }
 }
 
@@ -216,10 +205,10 @@ void MULFile::getULong(UI32 *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
-    buff[i] = wpgetchu();
-    buff[i] |= wpgetchu() << 8;
-    buff[i] |= wpgetchu() << 16;
-    buff[i] |= wpgetchu() << 24;
+    buff[i] = static_cast<unsigned long>((this->wpgetch() &0xFF));
+    buff[i] |= static_cast<unsigned long>((this->wpgetch() &0xFF) << 8);
+    buff[i] |= static_cast<unsigned long>((this->wpgetch() &0xFF) << 16);
+    buff[i] |= static_cast<unsigned long>((this->wpgetch() &0xFF) << 24);
   }
 }
 
@@ -227,10 +216,10 @@ void MULFile::getLong(SI32 *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
-   buff[i] = wpgetch();
-    buff[i] |= wpgetch() << 8;
-    buff[i] |= wpgetch() << 16;
-    buff[i] |= wpgetch() << 24;
+   buff[i] = static_cast<signed long>((this->wpgetch() &0xFF));
+    buff[i] |= static_cast<signed long>((this->wpgetch() &0xFF) << 8);
+    buff[i] |= static_cast<signed long>((this->wpgetch() &0xFF) << 16);
+    buff[i] |= static_cast<signed long>((this->wpgetch() &0xFF) << 24);
   }
 }
 /*
@@ -255,7 +244,7 @@ int MULFile::getChkSum()
   {
 if (qRefill())
 refill();
-    while(bIndex != bSize) chksum += ioBuff[bIndex++];
+    while(bIndex != bSize) chksum += ioBuff[(int)bIndex++];
   }
   while(bSize != 0);
 
@@ -323,9 +312,9 @@ void MULFile::get_st_multi(struct st_multi *buff, unsigned int number)
     getShort(&buff[i].tile);
     getUShort(&buff[i].x);
     getUShort(&buff[i].y);
-    getChar(&buff[i].z);
-    getChar(&buff[i].empty);
-    getLong(&buff[i].visible);
+    getChar((signed char *) &buff[i].z);
+    getChar((signed char *) &buff[i].empty);
+	getLong(&buff[i].visible);
   }
 }
 
@@ -333,13 +322,13 @@ void MULFile::get_land_st(struct land_st *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
-    getUChar(&(buff[i].flag1));
-    getUChar(&(buff[i].flag2));
-    getUChar(&(buff[i].flag3));
-    getUChar(&(buff[i].flag4));
-    getUChar(&(buff[i].unknown1));
-    getUChar(&(buff[i].unknown2));
-    getText(buff[i].name, 20);
+    getChar((signed char *) &(buff[i].flag1));
+    getChar((signed char *) &(buff[i].flag2));
+    getChar((signed char *) &(buff[i].flag3));
+    getChar((signed char *) &(buff[i].flag4));
+    getChar((signed char *) &(buff[i].unknown1));
+    getChar((signed char *) &(buff[i].unknown2));
+    getChar((signed char *) buff[i].name, 20);
   }
 }
 
@@ -358,7 +347,7 @@ void MULFile::get_tile_st(struct tile_st *buff, unsigned int number)
     getChar(&(buff[i].unknown2));
     getChar(&(buff[i].unknown3));
     getChar(&(buff[i].height));
-    getText(buff[i].name, 20);
+    getChar(buff[i].name, 20);
   }
 }
 
@@ -376,7 +365,7 @@ void MULFile::get_st_multiidx(struct st_multiidx *buff, unsigned int number)
   for(unsigned int i = 0; i < number; i++)
   {
     getLong(&buff[i].start);
-    getULong(&buff[i].length);
+    getLong(&buff[i].length);
     getLong(&buff[i].unknown);
   }
 }
@@ -389,7 +378,7 @@ void MULFile::get_staticrecord(struct staticrecord *buff, unsigned int number)
     getUChar(&buff[i].xoff);
     getUChar(&buff[i].yoff);
     getChar(&buff[i].zoff);
-    SI16 extra;
+    short int extra;
     getShort(&extra);
   }
 }

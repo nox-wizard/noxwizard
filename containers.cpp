@@ -98,11 +98,10 @@ void loadcontainers()
 
 SI16 cItem::getContGump()
 {
-#if 0
-	switch(id1)
+/*	switch(this->id1)
 	{
 		case 0x0E:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x75:			// Backpack
 				case 0x79: return 0x3C;	// Box/Pouch
@@ -146,7 +145,7 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x09:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x90: return 0x41; // Round Basket
 						break;
@@ -169,11 +168,11 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x20:
-			if (id2=='\x06') return 0x09; // Coffin
+			if (this->id2=='\x06') return 0x09; // Coffin
 			break;
 
 		case 0x0A:
-			switch (id2)
+			switch (this->id2)
 			{
 				case 0x97:		// Bookcase
 				case 0x98:		// Bookcase
@@ -208,7 +207,7 @@ SI16 cItem::getContGump()
 				case 0x44:		// Dresser
 				case 0x35: return 0x51; // Dresser
 						break;
-				case 0xb2: if (morex==1) return 0x4a;
+				case 0xb2: if (this->morex==1) return 0x4a;
 						break;
 			}
 			break;
@@ -223,8 +222,8 @@ SI16 cItem::getContGump()
 
 	}
 	return 0x47;
-#endif
-	CONTINFOMAP::iterator iter( contInfo.find( id() ) );
+*/
+	CONTINFOMAP::iterator iter( contInfo.find( this->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end() )
 		return 0x47;
 	else 
@@ -302,19 +301,18 @@ void cItem::putInto( P_ITEM pi )
 void cItem::SetRandPosInCont(P_ITEM pCont)
 {
 
-	Location l;
-	l.z = l.dispz = 9;
+	setPosition("z", 9);
 	CONTINFOMAP::iterator iter( contInfo.find( pCont->id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end()) {
-		l.x = RandomNum(18, 118);
-		l.y = RandomNum(50, 100);
+		setPosition("x", RandomNum(18, 118));
+		setPosition("y", RandomNum(50, 100));
 		LogWarning("trying to put something INTO a non container, id=0x%X",pCont->id());
 	}
 	else {
-		l.x = RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x);
-		l.y = RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y);
+		setPosition("x", RandomNum(iter->second->second.upperleft.x, iter->second->second.downright.x));
+		setPosition("y", RandomNum(iter->second->second.upperleft.y, iter->second->second.downright.y));
+		
 	}
-	setPosition( l );
 	
 }
 

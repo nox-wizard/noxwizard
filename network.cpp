@@ -67,7 +67,7 @@ cNetwork	*Network;
 #define PACKET_MISC_REQ			0xBF
 #define PACKET_CLIENT_VERSION		0xBD
 
-static UI16 m_packetLen[256] =
+static int m_packetLen[256] =
 {
 // 0..15
 	0x0068,	0x0005,	0x0007,	0x0000,	0x0002,	0x0005,	0x0005,	0x0007,	0x000E,	0x0005,	0x000B,	0x010A,	0x0000,	0x0003,	0x0000,	0x003D,
@@ -103,7 +103,7 @@ static UI16 m_packetLen[256] =
 	0x0000,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF,	0xFFFF
 };
 
-static UI16 bit_table[257][2] =
+static unsigned int bit_table[257][2] =
 {
 {0x0002, 0x0000}, {0x0005, 0x001F}, {0x0006, 0x0022}, {0x0007, 0x0034}, {0x0007, 0x0075}, {0x0006, 0x0028}, {0x0006, 0x003B}, {0x0007, 0x0032}, 
 {0x0008, 0x00E0}, {0x0008, 0x0062}, {0x0007, 0x0056}, {0x0008, 0x0079}, {0x0009, 0x019D}, {0x0008, 0x0097}, {0x0006, 0x002A}, {0x0007, 0x0057}, 
@@ -204,7 +204,7 @@ int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 				LogError("Error selecting socket %i (%s)", errno, strerror( errno ) );
 		}
 		else
-			loopexit = 0;
+			break;
 	}
 	return sent;
 }
@@ -223,8 +223,8 @@ void cNetwork::DoStreamCode( NXWSOCKET  socket )
 
 }
 
-//! Sends buffered data at once
-void cNetwork::FlushBuffer( NXWSOCKET socket )
+
+void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 {
 
 	int status ;
@@ -245,8 +245,7 @@ void cNetwork::FlushBuffer( NXWSOCKET socket )
 	}
 }
 
-//! Sends ALL buffered data
-void cNetwork::ClearBuffers()
+void cNetwork::ClearBuffers() // Sends ALL buffered data
 {
 	for ( int i = 0; i < now; ++i )
 		FlushBuffer( i );
@@ -297,8 +296,9 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 	boutlength[ socket ] += length;
 }
 
-//! Force disconnection of player
-void cNetwork::Disconnect ( NXWSOCKET socket )
+
+
+void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player //Instalog
 {
 	const char msgDisconnect[]	= "Client %i disconnected. [Total online clients: %i]\n";
 	const char msgPart[]		= "%s has left the realm";
@@ -330,7 +330,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket )
 			sysbroadcast( (char*)msgPart, pc->getCurrentNameC() );
 
 	if ( acctno[ socket ] != -1 )
-		accounts::SetOffline( acctno[ socket ] ); //Bug clearing logged in accounts!
+		Accounts->SetOffline( acctno[ socket ] ); //Bug clearing logged in accounts!
 	acctno[ socket ] = INVALID;
 
 //	char val=0;
@@ -369,7 +369,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket )
 		if( pc->murderrate>uiCurrentTime ) //save murder decay
 			pc->murdersave= (pc->murderrate -uiCurrentTime) / MY_CLOCKS_PER_SEC;
 
-		partySystem::removeMember( pc );
+		Partys->removeMember( pc );
 	}
 
 	currchar[ socket ] = INVALID;
@@ -470,7 +470,7 @@ void cNetwork::LoginMain(int s)
 	acctno[s]=INVALID;
 
 	pSplit((char*)&buffer[s][31]);
-	i = accounts::Authenticate((char*)&buffer[s][1], (char*)pass1);
+	i = Accounts->Authenticate((char*)&buffer[s][1], (char*)pass1);
 
 	if( i >= 0 )
 		acctno[s] = i;
@@ -503,16 +503,16 @@ void cNetwork::LoginMain(int s)
 					Xsend(s, nopass, 2);
 					return;
 				}
-				acctno[s] = accounts::CreateAccount(dummylogin, dummypass);
+				acctno[s] = Accounts->CreateAccount(dummylogin, dummypass);
 			}
 		}
 	}
 
-	if (accounts::IsOnline(acctno[s]) )
+	if (Accounts->IsOnline(acctno[s]) )
 	{
           Xsend(s, acctused, 2);
           //<Luxor>: Let's kick the current player
-          chrSerial = accounts::GetInWorld(acctno[s]);
+          chrSerial = Accounts->GetInWorld(acctno[s]);
           if (chrSerial == INVALID)
                 return;
           P_CHAR pc = pointers::findCharBySerial(chrSerial);
@@ -526,7 +526,7 @@ void cNetwork::LoginMain(int s)
 	//ndEndy now better
 	if (acctno[s]!=INVALID)
 	{
-		accounts::SetEntering(acctno[s]);
+		Accounts->SetEntering(acctno[s]);
 		Login2(s);
 	}
 }
@@ -652,11 +652,11 @@ void cNetwork::GoodAuth(int s)
 
 	ShortToCharPtr(tlen, login04a +1);
 
-	accounts::OnLogin(acctno[s],s);
+	Accounts->OnLogin(acctno[s],s);
 
 	//Endy now much fast
 	NxwCharWrapper sc;
-	accounts::GetAllChars( acctno[s], sc );
+	Accounts->GetAllChars( acctno[s], sc );
 
 	ActivateFeatures(s);
 
@@ -717,7 +717,7 @@ void cNetwork::CharList(int s) // Gameserver login and character listing
 	acctno[s]=-1;
 
 	pSplit((char*)&buffer[s][35]);
-	i = accounts::Authenticate((char*)&buffer[s][5], (char*)pass1);
+	i = Accounts->Authenticate((char*)&buffer[s][5], (char*)pass1);
 
 	if( i >= 0 )
 		acctno[s] = i;
@@ -772,9 +772,9 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 	if (acctno[s]>INVALID)
 	{
 		int j=0;
-		accounts::SetOffline(acctno[s]);
+		Accounts->SetOffline(acctno[s]);
 		NxwCharWrapper sc;
-		accounts::GetAllChars( acctno[s], sc );
+		Accounts->GetAllChars( acctno[s], sc );
 		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 			P_CHAR pc_i=sc.getChar();
 			if(!ISVALIDPC(pc_i))
@@ -801,7 +801,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 				}
 			}
 
-			accounts::SetOnline(acctno[s], pc_k);
+			Accounts->SetOnline(acctno[s], pc_k);
 			pc_k->logout=INVALID;
 
 			currchar[s] = pc_k->getSerial32();
@@ -893,8 +893,8 @@ void cNetwork::enterchar(int s)
 
 }
 
-//! Send character startup stuff to player
-void cNetwork::startchar(int s)
+
+void cNetwork::startchar(int s) // Send character startup stuff to player
 {
 
 	if ( s < 0 || s >= now ) //Luxor
@@ -909,8 +909,8 @@ void cNetwork::startchar(int s)
 			currchar[s] = pcPos->getSerial32();
 			pcPos->setClient(new cNxwClientObj(s));
 			pc->setClient(NULL);
-			accounts::SetOffline(pc->account);
-			accounts::SetOnline(pc->account, pcPos);
+			Accounts->SetOffline(pc->account);
+			Accounts->SetOnline(pc->account, pcPos);
 		} else pc->possessedSerial = INVALID;
 	}
 	//</Luxor>
@@ -1012,7 +1012,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 	UI32 a, valid=0;
 	Location charpos= pc->getPosition();
-	UI16 x= charpos.x, y= charpos.y;
+	UI32 x= charpos.x, y= charpos.y;
 
 
 	AMXEXECSVNR(s,AMXT_SPECIALS, 8, AMX_BEFORE);
@@ -1056,7 +1056,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 		}
 	}
 
-	accounts::SetOffline(pc->account);
+	Accounts->SetOffline(pc->account);
 	if (valid)//||region[chars[p].region].priv&0x17)
 	{
 		pc->logout=INVALID; // LB bugfix, was timeout
@@ -1190,7 +1190,8 @@ void cNetwork::sockInit()
 	if (ServerScp::g_nDeamonMode==0) {
 		MessageBox(NULL, temp, "NoX-Wizard network error [bind]", MB_ICONSTOP);
 	}
-#else
+#endif //win32
+#ifndef WIN32
 		ErrOut("ERROR: Unable to bind socket - Error code: %i\n",bcode);
 #endif
 		keeprun=false;
@@ -1227,8 +1228,7 @@ void cNetwork::sockInit()
 
 }
 
-//! Close all sockets for shutdown
-void cNetwork::SockClose ()
+void cNetwork::SockClose () // Close all sockets for shutdown
 {
 
 	int i;
@@ -1238,8 +1238,7 @@ void cNetwork::SockClose ()
 
 }
 
-//! Check for connection requests
-void cNetwork::CheckConn()
+void cNetwork::CheckConn() // Check for connection requests
 {
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -1347,8 +1346,7 @@ void cNetwork::CheckConn()
 
 }
 
-//! Check for messages from the clients
-void cNetwork::CheckMessage()
+void cNetwork::CheckMessage() // Check for messages from the clients
 {
 
 	int s, i, oldnow;
@@ -1394,8 +1392,8 @@ void cNetwork::CheckMessage()
 	}
 }
 
-//! Check for messages from the clients
-cNetwork::cNetwork()
+
+cNetwork::cNetwork() // Initialize sockets
 {
     sockInit();
 }
@@ -1454,8 +1452,7 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 
 }
 
-//! Receive message from client
-void cNetwork::GetMsg(int s)
+void cNetwork::GetMsg(int s) // Receive message from client
 {
 
 	NXWCLIENT ps = getClientFromSocket(s);
@@ -1717,7 +1714,7 @@ void cNetwork::GetMsg(int s)
 
 				case PACKET_TARGETING:
 					if(targetok[s]) 
-						targets::MultiTarget(ps);
+						Targ->MultiTarget(ps);
 					break;
 
 				case PACKET_WEARITEM:
@@ -2078,7 +2075,7 @@ void cNetwork::GetMsg(int s)
 						case 5: break; // unknown, sent once on login
 
 				   		case 6:
-							partySystem::processInputPacket(ps);
+							PartySystem::processInputPacket(ps);
 							break;
 
 						case 9:	//Luxor: Wrestling Disarm Macro support
@@ -2177,10 +2174,10 @@ void cNetwork::LoadHosts_deny()
 			if (ip_address != INADDR_NONE)
 				ip_block.mask = ip_address;
 			else
-				ip_block.mask = 0xFFFFFFFF; // mask is not required. (fills all bits with 1's)
+				ip_block.mask = static_cast<unsigned long>(~0); // mask is not required. (fills all bits with 1's)
 		}
 		else
-			ip_block.mask = 0xFFFFFFFF;
+			ip_block.mask = static_cast<unsigned long>(~0);
 		hosts_deny.push_back(ip_block);
 	} 
 	while ( sScript1.c_str()[0] != '}' );

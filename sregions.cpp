@@ -19,7 +19,7 @@
 #include "calendar.h"
 #include "sregions.h"
 
-void loadregions()
+void loadregions()//New -- Zippy spawn regions
 {
 	int i, noregion, l=0, a=0,loopexit=0;
 	char sect[512];
@@ -30,7 +30,7 @@ void loadregions()
 
 	for (i=0;i<256;i++)
 	{
-		regions::region_st &regionRef = region[i];
+		region_st &regionRef = region[i];
 		
 		regionRef.inUse = false;
 		regionRef.midilist=0;
@@ -239,10 +239,12 @@ void loadregions()
 
 }
 
+//<Anthalir>
 short calcRegionFromXY(Location pos)
 {
 	return calcRegionFromXY(pos.x, pos.y);
 }
+//</Anthalir>
 
 short calcRegionFromXY(int x, int y)
 {
@@ -257,10 +259,13 @@ short calcRegionFromXY(int x, int y)
 	}
 
 	return INVALID;
+
+
 }
 
 void checkregion(P_CHAR pc)
 {
+//	P_CHAR pc = MAKE_CHAR_REF( i );
 	VALIDATEPC( pc );
 
 	NXWSOCKET s;
@@ -272,6 +277,8 @@ void checkregion(P_CHAR pc)
 		
 		if ( pc->amxevents[EVENT_CHR_ONREGIONCHANGE] )
 			pc->amxevents[EVENT_CHR_ONREGIONCHANGE]->Call( pc->getSerial32(), pc->region, calcreg);
+		
+		//pc->runAmxEvent( EVENT_CHR_ONREGIONCHANGE, pc->getSerial32(), pc->region, calcreg);
 
 		s = pc->getSocket();
 		if (s!=INVALID)
@@ -319,10 +326,13 @@ void checkregion(P_CHAR pc)
 	}
 }
 
-/*!
- \brief Do the periodical check for weather change
- \author Xanathar
- */
+
+///////////////////////////////////////////////////////////////////
+// Function name     : check_region_weatherchange
+// Description       : do the periodical check for weather change
+// Return type       : void
+// Author            : Xanathar
+// Changes           : none yet
 void check_region_weatherchange ()
 {
 	int r,sn=0, rn=0, dr=0, sm, i;
@@ -331,7 +341,7 @@ void check_region_weatherchange ()
 
 	for (i=0;i<256;i++)
 	{
-		regions::region_st &regionRef = region[i];
+		region_st &regionRef = region[i];
 		if ((regionRef.keepchance==0)&&(regionRef.drychance==0)) continue;
 		r = rand()%100;
 		if ((r<=regionRef.keepchance)||(regionRef.keepchance==100)) continue;
@@ -353,12 +363,14 @@ void check_region_weatherchange ()
 	}
 
 	//here : we should commit weather changes to players
-	wtype=0;
-	UI08 packet[4] = { 0x65, 0xFF, 0x00, 0x20 };
+   wtype=0;
+	unsigned char packet[4] = { 0x65, 0xFF, 0x00, 0x20 };
 
-	for (i=0;i<now;i++) if (perm[i]) Xsend(i, packet, 4);
+	for (i=0;i<now;i++) { if (perm[i]) { Xsend(i, packet, 4);
+//AoS/	Network->FlushBuffer(i);
+} }
 
-	for (i=0;i<now;i++) if (perm[i]) pweather(i);
+	for (i=0;i<now;i++) { if (perm[i]) { pweather(i); } }
 
    ConOut("[ OK ]\n");
 

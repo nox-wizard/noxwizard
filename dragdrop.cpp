@@ -43,15 +43,15 @@ typedef struct _PKGx08
 //Drop Item(s) (14 bytes)
 //* BYTE cmd
 //* BYTE[4] item id
-	SERIAL Iserial;
+	long Iserial;
 //* BYTE[2] xLoc
-	UI16 TxLoc;
+	short TxLoc;
 //* BYTE[2] yLoc
-	UI16 TyLoc;
+	short TyLoc;
 //* BYTE zLoc
-	SI08 TzLoc;
+	signed char TzLoc;
 //* BYTE[4] Move Into (FF FF FF FF if normal world)
-	SERIAL Tserial;
+	long Tserial;
 } PKGx08;
 
 void UpdateStatusWindow(NXWSOCKET socket, P_ITEM pi)
@@ -217,66 +217,28 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				owner=pointers::findCharBySerial( container->getContSerial() );
 		}
 
-		if ( ISVALIDPC( owner ) )
-			if( owner->getSerial32()!=pc_currchar->getSerial32() )
-				if ( !pc_currchar->IsGM() && owner->getOwnerSerial32() != pc_currchar->getSerial32() )
-				{// Own serial stuff by Zippy -^ Pack aniamls and vendors.
-					UI08 bounce[2]= { 0x27, 0x00 };
-					Xsend(s, bounce, 2);
-					if (client->isDragging())
-					{
-						client->resetDragging();
-						pi->setContSerial(pi->getContSerial(),true,false);
-						item_bounce3(pi);
-					}
-					return;
+		if ( ISVALIDPC( owner ) && owner->getSerial32()!=pc_currchar->getSerial32() )
+		{
+			if ( !pc_currchar->IsGM() && owner->getOwnerSerial32() != pc_currchar->getSerial32() )
+			{// Own serial stuff by Zippy -^ Pack aniamls and vendors.
+				UI08 bounce[2]= { 0x27, 0x00 };
+				Xsend(s, bounce, 2);
+//AoS/				Network->FlushBuffer(s);
+				if (client->isDragging())
+				{
+					client->resetDragging();
+					pi->setContSerial(pi->getContSerial(),true,false);
+					item_bounce3(pi);
 				}
+				return;
+			}
+		}
 	}
 
 	if ( ISVALIDPI( container ) )
 	{
-		if ( pi->amxevents[EVENT_ITAKEFROMCONTAINER] )
-		{
-			g_bByPass = false;
-			pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), s );
-			if ( g_bByPass )
-			{
-				Sndbounce5( s );
-				if ( client->isDragging() )
-				{
-					client->resetDragging();
-					UpdateStatusWindow( s, pi );
-				}
-				pi->setContSerial( pi->getContSerial( true ) );
-				pi->setPosition( pi->getOldPosition() );
-				pi->layer = pi->oldlayer;
-				pi->Refresh();
-				return;
-			}
-		}
 
-		/*
-		//<Luxor>
-		g_bByPass = false;
-		pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
-		if (g_bByPass)
-		{
-			Sndbounce5(s);
-			if (client->isDragging())
-			{
-				client->resetDragging();
-				UpdateStatusWindow(s,pi);
-			}
-			pi->setContSerial( pi->getContSerial(true) );
-			pi->setPosition( pi->getOldPosition() );
-			pi->layer = pi->oldlayer;
-			pi->Refresh();
-			return;
-		}
-		//</Luxor>
-		*/
-
-		if ( container->layer == 0 && container->id() == 0x1E5E) // Sparhawk: What''s this??? if container = a messageboard???
+		if ( container->layer == 0 && container->id() == 0x1E5E)
 		{
 			// Trade window???
 			SERIAL serial = calcserial( pi->moreb1, pi->moreb2, pi->moreb3, pi->moreb4);
@@ -291,6 +253,50 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					container->morez = 0;
 					sendtradestatus( piz, container );
 				}
+
+
+			//<Luxor>
+			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
+			{
+				g_bByPass = false;
+				pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), s );
+				if (g_bByPass)
+				{
+					Sndbounce5(s);
+					if (client->isDragging())
+					{
+						client->resetDragging();
+						UpdateStatusWindow(s,pi);
+					}
+					pi->setContSerial( pi->getContSerial(true) );
+					pi->setPosition( pi->getOldPosition() );
+					pi->layer = pi->oldlayer;
+					pi->Refresh();
+					return;
+                		}
+			}
+			//</Luxor>
+
+			/*
+			//<Luxor>
+			g_bByPass = false;
+			pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
+			if (g_bByPass)
+			{
+				Sndbounce5(s);
+				if (client->isDragging())
+				{
+					client->resetDragging();
+					UpdateStatusWindow(s,pi);
+				}
+				pi->setContSerial( pi->getContSerial(true) );
+				pi->setPosition( pi->getOldPosition() );
+				pi->layer = pi->oldlayer;
+				pi->Refresh();
+				return;
+			}
+			//</Luxor>
+			*/
 
 			if ( container->corpse )
 			{
@@ -392,7 +398,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 			} // end if corpse
 
-			regions::remove( pi );
+			mapRegions->remove( pi );
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
 		}
@@ -1091,8 +1097,8 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 				P_ITEM pi_onground = si.getItem();
 				if(ISVALIDPI(pi_onground)) {
-                        if ( pi_onground->getPosition().x == pp->TxLoc &&
-                             pi_onground->getPosition().y == pp->TyLoc )
+                        if ( pi_onground->getPosition("x") == pp->TxLoc &&
+                             pi_onground->getPosition("y") == pp->TyLoc )
 							{
                                 itcount++;
                                 if (itcount >= 2) { //Only 2 items permitted
@@ -1182,7 +1188,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
 
-		P_ITEM p_boat = boats::GetBoat(pi->getPosition());
+		P_ITEM p_boat = Boats->GetBoat(pi->getPosition());
 
 		if(ISVALIDPI(p_boat))
 		{
@@ -1488,7 +1494,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			{
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
-					regions::remove(pItem);
+					mapRegions->remove(pItem);
 
 				pItem->setContSerial( pCont->getContSerial() );
 
@@ -1531,7 +1537,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		else { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: invalid item EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, EVILDRAGG[s]); ConOut(temp); }
 	  #endif
 
-	  if  ( (pp->TxLoc==0xFFFF) && (pp->TyLoc==0xFFFF) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
+	  if  ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
 	  {
 		  EVILDRAGG[s]=0;
           #ifdef debug_dragg
@@ -1540,7 +1546,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  return;
 	  }	 // swallow! note: previous evildrag !
 
-	  else if ( (pp->TxLoc==0xFFFF) && (pp->TyLoc==0xFFFF) && (pp->Tserial==0)  && (EVILDRAGG[s]==0) )
+	  else if ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==0) )
 	  {
           #ifdef debug_dragg
 		    ConOut("Bounce & Swallow\n");
@@ -1549,7 +1555,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  item_bounce6(ps, pi);
 		  return;
 	  }
-	  else if ( ( (pp->TxLoc!=0xFFFF) && (pp->TyLoc!=0xFFFF) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) EVILDRAGG[s]=1; // calc new evildrag value
+	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) EVILDRAGG[s]=1; // calc new evildrag value
 	  else EVILDRAGG[s]=0;
 	}
 

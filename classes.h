@@ -13,7 +13,7 @@
 \author Zippy
 
 Declaration of class cCommands, cGuilds, cGump, MapStaticIterator,
-cMapStuff, cNetworkStuff and a lot of structures
+cMapStuff, cFishing, cSkills, cNetworkStuff and a lot of structures
  */
 #ifndef __Classes_h
 #define __Classes_h
@@ -22,33 +22,33 @@ struct tile_st
 {
  SI32 unknown1;  //!< longs must go at top to avoid bus errors - fur
  SI32 animation;
- UI08 flag1;
- UI08 flag2;
- UI08 flag3;
- UI08 flag4;
- UI08 weight;
- SI08 layer;
- SI08 unknown2;
- SI08 unknown3;
- SI08 height;
- TEXT name[23];	//!< manually padded to long to avoid bus errors - fur
+ unsigned char flag1;
+ unsigned char flag2;
+ unsigned char flag3;
+ unsigned char flag4;
+ unsigned char weight;
+ signed char layer;
+ signed char unknown2;
+ signed char unknown3;
+ signed char height;
+ signed char name[23];	//!< manually padded to long to avoid bus errors - fur | There is no negative letter.
 } PACK_NEEDED;
 
 struct land_st
 {
- UI08 flag1;
- UI08 flag2;
- UI08 flag3;
- UI08 flag4;
- UI08 unknown1;
- UI08 unknown2;
- TEXT name[20];
+ char flag1;
+ char flag2;
+ char flag3;
+ char flag4;
+ char unknown1;
+ char unknown2;
+ char name[20];
 };
 
 struct map_st
 {
 	short int id;
-	SI08 z;
+	signed char z;
 };
 
 /*!
@@ -129,12 +129,12 @@ class MapStaticIterator
 private:
 	staticrecord staticArray;
 	SI32 pos;
-	UI08 remainX, remainY;
+	unsigned char remainX, remainY;
 	UI32 index, length, tileid, baseX, baseY;
 	bool exactCoords;
 
 public:
-	MapStaticIterator(UI16 x, UI16 y, bool exact = true);
+	MapStaticIterator(UI32 x, UI32 y, bool exact = true);
 	MapStaticIterator( Location where, bool exact= true);	// Added by Anthalir
 	~MapStaticIterator() { };
 
@@ -145,8 +145,8 @@ public:
 	UI32 GetLength() const { return length; }
 };
 
-extern UI32 MapTileWidth;
-extern UI32 MapTileHeight;
+extern UI32 MapTileWidth;//  = 768;
+extern UI32 MapTileHeight;// = 512;
 
 #define MAXMAPTILEWIDTH 768
 #define MAXMAPTILEHEIGHT 512
@@ -176,8 +176,8 @@ private:
 	{
 		unsigned short xb;
 		unsigned short yb;
-		UI08  xo;
-		UI08  yo;
+		unsigned char  xo;
+		unsigned char  yo;
 		map_st Cache;
 	};
 	MapCache Map0Cache[MAP0CACHE];
@@ -199,22 +199,22 @@ public:
 	// ok this is rather silly, allocating all the memory for the cache, even if
 	// they haven't chosen to cache?? - fur
 	StaCache_st StaticCache[MAXMAPTILEWIDTH][MAXMAPTILEHEIGHT];
-	UI08 Cache;
+	unsigned char Cache;
 	
 // Functions
 private:
 	char VerLand(int landnum, land_st *land);
-	SI08 MultiHeight(P_ITEM pi, UI16 x, UI16 y, SI08 oldz);
-	int MultiTile(P_ITEM pi, UI16 x, UI16 y, SI08 oldz);
+	signed char MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
+	int MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
 	SI32 VerSeek(SI32 file, SI32 block);
 	char VerTile(int tilenum, tile_st *tile);
 	bool IsTileWet(int tilenum);
 	bool TileWalk(int tilenum);
 	void CacheVersion();
 
-	int DynTile( UI16 x, UI16 y, SI08 oldz );
+	int DynTile( UI32 x, UI32 y, signed char oldz );
 	bool DoesTileBlock(int tilenum);
-	bool DoesStaticBlock(UI16 x, UI16 y, SI08 oldz);
+	bool DoesStaticBlock(UI32 x, UI32 y, signed char oldz);
 
 public:
 	cMapStuff();
@@ -223,17 +223,17 @@ public:
 	void Load();
 
 	// height functions
-	bool IsUnderRoof(UI16 x, UI16 y, SI08 z);
-	SI08 StaticTop(Location where);	// added by Anthalir
-	SI08 StaticTop(UI16 x, UI16 y, SI08 oldz);
-	SI08 DynamicElevation(Location where);	// added by Anthalir
-	SI08 DynamicElevation(UI16 x, UI16 y, SI08 oldz);
-	SI08 MapElevation(UI16 x, UI16 y);
-	SI08 AverageMapElevation(Location where, int &id);	// added by Anthalir
-	SI08 AverageMapElevation(UI16 x, UI16 y, int &id);
-	SI08 TileHeight( int tilenum );
-	SI08 Height(Location where);	// added by Anthalir
-	SI08 Height(UI16 x, UI16 y, SI08 oldz);
+	bool IsUnderRoof(UI32 x, UI32 y, signed char z);
+	signed char StaticTop(Location where);	// added by Anthalir
+	signed char StaticTop(UI32 x, UI32 y, signed char oldz);
+	signed char DynamicElevation(Location where);	// added by Anthalir
+	signed char DynamicElevation(UI32 x, UI32 y, signed char oldz);
+	signed char MapElevation(UI32 x, UI32 y);
+	signed char AverageMapElevation(Location where, int &id);	// added by Anthalir
+	signed char AverageMapElevation(UI32 x, UI32 y, int &id);
+	signed char TileHeight( int tilenum );
+	signed char Height(Location where);	// added by Anthalir
+	signed char Height(UI32 x, UI32 y, signed char oldz);
 
 	// look at tile functions
 	void MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2);
@@ -245,13 +245,222 @@ public:
 	bool IsRoofOrFloorTile( unitile_st *tile );
 
 	// misc functions
-	bool CanMonsterMoveHere( UI16 x, UI16 y, SI08 z );
+	bool CanMonsterMoveHere( UI32 x, UI32 y, signed char z );
 
 };
 
 #include "client.h"
 // use this value whereever you need to return an illegal z value
-const SI08 illegal_z = -128;	// reduced from -1280 to -128, to fit in with a valid SI08
+const signed char illegal_z = -128;	// reduced from -1280 to -128, to fit in with a valid signed char
+
+class cFishing
+{
+public:
+	void FishTarget(NXWCLIENT ps);
+	void Fish(CHARACTER c);
+};
+
+/*!
+\brief Skill related stuff
+*/
+namespace Skills {
+	//@{
+	/*!
+	\name General Skill stuff
+	*/
+	char AdvanceSkill(CHARACTER s, int sk, char skillused);
+	void AdvanceStats(CHARACTER s, int sk);
+	char CheckSkillSparrCheck(int c, unsigned short int sk, int low, int high, P_CHAR pcd);
+	void SkillUse(NXWSOCKET s, int x);
+	void updateSkillLevel(P_CHAR pc, int s);
+	//@}
+
+	//@{
+	/*!
+	\name Tracking stuff
+	*/
+	void Tracking(NXWSOCKET s, int selection);
+	int TrackingDirection(NXWSOCKET s, CHARACTER i);
+	void Track(CHARACTER i);
+	void CreateTrackingMenu(NXWSOCKET s, int m);
+	void TrackingMenu(NXWSOCKET s, int gmindex);
+	//@}
+
+	//@{
+	/*!
+	\name Hiding/Stealth stuff
+	*/
+	void Hide(NXWSOCKET s);
+	void Stealth(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name Musicianship stuff
+	*/
+	void PeaceMaking(NXWSOCKET s);
+	void PlayInstrumentWell(NXWSOCKET s, int i);
+	void PlayInstrumentPoor(NXWSOCKET s, int i);
+	int GetInstrument(NXWSOCKET s);
+	void ProvocationTarget1(NXWSOCKET s);
+	void ProvocationTarget2(NXWSOCKET s);
+	void EnticementTarget1(NXWSOCKET s);
+	void EnticementTarget2(NXWSOCKET s);
+	//@}
+
+	void TellScroll(char *menu_name, int player, long item_param);
+
+	void Meditation(NXWSOCKET s);
+
+	//@{
+	/*!
+	\name Blacksmithing stuff
+	*/
+	int CalcRank(NXWSOCKET s,int skill); // by Magius(CHE)
+	void ApplyRank(NXWSOCKET s,int c,int rank); // by Magius(CHE)
+	void Zero_Itemmake(NXWSOCKET s); // by Magius(CHE)
+	int GetSubIngotAmt(int p, char id1, char id2, char color1, char color2);
+	int DeleSubIngot(int p, int id1, int id2, int color1, int color2, int amount);
+	void RepairTarget(NXWSOCKET s); // Ripper
+//	void SmeltItemTarget(NXWSOCKET s); // Ripper
+	void Smith(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name ID-Stuff
+	*/
+	void TasteIDTarget(NXWSOCKET s);
+	void ItemIdTarget(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name Alchemy stuff
+	*/
+	void CreatePotion(CHARACTER s, char type, char sub, int mortar);
+	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM mortar);
+	void AlchemyTarget(NXWSOCKET s);
+	void BottleTarget(NXWSOCKET s);
+	void PotionToBottle(P_CHAR pc, P_ITEM mortar);
+	//@}
+
+	//@{
+	/*!
+	\name Tinkering stuff
+	*/
+	void TinkerAxel(NXWSOCKET s);
+	void TinkerAwg(NXWSOCKET s);
+	void TinkerClock(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name Cooking stuff
+	*/
+	void CookOnFire(NXWSOCKET s, short id, char* matname);
+	void MakeDough(NXWSOCKET s);
+	void MakePizza(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name Tailoring stuff
+	*/
+	void Tailoring(NXWSOCKET s);
+	void Wheel(NXWSOCKET s, int mat);
+	void Loom(NXWSOCKET s);
+	//@}
+
+	//@{
+	/*!
+	\name Bowcrafting stuff
+	*/
+	void Fletching(NXWSOCKET s);
+	void BowCraft(NXWSOCKET s);
+	//@}
+
+	void RemoveTraps(NXWSOCKET s);
+	
+	void Carpentry(NXWSOCKET s);
+
+	P_ITEM MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount = INVALID);
+	void MakeMenu(NXWSOCKET s, int m, int skill);
+
+	//@{
+	/*!
+	\name Mining stuff
+	*/
+	void Mine(NXWSOCKET s);
+	void GraveDig(NXWSOCKET s);
+	//@}
+
+	void SmeltOre(NXWSOCKET s);
+	void TreeTarget(NXWSOCKET s);
+
+	void DetectHidden(NXWSOCKET s);
+
+	//@{
+	/*!
+	\name Healing stuff
+	*/
+	void HealingSkillTarget(NXWSOCKET s);
+	//@}
+
+	void SpiritSpeak(NXWSOCKET s);
+	
+	void ArmsLoreTarget(NXWSOCKET s);
+	
+	void Evaluate_int_Target(NXWSOCKET s);
+	
+	void AnatomyTarget(NXWSOCKET s);
+	
+	void TameTarget(NXWSOCKET s);
+
+	//@{
+	/*!
+	\name Thievery stuff
+	*/
+	void RandomSteal(NXWCLIENT ps);
+	void StealingTarget(NXWCLIENT ps);
+	void PickPocketTarget(NXWCLIENT ps);
+	void LockPick(NXWCLIENT ps);
+	//@}
+
+	void BeggingTarget(NXWSOCKET s);
+	
+	void AnimalLoreTarget(NXWSOCKET s);
+	
+	void ForensicsTarget(NXWSOCKET s);
+	
+	void PoisoningTarget(NXWCLIENT ps);
+
+	void Inscribe(NXWSOCKET s);
+	
+	int EngraveAction(NXWSOCKET s, int i, int cir, int spl);
+	
+	void TDummy(NXWSOCKET s);
+	
+	void Tinkering(NXWSOCKET s);
+	
+	void AButte(NXWSOCKET s1, P_ITEM pButte);
+
+	void Persecute(NXWSOCKET s); //!< AntiChrist persecute stuff
+
+	//@{
+	/*!
+	\name Cartography Stuff
+	*/
+	void Cartography(NXWSOCKET s); //!< By Polygon - opens the cartography skillmenu
+	bool HasEmptyMap(CHARACTER cc); //!< By Polygon - checks if player has an empty map
+	bool DelEmptyMap(CHARACTER cc); //!< By Polygon - deletes an empty map from the player's pack
+	void Decipher(P_ITEM tmap, NXWSOCKET s); //!< By Polygon - attempt to decipher a tattered treasure map
+	//@}
+
+	int GetAntiMagicalArmorDefence(CHARACTER p); //!< blackwind meditation armor stuff
+};
+void snooping( P_CHAR snooper, P_ITEM cont );
+
 
 /*!
 \brief Weight related stuff

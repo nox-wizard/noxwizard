@@ -17,9 +17,18 @@ SERIAL cAllObjects::current_char_serial=0;
 
 cAllObjects objects; //All objects
 
+cAllObjects::cAllObjects()
+{
+
+}
+
+cAllObjects::~cAllObjects()
+{
+}
+
 void cAllObjects::clear()
 {
-	OBJECT_MAP::iterator iter( all.begin() );
+	OBJECT_MAP::iterator iter( this->all.begin() );
 	for( ; iter!=all.end(); iter++ ) {
 		if( iter->second!=NULL )
 			safedelete(iter->second);
@@ -29,7 +38,7 @@ void cAllObjects::clear()
 P_OBJECT cAllObjects::findObject(SERIAL nSerial)
 {
 	if (nSerial < 0) return NULL;
-    OBJECT_MAP::iterator iter( all.find(nSerial) );
+    OBJECT_MAP::iterator iter( this->all.find(nSerial) );
     if (iter == all.end())
 		return NULL;
 
@@ -50,24 +59,24 @@ void cAllObjects::eraseObject( P_OBJECT obj )
 
 SERIAL cAllObjects::getNextCharSerial()
 {
-	return ++current_char_serial;
+	return ++this->current_char_serial;
 }
 
 SERIAL cAllObjects::getNextItemSerial()
 {
-	return ++current_item_serial;
+	return ++this->current_item_serial;
 }
 
 void cAllObjects::updateCharSerial( SERIAL ser )
 {
-	if( ser > current_char_serial )
-		current_char_serial=ser;
+	if( ser > this->current_char_serial )
+		this->current_char_serial=ser;
 }
 
 void cAllObjects::updateItemSerial( SERIAL ser )
 {
-	if( ser > current_item_serial )
-		current_item_serial=ser;
+	if( ser > this->current_item_serial )
+		this->current_item_serial=ser;
 }
 
 
@@ -95,12 +104,12 @@ void DeleItem( P_ITEM pi )
 
 	if (pi->spawnregion!=INVALID )
 	{
-		spawns::removeObject( pi->spawnregion, pi );
+		Spawns->removeObject( pi->spawnregion, pi );
 	}
 
 	if( pi->isSpawner() || pi->spawnserial!=INVALID )
 	{
-		spawns::removeSpawnDynamic( pi );
+		Spawns->removeSpawnDinamic( pi );
 	}
 
 	NxwSocketWrapper sw;
@@ -119,7 +128,7 @@ void DeleItem( P_ITEM pi )
 	// - remove from mapRegions if a world item
 	if (pi->isInWorld())
 	{
-	   	regions::remove(pi); // da==1 not added !!
+	   	mapRegions->remove(pi); // da==1 not added !!
 	}
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
@@ -159,12 +168,12 @@ void DeleteChar( P_CHAR pc )
 
 	if( pc->spawnregion!=INVALID )
 	{
-		spawns::removeObject( pc->spawnregion, pc );
+		Spawns->removeObject( pc->spawnregion, pc );
 	}
 
 	if( pc->spawnserial!=INVALID ) 
 	{
-		spawns::removeSpawnDynamic( pc );
+		Spawns->removeSpawnDinamic( pc );
 	}
 
 	pointers::delChar(pc);	//Luxor
@@ -190,12 +199,25 @@ void DeleteChar( SERIAL k )
 
 }
 
+
+
+
+
+cAllObjectsIter::cAllObjectsIter(  )
+{
+}
+
+cAllObjectsIter::~cAllObjectsIter()
+{
+}
+
+
 void cAllObjectsIter::rewind()
 {
-	curr=objects.all.begin();
-	next=curr;
-	if ( next != objects.all.end() )
-		next++;
+	this->curr=objects.all.begin();
+	this->next=this->curr;
+	if ( this->next != objects.all.end() )
+		this->next++;
 }
 
 bool cAllObjectsIter::IsEmpty()
@@ -216,8 +238,8 @@ SERIAL cAllObjectsIter::getSerial()
 
 cAllObjectsIter& cAllObjectsIter::operator++(int)
 {
-	curr=next;
-	next++;
+	this->curr=this->next;
+	this->next++;
 	return (*this);
 }
 

@@ -26,14 +26,12 @@ otherwise, more memory will be allocated in the mainloop (Duke)
 */
 #define ITEM_RESERVE 3000
 
-#if 0
 /*!
 \brief Base constructor for cWeapon class
 */
 cWeapon::cWeapon(SERIAL serial) : cItem (serial)
 {
 }
-#endif
 
 /*!
 \author Luxor
@@ -194,7 +192,7 @@ void cItem::safeoldsave()
 //
 // Object methods
 //
-#if 0
+/*
 void setserial(int nChild, int nParent, int nType)
 { // Sets the serial #'s and adds to pointer arrays
   // types: 1-item container, 2-item spawn, 3-Item's owner 4-container is PC/NPC
@@ -245,7 +243,12 @@ void setserial(int nChild, int nParent, int nType)
 		break;
 	}
 }
-#endif
+*/
+
+cItem::~cItem()
+{
+
+}
 
 void cItem::setCont(P_OBJECT obj)
 {
@@ -524,7 +527,7 @@ void cItem::setAmount(const short amt)
 	Refresh();
 }
 
-#if 0
+/*
 // This method does not change the pointer arrays !!
 // should only be used in VERY specific situations like initItem... Duke, 6.4.2001
 void cItem::setContSerialOnly(SI32 contser)
@@ -544,7 +547,9 @@ void cItem::setContSerial(SI32 contser)
 	setContSerial(contser, false, false);
 	pointers::updContMap(this);	//Luxor
 }
+*/
 
+/*
 void cItem::setOwnSerialOnly(SI32 ownser)
 {
 	ownserial=ownser;
@@ -565,7 +570,7 @@ void cItem::SetOwnSerial(SI32 ownser)
 		setptr(&ownsp[ownserial%HASHMAX], DEREF_P_ITEM(this));
 
 }
-#endif
+*/
 
 
 void cItem::SetMultiSerial(SI32 mulser)
@@ -593,9 +598,9 @@ void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
 */
 void cItem::MoveTo(Location newloc)
 {
-	regions::remove(this);
+	mapRegions->remove(this);
 	setPosition( newloc );
-	regions::add(this);
+	mapRegions->add(this);
 }
 
 /*!
@@ -1217,13 +1222,226 @@ void cItem::Refresh()
 	}
 }
 
-#if 0
 cContainerItem::cContainerItem(LOGICAL ser/*= true*/) : cItem(ser)
 {
 	ItemList.empty();
 }
 
-#endif 
+/*!
+\author Lord Binary
+\brief Return the type of pack to handle its x, y coord system correctly
+\return see table
+
+<b>Interpretation of the result</b>
+<ul>
+	<li>type -1: no pack</li>
+	<li>type 1: y-range 50 .. 100</li>
+	<li>type 2: y-range 30 .. 80</li>
+	<li>type 3: y-range 100 .. 150</li>
+	<li>type 4: y-range 40 .. 140</li>
+</ul>
+x-range 18 .. 118 for 1,2,3; 40 for 4
+*/
+SI16 cContainerItem::getGumpType()
+{
+	switch( id() )
+	{
+	case 0x09b0:
+	case 0x09aa:
+	case 0x09a8: 
+	case 0x0e79:
+	case 0x0e7a:
+	case 0x0e76:
+	case 0x0e7d:
+	case 0x0e80:
+		return 1;
+
+	case 0x09a9:
+	case 0x0e3c:
+	case 0x0e3d:
+	case 0x0e3e:
+	case 0x0e3f:
+	case 0x0e78:
+	case 0x0e7e: 
+		return 2;
+
+	case 0x09ab:
+	case 0x0e40:
+	case 0x0e41:
+	case 0x0e42:
+	case 0x0e43:
+	case 0x0e7c: 
+		return 3;
+
+	case 0x0e75:
+	case 0x09b2:
+	case 0x0e77:
+	case 0x0e7f:
+	case 0x0e83:
+	case 0x0EFA: 	// spellbook. Position shouldn't matter, but as it can be opened like a backpack...(Duke)
+		return 4;
+
+	case 0x2006: 
+		return 5;	// a corpse/coffin
+
+	default: 
+		return -1;
+	}
+}
+
+LOGICAL cContainerItem::addItem(P_ITEM pItem, SI16 x/*= -1*/, SI16 y/*= -1*/)
+{
+	pItem->setContSerial( getSerial32() );
+	if( (x!=-1) && (y!=-1) )	// use the given position
+	{
+		pItem->setPosition(x, y, 9);
+	}
+	else		// no pos given
+	{
+		if( !pileItem(pItem) )
+			setRandPos(pItem);
+	}
+
+	ItemList.push_back( pItem->getSerial32() );
+	SndRemoveitem( pItem->getSerial32() );
+	pItem->Refresh();
+	return true;
+
+}
+
+LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the container to stack with
+{
+	
+	NxwItemWrapper si;
+	si.fillItemsInContainer( this, false );
+	for( si.rewind(); !si.isEmpty(); si++ ) 
+	{
+		P_ITEM pi=si.getItem();
+		if(!ISVALIDPI(pi)) continue;
+
+		if (!(pileable && pItem->pileable &&
+			id()==pItem->id() &&
+			color()==pItem->color() ))
+			return false;	//cannot stack.
+
+		if (amount+pItem->amount>65535)
+		{
+			pItem->setPosition( getPosition("x"), getPosition("y"), 9);
+			pItem->amount=(amount+pItem->amount)-65535;
+			amount=65535;
+			pItem->Refresh();
+		}
+		else
+		{
+			amount+=pItem->amount;
+			pItem->deleteItem();
+		}
+		Refresh();
+		return true;
+	}
+	return false;
+
+}
+
+void cContainerItem::setRandPos(P_ITEM pItem)
+{
+	pItem->setPosition("x", RandomNum(18, 118));
+	pItem->setPosition("z", 9);
+
+	switch( getGumpType() )
+	{
+	case 1: 
+		pItem->setPosition("y", RandomNum(50, 100));		
+		break;
+
+	case 2: 
+		pItem->setPosition("y", RandomNum(30, 80));		
+		break;
+
+	case 3: 
+		pItem->setPosition("y", RandomNum(100, 140));		
+		break;
+
+	case 4: 
+		pItem->setPosition("y", RandomNum(60, 140));	
+		pItem->setPosition("x", RandomNum(60, 140));			
+		break;
+
+	case 5: 
+		pItem->setPosition("y", RandomNum(85, 160));
+		pItem->setPosition("x", RandomNum(20, 70));		
+		break;
+
+	default: 
+		pItem->setPosition("y", RandomNum(30, 80));
+		break;
+	}
+}
+
+UI32 cContainerItem::countItems(UI32 scriptID, LOGICAL bAddAmounts/*= false*/)
+{
+	UI32 count= 0;
+	vector<SI32>::iterator it= ItemList.begin();
+
+	do
+	{
+		P_ITEM pi= pointers::findItemBySerial(*it);
+		if( !ISVALIDPI(pi) )
+		{
+			LogWarning("item's serial not valid: %d", *it);
+			continue;
+		}
+
+		if( bAddAmounts )
+			count+= pi->amount;
+		else
+			count++;
+	}
+	while( ++it != ItemList.end() );
+
+	return count;
+}
+
+UI32 cContainerItem::removeItems(UI32 scriptID, UI32 amount/*= 1*/)
+{
+	UI32 rest= amount;
+	vector<SI32>::iterator it= ItemList.begin();
+
+	do
+	{
+		P_ITEM pi= pointers::findItemBySerial(*it);
+		VALIDATEPIR(pi, 0);
+/*
+		if (pi->type == ITYPE_CONTAINER)
+			rest= pi->DeleteAmountByID(amount, scriptID);
+*/
+		if( pi->getScriptID()==scriptID )
+			rest= pi->ReduceAmount(rest);
+
+		if (rest<= 0)
+			break;
+
+	}
+	while( ++it!=ItemList.end() );
+
+	return rest;
+}
+
+/*!
+\brief remove item from container but don't delete it from world
+*/
+void cContainerItem::dropItem(P_ITEM pi)
+{
+	int ser= pi->getSerial32();
+	vector<SI32>::iterator it= ItemList.begin();
+
+	do
+	{
+		if( *it==ser )	// item found
+			ItemList.erase(it);
+	}
+	while( ++it!=ItemList.end() );
+}
 
 /*!
 \brief Get the out most container

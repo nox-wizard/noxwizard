@@ -27,7 +27,7 @@ using namespace std;
 bool	Race::activeRaceSystem	= false;
 string*	Race::globalWebRoot	= new string( "" );
 string* Race::globalWebLink	= new string( "" );
-UI16	Race::startLocation[3]	= { 0, 0, 0 };
+short	Race::startLocation[3]	= { 0, 0, 0 };
 bool	Race::teleportOnEnlist	= false;
 bool	Race::withWebInterface	= false;
 std::map<UI32, class Race*> Race::raceMap;
@@ -150,7 +150,7 @@ void Race::parseGlobalSection( void )
 				{
 					// quick and dirty for now
 					// this will be fixed using a special class location
-					UI16 x, y, z;
+					UI32 x, y, z;
 					sscanf( rha.c_str(), "%u %u %u", &x, &y, &z);
 					startLocation[0] = x;
 					startLocation[1] = y;
@@ -396,13 +396,13 @@ void Race::parseRaceDescription( const string& sectionName )
 	{
 		loopexit=0;
 		descriptionIndex = 0;
-		string Description;
+		string description;
 		do
 		{
-			Description = iter->getEntry()->getFullLine();
-			if( Description[0] != '{' && Description[0] != '}' )
-				description[descriptionIndex++] = new string( Description );
-		} while ( ( Description[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
+			description = iter->getEntry()->getFullLine();
+			if( description[0] != '{' && description[0] != '}' )
+				this->description[descriptionIndex++] = new string( description );
+		} while ( ( description[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
 
@@ -420,6 +420,7 @@ void Race::parsePoisonResistance( const string& sectionName )
 	}
 	else
 	{
+//		R32 	pr;
 		string	lha, rha;
 
 		loopexit=0;
@@ -432,23 +433,23 @@ void Race::parsePoisonResistance( const string& sectionName )
 				{
 					case 'D':
 						if ( lha == "DEADLY" )
-							sscanf( rha.c_str(), "%f", &poisonResistance[DEADLYPOISON] );
+							sscanf( rha.c_str(), "%f", &this->poisonResistance[DEADLYPOISON] );
 						break;
 					case 'G':
 						if ( lha == "GREATER" )
-							sscanf( rha.c_str(), "%f", &poisonResistance[GREATERPOISON] );
+							sscanf( rha.c_str(), "%f", &this->poisonResistance[GREATERPOISON] );
 						break;
 					case 'L':
 						if ( lha == "LETHAL" )
-							sscanf( rha.c_str(), "%f", &poisonResistance[LETHALPOISON] );
+							sscanf( rha.c_str(), "%f", &this->poisonResistance[LETHALPOISON] );
 						break;
 					case 'N':
 						if ( lha == "NORMAL" )
-							sscanf( rha.c_str(), "%f", &poisonResistance[REGULARPOISON] );
+							sscanf( rha.c_str(), "%f", &this->poisonResistance[REGULARPOISON] );
 						break;
 					case 'W':
 						if ( lha == "WEAK" )
-							sscanf( rha.c_str(), "%f", &poisonResistance[LESSERPOISON]  );
+							sscanf( rha.c_str(), "%f", &this->poisonResistance[LESSERPOISON]  );
 						break;
 					default:
 						WarnOut("Race::parseRaceSection unknown tag %s\n", lha.c_str());
@@ -464,7 +465,7 @@ void Race::parseSkill( const string& sectionName )
 	string section("SECTION RACESKILL ");
 	section += sectionName;
 	RaceScriptEntry	rse( script, section );
-	skills += rse;
+	this->skills += rse;
 }
 
 void Race::parseAbilityModifiers( const RACIALABILITY ability, const string& sectionName )
@@ -474,9 +475,9 @@ void Race::parseAbilityModifiers( const RACIALABILITY ability, const string& sec
 	RaceScriptEntry	rse( script, section );
 	switch( ability )
 	{
-		case STRENGTH 		:	strModifiers = rse; break;
-		case DEXTERITY		: dexModifiers = rse; break;
-		case INTELLIGENCE : intModifiers = rse; break;
+		case STRENGTH 		:	this->strModifiers = rse; break;
+		case DEXTERITY		: this->dexModifiers = rse; break;
+		case INTELLIGENCE : this->intModifiers = rse; break;
 	}
 }
 
@@ -495,12 +496,12 @@ void Race::parseBeardColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		beardColor.clear();
+		this->beardColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
 			if( color[0] != '{' && color[0] != '}' )
-				beardColor.push_back( hex2num(color) );
+				this->beardColor.push_back( hex2num(color) );
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
@@ -520,7 +521,7 @@ void Race::parseHairColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		hairColor.clear();
+		this->hairColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
@@ -530,7 +531,7 @@ void Race::parseHairColor( const string& sectionName )
 				case '}' :
 					break;
 				default:
-					hairColor.push_back( hex2num(color) );
+					this->hairColor.push_back( hex2num(color) );
 			}
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
@@ -551,12 +552,12 @@ void Race::parseSkinColor( const string& sectionName )
 	{
 		UI32 loopexit = 0;
 		string color;
-		skinColor.clear();
+		this->skinColor.clear();
 		do
 		{
 			color = iter->getEntry()->getFullLine();
 			if( color[0] != '{' && color[0] != '}' )
-				skinColor.push_back( hex2num(color) );
+				this->skinColor.push_back( hex2num(color) );
 		} while ( ( color[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
@@ -566,7 +567,7 @@ void Race::parseStartItem( const string& itemReference )
 	//
 	// Clear startItems vector as multiple startitem tags may be available (e.g. by using #copy)
 	//
-	startItems.clear();
+	this->startItems.clear();
 
 	string 		section("SECTION STARTITEM ");
 	section += itemReference;
@@ -580,7 +581,7 @@ void Race::parseStartItem( const string& itemReference )
 		{
 			itemId = iter->getEntry()->getFullLine();
 			if( itemId[0] != '{' && itemId[0] != '}' )
-				parseStartItemDetails( itemId );
+				this->parseStartItemDetails( itemId );
 		}
 		while (( itemId[0] != '}') && (++loopexit < MAXLOOPS) );
 	}
@@ -631,7 +632,7 @@ void Race::parseStartItemDetails( const string& itemReference )
 		if( !raceItem.layer && raceItem.protectedItem )
 			raceItem.protectedItem = false; // no protection on layer 0
 
-		//startItems.push_back( raceItem );
+		//this->startItems.push_back( raceItem );
 	}
 	else
 		ErrOut( "Race::parseStartItemDetails() unknown %s\n", itemReference.c_str() );
@@ -2231,7 +2232,7 @@ R32 Race::getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )
 	return pr;
 }
 
-Race::Race()
+Race::Race( void )
 {
 	activeRace = false;
 	skinColor.clear();
@@ -2244,6 +2245,10 @@ Race::Race()
 	webLink = "";
 	startItems.clear();
 	skillCap = SrvParms->skillcap;
+}
+
+Race::~Race( void )
+{
 }
 
 bool Race::isRaceActive( void )
@@ -2302,100 +2307,98 @@ bool Race::isProtectedLayer( unsigned char layer )
 	return false;
 }
 
-UI32 Race::getSkillCap()
+UI32 Race::getSkillCap( void )
 {
-	return skillCap;
+	return this->skillCap;
 }
 
-void Race::setSkillCap( UI32 newSkillCap )
+void	Race::setSkillCap( UI32 newSkillCap )
 {
-	skillCap = newSkillCap;
+	this->skillCap = newSkillCap;
 }
 
 UI32 Race::getSkillAdvanceSuccess( UI32 skillId, UI32 baseSkill )
 {
-	return skills.getSkill( skillId ).getAdvance( baseSkill ).getSuccess();
+	return this->skills.getSkill( skillId ).getAdvance( baseSkill ).getSuccess();
 }
 
 UI32 Race::getSkillAdvanceFailure( UI32 skillId, UI32 baseSkill )
 {
-	return skills.getSkill( skillId ).getAdvance( baseSkill ).getFailure();
+	return this->skills.getSkill( skillId ).getAdvance( baseSkill ).getFailure();
 }
 
 UI32 Race::getSkillAdvanceStrength( UI32 skillId )
 {
-	return skills.getSkill( skillId).getAdvanceStrength();
+	return this->skills.getSkill( skillId).getAdvanceStrength();
 }
 
 UI32 Race::getSkillAdvanceDexterity( UI32 skillId )
 {
-	return skills.getSkill( skillId).getAdvanceDexterity();
+	return this->skills.getSkill( skillId).getAdvanceDexterity();
 }
 
 UI32 Race::getSkillAdvanceIntelligence( UI32 skillId )
 {
-	return skills.getSkill( skillId).getAdvanceIntelligence();
+	return this->skills.getSkill( skillId).getAdvanceIntelligence();
 }
 
-UI32 Race::getStatCap()
+UI32 Race::getStatCap( void )
 {
-	return statCap;
+	return this->statCap;
 }
 
-UI32 Race::getStrCap()
+UI32 Race::getStrCap( void )
 {
-	return strCap;
+	return this->strCap;
 }
 
 int Race::getStrModifier( UI32 baseStr )
 {
-	return strModifiers.getAbilityModifier( baseStr ).getModifier();
+	return this->strModifiers.getAbilityModifier( baseStr ).getModifier();
 }
 
-UI32 Race::getStrStart()
+UI32 Race::getStrStart( void )
 {
-	return strStart;
+	return this->strStart;
 }
 
-UI32 Race::getDexCap()
+UI32 Race::getDexCap( void )
 {
-	return dexCap;
+	return this->dexCap;
 }
 
 int Race::getDexModifier( UI32 baseDex )
 {
-	return dexModifiers.getAbilityModifier( baseDex ).getModifier();
+	return this->dexModifiers.getAbilityModifier( baseDex ).getModifier();
 }
 
-UI32 Race::getDexStart()
+UI32 Race::getDexStart( void )
 {
-	return dexStart;
+	return this->dexStart;
 }
 
-UI32 Race::getIntCap()
+UI32 Race::getIntCap( void )
 {
-	return intCap;
+	return this->strCap;
 }
 
 int Race::getIntModifier( UI32 baseInt )
 {
-	return intModifiers.getAbilityModifier( baseInt ).getModifier();
+	return this->intModifiers.getAbilityModifier( baseInt ).getModifier();
 }
 
-UI32 Race::getIntStart()
+UI32 Race::getIntStart( void )
 {
-	return intCap;
+	return this->strCap;
 }
 
 bool Race::getCanUseSkill( UI32 skillId )
 {
-	return skills.getSkill( skillId ).getCanUseSkill();
-	
+	return this->skills.getSkill( skillId ).getCanUseSkill();
 }
 
-void Race::show()
+void Race::show( void )
 {
-	SDbgOut("Race %d %s\n", id, name.c_str() );
+	SDbgOut("Race %d %s\n", this->id, this->name.c_str() );
 	skills.show();
 }
-

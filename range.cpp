@@ -18,7 +18,7 @@ double dist(Location a, Location b)
 
 double dist(int xa, int ya, int za, int xb, int yb, int zb) {
 	double c= hypot(abs(xa-xb), abs(ya-yb) );
-	if( server_data.disable_z_checking==0 )  
+	if( server_data.disable_z_checking==1 )  
 		return c;
 	else {
 		double dz= abs(za-zb);

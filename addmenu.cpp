@@ -106,113 +106,64 @@ bool MakeItem::checkReq(P_CHAR pc, bool inMenu)
 */
 MakeItem* getMakeItem(int n)
 {
-	MakeItemPtr* mip	= &g_mapMakeItems[n];
-	MakeItem*    pMakeItem	= mip->get();
+    MakeItemPtr* mip = &g_mapMakeItems[n];
+    if (mip->get()!=NULL) return mip->get();
 
-	if( pMakeItem != 0 )
-	{
-		// we're here so no makeitem number n has been loaded yet
-		// so search it :]
-		char tmp[128];
-		sprintf( tmp, "SECTION MAKE %d", n);
-		cScpIterator*	iter = Scripts::Create->getNewIterator( tmp );
+    // we're here so no makeitem number n has been loaded yet
+    // so search it :]
+    char script1[1024], script2[1024];
+    sprintf(script1, "SECTION MAKE %d", n);
+    cScpIterator* iter = Scripts::Create->getNewIterator(script1);
 
-		if ( iter != 0 )
-		{
-			std::string	script1,
-					script2;
-			MakeItem* 	mi	   = new MakeItem;
-			int	  	reqres   = 0;
-			LOGICAL   	finished = false,
-					error	 = false;
+    if (iter==NULL) return NULL;
 
-			do
-			{
-				iter->parseLine( script1, script2 );
+    MakeItem* mi = new MakeItem;
+    int reqres = 0;
 
-				if	( script1 == "}" )
-				{
-					finished = true;
-				}
-				else if	( script1 == "DO" )
-				{
-					if ( script2.size() < 4)
-					{
-						WarnOut("Malformed DO command\n");
-						error = true;
-					}
-					else
-					{
-						SI32 firstspace = script2.find( " " );
-
-						if ( firstspace < 0 )
-						{
-							mi->cmd1 = script2.c_str();
-							mi->cmd2 = "";
-						}
-						else
-						{
-							mi->cmd1 = script2.substr( 0, firstspace == 0 ? 1 : firstspace ).c_str();
-							mi->cmd2 = script2.substr( firstspace + 1 ).c_str();
-						}
-					}
-				}
-				else if ( script1 == "SKILL" )
-				{
-					mi->skillToCheck = str2num( script2 );
-				}
-				else if ( script1 == "MINSKILL" )
-				{
-					mi->minskill = str2num( script2 );
-				}
-				else if ( script1 == "MAXSKILL" )
-				{
-					mi->maxskill = str2num( script2 );
-				}
-				else if ( script1 == "MANA" )
-				{
-					mi->mana = str2num( script2 );
-				}
-				else if ( script1 == "STAM" )
-				{
-					mi->stam = str2num( script2 );
-				}
-				else if ( script1 == "REQSPELL" )
-				{
-					mi->reqspell = str2num( script2 );
-				}
-				else if ( script1 == "HP" )
-				{
-					mi->hit = str2num( script2 );
-				}
-				else if ( script1 == "REQ" )
-				{
-					if (reqres <MakeItem::MAXREQITEM)
-					{
-						mi->reqitem[reqres++].parse( const_cast<char*>(script2.c_str()) );
-					}
-					else
-					{
-						WarnOut("makeitem %d has more than %d required resources\n", n, MakeItem::MAXREQITEM);
-					}
-				}
-			} while  ( !finished && !error );
-
-			if( !error )
-			{
-				mip		  = new MakeItemPtr(mi);
-				g_mapMakeItems[n] = *mip;
-				safedelete(mip);
-
-				pMakeItem = getMakeItem(n);
-			}
-			else
-				pMakeItem = 0;
+    do {
+		iter->parseLine(script1, script2);
+		if (!(strcmp(script1,"DO"))) {
+		    if (strlen(script2) < 4) {
+		        WarnOut("Malformed DO command\n");
+		        return NULL;
+		    }
+		    char *p = strstr(script2, " ");
+		    if (p==NULL) {
+		        mi->cmd1 = script2;
+		        mi->cmd2 = "";
+		    } else {
+		        *p = '\0';
+		        mi->cmd1 = script2;
+		        mi->cmd2 = p+1;
+		    }
+		} else if (!(strcmp(script1,"SKILL"))) {
+		    mi->skillToCheck = str2num(script2);
+		} else if (!(strcmp(script1,"MINSKILL"))) {
+		    mi->minskill = str2num(script2);
+		} else if (!(strcmp(script1,"MAXSKILL"))) {
+		    mi->maxskill = str2num(script2);
+		} else if (!(strcmp(script1,"MANA"))) {
+		    mi->mana = str2num(script2);
+		} else if (!(strcmp(script1,"STAM"))) {
+		    mi->stam = str2num(script2);
+		} else if (!(strcmp(script1,"REQSPELL"))) {
+		    mi->reqspell = str2num(script2);
+		} else if (!(strcmp(script1,"HP"))) {
+		    mi->hit = str2num(script2);
+		}  else if (!(strcmp(script1,"REQ"))) {
+			if (reqres <MakeItem::MAXREQITEM) {
+    		    mi->reqitem[reqres++].parse(script2);
+    		} else {
+				WarnOut("makeitem %d has more than %d required resources\n", n, MakeItem::MAXREQITEM);
+    		}
 		}
-		else
-			pMakeItem = 0;
-	}
-	return pMakeItem;
+    } while  (strcmp(script1,"}"));
+
+    mip = new MakeItemPtr(mi);
+    g_mapMakeItems[n] = *mip;
+    safedelete(mip);
+
+    return getMakeItem(n);
 }
 
 

@@ -11,8 +11,8 @@
 
 RaceScriptEntry::RaceScriptEntry( cScpScript* thatScript, const string& thatSection )
 {
-	script = thatScript;
-	section = thatSection;
+	this->script = thatScript;
+	this->section = thatSection;
 }
 
 RaceScriptEntry::RaceScriptEntry( void )

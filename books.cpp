@@ -253,7 +253,6 @@ namespace Books
 		std::vector<std::string> tmppage;
 		std::string line;
 		UI32 numpages = 0;
-		SI32 np = -1;
 
 		while(s)
 		{
@@ -289,7 +288,8 @@ namespace Books
 
 				if ( ! index )
 				{
-					WarnOut("Invalid book index (%s)\n", truebuffer);
+					WarnOut("Book index already in use (%s)\n", truebuffer);
+					//Error: invalid book index
 					return false;
 				}
 				if ( index > books_index )
@@ -328,29 +328,39 @@ namespace Books
 			else if ( !strncasecmp("TITLE", truebuffer, 5) )
 				title = linestart(truebuffer+5);
 			else if ( !strncasecmp("NUMPAGES", truebuffer, 8) )
-			{
-				while ( tmppage.size() < 8 ) tmppage.push_back("");
 				numpages = atoi(linestart(truebuffer+8));
-				while ( pages.size() < numpages ) pages.push_back(tmppage);
-			}
 			else if ( !strncasecmp("PAGE", truebuffer, 4) )
-				np = atoi(linestart(truebuffer+4));
-			else if ( !strncasecmp("LINE", truebuffer, 4) )
-			{	
-				if ( np == -1 )
+			{
+				s.getline(readbuffer, 255);
+				truebuffer = linestart(readbuffer);
+				if ( truebuffer[0] != '{' )
 				{
 					WarnOut("Invalid book script (%s)\n", truebuffer);
 					return false;
 				}
-				char *linenumber = linestart(truebuffer+4);
-				char *ls = strchr(linenumber, ' ');
-				
-				if ( ! ls ) continue;
-				*ls = '\0'; ls++;
+				else
+				{
+					while(truebuffer[0]!='}' && s)
+					{
+						s.getline(readbuffer, 255);
+						truebuffer = linestart(readbuffer);
 
-				int ln = atoi(linenumber);
-							
-				pages[np][ln] = ls;
+						if ( !strncasecmp("LINE", truebuffer, 4) )
+						{
+							line = linestart(truebuffer+4);
+							tmppage.push_back(line);
+						}
+						else if ( *truebuffer == '}' )
+						{
+							pages.push_back(tmppage);
+							tmppage.erase(tmppage.begin(), tmppage.end());
+						}
+						else if ( ! *truebuffer )
+							continue;
+						else
+							WarnOut("Invalid entry in book script (%s)\n", truebuffer);
+					}
+				}
 			}
 			else
 				WarnOut("Invalid entry in book script (%s)\n", truebuffer);
@@ -374,11 +384,10 @@ namespace Books
 	*/
 	void cBook::DumpTo(std::ostream &s)
 	{
-#ifndef _MSC_VER
 		if ( readonly )	// a readonly book shouldn't be dumped, but if we don't want to test it first...
 			return; // note that a class should be totally independent for OOP...
 
-		s	<< "SECTION RWBOOK " << index << std::endl
+		/*s	<< "SECTION RWBOOK " << index << std::endl
 			<< "{" << std::endl
 			<< "AUTHOR " << author << std::endl
 			<< "TITLE " << title << std::endl
@@ -386,16 +395,18 @@ namespace Books
 
 		for(tpages::iterator it = pages.begin(); it != pages.end(); it++)
 		{
-			
-			s	<< "PAGE " << distance(pages.begin(), it) << " " << std::endl;
+			s	<< "PAGE " << std::endl
+				<< "{" << std::endl;
 
 			for(std::vector<std::string>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++)
 				if ( ! (*it2).empty() )
-					s << "LINE " << distance((*it).begin(), it2) << " " << *it2 << std::endl;
+					s << "LINE " << *it2 << std::endl;
+
+			s	<< "}" << std::endl;
 		}
 
-		s << "}" << std::endl << std::endl;
-#endif
+		s << "}" << std::endl << std::endl;*/
+
 	}
 
 	/*!
@@ -408,18 +419,18 @@ namespace Books
 	*/
 	void cBook::ChangePages(char *packet, UI16 p, UI16 l, UI16 size)
 	{
-		p--; l--;
+		p--;
 		UI16 bp = 0, lin = 0, lp = 0;
 		char ch;
 		char s[34];
 		if ( p >= pages.size() )
 		{
-			WarnOut("Invalid page index in packet (index: %d max: %d) [books.cpp]\n", p, pages.size());
+			WarnOut("Invalid page index in packet [books.cpp]\n");
 			return;
 		}
 		if ( l >= pages[p].size() )
 		{
-			WarnOut("Invalid line index in packet (index: %d max: %d) [books.cpp]\n", l, pages[p].size());
+			WarnOut("Invalid line index in packet [books.cpp]\n");
 			return;
 		}
 

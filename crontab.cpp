@@ -598,12 +598,12 @@ static void exec_gcollect (char *dummy)
 
 static void exec_restock (char *dummy)
 {
-	restocks::doRestock();
+	Restocks->doRestock();
 }
 
 static void exec_restockall (char *dummy)
 {
-	restocks::doRestockAll();
+	Restocks->doRestockAll();
 }
 
 static void exec_zerokills (char *dummy)

@@ -241,8 +241,9 @@ void Skills::Carpentry(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
 }
 
-//! \todo ForgeInRange function is unused.
-#if 0
+/*!
+\todo use or remove it!
+*/
 static bool ForgeInRange(NXWSOCKET s)
 {
     P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], false);
@@ -256,7 +257,6 @@ static bool ForgeInRange(NXWSOCKET s)
     }
     return false;
 }
-#endif
 
 static bool AnvilInRange(NXWSOCKET s)
 {
@@ -2356,9 +2356,9 @@ protected:
     short minskill;
     short id2;
 public:
-    cTinkerCombine(short newBadsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
+    cTinkerCombine(short badsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
     {
-        badsnd=newBadsnd;
+        this->badsnd=badsnd;
         failtext=failmsg;
         itembits=0;
         minskill=100;

@@ -25,6 +25,7 @@ class cJailed
 {
 public:
 	cJailed();
+	~cJailed();
 	
 	SERIAL	serial;		//!< serial of char jailed
 	Location oldpos;	//!< old position
@@ -47,6 +48,7 @@ class cPrisonCell
 {
 public:
 	cPrisonCell();
+	~cPrisonCell();
 
 	SERIAL serial;		//!< serial of the cell
 	Location pos;		//!< position of the cell
@@ -75,7 +77,7 @@ namespace prison {
 	void release( P_CHAR releaser, P_CHAR pc );
 	void checkForFree();
 	void freePrisonCell( SERIAL cell );
-	void addCell( SERIAL serial, UI16 x, UI16 y, SI08 z );
+	void addCell( SERIAL serial, UI32 x, UI32 y, UI32 z );
 	void standardJailxyz (int jailnum, int& x, int& y, int& z);
 
 };

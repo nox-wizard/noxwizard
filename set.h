@@ -29,6 +29,7 @@ protected:
 
 public:
 	NxwWrapper();
+	~NxwWrapper();
 
 	bool isEmpty();
 	void clear();
@@ -51,6 +52,9 @@ protected:
 	void fillSerialInContainer( cObject* obj, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false );
 
 public:
+	NxwSerialWrapper();
+	~NxwSerialWrapper();
+
 	SERIAL getSerial();
 	void insertSerial( SERIAL s );
 	void insertSerial( cObject* obj );
@@ -62,9 +66,10 @@ public:
 class NxwCharWrapper : public NxwSerialWrapper {
 
 public:
+	NxwCharWrapper();
 	NxwCharWrapper( const NxwCharWrapper& that );
-	NxwCharWrapper() {}
-	
+	~NxwCharWrapper();
+
 	P_CHAR getChar();
 	void insertChar( P_CHAR pc );
 
@@ -83,16 +88,17 @@ public:
 class NxwItemWrapper : public NxwSerialWrapper {
 
 public:
+	NxwItemWrapper();
 	NxwItemWrapper( const NxwItemWrapper& that );
-	NxwItemWrapper() {}
+	~NxwItemWrapper();
 
 	P_ITEM getItem();
 	void insertItem( P_ITEM pi );
 
 	void fillItemsInContainer ( P_ITEM pi, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false);
 	void fillItemWeared( P_CHAR pc, bool bIncludeLikeHair = false, bool bIncludeProtectedLayer = false, bool bExcludeIllegalLayer=true );
-	void fillItemsAtXY( UI16 x, UI16 y, SI32 type = INVALID, SI32 id = INVALID );
-	void fillItemsAtXY( Location location, SI32 type = INVALID, SI32 id = INVALID );
+	void fillItemsAtXY( UI16 x, UI16 y, UI32 type = UINVALID, SI32 id = INVALID );
+	void fillItemsAtXY( Location location, UI32 type = UINVALID, SI32 id = INVALID );
 	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
 	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
 	void fillGuilds( SERIAL guild, GUILD_POLITICAL options );
@@ -102,6 +108,9 @@ public:
 class NxwSocketWrapper : public NxwWrapper {
 
 public:
+	NxwSocketWrapper();
+	~NxwSocketWrapper();
+
 	SERIAL getSocket();
 	NXWCLIENT getClient();
 	void insertSocket( NXWSOCKET s );

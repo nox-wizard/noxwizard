@@ -335,8 +335,15 @@ void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
 \brief Constructor
 */
 NxwWrapper::NxwWrapper() { 
-	rewind();
+	this->rewind();
 };
+
+/*!
+\brief Destructor
+*/
+NxwWrapper::~NxwWrapper() {
+};
+
 
 /*!
 \brief Check if empty
@@ -345,7 +352,7 @@ NxwWrapper::NxwWrapper() {
 */
 bool NxwWrapper::isEmpty()
 {
-	return ( ( vect.size()==0 ) || ( current==vect.end() ) );	
+	return ( ( this->vect.size()==0 ) || ( current==vect.end() ) );	
 };
 
 /*!
@@ -366,7 +373,7 @@ NxwWrapper& NxwWrapper::operator++(int)
 void NxwWrapper::clear()
 {
 	vect.clear();
-	rewind();
+	this->rewind();
 }
 
 /*!
@@ -434,6 +441,18 @@ void NxwWrapper::insert( SERIAL s )
 		vect.push_back( s );
 };
 
+
+/*!
+\brief Constructor
+*/
+NxwSerialWrapper::NxwSerialWrapper() { };
+
+/*!
+\brief Destructor
+*/
+NxwSerialWrapper::~NxwSerialWrapper() { };
+
+
 /*!
 \brief Get the current serial
 \author Endymion
@@ -463,7 +482,7 @@ void NxwSerialWrapper::insertSerial( SERIAL s )
 void NxwSerialWrapper::insertSerial( cObject* obj )
 {
 	if( (obj!=NULL) )
-		insertSerial( obj->getSerial32() );
+		this->insertSerial( obj->getSerial32() );
 };
 
 
@@ -510,10 +529,21 @@ void NxwSerialWrapper::fillSerialInContainer( cObject* obj, bool bIncludeSubCont
 		fillSerialInContainer( obj->getSerial32(), bIncludeSubContained, bIncludeOnlyFirstSubcont );
 }
 
+
+/*!
+\brief Constructor
+*/
+NxwCharWrapper::NxwCharWrapper() { };
+
 NxwCharWrapper::NxwCharWrapper( const NxwCharWrapper& that )
 {
 	copyQ( that );
 }
+
+/*!
+\brief Destructor
+*/
+NxwCharWrapper::~NxwCharWrapper() { };
 
 /*!
 \brief Get the current char and after move to next
@@ -579,20 +609,20 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
 
-	if(!regions::isValidCoord( x, y ))
+	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && regions::isValidCoord( x, y ) ) {
+				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( regions::regions[nowx][nowy].charsInRegions.empty() )
+					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=regions::regions[nowx][nowy].charsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
+					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
 						P_CHAR pc=pointers::findCharBySerial( *iter );
 						if( !ISVALIDPC( pc ) )
 							continue;
@@ -601,7 +631,7 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 							if (iDist <= nDistance)
 								if ( ( !bOnlyPlayer && pc->npc ) ||
 									( !bExcludeOfflinePlayers || pc->IsOnline() ) )
-									insertSerial(pc->getSerial32());
+									this->insertSerial(pc->getSerial32());
 						}
 					}
 				}
@@ -637,27 +667,27 @@ void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool b
 */
 void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 {
-	if(!regions::isValidCoord( x, y ))
+	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && regions::isValidCoord( x, y ) ) {
+				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( regions::regions[nowx][nowy].charsInRegions.empty() )
+					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=regions::regions[nowx][nowy].charsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
+					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
 						P_CHAR pc=pointers::findCharBySerial( *iter );
 						if( !ISVALIDPC( pc ) || !pc->npc )
 							continue;
 						if(  !pc->isStabled() && !pc->mounted ) {
 							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
 							if (iDist <= nDistance)
-								insertSerial(pc->getSerial32());
+								this->insertSerial(pc->getSerial32());
 						}
 					}
 				}
@@ -724,7 +754,7 @@ void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeTh
 		if( ISVALIDPC(pj) && pc->party==pj->party ) {
 			if( pc->distFrom( pj ) <= nDistance ) {
 				if( !bExcludeThis || ( pc->getSerial32()!=pj->getSerial32() ) )
-					insert( pj->getSerial32() );
+					this->insert( pj->getSerial32() );
 			}
 		}
 	}	
@@ -767,10 +797,20 @@ void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
 
 }
 
+/*!
+\brief Constructor
+*/
+NxwItemWrapper::NxwItemWrapper() { };
+
 NxwItemWrapper::NxwItemWrapper( const NxwItemWrapper& that )
 {
 	copyQ( that );
 }
+
+/*!
+\brief Destructor
+*/
+NxwItemWrapper::~NxwItemWrapper() { };
 
 /*!
 \brief Get the current item
@@ -816,19 +856,19 @@ void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, bool bIncludeSubContained,
 \param id if not INVALID only add item with this id
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
+void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, UI32 type, SI32 id )
 {
 	
-	if(!regions::isValidCoord( x, y ))
+	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
-	UI16 nowx = x/REGION_GRIDSIZE, nowy = y/REGION_COLSIZE;
+	UI16 nowx = x/REGION_GRIDSIZE, nowy= y/REGION_COLSIZE;
 
-	if( regions::regions[nowx][nowy].itemsInRegions.empty() )
+	if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 		return;
 
-	SERIAL_SET::iterator iter( regions::regions[nowx][nowy].itemsInRegions.begin() );
-	for( ; iter!= regions::regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
+	SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
+	for( ; iter!= mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
 		// <Luxor bug fix>
 		P_ITEM pi=pointers::findItemBySerial( *iter );
 		if ( !ISVALIDPI( pi ) )
@@ -852,7 +892,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 \param id if not INVALID only add item with this id
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
+void NxwItemWrapper::fillItemsAtXY( Location location, UI32 type, SI32 id )
 {
 	fillItemsAtXY( location.x, location.y, type, id ); 
 }
@@ -868,24 +908,24 @@ void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 */
 void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems )
 {
-	if(!regions::isValidCoord( x, y ))
+	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && regions::isValidCoord( x, y ) ) {
+				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( regions::regions[nowx][nowy].itemsInRegions.empty() )
+					if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].itemsInRegions.begin() );
-					for( ; iter!=regions::regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
+					for( ; iter!=mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
 						P_ITEM pi=pointers::findItemBySerial( *iter );
 						if(ISVALIDPI(pi) && pi->isInWorld() ) {
 
-							int iDist=(int)dist(x,y,0, pi->getPosition().x, pi->getPosition().y, 0 );
+							int iDist=(int)dist(x,y,0, pi->getPosition("x"), pi->getPosition("y"), 0 );
 							if (iDist <= nDistance) {
 								if ((!bExcludeNotMovableItems) || (pi->magic != 2 && pi->magic != 3))
 								{
@@ -948,7 +988,7 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 		if( Race::isRaceSystemActive() )
 			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->race, pi_j->layer ) ) ) 
 				continue;
-		insertSerial( pi_j->getSerial32() );
+		this->insertSerial( pi_j->getSerial32() );
 	}
 
 }
@@ -988,6 +1028,18 @@ void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
 	}
 
 }
+
+
+
+/*!
+\brief Constructor
+*/
+NxwSocketWrapper::NxwSocketWrapper() { };
+
+/*!
+\brief Destructor
+*/
+NxwSocketWrapper::~NxwSocketWrapper() { };
 
 /*!
 \brief Get the current socket

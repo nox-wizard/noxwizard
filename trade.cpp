@@ -18,10 +18,6 @@
 #include "trade.h"
 #include "commands.h"
 
-TIMERVAL restocks::timer;
-std::queue< SERIAL > restocks::needrestock;
-std::queue< SERIAL > restocks::restocked;
-
 void buyaction(int s)
 {
 	if ( s < 0 || s >= now )
@@ -455,7 +451,7 @@ void clearalltrades()
         for (i = 0; i < itemcount; i++) {
                 pi = MAKE_ITEM_REF(i);
                 if (!ISVALIDPI(pi)) continue;
-                if ((pi->type==1) && (pi->getPosition().x==26) && (pi->getPosition().y==0) && (pi->getPosition().z==0) &&
+                if ((pi->type==1) && (pi->getPosition("x")==26) && (pi->getPosition("y")==0) && (pi->getPosition("z")==0) &&
 			(pi->id()==0x1E5E))
 		{
                         pc = pointers::findCharBySerial(pi->getContSerial());
@@ -558,7 +554,8 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 			if (g_bByPass==true)
 				continue; //skip item, I hope
 			*/
-			bp2->AddItem( pi );
+			pi->setCont( bp2 );
+			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 			sendbpitem(s2, pi);
 			pi->Refresh();
 		}
@@ -585,14 +582,15 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 				continue; //skip item, I hope
 			*/
 
-			bp1->AddItem( pi );
+			pi->setCont( bp1 );
+			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 			sendbpitem(s1, pi);
 			pi->Refresh();
 		}
 	}
 }
 
-#if 0
+/*
 void restock(bool total)
 {
         //Luxor: new cAllObjects system -> this should be changed soon... too slow!!
@@ -635,15 +633,24 @@ void restock(bool total)
 		//if (SrvParms->trade_system==1) StoreItemRandomValue(pi,-1);// Magius(CHE) (2)
 	}
 }
-#endif
+*/
 
-void restocks::initialize()
+
+
+
+
+
+
+
+cRestockMng::cRestockMng()
 {
 	timer=uiCurrentTime;
 }
 
-void restocks::doRestock()
+void cRestockMng::doRestock()
 {
+
+
 	if( !TIMEOUT( timer ) )
 		return;
 
@@ -656,7 +663,7 @@ void restocks::doRestock()
 	while( ( --count>0 ) && ( !needrestock.empty() ) ) {
 
 		P_ITEM pi= pointers::findItemBySerial( needrestock.front() );
-		needrestock.pop();
+		this->needrestock.pop();
 		if( ISVALIDPI(pi) && pi->layer==LAYER_TRADE_RESTOCK  ) {
 
 			NxwItemWrapper si;
@@ -680,9 +687,11 @@ void restocks::doRestock()
 	}
 
 	updateTimer();
+
+
 }
 
-void restocks::doRestockAll()
+void cRestockMng::doRestockAll()
 {
 
 	rewindList();
@@ -690,7 +699,7 @@ void restocks::doRestockAll()
 	while( !needrestock.empty() ) {
 
 		P_ITEM pi= pointers::findItemBySerial( needrestock.front() );
-		needrestock.pop();
+		this->needrestock.pop();
 		if( ISVALIDPI(pi) && pi->layer==LAYER_TRADE_RESTOCK ) {
 
 			NxwItemWrapper si;
@@ -716,13 +725,13 @@ void restocks::doRestockAll()
 
 }
 
-void restocks::addNewRestock( P_ITEM pi )
+void cRestockMng::addNewRestock( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	needrestock.push( pi->getSerial32() );
+	this->needrestock.push( pi->getSerial32() );
 }
 
-void restocks::rewindList()
+void cRestockMng::rewindList()
 {
 	while( !restocked.empty() ) {
 		needrestock.push( restocked.front() );
@@ -730,11 +739,28 @@ void restocks::rewindList()
 	}
 }
 
-void restocks::updateTimer()
+void cRestockMng::updateTimer()
 {
 	if( needrestock.empty() ) //end restock.. next after much time
 		timer=uiCurrentTime+ServerScp::g_nRestockTimeRate*60*MY_CLOCKS_PER_SEC;
 	else
 		timer=uiCurrentTime+CHECK_RESTOCK_EVERY*MY_CLOCKS_PER_SEC;
 }
+
+
+
+cRestockMng* Restocks = NULL;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
