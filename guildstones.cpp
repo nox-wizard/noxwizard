@@ -118,17 +118,25 @@ void cGuilds::StonePlacement(int s)
 // Ofcourse checks for membership before opening any gump ;)
 void cGuilds::Menu(int s, int page)
 {
-	int total,i/*,guildmaster*/,counter,guild,recruit,war,member;
-	int lentext;
-	int gumpnum;
-	char guildfealty[60],guildt[16],toggle[6];
+	int	total,
+		i,
+		counter,
+		guild,
+		recruit,
+		war,
+		member;
+	int 	lentext;
+	int 	gumpnum;
+	char 	guildfealty[60],
+		guildt[16],
+		toggle[6];
 	static char mygump[MAXMEMRECWAR][257];
 
 	P_CHAR pc	= MAKE_CHARREF_LR(currchar[s]);
 	P_ITEM pStone	= MAKE_ITEMREF_LR( pc->fx1 );
 
-	VALIDATEPC(pc);
-	VALIDATEPI(pStone);
+	//VALIDATEPC(pc);
+	//VALIDATEPI(pStone);
 
 	int guildnumber=Guilds->SearchByStone(s);
 	
