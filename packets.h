@@ -1712,7 +1712,6 @@ private:
 	eUI16 size;	//!< size
 public:
 	eSERIAL chr;	//!< character
-    eUI16	type;	//!< type (0x0001 – Update)
 
 	std::string* title;	//!< title
 

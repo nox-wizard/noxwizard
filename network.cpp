@@ -12,6 +12,7 @@
 #include "network.h"
 #include "race.h"
 #include "commands.h"
+#include "packets.h"
 
 //#define USE_MTHREAD_SEND
 
@@ -1985,32 +1986,27 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					}
 					break;
 
-				case PACKET_PROFILE_REQUEST:// T2A Profile request
-					if (buffer[s][3] == 0) //Read request
-					{
-						P_CHAR pc_i=pointers::findCharBySerPtr(buffer[s]+4);
-						if (ISVALIDPC(pc_i) && !pc_i->npc)
-						{
-							UI08 PACKET0xB8[100] = {'\xB8','\x00',};
-							UI16 tlen = 7;
-							
-							LongToCharPtr(pc_i->getSerial32(), PACKET0xB8 +4);
-							strcpy((char*)&PACKET0xB8[8], complete_title(pc_i));
-							tlen += strlen(complete_title(pc_i))+1;
-							PACKET0xB8[tlen] = 0;
-							tlen++;
-							//strcpy((char*)&PACKET0xB8[tlen], "Can not determine this account's age.");
-							//tlen += strlen((char*)&PACKET0xB8[tlen]);*/
-							tlen += 4;
-							ShortToCharPtr(tlen, PACKET0xB8 +1);
-							Xsend(s, PACKET0xB8, tlen);
-						}
+				case PACKET_PROFILE_REQUEST: {// T2A Profile request
+					
+					cPacketCharProfileReq p;
+					p.receive( ps );
+					if( p.update ) { //update profile
+
 					}
-					else if (buffer[s][3] == 1) // Write request
-					{
+					else { //only send
+						cPacketCharProfile resp;
+						resp.title= new std::string;
+						(*resp.title)+= pc_currchar->getCurrentName();
+						resp.staticProfile = new cUnicodeString();
+						resp.profile = new cUnicodeString();
+						resp.send( ps );
+
+						delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
+						delete resp.staticProfile;
+						delete resp.profile;
 					}
-					else
-						LogWarning("Unknown packet 0xB8 request [%X]", buffer[s][3]);
+					
+					}
 					break;
 
 				case PACKET_MSGBOARD:

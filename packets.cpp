@@ -358,7 +358,7 @@ RECEIVE( CharProfileReq ) {
 	}
 }
 
-CREATE( CharProfile, PKG_CHAR_PROFILE, 0x09 )
+CREATE( CharProfile, PKG_CHAR_PROFILE, 0x07 )
 SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	this->size=this->headerSize +(title->size()+1) + (profile->length() +1)*2 + (staticProfile->length() +1)*2 ;
