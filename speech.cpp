@@ -2073,10 +2073,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}
 		else
 		{
-			/*talk2[14] = 'E';
-			talk2[15] = 'N';
-			talk2[16] = 'U';
-			talk2[17] = 0;*/
+			talk.language = (DBYTE2WORD( 'E', 'N'  ) << 16 ) +
+							 DBYTE2WORD( 'U',  0 );
 		}
 
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
