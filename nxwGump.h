@@ -99,7 +99,7 @@ class nxwGump
 		void		addString( const std::string& text = "" );
 		void 		addText( UI32 x, UI32 y, const char* data, UI32 hue = 0 );
 		void 		addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
-		void		addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 GUMPID, UI32 hue );
+		void		addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, GUMPID gump, UI32 hue );
 		void 		addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, const char* clilocid, UI32 hasBack , UI32 canScroll );
 		void 		handleButton( const NXWSOCKET socket, const UI32 button );
 		void		setCallBack( const std::string& arg );
