@@ -159,7 +159,7 @@ void cMULFile<T>::loadCache() {
 			continue;
 
 		if( ( index.size % sizeof(T) ) != 0  ) {
-			ErrOut( "data corrupted ( index=%i ) in %s ", i-1, idx->path.c_str() );
+			ErrOut( "data corrupted ( index=%i ) in %s ", i, idx->path.c_str() );
 			continue;
 		}
 
@@ -168,7 +168,7 @@ void cMULFile<T>::loadCache() {
 		for( int s=0; s<count; ++s ) {
 			T buffer;
 			data->file.read( (char*)&buffer, sizeof(T));
-			cache[ getIndexForCache( i-1, buffer ) ].push_back( buffer );
+			cache[ getIndexForCache( i, buffer ) ].push_back( buffer );
 		}
 
 	}
@@ -286,8 +286,11 @@ NxwMulWrapperMulti::NxwMulWrapperMulti( UI32 id ) : NxwMulWrapper<multi_st>( dat
 cTiledata::cTiledata( std::string path, bool cache ) : cFile( path )
 {
 	isCached=false;
-	if( cache )
-		loadForCaching();
+	if( cache ) {
+		ConOut("\n    Caching TILEDATA..");
+		loadCache();
+		ConOut("[DONE]\n");
+	}
 };
 
 /*!
@@ -377,7 +380,7 @@ bool cTiledata::getStatic( SERIAL id, tile_st& stat )
 \brief Cache Tiledata
 \author Endymion
 */
-void cTiledata::loadForCaching() {
+void cTiledata::loadCache() {
 
 	if(!isReady() || isCached )
 		return;
@@ -573,6 +576,31 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 }
 
 
+/*!
+\brief Constructor
+\author Endymion
+\param pathidx the path of statXidx.mul
+\param pathdata the path of staticsX.mul
+\param cache if true are cached
+*/
+cMulti::cMulti( std::string pathidx, std::string pathdata, bool cache ) : cMULFile<multi_st>( pathidx, pathdata, false )
+{
+	if( cache ) {
+		ConOut("\n    Caching MULTI..");
+		loadCache();
+		ConOut("[DONE]\n");
+	}
+}
+
+/*!
+\brief Destructor
+\author Endymion
+*/
+cMulti::~cMulti() 
+{
+}
+
+
 
 /*!
 \brief Constructor
@@ -583,10 +611,15 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 \param height the height of the map
 \param cache if true are cached
 */
-cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache ) : cMULFile<statics_st>( pathidx, pathdata, cache )
+cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache ) : cMULFile<statics_st>( pathidx, pathdata, false )
 {
 	this->width=width;
 	this->height=height;
+	if( cache ) {
+		ConOut("\n    Caching STATICS..");
+		loadCache();
+		ConOut("[DONE]\n");
+	}
 }
 
 /*!
@@ -621,10 +654,9 @@ UI32 cStatics::getIndexForCache( UI32 id, statics_st b ) {
 
 namespace data {
 
-#define CHECKMUL( A, B, C ) \
-	ConOut( "Loading %s ... ", B ); \
+#define CHECKMUL( A, B ) \
 	if ( !A->isReady() ) { \
-		LogError( "[ERROR] file not found %s ...\n", C.c_str() ); \
+		LogError( "[ERROR] file not found %s ...\n", B.c_str() ); \
 		return; \
 	} \
 	else ConOut( "[DONE]\n" ); \
@@ -639,18 +671,26 @@ void init()
 
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 
-	maps = new cMap( map_path, map_width, map_height );
-	CHECKMUL( maps, "MAP", map_path );
-
-	statics = new cStatics( statics_idx_path, statics_path, map_width, map_height, statics_cache );
-	CHECKMUL( statics, "STATICS", std::string( statics_idx_path + " or " + statics_path ) );
-
+	ConOut( "Loading TILEDATA ... ");
 	tiledata = new cTiledata( tiledata_path, tiledata_cache );
-	CHECKMUL( tiledata, "TILEDATA", tiledata_path );
+	CHECKMUL( tiledata, tiledata_path );
 
+	ConOut( "Loading MAP ... ");
+	maps = new cMap( map_path, map_width, map_height );
+	CHECKMUL( maps, map_path );
+
+	ConOut( "Loading STATICS ... ");
+	statics = new cStatics( statics_idx_path, statics_path, map_width, map_height, statics_cache );
+	CHECKMUL( statics, std::string( statics_idx_path + " or " + statics_path ) );
+
+	ConOut( "Loading MULTI ... ");
+	multi = new cMulti( multi_idx_path, multi_path, multi_cache );
+	CHECKMUL( multi, std::string( multi_idx_path + " or " + multi_path ) );
+	
+	ConOut( "Loading VERDATA ... ");
 	verdata = new cVerdata( verdata_path );
-	CHECKMUL( verdata, "VERDATA", verdata_path );
-	ConOut("Caching verdata info..");
+	CHECKMUL( verdata, verdata_path );
+	ConOut("    Caching VERDATA..");
 	verdata->load( tiledata, multi );
 	ConOut("[DONE]\n");
 

@@ -256,7 +256,7 @@ public:
 	~cTiledata();
 	bool isReady();
 	
-	void loadForCaching();
+	void loadCache();
 	bool getLand( SERIAL id, land_st& land );
 	bool getStatic( SERIAL id, tile_st& stat );
 
@@ -333,12 +333,11 @@ struct multi_st {
 	UI32 flags;
 } PACK_NEEDED;
 
-#define MULTISVEC std::vector<multi_st>
-#define MULTISMAP std::map< UI32, MULTISVEC >
-typedef MULTISVEC* P_MULTISVEC;
-
-
-typedef cMULFile<multi_st> cMulti;
+class cMulti : public cMULFile<multi_st> {
+public:
+	cMulti( std::string pathidx, std::string pathdata, bool cache );
+	~cMulti();
+};
 
 
 
