@@ -2274,19 +2274,19 @@ void Skills::Inscribe(NXWSOCKET s)
 	VALIDATEPC(pc);
 
 
-	if(buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF)
+	if( LongFromCharPtr(buffer[s] +11) == INVALID )
 	{
 		LogError("Morrolan - Inscribing click on invalid object?");
 		return;	// don't do this if the buffer got flushed - Morrolan prevents CRASH!
 			// are you sure ??? that is click xLoc & click yLoc ! - Duke
 	}
 
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerPtr(buffer[s] +7);
 	VALIDATEPI(pi);
 
 	if ( (pi->id()>=0xEEA && pi->id()<=0xEF2) || (!(pi->id()==0x0E34) && !(pi->IsStave()) && (!(pi->id()>=0xDF2 && pi->id()<=0xDF5)))) //not a wand
 	{
-		sysmessage(s,TRANSLATE("You could not possibly engrave on that!"));
+		pc->sysmsg(TRANSLATE("You could not possibly engrave on that!"));
 		pc->making=0;
 	}
 	else
@@ -2298,11 +2298,7 @@ void Skills::Inscribe(NXWSOCKET s)
 		and snum is also the value of what they selected. */
 
 		showAddMenu (pc, 7000);
-		//im_sendmenu( "InscribeMenu", s );  //this is in im.cpp file using inscribe.gmp
 	}
-
-	return;
-
 }
 
 /*!

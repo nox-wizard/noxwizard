@@ -1128,7 +1128,7 @@ void Skills::DetectHidden(NXWSOCKET  s)
 	if (s < 0 || s >= now)
 		return;
 
-	if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF)
+	if ( LongFromCharPtr(buffer[s] +11) == INVALID)
 		return;
 
 	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
@@ -1137,8 +1137,8 @@ void Skills::DetectHidden(NXWSOCKET  s)
 	AMXEXECSV(s,AMXT_SKITARGS,DETECTINGHIDDEN,AMX_BEFORE);
 	SI32 x, y, z;
 
-	x = (buffer[s][11]<<8) + buffer[s][12];
-	y = (buffer[s][13]<<8) + buffer[s][14];
+	x = ShortFromCharPtr(buffer[s] +11);
+	y = ShortFromCharPtr(buffer[s] +13);
 	z = buffer[s][16];
 
 	if ( x < 0 || y < 0 || z < 0 )
@@ -1156,7 +1156,6 @@ void Skills::DetectHidden(NXWSOCKET  s)
 
 	NxwCharWrapper sw;
 	LOGICAL bFound = false;
-//	NXWCLIENT ps = NULL;
 	P_CHAR pc_curr = NULL;
 	SI32 nDist = 0;
 	sw.fillCharsNearXYZ( x, y, nRange, true, true );
@@ -1166,7 +1165,7 @@ void Skills::DetectHidden(NXWSOCKET  s)
 		if ( !ISVALIDPC(pc_curr) )
 			continue;
 
-		if ( pc_curr->IsHiddenBySkill() && !(pc->priv2 & 8) ) {
+		if ( pc_curr->IsHiddenBySkill() && !(pc->priv2 & CHRPRIV2_PERMAHIDDEN) ) {
 			nDist = SI32( dist(lCharPos, pc_curr->getPosition()) );
 			nLow = SI32( (nDist * 20.0) + (pc_curr->skill[HIDING] / 2.0) );
 			if ( nLow < 0 )
@@ -1625,10 +1624,10 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
     int total;
     float totalhp;
     char p2[100];
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +7);
 	VALIDATEPI(pi);
 
     AMXEXECSV(s,AMXT_SKITARGS,ARMSLORE,AMX_BEFORE);
@@ -1636,22 +1635,21 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
     if ( (pi->def==0 || pi->pileable)
         && ((pi->lodamage==0 && pi->hidamage==0) && (pi->rank<1 || pi->rank>9)))
     {
-        sysmessage(s, TRANSLATE("That does not appear to be a weapon."));
+        pc->sysmsg(TRANSLATE("That does not appear to be a weapon."));
         return;
     }
-    if(pc_currchar->IsGM())
+    if(pc->IsGM())
     {
-        sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Lodamage [%i] Hidamage [%i]"), pi->att, pi->def, pi->lodamage, pi->hidamage);
-        sysmessage(s, temp);
+        pc->sysmsg(TRANSLATE("Attack [%i] Defense [%i] Lodamage [%i] Hidamage [%i]"), pi->att, pi->def, pi->lodamage, pi->hidamage);
         return;
     }
 
-    if (!pc_currchar->checkSkill( ARMSLORE, 0, 250))
-        sysmessage(s,TRANSLATE("You are not certain..."));
+    if (!pc->checkSkill( ARMSLORE, 0, 250))
+        pc->sysmsg(TRANSLATE("You are not certain..."));
     else
     {
         if( pi->maxhp==0)
-            sysmessage(s,TRANSLATE(" Sorry this is a old item and it doesn't have maximum hp"));
+            pc->sysmsg(TRANSLATE(" Sorry this is a old item and it doesn't have maximum hp"));
         else
         {
             totalhp= (float) pi->hp/pi->maxhp;
@@ -1671,7 +1669,7 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
             sprintf(temp2," [%.1f %%]",totalhp*100);
             strcat(temp,temp2);  // Magius(CHE) §
         }
-        if (pc_currchar->checkSkill(ARMSLORE, 250, 510))
+        if (pc->checkSkill(ARMSLORE, 250, 510))
         {
             if (pi->hidamage)
             {
@@ -1685,7 +1683,7 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
                 else              strcpy(p2, TRANSLATE(" Might scratch your opponent slightly."));
                 strcat(temp,p2);
 
-                if (pc_currchar->checkSkill( ARMSLORE, 500, 1000))
+                if (pc->checkSkill( ARMSLORE, 500, 1000))
                 {
                     if  (pi->spd > 35) strcpy(p2, TRANSLATE(" And is very fast."));
                     else if (pi->spd > 25) strcpy(p2, TRANSLATE(" And is fast."));
@@ -1707,11 +1705,11 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
                 strcat(temp,p2);
             }
         }
-        sysmessage(s, temp);
+        pc->sysmsg(temp);
 
         if (!(pi->rank<1 || pi->rank>10 || SrvParms->rank_system==0))
         {
-            if (pc_currchar->checkSkill(ARMSLORE, 250, 500))
+            if (pc->checkSkill(ARMSLORE, 250, 500))
             {
                 switch(pi->rank)
                 {
@@ -1726,7 +1724,7 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
                     case 9: strcpy(p2, TRANSLATE("It seems a beautiful quality item!"));            break;
                     case 10:strcpy(p2, TRANSLATE("It seems a perfect quality item!"));              break;
                 }
-                sysmessage(s,p2);
+                pc->sysmsg(p2);
             }
         }
     }
@@ -1743,7 +1741,6 @@ void Skills::ItemIdTarget(NXWSOCKET s)
 	VALIDATEPI(pi);
 
 
-    char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
     char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     AMXEXECSV(s,AMXT_SKITARGS,ITEMID,AMX_BEFORE);
@@ -1751,13 +1748,13 @@ void Skills::ItemIdTarget(NXWSOCKET s)
     {
         if (!pc->checkSkill( ITEMID, 0, 250))
         {
-            sysmessage(s, TRANSLATE("You can't quite tell what this item is..."));
+            pc->sysmsg(TRANSLATE("You can't quite tell what this item is..."));
         }
         else
         {
             if(pi->corpse)
             {
-                sysmessage(s, TRANSLATE("You have to use your forensics evalutation skill to know more on this corpse."));
+                pc->sysmsg(TRANSLATE("You have to use your forensics evalutation skill to know more on this corpse."));
                 return;
             }
 
@@ -1770,49 +1767,45 @@ void Skills::ItemIdTarget(NXWSOCKET s)
             else
 				strcpy(temp2, pi->getCurrentNameC());
 
-            sprintf(temp, TRANSLATE("You found that this item appears to be called: %s"), temp2);
-            sysmessage(s, temp);
+            pc->sysmsg(TRANSLATE("You found that this item appears to be called: %s"), temp2);
 
             // Show Creator by Magius(CHE)
             if (pc->checkSkill( ITEMID, 250, 500))
             {
                 if (!pi->creator.empty())
                 {
-                    if (pi->madewith>0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
-                    else if (pi->madewith<0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
-                    else sprintf(temp2, TRANSLATE("It is made by %s"),pi->creator.c_str()); // Magius(CHE)
-                } else strcpy(temp2, TRANSLATE("You don't know its creator!"));
-            } else strcpy(temp2, TRANSLATE("You can't know its creator!"));
-            sysmessage(s, temp2);
+                    if (pi->madewith>0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
+                    else if (pi->madewith<0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
+                    else pc->sysmsg(TRANSLATE("It is made by %s"),pi->creator.c_str()); // Magius(CHE)
+                } else pc->sysmsg(TRANSLATE("You don't know its creator!"));
+            } else pc->sysmsg(TRANSLATE("You can't know its creator!"));
             // End Show creator
 
             if (!pc->checkSkill( ITEMID, 250, 500))
             {
-                sysmessage(s, TRANSLATE("You can't tell if it is magical or not."));
+                pc->sysmsg(TRANSLATE("You can't tell if it is magical or not."));
             }
             else
             {
-                if(pi->type!=15)
+                if(pi->type != ITYPE_WAND)
                 {
-                    sysmessage(s, TRANSLATE("This item has no hidden magical properties."));
+                    pc->sysmsg(TRANSLATE("This item has no hidden magical properties."));
                 }
                 else
                 {
                     if (!pc->checkSkill( ITEMID, 500, 1000))
                     {
-                        sysmessage(s,TRANSLATE("This item is enchanted with a spell, but you cannot determine which"));
+                        pc->sysmsg(TRANSLATE("This item is enchanted with a spell, but you cannot determine which"));
                     }
                     else
                     {
                         if (!pc->checkSkill( ITEMID, 750, 1100))
                         {
-                            sprintf(temp, TRANSLATE("It is enchanted with the spell %s, but you cannot determine how many charges remain."),spellname[(8*(pi->morex-1))+pi->morey-1]);
-                            sysmessage(s,temp);
+                            pc->sysmsg(TRANSLATE("It is enchanted with the spell %s, but you cannot determine how many charges remain."),spellname[(8*(pi->morex-1))+pi->morey-1]);
                         }
                         else
                         {
-                            sprintf(temp, TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."),spellname[(8*(pi->morex-1))+pi->morey-1],pi->morez);
-                            sysmessage(s,temp);
+                            pc->sysmsg(TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."),spellname[(8*(pi->morex-1))+pi->morey-1],pi->morez);
                         }
                     }
                 }
@@ -1837,44 +1830,40 @@ void Skills::Evaluate_int_Target(NXWSOCKET  s)
 	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] + 7);
 	VALIDATEPC(pc);
 
-    
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     // blackwind distance fix
     if( pc->distFrom( eval ) >= 10 )
     {
-        sysmessage( s, TRANSLATE("You need to be closer to find out" ));
+        eval->sysmsg(TRANSLATE("You need to be closer to find out" ));
         return;
     }
 
     AMXEXECSV(s,AMXT_SKITARGS,EVALUATINGINTEL,AMX_BEFORE);
 
     if (eval->getSerial32() == pc->getSerial32() ) {
-        sysmessage(s, TRANSLATE("You cannot analyze yourself!"));
+        eval->sysmsg(TRANSLATE("You cannot analyze yourself!"));
         return;
     }
 
     if (!eval->checkSkill(EVALUATINGINTEL, 0, 1000))
     {
-        sysmessage(s,TRANSLATE("You are not certain.."));
+        eval->sysmsg(TRANSLATE("You are not certain.."));
         return;
     }
     if ((pc->in == 0))
-        sysmessage(s,TRANSLATE("That does not appear to be a living being."));
+        eval->sysmsg(TRANSLATE("That does not appear to be a living being."));
     else
     {
-        strcpy(temp,TRANSLATE("That person looks "));
-        if      (pc->in <= 10)  strcat(temp,TRANSLATE("slightly less intelligent than a rock."));
-        else if (pc->in <= 20)  strcat(temp, TRANSLATE("fairly stupid."));
-        else if (pc->in <= 30)  strcat(temp, TRANSLATE("not the brightest."));
-        else if (pc->in <= 40)  strcat(temp, TRANSLATE("about average."));
-        else if (pc->in <= 50)  strcat(temp, TRANSLATE("moderately intelligent."));
-        else if (pc->in <= 60)  strcat(temp, TRANSLATE("very intelligent."));
-        else if (pc->in <= 70)  strcat(temp, TRANSLATE("extraordinarily intelligent."));
-        else if (pc->in <= 80)  strcat(temp, TRANSLATE("like a formidable intellect, well beyond the ordinary."));
-        else if (pc->in <= 90)  strcat(temp, TRANSLATE("like a definite genius."));
-        else if (pc->in > 90)   strcat(temp, TRANSLATE("superhumanly intelligent in a manner you cannot comprehend."));
-        sysmessage(s, temp);
+        if      (pc->in <= 10)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("slightly less intelligent than a rock."));
+        else if (pc->in <= 20)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("fairly stupid."));
+        else if (pc->in <= 30)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("not the brightest."));
+        else if (pc->in <= 40)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("about average."));
+        else if (pc->in <= 50)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("moderately intelligent."));
+        else if (pc->in <= 60)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("very intelligent."));
+        else if (pc->in <= 70)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("extraordinarily intelligent."));
+        else if (pc->in <= 80)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("like a formidable intellect, well beyond the ordinary."));
+        else if (pc->in <= 90)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("like a definite genius."));
+        else if (pc->in > 90)   eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("superhumanly intelligent in a manner you cannot comprehend."));
     }
 
     AMXEXECSV(s,AMXT_SKITARGS,EVALUATINGINTEL,AMX_AFTER);
@@ -1887,146 +1876,140 @@ void Skills::Evaluate_int_Target(NXWSOCKET  s)
 //
 void Skills::AnatomyTarget(NXWSOCKET s)
 {
-    
-	P_CHAR current=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(current);
-	
-    P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
+	VALIDATEPC(target);
+	
 
-    AMXEXECSV(s,AMXT_SKITARGS,ANATOMY, AMX_BEFORE);
+	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_BEFORE);
 
+	if (target->getSerial32()==pc->getSerial32()) {
+        	pc->sysmsg(TRANSLATE("You cannot analyze yourself!"));
+        	return;
+	}
 
-    if (pc->getSerial32()==current->getSerial32()) {
-        sysmessage(s, TRANSLATE("You cannot analyze yourself!"));
-        return;
-    }
+	if( target->distFrom( pc ) >= 10 )
+	{
+        	pc->sysmsg(TRANSLATE("You need to be closer to find out more about them" ));
+		return;
+	}
 
+    
+	if (!target->checkSkill( ANATOMY, 0, 1000))
+	{
+		pc->sysmsg(TRANSLATE("You are not certain.."));
+		return;
+	}
 
-    if( pc->distFrom( current ) >= 10 )
-    {
-        sysmessage( s, TRANSLATE("You need to be closer to find out more about them" ));
-        return;
-    }
+	if ((target->getStrength() == 0) && (target->dx == 0))
+		pc->sysmsg(TRANSLATE("That does not appear to be a living being."));
+	else
+	{
+		char *ps1,*ps2;
+		if      (target->getStrength() <= 10)  ps1=TRANSLATE("rather feeble");
+		else if (target->getStrength() <= 20)  ps1=TRANSLATE("somewhat weak");
+		else if (target->getStrength() <= 30)  ps1=TRANSLATE("to be of normal strength");
+		else if (target->getStrength() <= 40)  ps1=TRANSLATE("somewhat strong");
+		else if (target->getStrength() <= 50)  ps1=TRANSLATE("very strong");
+		else if (target->getStrength() <= 60)  ps1=TRANSLATE("extremely strong");
+		else if (target->getStrength() <= 70)  ps1=TRANSLATE("extraordinarily strong");
+		else if (target->getStrength() <= 80)  ps1=TRANSLATE("as strong as an ox");
+		else if (target->getStrength() <= 90)  ps1=TRANSLATE("like one of the strongest people you have ever seen");
+		else if (target->getStrength() > 90)   ps1=TRANSLATE("superhumanly strong");
+		else ps1 = TRANSLATE("of unknown strenght"); //just for warns
 
-    if (!pc->checkSkill( ANATOMY, 0, 1000))
-    {
-        sysmessage(s,TRANSLATE("You are not certain.."));
-        return;
-    }
-    if ((pc->getStrength() == 0) && (pc->dx == 0))
-        sysmessage(s, TRANSLATE("That does not appear to be a living being."));
-    else
-    {
-        char *ps1,*ps2;
-        if      (pc->getStrength() <= 10)  ps1=TRANSLATE("rather feeble");
-        else if (pc->getStrength() <= 20)  ps1=TRANSLATE("somewhat weak");
-        else if (pc->getStrength() <= 30)  ps1=TRANSLATE("to be of normal strength");
-        else if (pc->getStrength() <= 40)  ps1=TRANSLATE("somewhat strong");
-        else if (pc->getStrength() <= 50)  ps1=TRANSLATE("very strong");
-        else if (pc->getStrength() <= 60)  ps1=TRANSLATE("extremely strong");
-        else if (pc->getStrength() <= 70)  ps1=TRANSLATE("extraordinarily strong");
-        else if (pc->getStrength() <= 80)  ps1=TRANSLATE("as strong as an ox");
-        else if (pc->getStrength() <= 90)  ps1=TRANSLATE("like one of the strongest people you have ever seen");
-        else if (pc->getStrength() > 90)   ps1=TRANSLATE("superhumanly strong");
-        else ps1 = TRANSLATE("of unknown strenght"); //just for warns
+		if      (target->dx <= 10)  ps2=TRANSLATE("very clumsy");
+		else if (target->dx <= 20)  ps2=TRANSLATE("somewhat uncoordinated");
+		else if (target->dx <= 30)  ps2=TRANSLATE("moderately dexterous");
+		else if (target->dx <= 40)  ps2=TRANSLATE("somewhat agile");
+		else if (target->dx <= 50)  ps2=TRANSLATE("very agile");
+		else if (target->dx <= 60)  ps2=TRANSLATE("extremely agile");
+		else if (target->dx <= 70)  ps2=TRANSLATE("extraordinarily agile");
+		else if (target->dx <= 80)  ps2=TRANSLATE("like they move like quicksilver");
+		else if (target->dx <= 90)  ps2=TRANSLATE("like one of the fastest people you have ever seen");
+		else if (target->dx > 90)   ps2=TRANSLATE("superhumanly agile");
+		else ps2 = TRANSLATE("of unknown dexterity"); //just for warns
 
-        if      (pc->getStrength() <= 10)  ps2=TRANSLATE("very clumsy");
-        else if (pc->getStrength() <= 20)  ps2=TRANSLATE("somewhat uncoordinated");
-        else if (pc->getStrength() <= 30)  ps2=TRANSLATE("moderately dexterous");
-        else if (pc->getStrength() <= 40)  ps2=TRANSLATE("somewhat agile");
-        else if (pc->getStrength() <= 50)  ps2=TRANSLATE("very agile");
-        else if (pc->getStrength() <= 60)  ps2=TRANSLATE("extremely agile");
-        else if (pc->getStrength() <= 70)  ps2=TRANSLATE("extraordinarily agile");
-        else if (pc->getStrength() <= 80)  ps2=TRANSLATE("like they move like quicksilver");
-        else if (pc->getStrength() <= 90)  ps2=TRANSLATE("like one of the fastest people you have ever seen");
-        else if (pc->getStrength() > 90)   ps2=TRANSLATE("superhumanly agile");
-        else ps2 = TRANSLATE("of unknown dexterity"); //just for warns
-        sprintf(temp,TRANSLATE("That person looks %s and %s."), ps1, ps2);
-        sysmessage(s, temp);
-    }
+		pc->sysmsg(TRANSLATE("That person looks %s and %s."), ps1, ps2);
 
-    AMXEXECSV(s,AMXT_SKITARGS,ANATOMY, AMX_AFTER);
+	}
 
+	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_AFTER);
 }
 
 //taken from 6904t2(5/10/99) - AntiChrist
 void Skills::TameTarget(NXWSOCKET s)
 {
-	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc);
+	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
+	VALIDATEPC(target);
 	
 	int tamed=0;
     
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-	if(line_of_sight(INVALID, pc_currchar->getPosition(), pc->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)==0)
+	if(line_of_sight(INVALID, pc->getPosition(), target->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)==0)
 		return;
 	
 	AMXEXECSV(s,AMXT_SKITARGS,TAMING,AMX_BEFORE);
 
 	if(buffer[s][7]==0xFF) return;
 	
-	if ((pc->npc==1 && ( pc_currchar->distFrom( pc) <= 3))) //Ripper
+	if (target->npc==1 && ( pc->distFrom(target) <= 3))
 	{
-		if (pc->taming>1000||pc->taming==0)//Morrolan default is now no tame
+		if ( (target->taming > 1000) || (target->taming ==0) )//Morrolan default is now no tame
 		{
-			sysmessage(s, TRANSLATE("You can't tame that creature."));
-			return;
-		}
-            // Below... can't tame if you already have!
-		
-		if( (pc->tamed) && pc_currchar->isOwnerOf(pc) )
-		{
-			sysmessage( s, TRANSLATE("You already control that creature!" ));
+			pc->sysmsg(TRANSLATE("You can't tame that creature."));
 			return;
 		}
 		
-		if( pc->tamed )
+		if( (target->tamed) && pc->isOwnerOf(target) )
 		{
-			sysmessage( s, TRANSLATE("That creature looks tame already." ));
+			pc->sysmsg(TRANSLATE("You already control that creature!" ));
+			return;
+		}
+		
+		if( target->tamed )
+		{
+			pc->sysmsg(TRANSLATE("That creature looks tame already." ));
 			return;
 		}
 
-//		sprintf((char*)temp,TRANSLATE( "*%s starts to tame %s*"), pc_currchar->getCurrentNameC(), pc->getCurrentNameC());
-		
 		for(int a=0;a<3;a++)
 		{
 			switch(rand()%4)
 			{
-				case 0: pc_currchar->talkAll( TRANSLATE("I've always wanted a pet like you."),0); break;
-				case 1: pc_currchar->talkAll( TRANSLATE("Will you be my friend?"),0); break;
-				case 2: sprintf(temp, TRANSLATE("Here %s."),pc->getCurrentNameC()); pc_currchar->talkAll( temp,0); break;
-				case 3: sprintf(temp, TRANSLATE("Good %s."),pc->getCurrentNameC()); pc_currchar->talkAll( temp,0); break;
+				case 0: pc->talkAll( TRANSLATE("I've always wanted a pet like you."),0); break;
+				case 1: pc->talkAll( TRANSLATE("Will you be my friend?"),0); break;
+				case 2: sprintf(temp, TRANSLATE("Here %s."), target->getCurrentNameC()); pc->talkAll( temp,0); break;
+				case 3: sprintf(temp, TRANSLATE("Good %s."), target->getCurrentNameC()); pc->talkAll( temp,0); break;
 				default:
 					LogError("switch reached default");
 			}
 		}
 		
-		if ((!pc_currchar->checkSkill(TAMING, 0, 1000))||
-				(pc_currchar->skill[TAMING]<pc->taming))
+		if ( (!pc->checkSkill(TAMING, 0, 1000)) || (pc->skill[TAMING] < target->taming) )
 		{
-			sysmessage(s,TRANSLATE("You were unable to tame it."));
+			pc->sysmsg(TRANSLATE("You were unable to tame it."));
 			return;
 		}
 		
-		pc_currchar->talk(s, TRANSLATE("It seems to accept you as it's master!"),0);
+		pc->talk(s, TRANSLATE("It seems to accept you as it's master!"),0);
 		tamed=1;
-		pc->setOwner(pc_currchar);
+		target->setOwner(pc);
 
-		if(pc->id1==0x00 && (pc->id2==0x0C || pc->id2==0x3B))
+		if((target->GetBodyType()==0x000C) || (target->GetBodyType()==0x003B))
 		{
-			if(!(pc->skin1==0x04 && pc->skin2==0x81))
+			if(target->getSkinColor() != 0x0481)
 			{
-				pc->npcaitype=NPCAI_TAMEDDRAGON;
+				target->npcaitype=NPCAI_TAMEDDRAGON;
 			}
 		}
 	}
 	
-	if (tamed==0) sysmessage(s,TRANSLATE("You can't tame that!"));
+	if (tamed==0) pc->sysmsg(TRANSLATE("You can't tame that!"));
 	
 	AMXEXECSV(s,AMXT_SKITARGS,TAMING,AMX_AFTER);
 }
@@ -2149,51 +2132,47 @@ void Skills::BeggingTarget(NXWSOCKET s)
 
 void Skills::AnimalLoreTarget(NXWSOCKET s)
 {
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 
-	P_CHAR pcc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pcc);
-    
-    P_CHAR pc = pointers::findCharBySerPtr(buffer[s] + 7);
-    VALIDATEPC(pc);
+	P_CHAR target = pointers::findCharBySerPtr(buffer[s] + 7);
+	VALIDATEPC(target);
 	
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     // blackwind distance fix
-    if( pc->distFrom( pcc ) >= 10 )
-    {
-        sysmessage( s, TRANSLATE("You need to be closer to find out more about them" ));
-        return;
-    }
+	if( target->distFrom(pc) >= 10 )
+	{
+		pc->sysmsg(TRANSLATE("You need to be closer to find out more about them" ));
+		return;
+	}
 
-    AMXEXECSV(s,AMXT_SKITARGS,ANIMALLORE,AMX_BEFORE);
+	AMXEXECSV(s,AMXT_SKITARGS,ANIMALLORE,AMX_BEFORE);
 
-    if (pc->IsGMorCounselor())
-    {
-        sysmessage(s,TRANSLATE( "Little is known of these robed gods."));
-        return;
-    }
-    else if (pc->HasHumanBody()) // Used on human
-    {
-        sysmessage(s, TRANSLATE("The human race should use dvorak!"));
-    }
-    else // Lore used on a non-human
-    {
-        if (pcc->checkSkill( ANIMALLORE, 0, 1000))
-        {	//Araknesh Writes the owner name if is tamed
-            if (pc->tamed==true)
-			{
-				P_CHAR pc_owner = MAKE_CHARREF_LR(calcCharFromSer(pc->getOwnerSerial32()));
-				sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: [%s]"), pc->att, pc->def, pc->taming/10, pc->hp,pc_owner->getCurrentNameC() );
-			}
-			else 
-				sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: himself"), pc->att, pc->def, pc->taming/10, pc->hp);
-            pc->emote(s,temp,1);
-        }
-        else
-        {
-            sysmessage(s, TRANSLATE("You can not think of anything relevant at this time."));
-        }
-    }
+	if (target->IsGMorCounselor())
+	{
+		pc->sysmsg(TRANSLATE( "Little is known of these robed gods."));
+		return;
+	}
+	else if( target->HasHumanBody() ) // Used on human
+	{
+		pc->sysmsg(TRANSLATE("The human race should use dvorak!"));
+	}
+	else // Lore used on a non-human
+	{
+        	if (target->checkSkill( ANIMALLORE, 0, 1000))
+        	{
+			P_CHAR target_owner = pointers::findCharBySerial( target->getOwnerSerial32() );
+			VALIDATEPC(target_owner);
+
+			sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: [%s]"), target->att, target->def, target->taming/10, target->hp, (target->tamed)? target_owner->getCurrentNameC() : "himself" );
+			target->emote(s,temp,1);
+        	}
+        	else
+        	{
+            		pc->sysmsg(TRANSLATE("You can not think of anything relevant at this time."));
+        	}
+	}
 
     AMXEXECSV(s,AMXT_SKITARGS,ANIMALLORE,AMX_AFTER);
 }
