@@ -1908,19 +1908,18 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 
 
 inline void makeGhost( ustring* from, ustring* to ) {
-	
+	/*
 	ustring::iterator iter( from->begin() ), end( from->end() );
 	for( ; iter!=end; iter++) {
 		if( (*iter)!=32 && (*iter)!=0x0000 )
 			(*to) += ( (*iter) %2)? L'O' : L'o';
-	}
+	}*/
 
 }
 
 
 void talking( NXWSOCKET socket, string speech) // PC speech
 {
-	ConOut( "%i", sizeof(uchar_t) );
 	if (socket < 0 || socket >= now) //Luxor
 		return;
 
@@ -2076,7 +2075,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}
 
 		bool ghost=false;
-		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
+		/*if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
 				speechGhostUni=new ustring();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
@@ -2084,7 +2083,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			pc->setSpeechCurrent( new ustring( *speechGhostUni ) );
 			ghost=true;
 		}
-		else
+		else*/
 			pc->setSpeechCurrent( new ustring( *speechUni ) );
 
 		/*
