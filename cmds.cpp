@@ -66,8 +66,11 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
 
 //Implementation of cCallCommand Class
 
-cCallCommand::cCallCommand (std::string par1, std::string par2, std::string par3, std::string par4, std::string par5, std::string par6, std::string par7, std::string par8){
+cCallCommand::cCallCommand (std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL){
 
+	if (callCommand_map[0]=NULL)
+		CmdNextSerial=0;
+	
 	param1=par1;
 	param2=par2;
 	param3=par3;
