@@ -7329,7 +7329,12 @@ NATIVE ( _chr_getCmdSpeech )
 	return true;
 }
 
-	
+NATIVE (_recompileSmall )
+{
+	initAmxEvents();
+	LoadOverrides ();
+	return true;
+}
 /*!
 \file
 
@@ -7794,7 +7799,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "world_save", _world_save },
  { "chr_setPostType", _chr_setPostType },
  { "setLightLevel", _setLightLevel },
- { "reload_accounts", _reload_accounts},
+ { "reload_accounts", _reload_accounts },
+ { "recompileSmall", _recompileSmall },
 
 // speech APIs
  { "chr_getSpeech", _chr_getCmdSpeech },

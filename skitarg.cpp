@@ -527,7 +527,7 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
     if(logamount[a][b]>0)
 		logamount[a][b]--;
 
-    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
+    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), pc->getSerial32());
 
     AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LUMBERJACKING,AMX_AFTER);
 }
