@@ -49,7 +49,7 @@ cLine::cLine( Location A, Location B )
 SI08 cLine::calcZAtX( UI32 x )
 {
 	SI08 z;
-	z = SI08( round( R32( ( SI32(x - x1) * m_zDist ) + (z1 * m_xDist) ) / R32( m_xDist ) ) );
+	z = SI08( ( R32( ( SI32(x - x1) * m_zDist ) + (z1 * m_xDist) ) / R32( m_xDist ) ) + 0.5);
 	return z;
 }
 
@@ -59,7 +59,7 @@ SI08 cLine::calcZAtX( UI32 x )
 Location cLine::getPosAtX( UI32 x )
 {
 	Location pos = Loc( x, 0, 0 );
-	pos.y = UI32( round( R32( ( SI32(x - x1) * m_yDist ) + ( SI32(y1) * m_xDist) ) / R32( m_xDist ) ) );
+	pos.y = UI32( ( R32( ( SI32(x - x1) * m_yDist ) + ( SI32(y1) * m_xDist) ) / R32( m_xDist ) ) + 0.5);
 	pos.z = calcZAtX( pos.x );
 	return pos;
 }
@@ -70,7 +70,7 @@ Location cLine::getPosAtX( UI32 x )
 Location cLine::getPosAtY( UI32 y )
 {
 	Location pos = Loc( 0, y, 0 );
-	pos.x = UI32( round( R32( ( SI32(y - y1) * m_xDist ) + ( SI32(x1) * m_yDist) ) / R32( m_yDist ) ) );
+	pos.x = UI32( ( R32( ( SI32(y - y1) * m_xDist ) + ( SI32(x1) * m_yDist) ) / R32( m_yDist ) ) + 0.5);
 	pos.z = calcZAtX( pos.x );
 	return pos;
 }

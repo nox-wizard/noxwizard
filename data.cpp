@@ -590,16 +590,12 @@ LOGICAL seekVerLand( UI16 id, land_st& land )
 template <typename T>
 cMULFile<T>::cMULFile( std::string path, std::string mode )
 {
-	m_cache = NULL;
-	m_file = fopen( path.c_str(), mode.c_str() );
-
-	// <Xanathar>: MULs path autodetecting
-#ifdef WIN32
+#ifdef WIN32 // <Xanathar>: MULs path autodetecting
 	if ( !isReady() && ServerScp::g_nAutoDetectMuls ) {
 		char *s;
-		char fn[800], fn2[800];
+		static char fn[800], fn2[800];
 		char *f;
-		strcpy( fn2, fileName );
+		strcpy( fn2, path.c_str() );
 		f = splitPath( fn2 );
 		s = getHKLMRegistryString( "SOFTWARE\\Origin Worlds Online\\Ultima Online\\1.0", "ExePath" );
 		if ( s != NULL ) {
@@ -611,9 +607,12 @@ cMULFile<T>::cMULFile( std::string path, std::string mode )
 			ConOut( "*** Can't open %s, trying %s ***\n", fileName, fn );
 			m_file = fopen( fn, mode.c_str() );
 		}
+	} else
+#endif	// </Xanathar>
+	{
+		m_cache = NULL;
+		m_file = fopen( path.c_str(), mode.c_str() );
 	}
-#endif
-	// </Xanathar>
 }
 
 /*!
