@@ -68,15 +68,20 @@ public:
 /*
 \brief Simple function API to small
 \author Endymion
+\todo remove funcName and add static funcNameMap based on funcidx
 */
 class AmxFunction {
 private:
-	std::string funcName;
+	
+	static AmxProgram amxProg;
+	
+	std::string* funcName;
 	int function;
+
 public:
 
 	AmxFunction( char* funName );
-	AmxFunction( int funIdx );
+	//AmxFunction( int funIdx ); //ndEndy how i can obtain func name from idx?
 
 
 	char* getFuncName();

@@ -52,6 +52,7 @@
 #include "common_libs.h"
 #include "srvparms.h"
 #include "amx_api.h"
+#include "constants.h"
 
 
 
@@ -516,13 +517,19 @@ cell AmxProgram::CallFn (const char *fn)
 */
 int AmxProgram::getFnOrdinal (char *fn)
 {
-	  int idx = AMX_EXEC_MAIN, err = 0;
+	
+	int idx = AMX_EXEC_MAIN, err = 0;
 	CHECKAMX;
 
-	  if (fn!=NULL) err = amx_FindPublic (m_AMX, fn, &idx);
-	  if (fn==NULL) return AMX_EXEC_MAIN;
-	  if (err!=0) return -3;
-	  return idx;
+	if (fn==NULL) 
+		return AMX_EXEC_MAIN;
+	else
+		err = amx_FindPublic (m_AMX, fn, &idx);
+	  
+	if(err!=AMX_ERR_NONE) 
+		return INVALID;
+	else
+		return idx;
 }
 
 
@@ -917,3 +924,55 @@ void checkAmxSpeech(int s, char *speech)
 		}
 	}
 }
+
+
+AmxProgram AmxFunction::amxProg;
+
+AmxFunction::AmxFunction( char* funName )
+{
+	function = amxProg.getFnOrdinal( funName );
+	funcName->copy( funName, strlen(funName) );
+}
+
+char* AmxFunction::getFuncName()
+{
+	return (function!=INVALID)? (char*)funcName->c_str(): "";
+}
+
+cell AmxFunction::Call( int param)
+{
+	return amxProg.CallFn( function, param );
+}
+
+cell AmxFunction::Call( int param1, int param2 )
+{
+	return amxProg.CallFn( function, param1, param2 );
+}
+
+
+cell AmxFunction::Call( int param1, int param2, int param3 )
+{
+	return amxProg.CallFn( function, param1, param2, param3 );
+}
+
+
+cell AmxFunction::Call( int param1, int param2, int param3, int param4 )
+{
+	return amxProg.CallFn( function, param1, param2, param3, param4 );
+}
+
+
+cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5 )
+{
+	return amxProg.CallFn( function, param1, param2, param3, param4, param5 );
+}
+
+
+cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5, int param6 )
+{
+	return amxProg.CallFn( function, param1, param2, param3, param4, param5, param6 );
+}
+
+
+
+
