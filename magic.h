@@ -230,7 +230,7 @@ namespace magic {
 	bool spellRequiresTarget(SpellId spellnum);
 	P_CHAR summon (P_CHAR owner, int npctype, int duration, bool bTamed = true, int x = INVALID, int y = INVALID, int z = INVALID);
 	bool checkGateCollision( P_CHAR pc );
-
+	UI32 getCastingTime( SpellId spell );
 
 
 } // namespace

@@ -91,7 +91,7 @@ Location cLine::getPosAtY( UI32 y )
 \brief Looks if a char can walk on the given Location
 \return The next z value of char position, illegal_z if the tile isn't walkable
 */
-SI08 isWalkable( Location pos, UI08 flags )
+SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 {
 	SI08 zRes = 0;
 	UI32 height = 0;
@@ -165,8 +165,10 @@ SI08 isWalkable( Location pos, UI08 flags )
 			)
 			return illegal_z;
 
-		if ( mapid >= 0x0A8 && mapid <= 0x0AB) 	// Water
-			return illegal_z;
+		if ( !ISVALIDPC( pc ) || !(pc->nxwflags[0] & NCF0_WATERWALK) ) {
+			if ( mapid >= 0x0A8 && mapid <= 0x0AB) 	// Water
+				return illegal_z;
+		}
 	} // WALKFLAG_MAP
 
         //
@@ -205,15 +207,15 @@ SI08 isWalkable( Location pos, UI08 flags )
 	//
 	if ( flags & WALKFLAG_CHARS ) {
 		NxwCharWrapper sc;
-		P_CHAR pc = NULL;
+		P_CHAR pc_curr = NULL;
 		sc.fillCharsAtXY( pos );
 
 		for( sc.rewind(); !sc.isEmpty(); sc++ )	{
-			pc = sc.getChar();
-			if ( !ISVALIDPC( pc ) )
+			pc_curr = sc.getChar();
+			if ( !ISVALIDPC( pc_curr ) )
 				continue;
 
-			if ( abs( pc->getPosition().z - zRes ) < MaxZstep )
+			if ( abs( pc_curr->getPosition().z - zRes ) < MaxZstep )
 				return illegal_z;
 		}
 	} // WALKFLAG_CHARS

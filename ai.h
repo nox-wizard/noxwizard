@@ -84,7 +84,8 @@ public:
 */
 #include "nxwcommn.h"
 
-#define MAX_PATH_LOOPS 2000
+#define MAX_PATH_INTERNAL_LOOPS 200
+#define MAX_PATH_TOTAL_LOOPS 10000
 #define Z_COST 1
 #define STRAIGHT_COST 10
 #define OBLIQUE_COST 14
@@ -108,11 +109,18 @@ typedef slist<Location> LOCATION_LIST;
 */
 class cPath {
 public:
-	cPath( Location startPos, Location finalPos );
+	cPath( Location startPos, Location finalPos, P_CHAR pc = NULL );
+	void exec();
 	Location getNextPos();
 	inline Location getFinalPos() { return m_finalPos; }
 	LOGICAL targetReached();
+	inline LOGICAL pathFound() { return m_pathFound; }
 private:
+	LOGICAL m_pathFound;
+	UI32 m_loops;
+	SERIAL pc_serial;
+	path_node* currNode;
+	path_node* nextNode;
 	path_node* create_node( Location pos, path_node* parentNode, UI32 cost );
         queue<path_node> nodes_vector;
 	UI08 addReachableNodes( path_node* node );
@@ -120,6 +128,7 @@ private:
 	void addToOpenList( Location pos, path_node* parentNode, UI32 cost = STRAIGHT_COST );
 	void addToOpenList( path_node* node );
 	void addToClosedList( path_node* node );
+	Location m_startPos;
         Location m_finalPos;
 	NODE_LIST open_list;
 	NODE_LIST closed_list;

@@ -782,12 +782,13 @@ public:
 		TIMERVAL		murdersave; //# of second for murder decay
 
 		TIMERVAL		crimflag; //Time when No longer criminal -1=Not Criminal
-		SI32				casting; // 0/1 is the cast casting a spell?
+		SI32			casting; // 0/1 is the cast casting a spell?
 		TIMERVAL		spelltime; //Time when they are done casting....
 		magic::SpellId		spell; //current spell they are casting....
 		SI32			spellaction; //Action of the current spell....
 		magic::CastingType	spelltype;
 		TIMERVAL		nextact; //time to next spell action....
+		TargetLocation*		spellTL; //Luxor: npc spell targetlocation
 		SI32			poisonserial; //AntiChrist -- poisoning skill
 
 		SI32			squelched; // zippy  - squelching

@@ -345,6 +345,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	speechCurrent = NULL; //Luxor
 	lastRunning = 0; //Luxor
 	path = NULL; //Luxor
+	spellTL = NULL; //Luxor
 
 	staticProfile=NULL;
 
@@ -1218,7 +1219,7 @@ void cChar::MoveTo(Location newloc)
 		return;
 
 	// <Luxor>
-	if ( newloc != getPosition() && casting ) {
+	if ( newloc != getPosition() && casting && !npc ) {
 		sysmsg( "You stop casting the spell." );
 		casting = 0;
 		spell = magic::SPELL_INVALID;
@@ -4557,24 +4558,26 @@ void cChar::pc_heartbeat()
 
 	if ( casting )
 	{
-		--nextact;
 		if ( TIMEOUT( spelltime ) )//Spell is complete target it.
 		{
-			unfreeze();
 			if ( magic::spellRequiresTarget( spell ) )
 				target( socket, 0, 1, 0, 194, TRANSLATE("Select your target") );
 			else
 			{
-		    	TargetLocation TL( this );
+		    		TargetLocation TL( this );
 				magic::castSpell( spell, TL, this );
 			}
 			casting   = 0;
 			spelltime = 0;
 		}
-		else if ( nextact <= 0 )//redo the spell action
-		{
-			nextact = 75;
-			impaction( socket, spellaction );
+		else if ( TIMEOUT( nextact ) ) //redo the spell action
+		{ //<Luxor>
+			nextact = uiCurrentTime + UI32(MY_CLOCKS_PER_SEC*1.5);
+			if ( isMounting() )
+				playAction( 0x1b );
+			else
+				playAction( spellaction );
+		//</Luxor>
 		}
 	}
 
@@ -4609,6 +4612,7 @@ void cChar::pc_heartbeat()
 		SetFame(0);
 }
 
+#define NPCMAGIC_FLAGS (SPELLFLAG_DONTCRIMINAL+SPELLFLAG_DONTREQREAGENTS+SPELLFLAG_DONTCHECKSPELLBOOK+SPELLFLAG_IGNORETOWNLIMITS+SPELLFLAG_DONTCHECKSKILL)
 void cChar::npc_heartbeat()
 {
 	if( stablemaster_serial != INVALID )
@@ -4768,7 +4772,28 @@ void cChar::npc_heartbeat()
 			combatHit( pointers::findCharBySerial( swingtargserial ) );
 
 	setcharflag2( this );
+
+	//
+	//	Handle spell casting (Luxor)
+	//
+	if ( casting ) {
+		if ( TIMEOUT( spelltime ) ) {
+			if ( spellTL != NULL ) {
+	    			magic::castSpell( spell, *spellTL, this, NPCMAGIC_FLAGS );
+				casting   = 0;
+				spelltime = 0;
+				safedelete( spellTL );
+			}
+		} else if ( TIMEOUT( nextact ) ) {
+			nextact = uiCurrentTime + UI32(MY_CLOCKS_PER_SEC*1.5);
+			if ( isMounting() )
+				playAction( 0x1b );
+			else
+				playAction( spellaction );
+		}
+	}
 }
+#undef NPCMAGIC_FLAGS
 
 /*!
 \author Sparhawk

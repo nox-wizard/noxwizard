@@ -38,7 +38,7 @@ private:
 	SI32 m_xDist, m_yDist, m_zDist;
 };
 
-SI08 isWalkable( Location pos, UI08 flags = WALKFLAG_ALL );
+SI08 isWalkable( Location pos, UI08 flags = WALKFLAG_ALL, P_CHAR pc = NULL );
 LOGICAL lineOfSight( Location pos1, Location pos2 );
 LOGICAL canNpcWalkHere( Location pos );
 SI08 staticTop( Location pos );

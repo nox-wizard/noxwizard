@@ -22,11 +22,33 @@
 
 namespace npcs {
 
+
+/*!
+\author Luxor
+*/
+static void npcBeginCasting( P_CHAR pc, P_CHAR target, magic::SpellId spell )
+{
+	VALIDATEPC( pc );
+	VALIDATEPC( target );
+	if ( pc->spellTL != NULL )
+		safedelete( pc->spellTL );
+	pc->spellTL = new TargetLocation( target );
+	pc->spelltype = magic::CASTINGTYPE_NPC;
+	pc->spell = spell;
+	pc->casting = 1;
+	pc->nextact = 1;
+	pc->spellaction = 6;
+	pc->spelltime = magic::getCastingTime( spell );
+	pc->addTempfx( *pc, tempfx::SPELL_PARALYZE, 0, 0, 0, ( pc->spelltime - uiCurrentTime ) / MY_CLOCKS_PER_SEC );
+	pc->emoteall("*Begins casting a spell*", false);
+}
+
 ///////////////NPC MAGIC STUFF
 ///////////////BY LUXOR & XANATHAR
 #define NPCMAGIC_FLAGS (SPELLFLAG_DONTCRIMINAL+SPELLFLAG_DONTREQREAGENTS+SPELLFLAG_DONTCHECKSPELLBOOK+SPELLFLAG_IGNORETOWNLIMITS+SPELLFLAG_DONTCHECKSKILL)
 //#define NPC_CASTSPELL(A,B) pc_att->castSpell(A, TargetLocation DUMMYTMP(B), NPCMAGIC_FLAGS);
-#define NPC_CASTSPELL(A,B) { TargetLocation INSTANCETEMP(B); pc_att->castSpell(A, INSTANCETEMP , NPCMAGIC_FLAGS); }
+//#define NPC_CASTSPELL(A,B) { TargetLocation INSTANCETEMP(B); pc_att->castSpell(A, INSTANCETEMP , NPCMAGIC_FLAGS); }
+#define NPC_CASTSPELL(A,B) { npcBeginCasting( pc_att, B, A ); }
 
 int spherespells[256][256];
 
@@ -102,13 +124,13 @@ void npcMagicAttack(P_CHAR pc_att, P_CHAR pc_def)
 				NPC_CASTSPELL(magic::SPELL_FLAMESTRIKE, pc_def);
 				break;
 			case 14:
-				pc_def->damage(10);
+				NPC_CASTSPELL(magic::SPELL_MINDBLAST, pc_def);
 				break;
 			case 15:
-				pc_def->damage(20);
+				NPC_CASTSPELL(magic::SPELL_MINDBLAST, pc_def);
 				break;
 			case 16:
-				pc_def->damage(40);
+				NPC_CASTSPELL(magic::SPELL_MINDBLAST, pc_def);
 				break;
 			default:
 				break;

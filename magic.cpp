@@ -48,6 +48,14 @@ std::map< std::string, SpellId > speechMap;
 /*!
 \author Luxor
 */
+UI32 getCastingTime( SpellId spell )
+{
+	return ( ( (g_Spells[spell].delay/10) * MY_CLOCKS_PER_SEC ) + uiCurrentTime );
+}
+
+/*!
+\author Luxor
+*/
 LOGICAL checkMagicalSpeech( P_CHAR pc, char* speech )
 {
 	VALIDATEPCR( pc, false );
@@ -546,7 +554,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcfrom->playSFX( 0x20B );
 			break;
 		case SPELL_REVEAL:
-			pcfrom->playSFX( 0x1FE );
+			pcfrom->playSFX( 0x1FD );
 			break;
 		case SPELL_CHAINLIGHTNING:
 			pcto->playSFX( 0x206 );
@@ -767,6 +775,8 @@ void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
 	if (divider!=0) damagetobedone /= divider;
 
 	if (ISVALIDPC(pcaster)) {
+		if ( spellnum == SPELL_EARTHQUAKE )
+			pcaster->playSFX( 0x20D );
 		if (checkTownLimits(spellnum, pcaster, pcaster, 0, 0, true)) return;
 	}
 
@@ -1555,7 +1565,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			break;
 
 		case SPELL_REVEAL: { //Luxor
-			spellFX(spellnumber, src, pd);
+			spellFX(spellnumber, src);
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
@@ -1993,7 +2003,6 @@ void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags,
 // Changes			 : none yet
 bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 {
-
 	if (s == NULL) return true;
 	// override for spellcasting (?)
 	P_CHAR pc = s->currChar();
@@ -2014,7 +2023,7 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 		return false;
 	}
 
-	if ( pc->hidden == HIDDEN_BYSPELL ) {	//Luxor: cannot do magic gestures if under invisible spell
+	if ( pc->IsHiddenBySpell() ) {	//Luxor: cannot do magic gestures if under invisible spell
 		pc->sysmsg(TRANSLATE("You cannot cast by invisible."));
 		return false;
 	}
@@ -2045,11 +2054,11 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 	pc->spelltype = type;
 	pc->spell = num;
 	pc->casting = 1;
-	pc->nextact = 75;
+	pc->nextact = 1;
 	pc->spellaction = g_Spells[num].action;
 
 	if ((type==CASTINGTYPE_SPELL)&&(!pc->IsGM()))
-		pc->spelltime = ((g_Spells[num].delay/10)*MY_CLOCKS_PER_SEC)+uiCurrentTime;
+		pc->spelltime = getCastingTime( num );
 	else
 		pc->spelltime = 0;
 

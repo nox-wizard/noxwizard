@@ -104,6 +104,7 @@
 #include "nox-wizard.h"
 #include "containers.h"
 #include "classes.h"
+#include "map.h"
 #include "scripts.h"
 
 
@@ -1335,6 +1336,7 @@ void updateMenus();
 
 	Spawns->doSpawnAll();
 
+
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
 	g_bInMainCycle = true;
@@ -1579,6 +1581,8 @@ void telltime( NXWSOCKET  s )
 
 void impaction(int s, int act)
 {
+	if ( s < 0 || s >= now ) //Luxor
+		return;
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc );
 	if ( pc->isMounting() && (act==0x10 || act==0x11))
