@@ -18,67 +18,6 @@
 #include "commands.h"
 #include "npcai.h"
 
-static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
-{
-
-	VALIDATEPCR(pc,0);
-
-	char sect[512];
-	int i,j,haircolor = 0;
-	i=0; j=0;
-	cScpIterator* iter = NULL;
-	char script1[1024];
-
-	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
-	iter = Scripts::Colors->getNewIterator(sect);
-	if (iter==NULL)
-	{
-		WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
-		return 0;
-	}
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	safedelete(iter);
-
-	if(i>0)
-	{
-		i=rand()%i;
-		i++;
-		iter = Scripts::Colors->getNewIterator(sect);
-		if (iter==NULL)
-		{
-			WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
-			return 0;
-		}
-		loopexit=0;
-		do
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				j++;
-				if(j==i)
-				{
-					haircolor=hex2num(script1);
-				}
-			}
-		}
-		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
-	}
-	return (haircolor);
-}
-
 namespace npcs {	//Luxor
 
 
@@ -671,10 +610,11 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 							case 'H':
 								if	( "HAIRCOLOR" == script1 )
 								{
-									if (ISVALIDPI(pi_n))
+									if( ISVALIDPI(pi_n) )
 									{
-										haircolor=addrandomhaircolor(pc, const_cast<char*>(script2.c_str()));
-										if (haircolor!=-1)
+										std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
+										haircolor = hex2num( value );
+										if ( haircolor != INVALID )
 										{
 											pi_n->setColor( haircolor );
 										}
