@@ -20,7 +20,6 @@
 #include "target.h"
 
 typedef std::vector< std::string > td_cmdparams;
-typedef std::vector< TargetLocation > td_targets;
 
 class cNxwClientObj {
 public:
@@ -96,7 +95,6 @@ public:
 	string getParamsAsString();
 
 	td_cmdparams cmdParams;
-	td_targets targets;
 };
 
 

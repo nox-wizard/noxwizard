@@ -98,6 +98,9 @@ typedef std::vector< P_CHAR >		PCHAR_VECTOR;	//!< a vector of pointers to cChar
 typedef PCHAR_VECTOR::iterator		PCHAR_VECTOR_IT;//!< an iterator to a vector of pointers to cChar
 typedef std::vector< P_ITEM >		PITEM_VECTOR;	//!<  a vector of pointers to cItem
 typedef PITEM_VECTOR::iterator		PITEM_VECTOR_IT;//!< an iterator to a vector of pointers to cChar
+typedef class cPartyMember* P_PARTY_MEMBER;
+typedef class cParty*	P_PARTY;
+
 
 
 #if defined __GNUC__ && (__GNUC__ < 3 || defined(WIN32))

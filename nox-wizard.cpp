@@ -2556,7 +2556,6 @@ void StartClasses()
 
 	Network=new cNetwork;
 	//Respawn=new cRespawn;
-	Partys=new cPartys;
 	Spawns=new cSpawns;
 	Areas=new cAreas;
 	Restocks= new cRestockMng();
@@ -2574,7 +2573,6 @@ void DeleteClasses()
 
 	delete Network;
 	//delete Respawn;
-	delete Partys;
 	delete Spawns;
 	delete Areas;
 

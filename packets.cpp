@@ -12,6 +12,7 @@
 #include "network.h"
 #include "globals.h"
 #include "chars.h"
+#include "party.h"
 
 wstring emptyUnicodeString;
 char stringTerminator = 0x00;
@@ -78,14 +79,12 @@ inline void reciveUnicodeStringFromSocket( NXWSOCKET s, wstring& c, int& from, i
 	SI32 i=0;
 	if( size==INVALID ) {//until termination
 		while ( w[i]!=0 ) {
-			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
-			c+=ntohs( w[i] );
+			c+=ntohs( w[i++] );
 		}
 	}
 	else { //until size
-		for( ; i<size; ++i ) {
-			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
-			c+=ntohs( w[i] );
+		while( i<size ) {
+			c+=ntohs( w[i++] );
 		}
 	}
 	if( size==INVALID )
@@ -184,32 +183,6 @@ void cServerPacket::send( P_CHAR pc ) {
 	VALIDATEPC( pc )
 	send( pc->getClient() );
 };
-
-
-/*!
-\brief get pointer after the packet command ( it's read before )
-\author Endymion
-\since 0.83
-\note point to cmd of serverpacket because is after in declatation
-*/
-char* cServerClientPacket::getBeginValidForReceive()
-{
-	return ( (char*)( &(cServerPacket::cmd) )  +sizeof(cServerPacket::cmd) );
-}
-
-/*!
-\brief Receive packet from client
-\author Endymion
-\since 0.83a
-\param ps the client who send this packet
-\attention NOT WRITE THE CMD, it's read before
-*/
-void cServerClientPacket::receive( NXWCLIENT ps ) {
-	cClientPacket::offset=1;
-	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), cServerPacket::headerSize-1 );
-};
-
 
 
 
@@ -621,10 +594,230 @@ SEND( IconListMenu ) {
 
 CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )
 
-cPacketTargetingCursor::cPacketTargetingCursor() 
-{
-	cServerPacket::cmd = PKG_TARGETING;
-	cServerPacket::headerSize = 0x13;
+template< class T >
+cPacketTargetingCursor<T>::cPacketTargetingCursor() {
+	cmd = PKG_TARGETING;
+	headerSize = 0x13;
 }
+
+cPacketTargetingCursor<cServerPacket>::cPacketTargetingCursor() {
+	cmd = PKG_TARGETING;
+	headerSize = 0x13;
+}
+
+cPacketTargetingCursor<cClientPacket>::cPacketTargetingCursor() {
+	cmd = PKG_TARGETING;
+	headerSize = 0x13;
+}
+
+template< class T >
+cPacketGeneralInfo<T>::cPacketGeneralInfo() {
+	cmd = PKG_GENERAL_INFO;
+	headerSize = 0x05;
+}
+
+template< class T >
+cSubPacketParty<T>::cSubPacketParty() : cPacketGeneralInfo<T>() {
+	this->subcmd = 6;
+	headerSize += sizeof( eUI08 );
+}
+
+clPacketAddPartyMember::clPacketAddPartyMember()
+{
+	subsubcommand = 1;
+}
+
+void clPacketAddPartyMember::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	offset=headerSize;
+	this->getFromSocket( s, (char*)&this->member, sizeof( eSERIAL ) );
+}
+
+csPacketAddPartyMembers::csPacketAddPartyMembers()
+{
+	subsubcommand = 1;
+	headerSize += sizeof( eUI08 );
+}
+
+void csPacketAddPartyMembers::send( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	count = members->size();
+	size = headerSize + count*sizeof(eSERIAL);
+	Xsend( s, getBeginValid(), headerSize );
+
+	std::vector<P_PARTY_MEMBER>::iterator iter( members->begin() ), end( members->end () );
+	for( ; iter!=end; ++iter ) {
+		eSERIAL b = (*iter)->serial;
+		Xsend( s, &b, sizeof( eSERIAL ) );
+	}
+}
+
+clPacketRemovePartyMember::clPacketRemovePartyMember()
+{
+	subsubcommand = 2;
+}
+
+void clPacketRemovePartyMember::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	offset=headerSize;
+	this->getFromSocket( s, (char*)&this->member, sizeof( eSERIAL ) );
+}
+
+
+csPacketRemovePartyMembers::csPacketRemovePartyMembers()
+{
+	subsubcommand = 2;
+	headerSize += sizeof( eUI08 ) +sizeof(eSERIAL);
+}
+
+void csPacketRemovePartyMembers::send( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	count = members->size();
+	size = headerSize + count*sizeof(eSERIAL);
+	Xsend( s, getBeginValid(), headerSize );
+
+	std::vector<P_PARTY_MEMBER>::iterator iter( members->begin() ), end( members->end () );
+	for( ; iter!=end; ++iter ) {
+		eSERIAL b = (*iter)->serial;
+		Xsend( s, &b, sizeof( eSERIAL ) );
+	}
+}
+
+clPacketPartyTellMessage::clPacketPartyTellMessage()
+{
+	subsubcommand = 3;
+}
+
+void clPacketPartyTellMessage::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	offset=headerSize;
+	getFromSocket( s, (char*)&this->member, sizeof(eSERIAL) );
+	getUnicodeStringFromSocket( s, message );
+
+}
+
+csPacketPartyTellMessage::csPacketPartyTellMessage()
+{
+	subsubcommand = 3;
+	headerSize += sizeof( eSERIAL );
+}
+
+void csPacketPartyTellMessage::send( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	size = headerSize + message->size()*sizeof(UI16)+sizeof(UI16);
+	Xsend( s, getBeginValid(), headerSize );
+
+	Xsend( s, *message, true );
+}
+
+csPacketPartyTellAllMessage::csPacketPartyTellAllMessage()
+{
+	subsubcommand = 4;
+	headerSize += sizeof( eSERIAL );
+}
+
+void csPacketPartyTellAllMessage::send( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+
+	size = headerSize + message->size()*sizeof(UI16)+sizeof(UI16);
+	Xsend( s, getBeginValid(), headerSize );
+
+	Xsend( s, *message, true );
+}
+
+
+clPacketPartyTellAllMessage::clPacketPartyTellAllMessage()
+{
+	subsubcommand = 4;
+}
+
+void clPacketPartyTellAllMessage::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+	
+	this->offset = headerSize;
+	getUnicodeStringFromSocket( s, message );
+}
+
+clPacketPartyCanLoot::clPacketPartyCanLoot()
+{
+	subsubcommand = 6;
+}
+
+void clPacketPartyCanLoot::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+	
+	this->offset = headerSize;
+	this->getFromSocket( s, (char*)&this->canLoot, sizeof(eBool) );
+}
+
+csPacketPartyInvite::csPacketPartyInvite()
+{
+	subsubcommand = 7;
+	headerSize += sizeof(eSERIAL);
+}
+
+void csPacketPartyInvite::send( NXWCLIENT ps )
+{
+	if( ps==NULL )
+		return;
+
+	size=headerSize;
+	Xsend( ps->toInt(), getBeginValid(), headerSize );
+}
+
+clPacketPartyAccept::clPacketPartyAccept()
+{
+	subsubcommand = 8;
+}
+
+void clPacketPartyAccept::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+	
+	this->offset = headerSize;
+	this->getFromSocket( s, (char*)&this->leader, sizeof(eSERIAL) );
+}
+
+clPacketPartyDecline::clPacketPartyDecline()
+{
+	subsubcommand = 9;
+}
+
+void clPacketPartyDecline::receive( NXWCLIENT ps )
+{
+	if( ps==NULL ) return;
+	NXWSOCKET s = ps->toInt();
+	
+	this->offset = headerSize;
+	this->getFromSocket( s, (char*)&this->leader, sizeof(eSERIAL) );
+}
+
+
+
 
 

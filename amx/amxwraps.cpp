@@ -41,6 +41,7 @@
 #include "skills.h"
 #include "utils.h"
 #include "jail.h"
+#include "party.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -68,6 +69,9 @@ NATIVE2(_setMenuProperty);
 NATIVE2(_getMenuProperty);
 NATIVE2(_getRaceProperty);
 NATIVE2(_getRaceGlobalProp);
+NATIVE2(_party_getProperty );
+NATIVE2(_party_setProperty );
+
 
 int g_nCurrentSocket;
 int g_nTriggeredItem;
@@ -267,8 +271,10 @@ NATIVE(_mnu_Prepare)
 	P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
 
-	if(pc->custmenu!=INVALID)
+	if(pc->custmenu!=INVALID) {
 		Menus.removeMenu( pc->custmenu, pc );
+		pc->custmenu=INVALID;
+	}
 
 	P_OLDMENU menu = (P_OLDMENU)Menus.insertMenu( new cOldMenu() );
 	pc->custmenu = menu->serial;
@@ -582,19 +588,54 @@ NATIVE(_ncprintf)
 NATIVE(_sysmessage)
 {
 
-	NXWCLIENT ps = getClientFromSocket(params[1]);
-	if( ps==NULL )
-		return 0;
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, false );
 
 	cell *cstr;
 	amx_GetAddr(amx,params[3],&cstr);
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
+	
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )
+		return false;
+
 	ps->sysmsg( params[2], g_cAmxPrintBuffer );
-	return 1;
+	return true;
 
 }
+
+/*
+\brief Send a sysmessage to given socket using given color, text is translated
+\author Endymion
+\param 1 socket
+\param 2 color
+\param 3 text to 
+\return 1 or 0 if error
+*/
+NATIVE(_sysmessageT)
+{
+
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, false );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[3],&cstr);
+	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )
+		return false;
+
+	ps->sysmsg( params[2], TRANSLATE( g_cAmxPrintBuffer ) );
+	return true;
+
+}
+
+
 /*
 \brief get the socket used by the given char
 \author Xanathar
@@ -5763,6 +5804,165 @@ NATIVE( _target_do )
 }
 
 
+//
+// New Party API 
+//
+
+/*!
+\brief Create a new party
+\author Endymion
+\since 0.82
+\param 1 leader
+\return the party serial
+*/
+NATIVE( _party_create )
+{
+	P_CHAR leader = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( leader, INVALID );
+
+	P_PARTY party = Partys.createParty();
+	party->addMember( leader );
+
+	return party->serial;
+}
+
+/*!
+\brief Add given member to party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 new member
+\return true or false if error
+*/
+NATIVE( _party_addMember )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return false;
+	
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	party->addMember( pc );
+	return true;
+}
+
+
+/*!
+\brief Remove given member from party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 member to remove
+\return true or false if error
+*/
+NATIVE( _party_delMember )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return false;
+	
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	party->removeMember( pc );
+	return true;
+}
+
+/*!
+\brief add a new candidate to given party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 the leader
+\param 3 new candidate
+\return true or false if error
+*/
+NATIVE( _party_addCandidate )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return false;
+	
+	P_CHAR leader = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( leader, false );
+
+	P_CHAR cand = pointers::findCharBySerial( params[3] );
+	VALIDATEPCR( cand, false );
+
+	party->addCandidate( leader, cand );
+	return true;
+}
+
+/*!
+\brief Remove given candidate from party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 member to remove
+\return true or false if error
+*/
+NATIVE( _party_delCandidate )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return false;
+	
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	party->removeCandidate( pc->getSerial32() );
+	return true;
+}
+
+/*!
+\brief Check if given character is candidate to party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 member to remove
+\return true or false if error
+*/
+NATIVE( _party_isCandidate )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return false;
+	
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	return party->isCandidate( pc->getSerial32() );
+
+}
+
+/*!
+\brief Send given message to all members of party
+\author Endymion
+\since 0.82
+\param 1 the party
+\param 2 color
+\param 3 message
+\return INVALID if error
+*/
+NATIVE( _party_broadcast )
+{
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+		return INVALID;
+
+	cell *cstr;
+	amx_GetAddr(amx,params[3],&cstr);
+	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	
+	std::wstring w;
+	string2wstring( std::string( g_cAmxPrintBuffer ), w );
+	party->talkToAll( w, params[2] );
+
+	return true;
+}
 
 
 /*!
@@ -6180,6 +6380,16 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "target_do",	_target_do },
 // { "target_getProperty", _target_getProperty },
 // { "target_setProperty", _target_getProperty },
+// party functions - Endymion
+ { "party_create",	_party_create },
+ { "party_addMember",	_party_addMember },
+ { "party_delMember",	_party_delMember },
+ { "party_addCandidate",	_party_addCandidate },
+ { "party_delCandidate",	_party_delCandidate },
+ { "party_isCandidate",	_party_isCandidate },
+ { "party_getProperty",	_party_getProperty },
+ { "party_setProperty",	_party_setProperty },
+ { "party_broadcast",	_party_broadcast },
 // Terminator :
  { NULL, NULL }
 };

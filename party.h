@@ -14,99 +14,74 @@
 #include "oldmenu.h"
 #include "target.h"
 
+#include <list>
 
-namespace PartySystem
+#define PARTY_BROADCAST_COLOR 0
+#define PARTY_PRIVATE_COLOR 0
+
+class cParty
 {
-
-	extern int g_nPartyShareKarma;
-	extern int g_nPartyShareFame;
-	extern int g_nPartyCanPMsg;
-	extern int g_nPartyCanBroadcast;
-
-
-	#define NET_ADDMEMBER 1
-	#define NET_DELMEMBER 2
-	#define NET_MESSAGE   3
-	#define NET_BROADCAST 4
-	#define NET_LOOTMODE  6
-
-
-	void target_party( NXWCLIENT ps, P_TARGET t );
-	void processInputPacket( NXWCLIENT ps );
-	void askPartyPermission( NXWCLIENT ps );
-
-
-}
-
-
-	class cPartyMenu : public cOldMenu {
+	
+	private:
+		void sendToAllMember( P_SERVER_PACKET pkg );
 	
 	public:
-		
-		cPartyMenu();
-		~cPartyMenu();
+		std::vector< P_PARTY_MEMBER >	members;	//!< all members
+		std::vector< SERIAL > candidates;	//!< all candidates
 
-		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
-		
-	};
+		SERIAL serial;	//!< party serial
 
-
-	typedef std::vector< SERIAL > MEMBER_LIST;
-
-	class cParty
-	{
-		protected:
-			MEMBER_LIST members;
-		public:
-			cParty( SERIAL ser );
-			~cParty();
-
-			SERIAL serial;	//!< party serial
+		cParty();
+		~cParty();
 			
-			bool addMember( P_CHAR pc );
-			void removeMember( P_CHAR pc );
-			void kickMember( P_CHAR pc );
-			void eraseAllMembers();
-			bool isMember( P_CHAR pc );
-			bool isLeader( P_CHAR pc );
-			P_CHAR getLeader();
-			UI32 membersNumber();
+		void addMember( P_CHAR member );
+		void removeMember( P_CHAR member );
+		P_PARTY_MEMBER getMember( SERIAL member );
 
-			void talkToOthers( std::string s );
+		SERIAL getLeader();
+
+		void addCandidate( P_CHAR leader, P_CHAR candidate );
+		void removeCandidate( SERIAL serial );
+		bool isCandidate( SERIAL serial );
+
+		void privateMessage( SERIAL from, SERIAL to, std::wstring& s, COLOR color=PARTY_PRIVATE_COLOR );
+		void talkToOthers( SERIAL from, std::wstring& s, COLOR color=PARTY_BROADCAST_COLOR );
+		void talkToAll( std::wstring& s, COLOR color=PARTY_BROADCAST_COLOR );
 			
-			void sendPartyList( NXWCLIENT ps );
-			void sendPartyListAll();
-			void sendEmptyList( NXWCLIENT ps );
-	};
+};
 
+class cPartyMember {
+	
+public:
 
-	typedef std::map< SERIAL, cParty> PARTY_LIST;
+	SERIAL serial;
+	bool canLoot;
 
-	class cPartys {
-		private:
-			PARTY_LIST partylist;	//!< All party
-			UI32 nextparty;	//!< next party free
+	cPartyMember( SERIAL member );
 
-		public:
-			cPartys();
-			~cPartys();
+};
 
-			SERIAL newParty();
+class cPartys {
 
-			bool addMember( SERIAL party, P_CHAR pc );
-			void removeMember( P_CHAR pc );
-			void kickMember( P_CHAR pc );
+	private:
+		std::map< SERIAL, P_PARTY > partys;	//!< all partys
+		SERIAL currentSerial;	//!< current serial
+	public:
+		bool shareKarma;
+		bool shareFame;
+		bool canPMsg;
+		bool canBroadcast;
 
-			bool isMember( SERIAL party, P_CHAR pc );
-			bool isLeader( SERIAL party, P_CHAR pc );
+		P_PARTY	createParty( );
+		P_PARTY	getParty( SERIAL serial );
+		void removeParty( SERIAL serial );
+		void recive( NXWCLIENT ps );
 
-			P_CHAR getLeader( SERIAL party );
+		cPartys();
+		~cPartys();
 
-			void talkToOthers( P_CHAR pc, std::string s );
-			UI32 membersNumber( P_CHAR pc );
+};
 
-	};
-
-extern cPartys* Partys;
+extern cPartys Partys;
 
 #endif //__PARTY_H__

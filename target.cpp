@@ -19,7 +19,7 @@ SERIAL cTarget::serial_current = 0;
 
 cTarget::cTarget( bool selectLocation )
 {
-	pkg.type = selectLocation;
+	this->type = selectLocation;
 	this->serial= ++serial_current;
 }
 
@@ -29,14 +29,27 @@ cTarget::~cTarget()
 
 void cTarget::send( NXWCLIENT ps )
 {
+	cPacketTargetingCursor< cServerPacket > pkg;
+	pkg.type = this->type;
+	pkg.cursor = this->serial;
 	pkg.send( ps );
+}
+
+void cTarget::receive( NXWCLIENT ps )
+{
+	cPacketTargetingCursor<cClientPacket> pkg;
+	pkg.receive( ps );
+
+	this->clicked = pkg.clicked.get();
+	this->model= pkg.model.get();
+	this->loc = Loc( pkg.x.get(), pkg.y.get(), pkg.z );
 }
 
 bool cTarget::isValid()
 {
-	if( pkg.type=1 && ( ( pkg.x.get()==UINVALID16 ) || ( pkg.y.get()==UINVALID16 ) ) )
+	if( type=1 && ( ( loc.x==UINVALID16 ) || ( loc.y==UINVALID16 ) ) )
 		return false;
-	if( pkg.type=0 && ( ( pkg.clicked.get()==0 ) && ( pkg.model.get()== 0 ) ) )
+	if( type=0 && ( ( clicked==0 ) && ( model== 0 ) ) )
 		return false;
 	return true;
 }
@@ -47,17 +60,17 @@ void cTarget::error( NXWCLIENT ps )
 
 Location cTarget::getLocation()
 {
-	return Loc( pkg.x.get(), pkg.y.get(), pkg.z );
+	return loc;
 }
 
 SERIAL cTarget::getClicked()
 {
-	return pkg.clicked.get();
+	return clicked;
 }
 
 UI16 cTarget::getModel()
 {
-	return pkg.model.get();
+	return model;
 }
 
 
@@ -71,7 +84,7 @@ cObjectTarget::~cObjectTarget()
 
 bool cObjectTarget::isValid()
 {
-	return ( pkg.type==0 );
+	return ( type==0 );
 }
 
 void cObjectTarget::error( NXWCLIENT ps )
@@ -89,7 +102,7 @@ cCharTarget::~cCharTarget()
 
 bool cCharTarget::isValid()
 {
-	return ( pkg.type==0 ) && ( isCharSerial( pkg.clicked.get() ) && ( MAKE_CHAR_REF( pkg.clicked.get() )!=NULL ) );
+	return ( type==0 ) && ( isCharSerial( clicked ) && ( MAKE_CHAR_REF( clicked )!=NULL ) );
 }
 
 void cCharTarget::error( NXWCLIENT ps )
@@ -107,7 +120,7 @@ cItemTarget::~cItemTarget()
 
 bool cItemTarget::isValid()
 {
-	return ( pkg.type==0 ) && ( isItemSerial( pkg.clicked.get() ) && MAKE_ITEM_REF( pkg.clicked.get() )!=NULL );
+	return ( type==0 ) && ( isItemSerial( clicked ) && MAKE_ITEM_REF( clicked )!=NULL );
 }
 
 void cItemTarget::error( NXWCLIENT ps )
@@ -125,7 +138,7 @@ cLocationTarget::~cLocationTarget()
 
 bool cLocationTarget::isValid()
 {
-	return ( pkg.type==1 ) && ( ( pkg.x.get()!=UINVALID16 ) && ( pkg.y.get()!=UINVALID16 ) );
+	return ( type==1 ) && ( ( loc.x!=UINVALID16 ) && ( loc.y!=UINVALID16 ) );
 }
 
 void cLocationTarget::error( NXWCLIENT ps )
@@ -322,7 +335,7 @@ void TargetLocation::extendItemTarget()
 // Changes           : none yet
 TargetLocation::TargetLocation( P_TARGET pp )
 {
-	if( pp->pkg.type==0 ) {
+	if( pp->type==0 ) {
 
 		P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
 		if(ISVALIDPC(pc)) {
@@ -336,7 +349,7 @@ TargetLocation::TargetLocation( P_TARGET pp )
 			return;
 		}
 	}
-	else if( pp->pkg.type==1 ) {
+	else if( pp->type==1 ) {
 		Location loc = pp->getLocation();
 		init( loc.x, loc.y, loc.z );
 		return;

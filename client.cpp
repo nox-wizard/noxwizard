@@ -337,11 +337,11 @@ void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
             if(strcmp(token, "LAST")==0) {
                 if(warn==NULL) {
 					if(cmd->targetingMask && TARG_LAST) {
-						if(!targets.empty()) {
+						/*if(!targets.empty()) {
                             currentCommand= currentCommand->nextStep;
 							needtargets= true;
 						} else
-                            warn= "There's no last target available.";
+                            warn= "There's no last target available.";*/
                     } else
                         warn= "Last target not supported by the command: %s";
                 }
@@ -351,7 +351,6 @@ void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
 						P_CHAR self = MAKE_CHAR_REF( currchar[toInt()] );
 						if(!needtargets) {
 							needtargets= true;
-							targets.clear();
 						}
 						//receiveTarget(*new TargetLocation(self));
 						currentCommand= currentCommand->nextStep;
@@ -365,8 +364,6 @@ void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
         }
         if(warn)
             sysmsg(warn, cmd->cmd_name);
-		if(!needtargets)
-			targets.clear();
         continueCommand();
     } else
       	sysmsg("Command inconsistency error: please call a GM.");

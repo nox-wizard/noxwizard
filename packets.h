@@ -77,14 +77,6 @@ public:
 } PACK_NEEDED;
 
 
-class cServerClientPacket : public cClientPacket, public cServerPacket
-{
-protected:
-	char* getBeginValidForReceive();
-public:
-	virtual void receive( NXWCLIENT ps );
-} PACK_NEEDED;
-
 typedef cPacket* P_PACKET;	//!< pointer to cPacket
 typedef cClientPacket* P_CLIENT_PACKET;	//!< pointer to cClientPacket
 typedef cServerPacket* P_SERVER_PACKET;	//!< pointer to cServerPacket
@@ -1873,6 +1865,12 @@ public:
 
 //@}
 
+//@{
+/*!
+\name target packets
+\brief target related packets
+*/
+
 #define PKG_QUEST_ARROW 0xBA;
 
 /*!
@@ -1893,6 +1891,7 @@ public:
 
 };
 
+
 #define PKG_TARGETING 0x6C;
 /*!
 \brief Targeting Cursor Commands
@@ -1901,7 +1900,8 @@ public:
 \note 0x6C
 \remarks the model number shouldn’t be trusted
 */
-class cPacketTargetingCursor : public cServerClientPacket {
+template< class T >
+class cPacketTargetingCursor : public T {
 
 public:
 
@@ -1920,6 +1920,260 @@ public:
 	cPacketTargetingCursor();
 
 } PACK_NEEDED;
+
+//@}
+
+//@{
+/*!
+\name party packets
+\brief party related packets
+*/
+
+
+#define PKG_GENERAL_INFO 0xBF;
+
+/*!
+\brief General info packet
+\author Endymion
+\since 0.83
+\note 0xBF
+*/
+template< class T >
+class cPacketGeneralInfo : public T {
+
+protected:
+	eUI16 size;	//<! size
+	eUI16 subcmd;	//!< the subcmd
+public:
+	cPacketGeneralInfo();
+
+};
+
+#define GEN_INFO_SUBCMD_PARTY 6
+
+/*!
+\brief Party packets
+\author Endymion
+\since 0.83
+\note 0xBF - 6
+*/
+template< class T >
+class cSubPacketParty : public cPacketGeneralInfo<T> {
+public:
+	eUI08 subsubcommand;
+
+	cSubPacketParty();
+};
+
+#define PARTY_SUBCMD_ADD 1
+
+/*!
+\brief Add a new member to party
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 1
+*/
+class clPacketAddPartyMember : public cSubPacketParty< cClientPacket > {
+public:
+	eUI32 member; //!< the member, if 0 the targeting cursor appears
+
+	clPacketAddPartyMember();
+	void receive( NXWCLIENT ps );
+};
+
+/*!
+\brief Send all party members after an add
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 1
+*/
+class csPacketAddPartyMembers : public cSubPacketParty< cServerPacket > {
+private:
+	eUI08 count;	//!< members count
+public:
+	std::vector<P_PARTY_MEMBER>* members;
+	void send( NXWCLIENT ps );
+
+	csPacketAddPartyMembers();
+
+};
+
+#define PARTY_SUBCMD_REMOVE 2
+
+/*!
+\brief Remove a member to party
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 2
+*/
+class clPacketRemovePartyMember : public cSubPacketParty< cClientPacket > {
+public:
+	eUI32 member; //!< the member, if 0 the targeting cursor appears
+
+	clPacketRemovePartyMember();
+	void receive( NXWCLIENT ps );
+};
+
+/*!
+\brief Remove a member to party, and resend list
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 2
+*/
+class csPacketRemovePartyMembers : public cSubPacketParty< cServerPacket > {
+private:
+	eUI08 count;	//!< members count
+public:
+	eUI32 member; //!< the member removed
+	std::vector<P_PARTY_MEMBER>* members; //!< all members
+
+	csPacketRemovePartyMembers();
+	void send( NXWCLIENT ps );
+
+};
+
+#define PARTY_SUBCMD_MESSAGE 3
+
+/*!
+\brief Tell to a party member a message
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 3
+\note message is NULL terminated
+*/
+class clPacketPartyTellMessage : public cSubPacketParty< cClientPacket > {
+public:
+	eSERIAL member; //!< to member
+	std::wstring message; //!< the message
+
+	clPacketPartyTellMessage();
+	void receive( NXWCLIENT ps );
+
+};
+
+/*!
+\brief Tell to a party member a message
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 3
+\note message is NULL terminated
+*/
+class csPacketPartyTellMessage : public cSubPacketParty< cServerPacket > {
+public:
+	eSERIAL member; //!< from member
+	std::wstring* message; //!< the message
+
+	csPacketPartyTellMessage();
+	void send( NXWCLIENT ps );
+
+};
+
+#define PARTY_SUBCMD_BROADCAST 4
+
+/*!
+\brief Tell to all party members a message
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 4
+\note message is NULL terminated
+*/
+class csPacketPartyTellAllMessage : public cSubPacketParty< cServerPacket > {
+public:
+	eSERIAL from; //!< from member
+	std::wstring* message; //!< the message
+
+	csPacketPartyTellAllMessage();
+	void send( NXWCLIENT ps );
+
+};
+
+/*!
+\brief Tell to all party members a message
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 4
+\note message is NULL terminated
+*/
+class clPacketPartyTellAllMessage : public cSubPacketParty< cClientPacket > {
+public:
+	std::wstring message; //!< the message
+
+	clPacketPartyTellAllMessage();
+	void receive( NXWCLIENT ps );
+
+};
+
+#define PARTY_SUBCMD_CANLOOT 6
+
+/*!
+\brief Other party memeber can loot this
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 6
+*/
+class clPacketPartyCanLoot : public cSubPacketParty< cClientPacket > {
+public:
+	eBool canLoot; //!< other member can loot this
+
+	clPacketPartyCanLoot();
+	void receive( NXWCLIENT ps );
+};
+
+#define PARTY_SUBCMD_INVITE 7
+
+/*!
+\brief Accept party invitation
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 7
+*/
+class csPacketPartyInvite : public cSubPacketParty< cServerPacket > {
+public:
+	eSERIAL leader; //!< party leader
+
+	csPacketPartyInvite();
+	void send( NXWCLIENT ps );
+};
+
+#define PARTY_SUBCMD_ACCEPT 8
+
+/*!
+\brief Accept party invitation
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 8
+*/
+class clPacketPartyAccept : public cSubPacketParty< cClientPacket > {
+public:
+	eSERIAL leader; //!< party leader
+
+	clPacketPartyAccept();
+	void receive( NXWCLIENT ps );
+};
+
+#define PARTY_SUBCMD_DECLINE 9
+
+/*!
+\brief Decline party invitation
+\author Endymion
+\since 0.83
+\note 0xBF - 6 - 9
+*/
+class clPacketPartyDecline : public cSubPacketParty< cClientPacket > {
+public:
+	eSERIAL leader; //!< party leader
+
+	clPacketPartyDecline();
+	void receive( NXWCLIENT ps );
+};
+
+
+
+
+
+
+
+//@}
 
 
 #endif

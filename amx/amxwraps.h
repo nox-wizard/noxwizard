@@ -251,6 +251,7 @@ const int NXW_CP_I_CX = 316;
 const int NXW_CP_I_CY = 317;
 const int NXW_CP_I_CZ = 318;
 const int NXW_CP_I_LASTMOVETIME = 319;
+const int NXW_CP_I_PARTY = 320;
 
 const int NXW_CP_S_BASESKILL = 400;
 const int NXW_CP_S_SKILL = 401;
@@ -483,6 +484,17 @@ const int RP_STR_NAME = 450;
 const int RP_STR_DESCRIPTION = 451;
 const int RP_STR_WEBLINK = 452;
 const int RP_STR_WEBROOT = 453;
+
+///
+/// Party constants
+///
+
+const int PP_B_CANLOOT = 0;
+
+const int PP_C_MEMBERS = 100;
+const int PP_C_CANDIDATES = 101;
+
+const int PP_I_LEADER = 200;
 
 
 

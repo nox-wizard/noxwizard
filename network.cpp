@@ -362,7 +362,16 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 	if( ISVALIDPC( pc ) )
 		if ( pc->IsOnline() )
 		{
+
 			LogOut( socket );
+
+
+			if( pc->party!=INVALID ) {
+				P_PARTY party = Partys.getParty( pc->party );
+				if( party!=NULL )
+					party->removeMember( pc );
+			}
+
 
 			SERIAL pc_serial = pc->getSerial32();
 
@@ -393,7 +402,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		if( pc->murderrate>uiCurrentTime ) //save murder decay
 			pc->murdersave= (pc->murderrate -uiCurrentTime) / MY_CLOCKS_PER_SEC;
 
-		Partys->removeMember( pc );
 	}
 
 	currchar[ socket ] = INVALID;
@@ -1716,7 +1724,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					if( target==NULL )
 						return;
 
-					target->pkg.receive( ps );
+					target->receive( ps );
 
 					if( !target->isValid() )
 						target->error( ps );
@@ -2081,13 +2089,13 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 					subcommand = ShortFromCharPtr(buffer[s] +3);
 
-				// please don't remove the // unknowns ... want to have them as dokumentation
+					// please don't remove the // unknowns ... want to have them as dokumentation
 					switch (subcommand)
 					{
 						case 5: break; // unknown, sent once on login
 
-				   		case 6:
-							PartySystem::processInputPacket(ps);
+				   		case GEN_INFO_SUBCMD_PARTY:
+							Partys.recive( ps );
 							break;
 
 						case 9:	//Luxor: Wrestling Disarm Macro support

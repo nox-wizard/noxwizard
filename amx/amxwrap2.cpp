@@ -35,6 +35,7 @@
 #include "chars.h"
 #include "race.h"
 #include "layer.h"
+#include "party.h"
 
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
@@ -1834,6 +1835,7 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_CY, pc->getPosition().y ) 			//dec value: 317
 		CHECK(  NXW_CP_I_CZ, pc->getPosition().z ) 			//dec value: 318
 		CHECK(  NXW_CP_I_LASTMOVETIME, pc->LastMoveTime)		//dec value: 319
+		CHECK(  NXW_CP_I_PARTY, pc->party )		//dec value: 320
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return INVALID;
@@ -2638,6 +2640,13 @@ NATIVE2(_getMenuProperty)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////// RACE PROPERTY /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 
 NATIVE2(_getRaceProperty)
@@ -2883,3 +2892,270 @@ NATIVE2(_getRaceGlobalProp)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////// PARTY PROPERTY /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+NATIVE2( _party_setProperty )
+{
+	// params[1] = party
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+	{
+		LogError( "party_setProperty called with invalid party %d", params[1] );
+		return INVALID;
+	}
+
+	cell* cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+		int p = *cptr;
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+
+		return p;
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p = *cptr? true : false;
+
+		switch( params[2] )
+		{
+			case PP_B_CANLOOT : {
+				P_PARTY_MEMBER member = party->getMember( params[3] );
+				if( member==NULL )
+					return p;
+				else 
+					member->canLoot = p;
+				break;
+			}
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p = static_cast<short>(*cptr & 0xFFFF);
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p = static_cast<char>(*cptr & 0xFF);
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring w;
+		amx_GetStringUnicode( w, cptr );
+
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("party_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default: 
+		return INVALID;
+	}
+}
+
+
+
+NATIVE2( _party_getProperty )
+{
+
+	// params[1] = party
+	// params[2] = property
+	// params[3] = subproperty
+
+	P_PARTY party = Partys.getParty( params[1] );
+	if( party==NULL )
+	{
+		LogError( "party_getProperty called with invalid party %d", params[1] );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[2]) {
+			case PP_I_LEADER: {
+				p = party->getLeader();
+				break;
+			}
+			default:
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p;
+		switch(params[2]) {
+
+			case PP_B_CANLOOT: {
+				P_PARTY_MEMBER member = party->getMember( params[3] );
+				p = (member!=NULL)? member->canLoot : false;
+			}
+			break;
+
+			default:
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[2]) {
+			case PP_C_MEMBERS:
+				p=party->members.size();
+				break;
+			case PP_C_CANDIDATES:
+				p=party->candidates.size();
+				break;
+			default:
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case INVALID :		
+			default :
+				ErrOut("party_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}

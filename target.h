@@ -26,10 +26,17 @@ private:
 
 	static SERIAL serial_current;
 
+protected:
+
+	Location loc;
+	UI16 model;
+	SERIAL clicked;
+
 public:
 
 	SERIAL serial;
-	cPacketTargetingCursor pkg;
+	bool type;
+
 	SERIAL buffer[4];
 	std::string buffer_str[4];
 	AmxFunction* amx_callback;
@@ -39,6 +46,7 @@ public:
 	~cTarget();
 
 	void send( NXWCLIENT ps );
+	void receive( NXWCLIENT ps );
 	virtual bool isValid();
 	virtual void error( NXWCLIENT ps );
 
