@@ -326,7 +326,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	targetcallback = INVALID;
 
 	statGainedToday = 0;	//Luxor
-	resetSpeechCurrent(); //Endymion
+	//resetSpeechCurrent(); //Endymion
+	speechCurrent = NULL; //Luxor
 	resetProfile();
 	staticProfile=NULL;
 }
@@ -4837,7 +4838,7 @@ cUnicodeString* cChar::getProfile()
 void cChar::setProfile( cUnicodeString* profile )
 {
 	if( this->profile!=NULL )
-		delete this->profile;
+		safedelete(this->profile);
 	this->profile=profile;
 }
 

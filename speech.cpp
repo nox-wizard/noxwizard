@@ -2090,11 +2090,11 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 				speechGhostUni=new cUnicodeString();
 				makeGhost( pc->getSpeechCurrent(), speechGhostUni );
 			}
-			pc->setSpeechCurrent( speechGhostUni );
+			pc->setSpeechCurrent( new cUnicodeString(speechGhostUni) );
 			ghost=true;
 		}
 		else
-			pc->setSpeechCurrent( speechUni );
+			pc->setSpeechCurrent( new cUnicodeString(speechUni) );
 
 		/*
 		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
@@ -2111,7 +2111,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	}
 
 
-	safedelete(speechUni);
+	//safedelete(speechUni);
 	pc->resetSpeechCurrent();
 	if( speechGhostUni!=NULL )
 		safedelete(speechGhostUni);
