@@ -1909,7 +1909,7 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 		return false;
 	}
 
-	if (hidden == HIDDEN_BYSPELL) {	//Luxor: cannot do magic gestures if under invisible spell
+	if ( pc->hidden == HIDDEN_BYSPELL ) {	//Luxor: cannot do magic gestures if under invisible spell
 		pc->sysmsg(TRANSLATE("You cannot cast by invisible."));
 		return false;
 	}
