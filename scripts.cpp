@@ -117,7 +117,7 @@ void readw3 ()
 
 /*!
 \brief Gets the token number num in the passed string
-\author Unknown, ported to std::string by Akron
+\author Sparhawk, ported to std::string by Akron
 \param s the string to get the token from
 \param num 0-based index of the token
 */
@@ -241,5 +241,29 @@ void splitLine( char* source, char *head, char *tail )
     ++tailIndex;
   }
   *tailIndex = '\0';
+}
+
+void splitLine( const std::string& source, std::string& head, std::string& tail )
+{
+  SI32 index		= 0;
+  SI32 sourceEnd	= source.size();
+
+  while ( (index < sourceEnd) && isspace(source[index]) )
+    ++index;
+
+  while ((index < sourceEnd) && !isspace(source[index]) )
+  {
+    head += source[index];
+    ++index;
+  }
+
+  while ( (index < sourceEnd) && isspace(source[index]) )
+    ++index;
+
+  while ((index < sourceEnd))
+  {
+    tail += source[ index ];;
+    ++index;
+  }
 }
 

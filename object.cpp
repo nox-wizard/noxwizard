@@ -609,7 +609,16 @@ void cObject::setCurrentName( const char *str )
 {
 	current_name = string(str);
 }
-
+/*!
+\brief Set the secondary name of object
+\author Sparhawk
+\since 0.82a
+\param string s, the new name
+*/
+void cObject::setSecondaryName( string s )
+{
+	secondary_name = s;
+}
 /*!
 \brief Set the secondary name of the object
 \author Anthalir, rewritten by Luxor

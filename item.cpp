@@ -37,12 +37,14 @@ namespace item
 	*/
 	P_ITEM CreateFromScript( SCRIPTID itemnum, cObject* cont )
 	{
-		char sect[512];
-		char script1[1024];
-		char script2[1024];
-		cScpIterator* iter = NULL;
-		int tmp, loopexit = 0;
-		tile_st tile;
+		char 		sect[512];
+		std::string 	lha;
+		std::string 	rha;
+
+		cScpIterator* 	iter = NULL;
+		int 		tmp;
+
+		LOGICAL 	finished = false;
 
 		sprintf(sect, "SECTION ITEM %i", itemnum);
 
@@ -62,308 +64,278 @@ namespace item
 
 		do
 		{
-			iter->parseLine(script1, script2);
-			if ((script1[0]!='}')&&(script1[0]!='{'))
+			iter->parseLine( lha, rha );
+			switch ( lha[0])
 			{
-				switch (script1[0])
-				{
-					case '@':
-						if(!LoadItemEventsFromScript(pi,script1,script2))
-							WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-					case 'A':
-					case 'a':
-						if (!strcmp("AMOUNT", script1))	 pi->amount = str2num(script2);
-						else if (!strcmp("ATT", script1)) pi->att = getRangedValue(script2);
-						//
-						// Old style user variables
-						//
-						else if (!strcmp("AMXFLAG0", script1)) amxVS.insertVariable( pi->getSerial32(), 0, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG1", script1)) amxVS.insertVariable( pi->getSerial32(), 1, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG2", script1)) amxVS.insertVariable( pi->getSerial32(), 2, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG3", script1)) amxVS.insertVariable( pi->getSerial32(), 3, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG4", script1)) amxVS.insertVariable( pi->getSerial32(), 4, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG5", script1)) amxVS.insertVariable( pi->getSerial32(), 5, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG6", script1)) amxVS.insertVariable( pi->getSerial32(), 6, str2num( script2 ) );
-						else if (!strcmp("AMXFLAG7", script1)) amxVS.insertVariable( pi->getSerial32(), 7, str2num( script2 ) );
-						//
-						// New style user variables
-						//
-						else if ( !strcmp( "AMXINT", script1 ) )
+				case '{':
+					break;
+				case '}':
+					finished = true;
+					break;
+				case '@':
+					if( !LoadItemEventsFromScript( pi, const_cast<char*>(lha.c_str()), const_cast<char*>(rha.c_str()) ) )
+						WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'A':
+					if ( lha == "AMOUNT" )	 pi->amount = str2num(rha);
+					else if ( lha == "ATT" ) pi->att = getRangedValue(const_cast<char*>(rha.c_str()));
+					//
+					// Old style user variables
+					//
+					else if ( lha == "AMXFLAG0" ) amxVS.insertVariable( pi->getSerial32(), 0, str2num( rha ) );
+					else if ( lha == "AMXFLAG1" ) amxVS.insertVariable( pi->getSerial32(), 1, str2num( rha ) );
+					else if ( lha == "AMXFLAG2" ) amxVS.insertVariable( pi->getSerial32(), 2, str2num( rha ) );
+					else if ( lha == "AMXFLAG3" ) amxVS.insertVariable( pi->getSerial32(), 3, str2num( rha ) );
+					else if ( lha == "AMXFLAG4" ) amxVS.insertVariable( pi->getSerial32(), 4, str2num( rha ) );
+					else if ( lha == "AMXFLAG5" ) amxVS.insertVariable( pi->getSerial32(), 5, str2num( rha ) );
+					else if ( lha == "AMXFLAG6" ) amxVS.insertVariable( pi->getSerial32(), 6, str2num( rha ) );
+					else if ( lha == "AMXFLAG7" ) amxVS.insertVariable( pi->getSerial32(), 7, str2num( rha ) );
+					//
+					// New style user variables
+					//
+					else if (  lha ==  "AMXINT" )
+					{
+						std::string rha1;
+						std::string rha2;
+						splitLine( rha, rha1, rha2 );
+						amxVS.insertVariable( pi->getSerial32(), str2num( rha1 ), str2num( rha2 ) );
+					}
+					else if ( lha == "AMXSTR"  )
+					{
+						std::string rha1;
+						std::string rha2;
+						splitLine( rha, rha1, rha2 );
+						amxVS.insertVariable( pi->getSerial32(), str2num( rha1 ), rha2 );
+					}
+					else if ( lha == "ANIMID" )   pi->animSetId(hex2num(rha));
+					else if ( lha == "AUXDAMAGE" )       pi->auxdamage = str2num(rha);
+					else if ( lha == "AUXDAMAGETYPE" )   pi->auxdamagetype = static_cast<DamageType>(str2num(rha));
+					else if ( lha == "AMMO" )	pi->ammo = str2num(rha);
+					else if ( lha == "AMMOFX" )	pi->ammoFx = hex2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'C':
+					if ( lha == "COLOR" )
+					{
+						tmp = hex2num(rha);
+						pi->setColor(tmp);
+					}
+					else if ( lha == "CREATOR" )		pi->creator = rha;
+					else if ( lha == "COLORLIST" )
+					{
+						tmp = addrandomcolor(pi, const_cast<char*>(rha.c_str()));
 						{
-							splitLine( script2, script1, script3 );
-							amxVS.insertVariable( pi->getSerial32(), str2num( script1 ), str2num( script3 ) );
-						}
-						else if (!strcmp("AMXSTR", script1) )
-						{
-							splitLine( script2, script1, script3 );
-							amxVS.insertVariable( pi->getSerial32(), str2num( script1 ), script3 );
-						}
-						else if (!strcmp("ANIMID", script1))   pi->animSetId(hex2num(script2));
-						else if (!strcmp("AUXDAMAGE", script1))       pi->auxdamage = str2num(script2);
-						else if (!strcmp("AUXDAMAGETYPE", script1))   pi->auxdamagetype = static_cast<DamageType>(str2num(script2));
-						else if (!strcmp("AMMO", script1))	pi->ammo = str2num(script2);
-						else if (!strcmp("AMMOFX", script1))	pi->ammoFx = hex2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'C':
-					case 'c':
-						if (!strcmp("COLOR", script1))
-						{
-							tmp = hex2num(script2);
 							pi->setColor(tmp);
 						}
-						else if (!strcmp("CREATOR", script1))		pi->creator = script2;
-						else if (!strcmp("COLORLIST", script1))
-						{
-							tmp = addrandomcolor(pi, script2);
-							{
-								pi->setColor(tmp);
-							}
+					}
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'D':
+					if ( lha == "DAMAGE" )		pi->att = getRangedValue( const_cast<char*>(rha.c_str()) );
+					else if ( lha == "DAMAGETYPE" )
+						pi->damagetype = static_cast<DamageType>(str2num(rha));
+					else if ( lha == "DEX" )
+						pi->dx = str2num(rha);
+					else if ( lha == "DISABLED" )
+						pi->disabled = uiCurrentTime + (str2num(rha)*MY_CLOCKS_PER_SEC);// AntiChrist
+					else if ( lha == "DISABLEMSG" ) {
+						if( pi->disabledmsg!=NULL )
+							(*pi->disabledmsg) = rha;
+						else
+							pi->disabledmsg= new std::string( rha );
+					}
+					else if ( lha == "DISPELLABLE" )
+						pi->setDispellable();
+					else if ( lha == "DECAY" )
+						pi->setDecay();
+					else if ( lha == "DIR" )
+						pi->dir = str2num(rha);
+					else if ( lha == "DYE" )
+						pi->dye = str2num(rha);
+					else if ( lha == "DEXADD" )
+						pi->dx2 = str2num(rha);
+					else if ( lha == "DEF" )
+						pi->def = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'F':
+					if ( lha == "FIGHTSKILL" )
+						pi->fightskill = static_cast<Skill>(str2num(rha)); // Added by Luxor
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'G':
+					if ( lha == "GOOD" )
+						pi->good = str2num(rha); // Added by Magius(CHE)
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'H':
+					if ( lha == "HIDAMAGE" )
+						pi->hidamage = str2num(rha);
+					else if ( lha == "HP" )
+						pi->hp = getRangedValue(script2);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'I':
+					if ( lha == "ID" )
+					{
+						tmp = hex2num(rha);
+						pi->setId(tmp);
+					}
+					else if ( lha == "ITEMLIST" )
+					{
+						pi->deleteItem();
+						pi=item::CreateScriptRandomItem( const_cast<char*>(rha.c_str()), cont);
+						/*
+						if( ISVALIDPI(pi) )
+							if( strcmp( script3, "") ) //ndEndy defined amount, 1 by default
+								pi->amount=str2num( script3 );
+						*/
+
+					}
+					else if ( lha == "INT" )
+						pi->in = str2num(rha);
+					else if ( lha == "INTADD" )
+						pi->in2 = str2num(rha);
+					else if ( lha == "ITEMHAND" )
+						pi->itmhand = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'L':
+					// Sparhawk -> altered so that chars may get items on race enlistment
+					// Anthalir -> why && ( so==-1 || Race::isRaceSystemActive() ) ???
+					// this result that created item won't have layer set
+					if ( lha == "LAYER"  /*&& ( so==-1 || Race::isRaceSystemActive() )*/ )
+						pi->layer = pi->scriptlayer = str2num(rha);	//Luxor
+					else if ( lha == "LODAMAGE" )
+						pi->lodamage = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'M':
+					if ( lha == "MORE" )
+					{
+						tmp = str2num(rha);
+						pi->more1 = tmp >> 24;
+						pi->more2 = tmp >> 16;
+						pi->more3 = tmp >> 8;
+						pi->more4 = tmp%256;
+					}
+					// MORE2 may not be useful ?
+					else if ( lha == "MORE2" )
+					{
+						tmp = str2num(rha);
+						pi->moreb1 = tmp >> 24;
+						pi->moreb2 = tmp >> 16;
+						pi->moreb3 = tmp >> 8;
+						pi->moreb4 = tmp%256;
+					}
+					else if ( lha == "MOVABLE" )
+						pi->magic = str2num(rha);
+					else if ( lha == "MAXHP" )
+						pi->maxhp = str2num(rha); // by Magius(CHE)
+					else if ( lha == "MOREX" )
+						pi->morex = str2num(rha);
+					else if ( lha == "MOREY" )
+						pi->morey = str2num(rha);
+					else if ( lha == "MOREZ" )
+						pi->morez = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'N':
+					if ( lha == "NEWBIE" )
+						pi->setNewbie();
+					else if ( lha == "NAME" )
+						pi->setCurrentName(rha);
+					else if ( lha == "NAME2" )
+						pi->setSecondaryName(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'O':
+					if ( lha == "OFFSPELL" )
+						pi->offspell = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'P':
+					if ( lha == "POISONED" )
+						pi->poisoned = (PoisonType)str2num(rha);
+
+					if ( lha == "PILE" )
+
+						pi->pileable = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'R':
+					if ( lha == "RANK" )
+					{
+						pi->rank = str2num(rha); // By Magius(CHE)
+						if (pi->rank <= 0)
+							pi->rank = 10;
+					}
+					else if ( lha == "REQSKILL" )
+					{// Added by Luxor
+						int params[2];
+						fillIntArray( const_cast<char*>(rha.c_str()), params, 2, 0, 10);
+						pi->reqskill[0] = params[0];
+						pi->reqskill[1] = params[1];
+					}
+					else if ( lha == "RESISTS" )
+					{// Added by Luxor
+						int params[2];
+						fillIntArray( const_cast<char*>(rha.c_str()), params, 2, 0, 10);
+						if (params[0] < MAX_RESISTANCE_INDEX) {
+							pi->resists[params[0]] = params[1];
 						}
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'D':
-					case 'd':
-						if (!strcmp("DAMAGE", script1))		pi->att = getRangedValue(script2);
-						else if (!strcmp("DAMAGETYPE", script1))
-							pi->damagetype = static_cast<DamageType>(str2num(script2));
-						else if (!strcmp("DEX", script1))
-							pi->dx = str2num(script2);
-						else if (!strcmp("DISABLED", script1))
-							pi->disabled = uiCurrentTime + (str2num(script2)*MY_CLOCKS_PER_SEC);// AntiChrist
-						else if (!strcmp("DISABLEMSG", script1)) {
-							if( pi->disabledmsg!=NULL )
-								(*pi->disabledmsg) = script2;
-							else
-								pi->disabledmsg= new std::string( script2 );
-						}
-						else if (!strcmp("DISPELLABLE", script1))
-							pi->setDispellable();
-						else if (!strcmp("DECAY", script1))
-							pi->setDecay();
-						else if (!strcmp("DIR", script1))
-							pi->dir = str2num(script2);
-						else if (!strcmp("DYE", script1))
-							pi->dye = str2num(script2);
-						else if (!strcmp("DEXADD", script1))
-							pi->dx2 = str2num(script2);
-						else if (!strcmp("DEF", script1))
-							pi->def = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'F':
-					case 'f':
-						if (!(strcmp("FIGHTSKILL", script1)))
-							pi->fightskill = static_cast<Skill>(str2num(script2)); // Added by Luxor
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'G':
-					case 'g':
-						if (!(strcmp("GOOD", script1)))
-							pi->good = str2num(script2); // Added by Magius(CHE)
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'H':
-					case 'h':
-						if (!(strcmp("HIDAMAGE", script1)))
-							pi->hidamage = str2num(script2);
-						else if (!(strcmp("HP", script1)))
-							pi->hp = getRangedValue(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'I':
-					case 'i':
-						if (!(strcmp("ID", script1)))
-						{
-							tmp = hex2num(script2);
-							pi->setId(tmp);
-						}
-						else if (!strcmp("ITEMLIST", script1))
-						{
-							pi->deleteItem();
-							pi=item::CreateScriptRandomItem( script2, cont);
-							if( ISVALIDPI(pi) )
-								if( strcmp( script3, "") ) //ndEndy defined amount, 1 by default
-									pi->amount=str2num( script3 );
-
-						}
-						else if (!strcmp("INT", script1))
-							pi->in = str2num(script2);
-						else if (!strcmp("INTADD", script1))
-							pi->in2 = str2num(script2);
-						else if (!strcmp("ITEMHAND", script1))
-							pi->itmhand = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'L':
-					case 'l':
-						// Sparhawk -> altered so that chars may get items on race enlistment
-						// Anthalir -> why && ( so==-1 || Race::isRaceSystemActive() ) ???
-						// this result that created item won't have layer set
-						if (!strcmp("LAYER", script1) /*&& ( so==-1 || Race::isRaceSystemActive() )*/ )
-							pi->layer = pi->scriptlayer = str2num(script2);	//Luxor
-						else if (!strcmp("LODAMAGE", script1))
-							pi->lodamage = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'M':
-					case 'm':
-						if (!strcmp("MORE", script1))
-						{
-							tmp = str2num(script2);
-							pi->more1 = tmp >> 24;
-							pi->more2 = tmp >> 16;
-							pi->more3 = tmp >> 8;
-							pi->more4 = tmp%256;
-						}
-						// MORE2 may not be useful ?
-						else if (!strcmp("MORE2", script1))
-						{
-							tmp = str2num(script2);
-							pi->moreb1 = tmp >> 24;
-							pi->moreb2 = tmp >> 16;
-							pi->moreb3 = tmp >> 8;
-							pi->moreb4 = tmp%256;
-						}
-						else if (!strcmp("MOVABLE", script1))
-							pi->magic = str2num(script2);
-						else if (!strcmp("MAXHP", script1))
-							pi->maxhp = str2num(script2); // by Magius(CHE)
-						else if (!strcmp("MOREX", script1))
-							pi->morex = str2num(script2);
-						else if (!strcmp("MOREY", script1))
-							pi->morey = str2num(script2);
-						else if (!strcmp("MOREZ", script1))
-							pi->morez = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'N':
-					case 'n':
-						if (!strcmp("NEWBIE", script1))
-							pi->setNewbie();
-						else if (!strcmp("NAME", script1))
-							pi->setCurrentName(script2);
-						else if (!strcmp("NAME2", script1))
-							pi->setSecondaryName(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'O':
-					case 'o':
-						if (!strcmp("OFFSPELL", script1))
-							pi->offspell = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'P':
-					case 'p':
-						if (!strcmp("POISONED", script1))
-							pi->poisoned = (PoisonType)str2num(script2);
-
-						if (!strcmp("PILE", script1))
-
-							pi->pileable = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'R':
-					case 'r':
-						if (!strcmp("RANK", script1))
-						{
-							pi->rank = str2num(script2); // By Magius(CHE)
-							if (pi->rank <= 0)
-								pi->rank = 10;
-						}
-						else if (!(strcmp("REQSKILL", script1)))
-						{// Added by Luxor
-							int params[2];
-							fillIntArray(script2, params, 2, 0, 10);
-							pi->reqskill[0] = params[0];
-							pi->reqskill[1] = params[1];
-						}
-						else if (!(strcmp("RESISTS", script1)))
-						{// Added by Luxor
-							int params[2];
-							fillIntArray(script2, params, 2, 0, 10);
-							if (params[0] < MAX_RESISTANCE_INDEX) {
-								pi->resists[params[0]] = params[1];
-							}
-						}
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-
-					case 'S':
-					case 's':
-						if (!strcmp("SK_MADE", script1))
-							pi->madewith = str2num(script2); // by Magius(CHE)
-						else if (!strcmp("SMELT", script1))
-							pi->smelt = str2num(script2);
-						else if (!strcmp("STR", script1))
-							pi->st = str2num(script2);
-						else if (!strcmp("SPD", script1))
-							pi->spd = str2num(script2);
-						else if (!strcmp("STRADD", script1))
-							pi->st2 = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'T':
-					case 't':
-						if (!strcmp("TYPE", script1))
-							pi->type = str2num(script2);
-						else if (!strcmp("TRIGGER", script1))
-							pi->trigger = str2num(script2);
-						else if (!strcmp("TRIGTYPE", script1))
-							pi->trigtype = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'U':
-					case 'u':
-						if (!strcmp("USES", script1))
-							pi->tuses = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'V':
-
-					case 'v':
-						if (!strcmp("VISIBLE", script1))
-							pi->visible = str2num(script2);
-						else if (!strcmp("VALUE", script1))
-							pi->value = str2num(script2);
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-
-					case 'W':
-					case 'w':
-						if (!strcmp("WEIGHT", script1))
-						{
-							int anum = 3;
-							// anum=4;
-							anum = str2num(script2); // Ison 2-20-99
-							pi->weight = anum;
-						}
-						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
-						break;
-				}
+					}
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'S':
+					if ( lha == "SK_MADE" )
+						pi->madewith = str2num(rha); // by Magius(CHE)
+					else if ( lha == "SMELT" )
+						pi->smelt = str2num(rha);
+					else if ( lha == "STR" )
+						pi->st = str2num(rha);
+					else if ( lha == "SPD" )
+						pi->spd = str2num(rha);
+					else if ( lha == "STRADD" )
+						pi->st2 = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'T':
+					if ( lha == "TYPE" )
+						pi->type = str2num(rha);
+					else if ( lha == "TRIGGER" )
+						pi->trigger = str2num(rha);
+					else if ( lha == "TRIGTYPE" )
+						pi->trigtype = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'U':
+					if ( lha == "USES" )
+						pi->tuses = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'V':
+					if ( lha == "VISIBLE" )
+						pi->visible = str2num(rha);
+					else if ( lha == "VALUE" )
+						pi->value = str2num(rha);
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
+				case 'W':
+					if ( lha == "WEIGHT" )
+					{
+						pi->weight = str2num(rha);
+					}
+					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
+					break;
 			}
 		}
-		while ((script1[0] != '}') &&(++loopexit < MAXLOOPS));
+		while ( !finished );
 
 		amxVS.setUserMode();
 		pi->useAnimId=(pi->animid()!=0);
+
+		tile_st tile;
 		Map->SeekTile(pi->id(), &tile);
 
 		if (tile.flag2&0x08)

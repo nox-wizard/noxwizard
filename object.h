@@ -139,6 +139,7 @@ public:
 	void			setCurrentName(char *format, ...);
 
 	// for items
+	void 			setSecondaryName( string s );
 	const char*		getSecondaryNameC() const;
 	string			getSecondaryName() const;
 	void			setSecondaryName(const char *format, ...);
