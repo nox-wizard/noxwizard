@@ -126,7 +126,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 
 	party=INVALID;
-	privlevel = PRIVLEVEL_GUEST;
+	privLevel = PRIVLEVEL_GUEST;
 
 	setId( BODY_MALE );
 	race=INVALID;
