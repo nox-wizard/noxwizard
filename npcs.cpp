@@ -1145,41 +1145,11 @@ P_CHAR addNpc(int npcNum, int x, int y, int z) {
 
 P_CHAR SpawnRandomMonster(P_CHAR pc, char* cList, char* cNpcID)
 {
+	std::string	section( cList ),
+			sectionId( cNpcID ),
+			value( cObject::getRandomScriptValue( section, sectionId ) );
 
-
-    char sect[512];
-    int i=0,item[256]={0};
-    char script1[1024];
-    cScpIterator* iter = NULL;
-
-    sprintf(sect, "SECTION %s %s", cList, cNpcID);
-    iter = Scripts::Necro->getNewIterator(sect);
-    if (iter==NULL) return NULL;
-
-    int loopexit=0;
-    do
-    {
-        strcpy(script1, iter->getEntry()->getFullLine().c_str());       
-        if ((script1[0]!='}')&&(script1[0]!='{'))
-        {
-            item[i]=str2num(script1);
-            i++;
-        }
-    }
-    while(script1[0]!='}' && (++loopexit < MAXLOOPS) );
-
-    safedelete(iter);
-
-    if(i>0)
-    {
-        i=rand()%(i);
-        if(item[i]!=INVALID)
-        {
-            return npcs::AddRespawnNPC(pc,item[i]);
-        }
-    }
-    return NULL;
-
+	return npcs::AddRespawnNPC( pc, str2num( value ) );
 }
 
 
