@@ -246,7 +246,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "DEAD"))			{ pc->dead = true; } // dead only appears in file if it's true.
 			else if (!strcmp(script1, "DEF"))			{ pc->def=str2num(script2);}
 			else if (!strcmp(script1, "DISABLED"))		{ pc->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);}//AntiChrist
-			else if (!strcmp(script1, "DISABLEMSG"))		{ strncpy(pc->disabledmsg,script2,255);} // Added by Magius(CHE) §
+			else if (!strcmp(script1, "DISABLEMSG"))	{ pc->disabledmsg = new std::string( script2 );}
 			else if (!strcmp(script1, "DOORUSE"))			{ pc->doorUse=str2num(script2);}
 		break;
 
@@ -1516,8 +1516,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "TRIGWORD %s\n", pc->trigword);
 			//Changed by Magius(CHE) §
 			//tmpdisable=(long) pc->disabled-currenttime;
-			if (strlen(pc->disabledmsg))
-				fprintf(cWsc, "DISABLEMSG %s\n", pc->disabledmsg); // Added by Magius(CHE) §
+			if (pc->disabledmsg!=NULL)
+				fprintf(cWsc, "DISABLEMSG %s\n", pc->disabledmsg->c_str()); // Added by Magius(CHE) §
 
 			for (j=0;j<TRUESKILLS;j++)
 			{
