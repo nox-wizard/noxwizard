@@ -409,7 +409,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 		if(!ISVALIDPI(pi_2) ||pi_2== pi||pi_2==pBoat->getTiller()||pi_2==pBoat->getLeftPlank()||pi_2==pBoat->getRightPlank()||pi_2==pBoat->getHold())
 			continue;
 		Location itemPos=pi->getPosition ();
-		if (( abs(bpos.x-itemPos.x) <= xdist) && ( abs(bpos.y-itemPos.y) <= ydist) )
+		if (( abs((int)(bpos.x-itemPos.x)) <= xdist) && ( abs((int)(bpos.y-itemPos.y)) <= ydist) )
 		{
 			TurnStuff_i(pi, pi_2, dir,0);
 		}
@@ -422,7 +422,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	{
 		P_CHAR pc=charsNear.getChar();
 		Location charPos=pc->getPosition ();
-		if (( abs(bpos.x-charPos.x) <= xdist) && ( abs(bpos.y-charPos.y) <= ydist)  )
+		if (( abs((int)(bpos.x-charPos.x)) <= xdist) && ( abs((int)(bpos.y-charPos.y)) <= ydist)  )
 		{
 			TurnStuff_c(pi, pc, dir,0);
 		}
@@ -1151,8 +1151,8 @@ LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 		P_BOAT coll=iter_boat->second;
 		if(coll->getSerial() != pi->getSerial32())
 		{
-			int xx=abs(x - (int)coll->getShipLink()->getPosition("x"));
-			int yy=abs(y - (int)coll->getShipLink()->getPosition("y"));
+			int xx=abs((int)(x - (int)coll->getShipLink()->getPosition("x")));
+			int yy=abs((int)(y - (int)coll->getShipLink()->getPosition("y")));
 			double dist=hypot(xx, yy);
 			if(dist<10)
 			{
@@ -1445,7 +1445,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		if(!ISVALIDPI(pi) ||pi== pBoat||pi==boat->getTiller()||pi==boat->getLeftPlank()||pi==boat->getRightPlank()||pi==boat->getHold())
 			continue;
 		Location itemPos=pi->getPosition ();
-		if (( abs(boatpos.x-itemPos.x) <= xdist) && ( abs(boatpos.y-itemPos.y) <= ydist) )
+		if (( abs((int)(boatpos.x-itemPos.x)) <= xdist) && ( abs((int)(boatpos.y-itemPos.y)) <= ydist) )
 		{
 			mapRegions->remove(pi);
 			itemPos.x+= tx;
@@ -1463,7 +1463,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	{
 		P_CHAR pc=charsNear.getChar();
 		Location charPos=pc->getPosition ();
-		if (( abs(boatpos.x-charPos.x) <= xdist) && ( abs(boatpos.y-charPos.y) <= ydist)  )
+		if (( abs((int)(boatpos.x-charPos.x)) <= xdist) && ( abs((int)(boatpos.y-charPos.y)) <= ydist)  )
 		{
 			mapRegions->remove(pc);
 			charPos.x+= tx;
