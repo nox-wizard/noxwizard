@@ -2138,49 +2138,52 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 void cNetwork::LoadHosts_deny()
 {
-	std::string  sScript1 ;
-	std::string  sToken1 ;
-	UI32 siEnd ;
-
 	if( !hosts_deny.empty() )
 		hosts_deny.clear();
 
 	cScpIterator* iter = Scripts::HostDeny->getNewIterator("SECTION HOST_DENY");
 
-	if( iter == NULL )
+	if( iter != NULL )
 	{
-		ErrOut("Can't find SECTION HOST_DENY! \n");
-		return ;
-	}
-
-	do 
-	{
-		//let's load a IP addresss/NetMask
-		ip_block_st ip_block;
-		unsigned long ip_address;
-		sScript1 = iter->getEntry()->getFullLine();
-		siEnd = sScript1.find("/") ;
-		sToken1 = sScript1.substr(0,siEnd) ;
-		ip_address = inet_addr(sToken1.c_str()) ;
-		if (ip_address != INADDR_NONE)
-			ip_block.address = ip_address;
-		else
-			continue;
-		// Get the rest of the string, after the '/' token
-		if (siEnd != std::string::npos)
+		ip_block_st	ip_block;
+		UI32		ip_address;
+		std::string	sScript1,
+				sToken1;
+		UI32 		siEnd ;
+		
+		do
 		{
-			sToken1 = sScript1.substr(siEnd+1) ;
+			//let's load a IP addresss/NetMask
+			sScript1 = iter->getEntry()->getFullLine();
+			siEnd = sScript1.find("/") ;
+			sToken1 = sScript1.substr(0,siEnd) ;
 			ip_address = inet_addr(sToken1.c_str()) ;
+
 			if (ip_address != INADDR_NONE)
-				ip_block.mask = ip_address;
-			else
-				ip_block.mask = static_cast<unsigned long>(~0); // mask is not required. (fills all bits with 1's)
+			{
+				ip_block.address = ip_address;
+
+				// Get the rest of the string, after the '/' token
+				if (siEnd != std::string::npos)
+				{
+					sToken1 = sScript1.substr(siEnd+1) ;
+					ip_address = inet_addr(sToken1.c_str()) ;
+					if (ip_address != INADDR_NONE)
+						ip_block.mask = ip_address;
+					else
+						ip_block.mask = static_cast<unsigned long>(~0); // mask is not required. (fills all bits with 1's)
+				}
+				else
+					ip_block.mask = static_cast<unsigned long>(~0);
+				hosts_deny.push_back(ip_block);
+			}
 		}
-		else
-			ip_block.mask = static_cast<unsigned long>(~0);
-		hosts_deny.push_back(ip_block);
-	} 
-	while ( sScript1.c_str()[0] != '}' );
+		while ( sScript1[0] != '}' );
+	}
+	else
+	{
+		WarnOut("Can't find SECTION HOST_DENY! \n");
+	}
 }
 
 bool cNetwork::CheckForBlockedIP(sockaddr_in ip_address)
