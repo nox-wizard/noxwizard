@@ -90,6 +90,8 @@ typedef std::vector<SERIAL>		SERIAL_VECTOR;	//!< vector of serials
 typedef slist<SERIAL>                   SERIAL_SLIST;	//!< slist of serials
 typedef SERIAL 				SCRIPTID; 	//!< a script id
 typedef std::set<SERIAL>		SERIAL_SET;	//!< set of serials
+typedef std::vector< P_OBJECT >		POBJECT_VECTOR;	//!<  a vector of pointers to cObject
+typedef POBJECT_VECTOR::iterator	POBJECT_VECTOR_IT;//!< an iterator to a vector of pointers to cObject
 typedef std::vector< P_CHAR >		PCHAR_VECTOR;	//!< a vector of pointers to cChar
 typedef PCHAR_VECTOR::iterator		PCHAR_VECTOR_IT;//!< an iterator to a vector of pointers to cChar
 typedef std::vector< P_ITEM >		PITEM_VECTOR;	//!<  a vector of pointers to cItem
