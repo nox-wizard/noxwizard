@@ -1303,6 +1303,28 @@ NATIVE(_isetContSerialonly)
 }
 
 /*
+\brief Shows the given container to the chr passed 
+\author Wintermute
+\since 0.82
+\param 1: container serial
+\param 2: character serial
+*/
+
+NATIVE(_itm_showContainer)
+{
+	P_ITEM pi = pointers::findItemBySerial(params[1]);
+	VALIDATEPIR(pi, INVALID);
+	if ( pi->isContainer() )
+	{
+		P_CHAR pc=pointers::findCharBySerial(params[2]);
+		pc->showContainer(pi);
+		pc->objectdelay=0;
+	}
+	return 0;
+}
+
+
+/*
 \brief set the multi serial
 \author Xanathar
 \since 0.10
@@ -3777,26 +3799,7 @@ NATIVE(_getIntFromDefine) {
 	amx_GetAddr(amx,params[1],&cstr);
 	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	int def = xss::getIntFromDefine( g_cAmxPrintBuffer );
-	g_nAmxPrintPtr=0;
-	return def;
-}
-
-
-/*
-\brief returns -1 if the object is not defined, xss define number otherwise
-\author Wintermute
-\since 0.82
-\param 1 xss section name
-\param 2 define name
-\return -1 if the object is not defined, define number otherwise
-*/
-NATIVE(_isDefined) {
-	cell *cstr;
-	amx_GetAddr(amx,params[1],&cstr);
-	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	int def = xss::getIntFromDefine( g_cAmxPrintBuffer );
+	int def = xss::getIntFromDefine( g_cAmxPrintBuffer, params[2] );
 	g_nAmxPrintPtr=0;
 	return def;
 }
@@ -3832,6 +3835,7 @@ NATIVE(_itm_getCombatSkill)
         VALIDATEPIR(pi, INVALID);
         return pi->getCombatSkill();
 }
+
 
 /*
 \brief Opens a skill makemenu
@@ -6054,7 +6058,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "weblaunch", _weblaunch },
  { "broadcast", _sysbroadcast },
  { "getIntFromDefine", _getIntFromDefine },
- { "isDefined", _isDefined },
 // Charachter functions :
  { "chr_message",  _chr_message },
  { "chr_addNPC",  _chr_addNPC},
@@ -6218,6 +6221,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_speech", _itm_speech},
  { "itm_BounceToPack", _ItemBounceToPack},
  { "itm_getCombatSkill", _itm_getCombatSkill},
+ { "itm_showContainer", _itm_showContainer},
 //
 // Local property functions
 //

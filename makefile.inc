@@ -37,6 +37,7 @@ SOURCES =	\
 		calendar.cpp \
 		chars.cpp \
 		client.cpp \
+		cmds.cpp \
 		cmdtable.cpp \
 		combat.cpp \
 		commands.cpp \
@@ -54,6 +55,7 @@ SOURCES =	\
 		amx/float.cpp \
 		gamedate.cpp \
 		globals.cpp \
+		gmpages.cpp \
 		guild.cpp \
 		guildstones.cpp \
 		house.cpp \
@@ -149,6 +151,7 @@ HEADERS =	\
 		chars.h \
 		classes.h \
 		client.h \
+		cmds.h \
 		cmdtable.h \
 		common_libs.h \
 		console.h \
@@ -159,6 +162,7 @@ HEADERS =	\
 		dragdrop.h \
 		encryption.h \
 		globals.h \
+		gmpages.h \
 		guild.h \
 		house.h \
 		inlines.h \

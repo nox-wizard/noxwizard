@@ -183,12 +183,13 @@ EXSTYLE WS_EX_TOOLWINDOW | WS_EX_CLIENTEDGE
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CTEXT           "NoX-Wizard UO Server Emulator Version 0.82a" // - Internal Development Version, DON'T RELEASE TO PUBLIC",
-                    IDC_STATIC,4,59,372,8,SS_NOPREFIX,WS_EX_TRANSPARENT
-    CTEXT           "Program by Xanathar, Luxor, Elcabesa, Araknesh, LordShoo, Dr.X and Anthalir",
-                    IDC_STATIC,4,68,372,8,0,WS_EX_TRANSPARENT
+    CTEXT           "NoX-Wizard UO Server Emulator Version 0.82a",IDC_STATIC,
+                    4,59,372,8,SS_NOPREFIX,WS_EX_TRANSPARENT
+    CTEXT           "Original program by Xanathar, Luxor, Elcabesa, Araknesh, LordShoo, Dr.X and Anthalir",
+                    IDC_STATIC,4,78,372,8,0,WS_EX_TRANSPARENT
     DEFPUSHBUTTON   "OK",IDOK,319,226,57,15,WS_GROUP,WS_EX_STATICEDGE
-    CTEXT           "http://nox-wizard.sunsite.dk",IDC_STATIC,4,91,372,8
+    CTEXT           "http://nox-wizard.sourceforge.net",IDC_STATIC,4,96,372,
+                    8
     LTEXT           "This program uses a modified version of scripting technologies from ITB CompuPhase Small Language (AMX Abstract Machine, Small compiler and SDBG debugger). Copyright 1997-2001 by ITB CompuPhase.",
                     IDC_STATIC,4,191,372,17
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,182,372,1
@@ -209,8 +210,10 @@ BEGIN
                     IDC_STATIC,4,142,372,18
     LTEXT           "See http://www.compuphase.com/small.htm for more informations.",
                     IDC_STATIC,4,209,372,11
-    LTEXT           "NoX-Wizard logo by CrueL",IDC_STATIC,4,231,91,10
-    CTEXT           "Based on Wolfpack Emu v.12.5b1",IDC_STATIC,4,78,372,8
+    LTEXT           "NoX-Wizard logo by Tecia",IDC_STATIC,4,231,91,10
+    CTEXT           "Based on Wolfpack Emu v.12.5b1",IDC_STATIC,4,86,372,8
+    CTEXT           "Current Developers: Fax, Frodo, Horian, Tecia, Wintermute",
+                    IDC_STATIC,4,67,372,9,SS_CENTERIMAGE
 END
 
 

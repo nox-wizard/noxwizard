@@ -268,6 +268,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 
 						if ( script1[0]!='}' && script1[0]!='{' )
 						{
+							script1=trim(script1);
+							script2=trim(script2);
+							if ( script1=="" )
+								continue;
 							switch(script1[0])
 							{
 							case '@':
@@ -556,6 +560,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									pc->hidamage=str2num(script2);
 								else if ( "HIDING" == script1 )
 									pc->baseskill[HIDING] = getRangedValue(script2);
+								else if ( "HIRE" == script1 )
+									pc->setHireFee(str2num(script2));
 								else if ( "HOLYDAMAGED" == script1 )
 									pc->holydamaged = true;
 								break;

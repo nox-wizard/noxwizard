@@ -54,6 +54,12 @@ enum DelType
 	DELTYPE_GMREMOVE
 };
 
+typedef struct 
+{
+	UI16 openfx;
+	UI16 closefx;
+} soundFX;
+
 /*!
 \brief Item class
 */
@@ -95,7 +101,6 @@ public:
 */
 	inline SI16 animid()
 	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : getId(); }
-
 	SI08	isFieldSpellItem();
 
 	LOGICAL IsCorpse();
@@ -158,7 +163,6 @@ public:
 	UI08		animid2;	//!< elcabesa animation
 	void		animSetId(SI16 id);	//!< elcabesa animation
 	LOGICAL		useAnimId;
-
 	SI08		layer;		//!< Layer if equipped on paperdoll
 	SI08		oldlayer;	//!< Old layer - used for bouncing bugfix - AntiChrist
 	SI08		scriptlayer;	//!< Luxor, for scripted setted Layer
@@ -175,7 +179,7 @@ public:
 private:
 	Serial 		contserial;
 	Serial		oldcontserial;
-
+	
 public:
 	SI32		getContSerial(LOGICAL old= 0) const;
 	BYTE		getContSerialByte(UI32 nByte, LOGICAL old= false) const;
@@ -408,6 +412,7 @@ public:
 //	SI08		glow_effect;
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
+	soundFX		itemSoundEffect;
 	void		explode(NXWSOCKET  s);
 
 
@@ -419,6 +424,15 @@ private:
 	TIMERVAL	decaytime;
 
 public:
+	inline const UI16 getOpeningSound() const
+	{ return itemSoundEffect.openfx; }
+	inline const UI16 getClosingSound() const
+	{ return itemSoundEffect.closefx; }
+	inline		void setOpeningSound(UI16 newSound) 
+	{ itemSoundEffect.openfx = newSound; }
+	inline		void setClosingSound(UI16 newSound) 
+	{ itemSoundEffect.closefx = newSound; }
+
 	LOGICAL		doDecay();
 
 	inline const LOGICAL canDecay() const

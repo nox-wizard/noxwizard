@@ -1140,7 +1140,7 @@ static void declglb(char *firstname,int firsttag,int fpublic,int fstatic,int sto
   int ident,tag,ispublic;
   int idxtag[sDIMEN_MAX];
   char name[sNAMEMAX+1];
-  cell val,size,cidx;
+  cell val,size,cidx=0;
   char *str;
   int dim[sDIMEN_MAX];
   int numdim,level;

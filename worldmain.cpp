@@ -467,6 +467,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "HOMEX"))			{ pc->homeloc.x=str2num(script2);}
 			else if (!strcmp(script1, "HOMEY"))			{ pc->homeloc.y=str2num(script2);}
 			else if (!strcmp(script1, "HOMEZ"))			{ pc->homeloc.z=str2num(script2);}
+			else if (!strcmp(script1, "HIRE"))			{ pc->setHireFee(str2num(script2));}
 		break;
 
 		case 'I':
@@ -839,8 +840,9 @@ void loaditem()
 			else if (!(strcmp(script1, "ATT")))
 				pi->att=str2num(script2);
 			else if (!strcmp("ANIMID", script1))
-				pi->animSetId(str2num(script2));
-  			else if (!strcmp("AUXDAMAGE", script1))
+				//pi->animSetId(str2num(script2));
+				break; // disable anim id
+			else if (!strcmp("AUXDAMAGE", script1))
 				pi->auxdamage = str2num(script2);
   			else if (!strcmp("AUXDAMAGETYPE", script1))
 				pi->auxdamagetype = static_cast<DamageType>(str2num(script2));
@@ -1143,10 +1145,8 @@ void loaditem()
 	//StoreItemRandomValue(pi,-1); // Magius(CHE) (2)
 
 	pi->timeused_last=getclock();
-
 	if(pi->animid()==pi->getId()) //elcabesa animation bugfix..if we have not defined a animid use the id of object
 		pi->animSetId(0);
-
 	pi->weight=(UI32)pi->getWeight();
 
 	if (pi->maxhp==0) pi->maxhp=pi->hp;
@@ -2511,6 +2511,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "NOTRAIN\n");
 			else
 				fprintf(cWsc, "CANTRAIN\n");
+			if ( pc->getHireFee() >= 0 )
+				fprintf(cWsc, "HIRE %d\n", pc->getHireFee());
 
 			if (pc->att!=dummy.att)
 				fprintf(cWsc, "ATT %i\n", pc->att);
@@ -2787,10 +2789,8 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		//</Luxor>
 		if( pi->getScriptID()!=dummy.getScriptID() )
 			fprintf(iWsc, "SCRIPTID %u\n", pi->getScriptID());
-
 		if ((pi->animid()!=pi->getId() )&&(pi->animid()!=dummy.animid()))
 			fprintf(iWsc, "ANIMID %i\n", pi->animid());
-
 		fprintf(iWsc, "NAME2 %s\n", pi->getSecondaryNameC());
 #ifndef DESTROY_REFERENCES
 		if ( !pi->creator.empty())	fprintf(iWsc, "CREATOR %s\n", pi->creator.c_str() ); // by Magius(CHE)

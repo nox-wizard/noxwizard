@@ -84,7 +84,7 @@ namespace Commands
 	int x=0;
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-
+/*
 		if(pc_currchar->callnum!=0)
 		{
 			donewithcall(s, type);
@@ -146,6 +146,7 @@ namespace Commands
 			}//for
 			if(x==0) pc_currchar->sysmsg("The Counselor queue is currently empty");
 		}//if
+		*/
 	}
 
 	void KillSpawn(NXWSOCKET s, int r)  //courtesy of Revana
@@ -267,7 +268,7 @@ namespace Commands
 		}
 		sysmessage(s, "Done.");*/
 	}
-
+/*
 	//o---------------------------------------------------------------------------o
 	//|   Function -  void cpage(NXWSOCKET s,char *reason)
 	//|   Date     -  UnKnown
@@ -415,7 +416,7 @@ namespace Commands
 			else pc_currchar->sysmsg(TRANSLATE("Please enter the reason for your GM request"));
 		}
 	}
-
+*/
 	void DyeItem(NXWSOCKET s) // Rehue an item
 	{
 		UI16 color, body;

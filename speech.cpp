@@ -96,6 +96,11 @@ int response(NXWSOCKET  s)
 	// name
 	//
 	bool requestName = ( strstr( comm, "NAME") != NULL ) || ( strstr( comm, "WHO ARE YOU") != NULL );
+		//
+	// name
+	//
+	bool requestHire = ( strstr( comm, "HIRE") != NULL );
+
 	//
 	// packup
 	//	this should become <playervendorname> packup
@@ -268,6 +273,23 @@ int response(NXWSOCKET  s)
 									pc_map->playMonsterSound(SND_STARTATTACK);
 								break;
 						}
+					}
+					handledRequest = true;
+					continue;
+				}
+				if ( requestHire && pc_map->isHirable() )
+				{
+					// Handle hiring request
+					// player needs to drag gold on npc to actually hire him
+					if ( pc_map->getOwnerSerial32()==INVALID )
+					{
+						sprintf( temp, TRANSLATE("Hello %s, i could work for thee for only %d goldpieces a day."), pc->getCurrentNameC(), pc_map->getHireFee());
+						pc_map->talkAll( temp, 0);
+					}
+					else
+					{
+						sprintf( temp, TRANSLATE("Hello %s, i am sorry, i already work for someone else."), pc->getCurrentNameC(), pc_map->getHireFee());
+						pc_map->talkAll( temp, 0);
 					}
 					handledRequest = true;
 					continue;
@@ -1256,6 +1278,7 @@ static LOGICAL renameKey( P_CHAR pc, NXWSOCKET socket, string &name )
 static LOGICAL pageGameMaster( P_CHAR pc, NXWSOCKET socket, string &reason )
 {
 	LOGICAL success = false;
+	/*
 	if (pc->pagegm == 1)
 	{
 		char temp[TEMP_STR_SIZE];
@@ -1287,12 +1310,14 @@ static LOGICAL pageGameMaster( P_CHAR pc, NXWSOCKET socket, string &reason )
 		pc->pagegm = 0;
 		success = true;
 	}
+	*/
 	return success;
 }
 
 static LOGICAL pageCouncillor( P_CHAR pc, NXWSOCKET socket, string &reason )
 {
 	LOGICAL success = false;
+	/*
 	if (pc->pagegm == 2) // Counselor page
 	{
 		char temp[TEMP_STR_SIZE];
@@ -1325,6 +1350,7 @@ static LOGICAL pageCouncillor( P_CHAR pc, NXWSOCKET socket, string &reason )
 		pc->pagegm = 0;
 		success = true;
 	}
+	*/
 	return success;
 }
 

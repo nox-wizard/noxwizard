@@ -75,6 +75,10 @@ namespace item
 		do
 		{
 			iter->parseLine( lha, rha );
+			lha=trim(lha);
+			rha=trim(rha);
+			if ( lha=="")
+				continue;
 			switch ( lha[0])
 			{
 				case '{':
@@ -343,7 +347,7 @@ namespace item
 				case 'M':
 					if ( lha == "MORE" )
 					{
-						
+
 						if ( rha.find("0x") == 0)
 							tmp=hex2num(rha);
 						else
@@ -495,7 +499,7 @@ namespace item
 			}
 			else
 				pi->setCont( cont );
-		
+
 		return pi;
 
 	}
@@ -764,12 +768,12 @@ namespace item
 			if (ISVALIDPI(pPack))
 			{
 				SERIAL piled = pPack->ContainerPileItem(pi);
-				if( piled==INVALID ) { 
+				if( piled==INVALID ) {
 					pi->setContSerial( pPack->getSerial32() );
 					pi->SetRandPosInCont( pPack );
 				}
-				else 
-					return pointers::findItemBySerial( piled );				
+				else
+					return pointers::findItemBySerial( piled );
 			}
 			else
 			{// LB place it at players feet if he hasnt got backpack
@@ -795,8 +799,8 @@ namespace item
 
 		int loopexit=0;
 		cScpIterator* iter = NULL;
-		char script1[1024];
-		char script2[1024];
+		std::string script1;
+		std::string script2;
 		int tmp;
 		LOGICAL sectfound=false;
 		char buff[512];
@@ -819,77 +823,83 @@ namespace item
 		do
 		{
 			iter->parseLine(script1, script2);
+			script1=trim(script1);
+			script2=trim(script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
 				if (script1[0] != 'S')
 					continue;
-				if (!(strcmp("SECTION",script1)))
-					if(strstr(script2,buff)) sectfound = true;//AntiChrist bugfix
+				if (script1=="SECTION")
+					if(script2.find(buff)) sectfound = true;//AntiChrist bugfix
 
 				if(sectfound)//AntiChrist bugfix
 				{
+					if ( script1=="" )
+						continue;
 					switch (script1[0])
 					{
 					case 'A':
 					case 'a':
-						if (!(strcmp("AMOUNT",script1))) pi->amount=str2num(script2); // -Fraz- moved from Case C
-						else if (!strcmp("ANIMID", script1)) pi->animSetId(hex2num(script2));
+						if (script1=="AMOUNT") pi->amount=str2num(script2); // -Fraz- moved from Case C
+						else if (script1=="ANIMID") pi->animSetId(hex2num(script2));
 						break;
 					case 'C':
 					case 'c':
-						if (!(strcmp("CREATOR", script1))) pi->creator = script2; // by Magius(CHE)
-						else if (!(strcmp("COLOR",script1)))
+						if (script1=="CLOSEFX") pi->setClosingSound((UI16) str2num(script2));
+						else if ( script1=="CREATOR") pi->creator = script2; // by Magius(CHE)
+						else if (script1=="COLOR")
 						{
 							tmp=hex2num(script2);
 							pi->setColor( tmp );
 						}
+
 					break;
 
 					case 'D':
 					case 'd':
-						if (!(strcmp("DEX", script1))) pi->dx=str2num(script2);
-						else if (!(strcmp("DEXADD", script1))) pi->dx2=str2num(script2);
-						else if ((!(strcmp("DAMAGE",script1)))||(!(strcmp("ATT",script1))))
+						if ( script1=="DEX") pi->dx=str2num(script2);
+						else if ( script1=="DEXADD") pi->dx2=str2num(script2);
+						else if ((script1=="DAMAGE")||(script1=="ATT"))
 							pi->att = getRangedValue(script2);
-						else if (!(strcmp("DEF",script1))) pi->def=str2num(script2);
-						else if (!(strcmp("DYE",script1))) pi->dye=str2num(script2);
-						else if (!(strcmp("DIR",script1))) pi->dir=str2num(script2);
-						else if (!(strcmp("DECAY",script1))) pi->setDecay();
-						else if (!(strcmp("DISPELLABLE",script1))) pi->setDispellable();
-						else if (!(strcmp("DISABLEMSG",script1))) {
+						else if (script1=="DEF") pi->def=str2num(script2);
+						else if (script1=="DYE") pi->dye=str2num(script2);
+						else if (script1=="DIR") pi->dir=str2num(script2);
+						else if (script1=="DECAY") pi->setDecay();
+						else if (script1=="DISPELLABLE") pi->setDispellable();
+						else if (script1=="DISABLEMSG") {
 							if( pi->disabledmsg!=NULL )
 								(*pi->disabledmsg) = script2;
 							else
 								pi->disabledmsg = new std::string( script2 );
 						}
-						else if (!(strcmp("DISABLED",script1))) pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);//AntiChrist
+						else if (script1=="DISABLED") pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);//AntiChrist
 					break;
 
 					case 'G':
 					case 'g':
 					case 'H':
 					case 'h':
-						if (!(strcmp("GOOD",script1))) pi->good=str2num(script2); // Added by Magius(CHE)
-						else if (!(strcmp("HP", script1))) pi->hp=str2num(script2);
-						else if (!(strcmp("HIDAMAGE", script1))) pi->hidamage=str2num(script2);
+						if (script1=="GOOD") pi->good=str2num(script2); // Added by Magius(CHE)
+						else if ( script1=="HP") pi->hp=str2num(script2);
+						else if ( script1=="HIDAMAGE") pi->hidamage=str2num(script2);
 					break;
 
 					case 'I':
 					case 'i':
 					case 'L':
 					case 'l':
-						if (!(strcmp("INT", script1))) pi->in=str2num(script2);
-						else if (!(strcmp("INTADD", script1))) pi->in2=str2num(script2);
-						else if (!(strcmp("ITEMHAND",script1))) pi->itmhand=str2num(script2);
-						else if (!(strcmp("LAYER",script1))) pi->layer=str2num(script2);
-						else if (!(strcmp("LODAMAGE", script1))) pi->lodamage=str2num(script2);
+						if ( script1=="INT") pi->in=str2num(script2);
+						else if ( script1=="INTADD") pi->in2=str2num(script2);
+						else if (script1=="ITEMHAND") pi->itmhand=str2num(script2);
+						else if (script1=="LAYER") pi->layer=str2num(script2);
+						else if ( script1=="LODAMAGE") pi->lodamage=str2num(script2);
 					break;
 
 					case 'M':
 					case 'm':
-						if (!(strcmp("MAXHP", script1))) pi->maxhp=str2num(script2); // by Magius(CHE)
-						else if (!(strcmp("MOVABLE",script1))) pi->magic=str2num(script2);
-						else if (!(strcmp("MORE", script1)))
+						if ( script1=="MAXHP") pi->maxhp=str2num(script2); // by Magius(CHE)
+						else if (script1=="MOVABLE") pi->magic=str2num(script2);
+						else if ( script1=="MORE")
 						{
 							tmp=str2num(script2);
 							pi->more1 = (unsigned char) (tmp>>24);
@@ -898,7 +908,7 @@ namespace item
 							pi->more4 = (unsigned char) (tmp%256);
 						}
 						//MORE2 may not be useful ?
-						else if (!(strcmp("MORE2", script1)))
+						else if ( script1=="MORE2")
 						{
 							tmp=str2num(script2);
 							pi->moreb1=tmp>>24;
@@ -906,28 +916,30 @@ namespace item
 							pi->moreb3=tmp>>8;
 							pi->moreb4=tmp%256;
 						}
-						else if (!(strcmp("MOREX",script1))) pi->morex=str2num(script2);
-						else if (!(strcmp("MOREY",script1))) pi->morey=str2num(script2);
-						else if (!(strcmp("MOREZ",script1))) pi->morez=str2num(script2);
+						else if (script1=="MOREX") pi->morex=str2num(script2);
+						else if (script1=="MOREY") pi->morey=str2num(script2);
+						else if (script1=="MOREZ") pi->morez=str2num(script2);
 					break;
 
 					case 'N':
 					case 'n':
+						if (script1=="NAME") pi->setCurrentName(script2);
+						else if (script1=="NAME2") pi->setSecondaryName(script2);
+						else if (script1=="NEWBIE") pi->setNewbie();
+					break;
+
 					case 'O':
 					case 'o':
-						if (!(strcmp("NAME",script1))) pi->setCurrentName(script2);
-						else if (!(strcmp("NAME2",script1))) pi->setSecondaryName(script2);
-						else if (!(strcmp("NEWBIE",script1))) pi->setNewbie();
-						else if (!(strcmp("OFFSPELL",script1))) pi->offspell=str2num(script2);
-
+						if (script1=="OFFSPELL") pi->offspell=str2num(script2);
+						else if (script1=="OPENFX") pi->setOpeningSound((UI16) str2num(script2));
 					break;
 
 					case 'P':
 					case 'p':
 					case 'R':
 					case 'r':
-						if (!strcmp("POISONED",script1)) pi->poisoned=(PoisonType)str2num(script2);
-						else if (!strcmp("RANK",script1))
+						if (script1=="POISONED") pi->poisoned=(PoisonType)str2num(script2);
+						else if (script1=="RANK")
 						{
 							pi->rank=str2num(script2); // By Magius(CHE)
 							if (pi->rank==0) pi->rank=10;
@@ -936,28 +948,28 @@ namespace item
 
 					case 'S':
 					case 's':
-						if (!(strcmp("SPD",script1))) pi->spd=str2num(script2);
-						else if (!(strcmp("SK_MADE", script1))) pi->madewith=str2num(script2); // by Magius(CHE)
-						else if (!(strcmp("STR", script1))) pi->st=str2num(script2);
-						else if (!(strcmp("STRADD", script1))) pi->st2=str2num(script2);
-						else if (!(strcmp("SMELT", script1))) pi->smelt=str2num(script2);
+						if (script1=="SPD") pi->spd=str2num(script2);
+						else if ( script1=="SK_MADE") pi->madewith=str2num(script2); // by Magius(CHE)
+						else if ( script1=="STR") pi->st=str2num(script2);
+						else if ( script1=="STRADD") pi->st2=str2num(script2);
+						else if ( script1=="SMELT") pi->smelt=str2num(script2);
 					break;
 
 					case 'T':
 					case 't':
 					case 'U':
 					case 'u':
-						if (!(strcmp("TRIGGER",script1))) pi->trigger=str2num(script2);
-						else if (!(strcmp("TRIGTYPE",script1))) pi->trigtype=str2num(script2);
-						else if (!(strcmp("TYPE",script1))) pi->type=str2num(script2);
-						else if (!(strcmp("USES",script1))) pi->tuses=str2num(script2);
+						if (script1=="TRIGGER") pi->trigger=str2num(script2);
+						else if (script1=="TRIGTYPE") pi->trigtype=str2num(script2);
+						else if (script1=="TYPE") pi->type=str2num(script2);
+						else if (script1=="USES") pi->tuses=str2num(script2);
 					break;
 
 					default:
-						if (!(strcmp("VISIBLE",script1))) pi->visible=str2num(script2);
-						else if (!(strcmp("VALUE",script1))) pi->value=str2num(script2);
+						if (script1=="VISIBLE") pi->visible=str2num(script2);
+						else if (script1=="VALUE") pi->value=str2num(script2);
 
-						else if (!(strcmp("WEIGHT",script1)))
+						else if (script1=="WEIGHT")
 						{
 							int anum=3;
 							//anum=4;
@@ -1056,7 +1068,7 @@ namespace item
 						if ((pi->gatetime<=currenttime || (overflow)) && pi->morex!=0)
 						{
 							npcs::AddRespawnNPC(pi,pi->morex);
-							pi->gatetime=0;					
+							pi->gatetime=0;
 						}
 					}
 				}
@@ -1171,7 +1183,7 @@ namespace item
 
 	P_ITEM SpawnRandomItem(NXWSOCKET s, char* cList, char* cItemID)
 	{
-		
+
 		P_CHAR pc=MAKE_CHAR_REF( currchar[s] );
 		VALIDATEPCR( pc, NULL );
 

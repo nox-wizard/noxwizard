@@ -227,9 +227,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	hunger=6;  // Level of hungerness, 6 = full, 0 = "empty"
 	hungertime=0; // Timer used for hunger, one point is dropped every 20 min
 	npcaitype=NPCAI_GOOD; // NPC ai
-	callnum=-1; //GM Paging
-	playercallnum=-1; //GM Paging
-	pagegm=0; //GM Paging
 	region=255;
 	skilldelay=0;
 	objectdelay=0;
@@ -322,7 +319,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	holydamaged = false;
 	damagetype = DAMAGE_BLUDGEON;
 	fstm=0.0f;
-
+	hirefee=INVALID;
 	setGuild( NULL, NULL );
 
 	jailed=false;

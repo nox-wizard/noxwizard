@@ -370,6 +370,13 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param = NULL );
 
 #endif // USE THREADS
 
+	extern std::string rtrim ( const string &sourceStr ,const string &whitespace = " \t" );
+	extern std::wstring rtrim ( const wstring &sourceStr ,const wstring &whitespace=L" \t" );
+	extern std::string ltrim ( const string &sourceStr ,const string &whitespace=" \t" );
+	extern std::wstring ltrim ( const std::wstring & sourceStr ,const wstring &whitespace=L" \t" );
+	extern std::string trim ( const std::string & sourceStr ,const string &whitespace=" \t" );
+	extern std::wstring trim ( const std::wstring & sourceStr ,const wstring &whitespace=L" \t" );
+
 #endif //__COMMON_LIBS_H__
 
 

@@ -1511,7 +1511,7 @@ static void callfunction(symbol *sym)
   constval arrayszlst = { NULL, "", 0}; /* array size list starts empty */
   cell array_sz;
   cell lexval;
-  char *lexstr;
+  char *lexstr=NULL;
 
   assert(sym!=NULL);
   arg=sym->dim.arglist;

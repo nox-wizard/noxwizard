@@ -163,6 +163,7 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 		UI32 counter = rand()%npcs.size();
 		{
 			Location location;
+			location.x=location.y=location.z=location.dispz=0;
 			if( c.findValidLocation( location ) )
 			{
 				P_CHAR npc = npcs::AddNPCxyz( INVALID, npcs[counter], location  );

@@ -813,7 +813,16 @@ public:
 
 	private:
 		wstring* speechCurrent;
+		SI32	hirefee;
+
 	public:
+		inline SI32 getHireFee()
+		{ return hirefee; }
+		inline void setHireFee(SI32 newfee)
+		{ hirefee=newfee; }
+		inline boolean isHirable()
+		{ return hirefee < 0 ? false : true; }
+
 		//! Return current speech
 		inline wstring* getSpeechCurrent() 
 		{ return speechCurrent; }
@@ -888,9 +897,6 @@ public:
 		TIMERVAL		invistimeout;
 		SI32			hunger;  // Level of hungerness, 6 = full, 0 = "empty"
 		TIMERVAL		hungertime; // Timer used for hunger, one point is dropped every 20 min
-		SI32			callnum; //GM Paging
-		SI32			playercallnum; //GM Paging
-		SI32			pagegm; //GM Paging
 		//char region;
 		UI08			region;
 

@@ -2001,7 +2001,7 @@ void command_gotocur( NXWCLIENT ps )
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-
+/*
 	if(pc->callnum==0)
 	{
 		pc->sysmsg("You are not currently on a call.");
@@ -2029,6 +2029,7 @@ void command_gotocur( NXWCLIENT ps )
 			pc->teleport();
 		}
 	}
+	*/
 }
 
 // Escilate a Counsellor Page into the GM Queue
@@ -2036,7 +2037,7 @@ void command_gmtransfer( NXWCLIENT ps )
 {
 
 	NXWSOCKET s = ps->toInt();
-
+	/*
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
@@ -2083,6 +2084,7 @@ void command_gmtransfer( NXWCLIENT ps )
 	{
 		pc->sysmsg("You are not currently on a call");
 	}
+	*/
 }
 
 // Displays a list of users currently online.

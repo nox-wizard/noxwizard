@@ -73,13 +73,15 @@ void cScriptCommand::execute( NXWSOCKET s )
 	} else if ( command == "SYSMESSAGE" ) {
 		sysmessage(s, param.c_str());
 		return;
-	} else if ( command == "GMPAGE" ) {
+	} /*
+	else if ( command == "GMPAGE" ) {
 		Commands::GMPage(s, param);
 		return;
 	} else if ( command == "CPAGE" ) {
 		Commands::CPage(s, param);
 		return;
-	} else if ( command == "VERSION" ) {
+	} */
+	else if ( command == "VERSION" ) {
 		sysmessage(s, idname);
 		return;
 	} else if ( command == "ADDITEM" ) {
@@ -861,6 +863,7 @@ void donewithcall(int s, int type)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc );
+	/*
 	int cn = pc->callnum;
 	if(cn!=0) //Player is on a call
 	{
@@ -886,6 +889,7 @@ void donewithcall(int s, int type)
 	{
 		sysmessage(s,"You are currently not on a call");
 	}
+	*/
 }
 
 /*!

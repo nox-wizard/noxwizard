@@ -1144,9 +1144,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 		case NXW_CP_I_BEARDSTYLE :					//dec value: 206;
 			//obsolete
 			break;
-		case NXW_CP_I_CALLNUM :			  			//dec value: 207;
-			pc->callnum = value;
-			break;
 		case NXW_CP_I_CARVE :		  				//dec value: 208;
 			pc->carve = value;
 			break;
@@ -1651,7 +1648,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		//obsolete CHECK(  NXW_CP_I_BEARDCOLOR , (prop2>1) ? &chars[i].beardcolor1 : &chars[i].beardcolor2 )  //dec value: 204;
 		CHECK(  NXW_CP_I_BEARDSERIAL , pc->beardserial )  		//dec value: 205;
 		//obsolete CHECK(  NXW_CP_I_BEARDSTYLE , (prop2>1) ? &chars[i].beardstyle1 : &chars[i].beardstyle2 )  //dec value: 206;
-		CHECK(  NXW_CP_I_CALLNUM , pc->callnum )  			//dec value: 207;
 		CHECK(  NXW_CP_I_CARVE , pc->carve )  				//dec value: 208;
 		CHECK(  NXW_CP_I_CASTING , pc->casting )  			//dec value: 209;
 		CHECK(  NXW_CP_I_CLIENTIDLETIME , pc->clientidletime )  	//dec value: 210;
@@ -1850,6 +1846,7 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_BASESKILL , pc->baseskill[prop2] )  		//dec value: 400;
 		CHECK(  NXW_CP_S_SKILL , pc->skill[prop2] )  			//dec value: 401;
 		CHECK(  NXW_CP_S_GUILDTYPE , pc->GetGuildType() )  		//dec value: 402;
+		CHECK(  NXW_CP_S_TOTALSKILL , pc->getSkillSum() )  			//dec value: 401;
 		CHECK(  NXW_CP_S_ID, pc->getId() )
 		CHECK(  NXW_CP_S_SKIN, pc->getColor() )
 		CHECK(  NXW_CP_S_XID, pc->getOldId() )

@@ -269,6 +269,7 @@ const int NXW_CP_S_XSKIN = 406;
 const int NXW_CP_S_ICON = 407;
 const int NXW_CP_S_SOUND = 408;
 const int NXW_CP_S_RACE = 409;
+const int NXW_CP_S_TOTALSKILL = 410;
 
 const int NXW_CP_STR_DISABLEDMSG = 450;
 const int NXW_CP_STR_GUILDTITLE = 451;

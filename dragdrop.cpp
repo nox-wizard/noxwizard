@@ -956,6 +956,12 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	return true;
 }
 
+static void hireNpc(P_CHAR employer, P_CHAR slave, P_ITEM igold)
+{
+	
+
+}
+
 static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
 	if (ps == NULL) return true;
@@ -989,23 +995,62 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 				{
 					ItemDroppedOnBeggar( ps, pp, pi);
 				}
-
 				//This crazy training stuff done by Anthracks (fred1117@tiac.net)
-				if(pc_currchar->trainer != pTC->getSerial32())
-
+				if(pc_currchar->isBeingTrained() )
 				{
-					pTC->talk(s, TRANSLATE("Thank thee kindly, but I have done nothing to warrant a gift."),0);
-					Sndbounce5(s);
-					if (ps->isDragging())
+					if ( pc_currchar->trainer != pTC->getSerial32())
 					{
-						ps->resetDragging();
-						item_bounce5(s,pi);
+						pTC->talk(s, TRANSLATE("Thank thee kindly, but I have done nothing to warrant a gift."),0);
+						Sndbounce5(s);
+						if (ps->isDragging())
+						{
+							ps->resetDragging();
+							item_bounce5(s,pi);
+						}
+						return true;
 					}
-					return true;
+					else // The player is training from this NPC
+					{
+						ItemDroppedOnTrainer( ps, pp, pi);
+					}
 				}
-				else // The player is training from this NPC
+				if ( pTC->isHirable() )
 				{
-					ItemDroppedOnTrainer( ps, pp, pi);
+					// test if gold is enough
+					if ( pi->amount  < pTC->getHireFee() )
+					{
+						pTC->talk(s, TRANSLATE("I need much more gold if i shall be working for you !"),0);
+						Sndbounce5(s);
+						if (ps->isDragging())
+						{
+							ps->resetDragging();
+							item_bounce5(s,pi);
+						}
+						return true;
+					}
+					else if ( pi->amount >= pTC->getHireFee() )
+					{
+						if ( pi->amount > pTC->getHireFee() )
+						{
+							pi->amount=pi->amount - pTC->getHireFee();
+							pTC->talk(s, TRANSLATE("Thank thee kindly, but this is more than i need for the day."),0);
+							Sndbounce5(s);
+							if (ps->isDragging())
+							{
+								ps->resetDragging();
+								item_bounce5(s,pi);
+							}
+						}
+						pTC->setOwner(pc_currchar);
+						tempfx::add(pTC, 
+							pc_currchar,
+							tempfx::NPC_HIRECOST, 
+							0, 
+							0, 
+							0, 
+							MY_CLOCKS_PER_SEC*secondsperuominute*60*24 ); // call callback every uo day
+						return true;
+					}
 				}
 			}//if human or not
 		}

@@ -332,7 +332,8 @@ void Race::parseRaceSection( void )
 					else if ( lha == "NEUTRAL" )					race->m_mapRacialRelations[ (UI32) str2num( rha ) ] = NEUTRAL;
 					break;
 				case 'P':
-					if 			( lha == "PLURALNAME" ) 			race->pluralName = rha;
+					if ( lha == "PEACEMAKING" ) 				race->parseSkill(rha);
+					else if ( lha == "PLURALNAME" ) 			race->pluralName = rha;
 					else if ( lha == "POISONING" )				race->parseSkill( rha );
 					else if ( lha == "POISONRESISTANCE" ) race->parsePoisonResistance( rha );
 					else if ( lha == "PROVOCATION" )			race->parseSkill( rha );

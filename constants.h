@@ -247,6 +247,8 @@ namespace tempfx {
 		CRIMINAL,		//!< mark criminal
 		FIELD_DAMAGE,		//!< magic fields damage
 		SPELL_TELEKINESYS,	//!< telekinesys spell
+		NPC_HIRECOST,
+		NPC_REMOVE,
 		MAX_TEMPFX_INDEX
 	};
 };

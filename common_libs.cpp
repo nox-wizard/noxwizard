@@ -275,4 +275,41 @@ char* getOSVersionString()
 }
 
 
+std::string rtrim ( const string &sourceStr ,const string &whitespace)
+{
+	std::string str = sourceStr;
+	int position = str.find_last_not_of (whitespace);
+	return str.erase ( position + 1 ) ;
+}
 
+std::wstring rtrim ( const wstring &sourceStr ,const wstring &whitespace)
+{
+	std::wstring str = sourceStr;
+	int position = str.find_last_not_of (whitespace);
+	return str.erase ( position + 1 ) ;
+}
+
+std::string ltrim ( const string &sourceStr ,const string &whitespace)
+{
+	std::string str = sourceStr;
+	int position = sourceStr.find_first_not_of (whitespace);
+	return str.erase ( 0, position) ;
+}
+
+std::wstring ltrim ( const std::wstring & sourceStr ,const wstring &whitespace)
+{
+	std::wstring str = sourceStr;
+	int position = sourceStr.find_first_not_of (whitespace);
+	return str.erase ( 0, position) ;
+}
+
+std::string trim ( const std::string & sourceStr ,const string &whitespace)
+{
+	std::string str = sourceStr;
+	return ltrim ( rtrim ( str , whitespace ) , whitespace );
+}
+std::wstring trim ( const std::wstring & sourceStr ,const wstring &whitespace)
+{
+	std::wstring str = sourceStr;
+	return ltrim ( rtrim ( str , whitespace ) , whitespace );
+}

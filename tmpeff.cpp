@@ -609,7 +609,6 @@ void cTempfx::start()
 		case SPELL_TELEKINESYS:
 			dest->nxwflags[0] |= cChar::flagSpellTelekinesys;
 			break;
-
 		default:
 			break;
 	}
@@ -888,7 +887,57 @@ void cTempfx::executeExpireCode()
 			VALIDATEPC( dest );
 			dest->nxwflags[0] &= ~cChar::flagSpellTelekinesys;
 			break;
+		case NPC_HIRECOST:
+			// src is hired noc, dest is employer
+			if ( dest->CountItems(ITEMID_GOLD) < src->getHireFee() )
+			{
+				// release npc
+				src->talkAll("You don't have enough money to employ me anymore!");
+				src->setOwner(NULL);
+				tempfx::add(src, 
+					dest,
+					tempfx::NPC_REMOVE,
+					0,
+					0,
+					0,
+					MY_CLOCKS_PER_SEC*secondsperuominute*60
+				);
+			}
+			else
+			{
+				UI32 amount = dest->delItems(ITEMID_GOLD, src->getHireFee());
+				if ( amount > 0 )
+				{
+					// release npc
+					src->talkAll("You don't have enough money to employ me anymore!");
+					src->setOwner(NULL);
+					// remove npc after one hour without payment
+					tempfx::add(src, 
+						dest,
+						tempfx::NPC_REMOVE,
+						0,
+						0,
+						0,
+						MY_CLOCKS_PER_SEC*secondsperuominute*60
+					);
 
+				}
+				tempfx::add(src, 
+					dest,
+					tempfx::NPC_HIRECOST, 
+					0, 
+					0, 
+					0, 
+					MY_CLOCKS_PER_SEC*secondsperuominute*60*24 
+				); // call callback every uo day
+
+			}
+			break;
+		case NPC_REMOVE:
+			if ( src->getOwnerSerial32() == INVALID)
+			{
+				src->Delete();
+			}
 		default:
 			break;
 	}
