@@ -19,11 +19,11 @@
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback()) {
+cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback) {
 
 	cmd_name=name;
 	cmd_priv=priv; //stonedz: should be a std::bitset (?)
-	callback();
+	cmd_callback=callback;
 }
 
 
@@ -33,14 +33,14 @@ cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback()) {
 
 cCommandMap::cCommandMap() {
 
-	// all addGmCommand(...); here
+	// all addGmCommand(...); goes here.
 
 }
 
 
-P_COMMAND cCommandMap::addGmCommand(std::string name, SI32 priv, AmxFunction* callback()) {
+P_COMMAND cCommandMap::addGmCommand(std::string name, SI32 priv, AmxFunction* callback) {
 
-	P_COMMAND cmd= new cCommand(name, priv, callback());
+	P_COMMAND cmd= new cCommand(name, priv, callback);
     command_map[name]= cmd;
  	return cmd;
 }
@@ -150,4 +150,24 @@ NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting fo
 
   	}
   	return INVALID;
+}
+
+/*
+
+*****
+A function that is called after 
+*****
+
+*/
+
+void command_execute( NXWCLIENT ps, P_COMMAND cmd /*should be replaced with a cCallCommand* params*/ )
+{
+ 
+	NXWSOCKET s = ps->toInt();
+
+	AmxFunction* cmd=NULL;
+	if( cmd==NULL )
+		cmd = new AmxFunction("command_stats");
+
+	cmd->Call( s );
 }
