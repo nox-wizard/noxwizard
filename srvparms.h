@@ -238,10 +238,7 @@ extern int g_css_override_case_sensitive; //!< Endymion, if 1 the xss speech ove
 extern int g_nAutoDetectIP;
 extern int g_nBehindNat;
 extern int g_nAutoDetectMuls;
-extern int g_nCPUCooling;
 extern int g_nLineBuffer;
-
-extern int g_nUseMTSaves;
 
 extern int g_nDeamonMode;
 
@@ -270,9 +267,6 @@ extern int g_nStatsAdvanceSystem;
 extern unsigned int g_nLimitRoleNumbers;
 extern int g_nPlayersCanDeleteRoles;
 extern int g_nBankLimit;
-
-extern int g_nSTSleepRate;
-extern int g_nSTSleepLenght;
 
 extern int g_nStatDailyLimit;
 extern int g_nAdventureMode;

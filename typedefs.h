@@ -373,7 +373,6 @@ struct speed_st
 	R32 tamednpctime;
 	R32 npcfollowtime;
 	R32 npcaitime;
-	UI32 checkmem;
 };
 
 

@@ -1363,18 +1363,6 @@ void updateMenus();
 		}
 
 
-#ifdef WIN32	//xan : cpu cooling under win9x/me (hlt op not supported in ring3 on winnt)
-	#if ( !defined __BORLANDC__ || __BORLANDC__ >= 0x0560 ) && !defined __GNUC__
-		// Akron: borland c++ builder 5 have asm problems
-		// also MingW32 can't compile it
-		if ((ServerScp::g_nCPUCooling!=0)&&(!(getOSVersion()==OSVER_WINNT))) {
-			for (i=0; i<ServerScp::g_nCPUCooling; i++)
-				__asm hlt
-		}
-	#endif
-#endif
-
-
 		if(loopTimeCount >= 1000)
 		{
 			loopTimeCount = 0;

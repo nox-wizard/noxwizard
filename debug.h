@@ -27,10 +27,6 @@
  #include <windows.h>
 #endif
 
-namespace ServerScp {
-extern int g_nExceptionHandling;
-}
-
 #ifdef  _MSC_VER	// when compiling with borland or mingw, can't use asm
  bool canBreakpoint();
  bool newIsDebuggerPresent();

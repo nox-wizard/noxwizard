@@ -150,13 +150,10 @@ int g_css_override_case_sensitive = 1;
 //[System]
 int g_nUseAccountEncryption=0;
 //[System]
-int g_nUseMTSaves=0;
 
 //[Windows]
 int g_nAutoDetectMuls=1;
-int g_nCPUCooling=3;
 int g_nLineBuffer=50;
-int g_nExceptionHandling = 0;
 
 int g_nAutoDetectIP=1;
 int g_nBehindNat=0;
@@ -181,8 +178,6 @@ int g_nLimitPlayerSparring = 0;
 int g_nStatsAdvanceSystem = 0;
 int g_nBankLimit = 0;
 
-int g_nSTSleepRate = 20000;
-int g_nSTSleepLenght = 2;
 // important: loaddefault has to be called before.
 // currently it is. makes no sense to change that too.
 TIMERVAL g_nRestockTimeRate = 15;
@@ -371,7 +366,6 @@ void loadserverdefaults()
 	speed.tamednpctime=(float)0.9;//AntiChrist
 	speed.npcfollowtime=(float)0.5; //Ripper
 	speed.nice=2;
-	speed.checkmem=3000000;
 
 	resource.logs=3;
 	resource.logtime=600;
@@ -418,7 +412,6 @@ static int loadspeed(char *script1, char *script2)//Lag Fix -- Zippy -- NEW FUNC
         else if(!(strcmp(script1,"CHECK_NPCAI"))) speed.npcaitime=(float)atof(script2);
         else if(!(strcmp(script1,"CHECK_TAMEDNPCS"))) speed.tamednpctime=(float)atof(script2);//AntiChrist
 		else if(!(strcmp(script1,"CHECK_NPCFOLLOW"))) speed.npcfollowtime=(float)atof(script2);//Ripper
-		else if(!(strcmp(script1,"CHECKMEM"))) speed.checkmem=str2num(script2);
 		else return -1;
 		return 0;
 }
@@ -647,9 +640,6 @@ static int loadserver(char *script1, char *script2)
 		else if(!strcmp(script1,"GUARDSACTIVE"))		server_data.guardsactive=str2num(script2);
 		else if(!strcmp(script1,"ANNOUNCE_WORLDSAVES"))		server_data.announceworldsaves=str2num(script2);
 		else if(!strcmp(script1,"BG_SOUNDS"))			server_data.bg_sounds=str2num(script2);
-		else if(!strcmp(script1,"MTHREADSAVE"))			ServerScp::g_nUseMTSaves=str2num(script2);
-		else if(!strcmp(script1,"MTHREADSAVE_SLEEPRATE"))	ServerScp::g_nSTSleepRate =str2num(script2);
-		else if(!strcmp(script1,"MTHREADSAVE_SLEEPLENGHT"))	ServerScp::g_nSTSleepLenght =str2num(script2);
 		else if(!strcmp(script1,"POISONTIMER"))			server_data.poisontimer=str2num(script2); // lb
 		else if(!strcmp(script1,"JOINMSG"))			server_data.joinmsg=str2num(script2);
 		else if(!strcmp(script1,"PARTMSG"))			server_data.partmsg=str2num(script2);
@@ -738,8 +728,6 @@ static int loadnxwoptions (char *script1, char *script2)
 	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
 	else if(!(strcmp(script1,"MAPHEIGHT"))) map_height=str2num(script2);
 	else if(!(strcmp(script1,"MAPWIDTH"))) map_width=str2num(script2);
-	else if(!(strcmp(script1,"EXCHANLDING"))) ServerScp::g_nExceptionHandling=str2num(script2);
-	else if(!(strcmp(script1,"CPUCOOLING"))) ServerScp::g_nCPUCooling=str2num(script2);
 	else if(!(strcmp(script1,"AUTODETECTMULS"))) ServerScp::g_nAutoDetectMuls=str2num(script2);
 	else if(!(strcmp(script1,"LINEBUFFER"))) ServerScp::g_nLineBuffer=str2num(script2);
 	else if(!(strcmp(script1,"USEACCOUNTENCRYPTION"))) ServerScp::g_nUseAccountEncryption=str2num(script2);
@@ -1274,16 +1262,6 @@ void saveserverscript()
 	fprintf(file, "GUARDSACTIVE %i\n",server_data.guardsactive);
 	fprintf(file, "// Must be 1 - 10, Higher the number, less chance of background sounds  \n");
 	fprintf(file, "BG_SOUNDS %i\n",server_data.bg_sounds);
-	fprintf(file, "// Set to 1 to use fast background saves. Note : requires much RAM!\n");
-	fprintf(file, "// and might be useful on SMP systems only.\n");
-	fprintf(file, "MTHREADSAVE %i\n", ServerScp::g_nUseMTSaves);
-	fprintf(file, "// The number of records saved before forcing thread switching. The higher\n");
-	fprintf(file, "// the fastest worldsaves but the slower the rest of emu will run. Ignored\n");
-	fprintf(file, "// if background saves are disabled\n");
-	fprintf(file, "MTHREADSAVE_SLEEPRATE %i\n", ServerScp::g_nSTSleepRate);
-	fprintf(file, "// The time the worldsave thread remains idle after having saved a bunch of\n");
-	fprintf(file, "// records. Ignored if background saves are disabled\n");
-	fprintf(file, "MTHREADSAVE_SLEEPLENGHT %i\n", ServerScp::g_nSTSleepLenght );
 	fprintf(file, "// 1=spawned npcs will be saved to the worldfile, 0=spawned npcs will not be saved \n");
  	fprintf(file, "SAVESPAWNREGIONS %i\n",server_data.savespawns);
 	fprintf(file, "// 1=Broadcasts a message to all players that a worldsave is being done,\n");
@@ -1359,8 +1337,6 @@ void saveserverscript()
 	fprintf(file, "CHECK_NPCAI %f\n",speed.npcaitime);
 	fprintf(file, "// Number of seconds between spawn regions being checked for more spawns  \n");
 	fprintf(file, "CHECK_SPAWNREGIONS %i\n",speed.srtime);
-	fprintf(file, "// Doesn't affect anything, leave at default  \n");
-	fprintf(file, "CHECKMEM %i\n", speed.checkmem);
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION COMBAT\n");
@@ -1629,13 +1605,6 @@ void saveserverscript()
 	fprintf(file, "// Set this to enable plug&play configuration of mul paths \n");
 	fprintf(file, "// (Requires you have correctly installed a T2A/Renaissance client) \n");
 	fprintf(file, "AUTODETECTMULS %i\n", ServerScp::g_nAutoDetectMuls); // lb
-	fprintf(file, "// Set this to a value >0 to enable internal processor cooling (via HLT instruction on idle) \n");
-	fprintf(file, "// only available in Windows 95/98. Unsupported on NT systems (it would be useless on such \n");
-	fprintf(file, "// systems however, since the HTL instruction is already executed by the OS) \n");
-	fprintf(file, "CPUCOOLING %i\n", ServerScp::g_nCPUCooling); // lb
-	fprintf(file, "// Enable this to enable exception handling. Note that this could improve uptime at the \n");
-	fprintf(file, "// expense of data coherency, thus clearing away many crashes, while creating new bugs. \n");
-	fprintf(file, "EXCHANLDING %i\n", ServerScp::g_nExceptionHandling); // lb
 	fprintf(file, "}\n\n");
 
 
