@@ -990,13 +990,13 @@ void commitserverscript() // second phase setup
 		}
 	}
 
-	data::setPath( Map_File, std::string( temp_map ) );
-	data::setPath( StaIdx_File, std::string( temp_staidx ) );
-	data::setPath( Statics_File, std::string( temp_statics ) );
-	data::setPath( VerData_File, std::string( temp_verdata ) );
-	data::setPath( TileData_File, std::string( temp_tiledata ) );
-	data::setPath( Multi_File, std::string( temp_multimul ) );
-	data::setPath( MultiIdx_File, std::string( temp_multiidx ) );
+	data::setPath( MUL_MAP, std::string( temp_map ) );
+	data::setPath( MUL_STATIDX, std::string( temp_staidx ) );
+	data::setPath( MUL_STATICS, std::string( temp_statics ) );
+	data::setPath( MUL_VERDATA, std::string( temp_verdata ) );
+	data::setPath( MUL_TILEDATA, std::string( temp_tiledata ) );
+	data::setPath( MUL_MULTI, std::string( temp_multimul ) );
+	data::setPath( MUL_MULTIIDX, std::string( temp_multiidx ) );
 
 		// name resovling of server-address, LB 7-JULY 2000
 
@@ -1088,18 +1088,18 @@ void saveserverscript()
 	fprintf(file, "// \n");
 	fprintf(file, "// The file containing the map, usually map0.mul for T2A client and Britannia on UO3D,\n");
 	fprintf(file, "// map2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "MAP %s\n", data::getPath( Map_File ).c_str()); // lb
+	fprintf(file, "MAP %s\n", data::getPath( MUL_MAP ).c_str()); // lb
 	fprintf(file, "// The files containing the statics, usually statics0.mul and staidx0.mul for T2A client\n");
 	fprintf(file, "// and Britannia on UO3D, statics2.mul and staidx2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "STATICS %s\n", data::getPath( Statics_File ).c_str()); // lb
-	fprintf(file, "STAIDX %s\n", data::getPath( StaIdx_File ).c_str()); // lb
+	fprintf(file, "STATICS %s\n", data::getPath( MUL_STATICS ).c_str()); // lb
+	fprintf(file, "STAIDX %s\n", data::getPath( MUL_STATIDX ).c_str()); // lb
 	fprintf(file, "// The version data you'll use (verdata.mul, usually)\n");
-	fprintf(file, "VERDATA %s\n", data::getPath( VerData_File ).c_str()); // lb
+	fprintf(file, "VERDATA %s\n", data::getPath( MUL_VERDATA ).c_str()); // lb
 	fprintf(file, "// The tile data you'll use (tiledata.mul, usually)\n");
-	fprintf(file, "TILEDATA %s\n", data::getPath( TileData_File ).c_str()); // lb
+	fprintf(file, "TILEDATA %s\n", data::getPath( MUL_TILEDATA ).c_str()); // lb
 	fprintf(file, "// The files containing multi data (multi.mul and multi.idx usually)\n");
-	fprintf(file, "MULTIMUL %s\n", data::getPath( Multi_File ).c_str()); // lb
-	fprintf(file, "MULTIIDX %s\n", data::getPath( MultiIdx_File ).c_str()); // lb
+	fprintf(file, "MULTIMUL %s\n", data::getPath( MUL_MULTI ).c_str()); // lb
+	fprintf(file, "MULTIIDX %s\n", data::getPath( MUL_MULTIIDX ).c_str()); // lb
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION SKILLS\n");
