@@ -27,6 +27,9 @@
 #define qmax(x,y) ((x)>(y)?(x):(y))
 #define min(x,y) ((x)<(y)?(x):(y))
 #define max(x,y) ((x)>(y)?(x):(y))
+inline float ceilf(float _X)
+        {return ((float)ceil((double)_X)); }
+
 #else
 #define qmax(A,B) (((A)>(B)) ? (A) : (B))
 #define qmin(A,B) (((A)<(B)) ? (A) : (B))
