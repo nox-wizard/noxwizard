@@ -1374,7 +1374,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 			UI08 pdoll[66] = { 0x88, 0x00, 0x05, 0xA8, 0x90, 0x00, };
 
 			LongToCharPtr(target->getSerial32(), pdoll +1);
-			if (SrvParms->g_showTitle == 2 || (SrvParms->g_showTitle == 1 && target->npc))
+			if (ServerScp::g_showTitle == 2 || (ServerScp::g_showTitle == 1 && target->npc))
 			{
 				completetitle = complete_title(target);
 				if ( strlen(completetitle) >= 60 )
