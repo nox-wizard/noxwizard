@@ -6015,6 +6015,44 @@ NATIVE ( _chr_solveGmPage )
 	return true;
 }
 
+
+
+// Command System Params
+
+
+/*!
+\brief Return a set with all the params give by the char with the last command calling
+\author Frodo
+\param 1 the char
+\param 2 the set
+\return false if no params are present at the moment
+*/
+
+/*NATIVE ( _chr_getParams )
+{
+	
+	//extern cGmpagesMap* pages;
+	
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
+	
+	int i, empty=1;
+
+	for(i=1; i<9 && strcmp((char*)pc->getCommandParams(i).c_str(), " ")!=0 ; i++){
+
+
+		amxSet::add( params[2], (char*)pc->getCommandParams(i).c_str() );
+		empty=0;
+	}
+	
+	if(empty) 
+		return false;
+	else 
+		return true;
+}*/
+
+
+
 /*!
 \brief returns the given property and subpropoerty value for the house
 \author Wintermute
