@@ -297,6 +297,24 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		return;
 
 	pc->nextAiCheck = (UI32) ((R64)uiCurrentTime + (speed.npcaitime*MY_CLOCKS_PER_SEC));
+
+	AmxEvent* oncheckai = pc->getAmxEvent( EVENT_CHR_ONCHECKNPCAI );
+	if( oncheckai!=NULL ) {
+
+		NxwCharWrapper sc;
+		sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
+		SERIAL set = amxSet::create();
+		amxSet::copy( set, sc );
+			
+		g_bByPass = false;
+		oncheckai->Call( pc->getSerial32(), set, uiCurrentTime );
+		
+		amxSet::deleteSet( set );
+
+		if (g_bByPass==true)
+			return;
+	}
+
 	switch(pc->npcaitype)
 	{
 		case NPCAI_GOOD:
@@ -702,24 +720,6 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				return;
 			}
 		} 
-		break;
-		case NPCAI_SMALL:
-		{
-			if( pc->npcai_func==NULL ) {
-				pc->npc_type = NPCAI_GOOD;
-				return;
-			}
-
-			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
-			SERIAL set = amxSet::create();
-			amxSet::copy( set, sc );
-			
-			pc->npcai_func->Call( pc->getSerial32(), uiCurrentTime, set );
-			
-			amxSet::deleteSet( set );
-
-		}
 		break;
 		default:
 			WarnOut("cCharStuff::CheckAI-> Error npc %i (%x %x %x %x) has invalid AI type %i\n",DEREF_P_CHAR(pc),pc->getSerial().ser1,pc->getSerial().ser2,pc->getSerial().ser3,pc->getSerial().ser4,pc->npcaitype); //Morrolan
