@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.h,v 1.5 2003/07/17 22:21:57 sparhawksf Exp $
+ *  Version: $Id: amx.h,v 1.6 2003/07/18 17:49:01 dgp85 Exp $
  *
  *  Changed by Luxor for FreeBSD Compatibility
  */
@@ -83,6 +83,9 @@ extern  "C" {
   #if defined(BIT16)
     typedef uint16_t  ucell;    /* only for type casting */
     typedef int16_t   cell;
+  #elif defined(__alpha__)
+    typedef uint64_t  ucell;
+    typedef int64_t   cell;
   #else
     typedef uint32_t  ucell;
     typedef int32_t   cell;
@@ -123,7 +126,7 @@ typedef struct {
 #define AMX_USERNUM     4
 #define sEXPMAX         19
 typedef struct {
-  uint32_t address;
+  cell address;
   char name[sEXPMAX+1];
 } AMX_FUNCSTUB;
 

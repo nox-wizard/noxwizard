@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.10 2003/07/17 22:21:57 sparhawksf Exp $
+ *  Version: $Id: amx.c,v 1.11 2003/07/18 17:49:01 dgp85 Exp $
  */
 
 //XAN
@@ -228,6 +228,32 @@ void swap32(uint32_t *v)
   s[2]=t;
 }
 
+#ifdef __alpha__
+void swap64(uint64_t *v)
+{
+  unsigned char *s = (unsigned char *)v;
+  unsigned char t;
+
+  assert(sizeof(*v)==8);
+  /* swap outer two bytes */
+  t=s[0];
+  s[0]=s[7];
+  s[7]=t;
+  /* swap 3rd inner two bytes */
+  t=s[1];
+  s[1]=s[6];
+  s[6]=t;
+  /* swap 2nd inner two bytes */
+  t=s[2];
+  s[2]=s[5];
+  s[5]=t;
+  /* swap inner two bytes */
+  t=s[3];
+  s[3]=s[4];
+  s[4]=t;
+}
+#endif
+
 uint16_t *amx_Align16(uint16_t *v)
 {
   assert(sizeof(*v)==2);
@@ -246,10 +272,26 @@ uint32_t *amx_Align32(uint32_t *v)
   return v;
 }
 
+#ifdef __alpha__
+uint64_t *amx_Align64(uint64_t *v)
+{
+  assert(sizeof(cell)==8);
+  init_little_endian();
+  if (!amx_LittleEndian)
+    swap64(v);
+  return v;
+}
+#endif
+
 #if defined BIT16
-  #define swapcell  swap16
+  #define swapcell	swap16
+  #define Align_Address	amx_Align16
+#elif defined(__alpha__)
+  #define swapcell  	swap64
+  #define Align_Address	amx_Align64
 #else
-  #define swapcell  swap32
+  #define swapcell  	swap32
+  #define Align_Address	amx_Align32
 #endif
 
 int AMXAPI amx_Flags(AMX *amx,uint16_t *flags)
@@ -334,7 +376,7 @@ int AMXAPI amx_Debug(AMX *amx)
   #define RELOC_VALUE(base, v)
 #else
   #define JUMPABS(base, ip)     ((cell *)*ip)
-  #define RELOC_ABS(base, off)  *(ucell *)(base+(int)off) += (ucell)base
+  #define RELOC_ABS(base, off)  *(ucell *)(base+(long)off) += (ucell)base
   #define RELOC_VALUE(base, v)  ((v)+((ucell)(base)))
 #endif
 
@@ -749,7 +791,7 @@ int AMXAPI amx_Init(AMX *amx,void *program)
     assert(hdr->publics<=hdr->natives);
     num=NUMENTRIES(*hdr,publics,natives);
     for (i=0; i<num; i++) {
-      amx_Align32(&fs->address);
+      Align_Address(&fs->address);
       fs++;
     } /* for */
 
@@ -757,7 +799,7 @@ int AMXAPI amx_Init(AMX *amx,void *program)
     assert(hdr->pubvars<=hdr->tags);
     num=NUMENTRIES(*hdr,pubvars,tags);
     for (i=0; i<num; i++) {
-      amx_Align32(&fs->address);
+      Align_Address(&fs->address);
       fs++;
     } /* for */
 
@@ -765,7 +807,7 @@ int AMXAPI amx_Init(AMX *amx,void *program)
     assert(hdr->tags<=hdr->cod);
     num=NUMENTRIES(*hdr,tags,cod);
     for (i=0; i<num; i++) {
-      amx_Align32(&fs->address);
+      Align_Address(&fs->address);
       fs++;
     } /* for */
   } /* if */
@@ -1015,7 +1057,7 @@ int AMXAPI amx_GetPubVar(AMX *amx, int index, char *varname, cell *amx_addr)
 
   var=(AMX_FUNCSTUB *)(amx->base+(int)hdr->pubvars+index*sizeof(AMX_FUNCSTUB));
   strcpy(varname,var->name);
-  *amx_addr=var->address;
+  *amx_addr=(cell)var->address;
   return AMX_ERR_NONE;
 }
 
@@ -1079,7 +1121,7 @@ int AMXAPI amx_GetTag(AMX *amx, int index, char *tagname, cell *tag_id)
 
   tag=(AMX_FUNCSTUB *)(amx->base+(int)hdr->tags+index*sizeof(AMX_FUNCSTUB));
   strcpy(tagname,tag->name);
-  *tag_id=tag->address;
+  *tag_id=(cell)tag->address;
   return AMX_ERR_NONE;
 }
 
@@ -1187,7 +1229,7 @@ int AMXAPI amx_Register(AMX *amx, AMX_NATIVE_INFO *list, int number)
       /* this function is not yet located */
       funcptr=(list!=NULL) ? findfunction(func->name,list,number) : NULL;
       if (funcptr!=NULL)
-        func->address=(uint32_t)funcptr;
+        func->address=(cell)funcptr;
       else
         err=AMX_ERR_NOTFOUND;
     } /* if */
@@ -1320,7 +1362,7 @@ static void *labels[] = {
     if (index>=NUMENTRIES(*hdr,publics,natives))
       return AMX_ERR_INDEX;
     func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
-    cip=(cell *)(code + (int)func->address);
+    cip=(cell *)(code + (long)func->address);
   } /* if */
   /* check values just copied */
   CHKSTACK();
@@ -2259,6 +2301,8 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
   assert(OP_SYMBOL==126);
   #if defined(BIT16)
     assert(sizeof(cell)==2);
+  #elif defined(__alpha__)
+    assert(sizeof(cell)==8);
   #else
     assert(sizeof(cell)==4);
   #endif
@@ -3155,6 +3199,8 @@ int AMXAPI amx_Release(AMX *amx,cell amx_addr)
 #define CHARBITS        (8*sizeof(char))
 #if defined BIT16
   #define CHARMASK      (0xffffu << 8*(2-sizeof(char)))
+#elif defined(__alpha__)
+  #define CHARMASK	(0xffffffffffffffffuLL << 8*(6-sizeof(char)))
 #else
   #define CHARMASK      (0xffffffffuL << 8*(4-sizeof(char)))
 #endif
