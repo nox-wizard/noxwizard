@@ -22,6 +22,7 @@
 #include "network.h"
 #include "set.h"
 
+
 void cChar::setClient(NXWCLIENT client)
 {
 	if (m_client != NULL) safedelete(m_client);
@@ -318,6 +319,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 	statGainedToday = 0;	//Luxor
 	speechCurrent=NULL; //Endymion
+	profile=NULL;
+	staticProfile=NULL;
 }
 
 /*!

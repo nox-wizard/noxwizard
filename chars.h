@@ -726,6 +726,11 @@ class cChar : public cObject
 		TIMERVAL		tempflagtime;
 		// End of Guild Related Character information
 
+
+		cUnicodeString* profile; //!< player profile
+		cUnicodeString* staticProfile; //!< player static profile
+
+
 		TIMERVAL		murderrate; //# of ticks until one murder decays //REPSYS
 		TIMERVAL		murdersave; //# of second for murder decay
 
