@@ -11,32 +11,49 @@
 
 
 MENU_MAP cMenu::menuMap;
-map<UI32, std::string > cMenu::responseMap;
 
 
 #define OPTIONS2BITSET( MOVE, CLOSE, DISPOSE ) \
 	( MOVE*MOVEABLE | CLOSE*CLOSEABLE | DISPOSE*DISPOSEABLE  ) \
 
 
-LOGICAL cMenu::createGump(UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial)
+
+
+/*!
+\brief Create a new menu
+\author Endymion
+\param id the menu id
+\param x the x location on screen
+\param y the y location on screen
+\param options the options
+\return the serial of new menu
+*/
+SERIAL cMenu::createMenu( UI32 id, UI32 x, UI32 y, UI08 options )
 {
-	if( menuMap.find( gump ) == menuMap.end() )
-	{
-		menuMap.insert( make_pair( gump, new cMenu( gump, x, y, options, serial ) ) );
-		return true;
-	}
-	return false;
+	menuMap.insert( make_pair( current_serial++, new cMenu( current_serial++, id, x, y, options ) ) );
+	return current_serial -1;
 }
 
-LOGICAL	cMenu::createGump(UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial)
+/*!
+\brief Create a new menu
+\author Endymion
+\param id the menu id
+\param x the x location on screen
+\param y the y location on screen
+\param canMove true if can move
+\param canClose true if can close
+\param canDispose true if can dispose
+\return the serial of new menu
+*/
+SERIAL	cMenu::createMenu( UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose )
 {
-	return createGump( gump, x, y, OPTIONS2BITSET(canMove, canClose, canDispose), serial );
+	return createMenu( id, x, y, OPTIONS2BITSET(canMove, canClose, canDispose) );
 }
 
 
-LOGICAL	cMenu::deleteGump( UI32 gump )
+LOGICAL	cMenu::deleteMenu( SERIAL menu )
 {
-	MENU_MAP::iterator iter( menuMap.find( gump ) );
+	MENU_MAP::iterator iter( menuMap.find( menu ) );
 	if( iter != menuMap.end() )
 	{
 		menuMap.erase( iter );
@@ -45,17 +62,17 @@ LOGICAL	cMenu::deleteGump( UI32 gump )
 	return false;
 }
 
-cMenu* cMenu::selectGump( UI32 gump )
+P_MENU cMenu::selectMenu( SERIAL menu )
 {
-	MENU_MAP::iterator iter( menuMap.find( gump ) );
+	MENU_MAP::iterator iter( menuMap.find( menu ) );
 	if( iter != menuMap.end() )
 		return iter->second;
 	return NULL;	
 }
 
-LOGICAL cMenu::showGump( UI32 gump, P_CHAR pc )
+LOGICAL cMenu::showMenu( SERIAL menu, P_CHAR pc )
 {
-	MENU_MAP::iterator iter( menuMap.find( gump ) );
+	MENU_MAP::iterator iter( menuMap.find( menu ) );
 	if( iter != menuMap.end() )
 	{
 		iter->second->show( pc );
@@ -64,7 +81,7 @@ LOGICAL cMenu::showGump( UI32 gump, P_CHAR pc )
 	return false;	
 }
 
-LOGICAL cMenu::handleGump( NXWCLIENT ps )
+LOGICAL cMenu::handleMenu( NXWCLIENT ps )
 {
 
 	if( ps==NULL )
@@ -132,7 +149,7 @@ LOGICAL cMenu::handleGump( NXWCLIENT ps )
 	else*/
 }
 
-LOGICAL cMenu::selectResponse( UI32 fieldId, std::string &value )
+/*LOGICAL cMenu::selectResponse( UI32 fieldId, std::string &value )
 {
 	map<UI32, std::string >::iterator iter( responseMap.find( fieldId ) );
 	if( iter != responseMap.end() )
@@ -142,9 +159,9 @@ LOGICAL cMenu::selectResponse( UI32 fieldId, std::string &value )
 	}
 	else
 		return false;
-}
+}*/
 
-LOGICAL	cMenu::addResponse( UI32 fieldId, std::string value )
+/*LOGICAL	cMenu::addResponse( UI32 fieldId, std::string value )
 {
 	if( responseMap.find( fieldId ) != responseMap.end() )
 		return false;
@@ -153,31 +170,84 @@ LOGICAL	cMenu::addResponse( UI32 fieldId, std::string value )
 		responseMap.insert( make_pair( fieldId, value ) );
 		return true;
 	}
-}
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 cMenu::cMenu()
 {
-	cMenu( 0, 0, 0, MOVEABLE|CLOSEABLE|DISPOSEABLE, 0 );
+	cMenu( INVALID, 0, 0, 0, MOVEABLE|CLOSEABLE|DISPOSEABLE );
 }
 
-cMenu::cMenu( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial )
+cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose )
 {
-	cMenu( gump, x, y, OPTIONS2BITSET(canMove, canClose, canDispose), serial );
+	cMenu( menu, id, x, y, OPTIONS2BITSET(canMove, canClose, canDispose) );
 }
 
-cMenu::cMenu( UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial )
+cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, UI08 options )
 {
-	setGumpId( gump );
+	setId( id );
 	setX( x );
 	setY( y );
 	setOptions( options );
-	setSerial( serial );
+	this->serial = serial;
 }
 
 cMenu::~cMenu()
 {
 	
 }
+
+void cMenu::setId( const UI32 arg )
+{
+	id = arg ;
+}
+
+void cMenu::setX( const UI32 arg )
+{
+	x = arg;
+}
+
+void cMenu::setY( const UI32 arg )
+{
+	y = arg;
+}
+
+void cMenu::setOptions( const UI08 options )
+{
+	this->options=options;
+}
+
+void cMenu::setOptions( const UI08 options, const bool value )
+{
+	if( value )
+		this->options|=options;
+	else 
+		this->options&=~options;
+}
+
+
+
+
+
+
 
 void cMenu::addCommand( const std::string& command )
 {
@@ -211,7 +281,7 @@ void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 returnCode )
 }
 
 
-void cMenu::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
+/*void cMenu::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
 {
 	addCommand( "{button %d %d %d %d 0 %d 0}", x, y, up, down, page );
 }
@@ -294,12 +364,7 @@ void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI3
 	addCommand( "{radio %d %d %d %d %d %d}", x, y, off, on, checked, result );
 }
 
-
-
-void cMenu::setSerial( const UI32 arg )
-{
-	serial = arg;
-}
+*/
 
 void cMenu::handleButton( const NXWSOCKET socket, const UI32 button )
 {
@@ -312,18 +377,6 @@ void cMenu::setCallBack( const std::string& arg )
 }
 
 
-void cMenu::setOptions( const UI08 options )
-{
-	this->options=options;
-}
-
-void cMenu::setOptions( const UI08 options, const bool value )
-{
-	if( value )
-		this->options|=options;
-	else 
-		this->options&=~options;
-}
 
 void cMenu::setMoveAble( const bool arg )
 {
@@ -344,20 +397,6 @@ void cMenu::setDisposeAble( const bool arg )
 
 
 
-void cMenu::setGumpId( const UI32 arg )
-{
-	gumpId = arg ;
-}
-
-void cMenu::setX( const UI32 arg )
-{
-	x = arg;
-}
-
-void cMenu::setY( const UI32 arg )
-{
-	y = arg;
-}
 
 
 
@@ -383,7 +422,7 @@ void cMenu::show( P_CHAR pc )
 
 
 	packet.id=serial;
-	packet.gump=gumpId;
+	packet.gump=id;
 	packet.x = x;
 	packet.y = y;
 
