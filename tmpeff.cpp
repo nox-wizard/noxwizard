@@ -867,16 +867,36 @@ void cTempfx::executeExpireCode()
 			break;
 
 		case AMXCUSTOM:
+		{
+			cObject *src=NULL, *dest=NULL;
+			if ( ISVALIDPC(pc_dest) ) 
 			{
-			cObject *src, *dest;
-			if ( ISVALIDPC(pc_dest) ) dest=pc_dest;
-			else if ( ISVALIDPC(pi_dest) ) dest=pi_dest;
-			if ( ISVALIDPC(pc_src) ) src=pc_src;
-			else if ( ISVALIDPC(pi_src) ) src=pi_src;
+				dest=pc_dest;
+			}
+			else if ( ISVALIDPI(pi_dest) ) 
+			{
+				dest=pi_dest;
+			}
+			else 
+			{
+				LogError ("Invalid destination object in amx custom tempfx ");
+			}
+			if ( ISVALIDPC(pc_src) ) 
+			{
+				src=pc_src;
+			}
+			else if ( ISVALIDPI(pi_src) ) 
+			{
+				src=pi_src;
+			}
+			else 
+			{
+				LogError ("Invalid source object in amx custom tempfx ");
+			}
 
 			callCustomTempFx(src, dest, MODE_END, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
-			}
-			break;
+		}
+		break;
 
 		case GREY:
 			VALIDATEPC(pc_dest);
