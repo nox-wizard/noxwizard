@@ -439,6 +439,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcfrom->staticFX(0x3735, 0, 10, &spfx);
 			break;
 		case SPELL_EARTHQUAKE: // Luxor
+			pcto->playSFX( 0x20E );
 			if ( pcto->HasHumanBody() && !pcto->isMounting() )
 				pcto->playAction( (rand()%2 == 1) ? 0x15 : 0x16 );
 			break;
@@ -692,10 +693,16 @@ void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pd = sc.getChar();
-		if (ISVALIDPC(pd)) {
+		if ( ISVALIDPC(pd) ) {
 			//<Luxor>
-			if ( spellnum == SPELL_EARTHQUAKE && pd->isMounting() )
-				pd->unmountHorse();
+			if ( spellnum == SPELL_EARTHQUAKE ) {
+				if ( ISVALIDPC( pcaster ) ) {
+					if ( pd->getSerial32() == pcaster->getSerial32() )
+						continue;
+				}
+				if ( pd->isMounting() )
+					pd->unmountHorse();
+			}
 			//</Luxor>
 			spellFX(spellnum, pcaster, pd);
 			damage(pcaster, pd, spellnum, SPELLFLAG_PARAMISDAMAGE, damagetobedone);
