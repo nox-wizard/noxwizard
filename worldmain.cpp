@@ -1464,7 +1464,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "FONT %i\n", pc->fonttype);
 			if ( pc->saycolor != dummy.saycolor )
 				fprintf(cWsc, "SAY %i\n", pc->saycolor);
-			if ( pc->emotecolor != dummy.emotecolor );
+			if ( pc->emotecolor != dummy.emotecolor )
 				fprintf(cWsc, "EMOTE %i\n", pc->emotecolor);
 
 			fprintf(cWsc, "STRENGTH %i\n", pc->st3);
