@@ -101,11 +101,6 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 //AoS/	Network->FlushBuffer(m_sck);
 }
 
-NXWSOCKET cNxwClientObj::toLegacySocket() 
-{ 
-	return m_sck; 
-}
-
 void cNxwClientObj::setLegacySocket(NXWSOCKET s) 
 { 
 	if (s < 0 || s > MAXCLIENT) return;
