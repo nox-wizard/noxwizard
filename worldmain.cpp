@@ -727,7 +727,7 @@ void loaditem()
 
 				if ( !((i&0x4000) || (i&0x8000)) || (i == 32767))
 				{
-					pi->setColor(i);
+					pi->setColor(static_cast<COLOR>(i));
 				}
 				else
 				{
