@@ -76,7 +76,6 @@ void itemtalk( P_ITEM pi, char *txt);
 
 void staticeffect (CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false );
 void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
-void bolteffect(CHARACTER player, bool UO3DonlyEffekt=false, bool skip_old=false);
 void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
 
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode);
@@ -103,7 +102,7 @@ void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3
 void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI08 sysname[30], char *text);
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen);
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color);
-void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false); 
+void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false);
 void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn, Location pos, bool useDispZ = false);
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send

@@ -1533,67 +1533,6 @@ MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), ef
 	}
 }
 
-void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
-{
-
-	P_CHAR pc=MAKE_CHAR_REF(player);
-	VALIDATEPC(pc);
-
-	UI08 effect[28]={ 0x70, 0x00, };
-
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	Location charpos= pc->getPosition();
-
-	if (!skip_old)
-	{
-Location pos2;
-pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0);
-	}
-
-	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
-	 {
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( pc, false );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-				Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 }
-		 }
-	   return;
-	}
-	else
-	{
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( pc, false );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-			 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
-			 {
-				 Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-			 {
-
-				bolteffectUO3D(player);
-				unsigned char particleSystem[49];
-				Xsend(j, particleSystem, 49);
-//AoS/				Network->FlushBuffer(j);
-			 }
-			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
-		 }
-	   }
-	}
-}
-
-
 // staticeffect2 is for effects on items
 void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt,  ParticleFx *str, bool skip_old )
 {
@@ -1608,7 +1547,7 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode);
+		MakeGraphicalEffectPkt_(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode);
 	}
 
 	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients

@@ -2266,7 +2266,54 @@ void cChar::staticFX(short id, SI32 speed, SI32 loop, ParticleFx* part)
 */
 void cChar::boltFX(LOGICAL bNoParticles)
 {
-	bolteffect(DEREF_P_CHAR(this), !bNoParticles);
+	UI08 effect[28]={ 0x70, 0x00, };
+
+ 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+
+	Location pos2;
+	pos2.x = 0; pos2.y = 0; pos2.z = 0;
+	MakeGraphicalEffectPkt_(effect, 0x01, getSerial32(), 0, 0, getPosition(), pos2, 0, 0, 1, 0);
+
+	if (bNoParticles) // no UO3D effect ? lets send old effect to all clients
+	{
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( this, false );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 }
+		 }
+	   return;
+	}
+	else
+	{
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( this, false );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+			 if (clientDimension[j]==2) // 2D client, send old style'd
+			 {
+				 Xsend(j, effect, 28);
+//AoS/				Network->FlushBuffer(j);
+			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+			 {
+				//TODO!!!! fix it!
+				bolteffectUO3D(player);
+				unsigned char particleSystem[49];
+				Xsend(j, particleSystem, 49);
+//AoS/				Network->FlushBuffer(j);
+			 }
+			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
+		 }
+	   }
+	}
 }
 
 /*!

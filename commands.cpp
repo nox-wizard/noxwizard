@@ -38,7 +38,7 @@ namespace Commands
 
 		pc->shopkeeper = true;
 
-		P_ITEM pi;	
+		P_ITEM pi;
 		if (pc->GetItemOnLayer(LAYER_TRADE_RESTOCK) == NULL)
 		{
 			pi = item::CreateFromScript( "$item_restock", pc );
@@ -167,7 +167,7 @@ namespace Commands
 
 				if(pc_i->spawnregion==r && !pc_i->free)
 				{
-					bolteffect(i, true);
+					pc_i->boltFX()
 					pc_i->playSFX( 0x0029);
 					pc_i->deleteChar();
 					killed++;
@@ -259,7 +259,7 @@ namespace Commands
 			{
 				if(rand()%100+1<=percent)
 				{
-					bolteffect(i, true);
+					pj->boltFX();
 					pj->playSFX(0x0029);
 					pj->Kill();
 				}
@@ -324,7 +324,7 @@ namespace Commands
 				for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 
 					NXWCLIENT ps_i=sw.getClient();
-					if(ps_i==NULL) 
+					if(ps_i==NULL)
 						continue;
 					P_CHAR pj=ps_i->currChar();
 					if ( ISVALIDPC(pj) && pj->IsCounselor() )
@@ -336,7 +336,7 @@ namespace Commands
 				}
 				if (found)
 					pc_currchar->sysmsg(TRANSLATE("Available Counselors have been notified of your request."));
-				else 
+				else
 					pc_currchar->sysmsg(TRANSLATE("There was no Counselor available to take your call."));
 			}
 			else pc_currchar->sysmsg(TRANSLATE("Please enter the reason for your Counselor request"));
@@ -398,7 +398,7 @@ namespace Commands
 				for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 
 					NXWCLIENT ps_i=sw.getClient();
-					if(ps_i==NULL) 
+					if(ps_i==NULL)
 						continue;
 					P_CHAR pc_i=ps_i->currChar();
 					if ( ISVALIDPC(pc_i) && pc_i->IsGM() )
@@ -409,7 +409,7 @@ namespace Commands
 				}
 				if (found)
 					pc_currchar->sysmsg(TRANSLATE("Available Game Masters have been notified of your request."));
-				else 
+				else
 					pc_currchar->sysmsg(TRANSLATE("There was no Game Master available to take your call."));
 			}
 			else pc_currchar->sysmsg(TRANSLATE("Please enter the reason for your GM request"));
@@ -426,10 +426,10 @@ namespace Commands
 		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
 		if( ISVALIDPI(pi) )
 		{
-			
+
 			if( !Me->IsGMorCounselor() ) {
 
-				if( !pi->dye ) 
+				if( !pi->dye )
 					return;
 
 				P_ITEM outmost = pi->getOutMostCont();
@@ -518,7 +518,7 @@ namespace Commands
 			P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 			Location charpos= pc_currchar->getPosition();
 
-			pi->MoveTo( charpos.x, charpos.y, z ); 
+			pi->MoveTo( charpos.x, charpos.y, z );
 			pi->doordir=0;
 			pi->setDecay( false );
 			pi->setNewbie( false );
@@ -625,7 +625,7 @@ namespace Commands
 	{
 		if (s < 0 || s >= now)
 			return;
-		
+
 		P_CHAR pc = pointers::findCharBySerial(currchar[s]);
 		VALIDATEPC(pc);
 		InfoOut( "%s has initiated an item wipe\n", pc->getCurrentNameC() );
@@ -636,7 +636,7 @@ namespace Commands
 			if ( ISVALIDPI(pi) && pi->isInWorld() && pi->wipe == 0 )
 				pi->Delete();
 		}
-		
+
 		sysbroadcast( TRANSLATE("All items have been wiped") );
 	}
 

@@ -2496,9 +2496,9 @@ NATIVE( _rgn_getName )
 */
 NATIVE (_send_boltfx)
 {
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
-    bolteffect(DEREF_P_CHAR(pc), true);
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
+	pc->boltFX();
 	return 0;
 }
 
