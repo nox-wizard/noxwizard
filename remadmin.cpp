@@ -175,16 +175,13 @@ void RemoteAdmin::CheckConn ()
 	Printf(racnow, "%s %s.%s [%s]\r\n", PRODUCT, VERNUMB, HOTFIX, OS);
 	Printf(racnow, "Remote Administration Console\r\n");
 	Printf(racnow, "Program by Xanathar and Ummon\r\n");
-	Printf(racnow, "http://nox-wizard.sunsite.dk\r\n");
+	Printf(racnow, "http://noxwizard.sourceforge.net/\r\n");
 	Printf(racnow, "\r\n");
 	Printf(racnow, "INFO: character typed for login and password\r\n");
 	Printf(racnow, "are not echoed, this is not a bug.\r\n");
-/*	Printf(racnow, "%.4f Native Rate, %.4f AMX Rate\r\n\r\n", g_fNatRate, g_fAmxRate);
-*/
 
 	Printf(racnow, "\r\nLogin : ");
 	racnow++;
-
 }
 
 

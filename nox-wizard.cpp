@@ -1180,7 +1180,7 @@ void angelMode();
 
 	ConOut("%s %s %s.%s [%s] compiled by %s\nProgrammed by: %s", PRODUCT, VER, VERNUMB, HOTFIX, OS, NAME, PROGRAMMERS);
 	ConOut("\nBased on Wolfpack 12.5b1 (http://www.wpdev.org)");
-	ConOut("\nWeb-site : http://nox-wizard.sunsite.dk/\n");
+	ConOut("\nWeb-site : http://noxwizard.sourceforge.net/\n");
 	ConOut("\n");
 	ConOut("Copyright (C) 1997, 98 Marcus Rating (Cironian)\n\n");
 	ConOut("This program is free software; you can redistribute it and/or modify\n");

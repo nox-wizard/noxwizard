@@ -188,7 +188,7 @@ BEGIN
     CTEXT           "Program by Xanathar, Luxor, Elcabesa, Araknesh, LordShoo, Dr.X and Anthalir",
                     IDC_STATIC,4,68,372,8,0,WS_EX_TRANSPARENT
     DEFPUSHBUTTON   "OK",IDOK,319,226,57,15,WS_GROUP,WS_EX_STATICEDGE
-    CTEXT           "http://nox-wizard.sunsite.dk",IDC_STATIC,4,91,372,8
+    CTEXT           "http://noxwizard.sourceforge.net/",IDC_STATIC,4,91,372,8
     LTEXT           "This program uses a modified version of scripting technologies from ITB CompuPhase Small Language (AMX Abstract Machine, Small compiler and SDBG debugger). Copyright 1997-2001 by ITB CompuPhase.",
                     IDC_STATIC,4,191,372,17
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,182,372,1
@@ -277,7 +277,7 @@ BEGIN
         BLOCK "040004b0"
         BEGIN
             VALUE "Comments", "Program by Xanathar, Ummon, Elcabesa, Luxor, Dr.X-Anfibius based on Wolfpack 12.5b1\0"
-            VALUE "CompanyName", "Please, visit http://nox-wizard.sunsite.dk\0"
+            VALUE "CompanyName", "Please, visit http://noxwizard.sourceforge.net/\0"
             VALUE "FileDescription", "NoX-Wizard\0"
             VALUE "FileVersion", "0, 0, 0, 0\0"
             VALUE "InternalName", "NXW-WIN32 (CONSOLE/SVC/GUI/EZ-GUI)\0"
