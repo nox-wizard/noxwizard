@@ -117,116 +117,118 @@ void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowi
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillOwnedNpcs( pc, includeStabled, onlyFollowing );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillOwnedNpcs( pc, includeStabled, onlyFollowing );
+		sc->rewind();
+	}
 }
 
 void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillNpcsNearXY( x, y, distance );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillNpcsNearXY( x, y, distance );
+		sc->rewind();
+	}
 }
 
 void addNpcsNearObj( SERIAL iSet, P_CHAR pc, int nDistance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillNpcsNear( pc, nDistance );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillNpcsNear( pc, nDistance );
+		sc->rewind();
+	}
 }
 
 void addNpcsNearObj( SERIAL iSet, P_ITEM pi, int nDistance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillNpcsNear( pi, nDistance );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillNpcsNear( pi, nDistance );
+		sc->rewind();
+	}
 }
 
 void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillPartyFriend( pc, distance, excludeThis );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillPartyFriend( pc, distance, excludeThis );
+		sc->rewind();
+	}
 }
 
 void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
-	si->fillItemsInContainer( pi, includeSubCont, includeOnlyFirstSubCont );
-	si->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemsInContainer( pi, includeSubCont, includeOnlyFirstSubCont );
+		si->rewind();
+	}
 }
 
 void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
-	si->fillItemWeared( pc, includeLikeHair, includeProtectedLayer, excludeIllegalLayer );
-	si->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemWeared( pc, includeLikeHair, includeProtectedLayer, excludeIllegalLayer );
+		si->rewind();
+	}
 }
 
 void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
-	si->fillItemsAtXY( x, y, type );
-	si->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemsAtXY( x, y, type );
+		si->rewind();
+	}
 }
 
 void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
-	si->fillItemsNearXYZ( x, y, distance, excludeNotMovable );
-	si->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemsNearXYZ( x, y, distance, excludeNotMovable );
+		si->rewind();
+	}
 }
 
 inline void NxwSocketWrapper2NxwCharWrapper( NxwSocketWrapper& sw, NxwCharWrapper* sc )
 {
+	NXWCLIENT	ps;
+	P_CHAR		pc;
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
-		NXWCLIENT ps=sw.getClient();
-		if( ps!=NULL ) {
-			P_CHAR pc=ps->currChar();
+		ps = sw.getClient();
+		if( ps != 0 ) {
+			pc=ps->currChar();
 			if(ISVALIDPC(pc))
 				sc->insert( pc->getSerial32() );
 		}
@@ -235,96 +237,94 @@ inline void NxwSocketWrapper2NxwCharWrapper( NxwSocketWrapper& sw, NxwCharWrappe
 
 void addAllOnlinePlayers( SERIAL iSet )
 {
-
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
+	if( iter != g_oSet.end() )
+	{
+		NxwSocketWrapper sw;
+		sw.fillOnline();
 
-	NxwSocketWrapper sw;
-	sw.fillOnline();
-
-	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
-	iter->second->rewind();
+		NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+		iter->second->rewind();
+	}
 }
 
 void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
+	if( iter != g_oSet.end() )
+	{
+		NxwSocketWrapper sw;
+		sw.fillOnline( pc, excludeThis, distance );
 
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc, excludeThis, distance );
-
-	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
-	iter->second->rewind();
+		NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+		iter->second->rewind();
+	}
 }
 
 void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
+	if( iter != g_oSet.end() )
+	{
+		NxwSocketWrapper sw;
+		sw.fillOnline( pi, distance );
 
-	NxwSocketWrapper sw;
-	sw.fillOnline( pi, distance );
-
-	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
-	iter->second->rewind();
+		NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+		iter->second->rewind();
+	}
 }
 
 void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
+	if( iter != g_oSet.end() )
+	{
+		NxwSocketWrapper sw;
+		Location loc; loc.x=x; loc.y=y;
+		sw.fillOnline( loc, distance );
 
-	NxwSocketWrapper sw;
-	Location loc; loc.x=x; loc.y=y;
-	sw.fillOnline( loc, distance );
-
-	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
-	iter->second->rewind();
+		NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+		iter->second->rewind();
+	}
 }
 
 void addGuildMembers( SERIAL iSet, SERIAL guild )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillGuildMembers( guild );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillGuildMembers( guild );
+		sc->rewind();
+	}
 }
 
 void addGuildRecruits( SERIAL iSet, SERIAL guild )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
-	sc->fillGuildRecruits( guild );
-	sc->rewind();
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc = static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillGuildRecruits( guild );
+		sc->rewind();
+	}
 }
 
 void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
-	si->fillGuilds( guild, options );
-	si->rewind();
-
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
+		si->fillGuilds( guild, options );
+		si->rewind();
+	}
 }
 
 
@@ -497,21 +497,22 @@ void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, bool bIncludeSubCon
 {
 	
 	std::map< SERIAL , vector<P_ITEM> >::iterator cont( pointers::pContMap.find( serial ) );
-	if( cont==pointers::pContMap.end() || cont->second.empty() )
-		return;
-
-	std::vector<P_ITEM>::iterator iter( cont->second.begin() );
-	for( ; iter!=cont->second.end(); iter++ )
+	if( cont != pointers::pContMap.end() && !cont->second.empty() )
 	{
-	
-		P_ITEM pi=(*iter);
-
-		insertSerial(pi);
-		if (pi->type==ITYPE_CONTAINER)		// a subcontainer ?
+		std::vector<P_ITEM>::iterator iter( cont->second.begin() ), end( cont->second.end() );
+		P_ITEM pi;
+		for( ; iter != end; ++iter )
 		{
-			if (bIncludeSubContained ) {
-				fillSerialInContainer( pi, bIncludeOnlyFirstSubcont ? false : bIncludeSubContained);
-			} //Endymion bugfix, becuase not added to set before :[
+
+			pi=(*iter);
+
+			insertSerial(pi);
+			if (pi->type==ITYPE_CONTAINER)		// a subcontainer ?
+			{
+				if (bIncludeSubContained ) {
+					fillSerialInContainer( pi, bIncludeOnlyFirstSubcont ? false : bIncludeSubContained);
+				} //Endymion bugfix, becuase not added to set before :[
+			}
 		}
 	}
 }
@@ -525,7 +526,7 @@ void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, bool bIncludeSubCon
 */
 void NxwSerialWrapper::fillSerialInContainer( cObject* obj, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont )
 {
-	if( obj!=NULL )
+	if( obj != 0 )
 		fillSerialInContainer( obj->getSerial32(), bIncludeSubContained, bIncludeOnlyFirstSubcont );
 }
 
@@ -582,16 +583,17 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 	std::map< SERIAL, std::vector< P_CHAR > >::iterator vect( pointers::pOwnCharMap.find( pc->getSerial32() ) );
 	if( ( vect!=pointers::pOwnCharMap.end() ) && !vect->second.empty() ) {
 
-		std::vector< P_CHAR >::iterator iter( vect->second.begin() );
-		for( ; iter!=vect->second.end(); iter++ ) {
-			P_CHAR poOwnedChr = (*iter);
-		
+		std::vector< P_CHAR >::iterator iter( vect->second.begin() ), end( vect->second.end() );
+		P_CHAR poOwnedChr;
+		for( ; iter != end; ++iter ) {
+			poOwnedChr = (*iter);
+
 			if(ISVALIDPC(poOwnedChr))
 			{
-				if ((poOwnedChr->ftargserial==pc->getSerial32()) || 
+				if ((poOwnedChr->ftargserial==pc->getSerial32()) ||
 					( !bOnlyFollowing && bIncludeStabled && ( poOwnedChr->isStabled() ) ) ) {
 					insertSerial(poOwnedChr->getSerial32());
-				} 
+				}
 			}
 		}
 	} 
@@ -605,28 +607,28 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
 
-	if( !mapRegions->isValidCoord( x, y ) )
-		return;
+	if( mapRegions->isValidCoord( x, y ) )
+	{
+		UI16 	nowx = x / REGION_GRIDSIZE,
+			nowy = y / REGION_COLSIZE;
 
-	UI16 nowx = x / REGION_GRIDSIZE, nowy = y / REGION_COLSIZE;
-
-	if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
-		return;
-
-	SERIAL_SET::iterator it( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
-	for( ; it != mapRegions->regions[nowx][nowy].charsInRegions.end(); it++ ) {
-		P_CHAR pc = pointers::findCharBySerial( *it );
-		
-		if ( !ISVALIDPC( pc ) )
-			continue;
-		if ( pc->getPosition().x != x || pc->getPosition().y != y )
-			continue;
-                if ( bExcludeOfflinePlayers && !pc->npc && !pc->IsOnline() )
-			continue;
-		if ( bOnlyPlayer && pc->npc )
-			continue;
-
-		insertSerial( pc->getSerial32() );
+		if( !mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+		{
+			SERIAL_SET::iterator	it( mapRegions->regions[nowx][nowy].charsInRegions.begin() ),
+						end( mapRegions->regions[nowx][nowy].charsInRegions.end() );
+			for( ; it != end; ++it ) {
+				P_CHAR pc = pointers::findCharBySerial( *it );
+				if ( pc == 0 )
+					continue;
+				if ( pc->getPosition().x != x || pc->getPosition().y != y )
+					continue;
+				if ( bExcludeOfflinePlayers && !pc->npc && !pc->IsOnline() )
+					continue;
+				if ( bOnlyPlayer && pc->npc )
+					continue;
+				insertSerial( pc->getSerial32() );
+			}
+		}
 	}
 }
 
@@ -655,37 +657,36 @@ void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlaye
 void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
 
-	if(!mapRegions->isValidCoord( x, y ))
-		return;
+	if( mapRegions->isValidCoord( x, y ) )
+		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
+			if( ix>=0 ) {
+				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
+					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+						UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
-		if( ix>=0 ) {
-			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
-
-					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
-						continue;
-					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
-						P_CHAR pc=pointers::findCharBySerial( *iter );
-						if( !ISVALIDPC( pc ) )
+						if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 							continue;
-						if(  !pc->isStabled() && !pc->mounted ) {
-							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
-							if (iDist <= nDistance)
-								if ( ( !bOnlyPlayer && pc->npc ) ||
-									( !bExcludeOfflinePlayers || pc->IsOnline() ) )
-									this->insertSerial(pc->getSerial32());
+
+						SERIAL_SET::iterator	iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() ),
+									end( mapRegions->regions[nowx][nowy].charsInRegions.end() );
+						for( ; iter != end; ++iter ) {
+							P_CHAR pc=pointers::findCharBySerial( *iter );
+							if( pc == 0 )
+								continue;
+							if(  !pc->isStabled() && !pc->mounted ) {
+								int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
+								if (iDist <= nDistance)
+									if ( ( !bOnlyPlayer && pc->npc ) ||
+										( !bExcludeOfflinePlayers || pc->IsOnline() ) )
+										this->insertSerial(pc->getSerial32());
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 
-	
+
 }
 
 
@@ -713,33 +714,35 @@ void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool b
 */
 void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 {
-	if(!mapRegions->isValidCoord( x, y ))
-		return;
+	if( mapRegions->isValidCoord( x, y ) )
+		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
+			if( ix>=0 ) {
+				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
+					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+						UI16	nowx = ix/REGION_GRIDSIZE,
+							nowy= iy/REGION_COLSIZE;
 
-	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
-		if( ix>=0 ) {
-			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
-
-					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
-						continue;
-					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
-						P_CHAR pc=pointers::findCharBySerial( *iter );
-						if( !ISVALIDPC( pc ) || !pc->npc )
+						if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 							continue;
-						if(  !pc->isStabled() && !pc->mounted ) {
-							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
-							if (iDist <= nDistance)
-								this->insertSerial(pc->getSerial32());
+
+						SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() ),
+									end( mapRegions->regions[nowx][nowy].charsInRegions.end() );
+						for( ; iter != end; ++iter ) {
+							P_CHAR pc=pointers::findCharBySerial( *iter );
+							if( pc == 0 )
+								continue;
+							if( !pc->npc )
+								continue;
+							if(  !pc->isStabled() && !pc->mounted ) {
+								int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
+								if (iDist <= nDistance)
+									this->insertSerial(pc->getSerial32());
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 }
 
 /*!
@@ -791,19 +794,22 @@ void NxwCharWrapper::fillNpcsNear( P_ITEM pi, int nDistance )
 void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeThis )
 {
 	VALIDATEPC(pc);
-	if( pc->party==INVALID )
-		return;
-	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc->getPosition(), nDistance, true, true );
-	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-		P_CHAR pj=sc.getChar();
-		if( ISVALIDPC(pj) && pc->party==pj->party ) {
-			if( pc->distFrom( pj ) <= nDistance ) {
-				if( !bExcludeThis || ( pc->getSerial32()!=pj->getSerial32() ) )
-					this->insert( pj->getSerial32() );
+	if( pc->party != INVALID )
+	{
+		NxwCharWrapper sc;
+		sc.fillCharsNearXYZ( pc->getPosition(), nDistance, true, true );
+		P_CHAR pj;
+		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+			pj=sc.getChar();
+			if( ISVALIDPC(pj) )
+				if( pc->party==pj->party ) {
+					if( pc->distFrom( pj ) <= nDistance ) {
+						if( !bExcludeThis || ( pc->getSerial32()!=pj->getSerial32() ) )
+							this->insert( pj->getSerial32() );
+				}
 			}
 		}
-	}	
+	}
 }
 
 
@@ -816,13 +822,13 @@ void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeTh
 void NxwCharWrapper::fillGuildMembers( SERIAL guild )
 {
 	P_GUILD pGuild = Guildz.getGuild( guild );
-	if( pGuild==NULL ) return;
-
-	GUILDMEMBERMAP::iterator iter( pGuild->members.begin() ), end( pGuild->members.end() );
-	for( ; iter!=end; iter++ ) {
-		insertSerial( iter->first ); 
+	if( pGuild != 0 )
+	{
+		GUILDMEMBERMAP::iterator iter( pGuild->members.begin() ), end( pGuild->members.end() );
+		for( ; iter!=end; iter++ ) {
+			insertSerial( iter->first );
+		}
 	}
-
 }
 
 /*!
@@ -834,13 +840,13 @@ void NxwCharWrapper::fillGuildMembers( SERIAL guild )
 void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
 {
 	P_GUILD pGuild = Guildz.getGuild( guild );
-	if( pGuild==NULL ) return;
-
-	GUILDRECRUITMAP::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
-	for( ; iter!=end; iter++ ) {
-		insertSerial( iter->first ); 
+	if( pGuild != NULL )
+	{
+		GUILDRECRUITMAP::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
+		for( ; iter!=end; iter++ ) {
+			insertSerial( iter->first );
+		}
 	}
-
 }
 
 /*!
@@ -913,11 +919,13 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 	if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 		return;
 
-	SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
-	for( ; iter!= mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
+	SERIAL_SET::iterator	iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() ),
+				end( mapRegions->regions[nowx][nowy].itemsInRegions.end() );\
+
+	for( ; iter != end; ++iter ) {
 		// <Luxor bug fix>
 		P_ITEM pi=pointers::findItemBySerial( *iter );
-		if ( !ISVALIDPI( pi ) )
+		if ( pi == 0 )
 			continue;
 		if ( !pi->isInWorld() )
 			continue;
@@ -954,36 +962,36 @@ void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 */
 void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems )
 {
-	if(!mapRegions->isValidCoord( x, y ))
-		return;
+	if( mapRegions->isValidCoord( x, y ) )
+		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
+			if( ix>=0 ) {
+				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
+					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+						UI16	nowx = ix/REGION_GRIDSIZE,
+							nowy= iy/REGION_COLSIZE;
 
-	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
-		if( ix>=0 ) {
-			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
+						if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
+							continue;
 
-					if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
-						continue;
-					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
-						P_ITEM pi=pointers::findItemBySerial( *iter );
-						if(ISVALIDPI(pi) && pi->isInWorld() ) {
-
-							int iDist=(int)dist(x,y,0, pi->getPosition("x"), pi->getPosition("y"), 0 );
-							if (iDist <= nDistance) {
-								if ((!bExcludeNotMovableItems) || (pi->magic != 2 && pi->magic != 3))
-								{
-									insertItem(pi);
-								} //if Distance
-							}
+						SERIAL_SET::iterator	iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() ),
+									end( mapRegions->regions[nowx][nowy].itemsInRegions.end() );
+						for( ; iter != end; ++iter ) {
+							P_ITEM pi=pointers::findItemBySerial( *iter );
+							if( pi != 0 )
+								if( pi->isInWorld() ) {
+									int iDist=(int)dist(x,y,0, pi->getPosition("x"), pi->getPosition("y"), 0 );
+									if (iDist <= nDistance) {
+										if ((!bExcludeNotMovableItems) || (pi->magic != 2 && pi->magic != 3))
+										{
+											insertItem(pi);
+										} //if Distance
+									}
+								}
 						}
 					}
 				}
 			}
 		}
-	}
 }
 
 /*!
@@ -1000,7 +1008,7 @@ void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, bool b
 }
 
 /*!
-\brief Fills a set with a list of item weared by given char
+\brief Fills a set with a list of item worn by given char
 \author Endymion
 \param pc the char
 \param bExcludeIllegalLayer if true layer like backpack, trade are excluded
@@ -1017,8 +1025,9 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 	if( cont==pointers::pContMap.end() || cont->second.empty() )
 		return;
 
-	std::vector<P_ITEM>::iterator iter( cont->second.begin() );
-	for( ; iter!=cont->second.end(); iter++ )
+	std::vector<P_ITEM>::iterator	iter( cont->second.begin() ),
+					end( cont->second.end() );
+	for( ; iter != end; ++iter )
 	{
 	
 		P_ITEM pi_j=(*iter);
@@ -1050,27 +1059,26 @@ void NxwItemWrapper::fillGuilds( SERIAL guild, GUILD_POLITICAL options )
 {
 	if( guild == INVALID ) { //all guilds
 		GUILDMAP::iterator iter( Guildz.guilds.begin() ), end( Guildz.guilds.end() );
-		for( ; iter!=end; iter++ ) {
+		for( ; iter!=end; ++iter ) {
 			insertSerial( iter->first );
 		}
 	}
 	else {
 
 		P_GUILD pGuild = Guildz.getGuild( guild );
-		if( pGuild==NULL ) return;
-
-		if( options == GUILD_WAR ) {
-			std::vector<SERIAL>::iterator iter( pGuild->war.begin() ), end( pGuild->war.end() );
-			for( ; iter!=end; iter++ ) {
-				insertSerial( *iter );	
+		if( pGuild != 0 )
+			if( options == GUILD_WAR ) {
+				std::vector<SERIAL>::iterator iter( pGuild->war.begin() ), end( pGuild->war.end() );
+				for( ; iter!=end; ++iter ) {
+					insertSerial( *iter );
+				}
 			}
-		}
-		else if( options == GUILD_ALLIED ) {
-			std::vector<SERIAL>::iterator iter( pGuild->allied.begin() ), end( pGuild->allied.end() );
-			for( ; iter!=end; iter++ ) {
-				insertSerial( *iter );	
+			else if( options == GUILD_ALLIED ) {
+				std::vector<SERIAL>::iterator iter( pGuild->allied.begin() ), end( pGuild->allied.end() );
+				for( ; iter!=end; ++iter ) {
+					insertSerial( *iter );
+				}
 			}
-		}
 	}
 
 }
@@ -1129,7 +1137,7 @@ void NxwSocketWrapper::insertSocket( NXWSOCKET s )
 */
 void NxwSocketWrapper::insertClient( NXWCLIENT ps )
 {
-	if( ps!=NULL )
+	if( ps != 0 )
 		insertSocket( ps->toInt() );
 }
 
@@ -1145,20 +1153,22 @@ void NxwSocketWrapper::insertClient( NXWCLIENT ps )
 */
 void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 nDistance )
 {
+	P_CHAR	pc;
+	LOGICAL	validOnlyNearThis = ISVALIDPC(onlyNearThis);
 
-	for (SI32 i = 0; i < now; i++) {
-		SERIAL serial = currchar[i];
-		if (serial < 0) continue;
-		P_CHAR pc = pointers::findCharBySerial(serial);
-		if (!ISVALIDPC(pc)) continue;
-
-		if (!ISVALIDPC(onlyNearThis)) {
-			insertSocket(i);
-		} else {
-			if (onlyNearThis->distFrom(pc) <= nDistance )
-				if( !(bExcludeThis && ( pc->getSerial32()==onlyNearThis->getSerial32() ) ) )
-					insertSocket(i);
-		}
+	for (SI32 i = 0; i < now; ++i )
+	{
+		pc = pointers::findCharBySerial( currchar[i] );
+		//
+		//	Sparhawk ISVALIDPC(pc) checking unnecessary here, is done by findCharBySerial
+		//
+		if ( pc != 0 )
+			if ( !validOnlyNearThis )
+				insertSocket(i);
+			else
+				if ( onlyNearThis->distFrom(pc) <= nDistance )
+					if( !(bExcludeThis && ( pc->getSerial32()==onlyNearThis->getSerial32() ) ) )
+						insertSocket(i);
 	}
 }
 
@@ -1171,17 +1181,16 @@ void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 
 */
 void NxwSocketWrapper::fillOnline( Location location, int nDistance )
 {
-
-	SERIAL serial = INVALID;
-	P_CHAR pc = NULL;
-	for (SI32 i = 0; i < now; i++) {
-		serial = currchar[i];
-		if (serial < 0) continue;
-		pc = pointers::findCharBySerial(serial);
-		if (!ISVALIDPC(pc)) continue;
-		
-		if (dist(location, pc->getPosition()) <= nDistance)
-			insertSocket(i);
+	P_CHAR pc;
+	for (SI32 i = 0; i < now; ++i )
+	{
+		pc = pointers::findCharBySerial( currchar[i] );
+		//
+		//	Sparhawk ISVALIDPC(pc) checking unnecessary here, is done by findCharBySerial
+		//
+		if ( pc != 0 )
+			if (dist(location, pc->getPosition()) <= nDistance)
+				insertSocket(i);
 	}
 }
 
@@ -1218,7 +1227,7 @@ void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, int nDistance )
 void NxwSocketWrapper::fillOnline(  )
 {
 
-	for (SI32 i = 0; i < now; i++) {
+	for (SI32 i = 0; i < now; ++i ) {
 		if (currchar[i] != INVALID ) 
 			insertSocket(i);
 	}
