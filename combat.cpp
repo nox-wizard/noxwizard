@@ -353,7 +353,6 @@ void cChar::doCombat()
 		return;
 	bool los;
 	int dist, fightskill, x = 0, j = 0, arrowsquant = 0;
-	char temp[TEMP_STR_SIZE];
 
 	if (targserial == INVALID || !war) return;
 
@@ -568,7 +567,6 @@ void cChar::checkPoisoning(P_CHAR pc_def)
 int cChar::combatHitMessage(SI32 damage)
 {
 	char temp[TEMP_STR_SIZE];
-	char temp2[TEMP_STR_SIZE];
 	int hitin;
 	int x = rand()%100;// determine area of body hit
 	if (SrvParms->combathitmessage != 1)
