@@ -305,7 +305,7 @@ DWORD: Unknown (Perhaps some CRC for the block, most blocks in UO files got this
 0D - multi.i
 */
 
-void MULFile::get_st_multi(struct st_multi *buff, unsigned int number)
+void MULFile::get_multi_st(struct multi_st *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {
@@ -360,7 +360,7 @@ void MULFile::get_map_st(struct map_st *buff, unsigned int number)
   }
 }
 
-void MULFile::get_st_multiidx(struct st_multiidx *buff, unsigned int number)
+void MULFile::get_multi_stidx(struct multi_stidx *buff, unsigned int number)
 {
   for(unsigned int i = 0; i < number; i++)
   {

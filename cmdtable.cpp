@@ -2829,8 +2829,8 @@ void command_tilew(NXWSOCKET  s)
 		int pile=0;
 
 		tile_st tile;
-		Map->SeekTile( (addid1[s]<<8) | addid2[s], &tile);
-		if (tile.flag2&0x08) pile=1;
+		data::seekTile( (addid1[s]<<8) | addid2[s], tile);
+		if (tile.flags&TILEFLAG_STACKABLE) pile=1;
 		for (int x=strtonum(3);x<=strtonum(4);x++)
 		{
 			for (int y=strtonum(5);y<=strtonum(6);y++)

@@ -745,8 +745,8 @@ namespace Commands
 		LOGICAL pileable=false;
 		tile_st tile;
 
-		Map->SeekTile((addid1[s]<<8)|addid2[s], &tile);
-		if (tile.flag2&0x08) pileable=true;
+		data::seekTile((addid1[s]<<8)|addid2[s], tile);
+		if (tile.flags&TILEFLAG_STACKABLE) pileable=true;
 
 		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI( pi );

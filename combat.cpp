@@ -917,7 +917,7 @@ int cChar::calcDef(SI32 x)
 					sprintf(temp,TRANSLATE("Your %s has been destroyed"),pj->getCurrentNameC());
 				} else {
 					tile_st tile;
-					Map->SeekTile(pj->id(), &tile);
+					data::seekTile(pj->id(), tile);
 					sprintf(temp,TRANSLATE("Your %s has been destroyed"),tile.name);
 				}
 				//LB bugfix !!! -- remove BONUS STATS given by equipped special items

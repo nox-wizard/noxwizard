@@ -244,351 +244,7 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 
 }
 
-///////////////
-// Name:	WalkCollectBlockers
-// history:	cut from walking() by Duke, 20.11.2000
-// Purpose:	Collects Landscape plus static and dynamic items in an array
-//
-UI32 WalkCollectBlockers(P_CHAR pc)
-{
-	VALIDATEPCR(pc, 0);
-	UI32 blockers_count= 0;
 
-
-	int mapid = 0;
-	SI08 mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
-	if (mapz != illegal_z)
-	{
-		land_st land;
-		Map->SeekLand(mapid, &land);
-
-		xyblock[blockers_count].type=0;
-		xyblock[blockers_count].basez = mapz;
-		xyblock[blockers_count].id = mapid;
-		xyblock[blockers_count].flag1=land.flag1;
-		xyblock[blockers_count].flag2=land.flag2;
-		xyblock[blockers_count].flag3=land.flag3;
-		xyblock[blockers_count].flag4=land.flag4;
-		xyblock[blockers_count].height=0;
-		xyblock[blockers_count].weight=255;
-		++blockers_count;
-	}
-
-	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pc->getPosition() );
-	for( si.rewind(); !si.isEmpty(); si++ ) {
-		P_ITEM pi=si.getItem();
-		if(!ISVALIDPI(pi))
-			continue;
-		if (pi->id1<0x40) // Not a Multi
-		{
-			if ((pi->getPosition("x")== pc->getPosition("x")) && (pi->getPosition("y")==pc->getPosition("y")))
-			{
-				if (pi->trigger!=0)
-				{
-					if ((pi->trigtype==1)&&(!pc->dead))
-					{
-						if ( TIMEOUT( pi->disabled ) )//AntiChrist
-						{
-							triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
-						}
-					}
-				}
-				else
-				{
-					
-					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
-					{
-						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
-						g_bByPass = false; //ndEndy ?? what is this?
-					}
-					/*
-					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
-					g_bByPass = false;
-					*/
-				}
-				tile_st tile;
-				Map->SeekTile(pi->id(), &tile);
-				xyblock[blockers_count].type=1;
-				xyblock[blockers_count].basez= pi->getPosition("z");
-				xyblock[blockers_count].id=pi->id();
-				xyblock[blockers_count].flag1=tile.flag1;
-				xyblock[blockers_count].flag2=tile.flag2;
-				xyblock[blockers_count].flag3=tile.flag3;
-				xyblock[blockers_count].flag4=tile.flag4;
-				xyblock[blockers_count].height=tile.height;
-				xyblock[blockers_count].weight=tile.weight;
-				++blockers_count;
-			}
-		}
-		else	// Multi Tile
-		{
-			if ( (abs(pi->getPosition("x") - (int)pc->getPosition("x"))<=BUILDRANGE) &&
-				 (abs(pi->getPosition("y") - (int)pc->getPosition("y"))<=BUILDRANGE) )
-			{
-				MULFile *mfile = NULL;
-				SI32 length = 0;
-
-				Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
-				length=length/MultiRecordSize;
-				if ((length == INVALID) || (length>=17000000))//Too big... bug fix hopefully (Abaddon 13 Sept 1999)
-				{
-					//ConOut("walking() - Bad length in multi file. Avoiding stall.\n");
-					length = 0;
-				}
-				int j;
-				for (j = 0; j < length; ++j)
-				{
-					st_multi multi;
-					mfile->get_st_multi(&multi);
-					if (multi.visible && (pi->getPosition("x")+multi.x == pc->getPosition("x")) && (pi->getPosition("y")+multi.y == pc->getPosition("y")))
-					{
-						tile_st tile;
-						Map->SeekTile(multi.tile, &tile);
-						xyblock[blockers_count].type=2;
-						xyblock[blockers_count].basez= multi.z+pi->getPosition("z");
-						xyblock[blockers_count].id= multi.tile;
-						xyblock[blockers_count].flag1= tile.flag1;
-						xyblock[blockers_count].flag2= tile.flag2;
-						xyblock[blockers_count].flag3= tile.flag3;
-						xyblock[blockers_count].flag4= tile.flag4;
-						xyblock[blockers_count].height= tile.height;
-						xyblock[blockers_count].weight= 255;
-						++blockers_count;
-					}
-				}
-			}
-		}
-	}
-
-    MapStaticIterator msi( pc->getPosition("x"), pc->getPosition("y") );
-	staticrecord *stat;
-	int loopexit=0;
-	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
-	{
-		//ConOut("staticr[X] type=%d, id=%d\n", 2, stat->itemid);
-		tile_st tile;
-		msi.GetTile(&tile);
-		xyblock[blockers_count].type= 2;
-		xyblock[blockers_count].basez= stat->zoff;
-		xyblock[blockers_count].id= stat->itemid;
-		xyblock[blockers_count].flag1= tile.flag1;
-		xyblock[blockers_count].flag2= tile.flag2;
-		xyblock[blockers_count].flag3= tile.flag3;
-		xyblock[blockers_count].flag4= tile.flag4;
-		xyblock[blockers_count].height= tile.height;
-		xyblock[blockers_count].weight= 255;
-		++blockers_count;
-	}
-	return blockers_count;
-
-
-}
-
-///////////////
-// Name:	WalkEvaluateBlockers
-// history:	cut from walking() by Duke, 20.11.2000
-// Purpose:	Decides if something in the array blocks the walker
-//
-void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
-{
-	VALIDATEPC(pc);
-	
-	if( blockers == 0 ) return;	// nothing to do since there is nothing on the way
-
-	SI08 z, oldz, seekz,dispz = -128;
-	int num;
-	UI32 i;
-	char gmbody;
-	UI32 blockers_count= blockers;
-
-	z=-128;
-
-	Location pcpos= pc->getPosition();
-
-	oldz= pcpos.z;
-
-	if( pc->IsGM() || pc->dead ) // gms and ghosts can walk through doors
-		gmbody=1;
-	else
-		gmbody=0;
-
-	bool bIgnoreWetBit = (ServerScp::g_nWalkIgnoreWetBit!=0)&&(pc->npc == 0);
-
-	int loopexit=0;
-	do
-	{
-		seekz=127;
-		num=INVALID;
-		for ( i = 0; i < blockers_count; ++i )
-		{
-			if ((xyblock[i].basez+xyblock[i].height)<seekz)
-			{
-				num=i;
-				seekz=xyblock[i].basez+xyblock[i].height;
-			}
-		}
-
-		if (num==INVALID)
-		{
-#ifdef DEBUG
-			ConOut("(walking) Error?\n");
-#endif
-			blockers_count= 0;
-
-		}
-		else
-		{
-			if (xyblock[num].type!=0)
-			{
-				if (xyblock[num].height==0) xyblock[num].height++;
-				if ((!(xyblock[num].id==1))&&(xyblock[num].basez<=oldz+MaxZstep))
-				{
-					//TEMP REMOVE.. DONT DONT ERASE.. MONDAY I READD THIS			// ehm ... of which year ? o_O' 
-					//if( xyblock[num].flag1&0x40 &&(xyblock[num].basez+xyblock[num].height<=oldz+MaxZstep) )
-					//	z=-128;
-					//else
-					if ((!bIgnoreWetBit)&&(xyblock[num].flag1&0x80)&&(!((pc->IsGM())||(pc->dead)||((pc->nxwflags[0]&NCF0_WATERWALK)!=0))))
-					{
-						z=-128;
-					}
-					else
-					{
-						if (gmbody)
-						{
-							if ( ((xyblock[num].weight==255)&&(!(pc->priv2&1))) || (xyblock[num].type==2) )
-								if ( (xyblock[num].weight==255) || (xyblock[num].type==2) )
-								{
-									if (xyblock[num].flag2&0x04) // is tile climbable
-									{
-										if (xyblock[num].basez<oldz+MaxZstep)
-										{
-											z=xyblock[num].basez+xyblock[num].height;
-											dispz=xyblock[num].basez+(xyblock[num].height/2);
-
-										}
-										else
-										{
-											if ((pc->IsGM())||(pc->dead)||(xyblock[num].flag4&0x20)) // tile is door
-											{
-												dispz=z=xyblock[num].basez;
-											}
-											else
-											{
-												z=-128;
-											}
-										}
-									}
-									else
-									{
-										if (xyblock[num].basez+xyblock[num].height<oldz+MaxZstep)
-										{
-											dispz=z=xyblock[num].basez+xyblock[num].height;
-										}
-										else
-										{
-											if ((pc->IsGM())||(pc->dead)||(xyblock[num].flag4&0x20)) // tile is door
-											{
-												dispz=z=xyblock[num].basez;
-											}
-											else
-											{
-												z=-128;
-											}
-										}
-									}
-								}
-						}
-						else
-						{
-							if ((xyblock[num].flag1&0x40) && (!(pc->IsGM()))) // lb, castle walk bugfix without sideffects with very.
-							{
-								if ((pc->npc) && (xyblock[num].basez+xyblock[num].height>pcpos.z))
-									z=-128; //xan -> doesn't work with small shop! :)
-							}
-							else
-							{
-								if ((xyblock[num].flag2&4)) // is tile climbable
-								{
-									if (xyblock[num].basez<oldz+MaxZstep)
-									{
-										z=xyblock[num].basez+xyblock[num].height;
-										dispz=xyblock[num].basez+(xyblock[num].height/2);
-									}
-									else
-									{
-										if (pc->IsGM())
-										{
-											dispz=z=xyblock[num].basez;
-										}
-										else
-										{
-											z=-128;
-										}
-									}
-								}
-								else
-								{
-									if (xyblock[num].basez+xyblock[num].height<oldz+MaxZstep)
-									{
-										dispz=z=xyblock[num].basez+xyblock[num].height;
-									}
-									else
-									{
-										if (pc->IsGM())
-										{
-											dispz=z=xyblock[num].basez;
-										}
-										else
-										{
-											if ((xyblock[num].flag2&0x20)&&(pc->npc))
-											{
-												z=-128; //xan : can't understand this :)
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				if (((xyblock[num].flag1&0x80)&&(xyblock[num].flag1&0x40))&&(!(pc->IsGM())))
-				{
-					if(pc->getSocket() == INVALID) {
-						if((pc->nxwflags[0]&NCF0_WATERWALK)==0)
-						{
-							z=-128;
-						}
-						else {
-							dispz=z=Map->Height( pc->getPosition() );
-						}
-					}
-
-				}
-				else
-				{
-					if ((z==-128)||(xyblock[num].basez+xyblock[num].height<oldz+MaxZstep))
-					{
-						dispz=z=xyblock[num].basez;
-					}
-				}
-			}
-
-			//if (xycount==0) break;
-			if( blockers_count==0 ) break;
-			memcpy(&xyblock[num],&xyblock[blockers_count-1],sizeof(unitile_st));
-
-			--blockers_count;
-		}
-	}
-	while ((blockers_count > 0)  && (++loopexit < MAXLOOPS) );
-
-	*pz=z; *pdispz=dispz;
-
-}
 
 ///////////////
 // Name:	WalkHandleBlocking
@@ -629,11 +285,12 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			return false;
 	}
 
-	UI32 blockers = WalkCollectBlockers(pc);
+	//UI32 blockers = WalkCollectBlockers(pc);
 
 	SI08 z, dispz=0;
 
-	WalkEvaluateBlockers(pc, &z, &dispz, blockers);
+	z = isWalkable( pc->getPosition() );
+	//WalkEvaluateBlockers(pc, &z, &dispz, blockers);
 
 	// check if player is banned from a house - crackerjack 8/12/99
 	int j;
@@ -676,12 +333,12 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
-				int sx, sy, ex, ey;
+				UI32 sx, sy, ex, ey;
 				j=on_hlist(pi_multi, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4, NULL);
 
 				if(j==H_BAN)
 				{
-					Map->MultiArea(pi_multi,&sx,&sy,&ex,&ey);
+					getMultiCorners(pi_multi,sx,sy,ex,ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));
 					Location pcpos= pc->getPosition();
 					pcpos.x= ex;
@@ -697,7 +354,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 		} // end of is_multi
 	} // end of is player
 
-	if ( z == -128 )
+	if ( z == illegal_z )
 	{
 		Location pcpos= pc->getPosition();
 		pcpos.x= oldx;
@@ -742,10 +399,10 @@ void WalkingHandleRainSnow(P_CHAR pc)
 	if (!pc->npc && pc->IsOnline() && wtype!=0 ) // check for being in buildings (for weather) only for PC's, check only neccasairy if it rains or snows ...
 	{
 		int j=indungeon(pc); // dung-check
-		i=Map->StaticTop( pc->getPosition() ); // static check
+		i=staticTop( pc->getPosition() ); // static check
 
 	// dynamics-check
-		int x=Map->DynamicElevation( pc->getPosition() );
+		int x=dynamicElevation( pc->getPosition() );
 		if (x!=-127) if (Boats->GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB

@@ -96,6 +96,9 @@ extern "C" int g_nTraceMode;
 
 RemoteAdmin TelnetInterface;	//!< remote administration
 
+UI32 MapTileWidth  = 768;
+UI32 MapTileHeight = 512;
+
 
 static void item_char_test()
 {
@@ -986,7 +989,6 @@ void angelMode();
 
 	CIAO_IF_ERROR;
 
-	Map->Cache=ServerScp::g_nMapCache;
 	commitserverscript(); // second phase setup
 /*
 	if ( (argc>1) && (strstr(argv[1], "-syra")) )
@@ -1062,18 +1064,8 @@ void angelMode();
 		ConOut("\n");
 	}
 
-	Map->Load();
+	data::init(); // Luxor
 
-	ConOut("Loading Mul files info...\n");
-	//TILEDATA
-		ConOut("	Loading tiledata ");
-		if( server_data.cache_tiledata )
-			ConOut("( Caching )");
-		ConOut("... ");
-		tiledata::tiledata= new tiledata::cTiledata( tiledata::path.c_str(), static_cast<bool>(server_data.cache_tiledata) );
-		ConOut("[DONE]\n");
-	//
-	ConOut("[DONE]\n");
 
 /*
 	if ((argc>1)&&(strstr(argv[1], "-syra"))) {
@@ -1480,6 +1472,7 @@ void angelMode();
 	ConOut("\n");
 	ConOut("Deleting Classes...");
 	DeleteClasses();
+	data::shutdown(); // Luxor
 	ConOut("[DONE]\n");
 
 	if (NewErrorsLogged())
@@ -2847,7 +2840,7 @@ void StartClasses()
 	Accounts = new cAccounts;
 	Boats=new cBoat;
 	Guilds=new cGuilds;
-	Map=new cMapStuff;
+
 	Targ=new cTargets;
 	Network=new cNetwork;
 	//Respawn=new cRespawn;
@@ -2866,14 +2859,14 @@ void DeleteClasses()
 	delete Accounts;
 	delete Boats;
 	delete Guilds;
-	delete Map;
+
 	delete Targ;
 	delete Network;
 	//delete Respawn;
 	delete Partys;
 	delete Spawns;
 	delete Areas;
-	if( tiledata::tiledata )	delete tiledata::tiledata;
+
 	delete Restocks;
 	//objects.clear();
 }

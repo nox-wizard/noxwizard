@@ -34,7 +34,6 @@ SOURCES =	\
 		boats.cpp \
 		books.cpp \
 		bounty.cpp \
-		cache.cpp \
 		calendar.cpp \
 		chars.cpp \
 		char_array.cpp \
@@ -47,6 +46,7 @@ SOURCES =	\
 		containers.cpp \
 		crontab.cpp \
 		custmenu.cpp \
+		data.cpp \
 		dbl_single_click.cpp \
 		debug.cpp \
 		dragdrop.cpp \
@@ -69,11 +69,9 @@ SOURCES =	\
 		logsystem.cpp \
 		magic.cpp \
 		map.cpp \
-		mapstuff.cpp \
 		menu.cpp \
 		mount.cpp \
 		msgboard.cpp \
-		muls.cpp \
 		network.cpp \
 		newbie.cpp \
 		nox-wizard.cpp \
@@ -166,12 +164,12 @@ HEADERS =	\
 		constants.h \
 		crontab.h \
 		custmenu.h \
+		data.h \
 		debug.h \
 		dragdrop.h \
 		encryption.h \
 		globals.h \
 		guild.h \
-		hcache.h \
 		house.h \
 		inlines.h \
 		itemid.h \
@@ -184,7 +182,6 @@ HEADERS =	\
 		menu.h \
 		mount.h \
 		msgboard.h \
-		muls.h \
 		npcai.h \
 		ntservice.h \
 		nxwcommn.h \

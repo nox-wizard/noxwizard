@@ -41,7 +41,7 @@ void loadmounts()
 			else if ( script1 == "ID" )
 			{
 				id = str2num(script2);
-				ConOut("Mount %d", id );
+				//ConOut("Mount %d", id );
 			}
 		}
 		while ( script1[0] != '}' );

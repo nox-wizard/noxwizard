@@ -27,7 +27,7 @@
 #include "worldmain.h"
 #include "srvparms.h" 
 
-#include "cache.h"
+#include "data.h"
 #include "accounts.h"
 #include "scp_parser.h"
 #include "basics.h"
@@ -53,7 +53,6 @@
 #include "timers.h"
 #include "mount.h"
 #include "itemid.h"
-#include "muls.h"
 #include "containers.h"
 #include "set.h"
 #include "area.h"

@@ -1024,13 +1024,11 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									MapStaticIterator msi(pi_i->getPosition("x") + xos, pi_i->getPosition("y") + yos);
-									staticrecord *stat;
-									loopexit=0;
-									while ( ((stat = msi.Next())!=NULL) && (++loopexit < MAXLOOPS) )
-									{
+									staticVector s_vec;
+									data::collectStatics( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, s_vec );
+									for ( UI32 idx = 0; idx < s_vec.size(); idx++ ) {
 										tile_st tile;
-										msi.GetTile(&tile);
+										data::seekTile( s_vec[idx].id, tile );
 										if(!(strcmp((char *) tile.name, "water")))//Water
 										{//Don't spawn on water tiles... Just add other stuff here you don't want spawned on.
 											lb=0;
@@ -1057,7 +1055,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								pc->dispz=chars[c].z=buffer[s][16]+Map->TileHeight((buffer[s][17]<<8)+buffer[s][18]);
 								*/
 								pc->MoveTo( (buffer[s][11]<<8)+buffer[s][12], (buffer[s][13]<<8)+buffer[s][14],
-												buffer[s][16]+Map->TileHeight((buffer[s][17]<<8)+buffer[s][18]) );
+												buffer[s][16]+tileHeight((buffer[s][17]<<8)+buffer[s][18]) );
 							}
 							break;
 						case 3: // take position from Parms

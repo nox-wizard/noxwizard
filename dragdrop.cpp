@@ -177,10 +177,10 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 	pc_currchar->disturbMed(); // Meditation
 
 	tile_st item;
- 	Map->SeekTile( pi->id(), &item );
+ 	data::seekTile( pi->id(), item );
 
 	// Check if item is equiped
- 	if( pi->getContSerial() == pc_currchar->getSerial32() && pi->layer == item.layer )
+ 	if( pi->getContSerial() == pc_currchar->getSerial32() && pi->layer == item.quality )
  	{
  		if( pc_currchar->UnEquip( pi, 1 ) == 1 )	// bypass called
  		{
@@ -333,7 +333,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		UpdateStatusWindow(s, pi);
 
 		tile_st tile;
-		Map->SeekTile( pi->id(), &tile);
+		data::seekTile( pi->id(), tile);
 
 		if (!pc_currchar->IsGM() && (( pi->magic == 2 || ((tile.weight == 255) && ( pi->magic != 1))) && !(pc_currchar->priv2 & CHRPRIV2_ALLMOVE))  ||
 			(( pi->magic == 3|| pi->magic == 4) && !pc_currchar->isOwnerOf( pi )))
@@ -437,9 +437,9 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 	tile_st tile;
 	int serial/*, letsbounce=0*/; // AntiChrist (5) - new ITEMHAND system
 
-	Map->SeekTile(pi->id(), &tile);
+	data::seekTile(pi->id(), tile);
 
-	if( ( clientDimension[s]==3 ) &&  (tile.layer==0) )
+	if( ( clientDimension[s]==3 ) &&  (tile.quality==0) )
 	{
 		ps->sysmsg(TRANSLATE("You can't wear that"));
 		resetDragging = true;
@@ -511,7 +511,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
                 //<Luxor>
 
 		P_ITEM pW = pc_currchar->getWeapon();
-		if (tile.layer == 1 || tile.layer == 2)
+		if (tile.quality == 1 || tile.quality == 2)
 		{ //weapons layers
 			if ( (pi->layer == LAYER_2HANDWEAPON && ISVALIDPI(pc_currchar->getShield())) )
 			{
@@ -566,7 +566,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				if(!ISVALIDPI(pj))
 					continue;
 
-				if ((tile.layer == 1) || (tile.layer == 2))// weapons
+				if ((tile.quality == 1) || (tile.quality == 2))// weapons
 				{
 					if (pi->itmhand == 2) // two handed weapons or shield
 					{
@@ -588,7 +588,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				}
 				else	// not a weapon
 				{
-					if (pj->layer == tile.layer)
+					if (pj->layer == tile.quality)
 						drop[curindex++]= DEREF_P_ITEM(pj);
 				}
 			}
@@ -1156,7 +1156,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 
 
-	Map->SeekTile(pi->id(), &tile);
+	data::seekTile(pi->id(), tile);
 	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 		( (pi->magic==3 || pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 	{
@@ -1365,7 +1365,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		return;
 	}
 
-	Map->SeekTile(pItem->id(), &tile);
+	data::seekTile(pItem->id(), tile);
 	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 				( (pItem->magic==3|| pItem->magic==4) && !(pItem->getOwnerSerial32()==pc->getSerial32())))
 	{

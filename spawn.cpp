@@ -34,9 +34,9 @@ bool cSpawnArea::findValidLocation( Location& location )
 
 		location.x = RandomNum( where->second.x1, where->second.x2 );
 		location.y = RandomNum( where->second.y1, where->second.y2 );
-		location.z = Map->MapElevation( location.x, location.y );
+		location.z = mapElevation( location.x, location.y );
 
-		if( Map->CanMonsterMoveHere( location.x, location.y, location.z ) )
+		if( canNpcWalkHere( location ) )
 			return true;
 	} while (++a < 100);
 	return false;

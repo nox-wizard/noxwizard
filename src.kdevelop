@@ -2,7 +2,8 @@
 <kdevelop>
   <general>
     <author>Fabrizio Montesi</author>
-    <email>luxor@e-vinco.it</email>
+    <email>luxor@eos-software.it</email>
+    <version>$VERSION$</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
     <ignoreparts>
@@ -19,6 +20,14 @@
       <dbgshell/>
     </general>
   </kdevdebugger>
+  <kdevfilecreate>
+    <filetypes/>
+    <useglobaltypes>
+      <type ext="ui" />
+      <type ext="cpp" />
+      <type ext="h" />
+    </useglobaltypes>
+  </kdevfilecreate>
   <kdevcvs>
     <cvsoptions>-f</cvsoptions>
     <commitoptions></commitoptions>

@@ -831,7 +831,7 @@ R32 cItem::getWeight()
 	else
 	{
 		tile_st tile;
-		Map->SeekTile(id(), &tile);
+		data::seekTile(id(), tile);
 		if (tile.weight==0) // can't find weight
 		{
 			if(type != ITYPE_FOOD)
@@ -1016,7 +1016,7 @@ const char* cItem::getRealItemName()
     else
 	{
 		tile_st tile;
-		Map->SeekTile(id(), &tile);
+		data::seekTile(id(), tile);
         return reinterpret_cast<char*>(tile.name);
     }
 }

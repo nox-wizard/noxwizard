@@ -826,13 +826,10 @@ void loaditem()
 
 				if (i>=0x4000)
 				{
-					SI32 length;
-					MULFile *mfile;
-					Map->SeekMulti(i-0x4000, &mfile, &length);
-					length=length/sizeof(st_multi);
-					if (length<=-1 || length>170000)
+					multiVector m_vec;
+					if ( !data::seekMulti( i-0x4000, m_vec ) )
 					{
-						LogWarning("bad item, serial: %i name: %s multi-l: %i deleted\n",pi->getSerial32(), pi->getCurrentNameC(), length);
+						LogWarning("bad item, serial: %i name: %s\n",pi->getSerial32(), pi->getCurrentNameC());
 						bad=1;
 					}
 				}

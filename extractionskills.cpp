@@ -231,15 +231,16 @@ void Skills::Mine(NXWSOCKET s)
 	{
 		// mountains are "map0's" and no statics !!!
 
-		map=Map->SeekMap0( target.x, target.y );
-		Map->SeekLand( map.id, &land );
+		data::seekMap( target.x, target.y, map );
+		data::seekLand( map.id, land );
 
 		if ( !strcmp(land.name,"rock") || !(strcmp(land.name, "mountain")) || !(strcmp(land.name, "cave")))
 			mountain = true;
 	}
 
+	data::seekMap( target.x, target.y, map );
 	if( !id )
-		id= (Map->SeekMap0( target.x, target.y )).id;
+		id= map.id;
 
 	switch( id )
 	{

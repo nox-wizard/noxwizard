@@ -819,7 +819,7 @@ P_ITEM cChar::GetItemOnLayer(UI08 layer)
 \author Endymion
 \param banktype BANK_GOLD or BANK_ITEM .. see note
 \note BANK_GOLD are gold&items ( if specialbank onlygold not for only this region )
-	  BANK_ITEM (only if specialbank) are the bank region of player 
+	  BANK_ITEM (only if specialbank) are the bank region of player
 */
 P_ITEM cChar::GetBankBox( short banktype )
 {
@@ -3447,7 +3447,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 	if (drag)
 		return 0;
 
-	Map->SeekTile( pi->id(), &item );
+	data::seekTile( pi->id(), item );
 	
 	NxwItemWrapper si;
 	si.fillItemWeared( this, true, true, false );
@@ -3457,18 +3457,18 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 		if( !ISVALIDPI(pj))
 			continue;
 
-		if ((pj->layer == item.layer) && ((pj->itmhand != 3) && (pi->itmhand != 3)))	// layer already used
+		if ((pj->layer == item.quality) && ((pj->itmhand != 3) && (pi->itmhand != 3)))	// layer already used
 			return 1;																	// don't equip the item
 
 		// for weapons
 		if (      ((pj->layer == LAYER_1HANDWEAPON)||(pj->layer == LAYER_2HANDWEAPON))
-			 &&  ((item.layer == LAYER_1HANDWEAPON)||(item.layer == LAYER_2HANDWEAPON))
+			 &&  ((item.quality == LAYER_1HANDWEAPON)||(item.quality == LAYER_2HANDWEAPON))
 			 && (pj->itmhand != 3) && (pi->itmhand != 3)
 		   ) 
 			return 1;
 	}
 
-	pi->layer= item.layer;
+	pi->layer= item.quality;
 	pi->setContSerial(getSerial32());
 
 	checkSafeStats();

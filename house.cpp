@@ -183,7 +183,7 @@ void buildhouse(int s, int i)
 
 		x = ShortFromCharPtr(buffer[s] +11); //where they targeted
 		y = ShortFromCharPtr(buffer[s] +13);
-		z = buffer[s][16] + Map->TileHeight(ShortFromCharPtr(buffer[s] +17));
+		z = buffer[s][16] + tileHeight(ShortFromCharPtr(buffer[s] +17));
 
 #define XBORDER 200
 #define YBORDER 200
@@ -505,7 +505,7 @@ void buildhouse(int s, int i)
 */
 void deedhouse(NXWSOCKET s, P_ITEM pi)
 {
-	SI32 x1, y1, x2, y2;
+	UI32 x1, y1, x2, y2;
 	VALIDATEPI(pi);
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
@@ -514,7 +514,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 
 	if(pi->getOwnerSerial32() == pc->getSerial32() || pc->IsGM()) // bugfix LB, was =
 	{
-		Map->MultiArea(pi, &x1,&y1,&x2,&y2);
+		getMultiCorners(pi, x1,y1,x2,y2);
 
 		P_ITEM pi_ii=item::CreateFromScript( pi->morex, pc->getBackpack() ); // need to make before delete
 		VALIDATEPI(pi_ii);
@@ -574,8 +574,8 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
 		pc->setPosition( charpos );
 		*/
-		pc->setPosition("z", Map->MapElevation(charpos.x, charpos.y));
-		pc->setPosition("dz", Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition("z", mapElevation(charpos.x, charpos.y));
+		pc->setPosition("dz", mapElevation(charpos.x, charpos.y));
 		pc->teleport();
 		return;
 	}
@@ -716,11 +716,11 @@ void addthere(int s, int xx, int yy, int zz, int t)
 #endif
 	}
 
-	Map->SeekTile(pi->id(), &tile);
+	data::seekTile(pi->id(), tile);
 	if(pc->making==999) 
 		pc->making=DEREF_P_ITEM(pi); // store item #
 
-	if(tile.flag2&0x08) 
+	if(tile.flags&TILEFLAG_STACKABLE)
 		pi->pileable=1;
 
 	pi->Refresh();
@@ -824,7 +824,7 @@ int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsign
 */
 int add_hlist(int c, int h, int t)
 {
-	int sx, sy, ex, ey;
+	UI32 sx, sy, ex, ey;
 
 	P_CHAR pc=MAKE_CHAR_REF(c);
 	VALIDATEPCR(pc,3);
@@ -837,7 +837,7 @@ int add_hlist(int c, int h, int t)
 
 
 	
-	Map->MultiArea(pi_h, &sx,&sy,&ex,&ey);
+	getMultiCorners(pi_h, sx,sy,ex,ey);
 	// Make an object with the character's serial & the list type
 	// and put it "inside" the house item.
 	Location charpos= pc->getPosition();
@@ -990,7 +990,7 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy)
 		checky=y-(sy/2);
 		for (;checky<(y+(sy/2));checky++)
 		{
-			checkz=Map->MapElevation(checkx,checky);
+			checkz=mapElevation(checkx,checky);
 			if ((checkz>(z-2))&&(checkz<(z+2)))
 			{
 				ycount++;

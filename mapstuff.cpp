@@ -2,8 +2,7 @@
 #include "debug.h"
 #include <assert.h>
 
-UI32 MapTileWidth  = 768;
-UI32 MapTileHeight = 512;
+
 
 //#define DEBUG_MAP_STUFF	1
 
@@ -31,11 +30,11 @@ mapfile(0), sidxfile(0), statfile(0), verfile(0), tilefile(0), multifile(0), mid
 	// after a mess of bugs with the structures not matching the physical record sizes
 	// i've gotten paranoid...
 	assert(sizeof(versionrecord) >= VersionRecordSize);
-	assert(sizeof(st_multi) >= MultiRecordSize);
+	assert(sizeof(multi_st) >= MultiRecordSize);
 	assert(sizeof(land_st) >= LandRecordSize);
 	assert(sizeof(tile_st) >= TileRecordSize);
 	assert(sizeof(map_st) >= MapRecordSize);
-	assert(sizeof(st_multiidx) >= MultiIndexRecordSize);
+	assert(sizeof(multi_stidx) >= MultiIndexRecordSize);
 	// staticrecord is not listed here because we explicitly don't read in some
 	// unknown bytes to save memory
 
@@ -201,7 +200,7 @@ signed char cMapStuff::StaticTop( UI32 x, UI32 y, signed char oldz)
 	{
 //		int tempTop = stat->zoff + TileHeight(stat->itemid);
 		signed char tempTop = stat->zoff + TileHeight(stat->itemid);
-		if ((tempTop <= oldz + MaxZstep) && (tempTop > top))
+		if ( (tempTop <= oldz + MaxZstep) && (tempTop > top) )
 		{
 			top = tempTop;
 		}
@@ -288,7 +287,7 @@ bool cMapStuff::DoesTileBlock(int tilenum)
 void cMapStuff::MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2)
 {
 
-	st_multi multi;
+	multi_st multi;
 	MULFile *mfile = 0;
 	SI32 length = 0;
 
@@ -300,7 +299,7 @@ void cMapStuff::MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2)
 
 	for (int j=0;j<length;j++)
 	{
-        mfile->get_st_multi(&multi);
+        mfile->get_multi_st(&multi);
 		if(multi.x<*x1) *x1=multi.x;
 		if(multi.x>*x2) *x2=multi.x;
 		if(multi.y<*y1) *y1=multi.y;
@@ -316,7 +315,7 @@ void cMapStuff::MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2)
 // return the height of a multi item at the given x,y. this seems to actually return a height
 //int cMapStuff::MultiHeight(int i, int x, int y, int oldz)
 signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
-{                                                                                                                                  	st_multi multi;
+{                                                                                                                                  	multi_st multi;
 
 	MULFile *mfile = 0;
 	SI32 length = 0;
@@ -331,7 +330,7 @@ signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 
 	for (int j=0;j<length;j++)
 	{
-		mfile->get_st_multi(&multi);
+		mfile->get_multi_st(&multi);
 		if (/*(multi.visible) &&*/ (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y))
 		{
 			int tmpTop = pi->getPosition("z") + multi.z;
@@ -404,7 +403,7 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 {
 
 	SI32 length = 0;
-	st_multi multi;
+	multi_st multi;
 	MULFile *mfile = 0;
 	SeekMulti(pi->id()-0x4000, &mfile, &length);
 	length=length/MultiRecordSize;
@@ -416,7 +415,7 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 
 	for (int j=0;j<length;j++)
 	{
-		mfile->get_st_multi(&multi);
+		mfile->get_multi_st(&multi);
 		if ((multi.visible && (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y)
 			&& (abs(pi->getPosition("z")+multi.z-oldz)<=1)))
 		{
@@ -874,9 +873,9 @@ void cMapStuff::SeekMulti(int multinum, MULFile **mfile, SI32 *length)
 	const int len=VerSeek(VERFILE_MULTI, multinum);
 	if (len==0)
 	{
-		st_multiidx multiidx;
+		multi_stidx multiidx;
         midxfile->seek(multinum*MultiIndexRecordSize, SEEK_SET);
-		midxfile->get_st_multiidx(&multiidx);
+		midxfile->get_multi_stidx(&multiidx);
 		multifile->seek(multiidx.start, SEEK_SET);
 		*mfile=multifile;
 		*length=multiidx.length;

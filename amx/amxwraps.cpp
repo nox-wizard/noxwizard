@@ -4586,7 +4586,7 @@ NATIVE(_itm_setLocalStrVar)
 */
 NATIVE(_map_canMoveHere)
 {
-	return Map->CanMonsterMoveHere( static_cast<short int>(params[1]), static_cast<short int>(params[2]), illegal_z );
+	return canNpcWalkHere( Loc( static_cast<UI32>(params[1]), static_cast<UI32>(params[2]), 0 ) );
 }
 
 /*
@@ -4618,12 +4618,10 @@ NATIVE(_map_distance)
 NATIVE(_map_getTileName)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
-    MapStaticIterator msi(params[1], params[2]);
-
-    staticrecord *stat;
+    staticVector s_vec;
     tile_st tile;
-    if((stat = msi.Next()) != NULL) {
-        msi.GetTile(&tile);
+    if( data::collectStatics( params[1], params[2], s_vec ) ) {
+        data::seekTile( s_vec[0].id, tile );
 
         char str[100];
   		cell *cptr;
@@ -4648,23 +4646,19 @@ NATIVE(_map_getTileName)
 */ 
 NATIVE(_map_isUnderStatic) 
 { 
-    if (params[1] < 0 || params[2] < 0) return INVALID; 
+	if (params[1] < 0 || params[2] < 0) return INVALID;
 
-   MapStaticIterator msi(params[1], params[2]); 
-   staticrecord *stat; 
-   int loopexit=0; 
-   while ( ((stat = msi.Next())!=0) && (++loopexit < MAXLOOPS) ) 
-   { 
-      tile_st tile; 
-      msi.GetTile(&tile); 
 
-      if ((tile.height+stat->zoff)>params[3]) // a roof  must be higher than player's z ! 
-      { 
-         return true; 
-      } 
-   } 
-   return false; 
-
+	staticVector s_vec;
+	if ( !data::collectStatics( params[1], params[2], s_vec ) )
+   		return false;
+	for ( UI32 i = 0; i < s_vec.size(); i++ ) {
+		tile_st tile;
+		data::seekTile( s_vec[i].id, tile );
+		if ( ( tile.height + s_vec[i].z ) >params[3] ) // a roof  must be higher than player's z !
+			return true;
+	}
+	return false;
 }
 
 /*
@@ -4678,17 +4672,15 @@ NATIVE(_map_isUnderStatic)
 */
 NATIVE(_map_getTileID)
 {
-    if (params[1] < 0 || params[2] < 0) return INVALID;
-    MapStaticIterator msi(params[1], params[2]);
-
-    staticrecord *stat;
-    while((stat = msi.Next()) != NULL)
-   {
-        if (stat->zoff == params[3])
-         return stat->itemid;
-      
-    }
-    return INVALID;
+	if (params[1] < 0 || params[2] < 0) return INVALID;
+	staticVector s_vec;
+	if ( !data::collectStatics( params[1], params[2], s_vec ) )
+   		return INVALID;
+	for ( UI32 i = 0; i < s_vec.size(); i++ ) {
+		if ( s_vec[i].z == params[3])
+			return s_vec[i].id;
+	}
+	return INVALID;
 }
 
 /*
@@ -4702,7 +4694,8 @@ NATIVE(_map_getTileID)
 NATIVE(_map_getFloorTileID)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
-    map_st map = Map->SeekMap0(params[1], params[2]);
+    map_st map;
+    data::seekMap(params[1], params[2],map);
     return map.id;
 }
 

@@ -1107,7 +1107,7 @@ void castFieldSpell( P_CHAR pc, int x, int y, int z, int spellnumber)
 
 	for( j=0; j<=fieldLen; j++ )
 	{
-		int nz=Map->Height( fx[j], fy[j], z );
+		SI08 nz=getHeight( Loc( fx[j], fy[j], z ) );
 		P_ITEM pi = item::addByID(id, 1, "#", 0, fx[j], fy[j], nz);
 
 		if (pi!=NULL)
@@ -1689,7 +1689,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_TELEPORT:
 			//Luxor: now a mage cannot teleport to water
 			bool isWater = false;
-			map_st map = Map->SeekMap0(x, y);
+			map_st map;
+			data::seekMap(x, y, map);
 			switch(map.id)
 			{
 				//water tiles:
@@ -1709,8 +1710,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					break;
 			}
 			land_st land;
-			Map->SeekLand(map.id, &land);
-			if (land.flag1&0x80) isWater = true;
+			data::seekLand(map.id, land);
+			if (land.flags&TILEFLAG_WET) isWater = true;
 			int s;
 			if (src->getClient()!=NULL) {
 				s = src->getClient()->toInt();

@@ -150,12 +150,12 @@ void doubleclick(NXWCLIENT ps)
 	VALIDATEPI( pack );
 
 
-	Map->SeekTile( pi->id(), &item );
+	data::seekTile( pi->id(), item );
 //////FINEVARIABILI
 	if ( ServerScp::g_nEquipOnDclick )
 	{
 		// equip the item only if it is in the backpack of the player
-		if ((pi->getContSerial() == pack->getSerial32()) && (item.layer != 0) && (item.layer != LAYER_BACKPACK) && (item.layer != LAYER_MOUNT))
+		if ((pi->getContSerial() == pack->getSerial32()) && (item.quality != 0) && (item.quality != LAYER_BACKPACK) && (item.quality != LAYER_MOUNT))
 		{
 			int drop[2]= {-1, -1};	// list of items to drop, there no reason for it to be larger
 			int curindex= 0;
@@ -168,7 +168,7 @@ void doubleclick(NXWCLIENT ps)
 				P_ITEM pj=wea.getItem();
 				if(!ISVALIDPI(pj))
 					continue;
-				if ((item.layer == LAYER_1HANDWEAPON) || (item.layer == LAYER_2HANDWEAPON))// weapons
+				if ((item.quality == LAYER_1HANDWEAPON) || (item.quality == LAYER_2HANDWEAPON))// weapons
 				{
 					if (pi->itmhand == 2) // two handed weapons or shield
 					{
@@ -187,7 +187,7 @@ void doubleclick(NXWCLIENT ps)
 				}
 				else	// not a weapon
 				{
-					if (pj->layer == item.layer)
+					if (pj->layer == item.quality)
 						drop[curindex++]= DEREF_P_ITEM(pj);
 				}
 			}

@@ -336,15 +336,15 @@ static void AddTarget(NXWSOCKET s, PKGx6C *pp)
     int pileable=0;
     short id=(addid1[s]<<8)+addid2[s];
     tile_st tile;
-    Map->SeekTile(id, &tile);
-    if (tile.flag2&0x08) pileable=1;
+    data::seekTile(id, tile);
+    if (tile.flags&TILEFLAG_STACKABLE) pileable=1;
 
     P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
     VALIDATEPI(pi);
     pi->setId( id );
     pi->pileable = pileable;
     pi->setDecay( false );
-    pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc+Map->TileHeight(pp->model));
+    pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc+tileHeight(pp->model));
     pi->Refresh();
     addid1[s]=0;
     addid2[s]=0;
@@ -394,7 +394,7 @@ static void TeleTarget(NXWSOCKET s, PKGx6C *pp)
 		(pc->IsGM())))
 	{
 		pc->doGmEffect();
-		pc->MoveTo( x,y,z+Map->TileHeight(pp->model) );
+		pc->MoveTo( x,y,z+tileHeight(pp->model) );
 		pc->teleport();
 		pc->doGmEffect();
 	}
@@ -737,7 +737,7 @@ void cTargets::IstatsTarget(NXWSOCKET s)
     if (serial == 0)
     {
         tile_st tile;
-        Map->SeekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), &tile);
+        data::seekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), tile);
         sprintf(temp, "Item [Static] ID [%x %x]",buffer[s][0x11], buffer[s][0x12]);
         sysmessage(s, temp);
         sprintf(temp, "ID2 [%i], Height [%i]",((buffer[s][0x11]<<8)+buffer[s][0x12]), tile.height);
@@ -1183,7 +1183,7 @@ static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
     pc->y= pp->TyLoc;
     pc->dispz=pc->z= pp->TzLoc+Map->TileHeight(pp->model);
 	*/
-	pc->MoveTo( pp->TxLoc, pp->TyLoc, pp->TzLoc+Map->TileHeight(pp->model) );
+	pc->MoveTo( pp->TxLoc, pp->TyLoc, pp->TzLoc+tileHeight(pp->model) );
 	pc->npc=1;
         pc->teleport();
 }
@@ -1301,30 +1301,22 @@ static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with m
         pos=(x1*512*196)+(y1*196)+(y2*24)+(x2*3)+4;
         fseek(mapfile, pos, SEEK_SET);
         fread(&map1, 3, 1, mapfile);
-        Map->SeekLand(map1.id, &land);
+        data::seekLand(map1.id, land);
         ConOut("type: map-tile\n");
         ConOut("tilenum: %i\n",map1.id);
-        ConOut("Flag1:%x\n", land.flag1);
-        ConOut("Flag2:%x\n", land.flag2);
-        ConOut("Flag3:%x\n", land.flag3);
-        ConOut("Flag4:%x\n", land.flag4);
-        ConOut("Unknown1:%lx\n", land.unknown1);
-        ConOut("Unknown2:%x\n", land.unknown2);
+        ConOut("Flags:%x\n", land.flags);
         ConOut("Name:%s\n", land.name);
     }
     else
     {
         tilenum=pp->model; // lb, bugfix
-        Map->SeekTile(tilenum, &tile);
+        data::seekTile(tilenum, tile);
         ConOut("type: static-tile\n");
         ConOut("tilenum: %i\n",tilenum);
-        ConOut("Flag1:%x\n", tile.flag1);
-        ConOut("Flag2:%x\n", tile.flag2);
-        ConOut("Flag3:%x\n", tile.flag3);
-        ConOut("Flag4:%x\n", tile.flag4);
+        ConOut("Flags:%x\n", tile.flags);
         ConOut("Weight:%x\n", tile.weight);
-        ConOut("Layer:%x\n", tile.layer);
-        ConOut("Anim:%lx\n", tile.animation);
+        ConOut("Layer:%x\n", tile.quality);
+        ConOut("Anim:%lx\n", tile.animid);
         ConOut("Unknown1:%lx\n", tile.unknown1);
         ConOut("Unknown2:%x\n", tile.unknown2);
         ConOut("Unknown3:%x\n", tile.unknown3);
@@ -1416,8 +1408,8 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
 
     int x,y;
 
-    Map->SeekTile((addid1[s]<<8)+addid2[s], &tile);
-    if (tile.flag2&0x08) pileable=1;
+    data::seekTile((addid1[s]<<8)+addid2[s], tile);
+    if (tile.flags&TILEFLAG_STACKABLE) pileable=1;
     for (x=x1;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
@@ -1426,7 +1418,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
             pi->setId( (addid1[s]<<8) | addid2[s] );
             pi->pileable = pileable;
             pi->setDecay( false );
-		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
+		pi->setPosition( x, y, pp->TzLoc+tileHeight(pp->model));
             pi->Refresh();
 #ifdef SPAR_I_LOCATION_MAP
 		pointers::addToLocationMap( pi );
@@ -1594,7 +1586,7 @@ static void TeleStuff(NXWSOCKET s, PKGx6C *pp)
 		SI32 x, y, z;
 		x = pp->TxLoc;
 		y = pp->TyLoc;
-		z = pp->TzLoc + Map->TileHeight(pp->model);
+		z = pp->TzLoc + tileHeight(pp->model);
 		if ( x < 0 || y < 0 ) {
 			po = NULL;
 			return;
@@ -3008,8 +3000,8 @@ void cTargets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someo
 	P_ITEM pi_h=MAKE_ITEM_REF(h);
 
     if((c!=-1)&&(h!=-1)) {
-        NXWSOCKET sx, sy, ex, ey;
-        Map->MultiArea(pi_h, &sx,&sy,&ex,&ey);
+        UI32 sx, sy, ex, ey;
+        getMultiCorners(pi_h, sx,sy,ex,ey);
         if((pcpos.x>=(UI32)sx) && (pcpos.y>=(UI32)sy) && (pcpos.x<=(UI32)ex) && (pcpos.y<=(UI32)ey))
         {
             //Char_MoveTo(c, ex, ey, pcpos.z);

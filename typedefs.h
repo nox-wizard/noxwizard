@@ -140,6 +140,24 @@ struct lookuptr_st //Tauriel  used to create pointers to the items dynamically a
   SI32 *pointer;
 };
 
+struct location_st
+{
+ SI32 x1;
+ SI32 y1;
+ SI32 x2;
+ SI32 y2;
+ //char region;
+ UI08 region;
+};
+
+struct logout_st//Instalog
+{
+        UI32 x1;
+        UI32 y1;
+        UI32 x2;
+        UI32 y2;
+};
+
 struct path_st {
 	UI32 x;
 	UI32 y;
@@ -174,24 +192,8 @@ struct creat_st
 	SI32 icon;
 };
 
-struct versionrecord
-{
- SI32 file;
- SI32 block;
- SI32 filepos;
- SI32 length;
- SI32 unknown;
-} PACK_NEEDED;
 
-struct staticrecord
-{
- SI16 itemid;
-// short int extra; // Unknown yet --Zippy unknown thus not used thus taking up mem.
- UI08 xoff;
- UI08 yoff;
- SI08 zoff;
- UI08 align;	// force word alignment by hand to avoid bus errors - fur
-} PACK_NEEDED;
+
 
 // XYZZY
 struct unitile_st
@@ -207,60 +209,12 @@ struct unitile_st
  UI08 weight;
 } PACK_NEEDED;
 
-struct st_multiidx
-{
- SI32 start;
- SI32 length;
- SI32 unknown;
-} PACK_NEEDED;
 
-struct st_multi
-{
- SI32 visible;  // this needs to be first so it is word aligned to avoid bus errors - fur
- SI16 tile;
- UI16 x;
- UI16 y;
- SI08 z;
- SI08 empty;
-} PACK_NEEDED;
 
-struct teffect_st
-{
- UI08 sour1;
- UI08 sour2;
- UI08 sour3;
- UI08 sour4;
- UI08 dest1;
- UI08 dest2;
- UI08 dest3;
- UI08 dest4;
- TIMERVAL expiretime;
- UI08 num;
- UI08 more1;
- UI08 more2;
- UI08 more3;
- SI32 amxcallback;		//for custom amx effects
- UI08 dispellable;
- SI32 itemptr;
-} PACK_NEEDED;
 
-struct location_st
-{
- SI32 x1;
- SI32 y1;
- SI32 x2;
- SI32 y2;
- //char region;
- UI08 region;
-};
 
-struct logout_st//Instalog
-{
-	UI32 x1;
-	UI32 y1;
-	UI32 x2;
-	UI32 y2;
-};
+
+
 
 /*
 	Sparhawk	-- moved to regions.h

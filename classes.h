@@ -18,38 +18,6 @@ cMapStuff, cFishing, cSkills, cNetworkStuff and a lot of structures
 #ifndef __Classes_h
 #define __Classes_h
 
-struct tile_st
-{
- SI32 unknown1;  //!< longs must go at top to avoid bus errors - fur
- SI32 animation;
- unsigned char flag1;
- unsigned char flag2;
- unsigned char flag3;
- unsigned char flag4;
- unsigned char weight;
- signed char layer;
- signed char unknown2;
- signed char unknown3;
- signed char height;
- signed char name[23];	//!< manually padded to long to avoid bus errors - fur | There is no negative letter.
-} PACK_NEEDED;
-
-struct land_st
-{
- char flag1;
- char flag2;
- char flag3;
- char flag4;
- char unknown1;
- char unknown2;
- char name[20];
-};
-
-struct map_st
-{
-	short int id;
-	signed char z;
-};
 
 /*!
 \brief New structure for basic guild related infos
@@ -124,130 +92,13 @@ namespace gumps
 	void Open(int s, int i, int num, int num2);
 };
 
-class MapStaticIterator
-{
-private:
-	staticrecord staticArray;
-	SI32 pos;
-	unsigned char remainX, remainY;
-	UI32 index, length, tileid, baseX, baseY;
-	bool exactCoords;
 
-public:
-	MapStaticIterator(UI32 x, UI32 y, bool exact = true);
-	MapStaticIterator( Location where, bool exact= true);	// Added by Anthalir
-	~MapStaticIterator() { };
-
-	staticrecord *First();
-	staticrecord *Next();
-	void GetTile(tile_st *tile) const;
-	UI32 GetPos() const { return pos; }
-	UI32 GetLength() const { return length; }
-};
 
 extern UI32 MapTileWidth;//  = 768;
 extern UI32 MapTileHeight;// = 512;
 
 #define MAXMAPTILEWIDTH 768
 #define MAXMAPTILEHEIGHT 512
-
-class cMapStuff
-{
-//Variables
-private:
-	friend class MapStaticIterator;
-
-        // moved from global vars into here - fur 11/3/1999
-        MULFile *mapfile, *sidxfile, *statfile, *verfile, *tilefile, *multifile, *midxfile;
-
-	// tile caching items
-	tile_st tilecache[0x4000];
-
-	// static caching items
-	unsigned long StaticBlocks;
-	struct StaCache_st
-	{
-		staticrecord *Cache;
-		unsigned short CacheLen;   // i've seen this goto to at least 273 - fur 10/29/1999
-	};
-
-	// map caching items
-	struct MapCache
-	{
-		unsigned short xb;
-		unsigned short yb;
-		unsigned char  xo;
-		unsigned char  yo;
-		map_st Cache;
-	};
-	MapCache Map0Cache[MAP0CACHE];
-
-	// version caching items
-	versionrecord *versionCache;
-	UI32 versionRecordCount;
-
-	// caching functions
-	void CacheTiles( void );
-	void CacheStatics( void );
-
-public:
-	// these used to be [512], thats a little excessive for a filename.. - fur
-	char mapname[80], sidxname[80], statname[80], vername[80],
-	  tilename[80], multiname[80], midxname[80];
-	unsigned long StaMem, TileMem, versionMemory;
-	unsigned int Map0CacheHit, Map0CacheMiss;
-	// ok this is rather silly, allocating all the memory for the cache, even if
-	// they haven't chosen to cache?? - fur
-	StaCache_st StaticCache[MAXMAPTILEWIDTH][MAXMAPTILEHEIGHT];
-	unsigned char Cache;
-	
-// Functions
-private:
-	char VerLand(int landnum, land_st *land);
-	signed char MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
-	int MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz);
-	SI32 VerSeek(SI32 file, SI32 block);
-	char VerTile(int tilenum, tile_st *tile);
-	bool IsTileWet(int tilenum);
-	bool TileWalk(int tilenum);
-	void CacheVersion();
-
-	int DynTile( UI32 x, UI32 y, signed char oldz );
-	bool DoesTileBlock(int tilenum);
-	bool DoesStaticBlock(UI32 x, UI32 y, signed char oldz);
-
-public:
-	cMapStuff();
-	~cMapStuff();
-
-	void Load();
-
-	// height functions
-	bool IsUnderRoof(UI32 x, UI32 y, signed char z);
-	signed char StaticTop(Location where);	// added by Anthalir
-	signed char StaticTop(UI32 x, UI32 y, signed char oldz);
-	signed char DynamicElevation(Location where);	// added by Anthalir
-	signed char DynamicElevation(UI32 x, UI32 y, signed char oldz);
-	signed char MapElevation(UI32 x, UI32 y);
-	signed char AverageMapElevation(Location where, int &id);	// added by Anthalir
-	signed char AverageMapElevation(UI32 x, UI32 y, int &id);
-	signed char TileHeight( int tilenum );
-	signed char Height(Location where);	// added by Anthalir
-	signed char Height(UI32 x, UI32 y, signed char oldz);
-
-	// look at tile functions
-	void MultiArea(P_ITEM pi, int *x1, int *y1, int *x2, int *y2);
-	void SeekTile(int tilenum, tile_st *tile);
-	void SeekMulti(int multinum, MULFile **mfile, SI32 *length);
-	void SeekLand(int landnum, land_st *land);
-	map_st SeekMap0( unsigned short x, unsigned short y );
-	bool IsRoofOrFloorTile( tile_st *tile );
-	bool IsRoofOrFloorTile( unitile_st *tile );
-
-	// misc functions
-	bool CanMonsterMoveHere( UI32 x, UI32 y, signed char z );
-
-};
 
 #include "client.h"
 // use this value whereever you need to return an illegal z value

@@ -89,14 +89,14 @@ SI08 isWalkable( Location pos, UI08 flags )
 				continue;
 
 			tile_st tile;
-			Map->SeekTile( pi->id(), &tile );
+			data::seekTile( pi->id(), tile );
 
 			height = tile.height;
-			if ( tile.flag2 & 0x4 ) // Stairs, ladders
+			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
 				height = tile.height / 2;
 
                 	if ( pi->getPosition().z < (pos.z + MaxZstep) ) { // We cannot walk under it
-				if ( tile.flag1 & 0x40 ) // Block flag
+				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
 				if ( (pi->getPosition().z + height) <= (pos.z + 2) ) { // We can walk on it
@@ -113,7 +113,8 @@ SI08 isWalkable( Location pos, UI08 flags )
         //
 	if ( flags & WALKFLAG_MAP ) {
 		SI32 mapid = 0;
-		map_st map1 = Map->SeekMap0( pos.x, pos.y );
+		map_st map1;
+		data::seekMap( pos.x, pos.y, map1 );
 		mapid = map1.id;
 
 		// Z elevation
@@ -151,31 +152,29 @@ SI08 isWalkable( Location pos, UI08 flags )
         // STATIC TILES -- Check for static tiles Z elevation
         //
 	if ( flags & WALKFLAG_STATIC ) {
-        	MapStaticIterator msi( pos.x, pos.y );
-		UI32 loopexit = 0;
+        	staticVector s_vec;
+		data::collectStatics( pos.x, pos.y, s_vec );
 
-		staticrecord *stat;
-		while ( ( (stat = msi.Next()) != NULL ) && ( ++loopexit < MAXLOOPS ) ) {
+		for ( UI32 i = 0; i < s_vec.size(); i++ ) {
                 	tile_st tile;
 
-			Map->SeekTile( stat->itemid, &tile );
+			data::seekTile( s_vec[i].id, tile );
 
 			// Z elevation
 			height = tile.height;
-			if ( tile.flag2 & 0x4 ) // Stairs, ladders
+			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
 				height = tile.height / 2;
 
-			if ( (stat->zoff + height) < (pos.z + MaxZstep) ) { // We cannot walk under it
-				if ( tile.flag1 & 0x40 ) // Block flag
+			if ( (s_vec[i].z + height) < (pos.z + MaxZstep) ) { // We cannot walk under it
+				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
-				if ( (stat->zoff + height) <= (pos.z + 2) ) { // We can walk on it
-	                                if ( (stat->zoff + tile.height) > zRes )
-						zRes = stat->zoff + tile.height;
+				if ( (s_vec[i].z + height) <= (pos.z + 2) ) { // We can walk on it
+	                                if ( (s_vec[i].z + tile.height) > zRes )
+						zRes = s_vec[i].z + tile.height;
 				} else
 					return illegal_z;
                 	}
-			loopexit++;
 		}
 	} // WALKFLAG_STATIC
 
@@ -230,8 +229,105 @@ LOGICAL lineOfSight( Location A, Location B )
 \brief Tells if an npc can move in the given position
 \todo Implement special features based on the npc (fire elemental should walk on lava passages etc...)
 */
-LOGICAL canNpcMoveHere( Location pos )
+LOGICAL canNpcWalkHere( Location pos )
 {
 	return ( isWalkable( pos ) != illegal_z );
+}
+
+/*!
+\author Luxor
+*/
+SI08 staticTop( Location pos )
+{
+	staticVector s;
+	if ( !data::collectStatics( pos.x, pos.y, s ) )
+		return illegal_z;
+
+	SI08 max_z = pos.z, temp_z;
+	for ( UI32 i = 0; i < s.size(); i++ ) {
+		temp_z = s[i].z + tileHeight( s[i].id );
+		if ( temp_z < ( MaxZstep + pos.z ) && temp_z > max_z )
+			max_z = temp_z;
+	}
+	return max_z;
+}
+
+/*!
+\author Luxor
+*/
+SI08 tileHeight( UI16 id )
+{
+	tile_st tile;
+	if ( !data::seekTile( id, tile ) )
+		return 0;
+	SI08 height = tile.height;
+	if ( tile.flags & TILEFLAG_BRIDGE )
+		height /= 2;
+
+	return height;
+}
+
+/*!
+\author Luxor
+*/
+SI08 mapElevation( UI32 x, UI32 y )
+{
+	map_st m;
+	if ( !data::seekMap( x, y, m ) )
+		return illegal_z;
+	return m.z;
+}
+
+/*!
+\author Luxor
+*/
+SI08 dynamicElevation( Location pos )
+{
+	SI08 max_z = pos.z, temp_z;
+	NxwItemWrapper si;
+	si.fillItemsAtXY( pos.x, pos.y );
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+		P_ITEM pi = si.getItem();
+
+		temp_z = pi->getPosition().z + tileHeight( pi->id() );
+		if ( temp_z < ( pos.z + MaxZstep ) && temp_z > max_z )
+			max_z = temp_z;
+	}
+	return max_z;
+}
+
+/*!
+\author Luxor
+*/
+SI08 getHeight( Location pos )
+{
+	SI08 max_z;
+
+	max_z = max( dynamicElevation( pos ), max_z );
+	max_z = max( staticTop( pos ), max_z );
+	max_z = max( mapElevation( pos.x, pos.y ), max_z );
+
+	return max_z;
+}
+
+/*!
+\author Luxor
+*/
+void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 )
+{
+	VALIDATEPI( pi );
+
+	multiVector m_vec;
+	data::seekMulti( pi->id() - 0x4000, m_vec );
+	for ( UI32 i = 0; i < m_vec.size(); i++ ) {
+		x1 = qmin( x1, m_vec[i].x );
+		x2 = qmax( x2, m_vec[i].x );
+		y1 = qmin( y1, m_vec[i].y );
+		y2 = qmax( y2, m_vec[i].y );
+	}
+	x1 += pi->getPosition().x;
+	x2 += pi->getPosition().x;
+	y1 += pi->getPosition().y;
+	y1 += pi->getPosition().y;
 }
 

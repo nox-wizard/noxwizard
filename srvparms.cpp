@@ -989,14 +989,14 @@ void commitserverscript() // second phase setup
 			strcpy(start[startcount][4], start[0][4]);
 		}
 	}
-	strcpy(Map->mapname, temp_map);
-	strcpy(Map->sidxname, temp_staidx);
-	strcpy(Map->statname, temp_statics);
-	strcpy(Map->vername, temp_verdata);
-	strcpy(Map->tilename, temp_tiledata);
-	strcpy(Map->multiname, temp_multimul);
-	strcpy(Map->midxname, temp_multiidx);
-	tiledata::path=temp_tiledata;
+
+	data::setPath( Map_File, std::string( temp_map ) );
+	data::setPath( StaIdx_File, std::string( temp_staidx ) );
+	data::setPath( Statics_File, std::string( temp_statics ) );
+	data::setPath( VerData_File, std::string( temp_verdata ) );
+	data::setPath( TileData_File, std::string( temp_tiledata ) );
+	data::setPath( Multi_File, std::string( temp_multimul ) );
+	data::setPath( MultiIdx_File, std::string( temp_multiidx ) );
 
 		// name resovling of server-address, LB 7-JULY 2000
 
@@ -1088,18 +1088,18 @@ void saveserverscript()
 	fprintf(file, "// \n");
 	fprintf(file, "// The file containing the map, usually map0.mul for T2A client and Britannia on UO3D,\n");
 	fprintf(file, "// map2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "MAP %s\n", Map->mapname); // lb
+	fprintf(file, "MAP %s\n", data::getPath( Map_File ).c_str()); // lb
 	fprintf(file, "// The files containing the statics, usually statics0.mul and staidx0.mul for T2A client\n");
 	fprintf(file, "// and Britannia on UO3D, statics2.mul and staidx2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "STATICS %s\n", Map->statname); // lb
-	fprintf(file, "STAIDX %s\n", Map->sidxname); // lb
+	fprintf(file, "STATICS %s\n", data::getPath( Statics_File ).c_str()); // lb
+	fprintf(file, "STAIDX %s\n", data::getPath( StaIdx_File ).c_str()); // lb
 	fprintf(file, "// The version data you'll use (verdata.mul, usually)\n");
-	fprintf(file, "VERDATA %s\n", Map->vername); // lb
+	fprintf(file, "VERDATA %s\n", data::getPath( VerData_File ).c_str()); // lb
 	fprintf(file, "// The tile data you'll use (tiledata.mul, usually)\n");
-	fprintf(file, "TILEDATA %s\n", Map->tilename); // lb
+	fprintf(file, "TILEDATA %s\n", data::getPath( TileData_File ).c_str()); // lb
 	fprintf(file, "// The files containing multi data (multi.mul and multi.idx usually)\n");
-	fprintf(file, "MULTIMUL %s\n", Map->multiname); // lb
-	fprintf(file, "MULTIIDX %s\n", Map->midxname); // lb
+	fprintf(file, "MULTIMUL %s\n", data::getPath( Multi_File ).c_str()); // lb
+	fprintf(file, "MULTIIDX %s\n", data::getPath( MultiIdx_File ).c_str()); // lb
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION SKILLS\n");
@@ -1381,7 +1381,7 @@ void saveserverscript()
 	fprintf(file, "// Doesn't affect anything, leave at default  \n");
 	fprintf(file, "CHECKMEM %i\n", speed.checkmem);
 	fprintf(file, "// Setting to 1 loads the statics, tiles and a map cache into RAM, significant speed boost  \n");
-	fprintf(file, "CACHE_MUL %i\n",Map->Cache);
+	fprintf(file, "CACHE_MUL %i\n", ServerScp::g_nMapCache);
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION COMBAT\n");

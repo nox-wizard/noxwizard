@@ -381,9 +381,9 @@ namespace item
 		pi->useAnimId=(pi->animid()!=0);
 
 		tile_st tile;
-		Map->SeekTile(pi->id(), &tile);
+		data::seekTile(pi->id(), tile);
 
-		if (tile.flag2&0x08)
+		if (tile.flags&TILEFLAG_STACKABLE)
 			pi->pileable = 1;
 
 		if (!pi->maxhp && pi->hp)
@@ -456,8 +456,8 @@ namespace item
 		LOGICAL pile=false;
 
 		tile_st tile;
-		Map->SeekTile(id, &tile);
-		pile = (tile.flag2&0x08);
+		data::seekTile(id, tile);
+		pile = (tile.flags&TILEFLAG_STACKABLE);
 		P_ITEM pi=archive::item::New();
 		if ( pi==NULL )
 			return NULL;
@@ -502,7 +502,7 @@ namespace item
 			short xx,yy,zz;
 			xx=(buffer[s][11]<<8)+buffer[s][12];
 			yy=(buffer[s][13]<<8)+buffer[s][14];
-			zz=buffer[s][16]+Map->TileHeight((buffer[s][17]<<8)+buffer[s][18]);
+			zz=buffer[s][16]+tileHeight((buffer[s][17]<<8)+buffer[s][18]);
 			pi->MoveTo(xx,yy,(SI08)zz);
 		}
 		else
@@ -608,9 +608,9 @@ namespace item
 			strcpy(itemname, pi->getCurrentNameC());
 			return strlen(itemname)+1;
 		}
-		Map->SeekTile(pi->id(), &tile);
-		if (tile.flag2&0x80) strcpy(itemname, "an ");
-		else if (tile.flag2&0x40) strcpy(itemname, "a ");
+		data::seekTile(pi->id(), tile);
+		if (tile.flags&TILEFLAG_PREFIX_AN) strcpy(itemname, "an ");
+		else if (tile.flags&TILEFLAG_PREFIX_A) strcpy(itemname, "a ");
 		else itemname[0]=0;
 		namLen = strlen( itemname );
 		mode=0;
@@ -1073,7 +1073,7 @@ namespace item
 	{
 		P_ITEM pi = spawnItemByIdInternal(nAmount, cName, id, color);
 		if ((pi!=NULL)&&(x!=INVALID)) {
-			z = Map->Height( x, y, z );
+			z = getHeight( Loc( x, y, z ) );
 			pi->MoveTo(x,y,z);
 			pi->Refresh();
 		}

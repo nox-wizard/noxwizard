@@ -13,7 +13,7 @@
 \brief Data files handling system
 */
 
-#include "data.h"
+#include "nxwcommn.h"
 
 namespace data {
 
@@ -365,6 +365,40 @@ void setPath( MulFileId id, std::string path )
 		default:
 			break;
 	}
+}
+
+/*!
+\author Luxor
+*/
+std::string getPath( MulFileId id )
+{
+	switch ( id )
+	{
+		case Map_File:
+			return map_path;
+			break;
+		case StaIdx_File:
+			return staIdx_path;;
+			break;
+		case Statics_File:
+			return statics_path;
+			break;
+		case Multi_File:
+			return multi_path;
+			break;
+		case MultiIdx_File:
+			return multiIdx_path;
+			break;
+		case TileData_File:
+			return tiledata_path;
+			break;
+		case VerData_File:
+			return verdata_path;
+			break;
+		default:
+			break;
+	}
+	return std::string( " " );
 }
 
 

@@ -40,6 +40,12 @@ private:
 SI08 isWalkable( Location pos, UI08 flags = WALKFLAG_ALL );
 LOGICAL lineOfSight( Location pos1, Location pos2 );
 LOGICAL canNpcWalkHere( Location pos );
+SI08 staticTop( Location pos );
+SI08 tileHeight( UI16 id );
+SI08 mapElevation( UI32 x, UI32 y );
+SI08 dynamicElevation( Location pos );
+SI08 getHeight( Location pos );
+void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 );
 
 inline SI32 line_of_sight( SI32 s, Location a, Location b, SI32 checkfor )
 { return lineOfSight( a, b ); }

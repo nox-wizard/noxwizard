@@ -7,6 +7,13 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
+
+#ifndef __BOATS_H__
+#define __BOATS_H__
+
+#include "nxwcommn.h"
+
 /*!
 \file
 \author Elcabesa
@@ -32,9 +39,6 @@ extern signed short int iSmallShipOffsets[4][4][2];
 extern signed short int iMediumShipOffsets[4][4][2];
 extern signed short int iLargeShipOffsets[4][4][2];
 extern char cShipItems[4][6];
-
-#ifndef __Boats_h
-#define __Boats_h
 
 //NEW BOAT SYSTEM
 
@@ -68,7 +72,7 @@ class cBoat
 		LOGICAL boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2);
 		LOGICAL collision(P_ITEM pi, Location where,int dir);
 		LOGICAL good_position(P_ITEM pBoat, Location where, int dir);
-		LOGICAL tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);
+		LOGICAL tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);
 		void LeaveBoat(P_CHAR pc, P_ITEM pi);
 		void TurnStuff_i(P_ITEM, P_ITEM, int, int);
 
@@ -88,5 +92,6 @@ class cBoat
 		void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
 		void Turn(P_ITEM, int);
 };
+
 
 #endif

@@ -117,7 +117,7 @@ inline bool isWaterTarget(NXWSOCKET  s)
 	int x = (buffer[s][0xB] << 8) + buffer[s][0xC];
 	int y = (buffer[s][0xD] << 8) + buffer[s][0xE];
 
-	map = Map->SeekMap0(x, y);
+	data::seekMap(x, y,map);
 	switch(map.id)
 	{
 		//water tiles:
@@ -136,11 +136,11 @@ inline bool isWaterTarget(NXWSOCKET  s)
 			break;
 	}
 
-	Map->SeekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), &tile);
+	data::seekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), tile);
 	if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
 	{
-		Map->SeekLand(map.id, &land);
-		if (!(land.flag1&0x80))//not a "wet" tile
+		data::seekLand(map.id, land);
+		if (!(land.flags&TILEFLAG_WET))//not a "wet" tile
 		{
 			return false;
 		}

@@ -8,10 +8,7 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
-#include "boats.h"
-#include "debug.h"
-#include "network.h"
-#include "sndpkg.h"
+
 
 #define X 0
 #define Y 1
@@ -102,23 +99,14 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 	
 	char temp[TEMP_STR_SIZE];
 	int j;
-	SI32 length;			// signed long int on Intel
-	st_multi multi;
-	MULFile *mfile;
-	Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
-	length=length/sizeof(st_multi);
-	if (length == -1 || length>=17000000)//Too big...
-	{
-		sprintf(temp,"inmulti() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pi->getCurrentNameC() );
-		LogError( temp ); // changed by Magius(CHE) (1)
-		length = 0;
-	}
+	multiVector m_vec;
 
-	for (j=0;j<length;j++)
+	data::seekMulti( pi->id()-0x4000, m_vec );
+
+	for ( j=0; j<m_vec.size();j++)
 	{
 		Location itmpos= pi->getPosition();
-		mfile->get_st_multi(&multi);
-		if (/*(multi.visible)&&*/((itmpos.x+multi.x) == where.x) && ((itmpos.y+multi.y) == where.y))
+		if (/*(multi.visible)&&*/((itmpos.x+m_vec[j].x) == where.x) && ((itmpos.y+m_vec[j].y) == where.y))
 		{
 			return true;
 		}
@@ -162,7 +150,7 @@ void cBoat::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double cl
 				pc_b->MoveTo( boatpos.x+1, boatpos.y+1, boatpos.z+2 );
 				pc_b->setMultiSerial( boat2->getSerial32() );
 				pc_b->teleport();
-			   
+
 			}
 		}
 
@@ -197,16 +185,16 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 	{
 		for(y=y2-YY;y<=y2+YY;y++)
 		{
-			sz=(signed char) Map->StaticTop(x,y,z); // MapElevation() doesnt work cauz we are in a multi !!
+			sz=(signed char) staticTop(Loc(x,y,z)); // MapElevation() doesnt work cauz we are in a multi !!
 
-			mz=(signed char) Map->MapElevation(x,y);
+			mz=(signed char) mapElevation(x,y);
 			if (sz==illegal_z) typ=0;
 			else typ=1;
 			//o=Map->o_Type(x,y,z);
 
 			if((typ==0 && mz!=-5) || (typ==1 && sz!=-5))// everthing the blocks a boat is ok to leave the boat ... LB
 			{
-				
+
 				NxwCharWrapper sc;
 				sc.fillOwnedNpcs( pc, false, true );
 				for( sc.rewind(); !sc.isEmpty(); sc++ )
@@ -814,7 +802,7 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 // Called form		 : cBoat:good_position()
 
 
-LOGICAL cBoat::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
+LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,int dir)
 {
 	land_st land;
 	int dx,dy;
@@ -841,17 +829,15 @@ LOGICAL cBoat::tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y,in
 
 			break;
 		}
-	MapStaticIterator msi(dx,dy);
-	staticrecord *stat;
-	int loopexit=0;
+	staticVector s;
+	data::collectStatics( dx, dy, s );
 	tile_st tile;
-	while ( ((stat = msi.Next())!=NULL) && (++loopexit <MAXLOOPS) )
-	{
-		msi.GetTile(&tile);
+	for ( UI32 i = 0; i < s.size(); i++ ) {
+		data::seekTile( s[i].id, tile );
 		if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
 		{
-			Map->SeekLand(map.id, &land);
-			if (!(land.flag1&0x80))//not a "wet" tile
+			data::seekLand( map.id, land );
+			if (!(land.flags&TILEFLAG_WET))//not a "wet" tile
 			{
 				return false;
 			}
@@ -886,37 +872,30 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 	char temp[TEMP_STR_SIZE];
 	map_st map;
 	int j;
-	SI32 length;			// signed long int on Intel
-	st_multi multi;
-	MULFile *mfile;
-	Map->SeekMulti(pBoat->id()-0x4000, &mfile, &length);
-	length=length/sizeof(st_multi);
-	if (length == -1 || length>=17000000)//Too big...
+	multiVector m_vec;
+
+	data::seekMulti(pBoat->id()-0x4000, m_vec);
+
+	for (j=0;j<m_vec.size();j++)
 	{
-		sprintf(temp,"good_position() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
-		LogError( temp ); // changed by Magius(CHE) (1)
-		length = 0;
-	}
-	for (j=0;j<length;j++)
-	{
-	    mfile->get_st_multi(&multi);
-		if (multi.visible)
-		{
+
+/*		if (m_vec[j].visible)
+		{*/
 			switch(dir)
 			{
 			case -1:
-				map = Map->SeekMap0(x-multi.y,y+multi.x);
+				data::seekMap(x-m_vec[j].y,y+m_vec[j].x, map);
 				break;
 			case 0:
-				map = Map->SeekMap0(x+multi.x,y+multi.y);
+				data::seekMap(x+m_vec[j].x,y+m_vec[j].y, map);
 				break;
 			case 1:
-				map = Map->SeekMap0(x+multi.y,y-multi.x);
+				data::seekMap(x+m_vec[j].y,y-m_vec[j].x, map);
 				break;
 
 			case 2:
 
-				map = Map->SeekMap0(x-multi.x,y-multi.y);
+				data::seekMap(x-m_vec[j].x,y-m_vec[j].y, map);
 
 				break;
 			}
@@ -942,12 +921,12 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 					break;
 				default:// we are in default if we are nearer coast
 					{
-						good_pos=tile_check(multi,pBoat,map,x,y,dir);
+						good_pos=tile_check( m_vec[j],pBoat,map,x,y,dir );
 						if (good_pos==false)
 							return false;
 					}
 			}
-		}
+		//}
 	}
 	return good_pos;
 }
@@ -1161,30 +1140,19 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 	int x,y;
 	SI32 length1,length2;			// signed long int on Intel
-	st_multi multi1,multi2;
-	MULFile *mfile1,*mfile2;
-	Map->SeekMulti(pBoat1->id()-0x4000, &mfile1, &length1);
-	length1=length1/sizeof(st_multi);
-	if (length1 == -1 || length1>=17000000)//Too big...
+	multi_st multi1,multi2;
+	multiVector m1, m2;
+
+	data::seekMulti( pBoat1->id()-0x4000, m1 );
+
+	data::seekMulti( pBoat2->id()-0x4000, m2 );
+
+	for(i=0;i<m1.size();i++)
 	{
-		sprintf(temp,"boat_collision() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat1->getCurrentNameC() );
-		LogError( temp );
-		length1 = 0;
-	}
-	Map->SeekMulti(pBoat2->id()-0x4000, &mfile2, &length2);
-	length2=length2/sizeof(st_multi);
-	if (length2 == -1 || length2>=17000000)//Too big...
-	{
-		sprintf(temp,"boat_collision() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat2->getCurrentNameC() );
-		LogError( temp );
-		length2 = 0;
-	}
-	for(i=0;i<length1;i++)
-	{
-		for (j=0;j<length2;j++)
+		for (j=0;j<m2.size();j++)
 		{
-			mfile1->get_st_multi(&multi1);
-			mfile2->get_st_multi(&multi2);
+			multi1 = m1[i];
+			multi2 = m2[j];
 
 
 			switch(dir)
@@ -1213,14 +1181,10 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 				LogError("boat_collision() - bad boat turning direction\n");
 			}
 
-			if (multi1.visible&&multi2.visible)
+			if ( (x==multi2.x+pBoat2->getPosition("x")) && (y==multi2.y+pBoat2->getPosition("y")) )
 			{
-				if ( (x==multi2.x+pBoat2->getPosition("x")) && (y==multi2.y+pBoat2->getPosition("y")) )
-				{
-					return true;
-				}
-
-			}		
+				return true;
+			}
 		}
 	}
 	return false;
@@ -1276,19 +1240,14 @@ P_ITEM cBoat::GetBoat(Location pos)
 		{
 			int i;
 			SI32 length;			// signed long int on Intel
-			st_multi multi;
-			MULFile *mfile;
+			multi_st multi;
+			multiVector m;
 
-			Map->SeekMulti(pBoat->id()-0x4000, &mfile, &length);
-			length=length/sizeof(st_multi);
-			if (length == -1 || length>=17000000)//Too big...
+			data::seekMulti(pBoat->id()-0x4000, m);
+
+			for(i=0;i<m.size();i++)
 			{
-				LogError("GetBoat() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
-				length = 0;
-			}
-			for(i=0;i<length;i++)
-			{
-				mfile->get_st_multi(&multi);
+				multi = m[i];
 				if (   ((UI32)(multi.x + pBoat->getPosition("x")) == pos.x) && ((UI32)(multi.y + pBoat->getPosition("y")) == pos.y) )
 				{
 					return  pBoat;
@@ -1540,3 +1499,4 @@ P_ITEM search_boat_by_plank(P_ITEM pl)
 	boat_db*  boat=search_boat(ser.serial32);
 	return boat->p_serial;
 }
+ 
