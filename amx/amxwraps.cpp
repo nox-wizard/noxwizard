@@ -7261,7 +7261,7 @@ NATIVE (_reload_accounts )
 \author stonedz
 \since 0.82
 \fn 
-\return
+\return none
 */
 
 NATIVE ( _reload_scripts )
@@ -7270,6 +7270,7 @@ NATIVE ( _reload_scripts )
 	deleteNewScripts();
 	newScriptsInit();
 	ConOut("[DONE]\n");
+	return true;
 }
 
 /*!
@@ -7280,6 +7281,7 @@ NATIVE ( _reload_scripts )
 \param 1 light level: 0=brightest, 15=darkest, -1=enable day/night cycles.
 \return true if the operation succedes, false elsewhere
 */
+
 NATIVE ( _setLightLevel )
 {
 
@@ -7289,6 +7291,26 @@ NATIVE ( _setLightLevel )
 	return true;	
 
 }
+
+/*!
+\brief shuts down the server in param1 minutes and broadcast a message with shutdown time.
+\author stonedz
+\since 0.82
+\fn shutdown
+\param 1 seconds until shutdown, if param 1 is 0 (zero) any previous shoutdown procedure will be interrupted.
+\return true if operation succeed.
+*/
+
+NATIVE ( _shutdown )
+{
+	char *err= NULL;
+	
+	endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*(int) params[1]);
+	sysbroadcast(TRANSLATE("The server will shutdown in %d minutes and %d seconds\n"),(int)params[1]/60, (int)params[1]%60);
+	InfoOut("The server will shutdown in %d minutes and %d seconds\n",(int)params[1]/60, (int)params[1]%60);
+	return true;
+}
+
 
 
 /*!
@@ -7817,6 +7839,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setLightLevel", _setLightLevel },
  { "reload_accounts", _reload_accounts },
  { "reload_scripts", _reload_scripts },
+ { "shutdown", _shutdown },
  { "recompileSmall", _recompileSmall },
 
 // speech APIs
