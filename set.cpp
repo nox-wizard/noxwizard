@@ -323,7 +323,7 @@ void NxwWrapper::copyQ( const NxwWrapper& from )
 */
 void NxwWrapper::insert( SERIAL s )
 {
-	vect.insert( s );
+	vect.push_back( s );
 
 };
 
