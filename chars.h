@@ -273,7 +273,7 @@ class cChar : public cObject
 \name Appearence
 */
 	public:
-		char			title[50];
+		std::string	title;
 		UI16			oldhairstyle;
 		UI16			oldbeardstyle;
 		UI16			oldhaircolor;
