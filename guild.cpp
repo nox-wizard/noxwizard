@@ -369,8 +369,8 @@ void cGuild::calculateFealty()
 		}
 		votes.insert(make_pair(votedGuildMember->getSerial(), voteCount));
 	}
-	int highest;
-	SERIAL master;
+	int highest=-1;
+	SERIAL master=-1;
 	for ( voteIndex = votes.begin();voteIndex != votes.end();voteIndex++)
 	{
 		if ( highest < voteIndex->second )
@@ -956,7 +956,7 @@ void cGuildz::checkConsistancy(void )
 		if (!pc) // if not, erase the guild !
 		{
 			ok=0;
-			LogWarning("guild: %s ereased because guildmaster vanished",guild->getName());
+			LogWarning("guild: %s ereased because guildmaster vanished",guild->getName().c_str());
 			Guildz.removeGuild(guild->getSerial());
 		}
 		// guildstone deleted ? yes -> erase guild !
@@ -981,7 +981,7 @@ void cGuildz::checkConsistancy(void )
 				if (!ISVALIDPC( pc ) )
 				{
 					ok=0;
-					LogWarning("guild: %s had an member that didnt exist anymore, removed\n",guild->getName());
+					LogWarning("guild: %s had an member that didnt exist anymore, removed\n",guild->getName().c_str());
 					guild->removeMember(member->getSerial());
 				}
 			}
