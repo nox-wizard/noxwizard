@@ -51,7 +51,6 @@ class cMenu
 
 	private:
 		UI32 addString( cUnicodeString& s );
-		UI32 addString( const char* c );
 
 	public:
 				
@@ -67,19 +66,19 @@ class cMenu
 		void 	addButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 returnCode );
 		void 	addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result );
 		void 	addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height );
-		void	addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, const char* text, UI32 hue );
+		void	addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& text, UI32 hue );
 		void 	addGroup( UI32 group = 0 );
 		void	addGump( UI32 x, UI32 y, UI32 gump, UI32 hue );
-		void	addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, const char* html, UI32 hasBack, UI32 canScroll );
-		void 	addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, const char* data, UI32 hue = 0 );
+		void	addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& html, UI32 hasBack, UI32 canScroll );
+		void 	addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, cUnicodeString& data, UI32 hue = 0 );
 		void 	addPage( UI32 page = 0 );
 		void 	addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page );
 		void 	addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  );
 		void 	addResizeGump( UI32 x, UI32 y, UI32 gumpId, UI32 width, UI32 height );
-		void 	addText( UI32 x, UI32 y, const char* data, UI32 hue = 0 );
+		void 	addText( UI32 x, UI32 y, cUnicodeString& data, UI32 hue = 0 );
 		void 	addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
 		void	addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI32 hue );
-		void 	addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, const char* clilocid, UI32 hasBack , UI32 canScroll );
+		void 	addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, cUnicodeString& clilocid, UI32 hasBack , UI32 canScroll );
 		void 	handleButton( const NXWSOCKET socket, const UI32 button );
 		void	setCallBack( const std::string& arg );
 
