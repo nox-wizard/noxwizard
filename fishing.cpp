@@ -231,35 +231,35 @@ void cFishing::Fish(CHARACTER i)
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "5" ); // random boots
 				pc->sysmsg(  TRANSLATE("You fished up an old pair of boots!") ); 
 			} 
-            break;
+            return;
 		case 1:
             if(skill>=970) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "1" ); // random paintings 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient painting!") ); 
 			} 
-            break;
+            return;
 		case 2:
             if(skill>=950) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "2" ); // random weapons 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient weapon!") ); 
 			} 
-            break;
+            return;
 		case 3:
             if(skill>=950) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "3" ); // random armor 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient armor!") ); 
 			} 
-            break;
+            return;
 		case 4:
             if(skill>=700) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "4" ); // random treasure
 				pc->sysmsg(  TRANSLATE("You fished up some treasure!") ); 
 			} 
-            break;
+            return;
 		case 5:
             if(skill>=400) 
 			{ 
@@ -268,50 +268,53 @@ void cFishing::Fish(CHARACTER i)
 				else
 					pc->sysmsg(  TRANSLATE("You wait for a while, but nothing happens"));
 			} 
-            break;
+            return;
 		case 6:
             if(skill>=800) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "6" ); // random chests
 				pc->sysmsg(  TRANSLATE("You fished up an old chest!") );
 			} 
-            break;
+            return;
 		case 7:
             if(skill>=700) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "8" ); // random seashells
 				pc->sysmsg(  TRANSLATE("You fished up a seashell!") );
 			} 
-            break;
+            return;
 		case 8:
             if(skill>=700) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "9" ); // random skulls
 				pc->sysmsg(  TRANSLATE("You fished up a skull!") );
 			} 
-            break;
+            return;
 		case 9:
             if(skill>=900) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "10" ); // random nets
 				pc->sysmsg(  TRANSLATE("You fished up a net!") );
 			} 
-            break;
+            return;
 		case 10:
             if(skill>=900) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "11" ); // random gold
 				pc->sysmsg(  TRANSLATE("You fished up some gold!") );
 			} 
-            break;
+            return;
 		case 11:
             if(skill>=400) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "12" ); // random bones
 				pc->sysmsg(  TRANSLATE("You fished up some bones!") );
 			} 
-            break;
+            return;
 		default:
+			break;
+	}
+
 
 	ii=rand()%3;
 	idnum=0xCC+ii;
@@ -357,14 +360,26 @@ void cFishing::Fish(CHARACTER i)
 		fish->color1= c1;
 		fish->color2= c2;
 		fish->id2= idnum;
-                //<Luxor>
-                if (ISVALIDPI(pc_bp)) {
-                        fish->setCont(pc_bp);
-                        if (!pc_bp->ContainerPileItem(fish))// try to pile
-                                fish->SetRandPosInCont(pc_bp);
-                } else
-                        fish->MoveTo( charpos ); //Luxor bug fix
-                //</Luxor>
+
+	if(c2>0)
+	{
+		sysmessage(s,TRANSLATE("You pull out an exotic fish!"));
+	}
+	else
+	{
+	    sysmessage(s,TRANSLATE("You pull out a fish!"));
+	}
+		
+		//<Luxor>
+		if (ISVALIDPI(pc_bp)) {
+			fish->setCont(pc_bp);
+			if (pc_bp->ContainerPileItem(fish)==INVALID)// try to pile
+				fish->SetRandPosInCont(pc_bp);
+			else 
+				return;				
+		} else
+			fish->MoveTo( charpos ); //Luxor bug fix
+		//</Luxor>
                 
 		fish->Refresh();
 /*	} else // fishes around ?
@@ -414,15 +429,5 @@ void cFishing::Fish(CHARACTER i)
 	} // end else fishes around
         */
         
-	if(c2>0)
-	{
-		sysmessage(s,TRANSLATE("You pull out an exotic fish!"));
-	}
-	else
-	{
-	    sysmessage(s,TRANSLATE("You pull out a fish!"));
-	}
-	break;
-	}
 }
 
