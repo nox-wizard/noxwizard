@@ -59,6 +59,7 @@ public:
 
 	SERIAL getInWorld();
 	void setEntering( );
+	bool isEntering( );
 	void setOnline( P_CHAR pc );
 	void setOffline();
 	void onLogin( NXWSOCKET socket );

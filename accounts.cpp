@@ -59,6 +59,16 @@ void cAccount::setEntering( )
 }
 
 /*!
+\brief returns if accounts is entering
+\author Wintermute
+*/
+
+bool cAccount::isEntering()
+{
+	return state==LOG_ENTERING;
+}
+
+/*!
 \brief Set online with given char
 \author Endymion
 \param pc the char
