@@ -303,7 +303,7 @@ namespace pointers {
 	{
 		VALIDATEPC(who);
 		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
-		ConOut("addCharToWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
+		//ConOut("addCharToWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
 		pCharLocationMap.insert( pair< UI32, P_CHAR >( key, who ) );
 	}
 
@@ -312,7 +312,7 @@ namespace pointers {
 		VALIDATEPC(who);
 		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
 
-		ConOut("delCharFromWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
+		//ConOut("delCharFromWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
 
 		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( key );
 
