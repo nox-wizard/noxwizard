@@ -58,8 +58,6 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		swingtargserial = INVALID;
 		return;
 	}
-	if ( swingtargserial == INVALID )
-		return;
 	if ( amxevents[EVENT_CHR_ONCOMBATHIT] ) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONCOMBATHIT]->Call( getSerial32(), pc_def->getSerial32() );
@@ -126,7 +124,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
         // Luxor: we must calculate the chance depending on which combat situation we are.
         //
         SI32 chanceToHit = 0;
-        if ( fightskill != ARCHERY && def_fightskill != ARCHERY ) { //Melee VS Melee
+    if ( fightskill != ARCHERY && def_fightskill != ARCHERY ) { //Melee VS Melee
 		chanceToHit = int( ( (fs1+500.0) / ((fs2+500.0)*2.0) )*100.0 - dex2/7.0 + dex1/7.0 );
 	} else if ( fightskill == ARCHERY && def_fightskill == ARCHERY ) { //Ranged VS Ranged
 		chanceToHit = int( (fs1/10.0) - dex2/2.0 + dex1/5.0 );
@@ -211,7 +209,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		return;
 	*/
 	if (ISVALIDPI(pWeapon)) {
-		if (chance(5) && pWeapon->type != ITYPE_SPELLBOOK) {
+		if (chance(1) && pWeapon->type != ITYPE_SPELLBOOK) {
 			pWeapon->hp--;
 			if(pWeapon->hp <= 0) {
 				sysmsg(TRANSLATE("Your weapon has been destroyed"));
@@ -351,7 +349,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if (fightskill == WRESTLING) dmgtype = DAMAGE_BLUDGEON;
 		if (npc) {
 			dmgtype = damagetype;
-			damage = int(damage / 3.5);
+			// damage = int(damage / 3.5);
 		}
 		(ISVALIDPI(pWeapon)) ? dmgtype = pWeapon->damagetype : dmgtype = DAMAGE_PURE;
 
@@ -363,27 +361,35 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
             		}
 			pc_def->damage(int(damage - (damage/100.0)*20.0), dmgtype);
 			pc_def->staticFX(0x374A, 0, 15);
-		} else {
+		} else 
+		{
 			pc_def->damage(damage, dmgtype);
-		        if ((ISVALIDPI(pWeapon))&&(pWeapon->auxdamage)) {
-	                	pc_def->damage(pWeapon->auxdamage, pWeapon->auxdamagetype);
-            		}
+		    if ((ISVALIDPI(pWeapon))&&(pWeapon->auxdamage)) 
+			{
+				pc_def->damage(pWeapon->auxdamage, pWeapon->auxdamagetype);
+			}
 		}
 	}	//End -> if (damage > 0)
 	if (!npc)
 		doCombatSoundEffect(fightskill, pWeapon);
 
-	if (pc_def->hp < 0) {
+	if (pc_def->hp < 0 || pc_def->dead) {
 		pc_def->hp=0;
 		pc_def->updateStats(0);
+		if ( pc_def->npc )
+		{
+			// Killed by damage
+			pc_def->Delete();
+		}
+
 	}
 
 	if( pc_def->HasHumanBody() ) {
 		if (!pc_def->onhorse) pc_def->playAction(0x14);
 	}
-        if (nTimeOut != 0) {
-                timeout = uiCurrentTime + nTimeOut;
-        }
+    if (nTimeOut != 0) {
+            timeout = uiCurrentTime + nTimeOut;
+    }
 }
 
 /*!
@@ -438,6 +444,12 @@ void cChar::doCombat()
 	bool	validWeapon = ISVALIDPI( pWeapon );
 	P_CHAR	pc_def = pointers::findCharBySerial(targserial);
 
+	if ( targserial==INVALID )
+	{
+		undoCombat();
+		return;
+	}
+		
 	if( !ISVALIDPC(pc_def) )
 	{
 		undoCombat();
@@ -506,7 +518,7 @@ void cChar::doCombat()
 					x=1;
 				else
 				{
-					sysmsg(TRANSLATE("You are out of ammunitions!"));
+					sysmsg(TRANSLATE("You are out of ammunition!"));
 					UnEquip(pWeapon, false);
 				}
 			}
@@ -516,7 +528,7 @@ void cChar::doCombat()
 					x=1;
 				else
 				{
-					sysmsg(TRANSLATE("You are out of ammunitions!"));
+					sysmsg(TRANSLATE("You are out of ammunition!"));
 					UnEquip(pWeapon, false);
 				}
 			}
@@ -575,7 +587,7 @@ void cChar::doCombat()
 			//
 			if ( validWeapon )
 			{
-	    			if (pWeapon->spd==0)
+				if (pWeapon->spd==0)
 					pWeapon->spd=35;
 				x = (15000 / ((dx+100) * pWeapon->spd)*MY_CLOCKS_PER_SEC);
 			}
@@ -604,7 +616,7 @@ void cChar::doCombat()
 				}
 				x = (15000 / ((dx+100) * j)*MY_CLOCKS_PER_SEC);
 			}
-       			timeout = uiCurrentTime+x;
+			timeout = uiCurrentTime+x;
 			timeout2 = timeout;
 			x = j = 0;
 
@@ -642,6 +654,8 @@ void cChar::doCombat()
 
 		if (fightskill != ARCHERY)
 			combatHit( pc_def, x);
+		if ( !pc_def->war )
+			pc_def->war=1;
 		return;
 	}	//End -> else if (dist<=10 && combatTimerOk())
 
@@ -950,9 +964,9 @@ int cChar::calcDef(SI32 x)
 	}
 
 	if (getClient() != NULL) statwindow(this,this);
-
+// Why is armor def tripled ?????
 	if (total<2) total=2;
-	return total*3;
+	return total;
 }
 
 //////////////////////////////////////////////////////////////////

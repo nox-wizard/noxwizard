@@ -1092,10 +1092,10 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL b
 						if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 							continue;
 
-						SERIAL_SET::iterator	iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() ),
-									end( mapRegions->regions[nowx][nowy].itemsInRegions.end() );
-						for( ; iter != end; ++iter ) {
-							P_ITEM pi=pointers::findItemBySerial( *iter );
+						SERIAL_SET::iterator	iter= mapRegions->regions[nowx][nowy].itemsInRegions.begin();
+						for( SI32 i=0 ; i < mapRegions->regions[nowx][nowy].itemsInRegions.size(); ++i ) 
+						{
+							P_ITEM pi=pointers::findItemBySerial( *iter++ );
 							if( pi != 0 )
 								if( pi->isInWorld() ) {
 									int iDist=(int)dist(x,y,0, pi->getPosition("x"), pi->getPosition("y"), 0 );
@@ -1139,6 +1139,11 @@ void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, LOGICA
 void NxwItemWrapper::fillItemWeared( P_CHAR pc, LOGICAL bIncludeLikeHair, LOGICAL bIncludeProtectedLayer, LOGICAL bExcludeIllegalLayer )
 {
 	
+	if (pc!=NULL && sizeof(*pc) == sizeof(cChar) )
+	{
+		if (pc->getSerial32() < 0) 
+			return;
+	}
 	VALIDATEPC(pc);
 
 	std::map< SERIAL , vector<P_ITEM> >::iterator cont( pointers::pContMap.find( pc->getSerial32() ) );

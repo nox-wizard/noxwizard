@@ -662,10 +662,12 @@ void cSpawnDinamic::addSpawned(P_OBJECT obj)
 	if( spawn->type == ITYPE_ITEM_SPAWNER ) 
 	{
 		this->items_spawned.insert( obj->getSerial32() );
+		this->current++;
 	}
 	else if( spawn->type == ITYPE_NPC_SPAWNER ) 
 	{
 		this->npcs_spawned.insert( obj->getSerial32() );
+		this->current++;
 	}
 }
 

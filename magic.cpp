@@ -148,7 +148,7 @@ bool checkGateCollision( P_CHAR pc )
 {
 	VALIDATEPCR( pc, false );
 
-	if ( pc->npc )
+	if ( pc->npc && pc->getOwnerSerial32() == INVALID ) // Allow owned pets to follow through gates
 		return false;
 
 	P_ITEM pgate = NULL;
@@ -165,6 +165,8 @@ bool checkGateCollision( P_CHAR pc )
 
 		if ( pgate->type != ITYPE_MOONGATE )
 			pgate = NULL;
+		else
+			break;
 	}
 
 	if ( !ISVALIDPI( pgate ) )

@@ -3405,12 +3405,9 @@ void cChar::Kill()
 		amxevents[EVENT_CHR_ONAFTERDEATH]->Call(getSerial32(), pCorpse->getSerial32() );
 	}
 
-	if ( npc )
-	{
-		Delete();
-	}
-	else
+	if ( !npc )
 		++deaths;
+
 }
 
 /*!
@@ -4341,10 +4338,18 @@ void cChar::pc_heartbeat()
 	NXWCLIENT ps = getClient();
 	NXWSOCKET socket = getSocket();
 
-	if     ( swingtargserial == INVALID )
+	if ( swingtargserial == INVALID )
+	{
 		doCombat();
+		// if char is in combat don't idle him out
+		clientidletime=SrvParms->inactivitytimeout*MY_CLOCKS_PER_SEC+uiCurrentTime;
+	}
 	else //if( TIMEOUT( timeout ) )
+	{
 		combatHit( pointers::findCharBySerial( swingtargserial ) );
+		// if char is in combat don't idle him out
+		clientidletime=SrvParms->inactivitytimeout*MY_CLOCKS_PER_SEC+uiCurrentTime;
+	}
 
 
 	if ( !TIMEOUT( smoketimer ) )
@@ -4478,12 +4483,6 @@ void cChar::npc_heartbeat()
 		if( dead )	// Killed as result of action in script
 			return;
 	}
-	/*
-	g_bByPass = false;
-	runAmxEvent( EVENT_CHR_ONHEARTBEAT, getSerial32(), uiCurrentTime );
-	if ( g_bByPass == true )
-		return;
-	*/
 	if( dead )	// Killed as result of action in script
 		return;
 	//
@@ -4518,11 +4517,6 @@ void cChar::npc_heartbeat()
 			amxevents[EVENT_CHR_ONDISPEL]->Call( getSerial32(), INVALID, DISPELTYPE_TIMEOUT );
 			if ( g_bByPass == true ) return;
 		}
-		/*
-		g_bByPass = false;
-		runAmxEvent( EVENT_CHR_ONDISPEL, getSerial32(), INVALID, DISPELTYPE_TIMEOUT );
-		if ( g_bByPass == true ) return;
-		*/
 		// Dupois - Added Dec 20, 1999
 		// QUEST expire check - after an Escort quest is created a timer is set
 		// so that the NPC will be deleted and removed from the game if it hangs around

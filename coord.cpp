@@ -681,7 +681,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				//Console::instance()->send( QString( "after statics\n" ) );
 				// Items
 				NxwItemWrapper si;
-				si.fillItemsNearXYZ(this->x, this->y);
+				si.fillItemsAtXY((*pit).x, (*pit).y,0);
 				
 				for( si.rewind(); !si.isEmpty(); si++ )
 				{
