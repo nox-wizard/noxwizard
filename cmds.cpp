@@ -67,7 +67,7 @@ std::map< std::string, P_COMMAND > cCommandMap::command_map;
 
 
 
-cCommand::cCommand(std::string name, SI08 number ,std::string callback) {
+cCommand::cCommand(std::string name, UI08 number ,std::string callback) {
 
 	cmd_name=name;
 	cmd_level=number; 
@@ -76,7 +76,7 @@ cCommand::cCommand(std::string name, SI08 number ,std::string callback) {
 
 
 
-SI08 cCommand::getCommandLevel() {
+UI08 cCommand::getCommandLevel() {
 	return this->cmd_level;
 }
 
@@ -114,7 +114,7 @@ cCommandMap::cCommandMap() {
 	FILE * pFile;
 	char str [150]; 
 	std::string var1, var3;
-	SI08 var2; 
+	UI08 var2; 
       
          
 	pFile = fopen ("small-scripts/commands.txt" , "r");		//Open commands.txt files
@@ -147,7 +147,7 @@ cCommandMap::cCommandMap() {
 
 
 
-P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, std::string callback) {
+P_COMMAND cCommandMap::addGmCommand(std::string name, UI08 priv, std::string callback) {
 
 	P_COMMAND cmd= new cCommand(name, priv, callback);
     command_map.insert(make_pair(name,cmd));
@@ -231,6 +231,8 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		
 		
 		//Control between cCommand privilege and cChar privilege.
+		client->sysmsg("%d", pc_currchar->commandLevel);
+		client->sysmsg("%d", p_cmd->getCommandLevel());
 
 		if( (p_cmd->getCommandLevel()) > pc_currchar->commandLevel){
 		client->sysmsg("You can't use this command!");

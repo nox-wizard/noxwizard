@@ -51,13 +51,13 @@ class cCommand {
 	private:
 
 	    std::string cmd_name;
-		SI08 cmd_level;  
+		UI08 cmd_level;  
 		std::string cmd_callback;
 
 	public:
 
-		cCommand( std::string cmd_name, SI08 cmd_number, std::string callback );
-		SI08 getCommandLevel();
+		cCommand( std::string cmd_name, UI08 cmd_number, std::string callback );
+		UI08 getCommandLevel();
 		void call( P_CHAR current );
 
 };
@@ -79,7 +79,7 @@ private:
 public:
 	
 	cCommandMap();
-	P_COMMAND addGmCommand(std::string name, SI08 number ,std::string callback);
+	P_COMMAND addGmCommand(std::string name, UI08 number ,std::string callback);
 	P_COMMAND findCommand(char* name,NXWCLIENT client);
 
 };
