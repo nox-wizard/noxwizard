@@ -761,8 +761,6 @@ public:
 		SI32			reattackat;
 		SI32			trigger; //Trigger number that character activates
 		TEXT			trigword[31]; //Word that character triggers on.
-		TIMERVAL		disabled; //Time character is disabled, cant trigger.
-		std::string*	disabledmsg; //Character is disabled, so dysplay this message
 		char			envokeid1; //ID1 of item user envoked
 		char			envokeid2; //ID2 of item user envoked
 		SI32			envokeitem;

@@ -376,10 +376,6 @@ public:
 */
 	SI32		trigger;	//!< Trigger number that item activates
 	SI32		trigtype;	//!< Type of trigger
-	UI32		disabled;	//!< Disabled item timer, cant trigger.
-	//char		disabledmsg[128];
-	std::string	disabledmsg;
-					//!<Item is disabled, so display this message.
 	SI32		tuses;		//!< Number of uses for trigger
 //@}
 

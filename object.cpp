@@ -24,6 +24,8 @@ cObject::cObject()
 
 	//amxEvents = 0;
 	tempfx = NULL;
+	disabledmsg=NULL;
+	disabled=0;
 }
 
 cObject::~cObject()
@@ -41,6 +43,8 @@ cObject::~cObject()
 		tempfx->clear();
 		safedelete( tempfx );
 	}
+	if( disabledmsg!=NULL )
+		safedelete( disabledmsg );
 }
 /*
 			Operators definitions

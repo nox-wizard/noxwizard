@@ -226,8 +226,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	reattackat=0;
 	trigger=0; //Trigger number that character activates
 	trigword[0]='\x00'; //Word that character triggers on.
-	disabled=0; //Character is disabled for n cicles, cant trigger.
-	disabledmsg = NULL;
 	envokeid1=0x00; //ID1 of item user envoked
 	envokeid2=0x00; //ID2 of item user envoked
 	envokeitem=-1;
@@ -345,8 +343,6 @@ cChar::~cChar()
 		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
-	if( disabledmsg!=NULL )
-		safedelete( disabledmsg );
 }
 
 

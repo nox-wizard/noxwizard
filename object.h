@@ -165,6 +165,11 @@ public:
 
 //@}
 
+	UI32	disabled;	//!< Disabled object timer, cant trigger.
+	std::string*	disabledmsg; //!< Object is disabled, so display this message.
+					
+
+
 /*
 private:
 	AmxEventMap		*amxEvents;

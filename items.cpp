@@ -122,8 +122,6 @@ cItem& cItem::operator=(cItem& b)
         restock = b.restock;
         trigger = b.trigger;
         trigtype = b.trigtype;
-        disabled = b.disabled;
-        disabledmsg = b.disabledmsg;
         tuses = b.tuses;
         poisoned = b.poisoned;
         murderer = b.murderer;
@@ -944,8 +942,6 @@ cItem::cItem( SERIAL ser )
 	restock=0; // Number up to which shopkeeper should restock this item
 	trigger=0; //Trigger number that item activates
 	trigtype=0; //Type of trigger
-	disabled=0; //Item is disabled, cant trigger.
-	disabledmsg = ""; //Item disabled message. -- by Magius(CHE) §
 	tuses=0;    //Number of uses for trigger
 	poisoned=POISON_NONE; //AntiChrist -- for poisoning skill
 	murdertime=0; //AntiChrist -- for corpse -- when the people has been killed
