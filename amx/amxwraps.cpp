@@ -3843,7 +3843,7 @@ NATIVE(_itm_speech)
 
 	if (params[1] == -1)
 	{
-		itemtalk(cur,g_cAmxPrintBuffer);	//Numbersix: if socket = -1
+		cur->talk(g_cAmxPrintBuffer);	//Numbersix: if socket = -1
 		return 0;							// =>item speaks to all in range
 	}
 

@@ -413,6 +413,7 @@ public:
 public:
 	void		playSFX(UI16 sound, NXWSOCKET s = INVALID);
 	void		staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx *str = NULL);
+	void		talk(std::string speech);
 //@}
 
 	LOGICAL		dye;		//!< Reserved: Can item be dyed by dye kit

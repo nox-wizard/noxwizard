@@ -559,6 +559,34 @@ void cItem::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::P
 	}
 }
 
+/*!
+ \author Akron
+ \param speech text the item has to "say"
+ \note replace old itemtalk()
+ */
+void cItem::talk(std::string speech)
+{
+	NxwSocketWrapper sw;
+	sw.fillOnline( this );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
+		NXWSOCKET s=sw.getSocket();
+		if(s==INVALID) continue;
+
+		UI08 unicodetext[512];
+		UI16 ucl = ( speech.length() * 2 ) + 2 ;
+
+		char2wchar(speech.c_str());
+		memcpy(unicodetext, Unicode::temp, ucl);
+
+		UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, getCurrentNameC());
+
+		SendUnicodeSpeechMessagePkt(s, getSerial32(), id(), 0, 0x0481, 0x0003, lang, name, unicodetext, ucl);
+	}
+}
+
 /*
 \author Duke
 \brief reduce the amount of piled items

@@ -1295,35 +1295,6 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 		}
 }
 
-void itemtalk(P_ITEM pi, char *txt)
-// Item "speech"
-//Modified by N6 to use UNICODE packets
-{
-
-	VALIDATEPI(pi);
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pi );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET s=sw.getSocket();
-		if(s==INVALID) continue;
-
-		UI08 unicodetext[512];
-		UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
-
-		char2wchar(txt);
-		memcpy(unicodetext, Unicode::temp, ucl);
-
-		UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-		UI08 name[30]={ 0x00, };
-		strcpy((char *)name, pi->getCurrentNameC());
-
-		SendUnicodeSpeechMessagePkt(s, pi->getSerial32(), pi->id(), 0, 0x0481, 0x0003, lang, name, unicodetext,  ucl);
-
-	}
-}
-
 #if 0
 //	- Movingeffect3 is used to send an object from a char
 //    to another object (like purple potions)

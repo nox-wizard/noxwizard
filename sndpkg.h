@@ -61,8 +61,6 @@ void weblaunch(int s, const char *txt);
 	//!< Direct client to a web page
 void broadcast(int s);
 	//!< GM Broadcast (Done if a GM yells something);
-void itemtalk( P_ITEM pi, char *txt);
-	//!< Item "speech"
 
 void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode );
 

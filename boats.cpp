@@ -616,7 +616,7 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	{
 		pBoat->type2=1;//Moving
 		Move(socket,dir,pBoat);
-		itemtalk(tiller, TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		return true;
 	}
 	if( talk == "BACKWARD" )
@@ -627,7 +627,7 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		else
 			dir+=4;
 		Move(socket,dir,pBoat);
-		itemtalk(tiller, TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		return true;
 	}
 	if( talk == "ONE LEFT" || talk == "DRIFT LEFT" )
@@ -636,7 +636,7 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		if(dir<0)
 			dir+=8;
 		Move(socket,dir,pBoat);
-		itemtalk(tiller,TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		return true;
 	}
 	if( talk == "ONE RIGHT" || talk == "DRIFT RIGHT" )
@@ -644,13 +644,13 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		dir+=2;
 		if(dir>=8) dir-=8;
 		Move(socket,dir,pBoat);
-		itemtalk(tiller, TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		return true;
 	}
 	if( talk == "STOP" || talk == "FURL SAIL" )
 	{
 		pBoat->type2=0;
-		itemtalk(tiller,TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		return true;
 	}
 
@@ -659,13 +659,13 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		if (good_position(pBoat, pBoat->getPosition(), -1) && collision(pBoat,pBoat->getPosition(),-1)==false)
 		{
 		  Turn(pBoat,0);
-		  itemtalk(tiller, TRANSLATE("Aye, sir."));
+		tiller->talk(TRANSLATE("Aye, sir."));
 		  return true;
 		}
 		else
 		{
 			pBoat->type2=0;
-			itemtalk(tiller, TRANSLATE("Arr,somethings in the way"));
+			tiller->talk(TRANSLATE("Arr,somethings in the way"));
 			return true;
 		}
 	}
@@ -675,12 +675,12 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		if (good_position(pBoat, pBoat->getPosition(), 1) && collision(pBoat,pBoat->getPosition(),1)==false)
 		{
 		  Turn(pBoat,1);
-		  itemtalk(tiller, TRANSLATE("Aye, sir."));
+		  tiller->talk(TRANSLATE("Aye, sir."));
 		  return true;
 		} else
 		{
 			pBoat->type2=0;
-			itemtalk(tiller, TRANSLATE("Arr,somethings in the way"));
+			tiller->talk(TRANSLATE("Arr,somethings in the way"));
 			return true;
 		}
 	}
@@ -691,13 +691,13 @@ LOGICAL boats::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)
 		{
 			Turn(pBoat,1);
 			Turn(pBoat,1);
-			itemtalk(tiller, TRANSLATE("Aye, sir."));
+			tiller->talk(TRANSLATE("Aye, sir."));
 			return true;
 		}
 		else
 		{
 			pBoat->type2=0;
-			itemtalk(tiller, TRANSLATE("Arr,somethings in the way"));
+			tiller->talk(TRANSLATE("Arr,somethings in the way"));
 			return true;
 		}
 	}
@@ -1253,7 +1253,7 @@ void boats::iMove(NXWSOCKET s, SI08 dir, P_ITEM pBoat, LOGICAL forced)
 		|| (boatpos.y+ty<=YBORDER || boatpos.y+ty>=(SI16)((MapTileHeight*8)-YBORDER))) //bugfix LB
 	{
 		pBoat->type2=0;
-		itemtalk(tiller,TRANSLATE("Arr, Sir, we've hit rough waters!"));
+		tiller->talk(TRANSLATE("Arr, Sir, we've hit rough waters!"));
 		SendPauseResumePkt(s, 0x00);
 		return;
 	}
@@ -1265,14 +1265,14 @@ void boats::iMove(NXWSOCKET s, SI08 dir, P_ITEM pBoat, LOGICAL forced)
 	if(!good_position(pBoat, boatpos, 0) && (!forced))
 	{
 		pBoat->type2=0;
-		itemtalk(tiller, TRANSLATE("Arr, somethings in the way!"));
+		tiller->talk(TRANSLATE("Arr, somethings in the way!"));
 		SendPauseResumePkt(s, 0x00);
 		return;
 	}
 	if(collision(pBoat, boatpos,0)==true)
 	{
 		pBoat->type2=0;
-		itemtalk(tiller, TRANSLATE("Arr, another ship in the way"));
+		tiller->talk(TRANSLATE("Arr, another ship in the way"));
 		SendPauseResumePkt(s, 0x00);
 		return;
 	}
