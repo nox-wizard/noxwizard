@@ -549,13 +549,13 @@ void cNetwork::Login2(int s)
 		ServerLog.Write( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 
 	tlen = 6 + (servcount*40);
-	ShortToCharPtr(tlen, newlist1 +1);
+	ShortToCharPtr( (UI16)tlen, newlist1 +1);
 	ShortToCharPtr(servcount, newlist1 +4);
 	Xsend(s, newlist1, 6);
 
 	for( i = 0; i < servcount; ++i )
 	{
-		ShortToCharPtr(i+1, newlist2);
+		ShortToCharPtr( (UI16)i+1, newlist2);
 
 		strcpy((char*)&newlist2[2], serv[i][0]);
 		ip=inet_addr(serv[i][1]); 	  // Host-Order
