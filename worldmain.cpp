@@ -737,8 +737,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 		charCount +=1;
 	}
 
-	UI32 max_x = map_width  * 8;
-	UI32 max_y = map_height * 8;
+	UI16 max_x = map_width  * 8;
+	UI16 max_y = map_height * 8;
 	Location pcpos= pc->getPosition();
 
 	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y) || (pcpos.x<0) || (pcpos.y<0)))

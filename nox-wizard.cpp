@@ -895,6 +895,8 @@ void signal_handler(int signal)
 		break ;
 
 	case SIGUSR1:
+	{
+
 		Accounts->LoadAccounts();
 		cAllObjectsIter objs;
 		for( objs.rewind(); !objs.IsEmpty(); objs++ )
@@ -908,6 +910,7 @@ void signal_handler(int signal)
 				}
 			}
 		}
+	}
 		break ;
 	case SIGUSR2:
 		cwmWorldState->saveNewWorld();
