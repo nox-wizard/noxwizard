@@ -1897,6 +1897,27 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 
 }// namespace Speech
 
+
+inline void makeGhost( cUnicodeString* from, cUnicodeString* to ) {
+
+	
+	std::vector<UI08>::iterator iter( from->s.begin() ), end( from->s.end() );
+	bool u=false; 
+	int v=0;
+	for( ; iter!=end; iter++ , u!=u ) {
+		if( u ) {
+			v+=(*iter);
+			if( v!=32 && v!=0x0000 )
+				(*to) += (v%2)? 'O' : 'o';
+		}
+		else {
+			v=(*iter)<<8;
+		}
+	}
+
+}
+
+
 void talking( NXWSOCKET socket, string speech) // PC speech
 {
 	if (socket < 0 || socket >= now) //Luxor
@@ -2022,28 +2043,10 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk2[12] = buffer[socket][6];		// speech font
 	talk2[13] = buffer[socket][7];		// speech font
 
-	cUnicodeString speechUni;
-	speechUni.copy( speech );
+	cUnicodeString* speechUni=new cUnicodeString();
+	speechUni->copy( speech );
 
-	char unicodeGhostText[512];
-
-	if( pc->dead )
-	{
-		char2wchar( speech.c_str() );
-		memcpy( unicodeGhostText, Unicode::temp, ucl);
-		for (j = 1; j < ucl-2 ; j += 2)
-		{
-			if (unicodeGhostText[j] == 32)
-			{
-				;
-			}
-			else
-				if (unicodeGhostText[j]%2)
-					unicodeGhostText[j] = 'O';
-				else
-					unicodeGhostText[j] = 'o';
-		}
-	}
+	cUnicodeString* speechGhostUni=NULL;
 
 	int range;
 	switch ( buffer[socket][3] ) {
@@ -2090,14 +2093,21 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		
 		Xsend( a_socket, talk2, 18);
 		Xsend( a_socket, name, 30);
-		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 )
-			Xsend( a_socket, unicodeGhostText, ucl);
+		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
+			if( speechGhostUni==NULL ) {
+				speechGhostUni=new cUnicodeString();
+				makeGhost( speechUni, speechGhostUni );
+			}
+			Xsend( a_socket, speechGhostUni->s.begin(), speechGhostUni->s.end() );
+		}
 		else
-			if( pc->unicode )
-				Xsend( a_socket, speechUni.s.begin(), speechUni.s.end() );
-			else
-				Xsend( a_socket, speechUni.s.begin(), speechUni.s.end() );
+			Xsend( a_socket, speechUni->s.begin(), speechUni->s.end() );
 	}
+
+
+	delete speechUni;
+	if( speechGhostUni!=NULL )
+		delete speechGhostUni;
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
 	{
