@@ -100,6 +100,7 @@ SOURCES =	\
 		range.cpp \
 		rcvpkg.cpp \
 		regions.cpp \
+		resourcemap.cpp \
 		remadmin.cpp \
 		scp_parser.cpp \
 		scripts.cpp \
@@ -206,6 +207,7 @@ HEADERS =	\
 		regions.h \
 		remadmin.h \
 		resource.h \
+		resourcemap.h \
 		sclinux.h \
 		scp_parser.h \
 		set.h \

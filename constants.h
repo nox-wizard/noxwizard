@@ -272,4 +272,9 @@ namespace tempfx {
 */
 enum VarType { VAR_EFF =0, VAR_DEC, VAR_REAL, VAR_ACT, };
 
+/*!
+\brief resource maps types
+\author Wintermute
+*/
+enum ResourceMapType { RESOURCEMAP_LOCATION = 0, RESOURCEMAP_STRING=1 };
 #endif //__extern extern constANTS_H__

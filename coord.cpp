@@ -118,6 +118,11 @@ cCoord cCoord::operator- (const cCoord& src) const
 	return cCoord((UI16)(this->x - src.x), (UI16)(this->y - src.y), (SI08)(this->z - src.z), this->map );
 }
 
+bool cCoord::operator< (const cCoord& src) const
+{
+	return ((this->x < src.x) || (this->y < src.y) || (this->z < src.z) || (this->map < src.map ));
+}
+
 /*
 void cCoord::effect( UI16 id, UI08 speed, UI08 duration, UI16 hue, UI16 renderMode )
 {

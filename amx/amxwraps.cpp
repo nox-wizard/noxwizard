@@ -49,6 +49,7 @@
 #include "dragdrop.h"
 #include "accounts.h"
 #include "spawn.h"
+#include "resourcemap.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -7476,6 +7477,72 @@ NATIVE (_recompileSmall )
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
 	return true;
 }
+// resource map functions
+NATIVE (_createResourceMap)
+{
+	ResourceMapType type=(ResourceMapType)params[1];
+	cResourceMap *map;	
+		
+
+	if ( type == RESOURCEMAP_STRING )
+	{
+		cResourceStringMap *newMap=new cResourceStringMap();
+		newMap->setType(RESOURCEMAP_STRING);
+		map=newMap;
+	}
+	else if ( type == RESOURCEMAP_LOCATION )
+	{
+		cResourceLocationMap *newMap=new cResourceLocationMap();
+		newMap->setType(RESOURCEMAP_LOCATION);
+		map=newMap;
+	}
+	return cResourceMap::addMap(map);
+
+}
+
+NATIVE (_deleteResourceMap )
+{
+	cResourceMap::deleteMap(params[1]);
+	return true;
+}
+
+NATIVE (_getResourceLocationValue )
+{
+	UI32 resourceIndex = params[1];
+	cResourceLocationMap * myMap = (cResourceLocationMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_LOCATION)
+	{
+		cCoord newKey(params[2], params[3],params[4]);
+		return myMap->getValue(newKey);
+	}
+	else
+	{
+		LogError("Illegal or wrong type of resource map used with index %d", resourceIndex);
+	}
+	return -1;
+}
+
+NATIVE (_setResourceLocationValue )
+{
+	UI32 resourceIndex = params[1];
+	cResourceLocationMap * myMap = (cResourceLocationMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_LOCATION)
+	{
+		cCoord newKey(params[3], params[4],params[5]);
+		myMap->setValue(newKey, params[2]);
+	}
+	return 1;
+}
+
+NATIVE (_getResourceStringValue )
+{
+	return -1;
+}
+NATIVE (_setResourceStringValue )
+{
+	return -1;
+}
+
 /*!
 \file
 
@@ -7950,6 +8017,14 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setSecondsPerUoMinute", _setSecondsPerUoMinute },
  { "garbageCollection", _garbageCollection },
  { "recompileSmall", _recompileSmall },
+
+ // resource map api
+ { "createResourceMap", _createResourceMap },
+ { "deleteResourceMap", _deleteResourceMap },
+ { "getResourceLocationValue", _getResourceLocationValue },
+ { "setResourceLocationValue", _setResourceLocationValue },
+ { "getResourceStringValue", _getResourceStringValue },
+ { "setResourceStringValue", _setResourceStringValue },
 
 // speech APIs
  { "chr_getSpeech", _chr_getCmdSpeech },

@@ -310,7 +310,7 @@ void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 	}
 	ores.decreaseResource( target, res );
 
-	AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXMINING), pc->getSerial32());
-	AMXEXECSVTARGET(pc->getSerial32(),AMXT_SKITARGS,MINING,AMX_AFTER);
+	AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXMINING), pc->getSerial32(), target.x, target.y, id);
+	// AMXEXECSVTARGET(pc->getSerial32(),AMXT_SKITARGS,MINING,AMX_AFTER);
 }
 

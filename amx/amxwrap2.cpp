@@ -798,15 +798,20 @@ const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
 NATIVE2(_getCharProperty)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
-	cell *subsubProp;
-  	amx_GetAddr(amx,params[5],&subsubProp);
+	cell *subsubProp=NULL;
+	if ( params[0] >= 5 )
+  		amx_GetAddr(amx,params[5],&subsubProp);
 
 	if ( ISVALIDPC( pc ) )
 	{
 		VAR_TYPE tp = getPropertyType( params[2] );
 		switch( tp ) {
 			case T_INT: {
-				int p = getCharIntProperty( pc, params[2], params[3], *subsubProp);
+				int p ;
+				if ( subsubProp != NULL )
+					p = getCharIntProperty( pc, params[2], params[3], *subsubProp);
+				else
+					p = getCharIntProperty( pc, params[2], params[3], 0);
 				cell i = p;
 				return i;
 			}
