@@ -947,7 +947,9 @@ AmxFunction::AmxFunction( char* funName )
 */
 char* AmxFunction::getFuncName()
 {
-	return (function!=INVALID)? (char*)funcName.c_str(): "";
+        char *str;
+        ( function != INVALID ) ? str = (char*)funcName.c_str() : str = "";
+	return str;
 }
 
 /*
