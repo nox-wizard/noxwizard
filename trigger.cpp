@@ -978,16 +978,16 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		// OH MY GOD
 				char sect[100];
 				NxwItemWrapper si;
-				si.fillItemWeared( m_pcCurrChar, true, true, false );
+				si.fillItemWeared( m_pcCurrChar, true, true, true );
 				si.fillItemsInContainer( m_pcCurrChar->getBackpack(), true, false );
 				for( si.rewind(); !si.isEmpty(); si++ ) {
 					m_piNeededItem=si.getItem();
 					if (ISVALIDPI(m_piNeededItem)) {
-			sprintf(sect, "x%x%x", m_piNeededItem->id1, m_piNeededItem->id2);
-			if (strstr(par, sect))
-			{
-						break;
-			}
+						sprintf(sect, "x%x%x", m_piNeededItem->id1, m_piNeededItem->id2);
+						if (strstr(par, sect))
+						{
+							break;
+						}
 					}
 				}
 

@@ -10,7 +10,6 @@
 #include "racetype.h"
 #include "racetokenizer.h"
 
-string RaceType::raceTypeNames[RACETYPES] = { "PC", "NPC", "PCNPC" };
 
 ///////////////////////////////////////////////////////////////////
 // Function name	: RaceType::RaceType
@@ -33,8 +32,8 @@ RACETYPE RaceType::getValue( void )
 
 RaceType& RaceType::operator=( const char* newRaceType )
 {
-	string		str = newRaceType;
-	RaceType	rt;
+	string str( newRaceType );
+	RaceType rt;
 	rt = str;
 	this->value = rt.value;
 	return *this;
@@ -48,23 +47,22 @@ RaceType& RaceType::operator=( const RACETYPE newRaceType )
 
 RaceType& RaceType::operator=( const string& newRaceType )
 {
-	int		index;
 
-	this->value = DEFAULTRACETYPE;
-
-	for( index = FIRSTRACE; index < LASTRACE; index++ )
-		if ( raceTypeNames[index] == newRaceType )
-		{
-			this->value = static_cast< RACETYPE >(index);
-			break;
-		}
+	if( newRaceType == "PC" )
+		this->value = PCRACE;
+	else if( newRaceType == "NPC" )
+		this->value = NPCRACE;
+	else if( newRaceType == "PCNPC" )
+		this->value = PCNPCRACE;
+	else
+		this->value = DEFAULTRACETYPE;
 
 	return *this;
 }
 
 RaceType& RaceType::operator=( const int newRaceType )
 {
-	if ( newRaceType >= int( FIRSTRACE ) && newRaceType <= int( LASTRACE ) )
+	if( ( newRaceType>=0 )  && ( newRaceType<=3 ) )
 		this->value = static_cast< RACETYPE >( newRaceType );
 	else
 		this->value = static_cast< RACETYPE >( DEFAULTRACETYPE );
@@ -89,7 +87,16 @@ bool RaceType::operator==( int a )
 
 bool RaceType::operator==( char* a )
 {
-	return ( strcmp( raceTypeNames[ this->value ].c_str(), a ) == 0 );
+	switch( this->value ) {
+		case PCRACE:
+			return ( strcmp( "PC", a ) == 0 );
+		case NPCRACE:
+			return ( strcmp( "NPC", a ) == 0 );
+		default:
+		case PCNPCRACE:
+			return ( strcmp( "PCNPC", a ) == 0 );
+	}
+;
 }
 
 RaceType::operator int() const
@@ -97,20 +104,16 @@ RaceType::operator int() const
 	return this->value;
 }
 
-/*
-RaceType::operator RACETYPE() const
-{
-	return this->value;
-}
-*/
-
 RaceType::operator char*() const
 {
-	return const_cast< char * >( raceTypeNames[ this->value ].c_str() ) ;
+	switch( this->value ) {
+		case PCRACE:
+			return "PC";
+		case NPCRACE:
+			return "NPC";
+		default:
+		case PCNPCRACE:
+			return "PCNPC";
+	}
 }
 
-
-RaceType::operator string*() const
-{
-	return &raceTypeNames[ this->value ] ;
-}

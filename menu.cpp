@@ -427,9 +427,10 @@ void cMenu::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
 void cMenu::addPage( UI32 page )
 {
 	pageCurrent=page;
-	pageCount=page+1;
+	if( page>=pageCount )
+		pageCount=page+1;
 
-	if ( page < 256 )
+	if( page < 256 )
 	{
 		addCommand( "{page %d}", page );
 	}

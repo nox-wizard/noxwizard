@@ -192,11 +192,11 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
 		else
 		{
 	        NxwItemWrapper si;
-			si.fillItemWeared( pc_currchar, true, true, false );
+			si.fillItemWeared( pc_currchar, true, true, true );
 			for( si.rewind(); !si.isEmpty(); si++ )
 			{
 	            P_ITEM pj=si.getItem();
-	            if( ISVALIDPI(pj) && pj->type==ITYPE_SPELLBOOK && pj->layer==ITYPE_CONTAINER)
+	            if( ISVALIDPI(pj) && pj->type==ITYPE_SPELLBOOK )
 				{
 	                pi=pj;
 					break;

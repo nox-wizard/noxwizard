@@ -1464,14 +1464,12 @@ SI32 cChar::calcResist(DamageType typeofdamage)
 	total += resists[typeofdamage];
 
 	NxwItemWrapper si;
-	si.fillItemWeared( this, true, true, false );
+	si.fillItemWeared( this, true, true, true );
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
 		if (ISVALIDPI(pi)) {
-			if ( pi->layer > 0 && pi->layer < LAYER_MOUNT ) {
-				total += pi->resists[typeofdamage];
-			}
+			total += pi->resists[typeofdamage];
 		}
 	}
 	return total;
@@ -2023,7 +2021,7 @@ SI32 cChar::getCombatSkill()
 {
 
 	NxwItemWrapper si;
-	si.fillItemWeared( this, false, false, false );
+	si.fillItemWeared( this, false, false, true );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi = si.getItem();
@@ -2127,7 +2125,7 @@ LOGICAL const cChar::CanDoGestures() const
 		if (hidden == HIDDEN_BYSPELL) return false;	//Luxor: cannot do magic gestures if under invisible spell
 
 		NxwItemWrapper si;
-		si.fillItemWeared( (P_CHAR)this, false, false, false );
+		si.fillItemWeared( (P_CHAR)this, false, false, true );
 		for( si.rewind(); !si.isEmpty(); si++ ) {
 			
 			P_ITEM pj=si.getItem();
@@ -2541,7 +2539,7 @@ void cChar::resurrect( NXWCLIENT healer )
 		hunger=6;
 
 		NxwItemWrapper si;
-		si.fillItemWeared( this, false, false, false );
+		si.fillItemWeared( this, false, false, true );
 		for( si.rewind(); !si.isEmpty(); si++ )
 		{
 			P_ITEM pj=si.getItem();

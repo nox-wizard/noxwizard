@@ -122,7 +122,7 @@ class Race
 			//
 			// -- race description
 			//
-			std::map<UI32, string*>		description;
+			std::vector< string >		description;
 			//
 			// -- appearance
 			//

@@ -12,12 +12,11 @@
 
 #include "nxwcommn.h"
 
-typedef enum { FIRSTRACE = 0, PCRACE = 0, NPCRACE = 1, PCNPCRACE = 2, LASTRACE = 2, RACETYPES = 3, DEFAULTRACETYPE = 2 } RACETYPE;
+typedef enum { PCRACE = 0, NPCRACE = 1, PCNPCRACE = 4 } RACETYPE;
+const RACETYPE DEFAULTRACETYPE = PCNPCRACE;
 
 class RaceType
 {
-	private:
-		static	string			raceTypeNames[];
 	private:
 			RACETYPE		value;
 	public:
@@ -34,10 +33,6 @@ class RaceType
 			bool	   	operator==( char* a );
 				   	operator int() const;
 				   	operator char*() const;
-				   	operator string*() const;
-					/*
-				   	operator RACETYPE() const;
-					*/
 };
 
 #endif

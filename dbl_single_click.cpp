@@ -182,7 +182,7 @@ void doubleclick(NXWCLIENT ps)
 			int curindex= 0;
 
 			NxwItemWrapper wea;
-			wea.fillItemWeared( pc, true, true, false );
+			wea.fillItemWeared( pc, true, true, true );
 			for( wea.rewind(); !wea.isEmpty(); wea++ )
 			{
 

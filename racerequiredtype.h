@@ -12,7 +12,7 @@
 
 #include "nxwcommn.h"
 
-typedef enum { RT_FIRST = 0, RT_OPTIONAL = 0, RT_PROHIBITED = 1, RT_MANDATORY = 2, RT_LAST = 2 } REQUIREDTYPE;
+typedef enum { RT_OPTIONAL = 0, RT_PROHIBITED = 1, RT_MANDATORY = 2 } REQUIREDTYPE;
 
 class RequiredType
 {

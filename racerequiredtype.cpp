@@ -47,7 +47,7 @@ RequiredType& RequiredType::operator=( const string& newRequiredType )
 
 	this->value = RT_OPTIONAL;
 
-	for( index = RT_FIRST; index < RT_LAST; index++ )
+	for( index = 0; index < 2; index++ )
 		if ( requiredTypeNames[index] == newRequiredType )
 		{
 			this->value = static_cast< REQUIREDTYPE >(index);
@@ -59,7 +59,7 @@ RequiredType& RequiredType::operator=( const string& newRequiredType )
 
 RequiredType& RequiredType::operator=( const int newRequiredType )
 {
-	if ( newRequiredType >= int( RT_FIRST ) && newRequiredType <= int( RT_LAST ) )
+	if ( newRequiredType >= int( 0 ) && newRequiredType <= int( 2 ) )
 		this->value = static_cast< REQUIREDTYPE >( newRequiredType );
 	else
 		this->value = RT_OPTIONAL;

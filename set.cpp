@@ -1041,7 +1041,13 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 		if(!ISVALIDPI(pi_j) )			// just to be sure ;-)
 			continue;
 		//is trade studd or bank ( ndEndy not need to remove it? )
-		if(bExcludeIllegalLayer && ( pi_j->layer==LAYER_TRADE_RESTOCK || pi_j->layer==LAYER_TRADE_NORESTOCK || pi_j->layer==LAYER_TRADE_BOUGHT || pi_j->layer==LAYER_BANKBOX ) )  
+		if(bExcludeIllegalLayer && (
+			( pi_j->layer==LAYER_BACKPACK ) ||
+			( pi_j->layer==LAYER_MOUNT ) ||
+			( pi_j->layer==LAYER_TRADE_RESTOCK ) ||
+			( pi_j->layer==LAYER_TRADE_NORESTOCK ) ||
+			( pi_j->layer==LAYER_TRADE_BOUGHT ) ||
+			( pi_j->layer==LAYER_BANKBOX ) ) )
 			continue;
 		//beard and hair not moving to corpse
 		if(!bIncludeLikeHair && ( pi_j->layer == LAYER_BEARD || pi_j->layer==LAYER_HAIR ) )

@@ -164,7 +164,7 @@ void usehairdye(NXWSOCKET  s, P_ITEM piDye)	// x is the hair dye bottle object n
 	VALIDATEPI(piDye);
 
 	NxwItemWrapper si;
-	si.fillItemWeared( pc, true, true, false );
+	si.fillItemWeared( pc, true, true, true );
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();

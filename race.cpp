@@ -405,7 +405,7 @@ void Race::parseRaceDescription( const string& sectionName )
 		{
 			description = iter->getEntry()->getFullLine();
 			if( description[0] != '{' && description[0] != '}' )
-				this->description[descriptionIndex++] = new string( description );
+				this->description.push_back( description );
 		} while ( ( description[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 	}
 }
@@ -695,6 +695,8 @@ void Race::reload( const char* fileName )
 	for(; raceIter != raceEnd; ++raceIter )	safedelete(raceIter->second);
 	load( fileName );
 }
+
+
 
 void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 button )
 {
@@ -2021,7 +2023,7 @@ void Race::showRaceDescription( const NXWSOCKET socket, const UI32 raceId, BYTE 
 	string	*menuLines1	= new string[200];	// as we are using only race descriptions here this can easily be calculated.
 
 	Race*	race = raceMap[raceId];
-	std::map<UI32, string*>::iterator iter, begin( race->description.begin() ), end( race->description.end() );
+	std::vector<string>::iterator iter, begin( race->description.begin() ), end( race->description.end() );
 																								// Must add static reference map < racename, &Race*> to class
 																								// then races may easily be listed alphabetically
 	menuLines0[linecount++] = "page 0";
@@ -2079,11 +2081,11 @@ void Race::showRaceDescription( const NXWSOCKET socket, const UI32 raceId, BYTE 
 		}
 
 		k++;
-		if ( *iter->second == "^p" )
+		if ( (*iter) == "^p" )
 			while( k > 0 && ( k % 11 ) ) k++;
 		else
 		{
-			if ( iter->second[0] >= "A" && iter->second[0] <= "Z" )
+			if ( (*iter)[0] >= 'A' && (*iter)[0] <= 'Z' )
 		 	{
 				sprintf(buffer, "text 20 %i 1153 %i", position - 4, linenum++ );
 				menuLines0[linecount++] = buffer; // Accentuate first letter on beginning of sentence
@@ -2139,15 +2141,15 @@ void Race::showRaceDescription( const NXWSOCKET socket, const UI32 raceId, BYTE 
 
 	for ( iter = begin; iter != end; ++iter )
 	{
-		if ( *iter->second != "^p" )
-			if ( iter->second[0] >= "A" && iter->second[0] <= "Z" )
+		if ( (*iter) != "^p" )
+			if ( (*iter)[0] >= 'A' && (*iter)[0] <= 'Z' )
 			{
-				menuLines1[linecount1++] = iter->second->substr( 0, 1 );
-				menuLines1[linecount1++] = iter->second->substr( 1 );
+				menuLines1[linecount1++] = iter->substr( 0, 1 );
+				menuLines1[linecount1++] = iter->substr( 1 );
 			}
 			else
-				if ( iter->second[0] != "^" )
-					menuLines1[linecount1++] = *iter->second;
+				if ( (*iter)[0] != '^' )
+					menuLines1[linecount1++] = *iter;
 	}
 
 	length2 = length + 1;
