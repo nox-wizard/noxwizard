@@ -312,7 +312,6 @@ SERIAL spyTo[MAXCLIENT];
  region_st region[256];
  advance_st wpadvance[1000];
  unsigned int metagm[256][7]; //!< for meta gm script
- signed short int menupriv[64][256]; //!< for menu priv script
  int validEscortRegion[256];
 
 int priv3a[MAXCLIENT];

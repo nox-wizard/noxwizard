@@ -183,7 +183,6 @@ extern region_st region[256];
 extern advance_st wpadvance[1000];
 extern char spellname[71][25];
 extern unsigned int metagm[256][7]; // for meta gm script
-extern signed short int menupriv[64][256]; // for menu priv script
 extern int validEscortRegion[256];
 
 extern int priv3a[MAXCLIENT];

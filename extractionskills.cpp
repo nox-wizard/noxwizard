@@ -182,23 +182,20 @@ static LOGICAL canMine( P_CHAR pc, P_ITEM weapon )
 }
 
 
-void Skills::Mine(NXWSOCKET s)
+void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC( pc );
-	
-	
-	cPacketTargeting targetData;
 
+	NXWSOCKET s = ps->toInt();
+	
 	P_ITEM weapon = pc->GetItemOnLayer(1);
 	
 	if( !canMine( pc, weapon ) )
 		return;
 
-	Location target;
-	target.x=targetData.getX( s );
-	target.y=targetData.getY( s );
+	Location target = t->getLocation();
 
 	pc->facexy( target.x, target.y );
 
@@ -231,7 +228,7 @@ void Skills::Mine(NXWSOCKET s)
 		return;
 	}
 
-	UI32 id = targetData.getModel( s );
+	UI32 id = t->getModel();
 
 	if( SrvParms->minecheck > 0 && !id )
 	{
