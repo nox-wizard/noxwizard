@@ -1848,17 +1848,19 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		int loopexit=0;
 		do
 		{
-		iter->parseLine(script1, script2);
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			if (!(strcmp("ADDITEM",script1)))
+			iter->parseLine(script1, script2);
+			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-			storeval=str2num(script2);
-			P_ITEM pi=item::CreateScriptItem(s,storeval,0);
+				if (!(strcmp("ADDITEM",script1)))
+				{
+					storeval=str2num(script2);
+					P_ITEM pi=item::CreateScriptItem(s,storeval,0);
 					if(ISVALIDPI(pi)) {
 						pi->layer=0;
 						pi->setCont(pi3);
-						pi->setPosition( 20+(rand()%50), 85+(rand()%75), 9);
+						pi->SetRandPosInCont( pi3 );
+						if( strcmp( script3, "" ) ) //ndEndy defined amount
+							pi->amount=str2num( script3 );
 						pi->Refresh();//let's finally refresh the item
 					}
                 }

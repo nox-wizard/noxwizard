@@ -448,8 +448,11 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
 		#endif
 			P_ITEM pi = item::CreateFromScript( (char*)script2.c_str(), pc->getBackpack() );
-			if( ISVALIDPI(pi) )
+			if( ISVALIDPI(pi) ) {
+				if( strcmp( script3, "" ) ) //ndEndy defined amount
+					pi->amount=str2num( script3 );
 				pi->Refresh();
+			}
 		#ifndef __NEWMAKESYS
 		}
 		else
