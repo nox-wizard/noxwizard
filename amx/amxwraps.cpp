@@ -5151,6 +5151,7 @@ NATIVE( _menu_addBackground )
 \param 4 button up gump
 \param 5 button down gump
 \param 6 return code
+\param 7 pressable, if true can be pressed
 \return false if error, true else
 */
 NATIVE ( _menu_addButton )
@@ -5158,7 +5159,7 @@ NATIVE ( _menu_addButton )
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
 	
-	menu->addButton( params[2], params[3], params[4], params[5], params[6] );
+	menu->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
 
 	return 1;
 }
@@ -5172,7 +5173,9 @@ NATIVE ( _menu_addButton )
 \param 3 y
 \param 4 button up gump
 \param 5 button down gump
-\param 6 function callback
+\param 6 return code
+\param 7 pressable, if true can be pressed
+\param 8 function callback
 \return false if error, true else
 */
 NATIVE ( _menu_addButtonFn )
@@ -5181,11 +5184,13 @@ NATIVE ( _menu_addButtonFn )
 	VALIDATEPMR( menu, 0 );
 	
 	cell *cstr;
-	amx_GetAddr(amx, params[6], &cstr);
-	amx_GetString(g_cAmxPrintBuffer, cstr);
+	amx_GetAddr(amx,params[8],&cstr);
+	printstring(amx,cstr,params+9,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
 	FUNCIDX fn = AmxFunction::g_prgOverride->getFnOrdinal( g_cAmxPrintBuffer );
 	
-	menu->addButtonFn( params[2], params[3], params[4], params[5], fn );
+	menu->addButtonFn( params[2], params[3], params[4], params[5], params[6], params[7], fn );
 	g_nAmxPrintPtr=0;
 
 	return 1;

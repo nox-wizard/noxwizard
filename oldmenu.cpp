@@ -156,7 +156,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_STONE:
 		menu->setCloseable( false );
 		menu->addBackground( 2600, width, 340 );
-		menu->addButton( 250, 17, 4017, 4017+1, INVALID );
+		menu->addButton( 250, 17, 4017, 4017+1, INVALID, true );
 		menu->addText( 30, 40, title, color );
 		pagebtny = 300;
 		break;
@@ -164,7 +164,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_BLACKBOARD:
 		menu->setCloseable( false );
 		menu->addBackground( 2620, 320, 340 );
-		menu->addButton( 250, 17, 4017, 4017+1, INVALID );
+		menu->addButton( 250, 17, 4017, 4017+1, INVALID, true );
 		menu->addText( 45, 17, title, color );
 		pagebtny = 307;
 		break;
@@ -172,7 +172,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_PAPER:
 		menu->setCloseable( false );
 		menu->addBackground( 0x0DAC, 320, 340 );
-		menu->addButton( 250, 7, 4017, 4017+1, INVALID );
+		menu->addButton( 250, 7, 4017, 4017+1, INVALID, true );
 		menu->addText( 45, 7, title, color );
 		pagebtny = 307;
 		break;
@@ -180,7 +180,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_SCROLL:
 		menu->setCloseable( false );
 		menu->addBackground( 0x1432, 320, 340 );
-		menu->addButton( 250, 27, 4017, 4017+1, INVALID );
+		menu->addButton( 250, 27, 4017, 4017+1, INVALID, true );
 		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
 		break;
@@ -188,7 +188,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_TRASPARENCY:
 	default:
 		menu->setCloseable( true );
-		menu->addButton( 250, 27, 4017, 4017+1, INVALID );
+		menu->addButton( 250, 27, 4017, 4017+1, INVALID, true );
 		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
 		break;
@@ -267,7 +267,7 @@ void cOldMenu::buildClassic()
 
 			menu->addText( 80, position, iter->second, color );
 
-			menu->addButton( 50, position+3, 4005, 4005+1, buttonnum );
+			menu->addButton( 50, position+3, 4005, 4005+1, buttonnum, true );
 
 			position += 20;
 			++buttonnum;

@@ -305,8 +305,8 @@ void cMenu::clear()
 
 	x = y = 0;
 
+	pageCurrent=0;
 	pageCount=1;
-	pageCurrent=1;
 
 	for( int i=0; i<4; ++i ) {
 		buffer[i] = INVALID;
@@ -315,19 +315,20 @@ void cMenu::clear()
 
 }
 
-void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode )
+void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode, bool pressable )
 {
-	addCommand( "{button %d %d %d %d %d 0 %d}", x, y, up, down, pageCurrent, returnCode );
+	addCommand( "{button %d %d %d %d %d %d %d}", x, y, up, down, pressable, pageCurrent, returnCode );
 	buttonCurrent++;
 }
 
  //needed for remove possibility of two return code equal
 #define AUTO_BUTTONID_OFFSET 0xFFFFF000
 
-void cMenu::addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, FUNCIDX fn )
+void cMenu::addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable, FUNCIDX fn )
 {
-	buttonCallbacks.insert( make_pair(  AUTO_BUTTONID_OFFSET + buttonCurrent, fn ) );
-	addButton( x, y, up, down, AUTO_BUTTONID_OFFSET + buttonCurrent );
+	buttonCallbacks_st info = { fn, returnCode };
+	buttonCallbacks.insert( make_pair(  AUTO_BUTTONID_OFFSET + buttonCurrent, info ) );
+	addButton( x, y, up, down, AUTO_BUTTONID_OFFSET + buttonCurrent, pressable );
 }
 
 void cMenu::addGump( UI32 x, UI32 y, UI32 gump, UI32 hue )
@@ -452,11 +453,11 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 	if( button!=MENU_CLOSE ) { 
 
-		std::map< SERIAL, FUNCIDX >::iterator iter( buttonCallbacks.find( button ) );
+		std::map< SERIAL, buttonCallbacks_st >::iterator iter( buttonCallbacks.find( button ) );
 		if( iter!=buttonCallbacks.end() ) {
 
-			AmxFunction func( iter->second );
-			func.Call( ps->toInt(), serial, button );
+			AmxFunction func( iter->second.fn );
+			func.Call( ps->toInt(), serial, iter->second.returnCode );
 			return;
 
 		}

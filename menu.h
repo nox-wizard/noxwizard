@@ -102,7 +102,9 @@ class cMenu : public cBasicMenu
 		bool disposeable;
 		
 		SERIAL buttonCurrent;	//!< current button serial
-		map< SERIAL, FUNCIDX > buttonCallbacks;	//!< all callback for button
+
+		typedef struct { FUNCIDX fn; SI32 returnCode; } buttonCallbacks_st;
+		map< SERIAL, buttonCallbacks_st > buttonCallbacks;	//!< all callback for button
 
 		std::vector<SERIAL>* switchs; //!< switch ids on after menu selection
 		std::map< SERIAL, std::wstring >* textResp; //!< edit field response
@@ -153,8 +155,8 @@ class cMenu : public cBasicMenu
 		void clear();
  
 		void addBackground( UI32 gumpId, UI32 width, UI32 height );
-		void addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode );
-		void addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, FUNCIDX fn );
+		void addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode, bool pressable );
+		void addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, SI32 returnCode, bool pressable, FUNCIDX fn );
 		void addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result );
 		void addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height );
 		void addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& text, UI32 hue );
