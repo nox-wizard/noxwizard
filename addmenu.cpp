@@ -317,6 +317,9 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		return;
 	}
 
+	if( pc->IsGM() )
+		mi->command->execute( ps->toInt() );
+
 	if( !mi->checkReq( pc ) )
 		return;
 
@@ -333,9 +336,9 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 		cRawItem& raw = mi->reqitems[j];
 		if( raw.id!=0 )
 	        pc->delItems( raw.id, raw.number, raw.color );
-    }
+	}
 
-    if( !pc->IsGM() && !pc->checkSkill((Skill)mi->skillToCheck, mi->minskill, mi->maxskill) ) {
+    if( !pc->checkSkill((Skill)mi->skillToCheck, mi->minskill, mi->maxskill) ) {
         pc->sysmsg(TRANSLATE("You failed"));
         return;
     }
