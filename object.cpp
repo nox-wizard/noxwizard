@@ -21,9 +21,11 @@ cObject::cObject()
 	old_position = Loc(0,0,0);
 	position = Loc(0,0,0);
 	ScriptID = 0;
-	
+
 	for (UI32 i = 0; i < tempfx::MAX_TEMPFX_INDEX; i++)
 		tempfx[i] = false;
+	
+	amxEvents = 0;
 }
 
 /*
@@ -656,3 +658,63 @@ string cObject::getSecondaryName() const
 	return secondary_name;
 }
 
+LOGICAL cObject::isValidAmxEvent( UI32 eventId )
+{
+	return false;
+}
+
+AmxEvent* cObject::getAmxEvent( UI32 eventId )
+{
+	AmxEvent* event = 0;
+	if( isValidAmxEvent( eventId ) )
+	{
+		if( amxEvents != 0 )
+		{
+			AmxEventMap::iterator it = amxEvents->find( eventId );
+			if( it != amxEvents->end() )
+				event = it->second;
+		}
+	}
+	return event;
+}
+
+AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamicEvent = false )
+{
+	AmxEvent* event = 0;
+
+	if( isValidAmxEvent( eventId ) )
+	{
+		if( amxEvents == 0 )
+			amxEvents = new AmxEventMap;
+		else
+			delAmxEvent( eventId );
+
+		(*amxEvents)[ eventId ] = newAmxEvent( amxFunction, dynamicEvent );
+	}
+
+	return event;
+}
+
+cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI32 param3 = INVALID, SI32 param4 = INVALID )
+{
+	AmxEvent* event = getAmxEvent( eventID );
+
+	if( event != 0 )
+		return event->Call( param1, param2, param3, param4 );
+
+	return INVALID;
+}
+
+void cObject::delAmxEvent( UI32 eventId )
+{
+	if( amxEvents )
+	{
+		AmxEventMap::iterator it = amxEvents->find( eventId );
+		if( it != amxEvents->end() )
+		{
+			delete it->second;
+			it->second = 0;
+			amxEvents->erase( it );
+		}
+	}
+}

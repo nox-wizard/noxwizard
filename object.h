@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include "constants.h"
 #include "typedefs.h"
+#include "amx/amxcback.h"
 
 #define ISVALIDPO(po) ( ( po!=NULL && ( sizeof(*po) == sizeof(cObject) || sizeof(*po) == sizeof(cChar) || sizeof(*po) == sizeof(cItem) ) ) ? (po->getSerial32() >= 0) : false )
 #define VALIDATEPO(po) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
@@ -26,6 +27,7 @@
 
 Location Loc(SI32 x, SI32 y, signed char z, signed char dispz=0);
 
+typedef map< UI32, AmxEvent* > AmxEventMap;
 
 //! == operator redefinition for Location
 int operator ==(Location a, Location b);
@@ -151,6 +153,15 @@ public:
 	LOGICAL			getTempfx( SI32 arg );
 	UI32			getScriptID();
 	void			setScriptID(UI32 sid);
+
+private:
+	AmxEventMap		*amxEvents;
+public:
+	virtual	LOGICAL		isValidAmxEvent( UI32 eventId );
+	AmxEvent*		getAmxEvent( UI32 eventId );
+	AmxEvent*		setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamic = false );
+	cell			runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI32 param3 = INVALID, SI32 param4 = INVALID );
+	void 			delAmxEvent( UI32 eventID );
 //@}
 } PACK_NEEDED;
 

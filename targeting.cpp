@@ -423,9 +423,10 @@ public:
 	if (!ISVALIDPI(pi)) return;	
 
         sysmessage(s, TRANSLATE("Removing item."));
-        if (pi->amxevents[EVENT_IONDECAY])
-            pi->amxevents[EVENT_IONDECAY]->Call(pi->getSerial32(), DELTYPE_GMREMOVE);
-        pi->deleteItem(); 
+        //if (pi->amxevents[EVENT_IONDECAY])
+        //   pi->amxevents[EVENT_IONDECAY]->Call(pi->getSerial32(), DELTYPE_GMREMOVE);
+	pi->runAmxEvent( EVENT_IONDECAY, pi->getSerial32(), DELTYPE_GMREMOVE );
+        pi->deleteItem();
     }
 };
 

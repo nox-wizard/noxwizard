@@ -64,14 +64,25 @@ void Skills::RemoveTraps(NXWSOCKET s)
 	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
-    if (pi->amxevents[EVENT_IONREMOVETRAP]==NULL)
-    {
-        sysmessage(s, TRANSLATE("There are no traps on this object"));
-        if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750);
-        return;
-    }
+	/*
+	if (pi->amxevents[EVENT_IONREMOVETRAP]==NULL)
+	{
+		sysmessage(s, TRANSLATE("There are no traps on this object"));
+		if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750);
+		return;
+	}
+	
+	pi->amxevents[EVENT_IONREMOVETRAP]->Call(pi->getSerial32(), s);
+	*/
 
-    pi->amxevents[EVENT_IONREMOVETRAP]->Call(pi->getSerial32(), s);
+	if ( pi->getAmxEvent( EVENT_IONREMOVETRAP ) == 0 )
+	{
+		sysmessage(s, TRANSLATE("There are no traps on this object"));
+		if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750);
+		return;
+	}
+
+	pi->runAmxEvent( EVENT_IONREMOVETRAP, pi->getSerial32(), s );
 }
 
 
@@ -2286,12 +2297,17 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 		pc->objectdelay = 0;
 		return;
 	}
-
+	/*
 	if (pi->amxevents[EVENT_IONPOISONED]!=NULL) {
 		g_bByPass = false;
 		poison->morez = pi->amxevents[EVENT_IONPOISONED]->Call(pi->getSerial32(), s, poison->morez);
 		if (g_bByPass==true) return;
 	}
+	*/
+	g_bByPass = false;
+	poison->morez = pi->runAmxEvent( EVENT_IONPOISONED, pi->getSerial32(), s, poison->morez );
+	if (g_bByPass==true)
+		return;
 
 	int success=0;
     switch(poison->morez)

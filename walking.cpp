@@ -527,11 +527,15 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				}
 				else
 				{
+					/*
 					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
 					{
 						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
 						g_bByPass = false;
 					}
+					*/
+					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
+					g_bByPass = false;
 				}
 				tile_st tile;
 				Map->SeekTile(pi->id(), &tile);

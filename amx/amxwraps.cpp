@@ -2185,10 +2185,17 @@ NATIVE(_itm_getEventHandler)
 
 	char str[100];
 	cell *cptr;
+	/*
 	if( pi->amxevents[params[2]] != NULL )
 		strcpy(str, pi->amxevents[params[2]]->getFuncName() );
 	else
 			str[0] = '\0';
+	*/
+	AmxEvent* event = pi->getAmxEvent( params[2] );
+	if( event )
+		strcpy(str, event->getFuncName() );
+	else
+		str[0] = '\0';
 	amx_GetAddr(amx,params[3],&cptr);
 	amx_SetString(cptr,str, g_nStringMode);
 	return strlen(str);
@@ -2206,16 +2213,17 @@ NATIVE(_itm_getEventHandler)
 */
 NATIVE(_itm_setEventHandler)
 {
-    P_ITEM pi = pointers::findItemBySerial(params[1]);
-    VALIDATEPIR(pi, INVALID);
+	P_ITEM pi = pointers::findItemBySerial(params[1]);
+	VALIDATEPIR(pi, INVALID);
 
-    cell *cstr;
+	cell *cstr;
 
 	amx_GetAddr(amx,params[4],&cstr);
-    printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-    g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	pi->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
-    g_nAmxPrintPtr=0;
+	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	//pi->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	pi->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] != 0 );
+	g_nAmxPrintPtr=0;
 	return 0;
 }
 

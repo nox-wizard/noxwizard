@@ -85,8 +85,13 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 	int s = calcSocketFromChar(DEREF_P_CHAR(pc));
 	if (s >-1 && s < now) //Luxor
 	{
+		/*
 		if (pi->amxevents[EVENT_IONCHECKCANUSE]==NULL) return true;
 		return (0!=pi->amxevents[EVENT_IONCHECKCANUSE]->Call(pi->getSerial32(), s, g_nType));
+		*/
+		AmxEvent* event = pi->getAmxEvent( EVENT_IONCHECKCANUSE );
+		if ( !event ) return true;
+		return ( 0 != event->Call(pi->getSerial32(), s, g_nType ) );
 	}
 	return true;
 }

@@ -154,7 +154,7 @@ void Skills::StealingTarget(NXWCLIENT ps)
         		return;
 			}
 
-
+			/*
 			if (pi->amxevents[EVENT_IONSTOLEN]!=NULL)
 			{
 				g_bByPass = false;
@@ -170,6 +170,17 @@ void Skills::StealingTarget(NXWCLIENT ps)
 				if (g_bByPass==true)
 					return;
 			}
+			*/
+
+			g_bByPass = false;
+			pi->runAmxEvent( EVENT_IONSTOLEN, pi->getSerial32(), s, victim->getSerial32() );
+			if (g_bByPass==true)
+				return;
+
+			g_bByPass = false;
+			victim->runAmxEvent( EVENT_CHR_ONSTOLEN, victim->getSerial32(), s );
+			if (g_bByPass==true)
+				return;
 
 			P_ITEM pack= thief->getBackpack();
 			VALIDATEPI(pack);
@@ -456,6 +467,7 @@ void Skills::LockPick(NXWCLIENT ps)
 
 	AMXEXECSV(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
 
+	/*
 	if (chest->amxevents[EVENT_IONLOCKPICK]!=NULL)
 	{
 		g_bByPass = false;
@@ -463,6 +475,12 @@ void Skills::LockPick(NXWCLIENT ps)
 		if (g_bByPass==true)
 			return;
 	}
+	*/
+	
+	g_bByPass = false;
+	chest->runAmxEvent( EVENT_IONLOCKPICK, chest->getSerial32(), s );
+	if (g_bByPass==true)
+		return;
 
 	if( !item_inRange(pc,pick,1) )
 	{

@@ -1967,7 +1967,9 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "SMELT %i\n", pi->smelt);
 		if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 
-#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
+//#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
+
+#define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) fprintf(iWsc, "%s %s\n", A, event->getFuncName()); }
 
 		SAVEITEMEVENT("@ONSTART", EVENT_IONSTART);
 		SAVEITEMEVENT("@ONCHECKCANUSE", EVENT_IONCHECKCANUSE);

@@ -79,7 +79,7 @@ public:
 /*!
 \name Who is
 */
-	AmxEvent	*amxevents[ALLITEMEVENTS];
+	//AmxEvent	*amxevents[ALLITEMEVENTS];
 
 	SI32		hp;	//!< Number of hit points an item has.
 	SI32		maxhp;	//!< Max number of hit points an item can have.
@@ -432,6 +432,10 @@ public:
 
 	UI32		distFrom( P_CHAR pc );
 	UI32		distFrom( P_ITEM pi );
+
+public:
+	LOGICAL 	isValidAmxEvent( UI32 eventId );
+
 } PACK_NEEDED;
 
 // will be fully implemented in 0.83
