@@ -160,7 +160,7 @@ void cAccount::addCharToAccount( P_CHAR pc )
 /*!
 \brief Constructor of cAccount
 */
-cAccounts::cAccounts(void)
+cAccounts::cAccounts()
 {
 	unsavedaccounts = 0;
 	saveratio = 0;         // Save everyaccount
@@ -169,7 +169,7 @@ cAccounts::cAccounts(void)
 /*!
 \brief Destructor of cAccount
 */
-cAccounts::~cAccounts(void)
+cAccounts::~cAccounts()
 {
 	if (unsavedaccounts > 0)
 		SaveAccounts();
@@ -474,7 +474,7 @@ ACCOUNT cAccounts::CreateAccount(std::string username, std::string password)
 \brief Check the account file status
 \remarks Reload Account if modified
 */
-void cAccounts::CheckAccountFile(void)
+void cAccounts::CheckAccountFile()
 {
 
 	struct stat filestatus;

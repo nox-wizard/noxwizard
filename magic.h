@@ -198,7 +198,7 @@ namespace magic {
 	SpellId spellNumberFromScrollId(int id);
 	void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);
 	void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster = NULL);
-	void loadSpellsFromScript(void);
+	void loadSpellsFromScript();
 	bool spellRequiresTarget(SpellId spellnum);
 	P_CHAR summon (P_CHAR owner, int npctype, int duration, bool bTamed = true, int x = INVALID, int y = INVALID, int z = INVALID);
 

@@ -58,7 +58,11 @@ char cShipItems[4][6]=
 };
 //============================================================================================
 
-P_ITEM findmulti(Location where) //Sortta like getboat() only more general... use this for other multi stuff!
+/*!
+\brief A sort of getboart() only more general
+\todo delete or write it
+*/
+P_ITEM findmulti(Location where)
 {
 /*	int lastdist=30;
 	P_ITEM pmulti=NULL;

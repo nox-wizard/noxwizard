@@ -336,7 +336,7 @@ void checkregion(int i)
 // Return type       : void
 // Author            : Xanathar
 // Changes           : none yet
-void check_region_weatherchange (void)
+void check_region_weatherchange ()
 {
 	int r,sn=0, rn=0, dr=0, sm, i;
 

@@ -411,8 +411,8 @@ void cParty::sendPartyList( NXWCLIENT ps )
 	ps->send( packet, lenght);
 }
 
-// Description	     : refreshes the party list to all members
-void cParty::sendPartyListAll(void)
+//! refreshes the party list to all members
+void cParty::sendPartyListAll()
 {
 	MEMBER_LIST::iterator iter( members.begin() ), end( members.end() );
 	for( ; iter!=end; iter++ ) {

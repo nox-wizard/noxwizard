@@ -192,7 +192,7 @@ TIMERVAL g_nRestockTimeRate = 15;
 extern bool g_bNTService;
 
 
-void loadclientsallowed(void)
+void loadclientsallowed()
 {
    int num_c=0, s=0, loopexit=0;
    std::vector<std::string> cls;
@@ -233,13 +233,13 @@ void loadclientsallowed(void)
 
 }
 
-void loadserverdefaults(void)
+void loadserverdefaults()
 {
-    std::string sd("ALL");
+	std::string sd("ALL");
 
 	strcpy(ServerScp::g_szOutput, "nxwout");
 
-    clientsAllowed.push_back(sd);
+	clientsAllowed.push_back(sd);
 	strcpy(serv[0][0], "NoX-Wizard Shard");
 	strcpy(serv[0][1], "127.0.0.1");
 	strcpy(serv[0][2], "2593");
@@ -1038,12 +1038,9 @@ void commitserverscript() // second phase setup
 
 }
 
-
-
-//void saveserverscript(char x)
-void saveserverscript(void)
+void saveserverscript()
 {
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	FILE *file;
 	file=fopen("config/server.cfg", "w");
 	if(!file) return; //only write can be..

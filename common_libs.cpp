@@ -92,7 +92,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param )
     // Return type       : bool
     // Author            : Xanathar
     // Notes             : can miss an HUP -- but should never be a problem
-    bool pollHUPStatus (void)
+    bool pollHUPStatus ()
     {
         if (g_bHUPReceived) {
            g_bHUPReceived = false;
@@ -106,7 +106,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param )
     // Description       : returns true if a SIGQUIT or similar was handled
     // Return type       : bool
     // Author            : Xanathar
-    bool pollCloseRequests(void)
+    bool pollCloseRequests()
     {
         return g_bShouldClose;
     }
@@ -183,7 +183,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param )
     // Description       : starts signal handling thread etc
     // Return type       : void
     // Author            : AnomCwrd
-    void setup_signals (void)
+    void setup_signals ()
     {
         sigset_t signals_to_block;
         struct sigaction ignore_handler;
@@ -222,7 +222,7 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param )
 // getOSVersionString, author Xanathar
 //
 static char g_szOSVerBuffer[1024];
-char* getOSVersionString(void)
+char* getOSVersionString()
 {
     g_szOSVerBuffer[0] = '\0';
 #ifdef WIN32

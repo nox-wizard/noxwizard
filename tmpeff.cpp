@@ -203,7 +203,7 @@ static int getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 		case GM_HIDING:
 			dur = more1;
 			break;
-		
+
 		case GM_UNHIDING:
 			dur = more1;
 			break;
@@ -248,7 +248,7 @@ static int getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 // Function name     : cTempfx::start
 // Return type       : void
 // Author            : Luxor
-void cTempfx::start(void)
+void cTempfx::start()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
@@ -533,7 +533,7 @@ void cTempfx::start(void)
 // Function name     : cTempfx::checkForExpire
 // Return type       : bool
 // Author            : Luxor
-bool cTempfx::checkForExpire(void)
+bool cTempfx::checkForExpire()
 {
 	if ( !TIMEOUT(m_nExpireTime) )
 		return false;
@@ -599,7 +599,7 @@ bool cTempfx::checkForExpire(void)
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_CUNNING:
 			VALIDATEPCR(dest, true);
 			dest->in -= m_nMore1;
@@ -805,7 +805,7 @@ bool cTempfx::checkForExpire(void)
 // Function name     : cTempfx::activate
 // Return type       : void
 // Author            : Luxor
-void cTempfx::activate(void)
+void cTempfx::activate()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
@@ -892,7 +892,7 @@ void cTempfx::activate(void)
 // Function name     : cTempfx::deactivate
 // Return type       : void
 // Author            : Luxor
-void cTempfx::deactivate(void)
+void cTempfx::deactivate()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
@@ -981,7 +981,7 @@ void cTempfx::deactivate(void)
 // Function name     : cTempfx::isValid
 // Return type       : bool
 // Author            : Luxor
-bool cTempfx::isValid(void)
+bool cTempfx::isValid()
 {
 	if (m_nNum < 0)
 		return false;
@@ -1116,7 +1116,7 @@ bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned cha
 // Description       : activates the temp effects
 // Return type       : void
 // Author            : Luxor
-void tempeffectson(void)
+void tempeffectson()
 {
     if (!tempfxQueue.empty())
         while (!tempfxQueue.empty())
@@ -1133,12 +1133,11 @@ void tempeffectson(void)
     tempfxVector.clear();
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : tempeffectsoff
-// Description       : deactivates the temp effects
-// Return type       : void
-// Author            : Luxor
-void tempeffectsoff(void)
+/*!
+\brief Deactivates the temp effects
+\author Luxor
+*/
+void tempeffectsoff()
 {
     if (!tempfxVector.empty())
         tempfxVector.clear();
@@ -1158,7 +1157,7 @@ void tempeffectsoff(void)
 // Function name     : checktempeffects
 // Return type       : void
 // Author            : Luxor
-void checktempeffects(void)
+void checktempeffects()
 {
     if (tempfxQueue.empty())
 	    return;

@@ -10,14 +10,14 @@
 #ifndef __Srv_Params
 #define __Srv_Params
 
-void loadserverdefaults(void);
-void loadserverscript(void);
-void loadclientsallowed(void);
+void loadserverdefaults();
+void loadserverscript();
+void loadclientsallowed();
 void preloadSections(char *fn);
 int cfg_command (char *commandstr);
 extern void commitserverscript(); // second phase setup
 
-void saveserverscript(void);
+void saveserverscript();
 #define SrvParms (&server_data)	// in preparation of making sever_data a class.Use SrvParms->xxx instead of server_dat.xxx (Duke)
 
 #define MAXTRACKINGTARGETS 20   // maximum number of trackable targets

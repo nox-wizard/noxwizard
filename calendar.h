@@ -28,8 +28,8 @@ namespace Calendar {
 	extern int g_nWinterOverride;
 	extern float g_fCurSnowMod, g_fCurRainMod, g_fCurDryMod;
 
-	void loadCalendarScp (void);
-	bool advanceMinute(void);
+	void loadCalendarScp ();
+	bool advanceMinute();
 	void setSeason(int nSeason);
 	void commitSeason(P_CHAR pc);
 
@@ -53,7 +53,7 @@ namespace Calendar {
 			int	m_nSunsetHour;
 			int	m_nSunsetMin;
 			int	m_nSeason;
-			int	getDays(void);
+			int	getDays();
 	};
 
 	/*!

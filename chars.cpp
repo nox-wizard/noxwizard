@@ -1276,7 +1276,7 @@ void cChar::unfreeze()
 \brief freezes the char
 \author Xanathar
 */
-void cChar::freeze(void)
+void cChar::freeze()
 {
 	priv2 |= CHRPRIV2_FROZEN;
 }

@@ -97,9 +97,9 @@ private:
 
 public:
 	void SetSaveRatio ( int );
-	void LoadAccounts( void );
-	void SaveAccounts( void );
-	void CheckAccountFile(void);
+	void LoadAccounts();
+	void SaveAccounts();
+	void CheckAccountFile();
 	
 	int Count();
 
@@ -121,7 +121,5 @@ public:
 	bool RemoveAccount( std::string name );
 
 };
-
-
 
 #endif // __ACCOUNTS_H__

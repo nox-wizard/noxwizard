@@ -31,7 +31,7 @@ public:
 	void parseLine(std::string& strParam1, std::string& strParam2);
 	void parseLine(char* szParam1, char* szParam2);
 	class cScpEntry* getEntry();
-	void rewind(void);
+	void rewind();
 };
 
 

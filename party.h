@@ -70,7 +70,7 @@ namespace PartySystem
 			void talkToOthers( std::string s );
 			
 			void sendPartyList( NXWCLIENT ps );
-			void sendPartyListAll(void);
+			void sendPartyListAll();
 			void sendEmptyList( NXWCLIENT ps );
 	};
 

@@ -87,7 +87,7 @@ public:
 	void		Refresh();
 	void		deleteItem();
 	SI32		getName(char* itemname);
-	const char*	getRealItemName(void);
+	const char*	getRealItemName();
 //@}
 
 //@{

@@ -54,7 +54,7 @@ void __CDECL SDbgOut(char *txt, ...);
 void __CDECL SDbgIn(char *s, int n);
 #endif
 
-void initConsole(void);
+void initConsole();
 char* getNoXDate();
 
 #endif //__CONSOLE_H__

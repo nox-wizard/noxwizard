@@ -103,9 +103,7 @@ void npcMagicAttack(P_CHAR pc_att, P_CHAR pc_def)
 	}
 }
 
-
-
-void initNpcSpells (void)
+void initNpcSpells ()
 {
 	int section = 0, i, j;
 	int ptr = 0;

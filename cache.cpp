@@ -95,7 +95,7 @@ void MULFile::seek(long offset, int whence)
   }
 }
 
-int MULFile::wpgetch(void)
+int MULFile::wpgetch()
 {
 	if (qRefill())
 		refill();

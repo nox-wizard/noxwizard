@@ -43,19 +43,19 @@ namespace tempfx {
 		LOGICAL m_bDestRepeatable;
 	public:
 		cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI32 more2, SI32 more3, SI32 amxcback );
-		int getExpireTime(void) { return m_nExpireTime; }
-		bool isDispellable(void) { return m_bDispellable; }
-		void activate(void);
-		void deactivate(void);
-		bool isValid(void);
-		bool checkForExpire(void);
-		void start(void);
-		int getNum(void) { return m_nNum; }
+		int getExpireTime() { return m_nExpireTime; }
+		bool isDispellable() { return m_bDispellable; }
+		void activate();
+		void deactivate();
+		bool isValid();
+		bool checkForExpire();
+		void start();
+		int getNum() { return m_nNum; }
 	};
 
-	void tempeffectson(void);
-	void tempeffectsoff(void);
-	void checktempeffects(void);
+	void tempeffectson();
+	void tempeffectsoff();
+	void checktempeffects();
 
 	//End Luxor's temp effects system
 }

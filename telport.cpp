@@ -64,7 +64,7 @@ void teleporters(P_CHAR pc)
 
 }
 
-void read_in_teleport(void)
+void read_in_teleport()
 {
 	char text[1024];
 	char seps[]	= " ,\t\n";

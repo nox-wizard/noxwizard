@@ -858,9 +858,9 @@ class cChar : public cObject
 		void			helpStuff(P_CHAR pc_i);
 		void			applyPoison(PoisonType poisontype, SI32 secs = INVALID);
 		void			setOwner(P_CHAR owner);
-		void			curePoison(void);
-		void			resurrect( NXWCLIENT healer = NULL );
-		void			unfreeze(void);
+		void			curePoison();
+		void			resurrect(NXWCLIENT healer = NULL);
+		void			unfreeze();
 		void			damage(SI32 amount, DamageType typeofdamage = DAMAGE_PURE, StatType stattobedamaged = STAT_HP);
 		void			playAction(SI32 action);
 

@@ -89,7 +89,7 @@ void constart( void )
 }
 
 
-void initConsole(void)
+void initConsole()
 {
 	if ((ServerScp::g_nRedirectOutput)||(ServerScp::g_nDeamonMode)) {
 		if(s_fileStdOut==NULL) s_fileStdOut = fopen(ServerScp::g_szOutput,"wt");

@@ -37,13 +37,13 @@ class MULFile
   MULFile(char *, char *);
   ~MULFile();
 
-  inline int qRefill(void) { return (bIndex >= bSize); };
-  inline int ready(void) { return (ok); };
-  void rewind(void);
+  inline int qRefill() { return (bIndex >= bSize); };
+  inline int ready() { return (ok); };
+  void rewind();
   void seek(long, int);
-  inline int eof(void) { return (feof(theFile)); };
-  int wpgetch(void);
-  void refill(void);
+  inline int eof() { return (feof(theFile)); };
+  int wpgetch();
+  void refill();
   char *gets(char *, int);
   int puts(char *);
   void getUChar(unsigned char *, unsigned int);

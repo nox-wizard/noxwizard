@@ -80,15 +80,15 @@
 	#include "nxwgui.h"
 #endif
 
-extern void initSignalHandlers(void);
+extern void initSignalHandlers();
 
-extern void checkGarbageCollect (void); // Remove items which were in deleted containers
+extern void checkGarbageCollect(); //!< Remove items which were in deleted containers
 
 
 
 bool g_bInMainCycle = false;
 char INKEY; //xan, used for wingui menus :) [gui mode under Win32 :)]
-void LoadOverrides (void);
+void LoadOverrides ();
 extern "C" int g_nTraceMode;
 
 #include "debug.h"
@@ -585,7 +585,7 @@ void callguards( CHARACTER p )
 	}
 }
 
-extern "C" void breakOnFirstFuncz(void);
+extern "C" void breakOnFirstFuncz();
 
 /*!
 \brief facilitate console control. SysOp keys and localhost controls
@@ -932,10 +932,10 @@ void init_deamon()
 }
 
 #ifdef _WINDOWS
-void updateMenus(void);
+void updateMenus();
 #endif
 
-void angelMode(void);
+void angelMode();
 
 #ifndef WIN32
 	#ifndef USES_QT
@@ -1495,7 +1495,7 @@ void angelMode(void);
 // does on Linux. Thus it doesn't go up on Linux, and time seems to stand
 // still. This function emulates clock()
 
-void initclock(void)
+void initclock()
 {
 #if defined(__unix__)
 	timeval t ;
@@ -2290,7 +2290,7 @@ who_am_i bit # 1 creature can fly (must have the animations, so better dont chan
 				# 4 water creatures (currently not used/set)
 icon: used for tracking, to set the appropriate icon
 */
-void init_creatures(void)
+void init_creatures()
 {
 
 	memset(&creatures[0], 0, 2048*sizeof( creat_st ));
@@ -3072,7 +3072,7 @@ void InitMultis()
 	}
 }
 
-void StartClasses(void)
+void StartClasses()
 {
 	ConOut("Initializing classes...");
 
@@ -3096,7 +3096,7 @@ void StartClasses(void)
 	ConOut(" [ OK ]\n");
 }
 
-void DeleteClasses(void)
+void DeleteClasses()
 {
 	delete cwmWorldState;
 	delete mapRegions;
@@ -3249,7 +3249,7 @@ namespace Scripts {
 	cScpScript* Areas = NULL; //cScpScript("areas.xss");
 };
 
-void newScriptsInit(void)
+void newScriptsInit()
 {
 	cScpScript* Dummy = new cScpScript("scripts/symbols.xss");
 	safedelete(Dummy);
@@ -3299,7 +3299,7 @@ void newScriptsInit(void)
 }
 
 
-void deleteNewScripts(void)
+void deleteNewScripts()
 {
 	cScpScript* Dummy = new cScpScript("scripts/symbols.xss");
 	safedelete(Dummy);//
@@ -3349,7 +3349,7 @@ void deleteNewScripts(void)
 }
 
 #ifndef _EXTERNANGEL
-void angelMode(void)
+void angelMode()
 {
 }
 #endif

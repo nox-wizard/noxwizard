@@ -179,7 +179,7 @@ warnings/errors/issues.
 	extern int errno;
 #endif
 
-extern char* getOSVersionString(void);
+extern char* getOSVersionString();
 enum OSVersion { OSVER_UNKNOWN, OSVER_WIN9X, OSVER_WINNT, OSVER_NONWINDOWS };
 extern OSVersion getOSVersion();
 
@@ -266,7 +266,7 @@ class Mutex {
         	free(m_mutex);
         #endif
     }
-    inline void enter (void) {
+    inline void enter () {
         if (m_bDebug) printf("DBG-MUTEX: Entering mutex %s\n", m_szMutexName);
         #ifdef WIN32
     	    EnterCriticalSection(&m_cs2);
@@ -281,7 +281,7 @@ class Mutex {
         #endif
         if (m_bDebug) printf("DBG-MUTEX: Entered mutex %s\n", m_szMutexName);
     }
-    inline void leave (void) {
+    inline void leave () {
         if (m_bDebug) printf("DBG-MUTEX: Leaving mutex %s\n", m_szMutexName);
         m_bLocked = false;
         #ifdef WIN32
@@ -383,14 +383,14 @@ int startTThread( TTHREAD ( *funk )( void * ), void* param = NULL );
 };
 
 #ifdef WIN32
-    inline bool pollHUPStatus (void) { return false; }
-    inline bool pollCloseRequests (void) { return false; }
-    inline void setup_signals (void){ return; }
+    inline bool pollHUPStatus () { return false; }
+    inline bool pollCloseRequests () { return false; }
+    inline void setup_signals (){ return; }
     inline void start_signal_thread() {return;}
 #else
-    extern bool pollHUPStatus (void);
-    extern bool pollCloseRequests (void);
-    extern void setup_signals (void);
+    extern bool pollHUPStatus ();
+    extern bool pollCloseRequests ();
+    extern void setup_signals ();
     extern void start_signal_thread();
 #endif
 

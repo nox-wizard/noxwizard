@@ -32,8 +32,8 @@ extern int g_nExceptionHandling;
 }
 
 #ifdef  _MSC_VER	// when compiling with borland or mingw, can't use asm
- bool canBreakpoint(void);
- bool newIsDebuggerPresent(void);
+ bool canBreakpoint();
+ bool newIsDebuggerPresent();
  //defined as macro so bkp happens locally to the prob :]
  #define BREAKPOINT { if (canBreakpoint()) { __asm { int 3 } } }
 #else

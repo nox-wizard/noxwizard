@@ -73,7 +73,7 @@ class NetThread
 		bool lastopwasinsert;
 		tthreads::Mutex mtxrun;
 		int realsocket;
-		void run (void);
+		void run();
 		void enqueue (char*, int);
 		NetThread(int s);
 		void set(int s);

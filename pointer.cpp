@@ -528,7 +528,7 @@ namespace pointers {
 	\brief initializes pointer maps
 	\author Luxor
 	*/
-	void init(void)
+	void init()
 	{
 
 

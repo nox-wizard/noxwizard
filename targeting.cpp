@@ -4164,7 +4164,7 @@ void TargetLocation::init(int x, int y, int z)
 // Return type       : void
 // Author            : Xanathar
 // Changes           : none yet
-void TargetLocation::revalidate(void)
+void TargetLocation::revalidate()
 {
 	m_pi=pointers::findItemBySerial(m_piSerial);
 

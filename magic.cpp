@@ -39,7 +39,7 @@ g_Spell g_Spells[MAX_SPELLS];
 // Return type		 : static void
 // Author			 : Xanathar
 // Changes			 : none yet
-void loadSpellsFromScript(void)
+void loadSpellsFromScript()
 {
 	cScpIterator* iter = NULL;
 	char script1[1024], script2[1024];

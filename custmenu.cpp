@@ -307,7 +307,7 @@ void cCustomMenu::addMenuItem(int page, int idx, char *desc)
 
 
 /*** Builds the menu ***/
-void cCustomMenu::buildClassicMenu (void)
+void cCustomMenu::buildClassicMenu ()
 {
 	char temp[512];
 	int i,k;
@@ -462,7 +462,7 @@ void cCustomMenu::buildClassicMenu (void)
 	}
 }
 
-void cCustomMenu::buildMenu (void)
+void cCustomMenu::buildMenu ()
 {
 	switch (m_nStyle&0x7F)
 	{
@@ -496,7 +496,7 @@ void cCustomMenu::buttonSelected (NXWSOCKET  s, unsigned short btn, int seed)
 	sysmessage(s, 0x489, "Internal error : pure virtual cCustomMenu::buttonSelected called.");
 }
 
-void cCustomMenu::buildIconList (void)
+void cCustomMenu::buildIconList ()
 {
 	char szTemp[70];
 
@@ -508,7 +508,7 @@ void cCustomMenu::buildIconList (void)
 	}
 }
 
-void cCustomMenu::buildIconMenu(void)
+void cCustomMenu::buildIconMenu()
 {
 }
 

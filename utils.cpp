@@ -612,10 +612,10 @@ int checkBoundingCircle(int xPos, int yPos, int fx1, int fy1, int fz1, int radiu
 		return 0;
 }
 
-unsigned long int getclockday(void)
+UI32 getclockday()
 {
-	unsigned long seconds;
-	unsigned long days ;
+	UI32 seconds;
+	UI32 days ;
 #ifdef __unix__
 	timeval buffer ;
 	gettimeofday(&buffer,NULL) ;
@@ -629,10 +629,10 @@ unsigned long int getclockday(void)
 	return days ;
 }
 
-unsigned long int getclock(void)
+UI32 getclock()
 {
-	unsigned long milliseconds;
-	unsigned long seconds ;
+	UI32 milliseconds;
+	UI32 seconds ;
 #ifdef __unix__
 	timeval buffer ;
 	gettimeofday(&buffer,NULL) ;
@@ -660,9 +660,9 @@ unsigned long int getclock(void)
 
 used by getSystemTime amx function
 */
-unsigned long int getsysclock(void)
+UI32 getsysclock()
 {
-   unsigned long seconds ;
+   UI32 seconds ;
 #ifdef __unix__
    timeval buffer ;
    gettimeofday(&buffer,NULL) ;

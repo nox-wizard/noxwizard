@@ -50,9 +50,9 @@ protected:
 	int			m_nSeed;
 	bool		m_bPrepared;
 	void SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& two, unsigned char type );
-	void buildClassicMenu (void);
-	void buildIconList (void);
-	void buildIconMenu (void);
+	void buildClassicMenu ();
+	void buildIconList ();
+	void buildIconMenu ();
 	void sendIconList (NXWSOCKET  s);
 	void sendIconMenu (NXWSOCKET  s);
 public:
@@ -61,7 +61,7 @@ public:
 	void setParameters(int numPerPage, int numpages);
 	void addMenuItem(int page, int idx, char *desc);
 	void setCallback(int cback) { m_nCallback = cback; }
-	void buildMenu (void);
+	void buildMenu ();
 	void showMenu (NXWSOCKET  s);
 	void setTitle (char *str);
 	void setWidth (int width);

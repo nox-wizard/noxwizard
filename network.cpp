@@ -160,7 +160,7 @@ NXWCLIENT getClientFromSocket( NXWSOCKET socket )
 		return NULL;
 }
 
-static void initClients(void)
+static void initClients()
 {
 	for (int i=0; i < MAXCLIENT; ++i)
 	{
@@ -2126,7 +2126,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 }
 
-void cNetwork::LoadHosts_deny(void)
+void cNetwork::LoadHosts_deny()
 {
 	std::string  sScript1 ;
 	std::string  sToken1 ;
@@ -2184,11 +2184,6 @@ bool cNetwork::CheckForBlockedIP(sockaddr_in ip_address)
 	return false;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////
-//
-//
-
-
 void NetThread::enqueue (char* buff, int len)
 {
     for ( int i=0; i < len; ++i )
@@ -2201,7 +2196,6 @@ void NetThread::enqueue (char* buff, int len)
     }
     outtail = ((int)(outtail)+len) % MTMAXBUFFER;
 }
-
 
 void NetThread::run()
 {

@@ -117,10 +117,10 @@ int findsection (unsigned char *s);
 
 
 //void xsend(int s, void *point, int length, int test);
-void loadserverscript(void);
+void loadserverscript();
 //void saveserverscript(unsigned char);
-void saveserverscript(void);
-void loadserverdefaults(void);
+void saveserverscript();
+void loadserverdefaults();
 int numbitsset( int number );
 int whichbit( int number, int bit );
 char *linestart(char *line);
@@ -128,24 +128,9 @@ char *linestart(char *line);
 void strupr(std::string &str);
 void strlwr(std::string &str);
 
-//int GetBankCount( P_CHAR, unsigned short itemid, unsigned short color = 0x0000 );
-//int DeleBankItem( CHARACTER p, unsigned short itemid, unsigned short color, int amt );
-
 void getSextantCords(signed int x, signed int y, bool t2a, char *sextant);
 
 void usehairdye(int s, P_ITEM pidye);
-//void buildhouse(int s, int i);
-//void buildhouse(int s, int i,char d_id1,char d_id2,char d_id3, char d_id4);
-//void deedhouse(NXWSOCKET  s, P_ITEM pi); //crackerjack 8/9/99
-//void killkeys(SERIAL serial); // crackerjack 8/11/99
-// house list functions - cj 8/12/99
-//int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4, int *li);
-//int add_hlist(int c, int h, int t);
-//int del_hlist(int c, int h);
-//
-//void house_speech(int s, char *talk);
-//void addthere(int s, int xx, int yy, int zz, int t);
-//void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt);
 
 COLOR addrandomcolor(cObject* po, char *colorlist);
 
@@ -215,52 +200,26 @@ void charcreate(NXWSOCKET  s);	// All the character creation stuff
 
 void usepotion(int p, P_ITEM pi);
 
-//void tempeffect(int source, int dest, int num, unsigned char more1, unsigned char more2, unsigned char more3,short dur=-1, int amxcback = -3);
-//void tempeffect2(int source, P_ITEM dest, int num, unsigned char more1, unsigned char more2, unsigned char more3);
-//unsigned char tempeffect(int source, int dest, int num, unsigned char more1, unsigned char more2, unsigned char more3,short dur=-1, int amxcback = -3);
-//unsigned char tempeffect2(int source, P_ITEM piDest, int num, unsigned char more1, unsigned char more2, unsigned char more3);
-//void tempeffectsoff();
-//void tempeffectson();
-//void checktempeffects();
-
-void checkauto();	// Check automatic/timer controlled stuff (Like fighting and regeneration)
-void checktimers();	// Check shutdown timers
+void checkauto();	//!< Check automatic/timer controlled stuff (Like fighting and regeneration)
+void checktimers();	//!< Check shutdown timers
 
 void setcharflag(P_CHAR pc);
 LOGICAL setcharflag2(P_CHAR pc);
-
-//P_ITEM ContainerSearch(const int serial, int *ci);
-//P_ITEM ContainerSearchFor(const int serial, int *ci, short id, short color=-1);
-//P_ITEM FindItemBySerial(int serial);
-//P_ITEM FindItemBySerPtr(unsigned char *p);
-//P_CHAR FindCharBySerPtr(unsigned char *p);
-//P_ITEM GetOutmostCont(P_ITEM pItem, short rec=50);
-//P_CHAR GetPackOwner(P_ITEM pItem, short rec=50);
-//void doGmMoveEff(P_CHAR pc); //gm movement effects
 
 void AttackStuff (NXWSOCKET  s, P_CHAR victim);
 void HelpStuff (P_CHAR pc,P_CHAR pc_i);
 void setCrimGrey (P_CHAR pc, int mode);
 void pweather(NXWSOCKET  s);
-void check_region_weatherchange (void);
-//void initNewNPCSpells (void);
-void newScriptsInit(void);
-void deleteNewScripts(void);
+void check_region_weatherchange ();
+void newScriptsInit();
+void deleteNewScripts();
 
 bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type);
 
 void updatehtml();
 void offlinehtml();
 
-
-
-//Boats --Fucntions in Boats.cpp
-
-P_ITEM findmulti(Location where);	// added by Anthalir
-bool inmulti(Location where,P_ITEM pi);
-//End Boat functions
-
-void init_creatures(void);
+void init_creatures();
 
 void TellScroll( char *menu_name, int player, long item_param );
 
@@ -271,7 +230,7 @@ char *RealTime(char *time_str);
 
 void walking(P_CHAR pc, int dir, int sequence);
 void teleporters(P_CHAR pc);
-void read_in_teleport(void);
+void read_in_teleport();
 void npcwalk( P_CHAR pc_i, int newDirection, int type);
 void walking2(P_CHAR pc_s);
 void savelog(const char *msg, char *logfile);
@@ -290,10 +249,10 @@ int SpawnFishingItem(int nCharID,int nInPack, char* cScript, char* cList, char* 
 // helper func for GOPLACE things :]
 void location2xyz(int loc, int& x, int& y, int& z);
 
-unsigned long int getclock();
-unsigned long int getsysclock(void);
-unsigned long int getclockday() ;
-void initclock() ;
+UI32 getclock();
+UI32 getsysclock();
+UI32 getclockday();
+void initclock();
 
 
 

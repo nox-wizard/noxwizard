@@ -26,12 +26,12 @@ void setkey(char *key);
 void endes(char *block);
 void dedes(char *block);
 int desinit(int mode);
-void desdone(void);
+void desdone();
 static void permute(char *inblock,char perm[16][16][8],char *outblock);
 static void round(int num,unsigned long *block);
 static long f(unsigned long r,unsigned char subkey[8]);
 static void perminit(char perm[16][16][8],char p[64]);
-static int spinit(void);
+static int spinit();
 
 
 
@@ -121,12 +121,12 @@ void setkey(char *key);
 void endes(char *block);
 void dedes(char *block);
 int desinit(int mode);
-void desdone(void);
+void desdone();
 static void permute(char *inblock,char perm[16][16][8],char *outblock);
 static void round(int num,unsigned long *block);
 static long f(unsigned long r,unsigned char subkey[8]);
 static void perminit(char perm[16][16][8],char p[64]);
-static int spinit(void);
+static int spinit();
 
 
 
@@ -306,7 +306,7 @@ int desinit(int mode)
 
 
 /* oldfree up storage used by DES */
-void desdone(void)
+void desdone()
 {
 	if(sp == NULL)
 		return;	/* Already done */
@@ -510,7 +510,7 @@ static void perminit(char perm[16][16][8],char p[64])
 }
 
 /* Initialize the lookup table for the combined S and P boxes */
-static int spinit(void)
+static int spinit()
 {
 	char pbox[32];
 	int p,i,s,j,rowcol;

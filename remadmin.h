@@ -54,10 +54,10 @@ private:
 public:
 	RemoteAdmin();
 	~RemoteAdmin();
-	void Init(void);
-	void Exit(void);
-	void CheckInp(void);
-	void CheckConn(void);
+	void Init();
+	void Exit();
+	void CheckInp();
+	void CheckConn();
 	void Printf(int sock, char *fmt, ...);
 	void Disconnect(int sock);
 	void Rcv(int sock);

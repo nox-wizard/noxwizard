@@ -1537,10 +1537,8 @@ cGuilds::~cGuilds()
 {
 }
 
-// TESTED: OKAY
-// guildinit() initializes the guild structure fields, marks them all as free.
-// Called by: main()
-cGuilds::cGuilds(void)
+//! initializes the guild structure fields, marks them all as free.
+cGuilds::cGuilds()
 {
 	int guildnumber, member, recruit, war;
 

@@ -40,10 +40,10 @@ extern int g_nLoadDebugger;
 #define MNUDEBUG 5
 
 void display(HDC hDC, LPRECT lpRect);
-void initScr(void);
+void initScr();
 void printLn (char *s);
 void __cdecl xwprintf(char *txt, ...); // System message (In lower left corner)
-void __cdecl backspace(void);
+void __cdecl backspace();
 
 #pragma comment( exestr , "Program by Marco Mastropaolo, aka Xanathar" )
 #define GETSBUFLIMIT 4096
@@ -168,7 +168,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 #define ENABLE_RUNMODE
 
-void updateMenus(void)
+void updateMenus()
 {
 	enableAllMenu(0,true);
 	enableAllMenu(1,true);
@@ -812,7 +812,7 @@ LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 // Return type       : void 
 // Author            : Xanathar 
 // Changes           : none yet
-void initScr(void)
+void initScr()
 {
 	for (int x=0; x<MAXX; x++)
 		for (int y=0; y<MAXY; y++)
@@ -994,7 +994,7 @@ void __cdecl xwgets(char *s, int n) // gets from xwconsole
 // Return type       : void 
 // Author            : Xanathar 
 // Changes           : none yet
-void __cdecl backspace(void)
+void __cdecl backspace()
 {
 	EnterCriticalSection(&s_csXwpf);
 	crx--;

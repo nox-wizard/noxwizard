@@ -65,7 +65,7 @@ bool newIsDebuggerPresent()
 // Return type       : bool
 // Author            : Xanathar
 // Changes           : none yet
-bool canBreakpoint(void)
+bool canBreakpoint()
 {
 	static bool bChecked = false;
 	static bool bBreak = false;
@@ -91,7 +91,7 @@ void interrupthandler (int x)
 { keeprun = false; }
 
 
-void initSignalHandlers(void)
+void initSignalHandlers()
 {
 	g_bExceptionCaught = false;
     start_signal_thread();

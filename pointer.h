@@ -37,7 +37,7 @@ namespace pointers {
 	extern std::map<SERIAL, vector <P_ITEM> > pMultiItemMap;
 	//@}
 
-	void init(void);
+	void init();
 	void delChar(P_CHAR pc);
 	void delItem(P_ITEM pi);
 	

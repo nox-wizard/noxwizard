@@ -593,7 +593,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 }
 
-void loaditem (void) // Load an item from WSC
+//! Load an item from WSC
+void loaditem()
 {
 	P_ITEM pi=archive::getItemForCopy();
 	if( pi==NULL ) return;

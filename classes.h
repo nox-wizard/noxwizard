@@ -112,7 +112,7 @@ public:
 	void Title(int s, int player2);
 	void Read(int guildnumber);
 	void Write(FILE *wscfile);
-	void CheckConsistancy(void);
+	void CheckConsistancy();
 };
 ////////////////////////END REMOVE////////////////////////////
 

@@ -42,7 +42,7 @@ cWeekday g_Weekday[MAXWEEKDAY];
 \author Xanathar
 \since 0.52a
 */
-int cMonth::getDays(void)
+int cMonth::getDays()
 {
 	if (m_nCompensation<=0) return m_nDays;
 	if ((g_nYear%m_nCompensation)==0) return m_nDays+1;
@@ -117,7 +117,7 @@ void commitSeason(P_CHAR pc)
 \author Xanathar
 \since 0.52a
 */
-bool advanceMinute(void)
+bool advanceMinute()
 {
 	bool bDateChanged = false;
 	g_nMinute++;
@@ -181,7 +181,7 @@ static void parseWeekday(int m, FILE *F);
 \since 0.52a
 \todo should be changed when we'll use new scripts with stl maps
 */
-void loadCalendarScp (void)
+void loadCalendarScp ()
 {
 #define SEC_NONE -1
 #define SEC_MONTH 0 

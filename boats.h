@@ -42,7 +42,6 @@ extern char cShipItems[4][6];
 
 struct boat_db
 {
-public:
 	int serial;
 	int tiller_serial;
 	int l_plank_serial;
@@ -57,7 +56,8 @@ public:
 };
 
 
-
+P_ITEM findmulti(Location where);
+bool inmulti(Location where,P_ITEM pi);
 void insert_boat(P_ITEM pi);
 boat_db* search_boat(SI32 ser);
 P_ITEM search_boat_by_plank(P_ITEM pl);
@@ -87,5 +87,5 @@ class cBoat
 		void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
 		void Turn(P_ITEM, int);
 };
-#endif
 
+#endif
