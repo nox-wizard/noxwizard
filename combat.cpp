@@ -144,7 +144,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 				doMissedSoundEffect();
 			else {
 				pc_def->doCombatSoundEffect( def_fightskill, def_Weapon );
-				pc_def->emoteall( "Parries the attack", 1 );
+				pc_def->emoteall( "*Parries the attack*", 1 );
 			}
 		}
 		if (fightskill == ARCHERY) {
@@ -264,6 +264,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	if(ISVALIDPI(pShield)) {
 		if ( chance(pc_def->skill[PARRYING]/20) ) { // chance to block with shield
 			pc_def->checkSkill(PARRYING, 0, 1000);
+			pc_def->emoteall( "*Parries the attack*", 1 );
 			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2; // damage absorbed by shield
 			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def; // damage absorbed by shield
 			if (chance(5)) pShield->hp--;

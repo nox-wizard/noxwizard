@@ -4125,7 +4125,7 @@ void cChar::generic_heartbeat()
 	{
 		if (mn < in)
 		{
-			mn++;
+			mn += 3;
 			update[ 1 ] = true;
 		}
 		else if (med)
@@ -4139,15 +4139,16 @@ void cChar::generic_heartbeat()
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
-				manarate += UI32( calcDef(0) / 10.0 ) - UI32( skill[MEDITATION]/200.0 );
+				manarate += UI32( calcDef(0) / 10.0 ) - UI32( skill[MEDITATION]/222.2 );
 			else
 				manarate += UI32( calcDef(0) / 5.0 );
 		}
 		else
 		{
 			if(med)
-				manarate -= UI32( skill[MEDITATION]/200.0 );
+				manarate -= UI32( skill[MEDITATION]/222.2 );
 		}
+                manarate = qmax( 1, manarate );
 		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
 		this->updateRegenTimer( STAT_MANA );
 
