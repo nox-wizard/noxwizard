@@ -435,7 +435,11 @@ public:
 
 void DyeTarget(NXWSOCKET s)
 {
-    SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
+	SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
+	UI16 color, body;
+
+	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(Me);
 
     if ((addid1[s]==255)&&(addid2[s]==255))
     {
@@ -452,9 +456,55 @@ void DyeTarget(NXWSOCKET s)
             SndDyevat(s,pc->getSerial32(),0x2106);
         }
     }
-    else
+    else // See Commands::DyeItem(s)
     {
-	Commands::DyeItem(s);
+	color = (addid1[s]<<8)|(addid2[s]%256);
+
+        P_ITEM pi=pointers::findItemBySerial(target_serial);
+        if (ISVALIDPI(pi))
+	{
+		if(!(dyeall[s]))
+		{
+			if (( color<0x0002) || (color>0x03E9))
+			{
+				color = 0x03E9;
+			}
+		}
+
+
+		if (! ((color & 0x4000) || (color & 0x8000)) )
+		{
+			pi->setColor(color);
+		}
+
+		if (color == 0x4631)
+		{
+			pi->setColor(color);
+		}
+
+		pi->Refresh();
+		return;
+	}
+
+        P_CHAR pc=pointers::findCharBySerial(target_serial);
+        if (ISVALIDPC(pc))
+	{
+		if( !Me->IsGM() ) return; // Only gms dye characters
+
+		body = pc->GetBodyType();
+
+		if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
+
+		if ((color & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) color = 0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
+
+		if (color != 0x8000)
+		{
+			pc->setSkinColor(color);
+			pc->setOldSkinColor(color);
+			pc->teleport( TELEFLAG_NONE );
+
+		}
+	}
     }
 }
 
