@@ -53,6 +53,8 @@ SOURCES =	\
 		dragdrop.cpp \
 		extractionskills.cpp \
 		encryption.cpp \
+		encryption/clientcrypt.cpp \
+		encryption/crypt.cpp \
 		fishing.cpp \
 		amx/float.cpp \
 		gamedate.cpp \
@@ -161,6 +163,12 @@ HEADERS =	\
 		debug.h \
 		dragdrop.h \
 		encryption.h \
+		encryption/aes.h \
+		encryption/clientcrypt.h \
+		encryption/common.h \
+		encryption/crypt.h \
+		encryption/platform.h \
+		encryption/table.h \
 		globals.h \
 		gmpages.h \
 		guild.h \
