@@ -98,14 +98,12 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 {
 	VALIDATEPIR(pi,false);
 	
-	NxwMulWrapperMulti sm( pi->id()-0x4000 );
+	multiVector m;
 
+	data::seekMulti( pi->id()-0x4000, m );
 	Location itmpos= pi->getPosition();
-	for( sm.rewind(); !sm.end(); sm++ )
-	{
-		
-		multi_st m = sm.get();
-		if(/*(multi.visible)&&*/((itmpos.x+m.x) == where.x) && ((itmpos.y+m.y) == where.y))
+	for( UI32 i = 0; i < m.size(); i++ ) {
+		if(/*(multi.visible)&&*/((itmpos.x+m[i].x) == where.x) && ((itmpos.y+m[i].y) == where.y))
 		{
 			return true;
 		}
@@ -828,10 +826,11 @@ LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,in
 			break;
 		}
 
-	NxwMulWrapperStatics sm( dx, dy );
-	for( sm.rewind(); !sm.end(); sm++ ) {
+	staticVector s;
+	data::collectStatics( dx, dy, s );
+	for( UI32 i = 0; i < s.size(); i++ ) {
 		tile_st tile;
-		if( data::seekTile( sm.get().id, tile ) ) {
+		if( data::seekTile( s[i].id, tile ) ) {
 			if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
 			{
 				land_st land;
@@ -858,29 +857,30 @@ LOGICAL cBoat::tile_check(multi_st multi,P_ITEM pBoat,map_st map,int x, int y,in
 
 LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 {
-	UI32 x= where.x, y= where.y;
+	UI32 x= where.x, y= where.y, i;
 	LOGICAL good_pos=false;
 
-	NxwMulWrapperMulti sm( pBoat->id()-0x4000 );
-	for( sm.rewind(); !sm.end(); sm++ ) {	
+	multiVector m;
+	data::seekMulti( pBoat->id()-0x4000, m );
 
-		multi_st m = sm.get();
+	for( i = 0; i < m.size(); i++ ) {
+
 		map_st map;
 /*		if (m.visible)
 		{*/
 			switch(dir)
 			{
 			case -1:
-				data::seekMap(x-m.y,y+m.x, map);
+				data::seekMap(x-m[i].y,y+m[i].x, map);
 				break;
 			case 0:
-				data::seekMap(x+m.x,y+m.y, map);
+				data::seekMap(x+m[i].x,y+m[i].y, map);
 				break;
 			case 1:
-				data::seekMap(x+m.y,y-m.x, map);
+				data::seekMap(x+m[i].y,y-m[i].x, map);
 				break;
 			case 2:
-				data::seekMap(x-m.x,y-m.y, map);
+				data::seekMap(x-m[i].x,y-m[i].y, map);
 				break;
 			}
 
@@ -906,7 +906,7 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 					break;
 				default:// we are in default if we are nearer coast
 					{
-						good_pos=tile_check( m,pBoat,map,x,y,dir );
+						good_pos=tile_check( m[i],pBoat,map,x,y,dir );
 						if (good_pos==false)
 							return false;
 					}
@@ -1119,46 +1119,47 @@ LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 
 LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2)
 {
-
+	UI32 i1, i2;
 	int x,y;
 
-	NxwMulWrapperMulti sm1( pBoat1->id()-0x4000 );
-	NxwMulWrapperMulti sm2( pBoat2->id()-0x4000 );
+	multiVector m1, m2;
+	data::seekMulti( pBoat1->id()-0x4000, m1 );
+	data::seekMulti( pBoat2->id()-0x4000, m2 );
 
-	for( sm1.rewind(); !sm1.end(); sm1++ )
+	for( i1 = 0; i1 < m1.size(); i1++ )
 	{
-		for( sm2.rewind(); !sm2.end(); sm2++ )
+		for( i2 = 0; i2 < m2.size(); i2++ )
 		{
-			multi_st multi1 = sm1.get();
-			multi_st multi2 = sm2.get();
+			/*multi_st multi1 = sm1.get();
+			multi_st multi2 = sm2.get();*/
 
 			switch(dir)
 			{
 			case -1:
-				x=x1-multi1.y;
-				y=y1+multi1.x;
+				x=x1-m1[i1].y;
+				y=y1+m1[i1].x;
 				break;
 
 			case 0:
-				x=x1+multi1.x;
-				y=y1+multi1.y;
+				x=x1+m1[i1].x;
+				y=y1+m1[i1].y;
 				break;
 
 			case 1:
-				x=x1+multi1.y;
-				y=y1-multi1.x;
+				x=x1+m1[i1].y;
+				y=y1-m1[i1].x;
 				break;
 
 			case 2:
-				x=x1-multi1.x;
-				y=y1-multi1.y;
+				x=x1-m1[i1].x;
+				y=y1-m1[i1].y;
 				break;
 
 			default:
 				LogError("boat_collision() - bad boat turning direction\n");
 			}
 
-			if ( (x==multi2.x+pBoat2->getPosition("x")) && (y==multi2.y+pBoat2->getPosition("y")) )
+			if ( (x==m2[i2].x+pBoat2->getPosition("x")) && (y==m2[i2].y+pBoat2->getPosition("y")) )
 			{
 				return true;
 			}
@@ -1200,7 +1201,7 @@ void cBoat::OpenPlank(P_ITEM pi)
 */
 P_ITEM cBoat::GetBoat(Location pos)
 {
-
+	UI32 i;
 	BOATS::iterator iter( s_boat.begin() ), end( s_boat.end() );
 	for( ; iter!=end; iter++) {
 
@@ -1210,12 +1211,11 @@ P_ITEM cBoat::GetBoat(Location pos)
 			continue;
 		if( dist( pos, pBoat->getPosition() ) < 10.0 )
 		{
-			NxwMulWrapperMulti sm( pBoat->id()-0x4000 );
+			multiVector m;
+			data::seekMulti( pBoat->id()-0x4000, m );
 
-			for( sm.rewind(); !sm.end(); sm++ )
-			{
-				multi_st multi = sm.get();
-				if( ((multi.x + pBoat->getPosition().x) == pos.x) && ((multi.y + pBoat->getPosition().y) == pos.y) )
+			for( i = 0; i < m.size(); i++ ) {
+				if( ((m[i].x + pBoat->getPosition().x) == pos.x) && ((m[i].y + pBoat->getPosition().y) == pos.y) )
 				{
 					return  pBoat;
 				}

@@ -826,8 +826,9 @@ void loaditem()
 
 				if (i>=0x4000)
 				{
-					NxwMulWrapperMulti sm( i-0x4000 );
-					if( sm.isEmpty() )
+					multiVector m_vec;
+					data::seekMulti( i-0x4000, m_vec );
+					if( m_vec.empty() )
 					{
 						LogWarning("bad item, serial: %i name: %s\n",pi->getSerial32(), pi->getCurrentNameC());
 						bad=1;

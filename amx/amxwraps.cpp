@@ -4619,13 +4619,12 @@ NATIVE(_map_getTileName)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
     
-	NxwMulWrapperStatics sm( params[1], params[2] );
-    for( sm.rewind(); !sm.end(); sm++ ) {
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
 
-		statics_st s = sm.get();
-		
 		tile_st tile;
-        if( data::seekTile( s.id, tile ) ) {
+        if( data::seekTile( s[i].id, tile ) ) {
 
 			char str[100];
   			cell *cptr;
@@ -4654,14 +4653,13 @@ NATIVE(_map_isUnderStatic)
 { 
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 
-	NxwMulWrapperStatics sm( params[1], params[2] );
-	for( sm.rewind(); !sm.end(); sm++ ) {
-
-		statics_st s = sm.get();
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
 
 		tile_st tile;
-		if( data::seekTile( s.id, tile ) ) 
-			if( ( tile.height + s.z ) >params[3] ) // a roof  must be higher than player's z !
+		if( data::seekTile( s[i].id, tile ) )
+			if( ( tile.height + s[i].z ) >params[3] ) // a roof  must be higher than player's z !
 				return true;
 	}
 	return false;
@@ -4680,12 +4678,11 @@ NATIVE(_map_getTileID)
 {
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 	
-	NxwMulWrapperStatics sm( params[1], params[2] );
-	for( sm.rewind(); !sm.end(); sm++ ) {
-
-		statics_st s = sm.get();
-		if( s.z == params[3])
-			return s.id;
+	staticVector s;
+	data::collectStatics( params[1], params[2], s );
+    for( UI32 i = 0; i < s.size(); i++ ) {
+		if( s[i].z == params[3])
+			return s[i].id;
 	}
 	return INVALID;
 }
