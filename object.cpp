@@ -73,7 +73,7 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 						++j;
 						if(j==i)
 						{
-							value = hex2num( script1 );
+							value = script1;
 						}
 					}
 				}
@@ -82,6 +82,7 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 			}
 		}
 	}
+	ConOut("RandomScriptValue %s %s = %s\n", section.c_str(), sectionId.c_str(), value.c_str());
 	return value;
 }
 
