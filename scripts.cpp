@@ -293,11 +293,11 @@ void splitLine( const std::string& source, std::string& head, std::string& tail 
 
 namespace Scripts {
 	cScpScript* Advance = NULL; //cScpScript("advance.scp");
-	cScpScript* Calendar = NULL; //cScpScript("calendar.scp");
+//	cScpScript* Calendar = NULL; //cScpScript("calendar.scp");
 	cScpScript* Carve = NULL; //cScpScript("carve.scp");
 	cScpScript* Colors = NULL; //cScpScript("colors.scp");
 	cScpScript* Create = NULL; //cScpScript("create.scp");
-	cScpScript* CronTab = NULL; //cScpScript("crontab.scp");
+//	cScpScript* CronTab = NULL; //cScpScript("crontab.scp");
 	cScpScript* Envoke = NULL; //cScpScript("envoke.scp");
 	cScpScript* Fishing = NULL; //cScpScript("fishing.scp");
 	cScpScript* HardItems = NULL; //cScpScript("harditems.scp");
@@ -316,17 +316,17 @@ namespace Scripts {
 	cScpScript* Newbie = NULL; //cScpScript("newbie.scp");
 	cScpScript* Npc = NULL; //cScpScript("npc.scp");
 	cScpScript* NpcMagic = NULL; //cScpScript("npcmagic.scp");
-	cScpScript* Override = NULL; //cScpScript("override.scp");
-	cScpScript* Polymorph = NULL; //cScpScript("polymorph.scp");
+//	cScpScript* Override = NULL; //cScpScript("override.scp");
+//	cScpScript* Polymorph = NULL; //cScpScript("polymorph.scp");
 	cScpScript* Regions = NULL; //cScpScript("regions.scp");
 	cScpScript* Skills = NULL; //cScpScript("skills.scp");
 	cScpScript* Spawn = NULL; //cScpScript("spawn.scp");
 	cScpScript* Speech = NULL; //cScpScript("speech.scp");
 	cScpScript* Spells = NULL; //cScpScript("spells.scp");
-	cScpScript* Teleport = NULL; //cScpScript("teleport.scp");
+//	cScpScript* Teleport = NULL; //cScpScript("teleport.scp");
 	cScpScript* Titles = NULL; //cScpScript("titles.scp");
 	cScpScript* Triggers = NULL; //cScpScript("triggers.scp");
-	cScpScript* WTrigrs = NULL; //cScpScript("wtrigrs.scp");
+//	cScpScript* WTrigrs = NULL; //cScpScript("wtrigrs.scp");
 	cScpScript* Mountable = NULL; //cScpScript("mount.xss");
 	cScpScript* WeaponInfo = NULL; //cScpScript("weaponinfo.xss");
 	cScpScript* Containers = NULL; //cScpScript("containers.xss");
@@ -363,7 +363,7 @@ void newScriptsInit()
 	Scripts::NpcMagic = new cScpScript("scripts/npcmagic.xss");
 //	Scripts::NTrigrs = new cScpScript("ntrigrs.scp");
 //	Scripts::Override = new cScpScript("override.scp");
-	Scripts::Polymorph = new cScpScript("scripts/polymorph.xss");
+//	Scripts::Polymorph = new cScpScript("scripts/polymorph.xss");
 	Race::load("scripts/race.xss");
 	Scripts::Regions = new cScpScript("scripts/regions.xss");
 	Scripts::Skills = new cScpScript("scripts/skills.xss");
@@ -413,13 +413,13 @@ void deleteNewScripts()
 	safedelete(Scripts::NpcMagic);// = new cScpScript("npcmagic.scp");
 //	safedelete(Scripts::NTrigrs);// = new cScpScript("ntrigrs.scp");
 //	Scripts::Override = new cScpScript("override.scp");
-	safedelete(Scripts::Polymorph);// = new cScpScript("polymorph.scp");
+//	safedelete(Scripts::Polymorph);// = new cScpScript("polymorph.scp");
 	safedelete(Scripts::Regions);// = new cScpScript("regions.scp");
 	safedelete(Scripts::Skills);// = new cScpScript("skills.scp");
 	safedelete(Scripts::Spawn);// = new cScpScript("spawn.scp");
 	safedelete(Scripts::Speech);// = new cScpScript("speech.scp");
 	safedelete(Scripts::Spells);// = new cScpScript("spells.scp");
-	safedelete(Scripts::Teleport);// = new cScpScript("teleport.scp");
+//	safedelete(Scripts::Teleport);// = new cScpScript("teleport.scp");
 	safedelete(Scripts::Titles);// = new cScpScript("titles.scp");
 	safedelete(Scripts::Triggers);// = new cScpScript("triggers.scp");
 //	safedelete(Scripts::WTrigrs);// = new cScpScript("wtrigrs.scp");
