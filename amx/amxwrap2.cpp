@@ -159,7 +159,10 @@ NATIVE2(_getCharProperty)
 		int tp = getPropertyType(params[2]);
 		if (tp==T_INT)
 		{
-			int p = getCharIntProperty( pc, params[2], params[3], params[4]);
+			cell *cptr2;
+			amx_GetAddr(amx,params[4],&cptr2);
+			int prop3 = *cptr2;
+			int p = getCharIntProperty( pc, params[2], params[3], prop3);
 			cell i = p;
 			return i;
 		}
@@ -213,6 +216,7 @@ NATIVE2(_setCharProperty)
 	// params[2] = property
 	// params[3] = subproperty
 	// params[4] = value to set property to
+	// params[5] = another sub property
 
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	if (!ISVALIDPC( pc ))
@@ -222,6 +226,11 @@ NATIVE2(_setCharProperty)
 
 	cell *cptr;
 	amx_GetAddr(amx,params[4],&cptr);
+
+	cell *cptr2;
+	amx_GetAddr(amx,params[5],&cptr2);
+
+	int sp2 = *cptr2;
 
 
 	if (tp==T_INT) {
@@ -532,7 +541,7 @@ NATIVE2(_setCharProperty)
 				pc->reattackat = p;
 				break;
 			case NXW_CP_I_REGENRATE :				  		//dec value: 271;
-				pc->setRegenRate( static_cast<StatType>(params[3]), params[4], static_cast<VarType>(params[5]) );
+				pc->setRegenRate( static_cast<StatType>(params[3]), p, static_cast<VarType>(sp2) );
 				break;
 			case NXW_CP_I_ROBE :			  				//dec value: 274;
 				pc->robe = p;
