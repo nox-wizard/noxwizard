@@ -90,9 +90,9 @@ int g_nMoment=0;
 
 
 
-int AMXAPI amx_SetStringUnicode(cell *dest, ustring* source )
+int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source )
 {
-	ustring::iterator iter( source->begin() ), end( source->end() );
+	wstring::iterator iter( source->begin() ), end( source->end() );
 
 	for( int i=0; iter!=end; iter++, ++i ) {
 		dest[i]=(*iter);
@@ -109,7 +109,7 @@ int AMXAPI amx_SetStringUnicode(cell *dest, ustring* source )
 	return AMX_ERR_NONE;
 }
 
-int AMXAPI amx_GetStringUnicode( ustring* dest, cell* source )
+int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source )
 {
 
 	dest->erase();
