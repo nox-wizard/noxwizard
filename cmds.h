@@ -12,82 +12,61 @@
 //by Frodo & Stonedz
 //Work in progress...
 
-//#ifndef __CMDS_H
-//#define __CMDS_H
+#ifndef __CMDS_H
+#define __CMDS_H
 
 #include "common_libs.h"
 #include "nxwcommn.h"		//for std classes
 
 
 
-class cCommand;
+typedef class cCommand* P_COMMAND;
 
-class cCallCommand;
-
-
-
-typedef cCommand* P_COMMAND;
-
-typedef cCallCommand* P_CALLCOMMAND;
-
-typedef std::map<string, P_COMMAND> CMDMAP;
-
-typedef std::map<SERIAL, P_CALLCOMMAND> CALLCMDMAP;
-
-
-
-static SERIAL CmdNextSerial=0;
-
-
-
-//brief Declaration of cCommand Class
-
-
+/*
+\brief Declaration of cCommand Class
+*/
 class cCommand {
 
-public:
-
-	cCommand(std::string cmd_name, SI08 cmd_number, AmxFunction* callback);
+	private:
 	
-	std::string cmd_name;
-	SI08 cmd_number;  
-	AmxFunction* cmd_callback;
+		std::string cmd_name;
+		SI08 cmd_number;  
+		AmxFunction* cmd_callback;
+
+	public:
+
+		cCommand( std::string& cmd_name, SI08 cmd_number, AmxFunction* callback );
+		void call( std::string params );
 
 };
 
 
 
-//brief Declaration of cCallCommand Class
-//a cCallCommand object is created every time a command is executed and goes in CALLCMDMAP. 
-//it is destroyed when the command has finished
-//All parameters given by the char who call the command goes in this obj.
- 
-
+/*
+\brief Declaration of cCallCommand Class
+ cCallCommand object is created every time a command is executed and goes in CALLCMDMAP. 
+ it is destroyed when the command has finished
+ All parameters given by the char who call the command goes in this obj.
+*/
 class cCallCommand {
 
 public:
 
-	cCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
+	cCallCommand( std::string& params );
 
-	std::string param1;
-	std::string param2;
-	std::string param3;
-	std::string param4;
-	std::string param5;
-	std::string param6;
-	std::string param7;
-	std::string param8;
-
-
-}
+};
  
 
 
-//brief Declaration of cCommandMap Class
 
-
+/*
+\brief Declaration of cCommandMap Class
+*/
 class cCommandMap {
 
+private:
+
+	std::map< std::string, P_COMMAND > command_map; //!< all commands
 public:
 	
 	cCommandMap();
@@ -95,25 +74,8 @@ public:
 	P_COMMAND findCommand(std::string name);
 	
 
-private:
-
-	CMDMAP command_map;
 };
 
 
 
-//brief Declaration of cCallCommandMap Class
-
-
-class cCallCommandMap {
-
-public:
-	
-	void addCallCommand(SERIAL cmdserial, std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
-	void remCallCommand(SERIAL cmdserial);
-	
-
-private:
-
-	CALLCMDMAP callCommand_map;
-};
+#endif

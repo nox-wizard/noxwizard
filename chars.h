@@ -171,40 +171,6 @@ class cChar : public cObject
 		void			MoveTo(Location newloc);
 		void			MoveTo(SI32 x, SI32 y, SI08 z);
 		void 			loadEventFromScript(TEXT *script1, TEXT *script2);
-//@{
-/*!
- \name Guilds
- \brief Guild related functions and attributes
-*/
-	private:
-		short 			guildType;		//!< (0) Standard guild, (1) Chaos Guild, (2) Order guild
-		LOGICAL			guildTraitor;		//!< (true) This character converted, (false) Neve converted, or not an order/chaos guild member
-		LOGICAL			guildToggle;		//!< Toggle for Guildtitle
-		SERIAL			guildFealty;		//!< Serial of player you are loyal to (default=yourself)
-		SI32			guildNumber;		//!< Number of guild player is in (0=no guild)
-		TEXT			guildTitle[21];		//!< Title Guildmaster granted player
-
-	public:
-		void			SetGuildType( short newGuildType );
-		short			GetGuildType();
-
-		LOGICAL			IsGuildTraitor();
-		void			SetGuildTraitor();
-		void			ResetGuildTraitor();
-
-		LOGICAL			HasGuildTitleToggle();
-		void			SetGuildTitleToggle();
-		void			ResetGuildTitleToggle();
-
-		SERIAL			GetGuildFealty();
-		void			SetGuildFealty( SERIAL newGuildFealty );
-
-		SI32			GetGuildNumber();
-		void			SetGuildNumber( SI32 newGuildNumber );
-
-		void			SetGuildTitle( TEXT *newGuildTitle );
-		TEXT*			GetGuildTitle();
-//@}
 
 //@{
 /*!
