@@ -1413,7 +1413,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 		case SPELL_TRAP:
         if (ISVALIDPI(pi)) {
-            if((pi->type==ITYPE_CONTAINER || pi->type==ITYPE_LOCKED_ITEM_SPAWNER ||
+            if((pi->type==ITYPE_DOOR || pi->type==ITYPE_CONTAINER || pi->type==ITYPE_LOCKED_ITEM_SPAWNER ||
                pi->type==ITYPE_LOCKED_CONTAINER || pi->type==ITYPE_UNLOCKED_CONTAINER) && pi->id()!=0x0E75)
             {
                 pi->moreb1=1;
@@ -1437,7 +1437,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
          case SPELL_UNTRAP:
          if (pi!=NULL) {
-             if((pi->type==ITYPE_CONTAINER || pi->type==ITYPE_LOCKED_ITEM_SPAWNER ||
+             if((pi->type==ITYPE_DOOR || pi->type==ITYPE_CONTAINER || pi->type==ITYPE_LOCKED_ITEM_SPAWNER ||
                 pi->type==ITYPE_LOCKED_CONTAINER || pi->type==ITYPE_UNLOCKED_CONTAINER))
          	{
                if(pi->moreb1==1) {
@@ -1687,7 +1687,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if (pd==NULL) pd = src;
                         CHECKDISTANCE(src, pd);
                         if (pd!=NULL) {
-				CHECKDISTANCE(src, pd);
+				//CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
 				if ((nTime==INVALID)) {
 					if (src!=NULL) nTime = src->skill[nSkill] / 2;

@@ -264,7 +264,7 @@ void doubleclick(NXWCLIENT ps)
 	charPos.z = dst.z;
 	charPos.dispz = dst.dispz;
 
-	if ( !pc->IsGM() && !lineOfSight( charPos, dst ) ) {
+	if ( !pc->IsGM() && !lineOfSight( charPos, dst ) && !(pc->nxwflags[0] & NCF0_TELEKINESYS) ) {
 		pc->sysmsg( TRANSLATE( "You cannot reach the item" ) );
 		return;
 	}

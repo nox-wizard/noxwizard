@@ -132,12 +132,14 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
             if(	pi->IsCutLeather()  ) {
 				if( tannering == NULL )
 					tannering = new AmxFunction( AMXTANNERING );
-				tannering->Call( s, pi->getSerial32() );
+				if( tannering != NULL )
+					tannering->Call( s, pi->getSerial32() );
 			}
             else {
 				if( tailoring == NULL )
 					tailoring = new AmxFunction( AMXTAILORING );
-				tailoring->Call( s, pi->getSerial32() );
+				if( tailoring != NULL )
+					tailoring->Call( s, pi->getSerial32() );
 			}
 
         }
