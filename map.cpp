@@ -164,29 +164,31 @@ SI08 isWalkable( Location pos, UI08 flags )
         // STATIC TILES -- Check for static tiles Z elevation
         //
 	if ( flags & WALKFLAG_STATIC ) {
-        	staticVector s_vec;
-		data::collectStatics( pos.x, pos.y, s_vec );
+        	
+		NxwMulWrapperStatics sm( pos.x, pos.y );
 
-		for ( UI32 i = 0; i < s_vec.size(); i++ ) {
-                	tile_st tile;
-
-			data::seekTile( s_vec[i].id, tile );
+		for( sm.rewind(); !sm.end(); sm++ ) {
+                	
+			statics_st s = sm.get();
+			tile_st tile;
+			if( !data::seekTile( s.id, tile ) )
+				continue;
 
 			// Z elevation
 			height = tile.height;
 			if ( tile.flags & TILEFLAG_BRIDGE ) // Stairs, ladders
 				height = tile.height / 2;
 
-			if ( s_vec[i].z < (pos.z + MaxZstep) ) { // We cannot walk under it
+			if ( s.z < (pos.z + MaxZstep) ) { // We cannot walk under it
 				if ( tile.flags & TILEFLAG_IMPASSABLE ) // Block flag
 					return illegal_z;
 
-				if ( (s_vec[i].z + height) <= (pos.z + 3) ) { // We can walk on it
-	                                if ( (s_vec[i].z + tile.height) > zRes )
-						zRes = s_vec[i].z + tile.height;
+				if ( (s.z + height) <= (pos.z + 3) ) { // We can walk on it
+					if ( (s.z + tile.height) > zRes )
+						zRes = s.z + tile.height;
 				} else
 					return illegal_z;
-                	}
+			}
 		}
 	} // WALKFLAG_STATIC
 
@@ -253,12 +255,11 @@ SI08 staticTop( Location pos )
 {
 	SI08 max_z = illegal_z, temp_z;
 
-	staticVector s;
-	if ( !data::collectStatics( pos.x, pos.y, s ) )
-		return max_z;
-
-	for ( UI32 i = 0; i < s.size(); i++ ) {
-		temp_z = s[i].z + tileHeight( s[i].id );
+	NxwMulWrapperStatics sm( pos.x, pos.y );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+		
+		statics_st s = sm.get();
+		temp_z = s.z + tileHeight( s.id );
 		if ( temp_z < ( MaxZstep + pos.z ) && temp_z > max_z )
 			max_z = temp_z;
 	}
@@ -392,14 +393,15 @@ SI08 getHeight( Location pos )
 		}
 	}
 
-	staticVector s;
-	data::collectStatics( pos.x, pos.y, s );
+	NxwMulWrapperStatics sm( pos.x, pos.y );
+	for( sm.rewind(); !sm.end(); sm++ ) {
 
-	for ( UI32 i = 0; i < s.size(); i++ ) {
-		data::seekTile( s[i].id, tile );
+		statics_st s = sm.get();
+		if(!data::seekTile( s.id, tile ))
+			continue;
 
-		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? s[i].z : s[i].z + tile.height;
-		temp_z = s[i].z + tile.height;
+		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? s.z : s.z + tile.height;
+		temp_z = s.z + tile.height;
 
 		// Check if the tile is reachable.
 		if ( base_z <= pos.z + MAX_Z_CLIMB && temp_z >= pos.z - MAX_Z_FALL ) {
@@ -454,14 +456,17 @@ void getMultiCorners( P_ITEM pi, UI32 &x1, UI32 &y1, UI32 &x2, UI32 &y2 )
 {
 	VALIDATEPI( pi );
 
-	multiVector m_vec;
-	data::seekMulti( pi->id() - 0x4000, m_vec );
-	for ( UI32 i = 0; i < m_vec.size(); i++ ) {
-		x1 = qmin( x1, m_vec[i].x );
-		x2 = qmax( x2, m_vec[i].x );
-		y1 = qmin( y1, m_vec[i].y );
-		y2 = qmax( y2, m_vec[i].y );
+	NxwMulWrapperMulti sm( pi->id() - 0x4000 );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+		
+		multi_st m = sm.get();
+
+		x1 = qmin( x1, m.x );
+		x2 = qmax( x2, m.x );
+		y1 = qmin( y1, m.y );
+		y2 = qmax( y2, m.y );
 	}
+
 	x1 += pi->getPosition().x;
 	x2 += pi->getPosition().x;
 	y1 += pi->getPosition().y;

@@ -1024,14 +1024,16 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									staticVector s_vec;
-									data::collectStatics( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, s_vec );
-									for ( UI32 idx = 0; idx < s_vec.size(); idx++ ) {
+									
+									NxwMulWrapperStatics sm( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos );
+									
+									for( sm.rewind(); !sm.end(); sm++ ) {
 										tile_st tile;
-										data::seekTile( s_vec[idx].id, tile );
+										data::seekTile( sm.get().id, tile );
 										if(!(strcmp((char *) tile.name, "water")))//Water
 										{//Don't spawn on water tiles... Just add other stuff here you don't want spawned on.
 											lb=0;
+											break;
 										}
 									}
 								} while (!lb);

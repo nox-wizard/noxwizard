@@ -150,7 +150,7 @@ const int STATICSINFOCOUNT = STATICGROUPCOUNT*STATICINGROUP;
 const int FIRSTSTATICSINFO = LANDGROUPCOUNT*LANDINGROUP;
 
 struct staticinfo_st {
-	UI32 flag;
+	UI32 flags;
 	UI08 weight;
 	UI08 quality;
 	UI16 unk;
