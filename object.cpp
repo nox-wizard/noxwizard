@@ -690,7 +690,7 @@ AmxEvent* cObject::getAmxEvent( UI32 eventId )
 	return event;
 }
 
-AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamicEvent = false )
+AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamicEvent )
 {
 	AmxEvent* event = 0;
 
@@ -707,7 +707,7 @@ AmxEvent* cObject::setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamic
 	return event;
 }
 
-cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI32 param3 = INVALID, SI32 param4 = INVALID )
+cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2, SI32 param3, SI32 param4 )
 {
 	AmxEvent* event = getAmxEvent( eventID );
 
