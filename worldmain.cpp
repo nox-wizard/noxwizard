@@ -616,7 +616,7 @@ void loaditem()
 	P_ITEM pi=archive::getItemForCopy();
 	if( pi==NULL ) return;
 
-	unsigned long int i,b;
+	unsigned long int i;
 	int loops=0;
 	char bad=0;
 
@@ -725,16 +725,9 @@ void loaditem()
 			{
 				i=str2num(script2);
 
-				b=((i&0x4000)>>14)+((i&0x8000)>>15);
-				if(i == 32767)
+				if ( !((i&0x4000) || (i&0x8000)) || (i == 32767))
 				{
-					b = 0; // Corrects the etheral color so horses you are rideing maintain their color.(Aldur)
-				}
-
-				if (!b)
-				{
-					pi->color1=(char)(i>>8);
-					pi->color2=(char)(i&0xFF);
+					pi->setColor(i);
 				}
 				else
 				{

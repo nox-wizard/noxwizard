@@ -5099,6 +5099,9 @@ NATIVE( _chr_unStable )
 NATIVE ( _menu_create )
 {
 	// TODO fix it!
+	  return 0;
+	// TODO fix it!
+
 //	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
 }
 

@@ -450,7 +450,7 @@ void DyeTarget(NXWSOCKET s)
 //            pi->Refresh();
         }
 
-        P_CHAR pc=pointers::findItemBySerial(target_serial);
+        P_CHAR pc=pointers::findCharBySerial(target_serial);
         if(ISVALIDPC(pc))
 	{
             SndDyevat(s,pc->getSerial32(),0x2106);
