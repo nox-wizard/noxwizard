@@ -1796,20 +1796,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				{
 					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, length-cryptBufferOffset);
 				}
-				FILE *debugout=fopen("d:\\packetsin.log", "a");
-				fprintf(debugout, "\nStart decrypt %d------------------------------------------\n", client[s]);
-
-				for ( int i=0; i< length;++i)
-				{
-					if ( i % 32 == 0 )
-					{
-						fprintf(debugout, "\n0x%04x ", i);
-					}
-					fprintf(debugout, "%02x ", buffer[s][i]);
-				}
-				fprintf(debugout, "\nStop decrpyt------------------------------------------\n");
-				fclose(debugout);
-
 #endif
 
 				if (ISVALIDPC(pc_currchar))
@@ -1953,7 +1939,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						//cout << "Max length characters will be " << dec << (iWord - myoffset) << endl ;
 						mysize = iWord - myoffset ;
 
-						for (i=0; i < mysize ; i++)
+						for (int i=0; i < mysize ; i++)
 							mytempbuf[i] = buffer[s][i+myoffset] ;
 
 						for (i=0; i < mysize ; i++)
@@ -2030,7 +2016,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_REQUESTACTION:
 				if( pc_currchar!=NULL ) {
-
+					int i=0;
 					if (buffer[s][3]==0xC7) // Action
 					{
 						if (pc_currchar->isMounting())
