@@ -5644,8 +5644,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addItemsAtXY", _set_addItemsAtXY },
  { "set_addItemsNearXY", _set_addItemsNearXY },
  { "set_addAllOnlinePl", _set_addAllOnlinePl },
- { "set_addOnlinePlNearObj", _set_addOnlinePlNearObj },
- { "set_addOnlinePlNearXY", _set_addOnlinePlNearXY },
+ { "set_addOnPlNearObj", _set_addOnlinePlNearObj },
+ { "set_addOnPlNearXY", _set_addOnlinePlNearXY },
 // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
