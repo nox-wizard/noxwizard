@@ -15,6 +15,7 @@ int g_nTraceMode=0; //by xan -> trace mode
 #include <limits.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
 #if defined LINUX
   #include "sclinux.h"
 #endif
@@ -1013,6 +1014,22 @@ int AMXAPI amx_GetPublic(AMX *amx, int index, char *funcname)
   func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->publics+index*sizeof(AMX_FUNCSTUB));
   strcpy(funcname,func->name);
   return AMX_ERR_NONE;
+}
+
+char * amx_FindFunctionbyIndex(AMX *amx, int index)
+{
+	int last;
+	static char pname[sEXPMAX+1];
+	static char result[40];
+	amx_NumPublics(amx, &last);
+	last--;       /* last valid index is 1 less than the number of functions */
+	if ( index <= last )
+	{
+		amx_GetPublic(amx, index, pname);
+		return pname;
+	}
+	sprintf(result, "function for index %d not found", index);
+	return result;
 }
 
 int AMXAPI amx_FindPublic(AMX *amx, char *name, int *index)

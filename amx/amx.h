@@ -269,7 +269,7 @@ int AMXAPI amx_SetDebugHook(AMX *amx, AMX_DEBUG debug);
 int AMXAPI amx_SetString(cell *dest, char *source, int pack);
 int AMXAPI amx_SetUserData(AMX *amx, long tag, void *ptr);
 int AMXAPI amx_StrLen(cell *cstring, int *length);
-
+char * amx_FindFunctionbyIndex(AMX *amx, int index);
 
 #if !defined AMX_NO_ALIGN
   #if defined __GNUC__
