@@ -60,11 +60,11 @@ typedef bool PACK_NEEDED eBool;
 */
 class eUI16 : public endian {
 private:
-	eUI08 a, b;
+	UI16 a;
 public:
-	eUI16() { a=0; b=0; };
+	eUI16() { a=0; };
 	~eUI16() { };
-	void operator =( UI32 v );
+	void operator =( UI16 v );
 } PACK_NEEDED;
 
 typedef eUI16 PACK_NEEDED eCOLOR;
@@ -75,9 +75,9 @@ typedef eUI16 PACK_NEEDED eCOLOR;
 */
 class eUI32 : public endian {
 private:
-	eUI16 a, b;
+	UI32 a;
 public:
-	eUI32() { a=0; b=0; };
+	eUI32() { a=0; };
 	~eUI32() { };
 	void operator =( UI32 v );
 } PACK_NEEDED;

@@ -94,15 +94,13 @@ void cUnicodeString::append( wchar_t c )
 
 
 
-void eUI16::operator =( UI32 v )
+void eUI16::operator =( UI16 v )
 {
-	this->a= (v >> 8) & 0xFF;
-	this->b= v & 0xFF ;
+	this->a= htons( v );
 }
 
 
 void eUI32::operator =( UI32 v )
 {
-	this->a= (v >>  16) & 0xFFFF;
-	this->b= v & 0xFFFF;
+	this->a= htonl( v );
 }
