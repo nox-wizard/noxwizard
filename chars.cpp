@@ -4817,7 +4817,7 @@ void cChar::updateRegenTimer( StatType stat )
 
 LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 {
-	if( eventId < ALLCHARSEVENTS )
+	if( eventId < ALLCHAREVENTS )
 		return true;
 	else
 		return false;
