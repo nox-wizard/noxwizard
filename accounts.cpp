@@ -19,9 +19,12 @@
 */
 cAccount::cAccount( ACCOUNT num ) {
 	number=num;
-	pgs.clear();
-	name.erase();
-	pass.erase();
+	//
+	//	Sparhawk:	gcc 3.3 doesn't like this, also it's not really needed
+	//
+	//pgs.clear();
+	//name.erase();
+	//pass.erase();
 	ban = false;
 	ras = false;
 	tempblock=0;
