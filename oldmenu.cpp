@@ -55,7 +55,6 @@ cOldMenu::cOldMenu() : cBasicMenu( MENUTYPE_TRASPARENCY )
 	title.clear();
 	allPages.clear();
 	type=NULL;
-	setParameters( 10, 1 );
 }
 
 /*
@@ -93,8 +92,7 @@ void cOldMenu::setParameters( int rowForPage, int pageCount )
 void cOldMenu::addMenuItem( int page, int idx, std::wstring desc )
 {
 //	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
-	std::map<UI32, wstring >& p= allPages[ page ];
-	p.insert( make_pair( idx, desc ) );
+	allPages[ page ][ idx ] = desc;
 }
 
 
@@ -103,14 +101,14 @@ void cOldMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 	UI32 button;
 	if( isIconList( pkg->cmd ) )
-		button = ((cPacketResponseToDialog*)pkg)->index.get()-1;
+		button = ((cPacketResponseToDialog*)pkg)->index.get();
 	else {
 		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
 		if( button!=MENU_CLOSE )
-			button = ((cMenu*)type)->rc_button[ button-1 ];
+			button = ((cMenu*)type)->rc_button[ button ];
 	}
 
-	callback->Call( ps->toInt(), ps->currChar()->getSerial32(), button );
+	callback->Call( ps->toInt(), ps->currChar()->getSerial32(), button-1 );
 
 }
 
@@ -161,7 +159,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_STONE:
 		menu->setCloseable( false );
 		menu->addBackground( 2600, width, 340 );
-		menu->addButton( 250, 17, 4017, 4017+1, INVALID, true );
+		menu->addButton( 250, 17, 4017, 4017+1, MENU_CLOSE, true );
 		menu->addText( 30, 40, title, color );
 		pagebtny = 300;
 		break;
@@ -169,7 +167,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_BLACKBOARD:
 		menu->setCloseable( false );
 		menu->addBackground( 2620, 320, 340 );
-		menu->addButton( 250, 17, 4017, 4017+1, INVALID, true );
+		menu->addButton( 250, 17, 4017, 4017+1, MENU_CLOSE, true );
 		menu->addText( 45, 17, title, color );
 		pagebtny = 307;
 		break;
@@ -177,7 +175,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_PAPER:
 		menu->setCloseable( false );
 		menu->addBackground( 0x0DAC, 320, 340 );
-		menu->addButton( 250, 7, 4017, 4017+1, INVALID, true );
+		menu->addButton( 250, 7, 4017, 4017+1, MENU_CLOSE, true );
 		menu->addText( 45, 7, title, color );
 		pagebtny = 307;
 		break;
@@ -185,7 +183,7 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_SCROLL:
 		menu->setCloseable( false );
 		menu->addBackground( 0x1432, 320, 340 );
-		menu->addButton( 250, 27, 4017, 4017+1, INVALID, true );
+		menu->addButton( 250, 27, 4017, 4017+1, MENU_CLOSE, true );
 		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
 		break;
@@ -193,82 +191,27 @@ void cOldMenu::buildClassic()
 	case MENUTYPE_TRASPARENCY:
 	default:
 		menu->setCloseable( true );
-		menu->addButton( 250, 27, 4017, 4017+1, INVALID, true );
+		menu->addButton( 250, 27, 4017, 4017+1, MENU_CLOSE, true );
 		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
 		break;
 	}
 
-	menu->addPage( 1 );
+	int buttonnum=1; //button number
 
-	int buttonnum=0; //button number
-	int position = 80;
-
-	std::map< UI32, std::map< UI32, std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
+	std::map< UI08, std::map< UI32, std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
 	int page_count = allPages.size();
 
-/*	int oldk = 0;
-
-
-
-	for( int k=0; curr_page!=last_page; ++curr_page, ++k ) {
+	for( int page=1; curr_page!=last_page; ++curr_page, ++page ) {
 
 		std::map< UI32, std::wstring >::iterator iter( curr_page->second.begin() ), end( curr_page->second.end() );
 	
-		for( int i=0; iter!=end; ++iter, ++i )
+		menu->addPage( page );
+
+		int position = 80;
+
+		for( int b=0; iter!=end; ++iter, ++b )
 		{
-				if ( k > oldk )
-				{
-					position = 80;
-					menu->addPage( menu->pageCurrent+1 );
-					oldk = k;
-				}
-
-				menu->addText( 80, position, iter->second, color );
-
-				menu->addButton( 50, position+3, 4005, 4005+1, buttonnum );
-
-				position += 20;
-				++buttonnum;
-		}
-	}
-
-
-	curr_page = allPages.begin();
-
-	for( int p=1; curr_page!=last_page; ++curr_page, ++p )
-	{
-		menu->addPage( p );
-		if( p > 1 )
-		{
-			menu->addPageButton( 50, pagebtny, 4014, 4014+1, p-1 ); //back button
-		}
-		if( p < allPages.size() )
-		{
-			menu->addPageButton( 254, pagebtny, 4005, 4005+1, p+1 ); //next button
-		}
-	}
-*/	
-
-	for( ; curr_page!=last_page; ++curr_page ) {
-
-		std::map< UI32, std::wstring >::iterator iter( curr_page->second.begin() ), end( curr_page->second.end() );
-	
-		if( menu->pageCurrent>1 )
-			menu->addPage( menu->pageCurrent+1 );
-
-		for( int b=1; iter!=end; ++iter, ++b )
-		{
-			if( b==rowForPage ) {
-				position = 80;
-				b=1;
-
-				menu->addPageButton( 254, pagebtny, 4005, 4005+1, menu->pageCurrent+1 ); //next button
-
-				menu->addPage( menu->pageCurrent+1 );
-
-				menu->addPageButton(  50, pagebtny, 4014, 4014+1, menu->pageCurrent-1 ); //back button
-			}
 
 			menu->addText( 80, position, iter->second, color );
 
@@ -280,11 +223,11 @@ void cOldMenu::buildClassic()
 
 		if( page_count>1 ) {
 
-			if( menu->pageCurrent>1 )
-				menu->addPageButton(  50, pagebtny, 4014, 4014+1, menu->pageCurrent-1 ); //back button
+			if( page>1 )
+				menu->addPageButton(  50, pagebtny, 4014, 4014+1, page-1 ); //back button
 
-			if( menu->pageCurrent< page_count )
-				menu->addPageButton( 254, pagebtny, 4005, 4005+1, menu->pageCurrent+1 ); //next button
+			if( page< page_count )
+				menu->addPageButton( 254, pagebtny, 4005, 4005+1, page+1 ); //next button
 		}
 
 	}
@@ -304,7 +247,7 @@ void cOldMenu::buildIconList()
 	
 	wstring2string( title, menu->question );
 
-	std::map< UI32, std::map< UI32, std::wstring >  >::iterator page( allPages.begin() ), last_page( allPages.end() );
+	std::map< UI08, std::map< UI32, std::wstring >  >::iterator page( allPages.begin() ), last_page( allPages.end() );
 	if( page!=last_page ) { //not support multiple pages
 		
 		std::map< UI32, std::wstring >::iterator iter( page->second.begin() ), end( page->second.end() );

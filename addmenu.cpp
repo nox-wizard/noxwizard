@@ -72,7 +72,7 @@ void cAddMenu::loadFromScript( P_CHAR pc )
 	if (entry->getFullLine().c_str()[0]=='{') entry = iter->getEntry();
 
 	if (!bIcons) {
-		oldmenu->setParameters(11,(nOpt/10)+1);
+		oldmenu->setParameters(10,(nOpt/10)+1);
 		oldmenu->style = MENUTYPE_STONE;
 	} else {
 		oldmenu->style = MENUTYPE_ICONLIST;
@@ -97,12 +97,11 @@ void cAddMenu::loadFromScript( P_CHAR pc )
    				else 
 					string2wstring( entry->getFullLine(), w);
 
-				
-				oldmenu->addMenuItem(0, nOpt, w );
+				oldmenu->addMenuItem( nOpt/10, nOpt%10, w );
 
    				commands.push_back( cScriptCommand( entry2->getParam1(), entry2->getParam2() ) );
+				nOpt++;
 			}
-			nOpt++;
 		}
 	}
 
@@ -156,17 +155,17 @@ void cAddMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 	SERIAL button;
 	if( isIconList( pkg->cmd ) )
-		button = ((cPacketResponseToDialog*)pkg)->index.get()-1;
+		button = ((cPacketResponseToDialog*)pkg)->index.get();
 	else {
 		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
 		if( button!=MENU_CLOSE )
 			button = ((cMenu*)oldmenu->type)->rc_button[button];
 	}
 
-	if( button<=INVALID )
+	if( button<=MENU_CLOSE )
 		return;
 
-	commands[button].execute( ps->toInt() );
+	commands[button-1].execute( ps->toInt() );
 	
 }
 

@@ -1287,7 +1287,7 @@ void cAllCreatures::load()
 						cinfo->flag |= CREATURE_CAN_FLY;
 					}
 					else
-						WarnOut("[ERROR] on parse of areas.xss" );
+						WarnOut("[ERROR] on parse of creatures.xss [%s]\n", lha.c_str() );
 				}
 			}
 			while ( lha[0] !='}' && ++loopexit < MAXLOOPS );

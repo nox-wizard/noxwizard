@@ -31,7 +31,7 @@ class cOldMenu : public cBasicMenu
 
 protected:
 
-	std::map< UI32, std::map< UI32, std::wstring >  > allPages; //!< all pages
+	std::map< UI08, std::map< UI32, std::wstring >  > allPages; //!< all pages
 
 	virtual cServerPacket* build();
 	void buildClassic();
