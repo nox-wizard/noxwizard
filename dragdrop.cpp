@@ -681,14 +681,14 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				}
 			}
 			pc->playSFX( itemsfx(pi->getId()) );
-			pc_currchar->Equip(pi, 1);
+			// pc_currchar->Equip(pi, 1); // Item is equipped twice ????
 		}
 		else
 		{
 			if (drop[0] == -1)
 			{
 				pc->playSFX( itemsfx(pi->getId()) );
-				pc_currchar->Equip(pi, 1);
+				// pc_currchar->Equip(pi, 1);// Item is equipped twice ????
 			}
 			else
 			{
