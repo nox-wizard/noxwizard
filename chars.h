@@ -461,6 +461,7 @@ class cChar : public cObject
 		SI32			Equip(P_ITEM pi, LOGICAL drag = false);
 		SI32			UnEquip(P_ITEM pi, LOGICAL drag = false);
 		void			checkEquipement();
+		void			sendWornItems(NXWSOCKET s);
 	#ifdef ENDY_NEW_WEAR
 	public:
 		SERIAL wear[LAYER_COUNT];	//!< wear serial list indexed by layer

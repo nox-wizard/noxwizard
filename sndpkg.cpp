@@ -717,7 +717,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 // used for LSd potions now, LB 5'th nov 1999
 void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, signed char z)
 {
-	const P_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
+	PC_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
@@ -1401,7 +1401,7 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
-MakeGraphicalEffectPkt(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
+	MakeGraphicalEffectPkt(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1433,7 +1433,7 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 
 	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
 
-MakeGraphicalEffectPkt(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
+	MakeGraphicalEffectPkt(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1519,10 +1519,10 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 	LongToCharPtr(pc->getSerial32(), deathact +1);
 	LongToCharPtr(pi->getSerial32(), deathact +5);
 
-	 NxwSocketWrapper sw;
-	 sw.fillOnline( pc, true );
-	 for( sw.rewind(); !sw.isEmpty(); sw++ )
-	 {
+	NxwSocketWrapper sw;
+	sw.fillOnline( pc, true );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
 		NXWSOCKET i=sw.getSocket();
 		if( i!=INVALID )
 		{
@@ -1535,7 +1535,7 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 //! Character sees death menu
 void deathmenu(NXWSOCKET s)
 {
-	UI08 testact[2]={ 0x2C, 0x00 };
+	static const UI08 testact[2]={ 0x2C, 0x00 };
 	Xsend(s, testact, 2);
 //AoS/	Network->FlushBuffer(s);
 }
@@ -2113,19 +2113,5 @@ void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
-}
-
-void wornitems(NXWSOCKET  s, P_CHAR pc) // Send worn items of player
-{
-	VALIDATEPC(pc);
-
-	NxwItemWrapper si;
-	si.fillItemWeared( pc, true, true, false );
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_ITEM pi=si.getItem();
-		if(ISVALIDPI(pi))
-			wearIt(s,pi);
-	}
 }
 

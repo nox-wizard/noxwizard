@@ -134,7 +134,6 @@ bool cNxwClientObj::inGame()
 
 P_CHAR cNxwClientObj::currChar() 
 { 
-	
 	return MAKE_CHAR_REF(currchar[m_sck]); 
 }
 
@@ -217,11 +216,8 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
 
     if (pi->layer!=1) senditem(m_sck,pi); // prevents crash if pack not open
 
-    char sbookstart[8]="\x24\x40\x01\x02\x03\xFF\xFF";
-    sbookstart[1]= pi->getSerial().ser1;
-    sbookstart[2]= pi->getSerial().ser2;
-    sbookstart[3]= pi->getSerial().ser3;
-    sbookstart[4]= pi->getSerial().ser4;
+    UI08 sbookstart[8]="\x24\x40\x01\x02\x03\xFF\xFF";
+    LongToCharPtr(pi->getSerial32(), sbookstart+1);
     send(sbookstart, 7);
 
     int spells[70] = {0,};

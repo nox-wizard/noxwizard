@@ -205,7 +205,7 @@ void cChar::mounthorse( P_CHAR mount )
 		{
 			NXWSOCKET si=sw.getSocket();
 			if( si!=INVALID )
-				wornitems(si, this );
+				sendWornItems(si);
 		}
 
 		// if this is a gm lets tame the animal in the process

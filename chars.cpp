@@ -1726,13 +1726,13 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 				impowncreate( ps_i->toInt(), this, 1 );
 				//ndEndy not too sure of this
 				if ( flags&TELEFLAG_SENDWORNITEMS )
-					wornitems( ps_i->toInt(), this );
+					sendWornItems(ps_i->toInt());
 			}
 		}
 	} else {
 		impowncreate( cli->toInt(), this, 1 );
 		if ( flags&TELEFLAG_SENDWORNITEMS )
-			wornitems( cli->toInt(), this );
+			sendWornItems(cli->toInt());
 	}
 
 
@@ -3234,7 +3234,7 @@ void cChar::checkEquipement()
 			for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 				NXWCLIENT ps=sw.getClient();
 				if(ps!=NULL ) {
-					wornitems(ps->toInt(), this );
+					sendWornItems(ps->toInt());
 					senditem(ps->toInt(), pi);
 				}
 			}
@@ -3243,7 +3243,24 @@ void cChar::checkEquipement()
 }
 
 /*!
-\author ANthalir
+ \brief Send the worn items to the specified socket
+ \author Unknown - rewritten by Akron
+ \param s socket to send the items to
+ */
+void cChar::sendWornItems(NXWSOCKET s)
+{
+	NxwItemWrapper si;
+	si.fillItemWeared( this, true, true, false );
+	for( si.rewind(); !si.isEmpty(); si++ )
+	{
+		P_ITEM pi=si.getItem();
+		if(ISVALIDPI(pi))
+			wearIt(s,pi);
+	}
+}
+
+/*!
+\author Anthalir
 \brief Equip an item
 \return 0 if item equipped, 1 if not equipped (layer already used),
 2 if small function cancelled the equip
