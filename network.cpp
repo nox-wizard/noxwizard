@@ -1991,14 +1991,14 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					cPacketCharProfileReq p;
 					p.receive( ps );
 					if( p.update ) { //update profile
-
+						
 					}
 					else { //only send
 						cPacketCharProfile resp;
 						resp.title= new std::string;
 						(*resp.title)+= pc_currchar->getCurrentName();
 						resp.staticProfile = new cUnicodeString();
-						resp.profile = pc_currchar->profile;
+						resp.profile = pc_currchar->getProfile();
 						resp.send( ps );
 
 						delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!

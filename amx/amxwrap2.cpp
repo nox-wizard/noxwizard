@@ -965,11 +965,8 @@ NATIVE2(_setCharProperty)
 				amx_GetStringUnicode( &pc->speechCurrent->s, cstr );
 				break;
 			case NXW_CP_UNI_PROFILE :				
-				if( pc->profile==NULL )
-					pc->profile= new cUnicodeString();
-				else
-					pc->profile->clear();
-				amx_GetStringUnicode( &pc->profile->s, cstr );
+				pc->setProfile( new cUnicodeString() );
+				amx_GetStringUnicode( &pc->getProfile()->s, cstr );
 				break;
 			default :
 				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
@@ -1993,7 +1990,7 @@ static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 )
 	switch( property )
 	{
 		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , (pc->speechCurrent!=NULL)? pc->speechCurrent : &emptyUnicodeString )
-		CHECK(  NXW_CP_UNI_PROFILE , (pc->profile!=NULL)? pc->profile : &emptyUnicodeString )
+		CHECK(  NXW_CP_UNI_PROFILE , (pc->getProfile()!=NULL)? pc->getProfile() : &emptyUnicodeString )
 	}
 	ErrOut("chr_getProperty called with invalid property %d!\n", property );
 	return &emptyUnicodeString;
