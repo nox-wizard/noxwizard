@@ -7,12 +7,13 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
 #include "nxwcommn.h"
 #include "accounts.h"
 #include "debug.h"
 #include "encryption.h"
 #include "network.h"
-
+ 
 
 /*!
 \brief Constructor
