@@ -116,19 +116,13 @@ else
 }
 
 
-
-cCommandMap* commands = new cCommandMap();
-cCallCommandMap* callcommands = new cCallCommandMap()
-
-
-
 //Implementation of cCallCommandMap Class
 
-void cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8) {
+void cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL) {
 
-	P_CALLCOMMAND cllcmd= new cCallCommand(std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8);
+	P_CALLCOMMAND cllcmd= new cCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
     
-	if (callCommand_map[1]==NULL)
+	if (callCommand_map.empty())
 		CmdNextSerial=0;
 
 	cmdserial=++CmdNextSerial;	
@@ -136,6 +130,17 @@ void cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string param1, std::
 	callCommand_map[cmdserial]= cllcmd;
  	
 }
+
+void cCallCommandMap::remCallCommand (SERIAL cmdserial){
+
+	callCommand_map.erase(cmdserial);
+}
+
+
+
+
+cCommandMap* commands = new cCommandMap();
+cCallCommandMap* callcommands = new cCallCommandMap()
 
 
 /*///////////////////////////////////////////////////////////////////////////////////

@@ -110,7 +110,7 @@ class cCallCommandMap {
 public:
 	
 	void addCallCommand(SERIAL cmdserial, std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
-	P_CALLCOMMAND remCallCommand(SERIAL cmdserial);
+	void remCallCommand(SERIAL cmdserial);
 	
 
 private:
