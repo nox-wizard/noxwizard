@@ -87,24 +87,13 @@ SERIAL get( SERIAL iSet)
 }
 
 
-void insert( SERIAL iSet, SERIAL nVal )
+void add( SERIAL iSet, SERIAL nVal )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
 		if( iter->second!=NULL )
 			iter->second->insert(nVal);
 }
-
-bool isEmpty( SERIAL iSet )
-{
-
-	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter!=g_oSet.end() )
-		if( iter->second!=NULL )
-			return iter->second->isEmpty();
-	return true;
-}
-
 
 UI32 size( SERIAL iSet)
 {
