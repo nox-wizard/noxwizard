@@ -914,7 +914,8 @@ NATIVE2(_setCharProperty)
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
 	if( params[2] == NXW_CP_STR_SPEECH_CURRENT ) { 
-		pc->speechCurrent= new cUnicodeString( (char*)cstr );
+		pc->speechCurrent= new cUnicodeString();
+		amx_GetStringUnicode( &pc->speechCurrent->s, cstr );
 	}
 	else {
 
