@@ -128,7 +128,8 @@ void DeleItem( P_ITEM pi )
 	// - remove from mapRegions if a world item
 	if (pi->isInWorld())
 	{
-	   	mapRegions->remove(pi); // da==1 not added !!
+	   	mapRegions->remove(pi);
+		pointers::delItemFromLocationMap(pi);
 	}
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
