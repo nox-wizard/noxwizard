@@ -80,7 +80,7 @@ namespace Commands
 	{
 	// Type is the same as it is in showgmqueue()
 
-	int i;
+	int i=0;
 	int x=0;
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
