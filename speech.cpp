@@ -18,7 +18,7 @@
 #include "npcai.h"
 #include "network.h"
 #include "commands.h"
-//#include "unicode.h"
+#include "unicode.h"
 
 #define MAXBUFFER_REAL MAXBUFFER
 
@@ -2021,13 +2021,12 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk2[11] = buffer[socket][5];		// speech color
 	talk2[12] = buffer[socket][6];		// speech font
 	talk2[13] = buffer[socket][7];		// speech font
-	char unicodeText[512];
+
+	cUnicodeString speechUni;
+	speechUni.copy( speech );
+
 	char unicodeGhostText[512];
-	if( !pc->unicode )
-	{
-		char2wchar( speech.c_str() );
-		memcpy( unicodeText, Unicode::temp, ucl);
-	}
+
 	if( pc->dead )
 	{
 		char2wchar( speech.c_str() );
@@ -2095,9 +2094,9 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			Xsend( a_socket, unicodeGhostText, ucl);
 		else
 			if( pc->unicode )
-				Xsend( a_socket, &buffer[socket][12], ucl);
+				Xsend( a_socket, speechUni.s.begin(), speechUni.s.end() );
 			else
-				Xsend( a_socket, unicodeText, ucl);
+				Xsend( a_socket, speechUni.s.begin(), speechUni.s.end() );
 	}
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
