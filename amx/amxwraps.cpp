@@ -1625,7 +1625,11 @@ NATIVE(_isetSerial)
 */
 NATIVE(_itm_createFromScript)
 {
-    P_ITEM pi = item::CreateFromScript(params[1]);
+	P_OBJECT po = NULL;
+	if ( params[2] != INVALID )
+		po = objects.findObject( params[2] );
+
+    P_ITEM pi = item::CreateFromScript(params[1], po);
 	VALIDATEPIR(pi, INVALID);
     pi->Refresh();
 	return pi->getSerial32();
@@ -1638,13 +1642,17 @@ NATIVE(_itm_createFromScript)
 */
 NATIVE(_itm_createByDef)
 {
+	P_OBJECT po = NULL;
+	if ( params[2] != INVALID )
+		po = objects.findObject( params[2] );
+		
         P_ITEM pi = NULL;
 	cell *cstr;
 	amx_GetAddr( amx, params[1], &cstr );
 	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 
-	pi = item::CreateFromScript( g_cAmxPrintBuffer );
+	pi = item::CreateFromScript( g_cAmxPrintBuffer, po );
 	g_nAmxPrintPtr = 0;
 	if ( ISVALIDPI( pi ) )
 		return pi->getSerial32();
