@@ -80,7 +80,7 @@ extern "C" {
 	void core_Exit(void);
 }
 
-AmxProgram *g_prgOverride;
+AmxProgram* AmxFunction::g_prgOverride = NULL;
 extern int g_nCurrentSocket;
 static int s_nTmpEnableAMXScripts = 1;
 
@@ -589,7 +589,7 @@ bool AmxOverride::Exec (int moment, int socket)
 	CHECKAMX;
 	bool bypassmode = (m_mode&0x04) ? true : false;
 
-	if (g_prgOverride==NULL) return false;
+	if (AmxFunction::g_prgOverride==NULL) return false;
 	if (m_mode==AMX_NONE) return false;
 	if (m_mode==AMX_SKIP) return true;
 	if ((moment&m_mode)==0) return false;
@@ -599,7 +599,7 @@ bool AmxOverride::Exec (int moment, int socket)
 	g_nMoment = moment;
 
 	g_nCurrentSocket = socket;
-	g_prgOverride->CallFn(m_ordinal, socket);
+	AmxFunction::g_prgOverride->CallFn(m_ordinal, socket);
 	g_nCurrentSocket = -1;
 
 	return ((g_bByPass) || (bypassmode));
@@ -676,7 +676,7 @@ void AmxOverride::Parse(char *line)
 
 		m_mode = mode;
 		if (mode!=AMX_SKIP) {
-			m_ordinal = g_prgOverride->getFnOrdinal(m_function);
+			m_ordinal = AmxFunction::g_prgOverride->getFnOrdinal(m_function);
 			if (m_ordinal==-3) ConOut("[FAIL]\n");
 				else ConOut("[ OK ]\n");
 		}
@@ -806,7 +806,7 @@ void LoadOverrides (void)
 	delete argv[4];
 
 	ConOut("Loading override.amx...");
-	g_prgOverride = new AmxProgram("small-scripts/override.amx");
+	AmxFunction::g_prgOverride = new AmxProgram("small-scripts/override.amx");
 
 	ConOut("Loading overrides...\n");
 
@@ -928,8 +928,6 @@ void checkAmxSpeech(int s, char *speech)
 
 std::string InvalidFunction( "InvalidFunction" );
 
-AmxProgram AmxFunction::amxProg;
-
 /*
 \brief Constructor
 \author Endymion
@@ -938,7 +936,7 @@ AmxProgram AmxFunction::amxProg;
 */
 AmxFunction::AmxFunction( char* funName )
 {
-	function = amxProg.getFnOrdinal( funName );
+	function = g_prgOverride->getFnOrdinal( funName );
 	funcName.copy( funName, strlen(funName) );
 }
 
@@ -964,7 +962,7 @@ char* AmxFunction::getFuncName()
 */
 cell AmxFunction::Call( )
 {
-	return amxProg.CallFn( function );
+	return g_prgOverride->CallFn( function );
 }
 
 /*
@@ -975,7 +973,7 @@ cell AmxFunction::Call( )
 */
 cell AmxFunction::Call( int param )
 {
-	return amxProg.CallFn( function, param );
+	return g_prgOverride->CallFn( function, param );
 }
 
 /*
@@ -987,7 +985,7 @@ cell AmxFunction::Call( int param )
 */
 cell AmxFunction::Call( int param1, int param2 )
 {
-	return amxProg.CallFn( function, param1, param2 );
+	return g_prgOverride->CallFn( function, param1, param2 );
 }
 
 
@@ -1001,7 +999,7 @@ cell AmxFunction::Call( int param1, int param2 )
 */
 cell AmxFunction::Call( int param1, int param2, int param3 )
 {
-	return amxProg.CallFn( function, param1, param2, param3 );
+	return g_prgOverride->CallFn( function, param1, param2, param3 );
 }
 
 
@@ -1016,7 +1014,7 @@ cell AmxFunction::Call( int param1, int param2, int param3 )
 */
 cell AmxFunction::Call( int param1, int param2, int param3, int param4 )
 {
-	return amxProg.CallFn( function, param1, param2, param3, param4 );
+	return g_prgOverride->CallFn( function, param1, param2, param3, param4 );
 }
 
 
@@ -1032,7 +1030,7 @@ cell AmxFunction::Call( int param1, int param2, int param3, int param4 )
 */
 cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5 )
 {
-	return amxProg.CallFn( function, param1, param2, param3, param4, param5 );
+	return g_prgOverride->CallFn( function, param1, param2, param3, param4, param5 );
 }
 
 
@@ -1049,7 +1047,7 @@ cell AmxFunction::Call( int param1, int param2, int param3, int param4, int para
 */
 cell AmxFunction::Call( int param1, int param2, int param3, int param4, int param5, int param6 )
 {
-	return amxProg.CallFn( function, param1, param2, param3, param4, param5, param6 );
+	return g_prgOverride->CallFn( function, param1, param2, param3, param4, param5, param6 );
 }
 
 

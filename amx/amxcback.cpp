@@ -113,7 +113,7 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 cell AmxEvent::Call (int param1, int param2, int param3, int param4)
 { 
 	g_nCurrentSocket = g_nTriggeredItem = g_nTriggerType = -1;
-	if (valid) return g_prgOverride->CallFn(function, param1, param2, param3, param4); 
+	if (valid) return AmxFunction::g_prgOverride->CallFn(function, param1, param2, param3, param4); 
 	else return -1;
 }
 
@@ -136,7 +136,7 @@ AmxEvent::AmxEvent(char *fnname, bool dyn)
 	dynamic = dyn;
 	funcname = new char[strlen(fnname)+3];
 	strcpy(funcname, fnname);
-	function = g_prgOverride->getFnOrdinal(funcname);
+	function = AmxFunction::g_prgOverride->getFnOrdinal(funcname);
 	if (function <= -3) valid = false; else valid = true;
 }
 	
@@ -280,7 +280,7 @@ void checkTimer (void)
 	for (i=0; i<MAXTIMERS; i++) {
 		if ((_timevent[i].callback>=0)&&(((UI32)(_timevent[i].timer)<=uiCurrentTime)||(overflow))) {
 						_timevent[i].interval = 
-							g_prgOverride->CallFn(_timevent[i].callback, _timevent[i].interval, uiCurrentTime, 
+							AmxFunction::g_prgOverride->CallFn(_timevent[i].callback, _timevent[i].interval, uiCurrentTime, 
 							_timevent[i].more1, _timevent[i].more2);
 						_timevent[i].timer = uiCurrentTime+_timevent[i].interval;
 						if (_timevent[i].interval == 0) _timevent[i].callback = -1;
@@ -332,20 +332,20 @@ void targetCallback (int s, TargetLocation &TL)
     
     P_CHAR pc = TL.getChar();
     if (ISVALIDPC(pc)) {
-        if (cback>=0) g_prgOverride->CallFn(cback, s, pc->getSerial32(), INVALID, INVALID, INVALID, INVALID);
+        if (cback>=0) AmxFunction::g_prgOverride->CallFn(cback, s, pc->getSerial32(), INVALID, INVALID, INVALID, INVALID);
         return;
     }
 
     P_ITEM pi = TL.getItem();
     if (ISVALIDPI(pi)) {
-        if (cback>=0) g_prgOverride->CallFn(cback, s, INVALID, pi->getSerial32(), INVALID, INVALID, INVALID);
+        if (cback>=0) AmxFunction::g_prgOverride->CallFn(cback, s, INVALID, pi->getSerial32(), INVALID, INVALID, INVALID);
         return;
     }
 
     int x, y, z;
     TL.getXYZ(x,y,z);
 
-    if (cback>=0) g_prgOverride->CallFn(cback, s, INVALID, INVALID, x, y, z);
+    if (cback>=0) AmxFunction::g_prgOverride->CallFn(cback, s, INVALID, INVALID, x, y, z);
 }
 
 
@@ -368,6 +368,6 @@ void cAmxMenu::buttonSelected (NXWSOCKET  s, unsigned short btn, int seed)
 		return;
 	}
 	 
-	if (m_nCallback>=0) g_prgOverride->CallFn(m_nCallback, s, page, item);	
+	if (m_nCallback>=0) AmxFunction::g_prgOverride->CallFn(m_nCallback, s, page, item);	
 	else sysmessage(s, 0x0d, TRANSLATE("*You should install a callback for the menu to work*"));
 }

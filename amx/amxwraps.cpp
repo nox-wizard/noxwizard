@@ -4945,7 +4945,7 @@ NATIVE( _file_read )
 NATIVE( _callFunction )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1]);
+	return AmxFunction::g_prgOverride->CallFn(params[1]);
 }
 
 /*!
@@ -4956,7 +4956,7 @@ NATIVE( _callFunction )
 NATIVE( _callFunction1P )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1], params[2]);
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2]);
 }
 
 /*!
@@ -4967,7 +4967,7 @@ NATIVE( _callFunction1P )
 NATIVE( _callFunction2P )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1], params[2], params[3]);
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3]);
 }
 
 /*!
@@ -4978,7 +4978,7 @@ NATIVE( _callFunction2P )
 NATIVE( _callFunction3P )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1], params[2], params[3], params[4]);
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4]);
 }
 
 /*!
@@ -4989,7 +4989,7 @@ NATIVE( _callFunction3P )
 NATIVE( _callFunction4P )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5]);
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5]);
 }
 
 /*!
@@ -5000,7 +5000,7 @@ NATIVE( _callFunction4P )
 NATIVE( _callFunction5P )
 {
 	if (params[1] < 0) return INVALID;
-	return g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5], params[6]);
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5], params[6]);
 }
 
 /*!

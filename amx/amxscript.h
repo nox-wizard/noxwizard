@@ -71,10 +71,11 @@ public:
 \todo remove funcName and add static funcNameMap based on funcidx
 */
 class AmxFunction {
+public:
+	
+	static AmxProgram* g_prgOverride; //!< used for amx API 
+	
 private:
-	
-	static AmxProgram amxProg; //!< used for amx API 
-	
 	std::string funcName; //!< function name
 	int function; //function index
 
@@ -162,8 +163,6 @@ extern AmxOverride g_Scripts[AMX_MAXTYPE][AMX_MAXNUMBER];
 #define AMXT_GMCMD 8
 
 void LoadOverrides (void);
-
-extern AmxProgram *g_prgOverride;
 
 extern bool g_bByPass;
 
