@@ -16,6 +16,7 @@
 #define __GLOBALS_H__
 
 #include "amx/amxvarserver.h"
+#include "regions.h"
 
 // GOOD GLOBALZ (Those which are just fine)
 

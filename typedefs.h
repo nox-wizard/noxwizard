@@ -240,6 +240,9 @@ struct logout_st//Instalog
 	UI32 y2;
 };
 
+/*
+	Sparhawk	-- moved to regions.h
+	
 struct region_st
 {
 	LOGICAL inUse;
@@ -261,6 +264,7 @@ struct region_st
 	SI32 forcedseason;
 	LOGICAL ignoreseason;
 };
+*/
 
 struct skill_st
 {

@@ -21,7 +21,28 @@
 #define REGION_X_CELLS MAP_WIDTH/REGION_GRIDSIZE
 #define REGION_Y_CELLS MAP_HEIGHT/REGION_COLSIZE
 
-// moved here from chars.h
+struct region_st
+{
+	LOGICAL inUse;
+ 	TEXT name[50];
+ 	SI32 midilist;
+ 	UI08 priv;	// 0x01 guarded, 0x02, mark allowed, 0x04, gate allowed, 0x08, recall
+			// 0x10 raining, 0x20, snowing, 0x40 magic damage reduced to 0
+	TEXT guardowner[50];
+	UI08 snowchance;
+	UI08 rainchance;
+	UI08 drychance;
+	UI08 keepchance;
+	UI08 wtype;
+	SI32 guardnum[10];
+	SI32 goodsell[256]; // Magius(CHE)
+	SI32 goodbuy[256]; // Magius(CHE)
+	SI32 goodrnd1[256]; // Magius(CHE) (2)
+	SI32 goodrnd2[256]; // Magius(CHE) (2)
+	SI32 forcedseason;
+	LOGICAL ignoreseason;
+};
+
 extern region_st region[256];
 
 typedef struct {
