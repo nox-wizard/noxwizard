@@ -42,7 +42,6 @@ extern class cBoat		*Boats;
 extern class CWorldMain		*cwmWorldState;
 extern class cAccounts		*Accounts;
 extern class cGuilds		*Guilds;
-extern class cGump		*Gumps;
 extern class cMapStuff		*Map;
 extern class cFishing		*Fishing;
 extern class cTargets		*Targ;

@@ -233,7 +233,6 @@ CWorldMain	*cwmWorldState;
 cRegion		*mapRegions;
 cBoat		*Boats;
 cGuilds		*Guilds;
-cGump		*Gumps;
 cMapStuff	*Map;
 cFishing        *Fishing;
 cTargets	*Targ;
