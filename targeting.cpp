@@ -1680,10 +1680,8 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	}
 	if(bird>0)
 	{
-		P_ITEM pi = item::CreateFromScript( "$item_hardcoded", pc->getBackpack(), bird );
+		P_ITEM pi = item::CreateFromScript( "$item_raw_bird", pc->getBackpack(), bird );
 		VALIDATEPI(pi);
-		pi->setId( 0x09B9 );
-		pi->setCurrentName( "raw bird" );
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You carve away some raw bird."));
 	}
