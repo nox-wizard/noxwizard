@@ -1677,13 +1677,8 @@ NATIVE(_itm_createInBp)
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
 		
-	cell *cstr;
-	amx_GetAddr( amx, params[1], &cstr );
-	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	P_ITEM pi = item::CreateFromScript( params[1], pc->getBackpack(), params[3] );
 
-	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->getBackpack(), params[3] );
-	g_nAmxPrintPtr = 0;
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
 
 }
@@ -1701,8 +1696,13 @@ NATIVE(_itm_createInBpDef)
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
 		
-	P_ITEM pi = item::CreateFromScript( params[1], pc->getBackpack(), params[3] );
+	cell *cstr;
+	amx_GetAddr( amx, params[1], &cstr );
+	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 
+	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->getBackpack(), params[3] );
+	g_nAmxPrintPtr = 0;
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
 
 }
@@ -1720,13 +1720,8 @@ NATIVE(_itm_createInBank)
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
 		
-	cell *cstr;
-	amx_GetAddr( amx, params[1], &cstr );
-	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	P_ITEM pi = item::CreateFromScript( params[1], pc->GetBankBox(), params[3] );
 
-	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->GetBankBox(), params[3] );
-	g_nAmxPrintPtr = 0;
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
 
 }
@@ -1744,8 +1739,13 @@ NATIVE(_itm_createInBankDef)
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, INVALID );
 		
-	P_ITEM pi = item::CreateFromScript( params[1], pc->GetBankBox(), params[3] );
+	cell *cstr;
+	amx_GetAddr( amx, params[1], &cstr );
+	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 
+	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->GetBankBox(), params[3] );
+	g_nAmxPrintPtr = 0;
 	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
 
 }
