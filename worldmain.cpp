@@ -61,20 +61,20 @@ CWorldMain::~CWorldMain()
 \param name the variable name
 \return the unicode string
 */
-cUnicodeString* HexVector2UnicodeString( char* s )
+wstring* HexVector2UnicodeString( char* s )
 {
-	
+	wstring* w= new wstring();
+
 	int i=0;
 	int size= strlen( s );
 	char temp[4] = { '0','x', };
-	char buffer[TEMP_STR_SIZE];
 	while( i<size ) {
 		memcpy( &temp[2], &s[i], 2 );
 		char* dummy; 
-		buffer[i /2]= strtol( temp, &dummy, 0 );
+		(*w) += strtol( temp, &dummy, 0 );
 		i+=2;
 	}
-	return new cUnicodeString( &buffer[0] );
+	return w;
 }
 
 void CWorldMain::loadChar() // Load a character from WSC
@@ -1298,25 +1298,22 @@ bool CWorldMain::Saving()
 
 
 /*
-\brief save on file a vector 
+\brief save on file a wstring 
 \author Endymion
-\note save output is like 0x000xAE0x000x120x320x15, hex output
+\note save output is like 00E000123215, hex output
 \param f the file
 \param name the variable name
-\param c the vector of UI08
+\param c the wstring
 */
-void fprintVector( FILE* f, char* name, std::vector<UI08>* c )
+void fprintWstring( FILE* f, char* name, wstring* c )
 {
 	if( c==NULL ) return;
 	fprintf( f, "%s ", name );
-	std::vector<UI08>::iterator iter( c->begin() ), end( c->end() );
+	wstring::iterator iter( c->begin() ), end( c->end() );
 	for( ; iter!=end; iter++ ) {
-		if( (*iter)!=0 )
-			fprintf( f, "%02x", (*iter) );
-		else
-			fprintf( f, "00" );
+		fprintf( f, "%04x", (*iter) );
 	}
-	fprintf( f, "\n" );
+	fprintf( f, "0000\n" );
 }
 
 // xan : this is an internal option -> with it enabled, player names etc will not be saved
@@ -1690,7 +1687,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if( pc->npc && pc->npcFollowSpeed != NPCFOLLOWSPEED )
 				fprintf(cWsc, "FOLLOWSPEED %f\n", pc->npcFollowSpeed );
 			if( pc->getProfile()!=dummy.getProfile() )
-				fprintVector( cWsc, "PROFILE", &pc->getProfile()->s );
+				fprintWstring( cWsc, "PROFILE", pc->getProfile() );
 			if( !pc->lootVector.empty() )
 			{
 				int last = pc->lootVector.size();

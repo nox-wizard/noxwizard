@@ -11,7 +11,7 @@
 #include "packets.h"
 #include "network.h"
 
-cUnicodeString emptyUnicodeString;
+wstring emptyUnicodeString;
 char stringTerminator = 0x00;
 char unicodeStringTerminator[2] = { 0x00, 0x00 };
 
@@ -85,7 +85,7 @@ void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& fr
 {
 	wchar_t* w=(wchar_t*)( &buffer[s][from] );
 	
-	c->erase( begin(), end() );
+	c->erase();
 	
 	int i=0;
 	if( size==INVALID ) {//until termination
@@ -361,7 +361,7 @@ SEND( UnicodeSpeech ) {
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
-	Xsend( ps->toInt(), this->msg->s.begin(), this->msg->s.end() );
+	Xsend( ps->toInt(), *msg, true );
 };
 
 CREATE( Map, PKG_MAP, 0x0B )
@@ -394,8 +394,8 @@ SEND( CharProfile ) {
 	this->size=this->headerSize +(title.size()+1) + profile->size() + staticProfile->size();
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->title.c_str(), title.size()+1 );
-	Xsend( ps->toInt(), this->staticProfile->s.begin(), this->staticProfile->s.end() );
-	Xsend( ps->toInt(), this->profile->s.begin(), this->profile->s.end() );
+	Xsend( ps->toInt(), *staticProfile, true );
+	Xsend( ps->toInt(), *profile, true );
 }
 
 CREATE( Features, PKG_FEATURES, 0x03 )
@@ -429,7 +429,7 @@ SEND( Menu ) {
 	temp+=size_of_commands;
 	temp+=sizeof( numTextLines );
 
-	std::vector< cUnicodeString >::iterator itu( texts->begin() ), endu( texts->end() );
+	std::vector< wstring >::iterator itu( texts->begin() ), endu( texts->end() );
 	for( ; itu!=endu; itu++ ) {
 		temp += itu->size() +sizeof( len );
 	}
@@ -457,9 +457,7 @@ SEND( Menu ) {
 	for( ; itu!=endu; itu++ ) {
 		len=itu->length();
 		Xsend( s, (char*)&len, sizeof( len ) );
-		std::vector< UI08 >::iterator bef_term= itu->s.end();
-		bef_term--; bef_term--;
-		Xsend( s, itu->s.begin(), bef_term ); //not send null terminator
+		Xsend( s, itu, false ); //not send null terminator
 	}
 
 }
