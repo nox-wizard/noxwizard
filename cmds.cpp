@@ -66,9 +66,9 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
 
 //Implementation of cCallCommand Class
 
-cCallCommand::cCallCommand (/*...*/){
+cCallCommand::cCallCommand (SERIAL cmdSerial){
 
-	/*...*/
+	SERIAL ++cmdSerial;
 }
 
 cCallCommand::~cCallCommand() {
@@ -92,17 +92,6 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 number, AmxFunction* 
     command_map[name]= cmd;
  	return cmd;
 }
-
-
-
-/*	Frodo: probably useless (not me, this function :P)
-
-P_COMMAND cCommandMap::addGmCommand(P_COMMAND cmd) {
- 	
-	P_COMMAND old= command_map[cmd->cmd_name];
-    command_map[cmd->cmd_name]= cmd;
- 	return old;
-} */
 
 
 

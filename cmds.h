@@ -24,7 +24,7 @@ typedef cCommand* P_COMMAND;
 
 typedef std::map<string, P_COMMAND> CMDMAP;
 
-
+static SERIAL CmdNextSerial=0;
 
 //brief Declaration of cCommand Class
 
@@ -55,7 +55,9 @@ class cCallCommand {
 
 public:
 
-	cCallCommand(/*parameters to be defined*/);
+	cCallCommand(SERIAL cmdSerial);
+
+	SERIAL CmdNextSerial;
 
 }
  
