@@ -54,13 +54,13 @@ inline int calcItemFromPtr(unsigned char *p)
 	else return (-1);
 }
 
-inline int calcItemFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
+/*inline int calcItemFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
 {
 	if((s1==255) && (s2==255) && (s3==255) && (s4==255) ) return -1;//AntiChrist
 	int serial = calcserial(s1, s2, s3, s4);
 	if (ISVALIDPI(pointers::findItemBySerial(serial))) return (DEREF_P_ITEM(pointers::findItemBySerial(serial)));
 	else return (-1);
-}
+}*/
 
 inline int calcItemFromSer(int ser) // Aded by Magius(CHE) (2)
 {
@@ -83,14 +83,14 @@ inline NXWSOCKET  calcSocketFromChar(CHARACTER i)
 
 }
 
-inline int calcCharFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
+/*inline int calcCharFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
 {
 	int serial;
 
 	serial = calcserial(s1, s2, s3, s4);
 	if (ISVALIDPC(pointers::findCharBySerial(serial))) return(DEREF_P_CHAR(pointers::findCharBySerial(serial)));
 	else return(-1);
-}
+}*/
 
 inline int calcCharFromSer(int serial)
 {
@@ -113,15 +113,17 @@ inline bool isItemSerial(long ser) {return (/*ser >= 0 && */ser >= 0x40000000);}
 inline std::string toString(int value)
 {
 	char s[20];
-	return itoa(value, s, 10);
+	snprintf(s, 20, "%d", value);
+	s[19]=0x00;
+
+	return std::string(s);
 }
 
 inline std::string toString(double value)
 {
 	char s[20];
-	return _gcvt(value, sizeof(s), s);
+	return std::string(gcvt(value, sizeof(s), s));
 }
-
 
 
 #endif //__INLINES_H__

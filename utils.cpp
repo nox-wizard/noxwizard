@@ -513,7 +513,7 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		int type = str2num(script2);
 		int sub = type % 10;
 		type /= 10 ;
-		Skills::DoPotion(s, type, sub, calcItemFromSer(addid1[s], addid2[s], addid3[s], addid4[s]));
+		Skills::DoPotion(s, type, sub, pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s])));
 	} else if ( script1 == "WRITESCROLL" ) {
 		TellScroll( "new xan inscription,sorry :P", s, str2num(script2) );
 	} else if ( script1 == "ADDBYID" ) {

@@ -952,12 +952,6 @@ int Skills::GetInstrument(NXWSOCKET s)
 
 }
 
-//////////////////////////////
-// name:    DoOnePotion
-// history: Duke,20.04.2000
-// Purpose: helper function for DoPotion
-//          checks if player has enough regs for selected potion and deletes them
-//
 /*!
 \author Duke
 \date 20/04/2000
@@ -999,15 +993,15 @@ static bool DoOnePotion(NXWSOCKET s, UI16 regid, UI32 regamount, char* regname)
 \brief Determines regs and quantity, creates working sound
 indirectly calls CreatePotion() on success
 */
-void Skills::DoPotion(NXWSOCKET s, SI32 type, SI32 sub, SI32 mortar)
+void Skills::DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM pi_mortar)
 {
 	if ( s < 0 || s >= now ) //Luxor
 		return;
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	P_ITEM pi_mortar=MAKE_ITEM_REF(mortar);
 	VALIDATEPI(pi_mortar);
+
 	bool success=false;
 
 	switch((type*10)+sub)

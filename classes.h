@@ -341,7 +341,7 @@ namespace Skills {
 	\name Alchemy stuff
 	*/
 	void CreatePotion(CHARACTER s, char type, char sub, int mortar);
-	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, SI32 mortar);
+	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM mortar);
 	void AlchemyTarget(NXWSOCKET s);
 	void BottleTarget(NXWSOCKET s);
 	void PotionToBottle(CHARACTER s, int mortar);

@@ -474,25 +474,25 @@ void clearalltrades()
 
 void trademsg(int s)
 {
+	P_ITEM cont1, cont2;
 
-	int cont1, cont2;
-	P_ITEM c1,c2;
 	switch(buffer[s][3])
 	{
 	case 0://Start trade - Never happens, sent out by the server only.
 		break;
 	case 2://Change check marks. Possibly conclude trade
-		cont1=calcItemFromSer(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
-		c1=MAKE_ITEM_REF(cont1);
-		if (c1!=NULL) cont2=calcItemFromSer(c1->moreb1, c1->moreb2,c1->moreb3, c1->moreb4); else cont2=-1;
-		c2=MAKE_ITEM_REF(cont2);
-		if (c2!=NULL) // lb crashfix
+		cont1 = pointers::findItemBySerPtr(buffer[s] +4);
+
+		if (cont1) cont2 = pointers::findItemBySerial(calcserial(cont1->moreb1, cont1->moreb2, cont1->moreb3, cont1->moreb4));
+		else cont2=NULL;
+		
+		if (cont2)
 		{
-			c1->morez=buffer[s][11];
-			sendtradestatus(cont1, cont2);
-			if (c1->morez && c2->morez)
+			cont1->morez=buffer[s][11];
+			sendtradestatus(DEREF_P_ITEM(cont1), DEREF_P_ITEM(cont2));
+			if (cont1->morez && cont2->morez)
 			{
-				dotrade(c1, c2);
+				dotrade(cont1, cont2);
 				endtrade(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
 			}
 		}
@@ -503,7 +503,6 @@ void trademsg(int s)
 	default:
 		ErrOut("Switch fallout. trade.cpp, trademsg()\n"); //Morrolan
 	}
-
 }
 
 void dotrade(P_ITEM cont1, P_ITEM cont2)

@@ -896,7 +896,7 @@ namespace pointers {
 	\return the corrispondent item of the serial passed in the params
 	\param serial the serial of the item which we're searching for
 	*/
-	P_ITEM findItemBySerial(int serial)
+	P_ITEM findItemBySerial(SERIAL serial)
 	{
 		if (serial < 0 || !isItemSerial(serial)) return NULL;
 
@@ -909,7 +909,7 @@ namespace pointers {
 	\author Luxor
 	\return the char we're looking for
 	*/
-	P_CHAR findCharBySerPtr(unsigned char *p)
+	P_CHAR findCharBySerPtr(UI08 *p)
 	{
 		int serial=LongFromCharPtr(p);
 		if (serial < 0) return NULL;

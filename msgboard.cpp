@@ -122,18 +122,14 @@ void MsgBoardOpen(int s)
 	// Message to client     |Pak|sz1|sz2|mTy|sn1|sn2|sn3|sn4| b | u | l | l | e | t | i | n |   | b | o | a | r | d |<------------  Unknown, don't care right now ----------------->|
 	unsigned char msgBoardHeader[] = "\x71\x00\x26\x00\xFF\xFF\xFF\xFF\x62\x75\x6c\x6c\x65\x74\x69\x6e\x20\x62\x6f\x61\x72\x64\x00\x00\x00\x00\x00\x00\x00\x00\x40\x20\x00\xff\x00\x00\x00\x00";
 
-	// Extract the Bulletin Board serial number from client buffer and update msgBoardHeader
-	msgBoardHeader[4]     = buffer[s][1]; // From doubleclick() buffer[s]
-	msgBoardHeader[5]     = buffer[s][2];
-	msgBoardHeader[6]     = buffer[s][3];
-	msgBoardHeader[7]     = buffer[s][4];
-
 	// Can place up to 20 customizable chars in Message Board header to give Message Board a unique name
 	// Might be able to do more, but why, it usually overruns the area designated for the name anyway
-	int msgBoardSerial;
-	msgBoardSerial = calcItemFromSer(buffer[s][1], buffer[s][2], buffer[s][3], buffer[s][4]);
+	SERIAL msgBoardSerial;
+	msgBoardSerial = LongFromCharPtr(buffer[s] +1);
 
-	P_ITEM p_msgboard=MAKE_ITEM_REF(msgBoardSerial);
+	P_ITEM p_msgboard = pointers::findItemBySerial(msgBoardSerial);
+
+	LongToCharPtr(msgBoardSerial, msgBoardHeader +4);
 
 	// If the name the item (Bulletin Board) has been defined, display it
 	// instead of the default "Bulletin Board" title.
@@ -189,7 +185,7 @@ void MsgBoardOpen(int s)
 	sprintf( fileName2, "region%d.bbi", calcRegionFromXY( p_msgboard->getPosition() ) );
 
 	// LOCAL post file
-	sprintf( fileName3, "%02x%02x%02x%02x.bbi", buffer[s][1], buffer[s][2], buffer[s][3], buffer[s][4]);
+	sprintf( fileName3, "%08x.bbi", msgBoardSerial);
 
 	while ( currentFile <= 3 )
 	{
@@ -254,10 +250,7 @@ void MsgBoardOpen(int s)
 				if ( msg[offset+6] )
 				{
 					// Set the Board SN fields the proper value for the board clicked on
-					msg[offset+13] = buffer[s][1];
-					msg[offset+14] = buffer[s][2];
-					msg[offset+15] = buffer[s][3];
-					msg[offset+16] = buffer[s][4];
+					LongToCharPtr(msgBoardSerial, &msg[offset+13]);
 
 					// Store message ID into array for later acknowledgement
 					postAcked[s][count][0] = msg[offset+0];
@@ -285,10 +278,8 @@ void MsgBoardOpen(int s)
 	if( file ) fclose( file );
 
 	// Update size fields of message with new values
-	msg[1] = (unsigned char) (offset>>8);
-	msg[2] = (unsigned char) (offset%256);
-	msg[3] = (unsigned char) (count>>8);
-	msg[4] = (unsigned char) (count%256);
+	ShortToCharPtr(offset, msg +1);
+	ShortToCharPtr(count, msg +3);
 
 	// Set global variable that holds the count of the number of posts being sent
 	// to this particular client
@@ -333,7 +324,7 @@ void MsgBoardList( int s )
 	SI32	msgOffset    = 0;  // Total number of bytes between messages from start of file
 	UI32	segmentSize  = 0;  // Size of a segment (Author, Subject, Date)
 	SI32	foundMsg     = 0;  // Flag when message has been found
-	SI32	boardSN      = 0;  // Bulletin Boards serial number (to determine what regions messages to display
+	SERIAL	boardSN      = 0;  // Bulletin Boards serial number (to determine what regions messages to display
 	SI32	currentFile  = 1;  // Starting file to open and iterate through (1=GLOBAL.bbp, 2=REGIONAL.bbp, 3=LOCAL.bbp)
 	UI32	w            = 0;  // Counter
 	SI32	x            = 0;  // Counter
@@ -344,9 +335,9 @@ void MsgBoardList( int s )
 	// LOCAL    Posts start at 03 00 00 00 -> 03 FF FF FF
 
 	// Determine the Bulletin Boards serial number
-	boardSN = calcItemFromSer(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+	boardSN = LongFromCharPtr(buffer[s] +4);
 
-	P_ITEM p_msgboard=MAKE_ITEM_REF(boardSN);
+	P_ITEM p_msgboard = pointers::findItemBySerial(boardSN);
 
 	// GLOBAL post file
 	strcpy( fileName1, "global.bbp" );
@@ -356,7 +347,7 @@ void MsgBoardList( int s )
 	sprintf( fileName2, "region%d.bbp", calcRegionFromXY( p_msgboard->getPosition() ) );
 
 	// LOCAL post file
-	sprintf( fileName3, "%02x%02x%02x%02x.bbp", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+	sprintf( fileName3, "%08x.bbp", boardSN);
 
 	// Open the bbp file for read
 	//file = fopen( fileName3, "rb");
@@ -433,10 +424,7 @@ void MsgBoardList( int s )
 						w++;
 
 						// Set the board SN values to the board that was just double-clicked on
-						msg[4] = buffer[s][4];
-						msg[5] = buffer[s][5];
-						msg[6] = buffer[s][6];
-						msg[7] = buffer[s][7];
+						LongToCharPtr(boardSN, msg +4);
 
 						// Read in  author, subject and date info to pass back to client (DO NOT SEND BODY of msg)
 						// Count the total number of bytes in posting (not including body as it isn't sent to client)
@@ -478,8 +466,7 @@ void MsgBoardList( int s )
 							ErrOut("MsgBoardEvent() case 4 : failed to seek start of next message\n");
 
 						// Calculate new message size
-						msg[1] = msgBytes>>8;
-						msg[2] = msgBytes%256;
+						ShortToCharPtr(msgBytes, msg +1);
 
 						// Set packet 0x71 message type to /0x01 (send post item to message board list)
 						msg[3] = 1;
@@ -490,7 +477,7 @@ void MsgBoardList( int s )
 					else // If this isn't the message were looking for, jump ahead to next message
 					{
 						// Since we didn't find the message in this pass, get this messages size and jump ahead
-						msgOffset += (msg[1]<<8) + msg[2];
+						msgOffset += (msg[1]<<8) | msg[2];
 
 						// Jump to next message
 						if ( fseek(file, msgOffset, SEEK_SET) )
@@ -541,11 +528,11 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 
 	// 50 chars for prefix and 4 for the extension plus the ending NULL
 	char        fileName[256]     = "";
-	unsigned char        msgbbiSegment[20] = "\x00\x00\x00\x00\x0e\x0b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-	char        maxMsgSN[5]       = "";
+	UI08 msgbbiSegment[20] = "\x00\x00\x00\x00\x0e\x0b\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 maxMsgSN[4] = { 0x00, };
 
-//	int         msgBoardSerial    = 0;
-	int         maxSN             = 0;
+	SERIAL msgBoardSerial    = 0;
+	SERIAL maxSN             = 0;
 
 	struct tm   timeOfPost;
 	time_t      now;
@@ -553,12 +540,14 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 	if (SrvParms->msgboardpath)
 		strcpy( fileName, SrvParms->msgboardpath );
 
+	msgBoardSerial = LongFromCharPtr(msg2Post +4);
+
 	switch ( msgType )
 	{
 		// LOCAL post
 	case LOCALPOST:
 		// Get Message Board serial number from message buffer
-		sprintf( temp, "%02x%02x%02x%02x.bbi", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
+		sprintf( temp, "%08x.bbi", msgBoardSerial);
 		break;
 
 		// REGIONAL post
@@ -566,13 +555,13 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 		// set the Message Board fileName to the proper region number
 		if ( autoPost )
 		{
-			P_CHAR pc_s=pointers::findCharBySerPtr(msg2Post +4);
+			P_CHAR pc_s=pointers::findCharBySerial(msgBoardSerial);
 			if(ISVALIDPC(pc_s))
 				sprintf( temp, "region%d.bbi", pc_s->region );
 		}
 		else
 		{
-			P_ITEM pi_s=pointers::findItemBySerPtr(msg2Post +4);
+			P_ITEM pi_s=pointers::findItemBySerial(msgBoardSerial);
 			if(ISVALIDPI(pi_s))
 				sprintf( temp, "region%d.bbi", calcRegionFromXY( pi_s->getPosition() ) );
 		}
@@ -613,7 +602,7 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 		}
 
 		// Calculate the maxSN in decimal
-		maxSN = (maxMsgSN[0]<<24) + (maxMsgSN[1]<<16) + (maxMsgSN[2]<<8) + maxMsgSN[3];
+		maxSN = LongFromCharPtr(maxMsgSN);
 
 		// Increment maxSN to new value
 		maxSN++;
@@ -710,10 +699,7 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 			else
 			{
 				// Convert maxSN to an char array
-				maxMsgSN[0] = maxSN>>24;
-				maxMsgSN[1] = maxSN>>16;
-				maxMsgSN[2] = maxSN>>8;
-				maxMsgSN[3] = maxSN%256;
+				LongToCharPtr(maxSN, maxMsgSN);
 
 				// Write out new maxSN for this post
 				if ( fwrite( maxMsgSN, sizeof(char), 4, pFile) != 4 )
@@ -735,10 +721,7 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 	}
 
 	// Set bytes to proper values in bbi message array
-	msgbbiSegment[0]  = maxSN>>24;  // Message ID 1
-	msgbbiSegment[1]  = maxSN>>16;     // Message ID 2
-	msgbbiSegment[2]  = maxSN>>8;       // Message ID 3
-	msgbbiSegment[3]  = maxSN%256;       // Message ID 4
+	LongToCharPtr(maxSN, msgbbiSegment);
 	msgbbiSegment[6]  = msg2Post[3];     // 05 = user posted message, 0xFF and lower  is a quest post (0xFF is escort quest)
 
 	// Calculate current time and date ( for later bulletin board maintenance routine )
@@ -855,13 +838,13 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	int         origMsgSize           = 0;
 //	int         tempMsgSize           = 0;
 	int         newMsgSize            = 0;
-	int         newMsgSN              = 0;
-	int         maxMsgSN              = 0;
-	int         isReply               = 0;
-//	int         msgBoardSerial        = 0;
+	SERIAL      newMsgSN              = 0;
+	SERIAL      maxMsgSN              = 0;
+	SERIAL      isReply               = 0;
+	SERIAL      msgBoardSerial        = 0;
 	int         x, y, z, pos, offset;
 
-	char        msgHeader[17]         = "";
+	UI08        msgHeader[17]         = "";
 	char        msgSubject[257]       = "";
 	char        msgBody[MAXBUFFER]    = "";
 	char        msgAuthor[52]         = "";   // Maximum name size from char_st (Size + Name)
@@ -880,7 +863,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		// GLOBAL or REGIONAL message.  No one can reply to GLOBAL or REGIONAL messages as they
 		// as for informational purposes only (discussions should be taken offline).  There is no
 		// reason to reply to a quest post execpt to fill up the message board.
-		isReply = (msg2Post[8]*16777216) + (msg2Post[9]*65536) + (msg2Post[10]*256) + msg2Post[11];
+		isReply = LongFromCharPtr(msg2Post +8);
 
 		// If this is a reply to anything other than a LOCAL post, abort
 		if ( (isReply>0) && (isReply<0x03000000) )
@@ -909,13 +892,14 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	if (SrvParms->msgboardpath)
 		strcpy( fileName, SrvParms->msgboardpath );
 
+	msgBoardSerial = LongFromCharPtr(msg2Post +4);
 
 	switch ( msgType )
 	{
 		// LOCAL post
 	case LOCALPOST:
 		// Get Message Board serial number from message buffer
-		sprintf( temp, "%02x%02x%02x%02x.bbp", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
+		sprintf( temp, "%08x.bbp", msgBoardSerial);
 		break;
 
 		// REGIONAL post
@@ -923,13 +907,13 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		// set the Message Board fileName to the proper region number
 		if ( autoPost )
 		{
-			P_CHAR pc_s=pointers::findCharBySerPtr(msg2Post +4);
+			P_CHAR pc_s = pointers::findCharBySerial(msgBoardSerial);
 			if(ISVALIDPC(pc_s))
 				sprintf( temp, "region%d.bbp", pc_s->region );
 		}
 		else
 		{
-			P_ITEM pi_s=pointers::findItemBySerPtr(msg2Post +4);
+			P_ITEM pi_s = pointers::findItemBySerial(msgBoardSerial);
 			if(ISVALIDPI(pi_s))
 				sprintf( temp, "region%d.bbp", calcRegionFromXY( pi_s->getPosition() ) );
 		}
@@ -961,7 +945,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	}
 
 	// Calculate original size of the message that the client sent to us
-  origMsgSize = ( (msg2Post[1]<<8) + msg2Post[2] );
+	origMsgSize = ShortFromCharPtr(msg2Post +1);
 
 	// Get the messages header info (packet type, size, type, board S/N, parent msg S/N(replies only))
 	for ( x=0; x<12; x++ )
@@ -969,14 +953,11 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 
 
 	// Set new messages serial number to maxMsgSN from the bbi file
-	msgHeader[8]  = maxMsgSN>>24;
-	msgHeader[9]  = maxMsgSN>>16;
-	msgHeader[10] = maxMsgSN>>8;
-	msgHeader[11] = maxMsgSN%256;
+	LongToCharPtr(maxMsgSN, msgHeader +8);
 
 	// Get the new messages serial number (which is its post position on the board- anything other than 00 00 00 00
 	// (base post) is a reply to a specific message ID )
-  newMsgSN = (msg2Post[8]<<24) + (msg2Post[9]<<16) + (msg2Post[10]<<8) + msg2Post[11];
+	newMsgSN = LongFromCharPtr(msg2Post +8);
 
 	// If the newMsgSN is 0 then it is a base post, other wise it is a reply to a previous post
 	if ( newMsgSN )
@@ -1075,8 +1056,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	// msgHeader + sizeof(msgAuthor) + msgAuthor
 
 	// Write out the msgHeader
-	msgHeader[1] = newMsgSize/256;
-	msgHeader[2] = newMsgSize%256;
+	ShortToCharPtr(newMsgSize, msgHeader +1);
 	fwrite( msgHeader, sizeof(char), (sizeof(msgHeader)-1), pFile );
 
 	// Write out the msgAuthor
@@ -1150,8 +1130,8 @@ void MsgBoardOpenPost( int s )
 	FILE *file = NULL;
 
 	int loopexit4=0,loopexit2=0;
-	UI32 msgSN           = 0;
-	int msgBoardSerial  = 0;
+	SERIAL msgSN    = 0;
+	SERIAL msgBoardSerial  = 0;
 	int msgBytes        = 0;
 	int dateBytes       = 0;
 	int authorBytes     = 0;
@@ -1170,7 +1150,8 @@ void MsgBoardOpenPost( int s )
 		strcpy( fileName, SrvParms->msgboardpath );
 
 
-	msgSN = (buffer[s][8]*16777216) + (buffer[s][9]*65536) + (buffer[s][10]*256) + buffer[s][11];
+	msgBoardSerial = LongFromCharPtr(buffer[s] +4);
+	msgSN = LongFromCharPtr(buffer[s] +8);
 
 	// Is msgSN within the GLOBAL post range
 	if ( (msgSN>=0x01000000) && (msgSN<=0x01FFFFFF) )
@@ -1187,27 +1168,26 @@ void MsgBoardOpenPost( int s )
 #ifdef DEBUG
 		sysmessage( s, "Opening REGIONAL.bbp posting");
 #endif
-		msgBoardSerial = calcItemFromSer(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
 
-		P_ITEM p_msgboard=MAKE_ITEM_REF(msgBoardSerial);
+		P_ITEM p_msgboard = pointers::findItemBySerial(msgBoardSerial);
 		sprintf( temp, "region%d.bbp", calcRegionFromXY( p_msgboard->getPosition() ) );
 		strcat( fileName, temp );
 		file = fopen( fileName, "rb" );
 	}
 	// Is msgSN within the LOCAL post range
-	else if ( (msgSN>=0x03000000) && (msgSN<=0xFFFFFFFF) )
+	else if ( (msgSN>=0x03000000) && (msgSN<=(SI32)0xFFFFFFFF) )
 	{
 #ifdef DEBUG
 		sysmessage( s, "Opening LOCAL.bbp posting");
 #endif
-		sprintf( temp, "%02x%02x%02x%02x.bbp", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+		sprintf( temp, "%08x.bbp", msgBoardSerial);
 		strcat( fileName, temp );
 		file = fopen( fileName, "rb" );
 	}
 	// This msgSN does not fall within a valid range
 	else
 	{
-		ErrOut("MsgBoardOpenPost() Invalid message SN: %02x%02x%02x%02x", buffer[s][8], buffer[s][9], buffer[s][10], buffer[s][11] );
+		ErrOut("MsgBoardOpenPost() Invalid message SN: %08x", msgSN);
 		sysmessage( s, TRANSLATE("Post not valid, please notify GM"));
 		return;
 	}
@@ -1231,10 +1211,7 @@ void MsgBoardOpenPost( int s )
 		}
 
 		// Find post that was ACK'd by client
-		if (( msg[8]  == buffer[s][8] ) &&
-			( msg[9]  == buffer[s][9] ) &&
-			( msg[10] == buffer[s][10]) &&
-			( msg[11] == buffer[s][11]))
+		if ( LongFromCharPtr(msg +8) == msgSN )
 		{
 			// Don't forget to set the flag to stop searching for the message when we find it
 			foundMsg = 1;
@@ -1339,14 +1316,13 @@ void MsgBoardOpenPost( int s )
 				z--;
 			}
 
-			msg[1] = msgBytes/256;
-			msg[2] = msgBytes%256;
+			ShortToCharPtr(msgBytes, msg +1);
 			msg[3] = 2;              // Set packet 0x71 message type to 0x02 (send full message)
    }
    else // If this isn't the message were looking for, jump ahead to next message
    {
 	   // Since we didn't find the message in this pass, get this messages size and jump ahead
-	   msgBytes += (msg[1]*256) + msg[2];
+	   msgBytes += ShortFromCharPtr(msg +1);
 
 	   // Jump to next message
 	   if ( fseek(file, msgBytes, SEEK_SET) )
@@ -1392,16 +1368,16 @@ void MsgBoardRemovePost( int s )
 	// 50 chars for prefix and 4 for the extension plus the ending NULL
 	char fileName[256] = "";
 
-	int msgSN      = 0;
-	int msgBoardSN = 0;
+	SERIAL msgSN      = 0;
+	SERIAL msgBoardSN = 0;
 
 	// Get the integer value of the message serial number
-	msgSN = (buffer[s][8]*16777216) + (buffer[s][9]*65536) + (buffer[s][10]*256) + buffer[s][11];
+	msgSN = LongFromCharPtr(buffer[s] +8);
 
 	// Calculate the Bulletin Boards serial number
-	msgBoardSN = calcItemFromSer(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+	msgBoardSN = LongFromCharPtr(buffer[s] +4);
 
-	P_ITEM p_msgboard=MAKE_ITEM_REF(msgBoardSN);
+	P_ITEM p_msgboard = pointers::findItemBySerial(msgBoardSN);
 
 	// Switch depending on what type of message this is:
 	// GLOBAL = 0x01000000 -> 0x01FFFFFF
@@ -1426,7 +1402,7 @@ void MsgBoardRemovePost( int s )
 	default:
 		{
 			// LOCAL post file
-			sprintf( temp, "%02x%02x%02x%02x.bbi", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+			sprintf( temp, "%08x.bbi", msgBoardSN);
 			break;
 		}
 	}
@@ -1465,10 +1441,7 @@ void MsgBoardRemovePost( int s )
 				if ( feof(file) ) break;
 			}
 
-			if ( (msg[0] == buffer[s][8])  &&
-				(msg[1] == buffer[s][9])  &&
-				(msg[2] == buffer[s][10]) &&
-				(msg[3] == buffer[s][11])    )
+			if ( LongFromCharPtr(msg) == msgSN )
 			{
 				// Jump back to the DEL segment in order to mark the post for deletion
 				fseek( file, -13, SEEK_CUR );
@@ -1495,12 +1468,9 @@ void MsgBoardRemovePost( int s )
 	// If, however, this is a problem, then simply remove this portion of code and the
 	// messages will not be removed on the client but will still be marked for removal
 	// in the message board files.
-	char cRemoveObject[6]="\x1D\x00\x00\x00\x00";
-	cRemoveObject[1] = buffer[s][8];
-	cRemoveObject[2] = buffer[s][9];
-	cRemoveObject[3] = buffer[s][10];
-	cRemoveObject[4] = buffer[s][11];
-	Xsend( s, cRemoveObject, (sizeof(cRemoveObject)-1));
+	UI08 cRemoveObject[5]={0x1D, 0x00, 0x00, 0x00, 0x00};
+	LongToCharPtr(msgSN, cRemoveObject +1);
+	Xsend( s, cRemoveObject, 5);
 	// Remove code above to prevent problems with client if necessary
 
 	return;
@@ -1519,7 +1489,7 @@ void MsgBoardRemovePost( int s )
 // RETURNS:     TRUE  Post was successfully found and marked as deleted
 //              FALSE Post could not be found
 //////////////////////////////////////////////////////////////////////////////
-bool MsgBoardRemoveGlobalPostBySerial( int nPostSerial )
+bool MsgBoardRemoveGlobalPostBySerial( SERIAL nPostSerial )
 {
 	// Sample REMOVE POST message from client
 	//             | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
@@ -1575,10 +1545,7 @@ bool MsgBoardRemoveGlobalPostBySerial( int nPostSerial )
                 break;
 			}
 
-			if ( ( msg[0] == ( ( nPostSerial & 0xFF000000 ) >> 0x18 ) ) &&
-				   ( msg[1] == ( ( nPostSerial & 0x00FF0000 ) >> 0x10 ) ) &&
-				   ( msg[2] == ( ( nPostSerial & 0x0000FF00 ) >> 0x08 ) ) &&
-				   ( msg[3] == ( ( nPostSerial & 0x000000FF )         ) )    )
+			if ( LongFromCharPtr(msg) == nPostSerial )
 			{
 				// Jump back to the DEL segment in order to mark the post for deletion
 				fseek( file, -13, SEEK_CUR );
@@ -1756,14 +1723,8 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 	}
 
 	// Since quest posts can only be regional or global, can use the BullBoard SN fields as CHAR or ITEM fields
-	msg2Post[4]   = serial>>24;//16777216;   // Normally Bulletin Board SN1 but used for quests as CHAR or ITEM SN1
-	msg2Post[5]   = serial>>16;//65536;      // Normally Bulletin Board SN2 but used for quests as CHAR or ITEM SN2
-	msg2Post[6]   = serial>>8;///256;        // Normally Bulletin Board SN3 but used for quests as CHAR or ITEM SN3
-	msg2Post[7]   = serial&0xFF;//%256;        // Normally Bulletin Board SN4 but used for quests as CHAR or ITEM SN4
-	msg2Post[8]   = 0x00;              // Reply to message serial number ( 00 00 00 00 for base post )
-	msg2Post[9]   = 0x00;              // Reply to message serial number ( 00 00 00 00 for base post )
-	msg2Post[10]  = 0x00;              // Reply to message serial number ( 00 00 00 00 for base post )
-	msg2Post[11]  = 0x00;              // Reply to message serial number ( 00 00 00 00 for base post )
+	LongToCharPtr(serial, msg2Post +4);  // Normally Bulletin Board SN but used for quests as CHAR or ITEM SN
+	LongToCharPtr(0x0000, msg2Post +8);  // Reply to message serial number ( 00 00 00 00 for base post )
 
     cScpIterator* iter = NULL;
     char script1[1024];
@@ -2042,8 +2003,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 
 	safedelete(iter);
 
-	msg2Post[1] = offset/256;
-	msg2Post[2] = offset%256;
+	ShortToCharPtr(offset, msg2Post +1);
 	msg2Post[numLinesOffset] = linesInBody;
 
 	// If the message is posted to the message board successfully
@@ -2166,21 +2126,20 @@ void MsgBoardQuestEscortArrive( P_CHAR pc, P_CHAR pc_k)
 	if ( servicePay == 0 )
 	{
 		sprintf( temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Alas, I seem to be a little short on gold. I have nothing to pay you with."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
-		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp, 0 );
+		pc->talk( pc_k->getSocket(), temp, 0 );
 	}
 	else // Otherwise pay the poor sod for his time
 	{
 		// Less than 75 gold for a escort is pretty cheesey, so if its between 1 and 75, add a randum amount of between 75 to 100 gold
 		if ( servicePay < 75 ) servicePay += RandomNum(75, 100);
-		addgold( calcSocketFromChar(DEREF_P_CHAR(pc_k)), servicePay );
-		goldsfx( calcSocketFromChar(DEREF_P_CHAR(pc_k)), servicePay );
+		addgold( pc_k->getSocket(), servicePay );
+		goldsfx( pc_k->getSocket(), servicePay );
 		sprintf( temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Here is thy pay as promised."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
 		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp, 0 );
 	}
 
 	// Inform the PC of what he has just been given as payment
-	sprintf( temp, TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title );
-	sysmessage( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp );
+	pc_k->sysmsg(TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title );
 
 	// Take the NPC out of quest mode
 	pc->npcWander = 2;         // Wander freely
@@ -2287,10 +2246,7 @@ void MsgBoardQuestEscortRemovePost( int npcIndex )
 				if ( feof(file) ) break;
 			}
 
-			if ( (msg[13] == s/16777216) &&
-				(msg[14] == s/65536   ) &&
-				(msg[15] == s/256     ) &&
-				(msg[16] == s%256     ) )
+			if ( LongFromCharPtr(msg +13)  == s )
 			{
 				// Jump back to the DEL segment in order to mark the post for deletion
 				fseek( file, -13, SEEK_CUR );
@@ -2340,7 +2296,7 @@ void MsgBoardMaintenance( void )
 	char                  fileName[256]   = "";
 	char                  fileBBITmp[256] = "";
 	char                  fileBBPTmp[256] = "";
-	char                  msg2[MAXBUFFER];
+	UI08                  msg2[MAXBUFFER];
 
 	FILE                  *pBBINew        = NULL;
 	FILE                  *pBBIOld        = NULL;
@@ -2367,8 +2323,8 @@ void MsgBoardMaintenance( void )
 	int                   postAge;
 	int                   count;
 
-	int                   newPostSN  = 0;
-	int                   basePostSN = 0;
+	SERIAL                newPostSN  = 0;
+	SERIAL                basePostSN = 0;
 	unsigned int          sizeOfBBP  = 0;
 
 	UI32		      index = 0 ;
@@ -2536,10 +2492,7 @@ void MsgBoardMaintenance( void )
 		basePostSN = newPostSN;
 
 		// Write out the new base SN to the new BBI file
-		msg[0] = newPostSN/16777216;
-		msg[1] = newPostSN/65536;
-		msg[2] = newPostSN/256;
-		msg[3] = newPostSN%256;
+		LongToCharPtr(newPostSN, msg +0);
 
 		if ( fwrite( msg, sizeof(char), 4, pBBINew ) != 4 )
 			ConOut("[FAIL]\n\tMsgBoardMaintenance() Failed to write out newPostSN to pBBINew\n");
@@ -2565,7 +2518,7 @@ void MsgBoardMaintenance( void )
 				if ( feof(pBBIOld) ) break;
 
 			// Day that post was created
-			postDay = (msg[7]*256) + msg[8];
+			postDay = ShortFromCharPtr(msg +7);
 
 			// Calculate the age of this post;
 			postAge = dayOfYear - postDay;
@@ -2590,21 +2543,16 @@ void MsgBoardMaintenance( void )
 			if (  (msg[6]>0x05) && ( msg[13] || msg[14] || msg[15] || msg[16]) )
 			{
 				// Convert the post objects serial number to an int.
-				int postObjectSN  = (msg[13]*16777216) + (msg[14]*65536) + (msg[15]*256) + msg[16];
+				SERIAL postObjectSN  = LongFromCharPtr(msg +13);
 				int postQuestType = msg[6];
 				int foundMatch    = 0;
+
+				P_CHAR pc_z=pointers::findCharBySerial(postObjectSN);
 
 				switch ( postQuestType )
 				{
 					case ESCORTQUEST:
 						{
-							// Use CHAR_ST to find owner of the post, Since the maintenance is performed
-							// after the world is loaded we can just whip through the array to find what we need
-							//for ( int z=0; z<charcount; z++ )
-							//or... we can use hastables and do it 100x faster --Zippy
-							//long z = calcCharFromSer( calcserial([13],msg[14],msg[15],msg[16]) );
-							P_CHAR pc_z=pointers::findCharBySerPtr(msg +13);
-
 							if (ISVALIDPC(pc_z))
 							{
 								if ( pc_z->npc && ( pc_z->questType>0 ) )
@@ -2634,14 +2582,9 @@ void MsgBoardMaintenance( void )
 						break;
 					case BOUNTYQUEST:
 						{
-							// Use CHAR_ST to find owner of the post, Since the maintenance is performed
-							// after the world is loaded we can just whip through the array to find what we need
-							//for ( int z=0; z<charcount; z++ )
-							//or... we can use hastables and do it 100x faster --Zippy
-							P_CHAR pc_z=pointers::findCharBySerPtr(msg +13);
 							if (ISVALIDPC(pc_z))
 							{
-								if ( (pc_z->getSerial32() == postObjectSN) && (pc_z->npc == 0 ) && (pc_z->questBountyReward  >  0           ) )
+								if ( (pc_z->npc == 0) && (pc_z->questBountyReward  >  0) )
 								{
 									// Check that if this is a BOUNTYQUEST that should be removed first!
 									if( ( postAge>=SrvParms->bountysexpire ) && ( SrvParms->bountysexpire!=0 ) )
@@ -2673,7 +2616,7 @@ void MsgBoardMaintenance( void )
 				if ( !foundMatch )
 				{
 					// Show the operator a message indicating that a dangling post has been removed
-					ConOut("[WARNING]\n\tDangling Post found (SN = %02x %02x %02x %02x, questType = %02x) REMOVING!\n", msg[13], msg[14], msg[15], msg[16], msg[6] );
+					ConOut("[WARNING]\n\tDangling Post found (SN = %08x, questType = %02x) REMOVING!\n", postObjectSN, msg[6] );
 					// Set the flag to delete the dangling post
 					msg[6]=0x00;
 				}
@@ -2695,28 +2638,26 @@ void MsgBoardMaintenance( void )
 					if ( fread( msg2, sizeof(char), 12, pBBPOld ) != 12 )
 						break;
 					// Calculate the size of the remainder of this BBP segment ( -12 because we just read the first 12 bytes)
-					sizeOfBBP = (msg2[1]*256) + msg2[2] - 12;
+					sizeOfBBP = ShortFromCharPtr(msg2 +1) - 12;
 					// Fill up the rest of the msg2 with data from the BBP file
 					if ( fread( &msg2[12], sizeof(char), sizeOfBBP, pBBPOld ) != sizeOfBBP )
 						if ( feof(pBBPOld) ) break;
 					// Check to see that the post SN of the message just read matches the SN in the BBI file
-					if ( (msg2[8]  == msg[0]) && (msg2[9]  == msg[1]) && (msg2[10] == msg[2]) && (msg2[11] == msg[3]) )
+					if ( LongFromCharPtr(msg2 +8) == LongFromCharPtr(msg +0) )
 					{
 						// This is a match so write the message out to the new BBP file
 						// First set the serial number of this post to the newPostSN
-						msg2[8]  = newPostSN/16777216;
-						msg2[9]  = newPostSN/65536;
-						msg2[10] = newPostSN/256;
-						msg2[11] = newPostSN%256;
+						LongToCharPtr(newPostSN, msg2 +8);
+
 						// If this is a BOUNTYQUEST, then make sure you update the
 						// PC that references this bounty with the new BountyPostSerial#
 						if( msg[6] == BOUNTYQUEST )
 						{
-        						SERIAL postObjectSN  = calcserial(msg[13],msg[14],msg[15],msg[16]);
+        						SERIAL postObjectSN  = LongFromCharPtr(msg +13);
 							P_CHAR pc_z=pointers::findCharBySerial(postObjectSN);
 							if (ISVALIDPC(pc_z))
 							{
-								if ( (pc_z->getSerial32()== postObjectSN) && (pc_z->npc== 0) && (pc_z->questBountyReward  >  0) )
+								if ( /*(pc_z->getSerial32()== postObjectSN) &&*/ (pc_z->npc== 0) && (pc_z->questBountyReward  >  0) )
 								{
 									pc_z->questBountyPostSerial = newPostSN;
 								}
@@ -2730,10 +2671,7 @@ void MsgBoardMaintenance( void )
 						// We found the message we are looking for so exit the loop leaving the file
 						// pointer where it is (messages must be in the same order in both files).
 						// Update msg[] with newPostSN value
-						msg[0] = newPostSN/16777216;
-						msg[1] = newPostSN/65536;
-						msg[2] = newPostSN/256;
-						msg[3] = newPostSN%256;
+						LongToCharPtr(newPostSN, msg +0);
 
 						// Write out new BBI segment to pBBINew
 						if ( fwrite( msg, sizeof(char), 19, pBBINew ) != 19)
@@ -2760,10 +2698,7 @@ void MsgBoardMaintenance( void )
 		if ( count == 0 ) newPostSN++;
 
 		// Set the buffer to the newPostSN
-		msg[0] = (newPostSN-1)/16777216;
-		msg[1] = (newPostSN-1)/65536;
-		msg[2] = (newPostSN-1)/256;
-		msg[3] = (newPostSN-1)%256;
+		LongToCharPtr(newPostSN-1, msg +0);
 
 		// Write out the newPostSN
 		if ( fwrite( msg, sizeof(char), 4, pBBINew ) != 4)

@@ -1807,7 +1807,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_STATUS_REQUEST:
 					if (buffer[s][5]==4)
-						statwindow(pc_currchar, MAKE_CHAR_REF(calcCharFromSer(buffer[s][6], buffer[s][7], buffer[s][8], buffer[s][9])));
+						statwindow(pc_currchar, pointers::findCharBySerPtr(buffer[s] +6));
 
 					if (buffer[s][5]==5) 
 						skillwindow(s);
