@@ -57,8 +57,10 @@ namespace item
 		sprintf(sect, "SECTION ITEM %i", itemnum);
 
 		if((iter = Scripts::Items->getNewIterator(sect)) == NULL)
+		{
+			WarnOut("Undefined item number %d\n", itemnum);
 			return NULL;
-
+		}
 		P_ITEM pi= archive::item::New();
 
 		if (!ISVALIDPI(pi)) {
@@ -157,6 +159,27 @@ namespace item
 								{
 									std::string	str_scriptId,
 											str_itemAmount;
+									std::string str_chanceWord, str_chance, remainder, str_remains;
+									if ( rha.find("CHANCE")>= 0 && rha.find("CHANCE") < rha.length())
+									{
+										splitLine( rha, str_scriptId, str_remains );
+										splitLine( str_remains, str_chanceWord, remainder);
+										// Either an amount was not given and str_chanceWord is nwo the value of amount
+										if ( str_chanceWord == "CHANCE")
+											str_chance=remainder;
+										else
+										// or the amount was there so remainder contains CHANCE <chance>
+											splitLine(remainder, str_chanceWord, str_chance);
+
+										rha.erase(rha.find(" CHANCE"), rha.length());
+										str_scriptId="";
+									}
+									SI32 chance=str2num(str_chance);
+									if ( chance > 0 )
+									{
+										if ( rand()%100 > chance )
+											break;
+									}
 
 									splitLine( rha, str_scriptId, str_itemAmount );
 
@@ -176,6 +199,59 @@ namespace item
 								WarnOut( "CreateFromScript: %s attribute in non container item %i", lha.c_str(), itemnum );
 						}
 						break;
+					}
+					else if ( lha == "CONTAINLIST" )
+					{
+						switch( pi->type )
+						{
+							case ITYPE_CONTAINER		:
+							case ITYPE_UNLOCKED_CONTAINER	:
+							case ITYPE_LOCKED_CONTAINER	:
+							{
+								std::string str_scriptid, str_chanceWord, str_chance, str_amount, str_remains, str_keyword;
+								std::string strItemList = rha;
+								do
+								{
+									str_keyword="";
+									str_remains="";
+									splitLine( strItemList, str_keyword, str_remains );
+									if ( str_scriptid == "" )
+										str_scriptid=str_keyword;
+									if ( str_keyword == "AMOUNT")
+									{
+										strItemList="";
+										splitLine( str_remains, str_amount, strItemList );
+									}
+									else if ( str_keyword == "CHANCE" )
+									{
+										strItemList="";
+										splitLine( str_remains, str_chance, strItemList );
+									}
+									else
+										strItemList=str_remains;
+								} while (strItemList != "" );
+
+								SI32 chance=str2num(str_chance);
+								SI32 amount=str2num(str_amount);
+								if ( chance > 0 )
+								{
+									if ( rand()%100 > chance )
+										break;
+								}
+								P_ITEM pitem=item::CreateScriptRandomItem( const_cast<char*>(str_scriptid.c_str()), pi);
+								if( ISVALIDPI(pitem) )
+								{
+									if ( amount <= 0 )
+										amount=1;
+									pitem->amount=amount;
+								}
+								else
+									WarnOut( "CreateFromScript: invalid attribute %s %s", lha.c_str(), rha.c_str() );
+								break;
+							}
+							default				:
+								WarnOut( "CreateFromScript: %s attribute in non container item %i", lha.c_str(), itemnum );
+						}
 					}
 					else if ( lha == "CREATOR" )
 						pi->creator = rha;
@@ -267,7 +343,11 @@ namespace item
 				case 'M':
 					if ( lha == "MORE" )
 					{
-						tmp = str2num(rha);
+						
+						if ( rha.find("0x") == 0)
+							tmp=hex2num(rha);
+						else
+							tmp = str2num(rha);
 						pi->more1 = tmp >> 24;
 						pi->more2 = tmp >> 16;
 						pi->more3 = tmp >> 8;
@@ -276,7 +356,10 @@ namespace item
 					// MORE2 may not be useful ?
 					else if ( lha == "MORE2" )
 					{
-						tmp = str2num(rha);
+						if ( rha.find("0x") == 0)
+							tmp=hex2num(rha);
+						else
+							tmp = str2num(rha);
 						pi->moreb1 = tmp >> 24;
 						pi->moreb2 = tmp >> 16;
 						pi->moreb3 = tmp >> 8;
