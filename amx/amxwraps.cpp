@@ -2876,13 +2876,11 @@ NATIVE( _set_addOwnedNpcs )
 \param 2 the x location
 \param 3 the y location
 \param 4 distance
-\param 5 exclude offline
-\param 6 only player
 \return 0
 */
-NATIVE( _set_addCharsNearXY ) 
+NATIVE( _set_addNpcsNearXY ) 
 {
-	amxSet::addCharsNearXY( params[1], params[2], params[3], params[4], params[5]!=0, params[6]!=0 );
+	amxSet::addNpcsNearXY( params[1], params[2], params[3], params[4] );
 	return 0;
 }
 
@@ -5637,7 +5635,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_add", _set_add },
  
  { "set_addOwnedNpcs", _set_addOwnedNpcs },
- { "set_addCharsNearXY", _set_addCharsNearXY },
+ { "set_addNpcsNearXY", _set_addNpcsNearXY },
  { "set_addPartyFriend", _set_addPartyFriend },
  { "set_addItemsInCont", _set_addItemsInCont },
  { "set_addItemWeared", _set_addItemWeared },
