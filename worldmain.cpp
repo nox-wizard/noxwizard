@@ -360,6 +360,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "CARVE"))			{ pc->carve=str2num(script2); }
 			else if (!strcmp(script1, "CANTRAIN"))		{ pc->cantrain = true; }
+			else if (!strcmp(script1, "COMMANDLEVEL"))  { pc->commandLevel = str2num(script2);}
 		break;
 
 		case 'D':
@@ -1739,6 +1740,16 @@ void CWorldMain::SaveChar( P_CHAR pc )
 
 			if (pc->gmrestrict!=dummy.gmrestrict)
 				fprintf(cWsc, "GMRESTRICT %i\n", pc->gmrestrict);
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
+			if (pc->commandLevel!=dummy.commandLevel)
+				fprintf(cWsc, "COMMANDLEVEL %i\n", pc->commandLevel);
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
+			////////////////////////////////////////////////////////
 
 			if( pc->npc && pc->npcMoveSpeed != NPCSPEED )
 				fprintf(cWsc, "MOVESPEED %f\n", pc->npcMoveSpeed );

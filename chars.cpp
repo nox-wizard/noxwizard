@@ -349,7 +349,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	vendorItemsBuy = NULL;
 
 	oldmenu=INVALID;
-
+	
 	commandLevel=0;
 	// initializing crypt
 #ifdef ENCRYPTION

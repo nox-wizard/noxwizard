@@ -106,6 +106,7 @@
 #include "classes.h"
 #include "map.h"
 #include "scripts.h"
+#include "cmds.h"
 
 
 
@@ -312,7 +313,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	}*/
 
 	//allclients.insert( make_pair( pc->getSerial32(), cNxwClientObj( s ) ) );
-
+	
 	pc->npc=false;
 
 	if (buffer[s][0x46] != 0x00)
@@ -486,7 +487,12 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
 	}
 
-
+	//Set command priv level 255 if the player is an admin, 0 otherwise
+	if(acctno[s]==0)
+	pc->commandLevel=255;
+	else
+	pc->commandLevel=0;
+	
 	clientInfo[s]->ingame=true;
 
 	newbieitems(pc);
@@ -1044,6 +1050,7 @@ void updateMenus();
 		Accounts->LoadAccounts();
 		ConOut("[DONE]\n");
 
+	
 		keeprun=(Network->kr); //LB. for some technical reasons global varaibles CANT be changed in constructors in c++.
 		error=Network->faul; // i hope i can find a cleaner solution for that, but this works !!!
 		// has to here and not at the cal cause it would get overriten later

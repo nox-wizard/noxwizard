@@ -176,7 +176,9 @@ P_COMMAND cCommandMap::findCommand(char* name,NXWCLIENT client){
 
 
 
-cCommandMap* commands = new cCommandMap();
+
+	 cCommandMap* commands = new cCommandMap();
+
 
 
 
@@ -231,13 +233,13 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		//Control between cCommand privilege and cChar privilege.
 
 		if( (p_cmd->getCommandLevel()) > pc_currchar->commandLevel){
-		client->sysmsg("You can use this command!");
+		client->sysmsg("You can't use this command!");
 		return;	
 		}
 		
 		
 		//Let's call the Small Function
-		
+	
 		p_cmd->call(pc_currchar);
    
 		

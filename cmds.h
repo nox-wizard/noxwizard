@@ -20,6 +20,7 @@
 
 
 
+
 enum PrivLevel
 {
 	PRIVLEVEL_ADMIN = 255,
@@ -33,7 +34,6 @@ enum PrivLevel
 
 
 typedef class cCommand* P_COMMAND;
-
 
 
 
