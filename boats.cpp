@@ -1628,7 +1628,16 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
-
+	if ( !ISVALIDPI(iShip) )
+	{
+		LogError("Invalid pointer to ship item with serial %d", shipserial);
+		return;
+	}
+	if ( pShip == NULL )
+	{
+		LogError("Invalid pointer to ship configuration with serial %d", shipserial);
+		return;
+	}
 	x = t->getLocation().x; //where they targeted
 	y = t->getLocation().y;
 	z = (signed char)t->getLocation().z;
