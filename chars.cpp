@@ -2268,8 +2268,6 @@ void cChar::boltFX(LOGICAL bNoParticles)
 {
 	UI08 effect[28]={ 0x70, 0x00, };
 
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
 	Location pos2;
 	pos2.x = 0; pos2.y = 0; pos2.z = 0;
 	MakeGraphicalEffectPkt_(effect, 0x01, getSerial32(), 0, 0, getPosition(), pos2, 0, 0, 1, 0);
@@ -2291,28 +2289,30 @@ void cChar::boltFX(LOGICAL bNoParticles)
 	}
 	else
 	{
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( this, false );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-			 if (clientDimension[j]==2) // 2D client, send old style'd
-			 {
-				 Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-			 {
+		NxwSocketWrapper sw;
+		sw.fillOnline( this, false );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET j=sw.getSocket();
+			if( j!=INVALID )
+			{
+				if (clientDimension[j]==2) // 2D client, send old style'd
+				{
+					Xsend(j, effect, 28);
+//AoS/					Network->FlushBuffer(j);
+				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+				{
 				//TODO!!!! fix it!
-				bolteffectUO3D(DEREF_P_CHAR(this));
-				unsigned char particleSystem[49];
-				Xsend(j, particleSystem, 49);
-//AoS/				Network->FlushBuffer(j);
-			 }
-			 else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
-		 }
-	   }
+					bolteffectUO3D(DEREF_P_CHAR(this));
+					UI08 particleSystem[49];
+					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
+				}
+			 
+				else if (clientDimension[j] != 2 && clientDimension[j] !=3 )
+					LogError("Invalid Client Dimension: %d\n",clientDimension[j]);
+			}
+		}
 	}
 }
 
