@@ -206,6 +206,7 @@ public:
 	LOGICAL		AddItem(P_ITEM pItem, short xx=-1, short yy=-1);	// Add Item to container
 	SI32		DeleteAmountByID(int amount, unsigned int scriptID);
 	SI16		getContGump();
+	void		putInto( P_ITEM pi );
 //@}
 
 /********************************

@@ -231,6 +231,21 @@ SI16 cItem::getContGump()
 
 }
 
+/*
+\brief Put an item into this container
+\author Endymion
+\note do refresh
+*/
+void cItem::putInto( P_ITEM pi )
+{
+	VALIDATEPI(pi);
+	if( this->ContainerPileItem(pi)==INVALID ) { // try to pile
+		pi->setCont(this);
+		pi->SetRandPosInCont(this);
+		pi->Refresh();
+	}
+}
+
 
 // author: LB purpose: returns the type of pack
 // to handle its x,y coord system corretly.
