@@ -988,7 +988,12 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 		if ( pc->race <= 0 )
 		{
 			pc->race = 0;
-			Race::enlist( s );
+
+			AmxFunction* race_enlist = NULL;
+			if( race_enlist==NULL )
+				race_enlist = new AmxFunction( "__race_enlist" );
+
+			race_enlist->Call( s );
 		}
 		//else
 		//	validate pc race and decide what to do if race is invalid or has been deactivated

@@ -125,6 +125,12 @@ public:
 
 };
 
+
+const int RS_BACKPACK_ITEM = 1;
+const int RS_BANK_ITEM = 2;
+const int RS_EQUIP_ITEM = 3;
+
+
 namespace amxSet {
 
 	typedef std::map< SERIAL, NxwWrapper* > AMX_WRAPPER_DB;

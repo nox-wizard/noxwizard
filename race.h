@@ -38,11 +38,6 @@ class Race
 					raceMap;
 		static	cScpScript* 	script;
 		static	bool		activeRaceSystem;
-		static	string*		globalWebRoot;
-		static	string*		globalWebLink;
-		static	bool		teleportOnEnlist;
-		static	short		startLocation[3];
-		static	bool		withWebInterface;
 
 	private:
 		//
@@ -68,6 +63,13 @@ class Race
 		static	void		scriptConOut( void );
 
 	public:
+
+		static	bool		teleportOnEnlist;
+		static	bool		withWebInterface;
+		static	string		globalWebRoot;
+		static	string		globalWebLink;
+		static	short		startLocation[3];
+		
 		//
 		//	public static methods
 		//
@@ -77,8 +79,6 @@ class Race
 
 		static	void		enlist( const NXWSOCKET socket );
 		//static	void		resurrect( const P_CHAR pc );
-
-		static	void		handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 button );
 
 		static	bool		isRaceSystemActive( void );
 		static	const 	string*	getName( const UI32 raceId );
@@ -105,7 +105,6 @@ class Race
 			//
 			// race name
 			//
-			string				name;
 			string				pluralName;
 			//
 			// race mode
@@ -114,7 +113,6 @@ class Race
 			//
 			// pc or npc race
 			//
-			RaceType			raceType;
 			//
 			// males or females only or mixed
 			//
@@ -122,19 +120,9 @@ class Race
 			//
 			// -- race description
 			//
-			std::vector< string >		description;
 			//
 			// -- appearance
 			//
-			UI32				skin;
-			//UI32		skinColor;
-			vector< UI32 >			skinColor;
-			RequiredType			hairPerm;
-			UI32				hairStyle;
-			vector< UI32>			hairColor;
-			RequiredType			beardPerm;
-			vector< BEARDSTYLE >		beardStyles;
-			vector< UI32 >			beardColor;
 			//
 			// -- abilities
 			//
@@ -172,7 +160,6 @@ class Race
 			//
 			// -- miscelaneous
 			//
-			string				webLink;
 			UI32				tileId;
 			UI32				font;
 			UI32				say;
@@ -220,6 +207,22 @@ class Race
 			void				setRacialRelation( UI32 raceId, RACIALRELATION relation );
 			void				setSkillCap( UI32 newSkillCap );
 			void				show( void );
+
+			vector< UI32 >			skinColor;
+			string				webLink;
+			std::vector< string >		description;
+			RaceType			raceType;
+			UI32				skin;
+			//UI32		skinColor;
+			RequiredType			hairPerm;
+			UI32				hairStyle;
+			vector< UI32>			hairColor;
+			RequiredType			beardPerm;
+			vector< BEARDSTYLE >		beardStyles;
+			vector< UI32 >			beardColor;
+			string				name;
 };
+
+
 
 #endif
