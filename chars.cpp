@@ -2832,17 +2832,18 @@ void cChar::Kill()
 
 	//--------------------- reputation stuff
 
-    P_CHAR pk = MAKE_CHAR_REF(0);
+	P_CHAR pk = MAKE_CHAR_REF(0);
 
-    NxwCharWrapper sc;
+	NxwCharWrapper sc;
 	sc.fillCharsNearXYZ( getPosition(), VISRANGE*2, false );
 	for( sc.rewind(); !sc.isEmpty(); sc++ )
 	{
-        pk = sc.getChar();
+		pk = sc.getChar();
 		if(!ISVALIDPC(pk) || pk->targserial!=getSerial32() )
 			continue;
 
-		if (pk->npcaitype==NPCAI_TELEPORTGUARD) {
+		if (pk->npcaitype==NPCAI_TELEPORTGUARD)
+		{
 			pk->summontimer=(uiCurrentTime+(MY_CLOCKS_PER_SEC*20));
 			pk->npcWander=2;
 			pk->setNpcMoveTime();
@@ -2853,67 +2854,73 @@ void cChar::Kill()
 		pk->timeout=0;
 
 		P_CHAR pk_att=pointers::findCharBySerial(pk->attackerserial);
-		if (ISVALIDPC(pk_att)) {
+		if (ISVALIDPC(pk_att))
+		{
 			pk_att->ResetAttackFirst();
 			pk_att->attackerserial=INVALID; // lb crashfix
-	}
-
-	pk->attackerserial=INVALID;
-	pk->ResetAttackFirst();
-
-	if (!pk->npc)
-	{
-		strncpy(murderername, pk->getCurrentNameC(), 48);
-
-		NxwCharWrapper party;
-		party.fillPartyFriend( pk, VISRANGE, true );
-		for( party.rewind(); !party.isEmpty(); party++ ) {
-			
-			P_CHAR fr=party.getChar();
-			if( ISVALIDPC(fr) ) {
-				fr->IncreaseKarma( (0-(karma)), this  );
-				fr->modifyFame( fame );
-			}
 		}
 
-		pk->IncreaseKarma( (0-(karma)), this  );
-		pk->modifyFame( fame );
-		
-		//murder count \/
-		if (!npc)
-		{ // PvP
-			if ( (!IsGrey()) && IsInnocent() && Guilds->Compare(pk,this)==0)
+		pk->attackerserial=INVALID;
+		pk->ResetAttackFirst();
+
+		if (!pk->npc)
+		{
+			strncpy(murderername, pk->getCurrentNameC(), 48);
+
+			NxwCharWrapper party;
+			party.fillPartyFriend( pk, VISRANGE, true );
+			for( party.rewind(); !party.isEmpty(); party++ )
 			{
-				murdererSer = pk->getSerial32();
-				pk->kills++;
-				pk->sysmsg(TRANSLATE("You have killed %i innocent people."), pk->kills);
-
-				if (pk->kills==(unsigned)repsys.maxkills)
-					pk->sysmsg(TRANSLATE("You are now a murderer!"));
-				setcharflag(pk);
-
-     			if (SrvParms->pvp_log)
+				P_CHAR fr=party.getChar();
+				if( ISVALIDPC(fr) )
 				{
-					LogFile pvplog("PvP.log");
-					pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pk->getCurrentNameC());
-     			}
+					fr->IncreaseKarma( (0-(karma)), this  );
+					fr->modifyFame( fame );
+				}
+			}
+
+			pk->IncreaseKarma( (0-(karma)), this  );
+			pk->modifyFame( fame );
+
+			//murder count \/
+			if (!npc)
+			{ // PvP
+				if ( (!IsGrey()) && IsInnocent() && Guilds->Compare(pk,this)==0)
+				{
+					murdererSer = pk->getSerial32();
+					pk->kills++;
+					pk->sysmsg(TRANSLATE("You have killed %i innocent people."), pk->kills);
+
+					if (pk->kills==(unsigned)repsys.maxkills)
+						pk->sysmsg(TRANSLATE("You are now a murderer!"));
+					setcharflag(pk);
+
+				if (SrvParms->pvp_log)
+				{
+						LogFile pvplog("PvP.log");
+						pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pk->getCurrentNameC());
+				}
 			}   // was innocent
-			
+
 			if (pk->amxevents[EVENT_CHR_ONKILL])
 				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
-			
-			//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
-		} //PvP
-	}//if !npc
-	else
-		if (pk->war)
-			pk->toggleCombat(); // ripper
+
+				//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+			} //PvP
+		}//if !npc
+		else
+		{
+			if (pk->amxevents[EVENT_CHR_ONKILL])
+				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), INVALID, getSerial32(), s);
+			if (pk->war)
+				pk->toggleCombat(); // ripper
+		}
 	}
 
 
 	//--------------------- trade stuff
 
-	
+
 	NxwItemWrapper weared;
 	weared.fillItemWeared( this, true, true, false );
 	for( weared.rewind(); !weared.isEmpty(); weared++ ) {
