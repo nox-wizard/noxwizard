@@ -445,10 +445,13 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		return;
 	} else if ( script1 == "ADDITEM" ) {
 		#ifndef __NEWMAKESYS
-		if (pc->IsGMorCounselor()) //Luxor bug fix for 'add command
+		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
 		#endif
-			item::SpawnItemBackpack2(s, str2num(script2), 0);
+			P_ITEM pi = item::CreateFromScript( (char*)script2.c_str(), pc->getBackpack() );
+			if( ISVALIDPI(pi) )
+				pi->Refresh();
 		#ifndef __NEWMAKESYS
+		}
 		else
 			Skills::MakeMenuTarget(s,str2num(script2),pc->making);
 		#endif

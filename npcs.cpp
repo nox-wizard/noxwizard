@@ -632,15 +632,12 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if (!ISVALIDPI(mypack))
 					{
-						pi_n=item::SpawnItem(-1,DEREF_P_CHAR(pc),1,"Backpack",0,0x0E75,0,0,0);
+						pi_n=item::CreateFromScript( "$item_backpack" );
 						if( ISVALIDPI(pi_n) )
 						{
 							pc->packitemserial=pi_n->getSerial32();
 							pi_n->setPosition(0, 0, 0);
 							pi_n->setContSerial(pc->getSerial32());
-							pi_n->layer = LAYER_BACKPACK;
-							pi_n->type=1;
-							pi_n->dye=1;
 							mypack=pi_n;
 						}
 						else
