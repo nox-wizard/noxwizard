@@ -70,7 +70,7 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback)
 //Implementation of cCallCommand Class
 
 
-cCallCommand::cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param )
+cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<string>* param )
 {
 	cmd_serial=++current_serial;
 	all_params=params;
@@ -95,17 +95,18 @@ cCommandMap::cCommandMap() {
 }
 
 
-P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 number, AmxFunction* callback) {
+P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* callback) {
 
-	P_COMMAND cmd= new cCommand(name, priv, number,callback);
+	P_COMMAND cmd= new cCommand(name, priv, callback);
     command_map[name]= cmd;
  	return cmd;
 }
 
 
-static bool cCommandMap::Check(string& speech) {
 
-std::map< std::string, P_COMMAND >::iterator iter( command_map.find( speech ) );
+bool cCommandMap::Check(string& speech) {
+
+std::map<std::string, P_COMMAND>::iterator iter( command_map.find( speech ) );
 
 if ( iter != command_map.end() )	//command exists
     return TRUE;
@@ -121,7 +122,7 @@ else
 
 cCallCommand::findCallCommand(SERIAL cmd){
 
-CMDMAP::iterator iter( command_map.find( cmd ) );
+std::map<SERIAL, callCommand*>::iterator iter( command_map.find( cmd ) );
 
 if ( iter != command_map.end() )	//command exists
     return iter->second.callback;
@@ -243,7 +244,8 @@ static CP_ALLPARAMS=1;
 
 /* Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
 			{ "getCmdProperty", _getCmdProperty } */
-	// params[1] = char serial
+	
+// params[1] = char serial
 	// params[2] = cCallCommand Serial
 	// params[3] = property
 	// params[4] = 1st param given
@@ -268,6 +270,5 @@ NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting fo
   	}
   	return INVALID;
 }
-
 
 */
