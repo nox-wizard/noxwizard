@@ -1127,9 +1127,13 @@ void LoadOverrides (void)
 
 			if (curType==AMXT_SPEECH) {
 				/** all speeches containing the given phrase will kick up the script */
-				for (i = 0; i<(signed)strlen(buf); i++) {
+				
+				if( ServerScp::g_css_override_case_sensitive==0 ){
+					for (i = 0; i<(signed)strlen(buf); i++) {
 					if ((buf[i]>='a')&&(buf[i]<='z')) buf[i] += static_cast<char>('A'-'a');
+					}
 				}
+				
 				strcpy(g_strAmxSpeeches[g_nAmxSpeechPtr], buf);
 				id = g_nAmxSpeechPtr;
 				g_nAmxSpeechPtr++;
@@ -1164,8 +1168,10 @@ void LoadOverrides (void)
 */
 void checkAmxSpeech( SERIAL chr, char *speech)
 {
+	
 	if( ServerScp::g_css_override_case_sensitive==0 )
 		strupr( speech );
+	
 	for (int i=0; i<g_nAmxSpeechPtr; i++)
 	{
 		if (strstr(speech,g_strAmxSpeeches[i])!=NULL)

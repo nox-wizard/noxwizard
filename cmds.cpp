@@ -206,7 +206,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		
 		//Control between cCommand privilege and cChar privilege.
 		if( (p_cmd->getCommandLevel()) > pc_currchar->getPrivLevel()){
-		client->sysmsg("You can't use this command! %d %d",p_cmd->getCommandLevel(),pc_currchar->getPrivLevel());
+		client->sysmsg("You can't use this command!");
 		return;	
 		}
 		
