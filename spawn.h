@@ -19,15 +19,14 @@ public:
 
 public:
 
-	cSpawnArea( AREA_ITER area );
-	~cSpawnArea();
+	cSpawnArea( areas::AREA_ITER area );
 
 	UI32 current; //!< currente number of spawned
 	TIMERVAL nextspawn; //!< next spawn
 
 	SERIAL_SET items_spawned;
 	SERIAL_SET npcs_spawned;
-	AREA_ITER where;
+	areas::AREA_ITER where;
 
 	bool needSpawn();
 
@@ -47,7 +46,6 @@ private:
 public:
 
 	cSpawnScripted( SERIAL serial );
-	~cSpawnScripted();
 
 	SERIAL serial; //!< region serial
 
@@ -75,7 +73,6 @@ class cSpawnDinamic {
 public:
 
 	cSpawnDinamic( P_ITEM pi );
-	~cSpawnDinamic();
 
 	SERIAL item; //!< the spawner
 	SERIAL_SET item_spawned; //!< spawned items
@@ -100,7 +97,6 @@ private:
 
 public:
 	cSpawns();
-	~cSpawns();
 
 	TIMERVAL check; //!< check respawn
 

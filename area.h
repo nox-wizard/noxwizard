@@ -16,35 +16,23 @@
 #ifndef _AREA_H
 #define _AREA_H
 
-typedef struct {
-	UI16 x1;
-	UI16 y1;
-	UI16 x2;
-	UI16 y2;
-} Area;
+namespace areas
+{
 
-typedef std::map< SERIAL, Area > AREA_DB;
-typedef AREA_DB::iterator AREA_ITER;
+	typedef struct {
+		UI16 x1;
+		UI16 y1;
+		UI16 x2;
+		UI16 y2;
+	} Area;
 
+	typedef std::map< SERIAL, Area > AREA_DB;
+	typedef AREA_DB::iterator AREA_ITER;
 
-class cAreas {
-
-private:
-
-	AREA_DB allareas;
-	SERIAL currarea;
-
-public:
-
-	friend class cSpawns;
-
-	cAreas();
-	~cAreas();
+	extern AREA_DB allareas;
+	extern SERIAL currarea;
 
 	SERIAL insert( Area& newarea, SERIAL index = INVALID );
 	void loadareas();
-
-
-};
-
+}
 #endif

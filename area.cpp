@@ -9,24 +9,13 @@
 
 #include "nxwcommn.h"
 
-cAreas*	Areas;
+areas::AREA_DB areas::allareas;
+SERIAL areas::currarea = INVALID;
 
-
-cAreas::cAreas() 
+SERIAL areas::insert( Area& newarea, SERIAL index )
 {
-	this->allareas.clear();
-	this->currarea=INVALID;
-};
-
-cAreas::~cAreas() 
-{
-}
-
-
-SERIAL cAreas::insert( Area& newarea, SERIAL index )
-{
-	AREA_DB::iterator iter( this->allareas.find( index ) );
-	if( iter==this->allareas.end() && index!=INVALID ) {
+	AREA_DB::iterator iter( allareas.find( index ) );
+	if( iter==allareas.end() && index!=INVALID ) {
 		if( currarea<=index )
 			currarea=index;
 		allareas[index]=newarea;
@@ -40,12 +29,12 @@ SERIAL cAreas::insert( Area& newarea, SERIAL index )
 }
 
 
-void cAreas::loadareas()
+void areas::loadareas()
 {
 
-    cScpIterator* iter = NULL;
-    char script1[1024];
-    char script2[1024];
+	cScpIterator* iter = NULL;
+	char script1[1024];
+	char script2[1024];
 	int idxarea=0;
 	
 	int loopexit=0;
@@ -79,10 +68,10 @@ void cAreas::loadareas()
         while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 		if( check==0xFFFF )
-			this->insert( area, current );
-    }
+			insert( area, current );
+	}
 	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
 
-    safedelete(iter);
-
+	safedelete(iter);
 }
+

@@ -1036,12 +1036,11 @@ void angelMode();
 		CIAO_IF_ERROR;
 
 		ConOut("Loading areas...");
-		Areas->loadareas();
+		areas::loadareas();
 		ConOut("[DONE]\n");
 
 
 		ConOut("Loading spawn regions...");
-		//loadspawnregions();
 		Spawns->loadFromScript();
 		ConOut("[DONE]\n");
 
@@ -3002,10 +3001,7 @@ void BuildPointerArray()
 */
 void InitMultis()
 {
-//	unsigned int i ; // unused variable
-
 	cAllObjectsIter objs;
-//	P_CHAR pc; // unused variable
 	for( objs.rewind(); !objs.IsEmpty(); objs++ )
 	{
 	/*for (i=0;i<charcount;i++)
@@ -3064,7 +3060,6 @@ void StartClasses()
 	Network=new cNetwork;
 	Partys=new cPartys;
 	Spawns=new cSpawns;
-	Areas=new cAreas;
 	Restocks= new cRestockMng();
 
 	ConOut(" [ OK ]\n");
@@ -3080,7 +3075,6 @@ void DeleteClasses()
 	delete Network;
 	delete Partys;
 	delete Spawns;
-	delete Areas;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
 	delete Restocks;
 	//objects.clear();
@@ -3097,13 +3091,10 @@ void gcollect()
 }
 
 /*!
-\brief remove all the item without any parents
-(not in any valid container)
-\author ?
-\since ?
+\brief Remove items which were in deleted containers
 \remarks \remark rewritten by Anthalir
 */
-void checkGarbageCollect () // Remove items which were in deleted containers
+void checkGarbageCollect ()
 {
 	int removed, rtotal=0, corrected=0;
 	int loopexit=0;
