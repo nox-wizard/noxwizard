@@ -92,7 +92,8 @@ class cNetwork
 		void enterchar(int s);
 		void startchar(int s);
 		void LoginMain(int s);
-		void xSend(NXWSOCKET s, const void *point, int length, int test);
+		void xSend(NXWSOCKET socket, const void *point, int length );
+		void xSend(NXWSOCKET socket, std::vector<UI08>::iterator point, std::vector<UI08>::iterator end );
 		void Disconnect(NXWSOCKET s);
 		void ClearBuffers();
 		void CheckConn();

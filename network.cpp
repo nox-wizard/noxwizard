@@ -248,7 +248,7 @@ void cNetwork::ClearBuffers() // Sends ALL buffered data
 		FlushBuffer( i );
 }
 
-void cNetwork::xSend( NXWSOCKET socket, const void *point, int length, int test ) // Buffering send function
+void cNetwork::xSend( NXWSOCKET socket, const void *point, int length  ) // Buffering send function
 {
 	if( socket == INVALID || socket > MAXCLIENT )
 	{
@@ -261,6 +261,27 @@ void cNetwork::xSend( NXWSOCKET socket, const void *point, int length, int test 
 	memcpy( &outbuffer[ socket ][ boutlength[ socket ] ], point, length );
 	boutlength[ socket ] += length;
 }
+
+void cNetwork::xSend(NXWSOCKET socket, std::vector<UI08>::iterator point, std::vector<UI08>::iterator end )
+{
+	if( socket == INVALID || socket > MAXCLIENT )
+	{
+		LogWarning("XSend called with an invalid socket");
+		return;
+	}
+
+
+	int length=( end- point );
+	if ( boutlength[ socket ] + length > MAXBUFFER )
+		FlushBuffer( socket );
+
+	for( int i=0; point!=end; point++, ++i )
+		outbuffer[ socket ][ boutlength[ socket ]+i ]=(*point);
+		
+	boutlength[ socket ] += length;
+}
+
+
 
 void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player //Instalog
 {
