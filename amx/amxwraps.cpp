@@ -3628,7 +3628,7 @@ NATIVE(_chr_morph)
     printstring(amx,cstr,params+10,(int)(params[0]/sizeof(cell))-1);
     g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
     g_nAmxPrintPtr=0;
-
+	pc->polymorph=true;
     pc->morph( params[2], params[3], params[4], params[5], params[6], params[7], (g_cAmxPrintBuffer[0]!=0)? g_cAmxPrintBuffer : NULL, (params[8] > 0));
 
     return 0;
@@ -3645,7 +3645,7 @@ NATIVE(_chr_unmorph)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-
+	pc->polymorph=false;
     pc->morph();
     return 0;
 }
