@@ -131,11 +131,11 @@ fd_set all ;
 fd_set errsock;
 
 int nfds;
-short g_nMainTCPPort=2593; //deafult!
+short g_nMainTCPPort=2593; //default!
 timeval nettimeout;
 int now;
 
-FILE *infile, *scpfile, *lstfile, *wscfile, *mapfile, *sidxfile, *statfile, *verfile, *tilefile, *multifile, *midxfile;
+FILE *infile, *scpfile, *lstfile, *wscfile;
 
 unsigned int servcount;
 unsigned int startcount;

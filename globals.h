@@ -348,7 +348,7 @@ extern timeval nettimeout;
 extern int now;
 
 
-extern FILE *infile, *scpfile, *lstfile, *wscfile, *mapfile, *sidxfile, *statfile, *verfile, *tilefile, *multifile, *midxfile;
+extern FILE *infile, *scpfile, *lstfile, *wscfile;
 extern unsigned int servcount;
 extern unsigned int startcount;
 
