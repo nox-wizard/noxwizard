@@ -643,6 +643,15 @@ LOGICAL cObject::hasTempfx()
 
 	return true;
 }
+
+/*!
+\author Akron
+\brief send a static effect... virtual, 'cause object and chars handle it in different ways
+*/
+void cObject::staticFX(UI16 id, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx* part)
+{
+}
+
 /*!
 \author Sparhawk
 \brief Tells if the object has tempfx in queue

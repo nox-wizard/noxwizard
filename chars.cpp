@@ -2276,7 +2276,7 @@ void cChar::movingFX3(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, UI08 explode,
 \param part optional particles data
 \note if part == NULL then id, speed and loop MUST be >= 0
 */
-void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, particles::ParticleFx* part)
+void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx* part)
 {
 	if (part!=NULL) {
 		if (id == 0xFF) id = (part->effect[0] << 8) + part->effect[1];
@@ -2286,7 +2286,7 @@ void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, particles::ParticleFx* par
 
 	UI08 effect[28]={ 0x70, 0x00, };
 
-	MakeGraphicalEffectPkt(effect, 0x03, getSerial32(), 0, eff, getPosition(), Loc(0, 0, 0), speed, loop, 1, 0); 
+	MakeGraphicalEffectPkt(effect, 0x03, getSerial32(), 0, eff, getPosition(), Loc(0, 0, 0), speed, loop, 1, explode); 
 
 	if (!part) // no UO3D effect ? lets send old effect to all clients
 	{

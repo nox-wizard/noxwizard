@@ -351,11 +351,11 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		case SPELL_CURSE:
 		case SPELL_POISON:
 			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x374A, 0, 10, &spfx);
+			pcto->staticFX(0x374A, 0, 10, 0, &spfx);
 			break;
 		case SPELL_PARALYZE:
 			pcto->playSFX(0x204);
-			pcto->staticFX(0x374A, 0, 10, &spfx);
+			pcto->staticFX(0x374A, 0, 10, 0, &spfx);
 			break;
 		case SPELL_CUNNING:
 		case SPELL_AGILITY:
@@ -363,20 +363,20 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		case SPELL_BLESS:
 		case SPELL_REFLECTION:
 			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x373A, 0, 10, &spfx);
+			pcto->staticFX(0x373A, 0, 10, 0, &spfx);
 			break;
 		case SPELL_GREATHEAL:
-			pcto->staticFX(0x376A, 0, 10, &spfx);
+			pcto->staticFX(0x376A, 0, 10, 0, &spfx);
 			pcto->playSFX(0x202);
 			break;
 		case SPELL_HEAL:
-			pcto->staticFX(0x376A, 0, 10, &spfx);
+			pcto->staticFX(0x376A, 0, 10, 0, &spfx);
 			pcto->playSFX(0x1F2);
 			break;
 		case SPELL_CURE:
 		case SPELL_ARCHCURE:
 			pcto->playSFX(0x1DF);
-			pcto->staticFX(0x376A, 0, 10, &spfx);
+			pcto->staticFX(0x376A, 0, 10, 0, &spfx);
 			break;
 		case SPELL_RESURRECTION:
 			pcto->playSFX(0x214);
@@ -386,11 +386,11 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcfrom->playSFX(0x1E5);
 			break;
 		case SPELL_FLAMESTRIKE:
-			pcto->staticFX(0x3709, 0, 10, &spfx);
+			pcto->staticFX(0x3709, 0, 10, 0, &spfx);
 			pcto->playSFX(0x208);
 			break;
 		case SPELL_EXPLOSION:
-			pcto->staticFX(0x36B0, 0, 10, &spfx);
+			pcto->staticFX(0x36B0, 0, 10, 0, &spfx);
 			pcto->playSFX(0x207);
 			break;
 		case SPELL_LIGHTNING:
@@ -405,16 +405,16 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		case SPELL_MINDBLAST:
 		case SPELL_MANADRAIN:
 		case SPELL_MANAVAMPIRE:
-			pcto->staticFX(0x374A, 0, 10, &spfx);
+			pcto->staticFX(0x374A, 0, 10, 0, &spfx);
 			pcto->playSFX(0x1F1);
 			break;
 
 		case SPELL_REACTIVEARMOUR:
-			pcfrom->staticFX(0x373A, 0, 10, &spfx);
+			pcfrom->staticFX(0x373A, 0, 10, 0, &spfx);
 			break;
 		case SPELL_PROTECTION:
 		case SPELL_ARCHPROTECTION:
-			pcfrom->staticFX(0x376A, 0, 10, &spfx);
+			pcfrom->staticFX(0x376A, 0, 10, 0, &spfx);
 			pcfrom->playSFX(0x1ED);
 			break;
 		case SPELL_NIGHTSIGHT:
@@ -425,7 +425,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcfrom->playSFX(0x203);
 			break;
 		case SPELL_SUMMON:
-			pcfrom->staticFX(0x3735, 0, 10, &spfx);
+			pcfrom->staticFX(0x3735, 0, 10, 0, &spfx);
 			break;
 		case SPELL_EARTHQUAKE:
 			break;
@@ -453,7 +453,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcfrom->playSFX(0x1FA);
 			break;
 		case SPELL_RECALL:
-			pcfrom->staticFX(0x374A, 0, 10, &spfx);
+			pcfrom->staticFX(0x374A, 0, 10, 0, &spfx);
 			pcfrom->playSFX(0x1FC);
 			break;
 
@@ -464,14 +464,14 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 		case SPELL_SUMMON_FIRE:
 		case SPELL_SUMMON_WATER:
 		case SPELL_ENERGYVORTEX:
-			pcfrom->staticFX(0x372A, 0, 10, &spfx);
+			pcfrom->staticFX(0x372A, 0, 10, 0, &spfx);
 			pcfrom->playSFX(0x212);
 			break;
 		case SPELL_WALLSTONE:
 			pcfrom->playSFX(0x1F6);
 			break;
 		case SPELL_TELEPORT:
-			pcfrom->staticFX(0x372A, 0, 10, &spfx);
+			pcfrom->staticFX(0x372A, 0, 10, 0, &spfx);
 			pcfrom->playSFX(0x1FE);
 			break;
 		case SPELL_MASSDISPEL:
@@ -495,7 +495,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 			pcto->playSFX(0x29);
 			break;
 		case SPELL_METEORSWARM:
-			pcto->staticFX(0x372A, 0, 10, &spfx);
+			pcto->staticFX(0x372A, 0, 10, 0, &spfx);
 			pcto->playSFX(0x160);
 			return ;
 

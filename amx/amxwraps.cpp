@@ -3421,10 +3421,9 @@ NATIVE(_chr_updatechar)
 */
 NATIVE(_send_staticfx)
 {
-//Magic->doStaticEffect(params[1], params[2]);
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
-    pc->staticFX(params[2], 0, 10, NULL);
+    P_OBJECT po = objects.findObject(params[1]);
+    VALIDATEPOR(po, INVALID);
+    po->staticFX(params[2], 0, 10);
     return 0;
 }
 

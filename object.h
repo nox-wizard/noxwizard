@@ -21,6 +21,7 @@
 #include "typedefs.h"
 #include "amx/amxcback.h"
 #include "tmpeff.h"
+#include "particles.h"
 
 
 #define ISVALIDPO(po) ( ( po!=NULL && ( sizeof(*po) == sizeof(cObject) || sizeof(*po) == sizeof(cChar) || sizeof(*po) == sizeof(cItem) ) ) ? (po->getSerial32() >= 0) : false )
@@ -171,6 +172,8 @@ public:
 
 public:
 	virtual	void		Delete();
+	virtual void		staticFX(UI16 id, UI08 speed, UI08 loop, UI08 explode = 0, particles::ParticleFx* part = NULL);
+
 
 /*
 private:
