@@ -10,17 +10,50 @@
 #include "nxwcommn.h"
 #include "unicode.h"
 
-#define FIRSTBYTE( C ) C & 0xFF
+#define FIRSTBYTE( C ) C & 0xFF00
 #define SECONDBYTE( C ) C >> 8
 
-cUnicodeString& cUnicodeString::operator=( std::string& str )
+cUnicodeString::cUnicodeString()
 {
-	erase(begin(), end()); // GCC2 workaround to missing clear
-	for(iterator iter = begin(); iter != end(); iter++ ) {
-		push_back( (wchar_t)*iter );
-	}
+	s.push_back(0); // 0 0 termination
+	s.push_back(0);
+}
 
-	return *this;
+cUnicodeString::~cUnicodeString() { }
+
+char* cUnicodeString::c_str()
+{
+	return (char*)s.begin();
+}
+
+UI32 cUnicodeString::size()
+{
+	return (s.size()-2)/2;
+}
+
+UI32 cUnicodeString::length()
+{
+	return size();
+}
+
+void cUnicodeString::clear()
+{
+	s.clear();
+	s.push_back(0); // 0 0 termination
+	s.push_back(0);
+}
+
+void cUnicodeString::copy( std::string& s )
+{
+	this->s.clear();
+	std::string::iterator iter( s.begin() ), end( s.end() );
+	for( ; iter!=end; iter++ ) {
+		this->s.push_back( 0 );
+		this->s.push_back( (*iter) );
+	}
+	this->s.push_back(0); //terminator
+	this->s.push_back(0);
+
 }
 
 template < class T >
@@ -39,3 +72,4 @@ template < class T >
 	for( int i=sizeof(T)-1; i>0; --i )
 		v+=this->byte[i]<< (8*i);
 }
+

@@ -7,36 +7,29 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-/*!
-\file
-\brief Unicode Stuff
-\author Endymion
-*/
-
 #ifndef __UNICODE_H__
 #define __UNICODE_H__
 
-#include <string>
+typedef UI16 UNI_TEXT;
 
 /*!
 \brief An unicode string
 \author Endymion
-\note Fixed for GCC by Akron
 */
-class cUnicodeString : public wstring{
+class cUnicodeString {
+private:
+	std::vector<UI08> s;
 public:
-	cUnicodeString(std::string &str)
-	{
-		*this = str;
-	}
+	cUnicodeString();
+	virtual ~cUnicodeString();
 
-	cUnicodeString &operator=(std::string &str);
+	UI32 size();
+	UI32 length();
 
-	inline const char* sc_str()
-	{
-		return (const char*)c_str();
-	}
+	void copy( std::string& s );
+	char* c_str();
 
+	void clear();
 };
 
 /*
@@ -44,7 +37,7 @@ public:
 \author Endymion
 \note endian now is not a problem
 */
-template < class T >
+template < class T > 
 class u{
 private: 	
 	UI08 byte[sizeof(T)];
