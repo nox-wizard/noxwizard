@@ -1470,7 +1470,7 @@ int npcSelectDirWarOld(P_CHAR pc_i, int j)
 
 /*!
 \author Luxor
-\brief Makes a character walking to a given location
+\brief Calls the pathfinding algorithm and creates a new path
 */
 void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 {
@@ -1479,7 +1479,72 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 
 	if ( hasPath() )
 		safedelete( path );
-	path = new cPath( getPosition(), pos );
+
+        LOGICAL bOk = true;
+	Location loc = pos;
+	if ( isWalkable( pos ) == illegal_z ) { // If it isn't walkable, we can only reach the nearest tile
+                //ConOut( "CIAO");
+		bOk = false;
+		for ( UI32 i = 1; i < 4; i++ ) {
+			// East
+			loc = Loc( pos.x + i, pos.y, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+			// West
+			loc = Loc( pos.x - i, pos.y, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// South
+			loc = Loc( pos.x, pos.y + i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// North
+			loc = Loc( pos.x, pos.y - i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// North-East
+			loc = Loc( pos.x + i, pos.y - i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// North-West
+			loc = Loc( pos.x - i, pos.y - i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// South-East
+			loc = Loc( pos.x + i, pos.y + i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+
+			// South-West
+			loc = Loc( pos.x - i, pos.y + i, pos.z );
+			if ( isWalkable( loc ) != illegal_z ) {
+				bOk = true;
+				break;
+			}
+		}
+	}
+
+        if ( bOk )
+		path = new cPath( getPosition(), loc );
 }
 
 /*!
@@ -1492,6 +1557,9 @@ void cChar::walkNextStep()
 	if ( !hasPath() )
 		return;
 	Location pos = path->getNextPos();
+	if ( pos == getPosition() )
+		return;
+
 	if ( path->targetReached() || isWalkable( pos ) == illegal_z ) {
                 safedelete( path );
 		return;

@@ -74,6 +74,8 @@ public:
 	void insertChar( P_CHAR pc );
 
 	void fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled = true, bool bOnlyFollowing = false );
+	void fillCharsAtXY( Location location, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
+	void fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillCharsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
 	void fillPartyFriend( P_CHAR pc, UI32 nDistance = VISRANGE, bool bExcludeThis = false );

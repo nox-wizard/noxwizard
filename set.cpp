@@ -598,6 +598,52 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 }
 
 /*!
+\brief Fills with a list of chars at given location
+\author Luxor
+\param location the location
+*/
+void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
+{
+
+	if( !mapRegions->isValidCoord( x, y ) )
+		return;
+
+	UI16 nowx = x / REGION_GRIDSIZE, nowy = y / REGION_COLSIZE;
+
+	if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+		return;
+
+	SERIAL_SET::iterator it( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
+	for( ; it != mapRegions->regions[nowx][nowy].charsInRegions.end(); it++ ) {
+		P_CHAR pc = pointers::findCharBySerial( *it );
+		
+		if ( !ISVALIDPC( pc ) )
+			continue;
+		if ( pc->getPosition().x != x || pc->getPosition().y != y )
+			continue;
+                if ( bExcludeOfflinePlayers && !pc->npc && !pc->IsOnline() )
+			continue;
+		if ( bOnlyPlayer && pc->npc )
+			continue;
+
+		insertSerial( pc->getSerial32() );
+	}
+}
+
+/*!
+\brief Fills with a list of chars at given location
+\author Luxor
+\param location the location
+*/
+void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
+{
+	fillCharsAtXY( location.x, location.y );
+}
+
+
+
+
+/*!
 \brief Fills a set with a list of char near x, y
 \author Endymion
 \param x the x location
