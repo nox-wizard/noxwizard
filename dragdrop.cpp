@@ -693,7 +693,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	VALIDATEPIR(pi, false);
 	P_CHAR pet = pointers::findCharBySerial(pp->Tserial);
 	VALIDATEPCR(pet, false);
-	NXWSOCKET  s=ps->toInt();
+	NXWSOCKET  s = ps->toInt();
 	P_CHAR pc = ps->currChar();
 	VALIDATEPCR(pc, false);
 
@@ -739,7 +739,7 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	VALIDATEPIR(pi, false);
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	NXWSOCKET  s=ps->toInt();
-	P_CHAR pc=ps->currChar();
+	P_CHAR pc = ps->currChar();
 	VALIDATEPCR(pc,false);
 
 	P_CHAR pc_t=pointers::findCharBySerial(pp->Tserial); //the guard
@@ -799,7 +799,7 @@ static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	P_CHAR pc_t=pointers::findCharBySerial(pp->Tserial); //beggar
 	VALIDATEPCR(pc_t,false);
 
-	if(pi->id()!=0x0EED)
+	if(pi->id()!=ITEMID_GOLD)
 	{
 		sprintf(temp,TRANSLATE("Sorry %s i can only use gold"), pc->getCurrentNameC());
 		pc_t->talk( s,temp,0);
@@ -836,18 +836,18 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	if (ps == NULL) return false;
 	VALIDATEPIR(pi, false);
 	NXWSOCKET  s = ps->toInt();
-//	CHARACTER cc = ps->currCharIdx();
-	P_CHAR pc_currchar = ps->currChar();
-//	int t=calcCharFromSer(pp->Tserial);
-	P_CHAR pc_t = pointers::findCharBySerial(pp->Tserial); //  MAKE_CHAR_REF(t);
+	P_CHAR pc = ps->currChar();
+	VALIDATEPCR(pc,false);
+	P_CHAR pc_t = pointers::findCharBySerial(pp->Tserial);
+	VALIDATEPCR(pc_t,false);
 
 	if( pi->id() == ITEMID_GOLD )
 	{ // They gave the NPC gold
 		char sk=pc_t->trainingplayerin;
 		pc_t->talk( s, TRANSLATE("I thank thee for thy payment. That should give thee a good start on thy way. Farewell!"),0);
 
-		int sum = pc_currchar->getSkillSum();
-		int delta = pc_t->getTeachingDelta(pc_currchar, sk, sum);
+		int sum = pc->getSkillSum();
+		int delta = pc_t->getTeachingDelta(pc, sk, sum);
 
 		if(pi->amount>delta) // Paid too much
 		{
@@ -866,13 +866,13 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 				delta = pi->amount;		// so adjust skillgain
 			pi->deleteItem();
 		}
-		pc_currchar->baseskill[sk]+=delta;
-		Skills::updateSkillLevel(pc_currchar, sk);
+		pc->baseskill[sk]+=delta;
+		Skills::updateSkillLevel(pc, sk);
 		updateskill(s,sk);
 
-		pc_currchar->trainer=-1;
+		pc->trainer=-1;
 		pc_t->trainingplayerin=0xFF;
-		pc_currchar->playSFX( itemsfx(pi->id()) );
+		pc->playSFX( itemsfx(pi->id()) );
 	}
 	else // Did not give gold
 	{
@@ -891,15 +891,17 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
 	if (ps == NULL) return false;
 	VALIDATEPIR(pi, false);
-	NXWSOCKET  s=ps->toInt();
+//	NXWSOCKET  s=ps->toInt();
 //	CHARACTER cc=ps->currCharIdx();
 	P_CHAR pc = ps->currChar(); // MAKE_CHAR_REF(cc);
-	Location charpos= pc->getPosition();
+	VALIDATEPCR(pc, false);
+
+	Location charpos = pc->getPosition();
 
 	if (pi->id() >= 0x4000 ) // crashfix , prevents putting multi-objects ni your backback
 	{
 		ps->sysmsg(TRANSLATE("Hey, putting houses in your pack crashes your back and client !"));
-		pi->MoveTo(charpos.x, charpos.y, charpos.z);
+		pi->MoveTo( charpos );
 		pi->Refresh();//AntiChrist
 		return true;
 	}
@@ -910,11 +912,11 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 //		pc->glowHalo(pi);
 //	}
 
-	P_ITEM pack= pc->getBackpack(); // LB ...
+	P_ITEM pack = pc->getBackpack();
 	if (pack==NULL) // if player has no pack, put it at its feet
 	{
-		pi->MoveTo(charpos.x, charpos.y, charpos.z);
-		pi->Refresh();//AntiChrist
+		pi->MoveTo( charpos );
+		pi->Refresh();
 	}
 	else
 	{
@@ -931,15 +933,17 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
 	if (ps == NULL) return true;
 	VALIDATEPIR(pi, false);
-	NXWSOCKET  s=ps->toInt();
-	CHARACTER cc=ps->currCharIdx();
-	P_CHAR pTC=pointers::findCharBySerial(pp->Tserial);	// the targeted character
-	P_CHAR pc_currchar = MAKE_CHAR_REF(cc);
-	Location charpos= pc_currchar->getPosition();
+	NXWSOCKET  s = ps->toInt();
+//	CHARACTER cc=ps->currCharIdx();
+	P_CHAR pTC = pointers::findCharBySerial(pp->Tserial);	// the targeted character
+	VALIDATEPCR(pTC, false);
+	P_CHAR pc_currchar = ps->currChar(); //MAKE_CHAR_REF(cc);
+	VALIDATEPCR(pc_currchar, false);
+	Location charpos = pc_currchar->getPosition();
 
 	if (!pTC) return true;
 
-	if (DEREF_P_CHAR(pTC)!=cc)
+	if (pc_currchar->getSerial32() != pTC->getSerial32() /*DEREF_P_CHAR(pTC)!=cc*/)
 	{
 		if (pTC->npc)
 		{
@@ -1002,7 +1006,7 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 					else	// Even GM has no pack?
 					{
 						// Drop it to it's feet
-						pi->MoveTo(charpos.x, charpos.y, charpos.z);
+						pi->MoveTo( charpos );
 						pi->Refresh();
 					}
 				}
@@ -1036,9 +1040,7 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a character
 {
-	
 	if (ps == NULL) return;
-	
 
 	tile_st tile;
 	NXWSOCKET  s=ps->toInt();
@@ -1336,7 +1338,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				ps->sysmsg(TRANSLATE("You can only put golds in this bank box!"));
 
 				pItem->setContSerial(-1);
-				pItem->MoveTo(charpos.x, charpos.y, charpos.z);
+				pItem->MoveTo( charpos );
 				pItem->Refresh();
 				pc->playSFX( itemsfx(pItem->id()) );
 				return;
@@ -1587,7 +1589,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	  #ifdef debug_dragg
 	    if (ISVALIDPI(pi)) { sprintf(temp, "%04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
 		else { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: invalid item EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, EVILDRAGG[s]); ConOut(temp); }
-      #endif
+	  #endif
 
 	  if  ( (pp->TxLoc==-1) && (pp->TyLoc==-1) && (pp->Tserial==0)  && (EVILDRAGG[s]==1) )
 	  {
@@ -1618,10 +1620,11 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 
 	     if (ISVALIDPI(pi)) { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
 	  }
-    #endif
+	#endif
 
 	  
-	if ( (buffer[s][10]>=0x40) && (buffer[s][10]!=0xff) )
+//	if ( (buffer[s][10]>=0x40) && (buffer[s][10]!=0xff) )
+	if ( isItemSerial(pp->Tserial) && (pp->Tserial != INVALID)  ) // Invalid target => invalid container => put inWorld !!! 
 		pack_item(ps,pp);
 	else
 		dump_item(ps,pp);
