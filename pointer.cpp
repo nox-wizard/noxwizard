@@ -363,18 +363,21 @@ namespace pointers {
 	{
 		pCharVector* 	pvCharsInRange	= 0;
 		LOGICAL		validCall	= true;
+		SERIAL		self		= INVALID;
 
 		if( pObject != 0 )
 			if( isItemSerial( pObject->getSerial32() ) )
 				if( !static_cast<P_ITEM>(pObject)->isInWorld() )
 					validCall = false;
+			else
+				self = pObject->getSerial32();
 		if( validCall )
-			return getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags );
+			return getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, serial );
 		else
 			return 0;
 	}
 
-	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags )
+	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, serial )
 	{
 		pCharVector* pvCharsInRange = 0;
 
@@ -424,18 +427,22 @@ namespace pointers {
 				{
 					if( flags )
 					{
-						if ( it->second->npc )
-						{ //Pc is an npc
-							if ( (flags & NPC) )
-								select = true;
-						}
-						else
-						{  //Pc is a player
-							if ( (flags & ONLINE) && it->second->IsOnline() )
-								select = true;
-							if ( (flags & OFFLINE) && !it->second->IsOnline() )
-								select = true;
-							//if ( (flags & DEAD) && !pc->dead ) continue;
+						if ( !(flags & EXCLUDESELF) ||
+						      ((flags & EXCLUDESELF) && serial != it->second->getSerial32() ) )
+						{
+							if ( it->second->npc )
+							{ //Pc is an npc
+								if ( (flags & NPC) )
+									select = true;
+							}
+							else
+							{  //Pc is a player
+								if ( (flags & ONLINE) && it->second->IsOnline() )
+									select = true;
+								if ( (flags & OFFLINE) && !it->second->IsOnline() )
+									select = true;
+								//if ( (flags & DEAD) && !pc->dead ) continue;
+							}
 						}
 					}
 					if( select )
