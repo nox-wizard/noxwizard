@@ -189,6 +189,10 @@ namespace item
 						{
 							pi->deleteItem();
 							pi=item::CreateScriptRandomItem( script2, cont);
+							if( ISVALIDPI(pi) )
+								if( strcmp( script3, "") ) //ndEndy defined amount, 1 by default
+									pi->amount=str2num( script3 );
+
 						}
 						else if (!strcmp("INT", script1))
 							pi->in = str2num(script2);
