@@ -49,45 +49,26 @@ warnings/errors/issues.
 #ifndef __GNUC__
 	#ifdef _MSC_VER
 		#define strncasecmp strncmp
-		//!< can microsoft follow standards? no, obvious... I hate them.... - Akron
+		// can microsoft follow standards? no, obvious... I hate them.... - Akron
 	#else
 		#define strncasecmp strncmpi
-		//!< on borland compiler exists strncmpi...
+		// on borland compiler exists strncmpi...
 	#endif
 	#define strcasecmp strcmpi
 #endif
 
-#ifdef __BEOS__
-	#ifndef __unix__
-		#define __unix__
-	#endif
+#if defined(__BEOS__) && !defined(__unix__)
+	#define __unix__
 #endif
 
-#ifdef __unix__
+#ifdef __GNUC__
 	#define PACK_NEEDED __attribute__ ((packed))
 #endif
 
 #ifdef  _MSC_VER
-	#pragma pack(push,8)			//for Visual C++ using STLport
-	#pragma warning(disable: 4786)  //Gets rid of BAD stl warnings
-	#pragma warning(disable: 4800) //needed couse now we can see the real warning
-#endif
-
-#include <cstdio>					//include a file to detect STLport
-
-#ifdef  _MSC_VER
-	#ifndef STLPORT
-		#pragma warning ( push, 1 )
-//		#pragma warning(disable: 4103)	// Disable pragma pack warning in MSVC++, xan
-//		#pragma warning(disable: 4503)
-//		#pragma warning(disable: 4514)	// inline function not called and removed
-//		#pragma warning(disable: 4511)
-//		#pragma warning(disable: 4512)
-//		#pragma warning(disable: 4100)	// formal parameters unused.. too many of them :)
-//		#pragma warning(disable: 4663)
-//		#pragma warning(disable: 4018)	// sadly, must disable these.. (sign mismatch)
-
-	#endif
+	#pragma pack(push,8)		//for Visual C++ using STLport
+	#pragma warning(disable: 4786)	//Gets rid of BAD stl warnings
+	#pragma warning(disable: 4800)	//needed couse now we can see the real warning
 #endif
 
 #include <cstdio>
@@ -115,7 +96,7 @@ warnings/errors/issues.
 	#include <dos.h>
 	#include <limits.h>
 	#include <conio.h>
-    #include <process.h>
+	#include <process.h>
 #endif
 
 #ifdef __unix__
@@ -138,9 +119,7 @@ warnings/errors/issues.
 		#include <sys/errno.h>
 		#include <arpa/inet.h>
 		#define closesocket(s)	close(s)
-	#endif
-
-	#ifdef __BEOS__
+	#else
 		#include <be/NetKit.h>
 		#include <be/NetworkKit.h>
 		#include <be/net/socket.h>
@@ -156,12 +135,7 @@ warnings/errors/issues.
 		#pragma warning (pop)
 		#pragma warning(disable: 4103)
 		#pragma warning(disable: 4786)
-//		#pragma warning(disable: 4503)
-//		#pragma warning(disable: 4514)
-//		#pragma warning(disable: 4018)
 	#endif
-//	#pragma warning(disable: 4786)
-//	#pragma warning(disable: 4100)
 #endif
 
 #ifdef __unix__

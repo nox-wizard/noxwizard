@@ -37,7 +37,7 @@ int calcGoodValue(int npcnum, int i, int value,int goodtype); // by Magius(CHE) 
 int whichbit( int number, int bit );
 int numbitsset( int number );
 
-void getSextantCoords(signed int x, signed int y, bool t2a, char *sextant);
+void getSextantCoords(SI32 x, SI32 y, LOGICAL t2a, char *sextant);
 void splitline();
 
 int hexnumber(int countx);

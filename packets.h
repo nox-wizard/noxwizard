@@ -1589,7 +1589,7 @@ public:
 \author Endymion
 \since 0.83
 \note 0x97
-\note Doesn’t move if there are obstacles
+\note Doesn't move if there are obstacles
 */
 class cPacketWalk : public cServerPacket {
 

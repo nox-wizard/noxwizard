@@ -612,7 +612,7 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	Xsend(s, login03, 11);
 }
 
-void cNetwork::ActivateFeatures(int s)
+void cNetwork::ActivateFeatures(NXWSOCKET s)
 {
 	UI08 feat[3] = {0xB9, 0x00, 0x00};
 	UI16 features = 0;  //<-- BitMask ?

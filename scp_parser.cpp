@@ -520,7 +520,7 @@ cScpSection* cScpScript::getSection(std::string& strIdentifier)
 /*!
 \brief Get Section for a given search id
 \author Xanathar
-\param strIdentifier the section id to be searched
+\param szIdentifier the section id to be searched
 \return the ptr to a cScpSection object or NULL if not found
 */
 cScpSection* cScpScript::getSection(char* szIdentifier)
@@ -533,7 +533,7 @@ cScpSection* cScpScript::getSection(char* szIdentifier)
 /*!
 \brief Get Section for a given search id
 \author Xanathar
-\param strIdentifier the section id to be searched
+\param szIdentifier the section id to be searched
 \return the ptr to a cScpSection object or NULL if not found
 \note search as sub-string
 */

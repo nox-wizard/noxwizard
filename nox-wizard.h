@@ -22,7 +22,6 @@ void SetGlobalVars();
 void BuildPointerArray();
 void InitMultis();
 void DeleteClasses();
-int chardir(int a, int b);
 void telltime(NXWSOCKET s);
 void impaction(int s, int act);
 bool npcattacktarget(int target2, int target);

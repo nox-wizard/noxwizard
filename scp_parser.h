@@ -25,8 +25,8 @@ private:
 	class cScpSection* m_section;
 protected:
 public:
-	explicit cScpIterator(class cScpSection*);
-	explicit cScpIterator(class cScpSection&);
+	explicit cScpIterator(cScpSection* section);
+	explicit cScpIterator(cScpSection& section);
 	~cScpIterator();
 	void parseLine(std::string& strParam1, std::string& strParam2);
 	void parseLine(char* szParam1, char* szParam2);

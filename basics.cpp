@@ -140,18 +140,16 @@ char *RealTime(char *time_str)
 /*!
 \brief build a Location structure
 \author Anthalir
-\return Location
+\return The Location structure that represent the, ehm, location
 \since 0.82a
-\param x,y,z,dispz values
+\param x X-Coordinate
+\param y Y-Coordinate
+\param z Z-Coordinate
+\param dispz displayed z value
 */
-Location Loc(SI32 x, SI32 y, signed char z, signed char dispz)
+Location Loc(SI32 x, SI32 y, SI08 z, SI08 dispz)
 {
 	Location l= {x, y, z, 0};
-/*
-	l.x= x;
-	l.y= y;
-	l.z= z;
-*/
 	if(dispz==0)
 		l.dispz=z;
 	else

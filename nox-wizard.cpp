@@ -1,8 +1,9 @@
-/*
+/*!
+\mainpage Nox-Wizard documentation
 
-	NoX-Wizard Emu (NXW)
+	<h1>NoX-Wizard Emu (NXW)</h1>
 	UO Server Emulation Program
-	Work based on the Wolfpack and UOX Projects.
+	<i>Work based on the Wolfpack and UOX Projects.</i>
 
 	This Project started on June 2001, by Xanathar and Ummon
 	Currently it's coded by Luxor, Sparhawk, Elcabesa, Anthalir and Endymion
@@ -23,34 +24,31 @@
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-	* In addition to that license, if you are running this program or modified	*
-	* versions of it on a public system you HAVE TO make the complete source of *
-	* the version used by you available or provide people with a location to	*
-	* download it.																*
+	<b>In addition to that license, if you are running this program or modified
+	versions of it on a public system you HAVE TO make the complete source of
+	the version used by you available or provide people with a location to
+	download it.</b>
 
-    -----------------------------------------------------------------------------
+	-----------------------------------------------------------------------------
 
-    NoX-Wizard also contains portions of code from the Small toolkit.
+	NoX-Wizard also contains portions of code from the Small toolkit.
 
-    The software toolkit "Small", the compiler, the abstract machine and the
-    documentation, are copyright (c) 1997-2001 by ITB CompuPhase.
+	The software toolkit "Small", the compiler, the abstract machine and the
+	documentation, are copyright (c) 1997-2001 by ITB CompuPhase.
 	See amx_vm.c and/or small_license.txt for more information about this.
 
-    ==============================================================================
+	==============================================================================
 
 	You can find info about the authors in the AUTHORS file.
-	
-	NoX-Wizard Homepage: http://www.noxwizard.com
+
+	<a href="http://noxwizard.sourceforge.net/">NoX-Wizard Homepage</a>
+
+	\section link Some links
+	Link to documentation page that can be useful
+	\subsection uo_protocol UO Protocol
+	Here is a page regarding the uo protocol: <a href='http://gonzo.kiev.ua/guide/node1.html'>http://gonzo.kiev.ua/guide/node1.html</a>
+
 */
-/*!
-\mainpage Nox-Wizard documentation
-
-\section link Some links
-  Link to documentation page that can be useful
-\subsection uo_protocol UO Protocol
-  Here is a page regarding the uo protocol: <a href='http://gonzo.kiev.ua/guide/node1.html'>http://gonzo.kiev.ua/guide/node1.html</a>
-
- */
 
 #include "nxwcommn.h"
 #include "basics.h"
@@ -93,7 +91,7 @@ extern "C" int g_nTraceMode;
 
 #include "debug.h"
 
-RemoteAdmin TelnetInterface;	// remote administration
+RemoteAdmin TelnetInterface;	//!< remote administration
 
 
 static void item_char_test()
@@ -1566,49 +1564,13 @@ void impaction(int s, int act)
 	pc->playAction(act);
 }
 
-
-
-/*!
-\brief [OBSOLETE] direction from character a to char b
-\author ?
-\return int direction
-\param a first character
-	   b second character
-*/
-/*
-int chardir(int a, int b)
-{
-	P_CHAR pca = MAKE_CHAR_REF( a );
-	VALIDATEPCR( pca, INVALID );
-	P_CHAR pcb = MAKE_CHAR_REF( b );
-	VALIDATEPCR( pcb, INVALID );
-
-	int dir,xdif,ydif;
-
-	xdif = pcb->getPosition().x - pca->getPosition().x;
-	ydif = pcb->getPosition().y - pca->getPosition().y;
-
-	if ((xdif==0)&&(ydif<0)) dir=0;
-	else if ((xdif>0)&&(ydif<0)) dir=1;
-	else if ((xdif>0)&&(ydif==0)) dir=2;
-	else if ((xdif>0)&&(ydif>0)) dir=3;
-	else if ((xdif==0)&&(ydif>0)) dir=4;
-	else if ((xdif<0)&&(ydif>0)) dir=5;
-	else if ((xdif<0)&&(ydif==0)) dir=6;
-	else if ((xdif<0)&&(ydif<0)) dir=7;
-	else dir=INVALID;
-
-	return dir;
-}
-*/
-
-
 /*!
 \brief direction from character a to position x,y
 \author ?
 \return int direction
 \param a first character
-	   x,y coordinates
+\param x X-coordinate
+\param y Y-coordinate
 */
 int chardirxyz(int a, int x, int y)
 {
@@ -1637,7 +1599,7 @@ int chardirxyz(int a, int x, int y)
 int fielddir(CHARACTER s, int x, int y, int z)
 {
 //WARNING: unreferenced formal parameter z
-	
+
 	P_CHAR pc=MAKE_CHAR_REF(s);
 	VALIDATEPCR(pc,0);
 
@@ -2555,6 +2517,7 @@ void init_creatures()
 \author Endymion
 \since 0.82a
 \param value positive or negative value to add to karma
+\param killed ptr to killed char
 \note every increase of karma have an event and stuff related
 */
 void cChar::IncreaseKarma( SI32 value, P_CHAR killed )

@@ -393,7 +393,9 @@ void cObject::setPosition(Location where)
 \brief Set the position of the object
 \author Anthalir
 \since 0.82a
-\param x,y,z new coords of the object
+\param x new X-coord of the object
+\param y new Y-coord of the object
+\param z new Z-coord of the object
 */
 void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 {
@@ -406,10 +408,13 @@ void cObject::setPosition(UI32 x, UI32 y, SI08 z)
 \brief Set one coord of the object position
 \author Anthalir
 \since 0.82a
-\param what what to set ?		\li "x" = set the x position
-								\li "y" = set the y position
-								\li "z" = set the z position
-								\li "dz"= set the dispz position (used in cChar)
+\param what what to set ?
+	\li "x" = set the x position
+	\li "y" = set the y position
+	\li "z" = set the z position
+	\li "dz"= set the dispz position (used in cChar)
+\param value the value to set
+\todo change from string to a simpler enum
 */
 void cObject::setPosition( const char *what, SI32 value)
 {
@@ -437,44 +442,6 @@ void cObject::setPosition( const char *what, SI32 value)
 		break;
 	}
 }
-/*
-void cObject::MoveTo(SI32 x, SI32 y, SI08 z)
-{
-	MoveTo( Loc(x, y, z) );
-}
-
-
-void cObject::MoveTo(Location newloc)
-{
-
-	int n;
-
-	// Avoid crash if go to 0,0
-	if (newloc.x < 1 || newloc.y < 1)
-		return;
-
-	if( (Type!="char") && (Type!="item") ) ConOut("Error in MoveTo, cObject has invalid type: '%s'\n", Type.c_str());
-
-	if( Type=="char" )
-	{
-		n= DEREF_P_CHAR(this);
-		mapRegions->RemoveItem(n + CharacterOffset);
-		setPosition( newloc );
-		mapRegions->AddItem(n + CharacterOffset);
-	}
-
-	if( Type=="item" )
-	{
-		n= DEREF_P_ITEM(this);
-		mapRegions->RemoveItem(n);
-		setPosition( newloc );
-		mapRegions->AddItem(n);
-	}
-
-
-}
-*/
-
 
 Location cObject::getOldPosition() const
 {
@@ -621,7 +588,7 @@ void cObject::setCurrentName( string s )
 \brief Set the current name of object
 \author Anthalir, rewritten by Luxor
 \since 0.82a
-\param format,... formatted C string
+\param format formatted C string
 */
 void cObject::setCurrentName( char *format, ... )
 {

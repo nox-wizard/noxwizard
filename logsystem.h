@@ -69,8 +69,20 @@ public:
 };
 
 
-bool NewErrorsLogged();
-bool NewWarningsLogged();
+/*!
+\brief Check if new errors has been logged
+\return true if new errors
+*/
+inline bool NewErrorsLogged()
+{ return (entries_e > 0 || entries_c > 0); }
+
+/*!
+\brief Check if new warnings has been logged
+\return true if new warnings
+*/
+inline bool NewWarningsLogged()
+{ return (entries_w > 0); }
+
 void LogMessageF(char *Message, ...);
 void prepareLogs(char type, char *fpath, int lnum);
 

@@ -662,18 +662,15 @@ void AmxOverride::Parse(char *line)
 
 AmxOverride g_Scripts[AMX_MAXTYPE][AMX_MAXNUMBER];
 
-
 #define ISNUMERICTYPE(A) ((A<7)&&(A!=AMXT_SPEECH))
 
 #define FAIL { ConOut ("[FAIL]\n"); return; }
 
-
 /*!
 \brief check the integrity of exported natives apis
 \author Xanathar
-\param line the line to be parsed
 */
-void check_Natives (void)
+void check_Natives ()
 {
 	char *str;
 	static char buffer[30];

@@ -1134,7 +1134,6 @@ UI32 cChar::getSkillSum()
 /*!
 \brief calculates how much the given player can learn from this teacher
 \author Duke
-\date 27/07/2001
 \param pPlayer pointer to the player
 \param skill index of skill to teach
 \return how much the given player can learn
@@ -4749,4 +4748,3 @@ void cChar::deleteSpeechCurrent()
 	if( speechCurrent!=NULL )
 		delete speechCurrent;
 }
-

@@ -23,9 +23,8 @@ void ErrOut(char *txt, ...);
 /*!
 \brief Write text to the GM log file
 \author Anthalir
-\since 0.82a
-\param	pc current PC
-		msg message
+\param pc current PC
+\param msg message
 \remarks \remark msg is formatted so you can use "file_%s", my_str as a filename
 */
 void WriteGMLog(P_CHAR pc, char *msg, ...)
@@ -44,7 +43,6 @@ void WriteGMLog(P_CHAR pc, char *msg, ...)
 /*!
 \brief Constructor of the class
 \author Anthalir
-\since 0.82a
 \param format name of the log file
 */
 LogFile::LogFile(char *format, ...)
@@ -94,7 +92,6 @@ LogFile::LogFile(string name)
 /*!
 \brief Destructor of the class
 \author Anthalir
-\since 0.82a
 */
 LogFile::~LogFile()
 {
@@ -105,7 +102,6 @@ LogFile::~LogFile()
 /*!
 \brief Write text to the log file
 \author Anthalir
-\since 0.82a
 \param format msg to write
 \remarks a timestamp is added before the string
 */
@@ -174,27 +170,6 @@ SpeechLogFile::SpeechLogFile(cChar *pc) : LogFile(MakeFilename(pc))
 
 }
 
-/*!
-\brief return 1 if new errors have been logged
-\author ?
-*/
-bool NewErrorsLogged() 
-{
-	return (entries_e > 0 || entries_c > 0);
-}
-
-/*!
-\brief return 1 if new warnings have been logged
-\author ?
-*/
-bool NewWarningsLogged() 
-{
-	return (entries_w > 0);
-}
-
-
-
-
 char CurrentFile[100];
 int CurrentLine;
 char LogType= 'M';
@@ -260,10 +235,10 @@ static void MessageReady(char *OutputMessage)
 
 	if (entries_c==1 && LogType=='C') // @serverstart, write out verison# !!!
 	{
-       logerr.Write("\nRunning NoX-Wizard Version: %s\n\n",VERNUMB);
-       logerr.Write("******************************************************************************************************************************************\n");
-	   logerr.Write("* to increase the stability and quality of this software please send this file to the NoXWizard developers - thanks for your support !!! *\n");
-	   logerr.Write("******************************************************************************************************************************************\n\n");
+		logerr.Write("\nRunning NoX-Wizard Version: %s\n\n",VERNUMB);
+		logerr.Write("******************************************************************************************************************************************\n");
+		logerr.Write("* to increase the stability and quality of this software please send this file to the NoXWizard developers - thanks for your support !!! *\n");
+		logerr.Write("******************************************************************************************************************************************\n\n");
 
 	}
 
