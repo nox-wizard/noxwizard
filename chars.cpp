@@ -227,7 +227,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	trigger=0; //Trigger number that character activates
 	trigword[0]='\x00'; //Word that character triggers on.
 	disabled=0; //Character is disabled for n cicles, cant trigger.
-	disabledmsg[0] = 0; //Character disabled message. -- by Magius(CHE) §
+	disabledmsg = NULL;
 	envokeid1=0x00; //ID1 of item user envoked
 	envokeid2=0x00; //ID2 of item user envoked
 	envokeitem=-1;
