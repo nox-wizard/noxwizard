@@ -1733,21 +1733,10 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 
 		case SPELL_SUMMON:
-			if (src!=NULL) {
-				spellFX(spellnumber, src, pd);
-				nTime = (nTime==INVALID) ? int(src->skill[nSkill] * 0.4) : nTime;
-				nValue = (nValue==INVALID) ? xss::getIntFromDefine("$npclist_summon_list") : nValue;
-				char buffer_list[20];
-				//itoa( nValue, buffer_list, 10 ); // Only works on win os Sparhawk so let's sprintf it
-				sprintf( buffer_list, "%d", nValue );
-				P_CHAR p_monster = MAKE_CHAR_REF(npcs::AddRandomNPC( src->getSocket(), buffer_list, -1 ));
-				if (ISVALIDPC(p_monster)) {
-					p_monster->setOwner(src);
-					p_monster->tamed = true;
-                                        p_monster->summontimer = uiCurrentTime + nTime * MY_CLOCKS_PER_SEC;
-					p_monster->MoveTo( x,y,z );
-					p_monster->teleport();
-				}
+			if (src!=NULL) { // Luxor
+				P_MENU menu = Menus.insertMenu( new cSummonCreatureMenu( src ) );
+				VALIDATEPM( menu );
+				menu->show( src );
 			}
 			break;
 
@@ -2209,6 +2198,56 @@ void cCreateFoodMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 
 	item::CreateFromScript( data, pc->getBackpack() );
 	spellFX( SPELL_CREATEFOOD, pc, pc );
+}
+
+/*
+\brief Constructor
+\author Luxor
+\since 0.82
+*/
+cSummonCreatureMenu::cSummonCreatureMenu( P_CHAR pc ) : cIconListMenu()
+{
+	VALIDATEPC( pc );
+
+	addIcon( 0x211E, 0, xss::getIntFromDefine("$npc_a_brown_bear"), string("Bear") );
+	addIcon( 0x211A, 0, xss::getIntFromDefine("$npc_forest_bird"), string("Bird") );
+	addIcon( 0x20EF, 0, xss::getIntFromDefine("$npc_a_bull"), string("Bull") );
+	addIcon( 0x211B, 0, xss::getIntFromDefine("$npc_a_cat"), string("Cat") );
+	addIcon( 0x20D1, 0, xss::getIntFromDefine("$npc_a_chicken"), string("Chicken") );
+	addIcon( 0x2102, 0, xss::getIntFromDefine("$npc_a_cougar"), string("Cougar") );
+	addIcon( 0x2103, 0, xss::getIntFromDefine("$npc_a_cow"), string("Cow") );
+	addIcon( 0x20D5, 0, xss::getIntFromDefine("$npc_a_dog"), string("Dog") );
+	addIcon( 0x20F5, 0, xss::getIntFromDefine("$npc_a_gorilla"), string("Gorilla") );
+	addIcon( 0x2124, 0, xss::getIntFromDefine("$npc_a_horse"), string("Horse") );
+	addIcon( 0x20F6, 0, xss::getIntFromDefine("$npc_a_llama"), string("Lama") );
+	addIcon( 0x2125, 0, xss::getIntFromDefine("$npc_a_rabbit"), string("Rabbit") );
+	addIcon( 0x2108, 0, xss::getIntFromDefine("$npc_a_sheep"), string("Sheep") );
+
+	question = string( "Choose a creature" );
+}
+
+/*!
+\author Luxor
+*/
+void cSummonCreatureMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
+{
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc );
+
+	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
+	std::map<SERIAL, SI32>::iterator iter( iconData.find( p->index.get()-1 ) );
+	UI16 data = ( iter!=iconData.end() )? iter->second : INVALID;
+
+	Location pos = pc->getPosition();
+	P_CHAR pc_monster = npcs::addNpc( data, pos.x, pos.y, pos.z );
+	VALIDATEPC( pc_monster );
+
+	pc_monster->setOwner( pc );
+	pc_monster->tamed = true;
+	pc_monster->summontimer = uiCurrentTime + UI32(pc->skill[MAGERY] * 0.4) * MY_CLOCKS_PER_SEC;
+	pc_monster->MoveTo( pos.x, pos.y, pos.z );
+	pc_monster->teleport();
+	spellFX( SPELL_SUMMON, pc, pc );
 }
 
 

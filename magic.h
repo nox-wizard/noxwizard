@@ -87,6 +87,16 @@ namespace magic {
 		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
 	};
 
+	/*!
+	\author Luxor
+	\brief Summon creature menu
+	*/
+	class cSummonCreatureMenu : public cIconListMenu {
+	public:
+		cSummonCreatureMenu( P_CHAR pc );
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+	};
+
 
 
 	/*!
