@@ -132,6 +132,87 @@ SI32 amxStringVariable::getSize()
 	return value.size();
 }
 
+//@{
+/*!
+\name AmxScriptId
+\brief AmxScriptId variable
+*/
+
+
+/*
+\brief
+\author Endymion
+*/
+amxScriptIdVariable::amxScriptIdVariable( char* initialValue )
+{
+	amxScriptIdVariable( xss::getIntFromDefine( initialValue ) );
+}
+
+/*
+\brief
+\author Endymion
+*/
+amxScriptIdVariable::amxScriptIdVariable( SERIAL initialValue )
+{
+	value=initialValue;
+}
+
+/*
+\brief
+\author Endymion
+*/
+amxScriptIdVariable::~amxScriptIdVariable()
+{
+}
+
+/*
+\brief
+\author Endymion
+*/
+AMXVARSRV_DATATYPE amxScriptIdVariable::getType()
+{
+	return AMXVARSRV_SCRIPTID;
+}
+
+/*
+\brief
+\author Endymion
+*/
+SERIAL amxScriptIdVariable::getValue()
+{
+	return value;
+}
+
+/*
+\brief
+\author Endymion
+*/
+void amxScriptIdVariable::setValue( char* newValue )
+{
+	setValue( xss::getIntFromDefine( newValue ) );
+}
+
+/*
+\brief
+\author Endymion
+*/
+void amxScriptIdVariable::setValue( SERIAL newValue )
+{
+	value=newValue;
+}
+
+/*
+\brief
+\author Endymion
+*/
+SI32 amxScriptIdVariable::getSize()
+{
+	return sizeof( value );
+}
+
+//@}
+
+
 //
 //	amxVariableServer
 //

@@ -33,7 +33,8 @@ typedef enum
 	AMXVARSRV_INTEGER		= 1,
 	AMXVARSRV_LOGICAL		= 2,
 	AMXVARSRV_STRING		= 3,
-	AMXVARSRV_INTEGERVECTOR		= 4
+	AMXVARSRV_INTEGERVECTOR	= 4,
+	AMXVARSRV_SCRIPTID		= 5
 } AMXVARSRV_DATATYPE;
 
 class amxVariable
@@ -84,6 +85,22 @@ class amxStringVariable : public amxVariable
 		SI32				getSize();
 };
 
+class amxScriptIdVariable : public amxVariable
+{
+	private:
+		SERIAL	value; //!< script id serial ( is a number into core, string only on save and load )
+	public:
+						
+		amxScriptIdVariable( char* initialValue );
+		amxScriptIdVariable( SERIAL initialValue = INVALID );
+		~amxScriptIdVariable();
+	
+		AMXVARSRV_DATATYPE getType();
+		SERIAL getValue();
+		void setValue( char* newValue );
+		void setValue( SERIAL initialValue = INVALID );
+		SI32 getSize();
+};
 
 typedef pair< SI32, amxVariable* >		amxVariablePair;
 typedef map< SI32, amxVariable* > 		amxVariableMap;
