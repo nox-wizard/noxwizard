@@ -20,23 +20,9 @@
 \brief Artificial Intelligence implementation, with a pathfinding algorithm and, in the future, a combat AI
 */
 
-/*!
-\author Luxor
-*/
-path_node* cPath::create_node( Location pos, path_node* parentNode, UI32 cost )
-{
-	path_node *node, newnode;
-
-	newnode.cost = parentNode->cost + cost;
-	newnode.pos = pos;
-	newnode.parentNode = parentNode;
-	nodes_vector.push( newnode );
-
-	node = &(nodes_vector.back());
-	return node;
-}
 
 /*!
+\brief constructor
 \author Luxor
 */
 cPath::cPath( Location startPos, Location finalPos, P_CHAR pc )
@@ -45,6 +31,7 @@ cPath::cPath( Location startPos, Location finalPos, P_CHAR pc )
 		pc_serial = INVALID;
 	else
 		pc_serial = pc->getSerial32();
+		
 	open_list.clear();
 	closed_list.clear();
 	path_list.clear();
@@ -70,6 +57,8 @@ cPath::cPath( Location startPos, Location finalPos, P_CHAR pc )
 	currNode = nextNode = sNode;
 }
 
+
+
 /*!
 \author Luxor
 */
@@ -78,37 +67,61 @@ void cPath::exec()
 	P_CHAR pc = pointers::findCharBySerial( pc_serial );
 	UI32 min_cost=(unsigned int) -1, curr_cost, heuristic, loops = 0;
 	NODE_LIST::iterator it;
-
-	while( loops < MAX_PATH_INTERNAL_LOOPS ) {
-                if ( currNode->pos == m_finalPos ) {
+	
+	//the extern loop avoids going into an infinite loop
+	while( loops < MAX_PATH_INTERNAL_LOOPS ) 
+	{	
+		//if current node is at the final position the path is complete
+                if ( currNode->pos == m_finalPos ) 
+		{
 			m_pathFound = true;
 			break;
 		}
+		
 		// Look for tiles reachable by currNode, add them to the open list
 		addReachableNodes( currNode );
 
 		// Drop the current node in the closed list
 		dropToClosedList( currNode );
-
-		if ( open_list.empty() ) {
+		
+		//empty open_list means that we used all reachable tiles and can't find new ones
+		//final destination can't be reached, take the current path as is
+		if ( open_list.empty() ) 
+		{
 			m_pathFound = true;
 			break;
 		}
-
-		for ( it = open_list.begin(); it != open_list.end(); it++ ) {
+		
+		//chose from the open list the node with lower cost
+		//cost is computed as the current node cost (wich in turn is the sum of parent nodes costs, see create_node() ) 
+		//plus the distance between current node and final destination
+		//this way if 2 nodes have the same cost (because the sum of their parent's costs is the same)
+		//the node wich is closer to the final destination is chosen
+		for ( it = open_list.begin(); it != open_list.end(); it++ ) 
+		{
 			loops++;
-			if ( it == open_list.begin() ) {
+			
+			//first node in the list
+			if ( it == open_list.begin() ) 
+			{
+				//set initial value for min_cost
 				min_cost = (*it)->cost + ( UI32( dist( (*it)->pos, m_finalPos ) ) * OBLIQUE_COST );
 				if ( (*it)->pos.z != m_finalPos.z )
 					min_cost += Z_COST * (abs( SI16((*it)->pos.z - m_finalPos.z )) / 2);
+				
+				//set initial value for nextNode
 				nextNode = (*it);
 				continue;
 			}
-
+			
+			//for other nodes compute cost
 			curr_cost = (*it)->cost + UI32( dist( (*it)->pos, m_finalPos ) ) * OBLIQUE_COST;
 			if ( (*it)->pos.z != m_finalPos.z )
 				curr_cost += Z_COST * (abs( SI16((*it)->pos.z - m_finalPos.z) ) / 2);
-			if ( curr_cost < min_cost ) {
+			
+
+			if ( curr_cost < min_cost ) 
+			{
 				min_cost = curr_cost;
 				nextNode = (*it);
 			}
@@ -118,7 +131,8 @@ void cPath::exec()
                 // Heuristic and possible path improvement
                 //
                 heuristic = UI32( dist( currNode->parentNode->pos, nextNode->pos, false ) );
-                if ( heuristic == 1 ) { // The nodes are adjacent
+                if ( heuristic == 1 ) 
+		{ // The nodes are adjacent
 			heuristic = 0;
                         Location parent = currNode->parentNode->pos;
                         Location next = nextNode->pos;
@@ -131,7 +145,8 @@ void cPath::exec()
 
 			if ( heuristic < abs( SI16(nextNode->cost - currNode->parentNode->cost) ) )
 				bOk = true;
-                        if ( parent.z != next.z ) {
+                        if ( parent.z != next.z ) 
+			{
 				next.z = parent.z;
 				if ( isWalkable( next, WALKFLAG_ALL, pc ) == illegal_z ) // nextNode is not walkable by parentNode
 					bOk = false;
@@ -147,9 +162,12 @@ void cPath::exec()
 	if ( m_loops > MAX_PATH_TOTAL_LOOPS )
 		m_pathFound = true;
 
-	if ( m_pathFound ) {
-		if ( path_list.empty() ) {
-			while( currNode->pos != m_startPos && currNode->cost != 0 && m_loops >= 0 ) {
+	if ( m_pathFound ) 
+	{
+		if ( path_list.empty() ) 
+		{
+			while( currNode->pos != m_startPos && currNode->cost != 0 && m_loops >= 0 ) 
+			{
 				path_list.push_front( currNode->pos );
 				currNode = currNode->parentNode;
 				m_loops--;
@@ -268,6 +286,26 @@ void cPath::addToOpenList( Location pos, path_node* parentNode, UI32 cost )
 {
 	path_node* node = create_node( pos, parentNode, cost );
 	addToOpenList( node );
+}
+
+
+/*!
+\author Luxor
+\brief creates a path node
+
+Each path node cost is computed as \a parentNode.cost + \a cost
+*/
+path_node* cPath::create_node( Location pos, path_node* parentNode, UI32 cost )
+{
+	path_node *node, newnode;
+
+	newnode.cost = parentNode->cost + cost;
+	newnode.pos = pos;
+	newnode.parentNode = parentNode;
+	nodes_vector.push( newnode );
+
+	node = &(nodes_vector.back());
+	return node;
 }
 
 /*!

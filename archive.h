@@ -18,6 +18,9 @@
 
 typedef std::map< SERIAL, P_OBJECT > OBJECT_MAP;
 
+/*!
+\brief container class that holds all objects
+*/
 class cAllObjects {
 
 protected:
@@ -51,12 +54,13 @@ public:
 
 extern cAllObjects objects;
 
-class cAllObjectsIter {
+class cAllObjectsIter 
+{
 
 public:
 
-	OBJECT_MAP::iterator curr; //current, can be deleted safaly
-	OBJECT_MAP::iterator next; //next for save delete of current
+	OBJECT_MAP::iterator curr; //!< current, can be deleted safaly
+	OBJECT_MAP::iterator next; //!< next for save delete of current
 
 public:
 

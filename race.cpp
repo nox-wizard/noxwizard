@@ -27,10 +27,7 @@
 
 using namespace std;
 
-//
-//	STATIC DATA
-//
-
+//Why this?these variables are already in the class implementation
 bool	Race::activeRaceSystem	= false;
 string	Race::globalWebRoot;
 string  Race::globalWebLink;
@@ -44,6 +41,10 @@ cScpScript* Race::script ;
 //	STATIC FUNCTIONS
 //
 
+/*!
+\brief returns a race pointer from serial
+\return the race pointer
+*/
 Race* Race::getRace( UI32 raceId )
 {
 	std::map<UI32, class Race*>::iterator raceIter = raceMap.find( raceId );
@@ -53,7 +54,12 @@ Race* Race::getRace( UI32 raceId )
 		return NULL;
 }
 
+bool Race::isRaceSystemActive( void )
+{
+	return activeRaceSystem;
+}
 
+//These are those getters to be removed, see race.h for the reason
 RequiredType Race::getBeardPerm( UI32 raceId )
 {
 	return raceMap[raceId]->beardPerm;
@@ -64,21 +70,25 @@ RequiredType Race::getHairPerm( UI32 raceId )
 	return raceMap[raceId]->hairPerm;
 }
 
-bool Race::isRaceSystemActive( void )
-{
-	return activeRaceSystem;
-}
-
 bool Race::isPlayerRace( const UI32 raceId )
 {
 	return raceMap[raceId]->isPlayerRace();
 }
 
+
+/*!
+\brief loads race script
+*/
 void Race::load( const char* scriptFileName )
 {
 	script = new cScpScript( const_cast<char *>(scriptFileName) );
 }
 
+/*!
+\brief triggers script parsing
+Actual parsing is done in parseGlobalSection() and parseRaceSection()
+
+*/
 void Race::parse( void )
 {
 	if ( !script )
@@ -100,37 +110,42 @@ void Race::parse( void )
 	safedelete(script);
 }
 
+/*!
+\brief parses SECTION GLOBAL
+*/
 void Race::parseGlobalSection( void )
 {
-	std::string	sectionName = "SECTION GLOBAL";
+	std::string sectionName = "SECTION GLOBAL";
 	UI32 globalSectionCount = script->countSectionInStr( sectionName );
-
+	
+	//check if SECTION GLOBAL is declared more than once
 	if ( globalSectionCount != 1 )
 	{
 		if ( globalSectionCount == 0 )
-			ErrOut("Race::parseSectionGlobal() no global section found!\n");
+			ErrOut("Race::parseSectionGlobal() no global section found!Racesystem is not active\n");
 		else
-			ErrOut("Race::parseSectionGlobal() multiple global sections found!\n");
+			ErrOut("Race::parseSectionGlobal() multiple global sections found!Racesystem is not active\n");
 		activeRaceSystem = false;
 		return;
 	}
 
-	UI32		/*i,*/
-			loopexit;
-	cScpIterator*	iter = NULL;
-	string		lha, rha;
-
-	iter = script->getNewIterator( sectionName );
+	cScpIterator* iter = script->getNewIterator( sectionName );
 	if ( iter == NULL )
 	{
 		// OOPS we've got a major problem here! ABORT ??? -> TODO
 		ErrOut("Race::parseSectionGlobal() no global section found!\n");
 		return ;
 	}
-	loopexit=0;
+	
+	UI32 loopexit = 0;
+	string lha, rha;
+
+	//parse commands
 	do
 	{
 		iter->parseLine( lha, rha );
+		
+		//this switch can be improved ...
 		switch( lha[0] )
 		{
 			case '{':
@@ -207,36 +222,34 @@ void Race::parseGlobalSection( void )
 	} while ( ( lha[0] != '}' ) && ( ++loopexit < MAXLOOPS ) );
 }
 
+/*!
+\brief parses SECTION RACE
+*/
 void Race::parseRaceSection( void )
 {
 	std::string	sectionName = "SECTION RACE ";
 	UI32 raceCount = script->countSectionInStr( sectionName );
 
+	//turn off race system if no sections are found
 	if ( raceCount <= 0 )
 	{
-		// Problem. Race.xss containes no RACE sections
-		// We need to handle this. Let's create a dummy race 0 and route all
-		// requests to it or just switch the race system off. TODO
-		ErrOut("Race::loadRaces() no races\n");
+		ErrOut("Race::loadRaces() no races. Racesystem is not active\n");
 		activeRaceSystem = false;
 		return;
 	}
 
-	UI32		/*i,*/
-//			raceId,
-			loopexit,
-			descriptionIndex;
+	UI32 loopexit,	descriptionIndex;
 	cScpIterator*	iter = NULL;
 	std::string*	sectionParms;
 	std::string	section, lha, rha;
 
 	sectionParms = script->getFirstSectionParmsInStr( sectionName );
-
+	
 	do
 	{
 		section = sectionName + *sectionParms;
-    iter = script->getNewIterator( section );
-    if ( iter == NULL )
+    		iter = script->getNewIterator( section );
+    		if ( iter == NULL )
 		{
 			ErrOut( "Race::loadRaces() no %s\n", section.c_str() );
 			return ;
@@ -256,29 +269,29 @@ void Race::parseRaceSection( void )
 				case '@':
 					break;
 				case 'A':
-					if 			( lha == "ALCHEMY" ||
-					     			lha == "ANATOMY" ||
-					     			lha == "ANIMALLORE" ||
-					     			lha == "ARMSLORE" ||
-					     			lha == "ARCHERY")						race->parseSkill( rha );
+					if ( lha == "ALCHEMY" ||
+					   lha == "ANATOMY" ||
+					   lha == "ANIMALLORE" ||
+					   lha == "ARMSLORE" ||
+					   lha == "ARCHERY")						race->parseSkill( rha );
 					break;
 				case 'B':
-					if 			( lha == "BEARD" )						race->beardPerm = rha;
-					else if ( lha == "BEARDCOLOR" )				race->parseBeardColor( rha );
+					if( lha == "BEARD" ) race->beardPerm = rha;
+					else if ( lha == "BEARDCOLOR" ) race->parseBeardColor( rha );
 					else if ( lha == "BEGGING" ||
-						  			lha == "BLACKSMITHING" ||
-						  			lha == "BOWCRAFTING")				race->parseSkill( rha );
+						 lha == "BLACKSMITHING" ||
+						 lha == "BOWCRAFTING") race->parseSkill( rha );
 					break;
 				case 'C':
-					if 			( lha == "CAMPING" ||
-					     			lha == "CARPENTRY" ||
-					     			lha == "CARTOGRAPHY" ||
-					     			lha == "COOKING")						race->parseSkill( rha );
+					if( lha == "CAMPING" ||
+					  lha == "CARPENTRY" ||
+					  lha == "CARTOGRAPHY" ||
+					  lha == "COOKING")					race->parseSkill( rha );
 				case 'D':
-					if 			( lha == "DESCRIPTION" )			race->parseRaceDescription( rha );
-					else if ( lha == "DETECTHIDDEN" )			race->parseSkill( rha );
-					else if ( lha == "DEXCAP" ) 					race->dexCap = str2num( rha );
-					else if	( lha == "DEXMOD" )						race->parseAbilityModifiers( DEXTERITY, rha );
+					if ( lha == "DESCRIPTION" ) race->parseRaceDescription( rha );
+					else if ( lha == "DETECTHIDDEN" ) race->parseSkill( rha );
+					else if ( lha == "DEXCAP" ) race->dexCap = str2num( rha );
+					else if	( lha == "DEXMOD" ) race->parseAbilityModifiers( DEXTERITY, rha );
 					else if	( lha == "DEXSTART" )					race->dexStart = str2num( rha );
 					break;
 				case 'E':
@@ -857,7 +870,7 @@ UI32 Race::getStrCap( void )
 	return this->strCap;
 }
 
-int Race::getStrModifier( UI32 baseStr )
+UI32 Race::getStrModifier( UI32 baseStr )
 {
 	return this->strModifiers.getAbilityModifier( baseStr ).getModifier();
 }
@@ -908,7 +921,7 @@ void Race::show( void )
 	skills.show();
 }
 
-int Race::getRaceGender( void )
+UI32 Race::getRaceGender( void )
 {
 	
 	if(this->gender==MALE) return GENDER_MALE;

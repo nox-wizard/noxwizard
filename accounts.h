@@ -19,6 +19,7 @@
 #include "set.h"
 
 #define ADMIN_ACCOUNT 0
+#define ACCOUNTS_FILENAME "config/accounts.adm"
 
 // Authenticate return codes
 enum AUTHENTICATE_RESULT {
@@ -28,32 +29,32 @@ enum AUTHENTICATE_RESULT {
 	ACCOUNT_WIPE = -6,
 };
 
-
+//Account state codes
 typedef enum {
 	LOG_OUT,
 	LOG_ENTERING,
 	LOG_INGAME,
 } ACCOUNT_STATE;
 
-
-
 /*!
-\brief an Account
+\brief account class
+
+\a cAccount objects store information about player acccounts
 */
 class cAccount {
 public:
 	ACCOUNT number;			//!< Account number
-	std::string name;		//!< Account name
-	std::string pass;		//!< Account password
+	std::string name;		//!< Username
+	std::string pass;		//!< Password
 	bool ban;			//!< Is banned
 	bool ras;			//!< Use Encription
 	TIMERVAL tempblock; 		//!< Elcabesa tempblock
 	TIMERVAL blockeduntil;		//!< Elcabesa tempblock
 	unsigned long lastlogin;	//!< Last login time
-	unsigned long lastIp;
-	ACCOUNT_STATE state;		//!< Account state
-	std::vector<SERIAL> pgs;	//!< list of pg of this account
-	SERIAL pc_online;		//!< the online player
+	unsigned int lastIp;		//!< Last connected IP
+	ACCOUNT_STATE state;		//!< Current account state
+	std::vector<SERIAL> pgs;	//!< list of PC on this account
+	SERIAL pc_online;		//!< current online character
 
 	cAccount( ACCOUNT num = INVALID );
 
@@ -79,28 +80,29 @@ typedef map<std::string, ACCOUNT > ACCOUNT_LIST_BY_NAME;
 
 /*!
 \brief Class for Account Management
+\todo check saveratio, it's set to 0 in constructor and never changes. can be removed?
 */
 class cAccounts
 {
 	
 private:
-	ACCOUNT_LIST acctlist;	//!< All Account, with info
+	ACCOUNT_LIST acctlist;		//!< All Account, with info
 	ACCOUNT_LIST_BY_NAME accbyname;	//!< All Account by name
 
-	UI32 lastusedacctnum, unsavedaccounts;
+	UI32 lastusedacctnum;	//!< last account used
+	UI32 unsavedaccounts;	//!< number of unsaved accounts	
 
 public:
 	UI32 lasttimecheck;
-
-	cAccounts( void );
-	~cAccounts( void );
-
+	
 private:
-	UI32 saveratio;
+	UI32 saveratio;		//!< how many unsaved accounts there can be
 	void safeInsert( cAccount& acc );
 	void LoadAccount ( ACCOUNT acctnumb, FILE* F );
-
+	
 public:
+	cAccounts( void );
+	~cAccounts( void );
 	void SetSaveRatio ( int );
 	void LoadAccounts();
 	void SaveAccounts();
@@ -130,7 +132,7 @@ public:
 
 };
 
+//declared in accounts.cpp
 extern cAccounts* Accounts;
-
 
 #endif // __ACCOUNTS_H__
