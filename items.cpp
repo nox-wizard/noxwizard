@@ -156,7 +156,7 @@ cItem& cItem::operator=(cItem& b)
 		setAmxEvent( i, event->getFuncName(), !(event->shouldBeSaved()) );*/
 	}
 	vendorDescription = b.vendorDescription;
-	amxVS.copyVariable(getSerial32(), b.getSerial32());
+	amxVS.copyVariable(b.getSerial32(), getSerial32());
 
         return *this;
 }

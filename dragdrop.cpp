@@ -405,7 +405,6 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					if ( pin->getOwnerSerial32() != INVALID )
 						pin->setOwnerSerial32( pi->getOwnerSerial32() );
 
-
 					statwindow(pc_currchar,pc_currchar);
 					pin->Refresh();//AntiChrist
 				}
