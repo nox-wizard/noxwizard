@@ -5296,3 +5296,15 @@ void cChar::modifyFame( SI32 value )
 		}
 	}
 }
+
+
+void cChar::setSkillDelay( UI32 seconds )
+{
+	skilldelay =  uiCurrentTime + seconds * MY_CLOCKS_PER_SEC;
+}
+
+bool cChar::canDoSkillAction()
+{
+	return TIMEOUT( skilldelay );
+}
+

@@ -25,6 +25,7 @@
 #include "constants.h"
 #include "menu.h"
 #include "logsystem.h"
+#include "globals.h"
 
 //@{
 /*!
@@ -582,6 +583,13 @@ public:
 
 //@}
 
+public:
+	TIMERVAL skilldelay;
+public:
+	void setSkillDelay( UI32 seconds = server_data.skilldelay );
+	bool canDoSkillAction();
+
+		
 	/********************************/
 	/*     TO REMOVE/REPLACE        */
 	/********************************/
@@ -682,7 +690,8 @@ public:
 		SI32			pagegm; //GM Paging
 		//char region;
 		UI08			region;
-		TIMERVAL		skilldelay;
+		
+
 		TIMERVAL		objectdelay;
 		SI32			combathitmessage;
 		SI32			making; // skill number of skill using to make item, 0 if not making anything.
