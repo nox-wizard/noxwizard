@@ -227,21 +227,23 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
            		mapRegions->remove(pc);
 
-				pc->setPosition("x", x);
-				pc->setPosition("y", y);
-
 				pc->setMultiSerial(INVALID);
+
+				Location where;
+				where.x = x;
+				where.y = y;
+
 
 				if (typ)
 				{
-					pc->setPosition("z", sz);
-					pc->setPosition("dz", sz);
+					where.z = where.dispz= sz;
 				}
 				else
 				{
-					pc->setPosition("z", mz);
-					pc->setPosition("dz", mz);
+					where.z = where.dispz = mz;
 				}
+
+				pc->setPosition( where );
 
 				mapRegions->add(pc);
 
@@ -258,28 +260,27 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
 void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
 {
-	int dx, dy;
-
-	Location bpos= p_b->getPosition();
 
 	VALIDATEPI(pi);
-	dx= pi->getPosition("x") - bpos.x;//get their distance x
-	dy= pi->getPosition("y") - bpos.y;//and distance Y
+
+	Location bpos= p_b->getPosition();
+	Location itmpos = pi->getPosition();
+
+	int dx= itmpos.x - bpos.x;//get their distance x
+	int dy= itmpos.y - bpos.y;//and distance Y
 
 	mapRegions->remove(pi);
 	
-	pi->setPosition("x", bpos.x);
-	pi->setPosition("y", bpos.y);
-
-	Location itmpos= pi->getPosition();
+	itmpos.x = bpos.x;
+	itmpos.x = bpos.y;
 
 	if(dir)//turning right
 	{
-		itmpos.x +=dy*-1;
-		itmpos.y +=dx;
+		itmpos.x += dy*-1;
+		itmpos.y += dx;
 	} else {//turning left
-		itmpos.x+=dy;
-		itmpos.y+=dx*-1;
+		itmpos.x += dy;
+		itmpos.y += dx*-1;
 	}
 
 	pi->setPosition( itmpos );
@@ -292,17 +293,19 @@ void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 
 {
 
-	int dx, dy;
-	Location bpos= p_b->getPosition();
 	VALIDATEPC(pc);
+
+	Location bpos= p_b->getPosition();
 	Location charpos= pc->getPosition();
-	dx= charpos.x - bpos.x;
-	dy= charpos.y - bpos.y;
+
+	int dx= charpos.x - bpos.x;
+	int dy= charpos.y - bpos.y;
 
 	mapRegions->remove(pc);
 
 	charpos.x= bpos.x;
 	charpos.y= bpos.y;
+	
 	if(dir)
 	{
 		charpos.x+= dy*-1;
@@ -867,48 +870,55 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pBoat->more1=id2;//Set min ID
 	pBoat->more2=nid2+3;//set MAX id
 	pBoat->type=ITYPE_BOATS;//Boat type
-	pBoat->setPosition("z", -5);//Z in water
-//	strcpy(pBoat->name,"a mast");//Name is something other than "%s's house"
+	
+	Location lb ( pBoat->getPosition() );
+	lb.z = -5;
+	pBoat->setPosition(lb);//Z in water
+
+	//	strcpy(pBoat->name,"a mast");//Name is something other than "%s's house"
 	pBoat->setCurrentName("a mast");
 
 	P_ITEM pTiller=item::CreateFromScript( "$item_tillerman" );
-	if( !pTiller ) return false;
-	pTiller->setPosition("z", -5);
+	VALIDATEPIR( pTiller, false );
+	Location lt ( pTiller->getPosition() );
+	lt.z=-5;
 	pTiller->priv=0;
 
 	P_ITEM pPlankR=item::CreateFromScript( "$item_plank2" );//Plank2 is on the RIGHT side of the boat
-	if( !pPlankR ) return false;
+	VALIDATEPIR( pPlankR, false );
 	pPlankR->type=ITYPE_BOATS;
 	pPlankR->type2=3;
 	pPlankR->more1= pBoat->getSerial().ser1;//Lock this item!
 	pPlankR->more2= pBoat->getSerial().ser2;
 	pPlankR->more3= pBoat->getSerial().ser3;
 	pPlankR->more4= pBoat->getSerial().ser4;
-	pPlankR->setPosition("z", -5);
+	Location lpr( pPlankR->getPosition() );
+	lpr.z=-5;
 	pPlankR->priv=0;//Nodecay
 
 	P_ITEM pPlankL=item::CreateFromScript( "$item_plank1" );//Plank1 is on the LEFT side of the boat
-	if( !pPlankL ) return false;
+	VALIDATEPIR( pPlankL, false );
 	pPlankL->type=ITYPE_BOATS;//Boat type
 	pPlankL->type2=3;//Plank sub type
 	pPlankL->more1= pBoat->getSerial().ser1;
 	pPlankL->more2= pBoat->getSerial().ser2;//Lock this
 	pPlankL->more3= pBoat->getSerial().ser3;
 	pPlankL->more4= pBoat->getSerial().ser4;
-	pPlankL->setPosition("z", -5);
+	Location lpl( pPlankL->getPosition() );
+	lpl.z =-5;
 	pPlankL->priv=0;
 
 	P_ITEM pHold=item::CreateFromScript( "$item_hold1" );
-	if( !pHold ) return false;
+	VALIDATEPIR( pHold, false );
 	pHold->more1= pBoat->getSerial().ser1;//Lock this too :-)
 	pHold->more2= pBoat->getSerial().ser2;
 	pHold->more3= pBoat->getSerial().ser3;
 	pHold->more4= pBoat->getSerial().ser4;
 
 	pHold->type=ITYPE_CONTAINER;//Container
-	pHold->setPosition("z", -5);
+	Location lh( pHold->getPosition() );
+	lh.z=-5;
 	pHold->priv=0;
-	pHold->setContSerial(-1);
 
 
 
@@ -929,38 +939,43 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	{
 	case 0x00:
 	case 0x04:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 4);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 4);
+		lt.x = boatpos.x + 1;
+		lt.y = boatpos.y + 4;
+		lpr.x = boatpos.x + 2;
+		lpr.y = boatpos.y;
+		lpl.x = boatpos.x - 2;
+		lpl.y = boatpos.y;
+		lh.x = boatpos.x;
+		lh.y = boatpos.y - 4;
 		break;
 	case 0x08:
 	case 0x0C:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 5);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 4);
+		lt.x = boatpos.x + 1;
+		lt.y = boatpos.y + 5;
+		lpr.x = boatpos.x + 2;
+		lpr.y = boatpos.y;
+		lpl.x = boatpos.x - 2;
+		lpl.y = boatpos.y;
+		lh.x = boatpos.x;
+		lh.y = boatpos.y - 4;
 		break;
 	case 0x10:
 	case 0x14:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 5);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y - 1);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y - 1);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 5);
+		lt.x = boatpos.x + 1;
+		lt.y = boatpos.y + 5;
+		lpr.x = boatpos.x + 2;
+		lpr.y = boatpos.y - 1;
+		lpl.x = boatpos.x - 2;
+		lpl.y = boatpos.y - 1;
+		lh.x = boatpos.x;
+		lh.y = boatpos.y - 5;
 		break;
 	}
+
+	pTiller->setPosition( lt );
+	pPlankL->setPosition( lpl );
+	pPlankR->setPosition( lpr );
+	pHold->setPosition( lh );
 
 	mapRegions->add(pTiller);//Make sure everything is in da regions!
 	mapRegions->add(pPlankL);
