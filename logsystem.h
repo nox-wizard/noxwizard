@@ -28,6 +28,10 @@
 class LogFile;
 
 extern LogFile ServerLog;	//! global log object
+extern static long entries_e=0;
+extern static long entries_c=0;
+extern static long entries_w=0;
+extern static long entries_m=0;
 
 void WriteGMLog(P_CHAR, char *msg, ...);
 #ifdef WIN32
