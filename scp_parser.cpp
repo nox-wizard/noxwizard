@@ -245,7 +245,7 @@ static char* getSzFromFile(char* buffer, int len, FILE* fileHandle)
 	idx = strlen(buffer)-1;
 	if (idx<0) idx = 0;
 	if (idx>(MAXLINELENGHT-2)) idx = MAXLINELENGHT-2;
-	buffer[idx] = '\0';
+	if ((buffer[idx]=='\n')||(buffer[idx]=='\r')) buffer[idx] = '\0';
 
 	//remove eventual CR
 	idx = strlen(buffer)-1;
@@ -340,7 +340,8 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 
 	while ((!feof(file))&&(buffer[0]!='}')) {
    	buffer = getSzFromFile(realbuffer, MAXLINELENGHT-3, file);
-		if (feof(file)) {
+		if ( (feof(file)) && (buffer[0]!='}') )
+		{
 			ConOut("[FAIL] : Unexpected end of file!..");
 			break;
 		}
@@ -521,7 +522,6 @@ cScpScript::~cScpScript()
 cScpSection* cScpScript::getSection(std::string strIdentifier)
 {
 	std::map<std::string, class cScpSection>::iterator iter;
-
 	iter = m_mapSections.find(strIdentifier);
 
 	return (iter!=m_mapSections.end())? &iter->second : NULL;

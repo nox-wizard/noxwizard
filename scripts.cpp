@@ -47,8 +47,19 @@ void readwscline () // Read line from *.WSC
 				g_strScriptTemp[i]=c;
 				i++;
 			}
-			if (feof(wscfile) || i>=512 ) return;
+			if (feof(wscfile) || i==510 ) 
+			{
+				g_strScriptTemp[i++]=c;
+				g_strScriptTemp[i]=0;
+				return;
+			}
 			c=(char)fgetc(wscfile);
+		}
+		if (feof(wscfile) ) 
+		{
+			g_strScriptTemp[i++]=c;
+			g_strScriptTemp[i]=0;
+			return;
 		}
 		g_strScriptTemp[i]=0;
 		valid=1;
