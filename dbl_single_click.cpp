@@ -408,7 +408,8 @@ void doubleclick(NXWCLIENT ps)
 		}
 	case ITYPE_CONTAINER: // bugfix for snooping not working, lb
 	case ITYPE_UNLOCKED_CONTAINER:
-		if (pi->moreb1 > 0) {
+		// Wintermute: GMs or Counselors should be able to open trapped containers always
+		if (pi->moreb1 > 0 && !pc->IsGMorCounselor()) {
 			magic::castAreaAttackSpell(pi->getPosition("x"), pi->getPosition("y"), magic::SPELL_EXPLOSION);
 			pi->moreb1--;
 		}
@@ -456,13 +457,22 @@ void doubleclick(NXWCLIENT ps)
 	case ITYPE_LOCKED_CONTAINER:
 
 		// Added traps effects by AntiChrist
-		if (pi->moreb1 > 0) {
-			magic::castAreaAttackSpell(pi->getPosition().x, pi->getPosition().y, magic::SPELL_EXPLOSION);
-			pi->moreb1--;
-		}
+		// Wintermute: GMs or Counselors should be able to open locked containers always
+		if ( !pc->IsGMorCounselor() )
+		{
+			if (pi->moreb1 > 0 ) {
+				magic::castAreaAttackSpell(pi->getPosition().x, pi->getPosition().y, magic::SPELL_EXPLOSION);
+				pi->moreb1--;
+			}
 
-		pc->sysmsg(TRANSLATE("This item is locked."));
-		return;
+			pc->sysmsg(TRANSLATE("This item is locked."));
+			return;
+		}
+		else
+		{
+			pc->showContainer(pi);
+ 			return;
+		}
 	case ITYPE_SPELLBOOK:
 		if (ISVALIDPI(pack)) // morrolan
 			if(pi->getContSerial()==pack->getSerial32() || pc->IsWearing(pi))
@@ -507,6 +517,13 @@ void doubleclick(NXWCLIENT ps)
 		dooruse(s, pi);
 		return; 
 	case ITYPE_LOCKED_DOOR:
+		// Wintermute: GMs or Counselors should be able to open locked doors always
+		if ( pc->IsGMorCounselor())
+ 		{
+ 			dooruse(s, pi);
+ 			return;
+ 		}
+
 		if (ISVALIDPI(pack))
 		{
 			NxwItemWrapper si;
