@@ -206,16 +206,20 @@ extern cTargets* Targ;
 
 
 
-
+void target_envoke( NXWCLIENT ps, P_TARGET t );
+void target_key( NXWCLIENT ps, P_TARGET t );
+void target_axe( NXWCLIENT ps, P_TARGET t );
+void target_sword( NXWCLIENT ps, P_TARGET t );
 
 
 void target_follow( NXWCLIENT ps, P_TARGET t );
 void target_attack( NXWCLIENT ps, P_TARGET t );
 void target_playerVendorBuy( NXWCLIENT ps, P_TARGET t );
-void target_envoke( NXWCLIENT ps, P_TARGET t );
-void target_key( NXWCLIENT ps, P_TARGET t );
-void target_axe( NXWCLIENT ps, P_TARGET t );
-void target_sword( NXWCLIENT ps, P_TARGET t );
+void target_allAttack( NXWCLIENT ps, P_TARGET t );
+void target_fetch( NXWCLIENT ps, P_TARGET t );
+void target_guard( NXWCLIENT ps, P_TARGET t );
+void target_transfer( NXWCLIENT ps, P_TARGET t );
+
 
 
 

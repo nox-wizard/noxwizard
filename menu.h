@@ -97,6 +97,7 @@ class cMenu : public cBasicMenu
 
 	friend class cAddMenu;
 	friend class cOldMenu;
+	friend class cPartyMenu;
 
 	private:
 

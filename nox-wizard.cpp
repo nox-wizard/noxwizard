@@ -346,7 +346,6 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pc->priv3[4]=0xFFFFFFFF;
 		pc->priv3[5]=0xFFFFFFFF;
 		pc->priv3[6]=0xFFFFFFFF;
-		pc->menupriv=INVALID; // lb, menu priv
 	}
 	else
 	{

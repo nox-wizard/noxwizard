@@ -128,13 +128,12 @@ void cScriptCommand::execute( NXWSOCKET s )
 		gcollect();
 		return;
 	} else if ( command == "GOPLACE" ) {
-		int tmp=str2num(param);
-		Commands::MakePlace (s, tmp);
-		if (addx[s]!=0) {
-			pc->MoveTo( addx[s],addy[s],addz[s] );
+		int x, y, z;
+		location2xyz( str2num(param), x, y, z );
+		if( x>0 ) {
+			pc->MoveTo( x, y, z );
 			pc->teleport();
 		}
-		return;
 	} else if ( command == "GRINDPOTION" ) {
 		int type = str2num(param);
 		int sub = type % 10;

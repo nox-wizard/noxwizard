@@ -40,6 +40,7 @@
 #include "scp_parser.h"
 #include "nox-wizard.h"
 #include "utils.h"
+#include "fishing.h"
 
 /*!
 \brief apply wear out to item, delete if necessary
@@ -353,7 +354,10 @@ void doubleclick(NXWCLIENT ps)
 		pc->envokeitem = pi->getSerial32();
 		pc->envokeid1 = pi->id1;
 		pc->envokeid2 = pi->id2;
-		target(s, 0, 1, 0, 24, TRANSLATE("What will you use this on?"));
+		P_TARGET targ = clientInfo[s]->newTarget( new cObjectTarget() );
+		targ->code_callback=target_envoke;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("What will you use this on?"));
 		return;
 	}
 	// end trigger stuff
@@ -366,6 +370,9 @@ void doubleclick(NXWCLIENT ps)
 	BYTE map2[12] = "\x56\x40\x01\x02\x03\x05\x00\x00\x00\x00\x00";
 	// By Polygon: This one is needed to show the location on treasure maps
 	BYTE map3[12] = "\x56\x40\x01\x02\x03\x01\x00\x00\x00\x00\x00";
+
+
+	P_TARGET targ = NULL;
 
 	switch (pi->type)
 	{
@@ -423,25 +430,27 @@ void doubleclick(NXWCLIENT ps)
 			snooping(pc, pi ); 
 		return;
 	case ITYPE_TELEPORTRUNE:
-		target(s, 0, 1, 0, 2, TRANSLATE("Select teleport target."));
+		targ = clientInfo[s]->newTarget( new cLocationTarget() );
+		targ->code_callback = target_tele;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("Select teleport target."));
 		return;
 	case ITYPE_KEY:
-		addid1[s] = pi->more1;
-		addid2[s] = pi->more2;
-		addid3[s] = pi->more3;
-		addid4[s] = pi->more4;
-
-		if (pi->more1 == 255)
-			addid1[s] = 255;
-
-		target(s, 0, 1, 0, 11, TRANSLATE("Select item to use the key on."));
+		targ = clientInfo[s]->newTarget( new cItemTarget() );
+		targ->code_callback = target_key;
+		targ->buffer[0]= pi->more1;
+		targ->buffer[1]= pi->more2;
+		targ->buffer[2]= pi->more3;
+		targ->buffer[3]= pi->more4;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("Select item to use the key on."));
 		return;
 	case ITYPE_LOCKED_ITEM_SPAWNER:
 	case ITYPE_LOCKED_CONTAINER:
 
 		// Added traps effects by AntiChrist
 		if (pi->moreb1 > 0) {
-			magic::castAreaAttackSpell(pi->getPosition("x"), pi->getPosition("y"), magic::SPELL_EXPLOSION);
+			magic::castAreaAttackSpell(pi->getPosition().x, pi->getPosition().y, magic::SPELL_EXPLOSION);
 			pi->moreb1--;
 		}
 
@@ -746,61 +755,96 @@ void doubleclick(NXWCLIENT ps)
 					pi->ReduceAmount(1);							// remove scroll if successful
 			} 
 			else pc->sysmsg(TRANSLATE("The scroll must be in your backpack to envoke its magic."));
-		return;
 	}
 	CASE(IsAnvil) {
-		target(s, 0, 1, 0, 236, TRANSLATE("Select item to be repaired."));
-		return;
+		targ = clientInfo[s]->newTarget( new cItemTarget() );
+		targ->code_callback=Skills::target_repair;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("Select item to be repaired."));
 	}
 	CASE(IsAxe) {
-		addx[s] = DEREF_P_ITEM(pi); // save the item number, AntiChrist
-		target(s, 0, 1, 0, 76, TRANSLATE("What would you like to use that on ?"));
-		return;
+		targ = clientInfo[s]->newTarget( new cItemTarget() );
+		targ->code_callback=target_axe;
+		targ->buffer[0]=pi->getSerial32();
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("What would you like to use that on ?"));
 	}
 	CASEOR(IsFeather, IsShaft) {
-		//ndEndy PDFARE
-		//itemmake[s].Mat1id = pi->id();
-		target(s, 0, 1, 0, 172, TRANSLATE("What would you like to use this with?"));
-		return;
-	}
-	CASE(IsForge) {
-		//Removed by Luxor: because now smelting is controlled by AMX
-		return;
+		targ = clientInfo[s]->newTarget( new cItemTarget() );
+		targ->buffer[0]= pi->getSerial32();
+		targ->code_callback=Skills::target_fletching;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("What would you like to use this with?"));
 	}
 	CASEOR( IsFencing1H, IsSword ) {
-		target(s, 0, 1, 0, 86, TRANSLATE("What would you like to use that on ?"));
-		return;
+		targ = clientInfo[s]->newTarget( new cObjectTarget() );
+		targ->code_callback=target_sword;
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("What would you like to use that on ?"));
 	}
-
-	///BEGIN IDENTIFICATION BY ID ( RAW MODE, DEPRECATED )
-	doubleclick_itemid( s, pc, pi, pack );
+	else ///BEGIN IDENTIFICATION BY ID ( RAW MODE, DEPRECATED )
+		doubleclick_itemid( s, pc, pi, pack );
 
 }
 
+void target_selectdyevat( NXWCLIENT ps, P_TARGET t )
+{
+    P_ITEM pi=pointers::findItemBySerial(t->getClicked());
+    VALIDATEPI(pi);
+
+    if( pi->id()==0x0FAB ||                     //dye vat
+        pi->id()==0x0EFF || pi->id()==0x0E27 )  //hair dye
+            SndDyevat( ps->toInt(), pi->getSerial32(), pi->id() );
+        else
+            ps->sysmsg( TRANSLATE("You can only use this item on a dye vat."));
+}
+
+void target_dyevat( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR curr = ps->currChar();
+	VALIDATEPC(curr);
+
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
+	VALIDATEPI(pi);
+
+	if( pi->dye )//if dyeable
+	{
+		P_CHAR pc = pi->getPackOwner();
+
+		if( pc->getSerial32()==curr->getSerial32() || pi->isInWorld())
+		{
+			pi->setColor( t->buffer[0] );
+			pi->Refresh();
+			curr->playSFX(0x023E); // plays the dye sound, LB
+		} 
+		else 
+			curr->sysmsg(TRANSLATE("That is not yours!!"));
+	} 
+	else
+		curr->sysmsg( TRANSLATE("You can only dye clothes with this.") );
+}
+
+
 static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 {
+	P_TARGET targ = NULL;
+	NXWCLIENT ps = getClientFromSocket( s );
+
 	switch (pi->id())
 	{
-		case 0x0FA9:// dye
-			dyeall[s] = 0;
-			target(s, 0, 1, 0, 31, TRANSLATE("Which dye vat will you use this on?"));
+		case 0x0FA9: // dye
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=target_selectdyevat;
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Which dye vat will you use this on?") );
 			return;// dye
 		case 0x0FAB:// dye vat
-			addid1[s] = pi->color()>>8;
-			addid2[s] = pi->color()%256;
-			target(s, 0, 1, 0, 32, TRANSLATE("Select the clothing to use this on."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=target_dyevat;
+			targ->buffer[0]=pi->color();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select the clothing to use this on.") );
 			return;// dye vat
-		case 0x14F0:// houses
-			if ((pi->type != ITYPE_ARMY_ENLIST) &&(pi->type != ITYPE_GUILDSTONE))
-			{  // experimental house code
-				pc->making = DEREF_P_ITEM(pi);
-				pc->fx1 = DEREF_P_ITEM(pi); // for deleting it later
-				addid3[s] = pi->morex;
-				// addx2[s]=pi->serial;
-				buildhouse(s, pi->morex);
-				// target(s,0,1,0,207,"Select Location for house.");
-			}
-			return;// house deeds
 		case 0x100A:
 		case 0x100B:// archery butte
 			Skills::AButte(s, pi);
@@ -840,8 +884,12 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x13E4:
 		case 0x0FB4:// sledge hammers
 		case 0x0FB5:
-			if (!Item_ToolWearOut(s, pi))
-				target(s, 0, 1, 0, 50, TRANSLATE("Select material to use."));
+			if (!Item_ToolWearOut(s, pi)) {
+				targ = clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=Skills::target_smith;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Select material to use.") );
+			}
 			return; // Smithy
 		case 0x1026:// Chisels
 		case 0x1027:
@@ -856,8 +904,11 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1032:// Smoothing plane
 		case 0x1033:
 		case 0x1034:// Saw
-		case 0x1035:
-			target(s, 0, 1, 0, 134, TRANSLATE("Select material to use."));
+		case 0x1035: 
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_carpentry;
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select material to use.") );
 			return; // carpentry
 		case 0x0E85:// pickaxes
 		case 0x0E86:
@@ -865,63 +916,55 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x0F3A:
 			if (!Item_ToolWearOut(s, pi))
 			{
-				addx[s] = DEREF_P_ITEM(pi); // save the item number, AntiChrist
-				target(s, 0, 1, 0, 51, TRANSLATE("Where do you want to dig?"));
+				targ = clientInfo[s]->newTarget( new cLocationTarget() );
+				targ->code_callback=Skills::target_mine;
+				targ->buffer[0]=pi->getSerial32();
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Where do you want to dig?"));
 			}
 			return; // mining
-		case 0x0E24: // empty vial
-			if (pack!=NULL)
-				if (pi->getContSerial() == pack->getSerial32())
-				{
-					addx[s] = DEREF_P_ITEM(pi); // save the vials number, LB
-					target(s, 0, 1, 0, 186, TRANSLATE("What do you want to fill the vial with?"));
-				}
-				else
-					pc->sysmsg(TRANSLATE("The vial is not in your pack"));
-				return;
 		case 0x0DF9:
-			pc->tailserial = pi->getSerial32();
-			target(s, 0, 1, 0, 166, TRANSLATE("Select spinning wheel to spin cotton."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_wheel;
+			targ->buffer[0]=THREAD;
+			targ->buffer[1]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select spinning wheel to spin cotton.") );
+			return;
+		case 0x0DF8: // wool to yarn
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_wheel;
+			targ->buffer[0]=YARN;
+			targ->buffer[1]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select your spin wheel to spin wool."));
 			return;
 		case 0x0FA0:
 		case 0x0FA1: // thread to Bolt
 		case 0x0E1D:
 		case 0x0E1F:
 		case 0x0E1E:  // yarn to cloth
-			pc->tailserial = pi->getSerial32();
-			target(s, 0, 1, 0, 165, TRANSLATE("Select loom to make your cloth"));
-			return;
-		case 0x14ED: // Build cannon
-			target(s, 0, 1, 0, 171, TRANSLATE("Build this Monster!"));
-			pi->Delete();
-			return;
-		case 0x0E73: // cannon ball
-			target(s, 0, 1, 0, 170, TRANSLATE("Select cannon to load."));
-			pi->Delete();
-			return;
-		case 0x0FF8:
-		case 0x0FF9: // pitcher of water to flour
-			pc->tailserial = pi->getSerial32();
-			target(s, 0, 1, 0, 173, TRANSLATE("Select flour to pour this on."));
-			return;
-		case 0x09C0:
-		case 0x09C1: // sausages to dough
-			pc->tailserial = pi->getSerial32();
-			target(s, 0, 1, 0, 174, TRANSLATE("Select dough to put this on."));
-			return;
-		case 0x0DF8: // wool to yarn
-			pc->tailserial = pi->getSerial32();
-			target(s, 0, 1, 0, 164, TRANSLATE("Select your spin wheel to spin wool."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_loom;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select loom to make your cloth"));
 			return;
 		case 0x0F9D: // sewing kit for tailoring
-			target(s, 0, 1, 0, 167, TRANSLATE("Select material to use."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_tailoring;
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select material to use."));
 			return;
 		case 0x19B7:
 		case 0x19B9:
 		case 0x19BA:
 		case 0x19B8: // smelt ore
-			pc->smeltserial = pi->getSerial32();
-			target(s, 0, 1, 0, 52, TRANSLATE("Select forge to smelt ore on."));// smelting  for all ore changed by Myth 11/12/98
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_smeltOre;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select forge to smelt ore on."));// smelting  for all ore changed by Myth 11/12/98
 			return;
 		case 0x1E5E:
 		case 0x1E5F: // Message board opening
@@ -929,13 +972,6 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			return;
 		case 0x0DE1:
 		case 0x0DE2: // camping
-			//<Luxor>
-			//int px,py,cx,cy;
-			//px=((buffer[s][0x0b]<<8)+(buffer[s][0x0c]%256));
-  					//py=((buffer[s][0x0d]<<8)+(buffer[s][0x0e]%256));
-  					//cx=abs(chars[currchar[s]].x-px);
-  					//cy=abs(chars[currchar[s]].y-py);
-  					//if(!((cx<=5)&&(cy<=5)))
   			if ( !item_inRange( pc, pi, 3 ) )
   			{
 				pc->sysmsg(TRANSLATE("You are to far away to reach that"));
@@ -945,7 +981,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			if (pc->checkSkill(  CAMPING, 0, 500)) // Morrolan TODO: insert logout code for campfires here
 			{
 				P_ITEM pFire = item::CreateFromScript( "$item_a_campfire" );
-				if (pFire)
+				if(ISVALIDPI(pFire))
 				{
 					pFire->type = 45;
 					pFire->dir = 2;
@@ -1015,8 +1051,12 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			return;
 		case 0x0DBF:
 		case 0x0DC0:// fishing
-			if( pi->getContSerial()==pc->getSerial32() || pi->getContSerial()==pack->getSerial32() )
-				target(s, 0, 1, 0, 45, TRANSLATE("Fish where?"));
+			if( pi->getContSerial()==pc->getSerial32() || pi->getContSerial()==pack->getSerial32() ) {
+				targ = clientInfo[s]->newTarget( new cLocationTarget() );
+				targ->code_callback = Fishing::target_fish;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Fish where?"));
+			}
 			else
 				pc->sysmsg( TRANSLATE("If you wish to use this, it must be equipped or in your backpack.") );
 			return;
@@ -1029,28 +1069,27 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			pc->objectdelay = ((SrvParms->objectdelay * MY_CLOCKS_PER_SEC)*3) + uiCurrentTime;
 			if (pi->type == ITYPE_MANAREQ_WAND)
 			{
-				addid1[s] = pi->getSerial().ser1;
-				addid2[s] = pi->getSerial().ser2;
-				addid3[s] = pi->getSerial().ser3;
-				addid4[s] = pi->getSerial().ser4;
-				target(s, 0, 1, 0, 109, TRANSLATE("Where is an empty bottle for your potion?"));
+				targ = clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=Skills::target_bottle;
+				targ->buffer[0]=pi->getSerial32();
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Where is an empty bottle for your potion?") );
 			}
 			else
 			{
-				addid1[s] = pi->getSerial().ser1;
-				addid2[s] = pi->getSerial().ser2;
-				addid3[s] = pi->getSerial().ser3;
-				addid4[s] = pi->getSerial().ser4;
-				target(s, 0, 1, 0, 108, TRANSLATE("What do you wish to grind with your mortar and pestle?"));
+				targ = clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=Skills::target_alchemy;
+				targ->buffer[0]=pi->getSerial32();
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("What do you wish to grind with your mortar and pestle?"));
 			}
 			return; // alchemy
-		case 0x0F9E:
-		case 0x0F9F: // scissors
-			target(s, 0, 1, 0, 128, TRANSLATE("What cloth should I use these scissors on?"));
-			return;
 		case 0x0E21: // healing
-			addx[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 130, TRANSLATE("Who will you use the bandages on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_healingSkill;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Who will you use the bandages on?"));
 			return;
 		case 0x1057:
 		case 0x1058: // sextants
@@ -1068,28 +1107,56 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x14FC:
 		case 0x14FD:
 		case 0x14FE: // lockpicks
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 162, TRANSLATE("What lock would you like to pick?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_lockpick;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What lock would you like to pick?"));
 			return;
 		case 0x097A: // Raw Fish steaks
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 49, TRANSLATE("What would you like to cook this on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_cookOnFire;
+			targ->buffer[0]=0x097B;
+			targ->buffer[1]=pi->getSerial32();
+			targ->buffer_str[0] = "fish steaks";
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What would you like to cook this on?"));
 			return;
 		case 0x09b9: // Raw Bird
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 54, TRANSLATE("What would you like to cook this on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_cookOnFire;
+			targ->buffer[0]=0x09B7;
+			targ->buffer[1]=pi->getSerial32();
+			targ->buffer_str[0] = "bird";
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What would you like to cook this on?"));
 			return;
 		case 0x1609: // Raw Lamb
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 55, TRANSLATE("What would you like to cook this on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_cookOnFire;
+			targ->buffer[0]=0x160A;
+			targ->buffer[1]=pi->getSerial32();
+			targ->buffer_str[0] = "lamb";
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What would you like to cook this on?"));
 			return;
 		case 0x09F1: // Raw Ribs
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 68, TRANSLATE("What would you like to cook this on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_cookOnFire;
+			targ->buffer[0]=0x09F2;
+			targ->buffer[1]=pi->getSerial32();
+			targ->buffer_str[0] = "ribs";
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What would you like to cook this on?"));
 			return;
 		case 0x1607: // Raw Chicken Legs
-			addmitem[s] = DEREF_P_ITEM(pi);
-			target(s, 0, 1, 0, 69, TRANSLATE("What would you like to cook this on?"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_cookOnFire;
+			targ->buffer[0]=0x1608;
+			targ->buffer[1]=pi->getSerial32();
+			targ->buffer_str[0] = "chicken legs";
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("What would you like to cook this on?"));
 			return;
 		case 0x0C4F:
 		case 0x0C50:
@@ -1113,11 +1180,11 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x105C:
 		case 0x1053:
 		case 0x1054: // tinker axle
-			addid1[s] = pi->getSerial().ser1;
-			addid2[s] = pi->getSerial().ser2;
-			addid3[s] = pi->getSerial().ser3;
-			addid4[s] = pi->getSerial().ser4;
-			target(s, 0, 1, 0, 183, TRANSLATE("Select part to combine that with."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_tinkerAxel;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select part to combine that with."));
 			return;
 		case 0x1051:
 		case 0x1052:
@@ -1125,23 +1192,21 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1056:
 		case 0x105D:
 		case 0x105E:
-			addid1[s] = pi->getSerial().ser1;
-			addid2[s] = pi->getSerial().ser2;
-			addid3[s] = pi->getSerial().ser3;
-			addid4[s] = pi->getSerial().ser4;
-			// itemmake[s].materialid1=pi->id1;
-			// itemmake[s].materialid2=pi->id2;
-			target(s, 0, 1, 0, 184, TRANSLATE("Select part to combine it with."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_tinkerAwg;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select part to combine it with."));
 			return;
 		case 0x104F:
 		case 0x1050:
 		case 0x104D:
 		case 0x104E:// tinker clock
-			addid1[s] = pi->getSerial().ser1;
-			addid2[s] = pi->getSerial().ser2;
-			addid3[s] = pi->getSerial().ser3;
-			addid4[s] = pi->getSerial().ser4;
-			target(s, 0, 1, 0, 185, TRANSLATE("Select part to combine with"));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback=Skills::target_tinkerClock;
+			targ->buffer[0]=pi->getSerial32();
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select part to combine with"));
 			return;
 		case 0x1059:
 		case 0x105A:// tinker sextant
@@ -1177,14 +1242,17 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		//	slotmachine(s, DEREF_P_ITEM(pi));
 		//	return; // Ripper
 		case 0x1EBC: // tinker's tools
-			target(s, 0, 1, 0, 180, TRANSLATE("Select material to use."));
+			targ = clientInfo[s]->newTarget( new cItemTarget() );
+			targ->code_callback = Skills::target_tinkering;
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select material to use."));
 			return;
 		default:
-			//	ConOut("Unhandled item id for item: %s with id: %X.",pi->name, itemids); //check for unused items - Morrolan
+			pc->sysmsg( TRANSLATE("You can't think of a way to use that item."));
 			break;
 	}
 
-	pc->sysmsg( TRANSLATE("You can't think of a way to use that item."));
+	
 }
 
 /*!

@@ -59,10 +59,8 @@ namespace Skills {
 	void PlayInstrumentWell(NXWSOCKET s, int i);
 	void PlayInstrumentPoor(NXWSOCKET s, int i);
 	int GetInstrument(NXWSOCKET s);
-	void ProvocationTarget1(NXWSOCKET s);
-	void ProvocationTarget2(NXWSOCKET s);
-	void EnticementTarget1(NXWSOCKET s);
-	void EnticementTarget2(NXWSOCKET s);
+	void target_provocation1( NXWCLIENT ps, P_TARGET t );
+	void target_enticement1( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	void TellScroll(char *menu_name, int player, long item_param);
@@ -87,7 +85,7 @@ namespace Skills {
 	\name ID-Stuff
 	*/
 	void TasteIDTarget(NXWSOCKET s);
-	void ItemIdTarget(NXWSOCKET s);
+	void target_itemId( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	//@{
@@ -152,7 +150,7 @@ namespace Skills {
 	void target_smeltOre( NXWCLIENT ps, P_TARGET t );
 	void TreeTarget(NXWSOCKET s);
 
-	void DetectHidden(NXWSOCKET s);
+	void target_detectHidden( NXWCLIENT ps, P_TARGET t );
 
 	//@{
 	/*!
@@ -163,31 +161,28 @@ namespace Skills {
 
 	void SpiritSpeak(NXWSOCKET s);
 	
-	void ArmsLoreTarget(NXWSOCKET s);
-	
-	void Evaluate_int_Target(NXWSOCKET s);
-	
-	void AnatomyTarget(NXWSOCKET s);
-	
-	void TameTarget(NXWSOCKET s);
+	void target_armsLore( NXWCLIENT ps, P_TARGET t );
+	void target_evaluateInt( NXWCLIENT ps, P_TARGET t );
+	void target_anatomy( NXWCLIENT ps, P_TARGET t );
+	void target_tame( NXWCLIENT ps, P_TARGET t );
 
 	//@{
 	/*!
 	\name Thievery stuff
 	*/
-	void RandomSteal(NXWCLIENT ps);
-	void StealingTarget(NXWCLIENT ps);
+	void target_randomSteal( NXWCLIENT ps, P_TARGET t );
+	void target_stealing( NXWCLIENT ps, P_TARGET t );
 	void PickPocketTarget(NXWCLIENT ps);
 	void target_lockpick( NXWCLIENT ps, P_TARGET t );
 	//@}
 
-	void BeggingTarget(NXWSOCKET s);
+	void target_begging( NXWCLIENT ps, P_TARGET t );
 	
-	void AnimalLoreTarget(NXWSOCKET s);
+	void target_animalLore( NXWCLIENT ps, P_TARGET t );
 	
-	void ForensicsTarget(NXWSOCKET s);
+	void target_forensics( NXWCLIENT ps, P_TARGET t );
 	
-	void PoisoningTarget(NXWCLIENT ps);
+	void target_poisoning( NXWCLIENT ps, P_TARGET t );
 
 	void Inscribe(NXWSOCKET s);
 	

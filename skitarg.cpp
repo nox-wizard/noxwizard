@@ -105,14 +105,16 @@ AmxFunction* tailoring = NULL;
 AmxFunction* tannering = NULL;
 
 
-void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
+void Skills::target_tailoring( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
     AMXEXECSV(s,AMXT_SKITARGS,TAILORING,AMX_BEFORE);
 
@@ -150,12 +152,14 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
     AMXEXECSV(s,AMXT_SKITARGS,TAILORING,AMX_AFTER);
 }
 
-void Skills::Fletching(NXWSOCKET s)
+void Skills::target_fletching( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	NXWSOCKET s = ps->toInt();
+
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
     AMXEXECSV(s,AMXT_SKITARGS,BOWCRAFT,AMX_BEFORE);
@@ -163,11 +167,7 @@ void Skills::Fletching(NXWSOCKET s)
     {
         if (CheckInPack(s,pi))
         {
-			//ndEndy PDFARE
-			//itemmake[s].Mat2id=pi->id();    // 2nd material
-            //itemmake[s].has=pc->getAmount(itemmake[s].Mat1id);     // count both materials
-            //itemmake[s].has2=pc->getAmount(itemmake[s].Mat2id);
-            MakeMenu(pc,60,BOWCRAFT, pi);
+            MakeMenu(pc,60,BOWCRAFT, pointers::findItemBySerial( t->buffer[0] ), pi );
         }
     }
 	else
@@ -205,7 +205,7 @@ void Skills::BowCraft(NXWSOCKET s)
 }
 
 ////////////////////
-// name:    Carpentry()
+// name:    target_carpentry()
 // history: unknown, rewritten by Duke, 25.05.2000
 // purpose: sets up appropriate Makemenu when player targets logs or boards
 //          after dclick on carpentry tool
@@ -213,21 +213,21 @@ void Skills::BowCraft(NXWSOCKET s)
 //          If logs are targetted, Makemenu 19 is called to produce boards
 //          If boards, MM 20 is called for furniture etc.
 //
-void Skills::Carpentry(NXWSOCKET s)
+void Skills::target_carpentry( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
-    AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_BEFORE);
+    AMXEXECSV(ps->toInt(),AMXT_SKITARGS,CARPENTRY,AMX_BEFORE);
     if ( pi->magic!=4)
     {
         if( pi->IsLog() || pi->IsBoard() ) // logs or boards
         {
-           if (CheckInPack(s,pi))
+           if (CheckInPack(ps->toInt(),pi))
            {
               short mm = pi->IsLog() ? 19 : 20; // 19 = Makemenu to create boards from logs
               MakeMenu(pc,mm,CARPENTRY,pi);
@@ -237,7 +237,7 @@ void Skills::Carpentry(NXWSOCKET s)
     else
         pc->sysmsg(TRANSLATE("You cannot use that material for carpentry."));
 
-    AMXEXECSV(s,AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
+    AMXEXECSV(ps->toInt(),AMXT_SKITARGS,CARPENTRY,AMX_AFTER);
 }
 
 /*!
@@ -276,7 +276,7 @@ static bool AnvilInRange(NXWSOCKET s)
 /*!
 \author Duke
 \date 28/03/2000
-\brief Little helper function for cSkills::Smith()
+\brief Little helper function for cSkills::target_smith()
 \param s socket number
 \param pi pointer to material item
 \param ma maximum amount
@@ -316,23 +316,24 @@ static void AnvilTarget( NXWSOCKET s, P_ITEM pi, int ma, int mm, char* matname)
 // Remarks:     the ingottype var is problematic in a multiplayer environment!!
 //
 extern int ingottype;
-void Skills::Smith(NXWSOCKET s)
+
+void Skills::target_smith( NXWCLIENT ps, P_TARGET t )
 {
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
     if (pi->magic!=4) // Ripper
     {
-        if (!CheckInPack(s,pi)) return;
+        if (!CheckInPack(ps->toInt(),pi)) 
+			return;
 
         if (pi->id()==0x1BEF || pi->id()==0x1BF2)   // is it an ingot ?
         {
-
-			AnvilTarget(s, pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
+			AnvilTarget( ps->toInt(), pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
 			return;
         }
     }
-    sysmessage(s,TRANSLATE("You cannot use that material for blacksmithing"));
+    ps->sysmsg( TRANSLATE("You cannot use that material for blacksmithing") );
 }
 
 void Skills::TasteIDTarget(NXWSOCKET s)
@@ -823,12 +824,14 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 //              minskill and ingot type
 // Remarks:     NOTE: ingot color is different from ore color for gold, silver & copper!
 //
-void Skills::SmeltOre(NXWSOCKET s)
+void Skills::target_smeltOre( NXWCLIENT ps, P_TARGET t )
 {
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
     if ( pi->magic!=4) // Ripper
     {
@@ -838,44 +841,26 @@ void Skills::SmeltOre(NXWSOCKET s)
                 pc->sysmsg(TRANSLATE("You cant smelt here."));
             else
             {
-                P_ITEM pix=pointers::findItemBySerial(pc->smeltserial);  // on error return
-                /*int color1 = pix->color1;
-                int color2 = pix->color2;
-                switch (color)
-                {
-                    case 0x0000:    SmeltOre2(s,   0, 0x1B, 0xF2, 0x09, 0x61,"Iron");break;
-                    case 0x0466:    SmeltOre2(s, 850, 0x1B, 0xF2, 0x04, 0x66,"Golden");break;
-                    case 0x046E:    SmeltOre2(s, 750, 0x1B, 0xF2, 0x04, 0x6E,"Copper");break;
-                    case 0x0961:    SmeltOre2(s, 790, 0x1B, 0xF2, 0x00, 0x00,"Silver");break;
-                    case 0x0150:    SmeltOre2(s, 900, 0x1B, 0xF2, 0x01, 0x50,"Agapite");break;
-                    case 0x0386:    SmeltOre2(s, 650, 0x1B, 0xF2, 0x03, 0x86,"Shadow");break;
-                    case 0x022f:    SmeltOre2(s, 950, 0x1B, 0xF2, 0x02, 0x2F,"Verite");break;
-                    case 0x02e7:    SmeltOre2(s, 800, 0x1B, 0xF2, 0x02, 0xE7,"Bronze");break;
-                    case 0x02c3:    SmeltOre2(s, 700, 0x1B, 0xF2, 0x02, 0xC3,"Merkite");break;
-                    case 0x0191:    SmeltOre2(s, 990, 0x1B, 0xF2, 0x01, 0x91,"Mythril");break;
-                    default:
-                        LogError("switch reached default");
-                }*/
-                //
-                //28/11/01
-                //
-                //Luxor - new implementation of AMX controlled ores smelting.
+                P_ITEM pix=pointers::findItemBySerial( t->buffer[0] );
+				VALIDATEPI( pix );
 
                 AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color() >> 8), (pix->color() % 256), pix->getSerial32());
             }
         }
     }
-    pc->smeltserial=INVALID;
+
 	weights::NewCalc(pc);   // Ison 2-20-99
     statwindow(pc,pc);      // Ison 2-20-99
 }
 
-void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
+void Skills::target_wheel( NXWCLIENT ps, P_TARGET t )	//Spinning wheel
 {
-    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
     VALIDATEPI(pi);
+
+	int mat = t->buffer[0];
 
     int tailme=0;
 
@@ -890,8 +875,8 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
                 return;
             }
 
-            P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);   // on error return
-	    VALIDATEPI(pti);
+            P_ITEM pti=pointers::findItemBySerial( t->buffer[1] );   // on error return
+			VALIDATEPI(pti);
 
             pc_currchar->sysmsg(TRANSLATE("You have successfully spun your material."));
 
@@ -914,16 +899,18 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
         }
     }
 
-    pc_currchar->tailserial=INVALID;
-    if(!tailme) pc_currchar->sysmsg(TRANSLATE("You cant tailor here."));
+    if(!tailme) 
+		pc_currchar->sysmsg(TRANSLATE("You cant tailor here."));
 }
 
-void Skills::Loom(NXWSOCKET s)
+void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 {
-    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
 	int tailme=0;
 
@@ -934,7 +921,7 @@ void Skills::Loom(NXWSOCKET s)
 		{
 			if(item_inRange(pc_currchar,pi,3))
 			{
-				P_ITEM pti=pointers::findItemBySerial(pc_currchar->tailserial);
+				P_ITEM pti=pointers::findItemBySerial( t->buffer[0] );
 				VALIDATEPI(pti);
 
 				if(pti->amount<5)
@@ -980,8 +967,8 @@ void Skills::Loom(NXWSOCKET s)
 		}
 	}
 
-	pc_currchar->tailserial=INVALID;
-	if(!tailme) pc_currchar->sysmsg(TRANSLATE("You can't tailor here."));
+	if(!tailme) 
+		pc_currchar->sysmsg(TRANSLATE("You can't tailor here."));
 }
 
 ////////////
@@ -989,18 +976,21 @@ void Skills::Loom(NXWSOCKET s)
 // By:      Ripper & Duke, 07/20/00
 // Purpose: so you can use raw meat on fire
 //
-void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
+void Skills::target_cookOnFire( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	short id = t->buffer[0];
+	std::string matname = t->buffer_str[0];
 
     if (pi->magic!=4) // Ripper
     {
-        P_ITEM piRaw=MAKE_ITEM_REF(addmitem[s]);
+        P_ITEM piRaw=MAKE_ITEM_REF( t->buffer[1] );
 		VALIDATEPI(piRaw);
         if (pc->isInBackpack(piRaw))
         {
@@ -1012,7 +1002,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                     if (!pc->checkSkill(COOKING, 0, 1000))
                     {
                         piRaw->ReduceAmount(1+(rand() %(piRaw->amount)));
-                        pc->sysmsg(TRANSLATE("You failed to cook the %s and drop some into the ashes."),matname);
+                        pc->sysmsg(TRANSLATE("You failed to cook the %s and drop some into the ashes."),matname.c_str());
                     }
                     else
                     {
@@ -1024,7 +1014,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                         pi->type=ITYPE_FOOD;
                         pi->Refresh();
                         piRaw->Delete();
-                        pc->sysmsg(TRANSLATE("You have cooked the %s,and it smells great."),matname);
+                        pc->sysmsg(TRANSLATE("You have cooked the %s,and it smells great."),matname.c_str());
                     }
                 }
             }
@@ -1032,85 +1022,6 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
     }
 }
 
-void Skills::MakeDough(NXWSOCKET s)
-{
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-	VALIDATEPI(pi);
-
-	int tailme=0;
-
-    if ( pi->magic!=4) // Ripper
-    {
-        if(pi->id()==0x103A)
-        {
-            if(item_inRange(pc,pi,3))
-            {
-                if (!pc->checkSkill(COOKING, 0, 1000))
-                {
-                    pc->sysmsg(TRANSLATE("You failed to mix, and spilt your water."));
-                    return;
-                }
-
-                P_ITEM pti=MAKE_ITEM_REF(pc->tailserial);
-				VALIDATEPI(pti);
-
-                pc->sysmsg(TRANSLATE("You have mixed very well to make your dough."));
-
-				pti->setCurrentName("#");
-                pti->setId(0x103D);
-                pti->priv |= ITMPRIV_DECAY;
-                pti->amount *= 2;
-                pti->Refresh();
-                tailme=1;
-            }
-        }
-    }
-    pc->tailserial=INVALID;
-    if(!tailme) pc->sysmsg(TRANSLATE("You cant mix here."));
-}
-
-void Skills::MakePizza(NXWSOCKET s)
-{
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-    VALIDATEPI(pi);
-
-	int tailme=0;
-
-	if ( pi->magic!=4) // Ripper
-	{
-        	if(pi->id()==0x103D)
-        	{
-			if(item_inRange(pc,pi,3))
-			{
-				if (!pc->checkSkill(COOKING, 0, 1000))
-				{
-					pc->sysmsg(TRANSLATE("You failed to mix."));
-					pi->Delete();
-					return;
-				}
-
-				P_ITEM pti=pointers::findItemBySerial(pc->tailserial);
-				VALIDATEPI(pti);
-
-				pc->sysmsg(TRANSLATE("You have made your uncooked pizza, ready to place in oven."));
-
-				pti->setCurrentName("#");
-				pti->setId(0x1083);
-				pti->priv |= ITMPRIV_DECAY;
-				pti->amount *= 2;
-				pti->Refresh();
-				tailme = 1;
-			}
-		}
-	}
-
-	pc->tailserial=INVALID;
-	if(!tailme) pc->sysmsg(TRANSLATE("You cant mix here."));
-}
 
 /*
 * I decided to base this on how OSI will be changing detect hidden.
@@ -1125,33 +1036,24 @@ void Skills::MakePizza(NXWSOCKET s)
 /*!
 \author Luxor
 */
-void Skills::DetectHidden(NXWSOCKET  s)
+void Skills::target_detectHidden( NXWCLIENT ps, P_TARGET t )
 {
-	if (s < 0 || s >= now)
-		return;
 
-	if ( LongFromCharPtr(buffer[s] +11) == INVALID)
-		return;
-
-	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
+	NXWSOCKET s = ps->toInt();
+
 	AMXEXECSV(s,AMXT_SKITARGS,DETECTINGHIDDEN,AMX_BEFORE);
-	SI32 x, y, z;
-
-	x = ShortFromCharPtr(buffer[s] +11);
-	y = ShortFromCharPtr(buffer[s] +13);
-	z = buffer[s][16];
-
-	if ( x < 0 || y < 0 || z < 0 )
-		return;
+	
+	Location location = t->getLocation();
 
 	SI32 nSkill = pc->skill[DETECTINGHIDDEN];
 	SI32 nRange = SI32( VISRANGE * nSkill/2000.0 );
 	SI32 nLow = 0;
 	Location lCharPos = pc->getPosition();
 
-	if ( SI32(dist(lCharPos, Loc(x, y, z))) > 15 ) {
+	if ( SI32(dist(lCharPos, location)) > 15 ) {
 		pc->sysmsg( TRANSLATE("You cannot see for hidden objects so far.") );
 		return;
 	}
@@ -1160,7 +1062,7 @@ void Skills::DetectHidden(NXWSOCKET  s)
 	LOGICAL bFound = false;
 	P_CHAR pc_curr = NULL;
 	SI32 nDist = 0;
-	sw.fillCharsNearXYZ( x, y, nRange, true, true );
+	sw.fillCharsNearXYZ( location, nRange, true, true );
 
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		pc_curr = sw.getChar();
@@ -1189,42 +1091,50 @@ void Skills::DetectHidden(NXWSOCKET  s)
 	AMXEXECSV(s,AMXT_SKITARGS,DETECTINGHIDDEN,AMX_AFTER);
 }
 
-void Skills::ProvocationTarget1(NXWSOCKET  s)
+void target_enticement2( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR current=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(current);
 
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	int inst = Skills::GetInstrument(s);
+	P_CHAR pc_ftarg=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc_ftarg);
+
+	NXWSOCKET s= ps->toInt();
+
+	ITEM inst = Skills::GetInstrument(s);
 	if (inst==INVALID)
 	{
 		sysmessage(s, TRANSLATE("You do not have an instrument to play on!"));
 		return;
 	}
 
-	if (!pc->npc)
-		sysmessage(s, TRANSLATE("You cannot provoke other players."));
+	if (pc->checkSkill( ENTICEMENT, 0, 1000) && pc->checkSkill( MUSICIANSHIP, 0, 1000) )
+	{
+		P_CHAR pc_target = pointers::findCharBySerial( t->buffer[0] );
+		VALIDATEPC(pc_target);
+		pc_target->ftargserial = pc_ftarg->getSerial32();
+		pc_target->npcWander = WANDER_FOLLOW;
+		sysmessage(s, TRANSLATE("You play your hypnotic music, luring them near your target."));
+		Skills::PlayInstrumentWell(s, inst);
+	}
 	else
 	{
-		addid1[s]=buffer[s][7];
-		addid2[s]=buffer[s][8];
-		addid3[s]=buffer[s][9];
-		addid4[s]=buffer[s][10];
-		target(s, 0, 1, 0, 80, TRANSLATE("You play your music, inciting anger, and your target begins to look furious. Whom do you wish it to attack?"));
-		PlayInstrumentWell(s, inst);
+		sysmessage(s, TRANSLATE("Your music fails to attract them."));
+		Skills::PlayInstrumentPoor(s, inst);
 	}
 }
 
-void Skills::EnticementTarget1(NXWSOCKET  s)
+void Skills::target_enticement1( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR current=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR current=ps->currChar();
 	VALIDATEPC(current);
 
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
 
 	ITEM inst = Skills::GetInstrument(s);
 	if (inst==INVALID)
@@ -1246,58 +1156,29 @@ void Skills::EnticementTarget1(NXWSOCKET  s)
 		sysmessage(s, TRANSLATE("You cannot entice other players."));
 	else
 	{
-		addid1[s]=buffer[s][7];
-		addid2[s]=buffer[s][8];
-		addid3[s]=buffer[s][9];
-		addid4[s]=buffer[s][10];
-		target(s, 0, 1, 0, 82, TRANSLATE("You play your music, luring them near. Whom do you wish them to follow?"));
+		P_TARGET targ= clientInfo[s]->newTarget( new cCharTarget() );
+		targ->code_callback = target_enticement2;
+		targ->buffer[0]= pc->getSerial32();
+		targ->send( ps );
+		ps->sysmsg(TRANSLATE("You play your music, luring them near. Whom do you wish them to follow?"));
 		PlayInstrumentWell(s, inst);
 	}
 }
 
-void Skills::EnticementTarget2(NXWSOCKET  s)
+
+void target_provocation2( NXWCLIENT ps, P_TARGET t )
 {
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	P_CHAR pc_ftarg=pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc_ftarg);
-
-	ITEM inst = Skills::GetInstrument(s);
-	if (inst==INVALID)
-	{
-		sysmessage(s, TRANSLATE("You do not have an instrument to play on!"));
-		return;
-	}
-
-	if (pc->checkSkill( ENTICEMENT, 0, 1000) && pc->checkSkill( MUSICIANSHIP, 0, 1000) )
-	{
-		P_CHAR pc_target = pointers::findCharBySerial( calcserial( addid1[s], addid2[s], addid3[s], addid4[s] ) );
-		VALIDATEPC(pc_target);
-		pc_target->ftargserial = pc_ftarg->getSerial32();
-		pc_target->npcWander = WANDER_FOLLOW;
-		sysmessage(s, TRANSLATE("You play your hypnotic music, luring them near your target."));
-		PlayInstrumentWell(s, inst);
-	}
-	else
-	{
-		sysmessage(s, TRANSLATE("Your music fails to attract them."));
-		Skills::PlayInstrumentPoor(s, inst);
-	}
-}
-
-void Skills::ProvocationTarget2(NXWSOCKET  s)
-{
-	P_CHAR Victim2 = pointers::findCharBySerPtr(buffer[s]+7);
+	P_CHAR Victim2 = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(Victim2);
 
-	P_CHAR Player = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR Player = ps->currChar();
 	VALIDATEPC(Player);
 	Location charpos= Player->getPosition();
 
-	P_CHAR Victim1 = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
+	P_CHAR Victim1 = pointers::findCharBySerial( t->buffer[0] );
 	VALIDATEPC(Victim1);
+
+	NXWSOCKET s =ps->toInt();
 
 	if (Victim2->InGuardedArea())
 	{
@@ -1310,7 +1191,7 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 		return;
 	}
 
-	int inst = GetInstrument(s);
+	int inst = Skills::GetInstrument(s);
 	if (inst==INVALID)
 	{
 		sysmessage(s, "You do not have an instrument to play on!");
@@ -1318,7 +1199,7 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 	}
 	if (Player->checkSkill( MUSICIANSHIP, 0, 1000))
 	{
-		PlayInstrumentWell(s, inst);
+		Skills::PlayInstrumentWell(s, inst);
 		if (Player->checkSkill( PROVOCATION, 0, 1000))
 		{
 			if (Player->InGuardedArea() && ServerScp::g_nInstantGuard == 1) //Luxor
@@ -1353,10 +1234,42 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 	}
 	else
 	{
-		PlayInstrumentPoor(s, inst);
+		Skills::PlayInstrumentPoor(s, inst);
 		sysmessage(s, TRANSLATE("You play rather poorly and to no effect."));
 	}
 }
+
+void Skills::target_provocation1( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR current=ps->currChar();
+	VALIDATEPC(current);
+
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+	NXWSOCKET s =ps->toInt();
+
+	int inst = Skills::GetInstrument(s);
+	if (inst==INVALID)
+	{
+		sysmessage(s, TRANSLATE("You do not have an instrument to play on!"));
+		return;
+	}
+
+	if (!pc->npc)
+		sysmessage(s, TRANSLATE("You cannot provoke other players."));
+	else
+	{
+		P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+		targ->code_callback=target_provocation2;
+		targ->buffer[0]=pc->getSerial32();
+		targ->send( ps );
+		ps->sysmsg( TRANSLATE("You play your music, inciting anger, and your target begins to look furious. Whom do you wish it to attack?"));
+		PlayInstrumentWell(s, inst);
+	}
+}
+
+
 
 //////////////////////////
 // name:    AlchemyTarget
@@ -1364,19 +1277,19 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 // Purpose: checks for valid reg and brings up gumpmenu to select potion
 //          This is called after the user dblclicked a mortar and targeted a reg
 //
-void Skills::AlchemyTarget(NXWSOCKET s)
+void Skills::target_alchemy( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
 	P_ITEM pack= pc_currchar->getBackpack();    // Get the packitem
 	VALIDATEPI(pack);
 
-    ////////////////////Araknesh Find Empty Bottle Bugfix Mortar
+	NXWSOCKET s = ps->toInt();
 
 
 	P_ITEM pfbottle=NULL; //candidate of the bottle
@@ -1419,17 +1332,19 @@ void Skills::AlchemyTarget(NXWSOCKET s)
 // name:    HealingSkillTarget
 // history: unknown, revamped by Duke, 4.06.2000
 //
-void Skills::HealingSkillTarget(NXWSOCKET s)
+void Skills::target_healingSkill( NXWCLIENT ps, P_TARGET t )
 {
 
-    P_CHAR ph = MAKE_CHAR_REF(currchar[s]);   // points to the healer
+    P_CHAR ph = ps->currChar();   // points to the healer
 	VALIDATEPC(ph);
-    P_CHAR pp = pointers::findCharBySerPtr(buffer[s]+7); // pointer to patient
+    P_CHAR pp = pointers::findCharBySerial( t->getClicked() );; // pointer to patient
 	VALIDATEPC(pp);
 
     int j;
-    P_ITEM pib=MAKE_ITEM_REF(addx[s]);    // item index of bandage
+    P_ITEM pib=MAKE_ITEM_REF( t->buffer[0] );    // item index of bandage
 	VALIDATEPI(pib);
+
+	NXWSOCKET s = ps->toInt();
 
 
     AMXEXECSV(s,AMXT_SKITARGS,HEALING,AMX_BEFORE);
@@ -1550,18 +1465,21 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,HEALING,AMX_AFTER);
 }
 
-void Skills::ArmsLoreTarget(NXWSOCKET s)
+void Skills::target_armsLore( NXWCLIENT ps, P_TARGET t )
 {
-    int total;
-    float totalhp;
-    char p2[100];
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
 
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-    P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +7);
+    P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+    int total;
+    float totalhp;
+    char p2[100];
 
     AMXEXECSV(s,AMXT_SKITARGS,ARMSLORE,AMX_BEFORE);
 
@@ -1665,13 +1583,15 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
 
 }
 
-void Skills::ItemIdTarget(NXWSOCKET s)
+void Skills::target_itemId( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    const P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
 
     char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -1754,14 +1674,16 @@ void Skills::ItemIdTarget(NXWSOCKET s)
 // history: unknown, revamped by Duke, 2.10.2000
 // Purpose: implements the 'evaluate intelligence' skill
 //
-void Skills::Evaluate_int_Target(NXWSOCKET  s)
+void Skills::target_evaluateInt( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR eval=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR eval=ps->currChar();
 	VALIDATEPC(eval);
 
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] + 7);
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
 
 
     // blackwind distance fix
@@ -1807,13 +1729,15 @@ void Skills::Evaluate_int_Target(NXWSOCKET  s)
 // history: unknown, revamped by Duke, 2.10.2000
 // Purpose: implements the 'evaluate anatomy' skill
 //
-void Skills::AnatomyTarget(NXWSOCKET s)
+void Skills::target_anatomy( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
+	P_CHAR target = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(target);
+
+	NXWSOCKET s = ps->toInt();
 
 
 	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_BEFORE);
@@ -1872,13 +1796,14 @@ void Skills::AnatomyTarget(NXWSOCKET s)
 	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_AFTER);
 }
 
-//taken from 6904t2(5/10/99) - AntiChrist
-void Skills::TameTarget(NXWSOCKET s)
+void Skills::target_tame( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
-	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
+	P_CHAR target = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(target);
+
+	NXWSOCKET s=ps->toInt();
 
 	int tamed=0;
 
@@ -1949,25 +1874,19 @@ void Skills::TameTarget(NXWSOCKET s)
 }
 
 
-void Skills::BeggingTarget(NXWSOCKET s)
+void Skills::target_begging( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pcc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pcc=ps->currChar();
 	VALIDATEPC(pcc);
 
-    P_CHAR pc = pointers::findCharBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
+    P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
 
     int gold,x,y,realgold;
     char abort;
-
-
-
-    addid1[s]=buffer[s][7];
-    addid2[s]=buffer[s][8];
-    addid3[s]=buffer[s][9];
-    addid4[s]=buffer[s][10];
-
 
     AMXEXECSV(s,AMXT_SKITARGS,BEGGING,AMX_BEFORE);
 
@@ -2064,13 +1983,15 @@ void Skills::BeggingTarget(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,BEGGING,AMX_AFTER);
 }
 
-void Skills::AnimalLoreTarget(NXWSOCKET s)
+void Skills::target_animalLore( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	P_CHAR target = pointers::findCharBySerPtr(buffer[s] + 7);
+	P_CHAR target = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(target);
+
+	NXWSOCKET s = ps->toInt();
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
@@ -2111,12 +2032,14 @@ void Skills::AnimalLoreTarget(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,ANIMALLORE,AMX_AFTER);
 }
 
-void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
+void Skills::target_forensics( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
-	P_ITEM pi = pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
 	AMXEXECSV(s,AMXT_SKITARGS,FORENSICS,AMX_BEFORE);
 
@@ -2158,9 +2081,8 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 \param ps the client
 \note pi->morez is the poison type
 */
-void Skills::PoisoningTarget(NXWCLIENT ps)
+void Skills::target_poisoning( NXWCLIENT ps, P_TARGET t )
 {
-    if( ps == NULL ) return;
 	P_CHAR pc = ps->currChar();
     VALIDATEPC(pc);
 	NXWSOCKET s = ps->toInt();
@@ -2185,7 +2107,7 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 
     pc->poisonserial=0;
 
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    const P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
     if( !ISVALIDPI(pi) ) {
         pc->sysmsg(TRANSLATE("You can't poison that item."));
 		pc->objectdelay = 0;
@@ -2291,12 +2213,14 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 }
 
 
-void Skills::Tinkering(NXWSOCKET s)
+void Skills::target_tinkering( NXWCLIENT ps, P_TARGET t )
 {
-    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
-    const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
     AMXEXECSV(s,AMXT_SKITARGS,TINKERING,AMX_BEFORE);
 
@@ -2374,16 +2298,18 @@ public:
     virtual bool decide()               {return (itembits == 3) ? true : false;}
     virtual void createIt(NXWSOCKET s)        {;}
     static cTinkerCombine* factory(short combinetype);
-    virtual void DoIt(NXWSOCKET s)
+    virtual void DoIt( NXWCLIENT ps, P_TARGET t )
     {
-        P_ITEM piClick = pointers::findItemBySerial( calcserial(addid1[s], addid2[s], addid3[s], addid4[s]) );
+        NXWSOCKET s = ps->toInt();
+		
+		P_ITEM piClick = pointers::findItemBySerial( t->buffer[0] );
         if( piClick == NULL )
         {
             sysmessage( s,TRANSLATE("Original part no longer exists" ));
             return;
         }
 
-        const P_ITEM piTarg=pointers::findItemBySerPtr(buffer[s]+7);
+        const P_ITEM piTarg=pointers::findItemBySerial( t->getClicked() );
         if (piTarg==NULL || piTarg->magic==4)
         {
             sysmessage(s,TRANSLATE("You can't combine these."));
@@ -2516,32 +2442,34 @@ cTinkerCombine* cTinkerCombine::factory(short combinetype)
     }
 }
 
-void Skills::TinkerAxel(NXWSOCKET s)
+void Skills::target_tinkerAxel( NXWCLIENT ps, P_TARGET t )
 {
     cTinkerCombine *ptc = cTinkerCombine::factory(cTC_AwG);
-    ptc->DoIt(s);
+    ptc->DoIt(ps, t);
 }
 
-void Skills::TinkerAwg(NXWSOCKET s)
+void Skills::target_tinkerAwg( NXWCLIENT ps, P_TARGET t )
 {
     cTinkerCombine *ptc = cTinkerCombine::factory(cTC_Parts);
-    ptc->DoIt(s);
+    ptc->DoIt(ps, t);
 }
 
-void Skills::TinkerClock(NXWSOCKET s)
+void Skills::target_tinkerClock( NXWCLIENT ps, P_TARGET t )
 {
     cTinkerCombine *ptc = cTinkerCombine::factory(cTC_Clock);
-    ptc->DoIt(s);
+    ptc->DoIt(ps, t);
 }
 
-void Skills::RepairTarget(NXWSOCKET  s)
+void Skills::target_repair( NXWCLIENT ps, P_TARGET t )
 {
 
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+    P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
 
     short smithing=pc->baseskill[BLACKSMITHING];
 
@@ -2591,114 +2519,3 @@ void Skills::RepairTarget(NXWSOCKET  s)
     }
 }
 
-/*
-void Skills::SmeltItemTarget(NXWSOCKET  s)
-{ // Ripper..Smelting items.
-
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	P_ITEM pack= pc->getBackpack();
-    if (!ISVALIDPI(pack)) {
-		pc->sysmsg(TRANSLATE("Time to buy a backpack"));
-		return;
-	}
-
-    if (pc->skill[MINING] < 300)
-    {
-        pc->sysmsg(TRANSLATE("* Your not skilled enough to smelt items.*"));
-        return;
-    }
-
-    //int serial=LongFromCharPtr();
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-	VALIDATEPI(pi);
-
-	//int i=DEREF_P_ITEM(pi);
-
-	if (pi->isInWorld()||(pi->magic==4) )
-		return;
-
-    int col1=pi->color1;
-    int col2=pi->color2;
-
-//  int c=itemmake[s].needs/2;
-    //int c=1+(int)(pi->getWeight())/100;    // number of ingots you get depends on the weight (Duke)
-    //int sm= pi->smelt;
-	int ingots=1+(int)(pi->getWeight())/100;
-
-	if(pi->rank!=30)
-	{
-		pc->sysmsg(TRANSLATE("You cant smelt that item!"));
-		return;
-	}
-
-	if (pi->getContSerial()!=pack->getSerial32())
-	{
-		pc->sysmsg(TRANSLATE("The item must be in your backpack"));
-		return;
-	}
-
-	if(!ForgeInRange(s))
-    {
-		pc->sysmsg(TRANSLATE(" Must be closer to the forge."));
-		return;
-	}
-
-	if(pc->skill[MINING]>300 && pc->skill[MINING]<500 && pi->smelt==1)
-	{
-		if (pc->checkSkill( MINING, 0, 1000))
-		{
-			item::CreateFromScript( "$item_iron_ingots", pc->getBackpack() );
-			pc->sysmsg(TRANSLATE("you smelt the item and place some ingots in your pack."));
-			pi->deleteItem();
-			return;
-		}
-	}
-
-	if(pc->skill[MINING]>=500)
-	{
-		if (pc->checkSkill( MINING, 0, 1000) )
-		{
-			switch(pi->smelt)
-			{
-				case 1:
-					item::CreateFromScript( "$item_iron_ingots", pc->getBackpack() );
-					break;
-				case 2:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"silver ingot",1,0x1BF2,0,1,1);
-					break;
-				case 3:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"golden ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 4:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"agapite ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 5:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"shadow ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 6:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"mythril ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 7:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"bronze ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 8:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"verite ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 9:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"merkite ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				case 10:
-					item::SpawnItem(INVALID,DEREF_P_CHAR(pc),ingots,"copper ingot",1,0x1BF2,(col1<<8)+col2,1,1);
-					break;
-				default:
-					return;
-			}
-			pc->sysmsg(TRANSLATE("you smelt the item and place some ingots in your pack."));
-			pi->deleteItem();
-
-		}
-	}
-}
-*/

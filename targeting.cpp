@@ -60,13 +60,13 @@ extern void targetParty(NXWSOCKET  s);
 \param s socket to attack
 \brief Manages all attack command
 */
-void cTargets::AllAttackTarget(NXWSOCKET s)
+void target_allAttack( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-    P_CHAR pc_target = pointers::findCharBySerPtr(buffer[s] +7);
+    P_CHAR pc_target = pointers::findCharBySerial( t->getClicked() );
     VALIDATEPC(pc_target);
 
 
@@ -1441,37 +1441,6 @@ void cTargets::MakeShopTarget(NXWSOCKET s)
     sysmessage(s, TRANSLATE("Target character not found..."));
 }
 
-void cTargets::TransferTarget(NXWSOCKET s)
-{
-
-    P_CHAR pc1 = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
-	VALIDATEPC(pc1);
-    P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
-	VALIDATEPC(pc2);
-
-	//Araknesh Call OnTransfer Event Passing Animal,NewOwner
-
-	if (pc1->amxevents[EVENT_CHR_ONTRANSFER])
-	{
-		g_bByPass = false;
-		pc1->amxevents[EVENT_CHR_ONTRANSFER]->Call(pc1->getSerial32(),pc2->getSerial32());
-		if (g_bByPass==true) return ;
-	}
-	/*
-	pc1->runAmxEvent( EVENT_CHR_ONTRANSFER, pc1->getSerial32(),pc2->getSerial32());
-	if (g_bByPass==true)
-		return ;
-	*/
-    char t[120];
-    sprintf(t,TRANSLATE("* %s will now take %s as his master *"), pc1->getCurrentNameC(), pc2->getCurrentNameC());
-    pc1->talkAll(t,0);
-
-    pc1->setOwner( pc2 );
-    pc1->npcWander=WANDER_FOLLOW;
-    pc1->ftargserial=INVALID;
-    pc1->npcWander=WANDER_NOMOVE;
-}
-
 void cTargets::BuyShopTarget(NXWSOCKET s)
 {
     P_CHAR pc =pointers::findCharBySerPtr(buffer[s]+7);
@@ -1992,32 +1961,6 @@ void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
         sysmessage(s,TRANSLATE("no valid target"));
 }
 
-void cTargets::FetchTarget(NXWSOCKET  s) // Ripper
-{
-    sysmessage(s,TRANSLATE("Fetch is not available at this time."));
-}
-
-void cTargets::GuardTarget( NXWSOCKET  s )
-{
-    P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	P_CHAR pPet = pointers::findCharBySerial(addx[s]);
-    if (!ISVALIDPC(pPet)) LogError("Lost pet serial");
-
-    P_CHAR pToGuard = pointers::findCharBySerPtr(buffer[s]+7);
-    if( !ISVALIDPC(pToGuard) || pToGuard->getSerial32() != pPet->getOwnerSerial32() )
-    {
-        sysmessage( s, TRANSLATE("Currently can't guard anyone but yourself!" ));
-        return;
-    }
-    pPet->npcaitype = NPCAI_PETGUARD;
-    pPet->ftargserial=pc->getSerial32();
-    pPet->npcWander=WANDER_FOLLOW;
-    sysmessage(s, TRANSLATE("Your pet is now guarding you."));
-    pc->guarded = true;
-}
-
 void cTargets::ResurrectionTarget( NXWSOCKET  s )
 {
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
@@ -2109,6 +2052,7 @@ void cTargets::MoveToBagTarget(NXWSOCKET s)
 
 void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with the targetting cursor
 {
+#ifdef PDDAFARE
 	if (ps == NULL)
 		return;
 	NXWSOCKET  s=ps->toInt();
@@ -2124,7 +2068,6 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 	target->execute( ps );
 
 	return;
-#ifdef PDDAFARE
 
 	targetok[s]=0;
 
@@ -2200,7 +2143,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 26: Targ->AddMenuTarget(s, 1, addmitem[s]); break;
         case 27: Targ->NpcMenuTarget(s); break;
 //        case 28: ItemTarget(ps,pt); break;//MovableTarget
-        case 29: Skills::ArmsLoreTarget(s); break;
+//        case 29: Skills::ArmsLoreTarget(s); break;
         case 30: if (Cready)
 				    OwnerTarget(ps,pc);
 				 else if (Iready)
@@ -2215,7 +2158,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 37: Skills::AnatomyTarget(s); break;
 //        case 38: target_recall /*Magic->Recall(s); break;*/
 //        case 39: target_mark /*Magic->Mark(s); break;*/
-        case 40: Skills::ItemIdTarget(s); break;
+//        case 40: Skills::ItemIdTarget(s); break;
         case 41: Skills::Evaluate_int_Target(s); break;
         case 42: Skills::TameTarget(s); break;
 //        case 43: /*Magic->Gate(s); break;*/
@@ -2257,10 +2200,10 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 72: if (Iready) ContainerEmptyTarget2(ps,pi); break;
         case 73: CodedNpcRectangle(s,pt); break;
 //        case 76: AxeTarget(ps,pt); break;
-        case 77: Skills::DetectHidden(s); break;
+//        case 77: Skills::DetectHidden(s); break;
 
-        case 79: Skills::ProvocationTarget1(s); break;
-        case 80: Skills::ProvocationTarget2(s); break;
+//        case 79: Skills::ProvocationTarget1(s); break;
+//        case 80: Skills::ProvocationTarget2(s); break;
         case 81: Skills::EnticementTarget1(s); break;
         case 82: Skills::EnticementTarget2(s); break;
 
@@ -2285,12 +2228,12 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 116: Targ->MakeShopTarget(s); break;
 //        case 117: Targ->FollowTarget(s); break;
 //        case 118: Targ->AttackTarget(s); break;
-        case 119: Targ->TransferTarget(s); break;
+//        case 119: Targ->TransferTarget(s); break;
         case 120: Targ->GuardTarget( s ); break;
         case 121: Targ->BuyShopTarget(s); break;
         case 122: ItemTarget(ps,pt); break;//SetValueTarget
 //        case 123: ItemTarget(ps,pt); break;//SetRestockTarget
-        case 124: Targ->FetchTarget(s); break;
+//        case 124: Targ->FetchTarget(s); break;
 
 //        case 126: target_jail Targ->JailTarget(s,-1); break;
         case 127: target_release Targ->ReleaseTarget(s,-1); break;
@@ -2351,7 +2294,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
             break;
         } //</Luxor>*/
 //        case 192: PartySystem::targetParty(ps); break;   // Xan Party System
-        case 193: Targ->AllAttackTarget(s); break;      // Luxor All Attack
+//        case 193: Targ->AllAttackTarget(s); break;      // Luxor All Attack
 		case 194:
 		{
 		     TargetLocation TL(pt);
@@ -2896,5 +2839,62 @@ void target_sword( NXWCLIENT ps, P_TARGET t )
 	} 
 	else
 		pc->sysmsg(TRANSLATE("You can't think of a way to use your blade on that."));
+}
+
+void target_fetch( NXWCLIENT ps, P_TARGET t )
+{
+    ps->sysmsg( TRANSLATE("Fetch is not available at this time.") );
+}
+
+void target_guard( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+	P_CHAR pPet = pointers::findCharBySerial(t->buffer[0]);
+    VALIDATEPC(pPet);
+
+    P_CHAR pToGuard = pointers::findCharBySerial( t->getClicked() );
+    if( !ISVALIDPC(pToGuard) || pToGuard->getSerial32() != pPet->getOwnerSerial32() )
+    {
+        ps->sysmsg( TRANSLATE("Currently can't guard anyone but yourself!" ));
+        return;
+    }
+    pPet->npcaitype = NPCAI_PETGUARD;
+    pPet->ftargserial=pc->getSerial32();
+    pPet->npcWander=WANDER_FOLLOW;
+    ps->sysmsg( TRANSLATE("Your pet is now guarding you."));
+    pc->guarded = true;
+}
+
+void target_transfer( NXWCLIENT ps, P_TARGET t )
+{
+
+    P_CHAR pc1 = pointers::findCharBySerial( t->buffer[0] );
+	VALIDATEPC(pc1);
+    P_CHAR pc2 = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc2);
+
+	//Araknesh Call OnTransfer Event Passing Animal,NewOwner
+
+	if (pc1->amxevents[EVENT_CHR_ONTRANSFER])
+	{
+		g_bByPass = false;
+		pc1->amxevents[EVENT_CHR_ONTRANSFER]->Call(pc1->getSerial32(),pc2->getSerial32());
+		if (g_bByPass==true) return ;
+	}
+	/*
+	pc1->runAmxEvent( EVENT_CHR_ONTRANSFER, pc1->getSerial32(),pc2->getSerial32());
+	if (g_bByPass==true)
+		return ;
+	*/
+    char bb[120];
+    sprintf(bb,TRANSLATE("* %s will now take %s as his master *"), pc1->getCurrentNameC(), pc2->getCurrentNameC());
+    pc1->talkAll(bb,0);
+
+    pc1->setOwner( pc2 );
+    pc1->npcWander=WANDER_FOLLOW;
+    pc1->ftargserial=INVALID;
+    pc1->npcWander=WANDER_NOMOVE;
 }
 

@@ -105,20 +105,19 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 \author Unknow, completly rewritten by Endymion
 \param ps the client
 */
-void Skills::StealingTarget(NXWCLIENT ps)
+void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 {
-	if ( ps == NULL ) return;
 	NXWSOCKET s = ps->toInt();
 	P_CHAR thief = ps->currChar();
 	VALIDATEPC(thief);
-	SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
+	SERIAL target_serial = t->getClicked();
 
 	AMXEXECSV(s,AMXT_SKITARGS,STEALING,AMX_BEFORE);
 
 	//steal a char
 	if ( isCharSerial(target_serial) )
 	{
-		Skills::RandomSteal(ps);
+		Skills::target_randomSteal(ps,t);
         	return;
 	}
 
@@ -290,7 +289,7 @@ void Skills::PickPocketTarget(NXWCLIENT ps)
 		// rustling sound..dont know if right but it works :)
 	}
 	else
-        	Me->sysmsg(TRANSLATE("You learn nothing from practicing here"));
+        Me->sysmsg(TRANSLATE("You learn nothing from practicing here"));
         	// if over 30 Stealing..dont learn.
 }
 
@@ -300,14 +299,13 @@ void Skills::PickPocketTarget(NXWCLIENT ps)
 \param ps the client
 \todo add string because it's locked contanier into translate
 */
-void Skills::RandomSteal(NXWCLIENT ps)
+void Skills::target_randomSteal( NXWCLIENT ps, P_TARGET t )
 {
 
-	if( ps == NULL ) return;
 	P_CHAR thief=ps->currChar();
 	VALIDATEPC(thief);
 	NXWSOCKET s = ps->toInt();
-	P_CHAR victim = pointers::findCharBySerPtr( buffer[s]+7 );
+	P_CHAR victim = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(victim);
 	
 

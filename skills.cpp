@@ -1036,10 +1036,11 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 	if ( s < 0 || s >= now || x < 0 || x >= TRUESKILLS) //Luxor
 		return;
 
+    NXWCLIENT ps=getClientFromSocket(s);
+	if( ps==NULL )
+		return;
     
-    
-	int cc=currchar[s];
-	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
 	if( (pc->skilldelay>uiCurrentTime) && (!pc->IsGM()) )
@@ -1089,24 +1090,34 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 	}
 	else 
 	{
+		P_TARGET targ=NULL;
 		switch(x)
 		{
 			case ARMSLORE:
-				target(s, 0, 1, 0, 29, TRANSLATE("What item do you wish to get information about?"));
+				targ=clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=target_armsLore;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("What item do you wish to get information about?"));
 				break;
 
 			case ANATOMY:
 				break;
 
 			case ITEMID:
-				target(s, 0, 1, 0, 40, TRANSLATE("What do you wish to appraise and identify?"));
+				targ=clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=Skills::target_itemId;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("What do you wish to appraise and identify?"));
 				break;
 			
 			case EVALUATINGINTEL:
 				break;
 			
 			case TAMING:
-				target(s, 0, 1, 0, 42, TRANSLATE("Tame which animal?"));
+				targ=clientInfo[s]->newTarget( new cCharTarget() );
+				targ->code_callback=target_tame;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Tame which animal?"));
 				break;
 			
 			case HIDING:
@@ -1118,7 +1129,10 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case DETECTINGHIDDEN:
-				target(s, 0, 1, 0, 77, TRANSLATE("Where do you wish to search for hidden characters?"));
+				targ=clientInfo[s]->newTarget( new cLocationTarget() );
+				targ->code_callback=target_detectHidden;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Where do you wish to search for hidden characters?"));
 				break;
 			
 			case PEACEMAKING:
@@ -1126,11 +1140,17 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case PROVOCATION:
-				target(s, 0, 1, 0, 79, TRANSLATE("Whom do you wish to incite?"));
+				targ=clientInfo[s]->newTarget( new cCharTarget() );
+				targ->code_callback=target_provocation1;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Whom do you wish to incite?"));
 				break;
 			
 			case ENTICEMENT:
-				target(s, 0, 1, 0, 81, TRANSLATE("Whom do you wish to entice?"));
+				targ=clientInfo[s]->newTarget( new cCharTarget() );
+				targ->code_callback=target_enticement1;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Whom do you wish to entice?"));
 				break;
 			
 			case SPIRITSPEAK:
@@ -1138,8 +1158,12 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case STEALING:
-				if (SrvParms->rogue)
-					target(s,0,1,0,205, TRANSLATE("What do you wish to steal?"));
+				if (SrvParms->rogue) {
+					targ=clientInfo[s]->newTarget( new cObjectTarget() );
+					targ->code_callback=target_stealing;
+					targ->send( ps );
+					ps->sysmsg( TRANSLATE("What do you wish to steal?"));
+				}
 				else
 				{
 					sysmessage(s, TRANSLATE("That skill has been disabled."));
@@ -1154,15 +1178,24 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				break;
 			
 			case BEGGING:
-				target(s, 0, 1, 0, 152, TRANSLATE("Whom do you wish to annoy?"));
+				targ=clientInfo[s]->newTarget( new cCharTarget() );
+				targ->code_callback=Skills::target_begging;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Whom do you wish to annoy?"));
 				break;
 			
 			case ANIMALLORE:
-				target(s, 0, 1, 0, 153, TRANSLATE("What animal do you wish to get information about?"));
+				targ=clientInfo[s]->newTarget( new cCharTarget() );
+				targ->code_callback=Skills::target_animalLore;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("What animal do you wish to get information about?"));
 				break;
 			
 			case FORENSICS:
-				target(s, 0, 1, 0, 154, TRANSLATE("What corpse do you want to examine?"));
+				targ=clientInfo[s]->newTarget( new cItemTarget() );
+				targ->code_callback=Skills::target_forensics;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("What corpse do you want to examine?"));
 				break;
 			
 			case POISONING:
@@ -1201,7 +1234,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 	}
 	
 	if ( setSkillDelay )
-		SetSkillDelay(cc);
+		SetSkillDelay(pc->getSerial32());
 
 	AMXEXECSV(s,AMXT_SKILLS, x, AMX_AFTER);
 }
