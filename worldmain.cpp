@@ -2887,6 +2887,20 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 		}
 	}
+	if ( (pi->type == ITYPE_NPC_SPAWNER )|| (pi->type == ITYPE_ITEM_SPAWNER ))
+	{
+		cSpawnDinamic *spawn = Spawns->getDynamicSpawn(pi->getSerial32());
+		if ( spawn == NULL )
+		{
+			// No spawner has been made yet
+			Spawns->loadFromItem(pi);
+			spawn = Spawns->getDynamicSpawn(pi->getSerial32());
+			spawn->clear();
+			pi->amount2=0;
+			spawn->current=0;
+			spawn->nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
+		}
+	}
 	if ( ( !pi->isInWorld() || ((pi->getPosition("x") > 1) && (pi->getPosition("x") < 6144) && (pi->getPosition("y") < 4096))))
 	{
 		fprintf(iWsc, "SECTION WORLDITEM %i\n", this->itm_curr++);
