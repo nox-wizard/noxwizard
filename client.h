@@ -23,26 +23,6 @@ typedef std::vector< std::string > td_cmdparams;
 
 class cNxwClientObj {
 public:
-/*    P_CHAR m_pcCurrChar;
-    bool m_bDragging;
-    bool m_bNoWeather;
-    bool m_bEvilDraggg; // for UO:3D clients
-    bool m_bFirstPacket;
-    unsigned m_uPriv3[8];
-    int  m_nNewClient;
-    bool m_bShouldPack;
-    BYTE m_RcvBuffer[MAXBUFFER];
-    BYTE m_SndBuffer[MAXBUFFER];
-    int m_nSndBufLen;
-    int m_nRcvBufLen;
-    int m_nRealSocket;
-    short m_sWalkSequence;
-    unsigned char m_ucAddId[8];
-    int m_nAdd[6];
-    int m_iAccount;
-    make_st m_ItemMake;
-    bool m_bInGame;
-*/
 /*  -- not yet implemented ;) --
     void doStreamCode();
     void flushBuffer();
@@ -128,13 +108,14 @@ public:
 	bool lsd; //!< lsd stuff
 	bool dragging; //!< true if is dragging
 	bool evilDrag; //!< evil dragging, we need this for UO3D clients to save dragging history
+	bool newclient; //!< is a new client
+	bool firstpacket; //!< fist packet sended
 
 	cClient();
 	~cClient();
 
 };
 
-typedef cClient* P_CLIENT;
 
 
 

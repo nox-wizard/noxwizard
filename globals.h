@@ -97,8 +97,6 @@ extern int escortRegions;
 
 extern P_CLIENT clientInfo[MAXCLIENT];
 
-extern char firstpacket[MAXCLIENT+1];
-extern int newclient[MAXCLIENT];
 extern bool cryptedClient[MAXCLIENT];
 
 extern unsigned char  buffer[MAXCLIENT][MAXBUFFER];

@@ -415,6 +415,8 @@ cClient::cClient()
 	noweather=true;
 	lsd=false;
 	dragging=false;
+	firstpacket=true;
+	newclient=true;
 }
 
 cClient::~cClient()

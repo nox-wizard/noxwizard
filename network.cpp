@@ -413,7 +413,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		int jj = j+1;
 		client[j]=client[jj];
 		currchar[j]=currchar[jj];
-		newclient[j]=newclient[jj];
 		cryptedClient[j]=cryptedClient[jj];
 		clientip[j][0]=clientip[jj][0];
 		clientip[j][1]=clientip[jj][1];
@@ -425,7 +424,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		boutlength[j]=boutlength[jj];
 		clientInfo[j]=clientInfo[jj];
 		walksequence[j]=walksequence[jj];
-		firstpacket[j]=firstpacket[jj];
 		clientDimension[j]=clientDimension[jj];
 
 		memcpy(&buffer[j], &buffer[jj], MAXBUFFER); // probably not nec.
@@ -1295,7 +1293,6 @@ void cNetwork::CheckConn() // Check for connection requests
 			#endif
 
 				currchar[now] = INVALID;
-				newclient[now]=1;
 				cryptedClient[now]=true;
 				acctno[now]=-1;
 				perm[now]=0;
@@ -1469,8 +1466,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 	std::string cpps;
 	std::vector<std::string>::const_iterator viter;
 
-	newclient[s]=0; 
-	if (newclient[s])
+	if ( clientInfo[s]->newclient )
 	{
 		if((count=recv(client[s], (char*)buffer[s], 4, MSG_NOSIGNAL))==SOCKET_ERROR)
 		{
@@ -1488,8 +1484,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			*(unsigned long*)&clientip[s]=0;
 		}
 
-		newclient[s]=0; 
-		firstpacket[s]=1;
+		clientInfo[s]->newclient=false;
+		clientInfo[s]->firstpacket=true;
 
 	}
 	else
@@ -1503,7 +1499,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 			// Lets assure the data is valid, this stops server freezes caused by receiving nonsense data
 			// (remark: useres that dont use ignition do that)
-			if (firstpacket[s] && packet != 0x80 && packet !=0x91 )
+			if ( clientInfo[s]->firstpacket && packet != 0x80 && packet !=0x91 )
 			{
 				Disconnect(s);
 				InfoOut("received garbage from a client, disconnected it to prevent bad things.\n User probably didnt use ignition or UO-RICE\n");
@@ -1577,7 +1573,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_FIRSTLOGINREQUEST:
-					firstpacket[s]=0;
+					clientInfo[s]->firstpacket=false;
 					LoginMain(s);
 					break;
 
@@ -1586,7 +1582,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_LOGINREQUEST:
-					firstpacket[s]=0;
+					clientInfo[s]->firstpacket=false;
 					clientInfo[s]->compressOut=true;
 					CharList(s);
 					break;

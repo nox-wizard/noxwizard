@@ -104,6 +104,8 @@ typedef class cBasicMenu* P_MENU;
 typedef class cGuild* P_GUILD;
 typedef class cGuildMember* P_GUILD_MEMBER;
 typedef class cGuildRecruit* P_GUILD_RECRUIT;
+typedef class cClient* P_CLIENT;
+
 
 
 

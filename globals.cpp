@@ -229,8 +229,6 @@ cGuilds		*Guilds;
 /////////////////////////////////////////////
 // maximum too cause maxclient = maximum +1
 
-char firstpacket[MAXCLIENT+1];
-int newclient[MAXCLIENT];
 bool cryptedClient[MAXCLIENT];
 
 char unsigned buffer[MAXCLIENT][MAXBUFFER];
