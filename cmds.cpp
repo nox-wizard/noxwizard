@@ -10,24 +10,32 @@
 
 //file cmds.cpp
 //by Frodo & Stonedz
+//Work in progress...
 
-
+//#include "nxwcommn.h"
 #include "cmds.h"
 
 
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(char* name, long int priv) {
+cCommand::cCommand(char* name, long int priv, void command()) {
 
-	this->cmd_name=name;
-	this->cmd_priv=priv;
+	cmd_name=name;
+	cmd_priv=priv; //stonedz: should be a std::bitset (?)
+	cmd_extra= command;
 }
 
 
 
 
 //Implementation of cCommandMap Class
+
+cCommandMap::cCommandMap() {
+
+	// all addGmCommand(...); goes here
+
+}
 
 
 P_COMMAND cCommandMap::addGmCommand(char* name, int long priv, void callback()) {
@@ -67,7 +75,25 @@ td_cmditer cCommandMap::getIteratorEnd() {			// Not sure if necessary
 
 
 
+/*
 
+
+*****
+Must add a native function for AMX to get command property
+for use it in small scripting.
+Something like :
+
+\param 1 char serial
+\param 2 command serial
+\param 3 property
+\param ...  
+
+  NATIVE (_getCmdProperty){
+	...
+  }
+*****
+
+*/
 
 
 

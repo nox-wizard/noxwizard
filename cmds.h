@@ -10,13 +10,14 @@
 
 //file cmds.h
 //by Frodo & Stonedz
+//Work in progress...
 
 
-#include "commons_libs.h"
-#include <bitset>
+//#include <bitset>
 
 
 typedef cCommand* P_COMMAND;
+
 typedef std::map< string, P_COMMAND> td_cmdmap;
 typedef td_cmdmap::iterator td_cmditer;
 
@@ -33,7 +34,7 @@ public:
 	
 	void (*cmd_extra) ();
     char* cmd_name;
-	long int cmd_priv;
+	long int cmd_priv;  //stonedz: this should be a std::bitset (?)
 };
 
 
