@@ -97,7 +97,7 @@ void cTweaking::RENAME2_Apply(NXWCLIENT client) {
 	}
 	P_ITEM pi= target->getItem();
 	if(ISVALIDPI(pi)) {
-		pi->setSecondaryName(text.c_str());
+		pi->setSecondaryName(text);
 	}
 }
 
