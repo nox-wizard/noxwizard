@@ -266,7 +266,7 @@ void LogMessageF(char *Message, ...)
 
 	switch( LogType )
 	{
-//	case 'M': InfoOut("%s\n", fullMessage); break;
+	case 'M': InfoOut("%s\n", fullMessage); break;
     case 'W': WarnOut("%s\n",fullMessage); break;
     case 'E': ErrOut("%s\n",fullMessage); break;
     case 'C': PanicOut("%s\n",fullMessage); break;
