@@ -106,7 +106,7 @@ public:
     bool isValid(P_CHAR character);
     bool notValid(P_CHAR character);
 
-    static P_COMMANDSTEP buildSteps(void command(NXWCLIENT) ...);
+    static P_COMMANDSTEP buildSteps(MANAGEDSTEP(command), ...);
 
 	char*	cmd_name;
 	unsigned int	cmd_priv_m;	/* PRIV3 byte# - 0-6, 255=no privs needed */
