@@ -49,9 +49,8 @@ protected:
 */
 class cClientPacket : public cPacket {
 protected:
-	void getFromSocket( NXWSOCKET s, char* buffer, int size );
-	void getUI32FromSocket( NXWSOCKET s, UI32& i );
-	void getStringFromSocket( NXWSOCKET s, string& i, int lenght );
+	void getFromSocket( NXWSOCKET socket, char* buffer, int size, int& from );
+	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
 
 public:
 	virtual ~cClientPacket() {}
@@ -1684,7 +1683,7 @@ public:
 private:
 	eUI16	len;	//!< # of unicode characters
 public:
-	std::vector<wchar_t> msg;	//!< new profile, in unicode, not null terminated.
+	cUnicodeString profile;	//!< new profile, in unicode, not null terminated.
 
 	cPacketCharProfileUpdate();
 	void receive( NXWCLIENT PS );

@@ -37,27 +37,20 @@ char* cPacket::getBeginValidForReceive() {
 \param s the socket
 \param buffer the data
 \param size the number of byte to read
+\param from offset
 */
-void cClientPacket::getFromSocket( NXWSOCKET s, char* buffer, int size ) {
-
+void cClientPacket::getFromSocket( NXWSOCKET socket, char* buffer, int size, int& from ) 
+{
+/*
 	int count;
 	if( ( count = recv( s, buffer, size, MSG_NOSIGNAL) ) == SOCKET_ERROR )
 	{
 		LogSocketError("Socket Recv Error %s\n", errno) ;
 	}
-
-};
-
-/*!
-\brief read a UI32 from socket buffer
-\author Endymion
-\since 0.83a
-\param s the socket
-\param i the interger variable
 */
-void cClientPacket::getUI32FromSocket( NXWSOCKET s, UI32& i ) {
-	//getFRomSOcket
-}
+	memcpy( buffer, &buffer[socket]+from, size );
+	from+=size;
+};
 
 /*!
 \brief read a string from socket buffer
@@ -66,11 +59,13 @@ void cClientPacket::getUI32FromSocket( NXWSOCKET s, UI32& i ) {
 \param s the socket
 \param i the string
 \param lenght the length of need to read
+\param from offset
 */
-void cClientPacket::getStringFromSocket( NXWSOCKET s, string& i, int lenght ) {
-	char* buffer = NULL;
-	this->getFromSocket( s, buffer, lenght );
-	i = buffer;	
+void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from ) {
+	int i=0;
+	while( buffer[socket][from+i]!=0 ) {
+		s+=buffer[socket][from+ i++];
+	}
 }
 
 /*!
@@ -81,8 +76,9 @@ void cClientPacket::getStringFromSocket( NXWSOCKET s, string& i, int lenght ) {
 \attention NOT WRITE THE CMD, it's read before
 */
 void cClientPacket::receive( NXWCLIENT ps ) {
+	int i=1;
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1 );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1, i );
 };
 
 /*!
@@ -123,20 +119,20 @@ void cServerPacket::send( P_CHAR pc ) {
 
 CREATE( CreateCharacter, PKG_CREATE_CHARACTER, 0x0A )
 RECEIVE( CreateCharacter ) {
-	if( ps == NULL ) return; //after error here
+	/*if( ps == NULL ) return; //after error here
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
 	getStringFromSocket( ps->toInt(), this->passwd, 30 );
-	getFromSocket( ps->toInt(), (char*)(&this->sex), 30 );
+	getFromSocket( ps->toInt(), (char*)(&this->sex), 30 );*/
 };
 
 CREATE( DisconnectNotification, PKG_DISCONNECT_NOTIFY, 0x05 )
 
 CREATE( TalkRequest, PKG_TALK_REQUEST, 0x08 )
 RECEIVE( TalkRequest ) {
-	if( ps == NULL ) return; //after error here
+	/*if( ps == NULL ) return; //after error here
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
-	getStringFromSocket( ps->toInt(), this->msg, this->size-0x08 ); 	
+	getStringFromSocket( ps->toInt(), this->msg, this->size-0x08 ); 	*/
 };
 
 CREATE( GodModeToggle, PKG_GODMODE_TOGGLE, 0x02  )
@@ -261,11 +257,11 @@ CREATE( Time, PKG_TIME, 0x04 )
 
 CREATE( Login, PKG_LOGIN, 0x05 )
 RECEIVE( Login ) {
-	if( ps == NULL ) return; //after error here
+/*	if( ps == NULL ) return; //after error here
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
 	getStringFromSocket( ps->toInt(), this->name, 30 ); 	
 	getStringFromSocket( ps->toInt(), this->passwd, 30 );
-	getFromSocket( ps->toInt(), (char*)(&this->slot), 8 );
+	getFromSocket( ps->toInt(), (char*)(&this->slot), 8 );*/
 }
 
 CREATE( Weather, PKG_WEATHER, 0x04 )
@@ -309,10 +305,10 @@ CREATE( LoginDenied, PKG_LOGIN_DENIED, 0x02 )
 
 CREATE( DeleteCharacter, PKG_DELETE_CHARACHTER, 0x01 )
 RECEIVE( DeleteCharacter ) {
-	if( ps == NULL ) return; 
+/*	if( ps == NULL ) return; 
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 ); // nothing.. remove?
 	getStringFromSocket( ps->toInt(), this->passwd, 30 ); 	
-	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );
+	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );*/
 }
 
 
@@ -337,11 +333,23 @@ CREATE( WalkAck, PKG_WALK_ACK, 0x03 )
 CREATE( WalkReject, PKG_WALK_REJECT, 0x08 )
 
 CREATE( CharProfileReq, PKG_CHAR_PROFILE, 0x08 )
-CREATE( CharProfileUpdate, PKG_CHAR_PROFILE, 0x0A )
+CREATE( CharProfileUpdate, PKG_CHAR_PROFILE, 0x0C )
 RECEIVE( CharProfileUpdate ) {
 	if( ps == NULL ) return; 
-	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
-	//dsdsds
+	NXWSOCKET s=ps->toInt();
+	int offset=1;
+	
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize -1, offset );
+	wchar_t t=0;
+	for( int i=0; ; ++i ) {
+		if( i%2==0 ) {
+			t=buffer[s][offset+i];
+		}
+		else {
+			t+=buffer[s][offset+i]<<8;
+			profile+= t;
+		}
+	}
 }
 
 CREATE( CharProfile, PKG_CHAR_PROFILE, 0x09 )
