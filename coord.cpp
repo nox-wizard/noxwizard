@@ -120,7 +120,10 @@ cCoord cCoord::operator- (const cCoord& src) const
 
 bool cCoord::operator< (const cCoord& src) const
 {
-	return ((this->x < src.x) || (this->y < src.y) || (this->z < src.z) || (this->map < src.map ));
+	cCoord ursprung(0,0,0,0);
+	if (( distance(ursprung) < src.distance(ursprung)) && ( distance(src) != 0 ) )
+		return true;
+	return false;
 }
 
 /*

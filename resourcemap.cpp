@@ -208,7 +208,7 @@ cResourceStringMap::cResourceStringMap(std::string filename, LOGICAL keepInMemor
 void cResourceStringMap::deserialize(ifstream *myStream)
 {
 	std::string tempKey;
-	UI32 value;
+	SI32 value;
 	while (! myStream->eof() )
 	{
 		*myStream >> tempKey;
@@ -339,6 +339,183 @@ SI32 cResourceStringMap::getValue(std::string key)
 		std::map<std::string, SI32>::iterator iter = resourceMap.find(key);
 		if ( iter != resourceMap.end())
 			return iter->second;
+		else
+			return -1;
+	}
+	if ( !isInMemory() && getFile() != "" )
+	{
+		SI32 value;
+		// since we have a sorted file get Operations should be much faster using a binary sort
+		// but we have to find the correct offset first
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
+		if (!datafile.is_open()) 
+		{ 
+			// file didn't exist until now
+			datafile.close();
+			return -1;
+		}
+		ResourceMapType tempType=getType();
+		LOGICAL tempInMemory=isInMemory();
+		std::string tempKey;
+		// read over the first two header bytes
+		datafile.ignore(sizeof(tempType)+sizeof(tempInMemory));
+		do
+		{
+			datafile >> tempKey;
+			datafile.read((char *)&value, sizeof(value));
+			// ignore data and end line sign
+			if ( tempKey == key )
+			{
+				datafile.close();
+				return value;
+			}
+		}
+		while ( !datafile.eof() && tempKey > key );
+		datafile.close();
+		return -1;
+	}
+	return -1;
+}
+
+cResourceStringStringMap::cResourceStringStringMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
+{
+}
+
+
+void cResourceStringStringMap::deserialize(ifstream *myStream)
+{
+	std::string tempKey;
+	std::string value;
+	while (! myStream->eof() )
+	{
+		*myStream >> tempKey;
+		*myStream >> value;
+		this->setValue(tempKey, 1);
+	}
+	return ;
+}
+
+void cResourceStringStringMap::serialize(ofstream *myStream)
+{
+	std::map<std::string, std::string>::iterator iter = resourceMap.begin();
+	ResourceMapType tempType=getType();
+	LOGICAL tempInMemory=isInMemory();
+	myStream->write((char *)&tempType, sizeof(tempType)) ;
+	myStream->write((char *)&tempInMemory, sizeof(tempInMemory));
+
+	for ( ; iter !=  resourceMap.end();iter++)
+	{
+		*myStream << iter->first << ends;
+		*myStream << iter->second << endl;
+	}
+	return ;
+}
+
+void cResourceStringStringMap::setValue(std::string key, SI32 value)
+{
+	if ( isInMemory() )
+	{
+		resourceMap.insert(make_pair(key, std::string("")));
+	}
+	if ( !isInMemory() && getFile() != "" )
+	{
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
+		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
+		if (!datafile.is_open()) 
+		{ 
+			// file didn't exist until now
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
+			datafile.write((char *)&tempType, sizeof(tempType)) ;
+			datafile.write((char *)&tempInMemory, sizeof(tempInMemory));
+			datafile << key << ends;
+			datafile.write((char *)&value, sizeof(value));
+		}
+		else
+		{
+// now the complicated part begins
+// search for the key linear
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
+			std::string tempKey;
+			// read over the first two header bytes
+			datafile.ignore(sizeof(tempType)+sizeof(tempInMemory));
+			do
+			{
+				datafile >> tempKey;
+				// ignore data and end line sign
+				datafile.ignore(sizeof(value)+1);
+				if ( tempKey == key )
+				{
+					// the value has been previously used and needs to be updated now
+					datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
+					datafile << key << ends;
+					datafile.write((char *)&value, sizeof(value));
+					break;
+				}
+			}
+			while ( !datafile.eof() && tempKey > key );
+			if ( tempKey < key )
+			{
+				// another condition, to keep the file sorted, the new key has to be inserted ahead of the current key
+				// i suppose it is faster to copy the file up to the current position to a backup file
+				// then insert the new key and append the rest of the file
+				
+				std::string backupFilename=SrvParms->savePath+resourceFilename+".new";
+				ofstream backupFile(backupFilename.c_str(), ios::out);
+				datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
+				UI32 currOffset=datafile.tellg();
+				datafile.seekg(0, ios::beg);
+				// Since there does not seem to be a way to push data into the stream without destroying the content 
+				// all data from the current offset is moved to the end
+				char buffer[4096];
+
+				while ( datafile.tellg() < currOffset-4096 )
+				{
+					UI32 readBytes;
+					datafile.read(buffer, 4096);
+					readBytes=datafile.gcount();
+					backupFile.write(buffer, readBytes);
+				}
+				// if the current offset is still lower than the old offset, then write the remaining bytes
+				if ( datafile.tellg() < currOffset)
+				{
+					UI32 offset;
+					datafile.read(buffer, currOffset-datafile.tellg());
+					offset=datafile.gcount();
+					backupFile.write(buffer, offset);
+				}
+				// now we can finally write the new key
+				datafile << key << ends;
+				datafile.write((char *)&value, sizeof(value));
+				// and now the rest of the datafile
+				while ( !datafile.eof() )
+				{
+					UI32 readBytes;
+					datafile.read(buffer, 4096);
+					readBytes=datafile.gcount();
+					backupFile.write(buffer, readBytes);
+				}
+				backupFile.flush();
+				backupFile.close();
+				datafile.close();
+				remove( getFile().c_str() );
+				rename( backupFilename.c_str(), resourceFilename.c_str() );
+
+
+			}
+		}
+	}
+}
+
+SI32 cResourceStringStringMap::getValue(std::string key)
+{
+	if ( isInMemory() )
+	{
+		std::map<std::string, std::string>::iterator iter = resourceMap.find(key);
+		if ( iter != resourceMap.end())
+			return -1;
 		else
 			return -1;
 	}
