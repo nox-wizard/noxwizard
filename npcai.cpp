@@ -41,7 +41,7 @@ void npcMagicAttack(P_CHAR pc_att, P_CHAR pc_def)
 	pc_att->spatimer=currenttime+(pc_att->spadelay*MY_CLOCKS_PER_SEC); //LB bugkilling
 
 
-	if ( pc_def->summontimer && pc_att->baseskill[MAGERY] > 400 ) {
+	if ( pc_def->summontimer && pc_att->baseskill[MAGERY] > 700 ) {
 		pc_att->facexy( pc_def->getPosition().x, pc_def->getPosition().y );
 		NPC_CASTSPELL( magic::SPELL_DISPEL, pc_def );
 		return;
