@@ -171,7 +171,7 @@ namespace item
 					if ( lha == "HIDAMAGE" )
 						pi->hidamage = str2num(rha);
 					else if ( lha == "HP" )
-						pi->hp = getRangedValue(script2);
+						pi->hp = getRangedValue((char*)rha.c_str());
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'I':
