@@ -104,10 +104,10 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* ca
 
 
 
-bool cCommandMap::Check(string& speech) 
+bool cCommandMap::Check( string& text )
 {
 
-	std::map<std::string, P_COMMAND>::iterator iter( command_map.find( speech ) );
+	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( text ) );
 
 	if ( iter == command_map.end() )	//command not exists
 		return false;
@@ -123,14 +123,15 @@ bool cCommandMap::Check(string& speech)
 //Implementation of cCallCommandMap Class
 
 
-cCallCommand* cCallCommand::findCallCommand(SERIAL cmd){
+cCallCommand* cCallCommand::findCallCommand(SERIAL cmd)
+{
 
-std::map< SERIAL, callCommand* >::iterator iter( command_map.find( cmd ) );
+	std::map< SERIAL, cCallCommand* >::iterator iter( command_map.find( cmd ) );
 
-if ( iter != command_map.end() )	//command exists
-    return iter->second.callback;
-else
-    return NULL;					//command doesnt exist
+	if ( iter != command_map.end() )	//command exists
+		return iter->second.callback;
+	else
+		return NULL;					//command doesnt exist
 }
 	
 

@@ -89,7 +89,7 @@ class cCommandMap {
 
 private:
 
-	std::map< std::string, P_COMMAND > command_map; //!< all commands
+	static std::map< std::string, P_COMMAND > command_map; //!< all commands
 public:
 	
 	cCommandMap();
