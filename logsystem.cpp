@@ -12,7 +12,7 @@
 #include "inlines.h"
 
 
-#define MAXLINESIZE	200
+#define MAXLINESIZE	2000
 
 SI32 entries_e=0, entries_c=0, entries_w=0, entries_m=0;
 LogFile ServerLog("server.log");
