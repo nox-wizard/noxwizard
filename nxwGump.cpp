@@ -80,6 +80,7 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 		UI32		fieldOffset;
 		UI32		fieldLength;
 		UI32		fieldId;
+		responseMap.clear();
 		if( hasRadio )
 		{
 			radioButton = static_cast<int>(data[22]); // probably data[19]...data[22]
@@ -140,7 +141,7 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			callback = newAmxEvent( const_cast< char* >( sCallback.c_str() ) );
 			callback->Call( gump, gumpSerial, button, pc->getSerial32() );
 
-			responseMap.erase( it );
+			//responseMap.erase( it );
 		}			
 		return true;
 	}
