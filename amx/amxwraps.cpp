@@ -7255,18 +7255,37 @@ NATIVE (_reload_accounts )
 \brief reloads scripts
 \author stonedz
 \since 0.82
-\fn 
+\fn reload_scripts
 \return none
 */
 
 NATIVE ( _reload_scripts )
 {
-	InfoOut("Reloading XSS scripts...\n");
+	InfoOut("Reloading XSS scripts...");
 	deleteNewScripts();
 	newScriptsInit();
 	ConOut("[DONE]\n");
 	return true;
 }
+
+/*!
+\brief reload the commands.txt file into memory
+\author stonedz
+\since 0.82
+\fn reload_commands
+\return none
+*/
+
+NATIVE ( _reload_commands )
+{
+	InfoOut("Reloading commands.txt into memory...");
+	extern cCommandMap* commands;
+	commands->clearCommandMap();
+	commands->fillCommandMap();
+	ConOut("[DONE]\n");
+	return true;
+}
+
 
 /*!
 \brief set light level in world
@@ -7854,6 +7873,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setLightLevel", _setLightLevel },
  { "reload_accounts", _reload_accounts },
  { "reload_scripts", _reload_scripts },
+ { "reload_commands", _reload_commands },
  { "shutdown", _shutdown },
  { "recompileSmall", _recompileSmall },
 

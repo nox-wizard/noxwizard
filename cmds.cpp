@@ -79,7 +79,48 @@ void cCommand::call(P_CHAR curr_char){
 
 
 cCommandMap::cCommandMap() { 
- 
+fillCommandMap();
+}
+
+
+
+
+P_COMMAND cCommandMap::addGmCommand(std::string name, UI08 priv, std::string callback) {
+
+	P_COMMAND cmd= new cCommand(name, priv, callback);
+    command_map.insert(make_pair(name,cmd));
+ 	return cmd;
+}
+
+
+
+
+
+P_COMMAND cCommandMap::findCommand(char* name,NXWCLIENT client){
+
+
+	std::map< std::string, P_COMMAND >::iterator iter;
+
+	iter=command_map.find( name );
+
+
+	if ( iter != command_map.end() )	//command exists
+		return iter->second;
+	else
+		return NULL;					//command doesnt exist
+
+}
+
+void cCommandMap::clearCommandMap(void)
+{
+
+	command_map.clear();
+
+}
+
+void cCommandMap::fillCommandMap(void)
+{
+
 	FILE * pFile;
 	char str [150]; 
 	std::string var1, var3;
@@ -114,38 +155,8 @@ cCommandMap::cCommandMap() {
 		
 		addGmCommand(var1,var2,var3);						//Put the command in command_map
      } 
-
+	
 }
-
-
-
-
-P_COMMAND cCommandMap::addGmCommand(std::string name, UI08 priv, std::string callback) {
-
-	P_COMMAND cmd= new cCommand(name, priv, callback);
-    command_map.insert(make_pair(name,cmd));
- 	return cmd;
-}
-
-
-
-
-
-P_COMMAND cCommandMap::findCommand(char* name,NXWCLIENT client){
-
-
-	std::map< std::string, P_COMMAND >::iterator iter;
-
-	iter=command_map.find( name );
-
-
-	if ( iter != command_map.end() )	//command exists
-		return iter->second;
-	else
-		return NULL;					//command doesnt exist
-
-}
-
 
 
 

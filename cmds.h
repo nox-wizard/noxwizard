@@ -81,6 +81,8 @@ public:
 	cCommandMap();
 	P_COMMAND addGmCommand(std::string name, UI08 number ,std::string callback);
 	P_COMMAND findCommand(char* name,NXWCLIENT client);
+	void clearCommandMap(void);
+	void fillCommandMap(void);
 
 };
 
