@@ -4555,208 +4555,127 @@ NATIVE(_map_getFloorTileID)
 
 
 /*!
-\brief Make a guildstone ( and a guild :D )
+\brief Make a guildstone ( and a guild :D ) the given item
 \author Endymion
 \since 0.82
-\param 1: the player
-\param 2: the deed
-\return the stone
+\param 1 the stone
+\param 2 the guild master
+\return 0 if valid or INVALID if error
 */
-NATIVE(_guild_placeStone)
+NATIVE(_guild_makeGuildstone)
 {
-	P_CHAR pChar = pointers::findCharBySerial(params[1]);
-	VALIDATEPCR(pChar, INVALID);
-	P_ITEM pDeed = pointers::findItemBySerial(params[2]);
-	VALIDATEPIR(pDeed, INVALID);
-	P_ITEM pStone = PlaceGuildStoneDeed( pChar, pDeed );
-	if(ISVALIDPI( pStone ))
-		return pStone->getSerial32();
-	else
-		return INVALID;
+	P_ITEM stone = pointers::findItemBySerial(params[1]);
+	VALIDATEPIR( stone, INVALID );
+	P_CHAR master = pointers::findCharBySerial(params[2]);
+	VALIDATEPCR( master, INVALID );
+
+	Guildz.addGuild( stone, master );
+
+	return 0;
 }
 
 /*!
 \brief Add a member to a guild
 \author Endymion
 \since 0.82
-\param 1: the guild
-\param 2: the new member
-\return true or false
+\param 1 the guild
+\param 2 the new member
+\return 0 or INVALID if error
 */
 NATIVE(_guild_addMember)
 {
-	LOGICAL success = false;
+	
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
 
-	if( Guildz.find( params[1] ) )
-	{
-		cGuild *pGuild = Guildz.fetch();
-		P_CHAR pc = pointers::findCharBySerial( params[2] );
-		if( ISVALIDPC( pc ) )
-			if( pGuild->addMember( pc ) )
-				if( Guildz.update( pGuild ) )
-					success = true;
-	}
-	return success;
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if( guild==NULL )
+		return INVALID;
+
+	guild->addMember( pc );
+	return 0;
 }
 
 /*!
 \brief A member resign from his guild
 \author Endymion
 \since 0.82
-\param 1: the guild
-\param 2: the member
-\todo Handle situation if member is guildmaster & if guild is empty after resign
+\param 1 the guild
+\param 2 the member
+\return 0 or INVALID if error
 */
 NATIVE(_guild_resignMember)
 {
-	LOGICAL success = false;
+	
+	P_CHAR pc=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
 
-	if( Guildz.find( params[1] ) )
-	{
-		cGuild *pGuild = Guildz.fetch();
-		P_CHAR pc= pointers::findCharBySerial( params[2] );
-		if( ISVALIDPC( pc ) )
-			if( pGuild->resignMember( pc ) )
-				if( Guildz.update( pGuild ) )
-					success = true;
-	}
-	return success;
-}
-
-/*!
-\brief return the number of members in a guild
-\author Sparhawk
-\since 0.82
-\param 1: the guild
-\return number of members or invalid when guild does not exist
-*/
-NATIVE(_guild_countMember)
-{
-	if( Guildz.find( params[1] ) )
-		return Guildz.fetch()->members.size();
-	return INVALID;
-}
-
-/*!
-\brief Get the member by given index
-\author Endymion
-\since 0.82
-\param 1: the guild
-\param 2: the member index
-\return the member or INVALID
-*/
-NATIVE(_guild_getMemberByIdx)
-{
-	if( !Guildz.find( params[1] ) )
-		return INVALID;
-	cGuild *pGuild = Guildz.fetch();
-	if( (params[2]<0) || ((UI32)params[2] >= pGuild->members.size() ) )
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if( guild==NULL )
 		return INVALID;
 
-	GUILDMEMBERMAPITER iter( pGuild->members.begin() );
-	for( int i = params[2]; i > 0; --i, ++iter );
-		return iter->first;
+	guild->resignMember( pc );
+	return 0;
 }
 
 /*!
 \brief Add a recuit to a guild
 \author Endymion
 \since 0.82
-\param 1: the guild
-\param 2: the new recruit
-\return true or false
+\param 1 the guild
+\param 2 the new recruit
+\param 3 the recruiter
+\return 0 or INVALID if error
 */
 NATIVE(_guild_addRecruit)
 {
-	if( !Guildz.find( params[1] ) )
-		return false;
+	
+	P_CHAR recruit=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( recruit, INVALID );
 
-	P_CHAR pc= pointers::findCharBySerial( params[2] );
-	VALIDATEPCR(pc,false);
-	cGuild *pGuild = Guildz.fetch();
-	if( pGuild->addNewRecruit(pc) )
-		return Guildz.update( pGuild );
-	return false;
+	P_CHAR recruiter=pointers::findCharBySerial( params[3] );
+	VALIDATEPCR( recruiter, INVALID );
+
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if( guild==NULL )
+		return INVALID;
+
+	guild->addNewRecruit( recruit, recruiter );
+	return 0;
 }
 
 /*!
-\brief Given recruit are refuse
+\brief Given recruit are refused
 \author Endymion
 \since 0.82
-\param 1: the guild
-\param 2: the recruit
+\param 1 the guild
+\param 2 the recruit
+\return 0 or INVALID if error
 */
 NATIVE(_guild_refuseRecruit)
 {
-	if( !Guildz.find( params[1] ) )
-		return false;
-	P_CHAR pc= pointers::findCharBySerial( params[2] );
-	VALIDATEPCR(pc,false);
-	cGuild *pGuild = Guildz.fetch();
-	if( pGuild->refuseRecruit(pc) )
-		return Guildz.update( pGuild );
-	return false;
-}
+	
+	P_CHAR recruit=pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( recruit, INVALID );
 
-/*!
-\brief return the number of recruits in a guild
-\author Sparhawk
-\since 0.82
-\param 1: the guild
-\return number of recruits or invalid
-*/
-NATIVE(_guild_countRecruit)
-{
-	if( !Guildz.find( params[1] ) )
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if( guild==NULL )
 		return INVALID;
-	else
-		return Guildz.fetch()->recruits.size();
-}
 
-/*!
-\brief Get the recruit by given index
-\author Endymion
-\since 0.82
-\param 1: the guild
-\param 2: the recruit index
-\return the recruit or INVALID
-*/
-NATIVE(_guild_getRecruitByIdx)
-{
-	if( !Guildz.find( params[1] ) )
-		return INVALID;
-	cGuild *pGuild = Guildz.fetch();
-	if( (params[2]<0) || (UI32)params[2] >= pGuild->recruits.size() )
-		return INVALID;
-	SERIALVECTORITER iter( pGuild->recruits.begin() );
-	for( int i = params[2]; i > 0; --i, ++iter );
-	return *iter;
-}
-
-/*!
-\brief Get the Guild master for a specified guild
-\author Sparhawk
-\since 0.82
-\param 1: guild id
-\return the serial of the guildmaster or invalid
-*/
-NATIVE(_guild_getMaster)
-{
-	if( !Guildz.find( params[1] ) )
-		return INVALID;
-	return Guildz.fetch()->getGuildMaster();
+	guild->refuseRecruit( recruit );
+	return 0;
 }
 
 /*!
 \brief check if guild exists
-\author Sparhawk
+\author Endymion
 \since 0.82
-\param 1: the guild
+\param 1 the guild
 \return true or false
 */
 NATIVE(_guild_exists)
 {
-	return Guildz.find( params[1] );
+	return ISVALIDGUILD( params[1] );
 }
 
 /*!
@@ -5645,23 +5564,14 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "map_getTileID", _map_getTileID}, //Keldan, posted 2003/01/27 - added 2003/03/01
  { "map_getFloorTileID", _map_getFloorTileID}, // Keldan, posted 2003/01/27 - added 2003/03/01
 // Guild function and properties - Endymion
+ { "guild_makeGuildstone", _guild_makeGuildstone },
  { "guild_setProperty", _setGuildProperty },
  { "guild_getProperty", _getGuildProperty },
- { "guild_placeStone", _guild_placeStone },
+ { "guild_makeGuildstone", _guild_makeGuildstone },
  { "guild_addMember", _guild_addMember },
  { "guild_resignMember", _guild_resignMember },
- { "guild_countMember", _guild_countMember },
- { "guild_getMbrByIdx", _guild_getMemberByIdx },
-/*
- { "guild_getFstMember", _guild_getFstMember },
- { "guild_getNxtMember", _guild_getNxtMember },
-*/
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
- { "guild_getRecByIdx", _guild_getRecruitByIdx },
- { "guild_countRecruit", _guild_countRecruit },
- { "guild_getMaster", _guild_getMaster },
- { "guild_exists",	_guild_exists },
 // Timer function - Endymion
  { "timer_add", _timer_add },
 // Log message functions - Sparhawk
