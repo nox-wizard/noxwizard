@@ -2293,14 +2293,24 @@ LOGICAL cChar::seeForFirstTime( P_OBJECT po )
 	if ( objser == getSerial32() )
 		return false;
 
-	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
-
 	//
 	// Check if the object is in visRange
 	//
 	R64 distance = dist( po->getPosition(), getPosition(), false );
 	if ( distance > VISRANGE ) // We cannot see it!
 		return false;
+
+	if ( isCharSerial( po->getSerial32() ) ) {
+		P_CHAR pc = P_CHAR( po );
+		if ( !IsGM() ) { // Players only
+			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
+				return false;
+			if ( pc->dead && !pc->war && !dead ) // Non-persecuting ghosts can be seen only by other ghosts
+				return false;
+		}
+	}
+
+	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
 
 	if ( it != sentObjects.end() ) // Already sent before
 		return false;
@@ -2325,14 +2335,14 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 	if ( objser == getSerial32() )
 		return false;
 
-	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
-
 	//
 	// Check if the object is in visRange
 	//
 	R64 distance = dist( po->getPosition(), getPosition(), false );
 	if ( distance <= VISRANGE ) // We should see it
 		return false;
+
+	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
 
 	if ( it == sentObjects.end() ) // Never sent before, so why remove it from the display?
 		return false;

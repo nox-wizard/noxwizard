@@ -1427,7 +1427,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	Location pcpos=pc->getPosition();
 
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pcpos, VISRANGE + 5, false );
+	si.fillItemsNearXYZ( pcpos, VISRANGE + 1, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
@@ -1462,7 +1462,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 	NXWCLIENT ps = NULL;
 	NXWCLIENT cli = pc->getClient();
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 5, !pc->IsGM() );
+	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 1, !pc->IsGM() );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pc_curr = sc.getChar();
