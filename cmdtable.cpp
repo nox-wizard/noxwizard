@@ -1525,7 +1525,7 @@ void command_skin(NXWSOCKET  s)
 {
 	if (tnum == 3)
 	{
-		int k, b, body;
+		int k, body;
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 

@@ -193,7 +193,7 @@ void cFishing::Fish(CHARACTER i)
 //	const int max_fish_piles = 1;		// attention: thats per fish *type*, so the efffective limit of piles is *3
 //	const int max_fish_stacksize = 15;	// attention: rela max size = value+1
 
-	int ii,b;
+	int ii;
 	int idnum;
 	int s=calcSocketFromChar(i);
 	SI16 color;
