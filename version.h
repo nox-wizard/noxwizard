@@ -30,7 +30,7 @@
 
 #define VER "**Oxygene**"
 //Note : vernumb MUST always be 5 char lenght and WSCREQVER also must.
-#define VERNUMB "0.82rc3"
+#define VERNUMB "0.82s"
 //This is the requested version for the WSC to be read correctly
 #define WSCREQVER "0.60s"
 //This is the requested version for the server.cfg to be read correctly
@@ -52,7 +52,7 @@
 
 #define VERTYPE2 VT_X
 
-#define EXTREMELY_UNTESTED
+//#define EXTREMELY_UNTESTED
 
 #ifdef _WINDOWS
 #define VERTYPE ((VERTYPE2|VTF_GUI))
@@ -141,7 +141,7 @@
 #define NAME "Official Dev Team"
 
 //NOTE: In order to modify this, please ask to the nox-wizard staff. Remember to do not remove any developer from PROGRAMMERS without nox-wizard staff permission
-#define PROGRAMMERS "Xanathar, Luxor, Sparhawk, Elcabesa, Araknesh, Anthalir and Endymion"
+#define PROGRAMMERS "Xanathar, Luxor, Sparhawk, Elcabesa, Araknesh, Anthalir, Endymion, Akron and Riekr"
 
 #define EMAIL "staff@noxwizard.com"
 
