@@ -944,7 +944,7 @@ NATIVE2(_setCharProperty)
 			break;
 		case NXW_CP_STR_SPEECH_CURRENT :			 		//dec value: 459;
 			pc->speechCurrent= new cUnicodeString( std::string( g_cAmxPrintBuffer ) );
-			break;
+			break; 
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
 			break;
