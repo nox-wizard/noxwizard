@@ -364,7 +364,10 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 		amxevents[EVENT_CHR_ONSTART] = newAmxEvent(script2);
 		newAmxEvent(script2)->Call(getSerial32(), INVALID);
 	}
-	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONDEATH)
+	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONBEFOREDEATH)
+	CASECHAREVENT("@ONBEFOREDEATH",EVENT_CHR_ONBEFOREDEATH)		// SYNONYM OF ONDEATH EVENT
+	CASECHAREVENT("@ONDIED",EVENT_CHR_ONAFTERDEATH)
+	CASECHAREVENT("@ONAFTERDEATH",EVENT_CHR_ONAFTERDEATH)			// SYNONYM OF ONDIED EVENT
 	CASECHAREVENT("@ONKILL",EVENT_CHR_ONKILL)
 	CASECHAREVENT("@ONWOUNDED",EVENT_CHR_ONWOUNDED)
 	CASECHAREVENT("@ONHIT",EVENT_CHR_ONHIT)
@@ -2778,10 +2781,10 @@ void cChar::Kill()
 
 	char murderername[128];
 	murderername[0] = '\0';
-	
-	if (amxevents[EVENT_CHR_ONDEATH]) {
+
+	if (amxevents[EVENT_CHR_ONBEFOREDEATH]) {
 		g_bByPass = false;
-		amxevents[EVENT_CHR_ONDEATH]->Call(getSerial32(), s);
+		amxevents[EVENT_CHR_ONBEFOREDEATH]->Call(getSerial32(), s);
 		if (g_bByPass==true) return;
 	}
 	
@@ -2791,7 +2794,7 @@ void cChar::Kill()
 	if (g_bByPass==true)
 		return;
 	*/
-	if ( ps != NULL ) 
+	if ( ps != NULL )
 		unmountHorse();	//Luxor bug fix
 	if (morphed)
 		morph();
@@ -2829,7 +2832,7 @@ void cChar::Kill()
 		polymorph=false;
 		teleport( TELEFLAG_SENDWORNITEMS );
 	}
-    
+
 	murdererSer = INVALID;
 
 	//--------------------- reputation stuff
@@ -2932,8 +2935,8 @@ void cChar::Kill()
 		if(!ISVALIDPI(pi_j))
 			continue;
 
-		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition("x")==26) && (pi_j->getPosition("y")==0) &&
-			(pi_j->getPosition("z")==0) && (pi_j->id()==0x1E5E) )
+		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition().x==26) && (pi_j->getPosition().y==0) &&
+			(pi_j->getPosition().z==0) && (pi_j->id()==0x1E5E) )
 		{
 			endtrade(pi_j->getSerial32());
 		}
@@ -3031,18 +3034,18 @@ void cChar::Kill()
 	//
 	//
 	//
-	
+
 
 	NxwItemWrapper si;
 	si.fillItemWeared( this, false, false, true ); //Endymion adding weared item
 	si.fillItemsInContainer( pBackPack, false, false ); //Endymion adding backpack item 
-	
+
 	for( si.rewind(); !si.isEmpty(); si++ ) {
-    
+
 		P_ITEM pi_j=si.getItem();
 		if( !ISVALIDPI(pi_j) )
 			continue;
-		
+
 		//the backpack
 		if (pi_j->getSerial32() == pBackPack->getSerial32() ) continue;
 		//not the death robe
@@ -3060,11 +3063,13 @@ void cChar::Kill()
 			pi_j->Refresh();
 			continue;
 		}
-		
+
 		pi_j->setContSerial( pCorpse->getSerial32() );	
 		//General Lee
-		pi_j->setPosition("y", RandomNum(85,160));
-		pi_j->setPosition("x", RandomNum(20,70));
+		Location lj = pi_j->getPosition();
+		lj.y = RandomNum(85,160);
+		lj.x = RandomNum(20,70);
+		pi_j->setPosition( lj );
 		pi_j->Refresh();
 		//General Lee
 		
@@ -3079,9 +3084,14 @@ void cChar::Kill()
 	}
 	//</Luxor> 
 
+	if (amxevents[EVENT_CHR_ONAFTERDEATH])
+	{
+		g_bByPass = false;
+		amxevents[EVENT_CHR_ONAFTERDEATH]->Call(getSerial32(), pCorpse->getSerial32() );
+	}
+
 	if (npc)
 		deleteChar();
-
 }
 
 /*!
