@@ -362,19 +362,25 @@ namespace pointers {
 	pCharVector* getCharsNearLocation( cObject* pObject, SI32 range, UI32 flags )
 	{
 		pCharVector* 	pvCharsInRange	= 0;
-		LOGICAL		validCall	= true;
+		LOGICAL		validCall	= false;
 		SERIAL		self		= INVALID;
 
 		if( pObject != 0 )
+		{
 			if( isItemSerial( pObject->getSerial32() ) )
-				if( !static_cast<P_ITEM>(pObject)->isInWorld() )
-					validCall = false;
+			{
+				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+					validCall = true;
+			}
 			else
+			{
 				self = pObject->getSerial32();
-		if( validCall )
-			return getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, serial );
-		else
-			return 0;
+				validCall = true;
+			}
+			if( validCall )
+				pvCharsInRange = getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, serial );
+		}
+		return pvCharsInRange;
 	}
 
 	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, serial )
