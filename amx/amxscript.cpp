@@ -120,11 +120,11 @@ int AMXAPI amx_GetStringUnicode( std::vector<unsigned char>* dest, cell* source 
 	cell temp;
 	int i=0;
 	do {
-		temp=source[++i];
+		temp=source[i++];
 	    if (!amx_getLittleEndian()) 
 			swapcell( (ucell *)&temp );
-		dest->push_back( temp >>8 );
-		dest->push_back( temp & 0xFF );
+		dest->push_back( static_cast<unsigned char>(temp >>8) );
+		dest->push_back( static_cast<unsigned char>(temp & 0xFF ));
 	} while ( temp!=0 );
 
 	return AMX_ERR_NONE;
