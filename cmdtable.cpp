@@ -507,7 +507,7 @@ cCommandTable::cCommandTable() {
     addGmCommand("APPETITE",        1, 6,  CMD_FUNC,        (CMD_DEFINE)&command_appetite);
 //BYTE-2
 //    addGmCommand("WHOLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
-//    addGmCommand("OFFLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
+    addGmCommand("SKILLS",          2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_skills);
     addGmCommand("PLAYERLIST",      2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_playerlist); // other dupes
     addGmCommand("PL",              2, 0,	 CMD_FUNC,        (CMD_DEFINE)&command_playerlist);
     addGmCommand("KILL",            2, 1,	 CMD_TARGET,	  (CMD_DEFINE)&target_kill);
@@ -1982,6 +1982,15 @@ void command_playerlist(NXWSOCKET  s)
 	static AmxFunction* cmd = NULL;
 	if( cmd==NULL )
 		cmd= new AmxFunction( "command_playerlist" );
+	
+	cmd->Call( s );
+}
+
+void command_skills( NXWSOCKET s )
+{
+	static AmxFunction* cmd = NULL;
+	if( cmd==NULL )
+		cmd= new AmxFunction( "command_skills" );
 	
 	cmd->Call( s );
 }

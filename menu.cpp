@@ -246,16 +246,12 @@ cMenu::cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool ca
 
 	for( int i=0; i<4; ++i ) {
 		buffer[i] = INVALID;
-		buffer_str[i] = NULL;
 	}
 
 }
 
 cMenu::~cMenu()
 {
-	for( int i=0; i<4; ++i )	
-		if( buffer_str[i]!=NULL )
-			delete buffer_str[i];
 }
 
 void cMenu::addCommand( std::string& command )
@@ -299,12 +295,10 @@ void cMenu::clear()
 	setMoveable( true );
 	setDisposeable( true );
 
-	responseMap.clear();
-
 	buttonCurrent = 1;
 	buttonCallbacks.clear();
 
-	switchs.clear();
+	switchs = NULL;
 	textEditSubProps.clear();
 	checkboxSubProps.clear();
 	commands.clear();
@@ -317,8 +311,7 @@ void cMenu::clear()
 
 	for( int i=0; i<4; ++i ) {
 		buffer[i] = INVALID;
-		if( buffer_str[i]!=NULL )
-			safedelete( buffer_str[i] );
+		buffer_str[i].erase();
 	}
 
 }
@@ -456,7 +449,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	cPacketMenuSelection* p = (cPacketMenuSelection*)pkg;
 
 	SERIAL button = p->buttonId.get();
-	switchs = p->switchs;
+	switchs = &p->switchs;
 	
 	if( button!=MENU_CLOSE ) { 
 
@@ -471,14 +464,19 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	}
 
 	//set property if there are
-	std::vector<text_entry_st>::iterator textIter( p->text_entries.begin() ), lastText( p->text_entries.end() );
-	for( ; textIter!=lastText; ++textIter ) {
-		textResp.insert( make_pair( textIter->id.get(), textIter->text ) );
-	}
+	textResp = &p->text_entries;
 
-	std::map< SERIAL, SERIAL >::iterator propIter( textEditSubProps.begin() ), lastProp( textEditSubProps.end() );
-	for( ; propIter!=lastProp; ++propIter ) {
-
+	if( button==buffer[3] ) {
+		std::map< SERIAL, SERIAL >::iterator propIter( textEditSubProps.begin() ), lastProp( textEditSubProps.end() );
+		for( ; propIter!=lastProp; ++propIter ) {
+			if( getPropertyType( propIter->first )!=T_BOOL ) {
+				std::wstring* data = getText( propIter->first );
+				if( data!=NULL )
+					setPropertyField( buffer[0], buffer[1], propIter->first, propIter->second, 0, *data );
+			}
+			else 
+				setPropertyField( buffer[0], buffer[1], propIter->first, propIter->second, 0, getCheckBox( propIter->first ) );
+		}
 	}
 	
 	callback->Call( ps->toInt(), serial, button );
@@ -573,6 +571,7 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 					break;
 			}
 		}
+		break;
 		case PROP_ITEM : {
 			P_ITEM pi = pointers::findItemBySerial( obj );
 			VALIDATEPI(pi);
@@ -604,6 +603,7 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 					break;
 			}
 		}
+		break;
 		case PROP_CALENDAR:
 		case PROP_GUILD:
 		default:
@@ -613,9 +613,24 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 
 }
 
+template< typename T >
+std::wstring toWstr( T num )
+{
+	wchar_t buffer[TEMP_STR_SIZE];
+	swprintf( buffer, L"%i", num );
+	return std::wstring( buffer );
+}
+
+std::wstring toWstr( const char* s )
+{
+	std::wstring data;
+	string2wstring( std::string(s), data );
+	return data;
+}
+
+
 std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 )
 {
-	wchar_t data[TEMP_STR_SIZE];
 	
 	VARTYPE t = getPropertyType( prop );
 	switch( type ) {
@@ -625,71 +640,45 @@ std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERI
 			VALIDATEPCR(pc, std::wstring());
 
 			switch( t ) {
-				case T_CHAR : {
-					char value = getCharCharProperty( pc, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_INT: {
-					int value = getCharIntProperty( pc, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_SHORT: {
-					short value = getCharShortProperty( pc, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_STRING: {
-					std::string value( getCharStrProperty( pc, prop, subProp ) );
-					std::wstring buffer;
-					string2wstring( value, buffer );
-					return data;
-					}
-					break;
+				case T_CHAR :
+					return toWstr( getCharCharProperty( pc, prop, subProp ) );
+				case T_INT:
+					return toWstr( getCharIntProperty( pc, prop, subProp ) );
+				case T_SHORT:
+					return toWstr( getCharShortProperty( pc, prop, subProp ) );
+				case T_STRING:
+					return toWstr( getCharStrProperty( pc, prop, subProp ) );
 				case T_UNICODE: 
 					return getCharUniProperty( pc, prop, subProp );
 			}
 		}
+		break;
 		case PROP_ITEM : {
 			P_ITEM pi = pointers::findItemBySerial( obj );
 			VALIDATEPIR(pi, std::wstring());
 
 			switch( t ) {
-				case T_CHAR : {
-					char value = getItemCharProperty( pi, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_INT: {
-					int value = getItemCharProperty( pi, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_SHORT: {
-					short value = getItemCharProperty( pi, prop, subProp );
-					swprintf( data, L"%i", value );
-					}
-					break;
-				case T_STRING: {
-					std::string value( getItemStrProperty( pi, prop, subProp ) );
-					std::wstring buf;
-					string2wstring( value, buf );
-					return buf;
-					}
-					break;
+				case T_CHAR :
+					return toWstr( getItemCharProperty( pi, prop, subProp ) );
+				case T_INT:
+					return toWstr( getItemCharProperty( pi, prop, subProp ) );
+				case T_SHORT:
+					return toWstr( getItemCharProperty( pi, prop, subProp ) );
+				case T_STRING:
+					return toWstr( getItemStrProperty( pi, prop, subProp ) );
 				case T_UNICODE:
 					return getItemUniProperty( pi, prop, subProp );
 			}
 		}
+		break;
 		case PROP_CALENDAR:
 		case PROP_GUILD:
 		default:
 			return std::wstring(L"Not implemented yet");
 	}
 
-	return std::wstring( data );
 
+	return std::wstring( L"Error" );
 }
 
 void cMenu::setMoveable( bool canMove )
@@ -739,18 +728,18 @@ bool cMenu::getDisposeable()
 
 bool cMenu::getCheckBox( SERIAL checkbox )
 {
-	return find( switchs.begin(), switchs.end(), checkbox )!=switchs.end();
+	return find( switchs->begin(), switchs->end(), checkbox )!=switchs->end();
 }
 
 bool cMenu::getRadio( SERIAL radio )
 {
-	return find( switchs.begin(), switchs.end(), radio )!=switchs.end();
+	return find( switchs->begin(), switchs->end(), radio )!=switchs->end();
 }
 
 std::wstring* cMenu::getText( SERIAL text )
 {
-	std::map< SERIAL, std::wstring >::iterator iter( textResp.find( text ) );
-	if( iter!=textResp.end() )
+	std::map< SERIAL, std::wstring >::iterator iter( textResp->find( text ) );
+	if( iter!=textResp->end() )
 		return &iter->second;
 	else
 		return NULL;

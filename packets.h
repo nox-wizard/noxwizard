@@ -1842,7 +1842,8 @@ public:
 private:
 	eUI32 textcount; //!< response info for textentries
 public:
-	std::vector<text_entry_st> text_entries; //!< text entries
+//	std::vector<text_entry_st> text_entries; //!< text entries
+	std::map< SERIAL, std::wstring> text_entries; //!< text entries
 
 	cPacketMenuSelection();
 	void receive( NXWCLIENT PS );

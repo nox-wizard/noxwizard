@@ -37,7 +37,6 @@ namespace Commands
 	void AddHere(NXWSOCKET s, char z);
 	void ShowGMQue(NXWSOCKET s, int type);
 	void Wipe(NXWSOCKET s);
-	void WhoCommand(NXWSOCKET s, int type, int buttonnum);
 	void CPage(NXWSOCKET s, std::string reason);
 	void GMPage(NXWSOCKET s, std::string reason);
 	void MakePlace(NXWSOCKET s, int i);

@@ -106,7 +106,7 @@ void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& fr
 	if( size==INVALID )
 		from+=c->size()*chSize+chSize;
 	else
-		from+=size;
+		from+=size*chSize;
 
 }
 
@@ -491,9 +491,11 @@ RECEIVE( MenuSelection ) {
 	while( ti-- ) {
 		text_entry_st te;
 		getFromSocket( s, (char*)&te, sizeof(te.id)+sizeof(te.textlength), offset );
-		getUnicodeStringFromSocket( s, &te.text, offset, te.textlength.get() );
+		
+		std::wstring entry;
+		getUnicodeStringFromSocket( s, &entry, offset, te.textlength.get() );
 
-		text_entries.push_back( te );
+		text_entries.insert( make_pair( te.id.get(), entry ) );
 	}
 }
 

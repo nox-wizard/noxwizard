@@ -101,13 +101,11 @@ class cMenu : public cBasicMenu
 		bool moveable;
 		bool disposeable;
 		
-		map< UI32, std::string > responseMap; //!< response for every input
-
 		SERIAL buttonCurrent;	//!< current button serial
 		map< SERIAL, FUNCIDX > buttonCallbacks;	//!< all callback for button
 
-		std::vector<SERIAL> switchs; //!< switch ids on after menu selection
-		std::map< SERIAL, std::wstring > textResp; //!< edit field response
+		std::vector<SERIAL>* switchs; //!< switch ids on after menu selection
+		std::map< SERIAL, std::wstring >* textResp; //!< edit field response
 
 		std::map< SERIAL, SERIAL > textEditSubProps; //!< sub props for property edit
 		std::map< SERIAL, SERIAL > checkboxSubProps; //!< sub props for property checkbox
@@ -136,7 +134,7 @@ class cMenu : public cBasicMenu
 		UI32 pageCount;	//!< page count
 		UI32 pageCurrent;	//!< current page
 		SERIAL buffer[MENU_BUFF_COUNT];
-		std::string* buffer_str[MENU_BUFF_COUNT];
+		std::string buffer_str[MENU_BUFF_COUNT];
 
 		cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose );
 		~cMenu();

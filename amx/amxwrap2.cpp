@@ -133,35 +133,35 @@ NATIVE2(_setItemProperty)
 	if (!ISVALIDPI( pi ) )
 		return 0;
 
+	cell* cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
 	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
 	
 		case T_INT: {
-			int p = params[4];
+			int p = *cptr;
 			setItemIntProperty( pi, params[2], params[3], p );
 			return p;
 		}
 		case T_BOOL: {
-			bool p = params[4] ? true : false;
+			bool p = *cptr ? true : false;
 			setItemBoolProperty( pi, params[2], params[3], p );
 			return p;
 		}
 		case T_SHORT: {
-			short p = static_cast<short>(params[4] & 0xFFFF);
+			short p = static_cast<short>(*cptr & 0xFFFF);
 			setItemShortProperty( pi, params[2], params[3], p );
 			return p;
 		}
 		case T_CHAR: {
-			char p = static_cast<char>(params[4] & 0xFF);
+			char p = static_cast<char>(*cptr & 0xFF);
 			setItemCharProperty( pi, params[2], params[3], p );
 			return p;
 		}
 		case T_STRING: {
 			//we're here so we should get a ConOut format string, params[4] is the str format
-
-			cell *cptr;
-			amx_GetAddr(amx,params[4],&cptr);
 
 			printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
@@ -173,8 +173,6 @@ NATIVE2(_setItemProperty)
 			return 0;
 		}
 		case T_UNICODE: {
-			cell *cptr;
-			amx_GetAddr(amx,params[4],&cptr);
 
 			std::wstring buffer;
 			amx_GetStringUnicode( buffer, cptr );
@@ -940,9 +938,7 @@ NATIVE2(_setCharProperty)
 		case T_STRING : {
 			//we're here so we should get a ConOut format string, params[4] is the str format
 
-			cell *cstr;
-			amx_GetAddr(amx,params[4],&cstr);
-			printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+			printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
 		
 			setCharStrProperty( pc, params[2], params[3], params[5], g_cAmxPrintBuffer );
@@ -951,11 +947,9 @@ NATIVE2(_setCharProperty)
 			return 0;
 		}
 		case T_UNICODE : {
-			cell *cstr;
-			amx_GetAddr(amx,params[4],&cstr);
 
 			std::wstring buffer;
-			amx_GetStringUnicode( buffer, cstr );
+			amx_GetStringUnicode( buffer, cptr );
 
 			setCharUniProperty( pc, params[2], params[3], params[5], buffer );
 
@@ -2281,9 +2275,7 @@ NATIVE2(_setGuildProperty)
 
 		//we're here so we should get a ConOut format string, params[4] is the str format
 
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
 		switch( params[2] )
 		{
@@ -2306,10 +2298,9 @@ NATIVE2(_setGuildProperty)
 	break;
 
 	case T_UNICODE: {
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
+
 		wstring w;
-		amx_GetStringUnicode( w, cstr );
+		amx_GetStringUnicode( w, cptr );
 
 		switch( params[2] )
 		{
@@ -2483,11 +2474,10 @@ NATIVE2(_setMenuProperty)
 		return INVALID;
 	}
 
-	VAR_TYPE tp = getPropertyType(params[2]);
-
 	cell* cptr;
 	amx_GetAddr(amx,params[4],&cptr);
 
+	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
 	
@@ -2510,7 +2500,8 @@ NATIVE2(_setMenuProperty)
 
 			case NXW_MP_I_BUFFER:
 				if( ISVALIDMENUBUFFER( params[3] ) )
-					menu->buffer[ params[3] ]=p;				
+					menu->buffer[ params[3] ]=p;
+				break;
 
 			default :
 				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
@@ -2523,7 +2514,7 @@ NATIVE2(_setMenuProperty)
 
 	case T_BOOL: {
 
-		bool p = *cptr ? true : false;
+		bool p = *cptr? true : false;
 
 		switch( params[2] )
 		{
@@ -2580,9 +2571,7 @@ NATIVE2(_setMenuProperty)
 
 		//we're here so we should get a ConOut format string, params[4] is the str format
 
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
 		switch( params[2] )
 		{
@@ -2591,7 +2580,7 @@ NATIVE2(_setMenuProperty)
 				break;
 			case NXW_MP_STR_BUFFER :
 				if( ISVALIDMENUBUFFER( params[3] ) )
-					menu->buffer_str[ params[3] ] = new std::string( g_cAmxPrintBuffer );
+					menu->buffer_str[ params[3] ] = g_cAmxPrintBuffer;
 			default :
 				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -2603,10 +2592,8 @@ NATIVE2(_setMenuProperty)
 
 	case T_UNICODE: {
 
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
 		wstring w;
-		amx_GetStringUnicode( w, cstr );
+		amx_GetStringUnicode( w, cptr );
 
 		switch( params[2] )
 		{
@@ -2656,10 +2643,7 @@ NATIVE2(_getMenuProperty)
 				p = menu->id;
 				break;
 			case NXW_MP_I_BUFFER:
-				if( ISVALIDMENUBUFFER( params[3] ) )
-					p=menu->buffer[ params[3] ];					
-				else
-					p=INVALID;
+				p = ISVALIDMENUBUFFER( params[3] )? menu->buffer[ params[3] ] : INVALID;
 				break;
 			default:
 				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
@@ -2739,10 +2723,7 @@ NATIVE2(_getMenuProperty)
 				if( !ISVALIDMENUBUFFER( params[3] ) )
 					return INVALID;
 				else
-					if( menu->buffer_str[ params[3] ]!=NULL )
-						strcpy( str, menu->buffer_str[ params[3] ]->c_str() );
-					else
-						return INVALID;
+					strcpy( str, menu->buffer_str[ params[3] ].c_str() );
 				break;
 			default:
 				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );

@@ -210,7 +210,7 @@ CMD_HANDLER(command_send);
 CMD_HANDLER(command_showtime);
 CMD_HANDLER(command_settime);
 CMD_HANDLER(command_shutdown);
-//CMD_HANDLER(command_wholist);
+CMD_HANDLER(command_skills);
 CMD_HANDLER(command_playerlist);
 CMD_HANDLER(command_blt2);
 CMD_HANDLER(command_sfx);
