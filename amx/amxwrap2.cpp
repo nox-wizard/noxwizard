@@ -195,12 +195,12 @@ NATIVE2(_getCharProperty)
 		}
 		if (tp==T_UNICODE )
 		{
-			if( pc->getSpeechCurrent()!=NULL ) {
-				cell *cptr;
-	  			amx_GetAddr(amx,params[4],&cptr);
-				amx_SetStringUnicode(cptr, pc->getSpeechCurrent() );
-				return pc->getSpeechCurrent()->length();
-			}
+			wstring* w=getCharUniProperty( pc, params[2], params[3] );
+			if( w==NULL ) w=&emptyUnicodeString;
+			cell *cptr;
+	  		amx_GetAddr(amx,params[4],&cptr);
+			amx_SetStringUnicode(cptr, w );
+			return w->length();
 		}
 
   	}
@@ -1980,11 +1980,11 @@ static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{
-		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , (pc->getSpeechCurrent()!=NULL)? pc->getSpeechCurrent() : &emptyUnicodeString )
-		CHECK(  NXW_CP_UNI_PROFILE , (pc->getProfile()!=NULL)? pc->getProfile() : &emptyUnicodeString )
+		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , pc->getSpeechCurrent() )
+		CHECK(  NXW_CP_UNI_PROFILE , pc->getProfile() )
 	}
 	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return &emptyUnicodeString;
+	return NULL;
 }
 
 

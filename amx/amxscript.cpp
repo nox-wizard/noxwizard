@@ -115,12 +115,11 @@ int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source )
 	dest->erase();
 	cell temp;
 	int i=0;
-	do {
-		temp=source[i++];
+	while( (temp=source[i++])!=0 ) {
 	    if (!amx_getLittleEndian()) 
 			swapcell( (ucell *)&temp );
 		(*dest)+=temp;
-	} while ( temp!=0 );
+	}
 
 	return AMX_ERR_NONE;
 }
