@@ -669,7 +669,6 @@ void doubleclick(NXWCLIENT ps)
 			vendor->setOwnerSerial32( pc->getSerial32() );
 			vendor->tamed = false;
 			pi->deleteItem();
-			pi->Refresh();
 			vendor->teleport();
 			sprintf( temp, TRANSLATE("Hello sir! My name is %s and i will be working for you."), vendor->getCurrentNameC());
 			vendor->talk(s, temp, 0);
