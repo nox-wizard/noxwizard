@@ -106,7 +106,7 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
     if( pi->magic==4)
 		return;
     
-	if( pi->IsCutLeather() || pi->IsCutCloth() )
+	if( pi->IsCutLeather() || pi->IsCutCloth() || pi->IsHide() )
     {
 		if (CheckInPack(s,pi))
         {
