@@ -1052,28 +1052,27 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 }
 
-// parameters : x = # of bytes
-//            : a = buffer offset
-
+/*!
+\brief Receive data from a socket
+\param s the socket to receive from
+\param x the numero of bytes to receive
+\param a the buffer offset
+\return the number of actually read bytes
+*/
 int cNetwork::Receive(int s, int x, int a )
 {
-
-	int count,loopexit=0;
-
 	if ( (x+a) >= MAXBUFFER) return 0;
 
+	int count,loopexit=0;
 	do
 	{
 		if((count = recv(client[s], (char*)&buffer[s][a], x, MSG_NOSIGNAL))==SOCKET_ERROR)
-		{
 			LogSocketError("Socket Recv Error %s\n", errno) ;
-		}
 
 	}
 	while ( (count!=x) && (count>0) && (++loopexit < MAXBUFFER ));
 
 	return count;
-
 }
 
 void cNetwork::sockInit()
@@ -1127,36 +1126,36 @@ void cNetwork::sockInit()
 #ifdef WIN32
 		bcode = WSAGetLastError ();
 		switch(bcode) {
-		case WSANOTINITIALISED :
-			sprintf(temp, "Winsock2 initialization problems (%d)", bcode);
-			break;
-		case WSAENETDOWN:
-			sprintf(temp, "Network subsystem failure (%d)", bcode);
-			break;
-		case WSAEADDRINUSE:
-			sprintf(temp, "Address+port already in use (%d)", bcode);
-			break;
-		case WSAEADDRNOTAVAIL:
-			sprintf(temp, "Address use not valid for this machine (%d)", bcode);
-			break;
-		case WSAEFAULT:
-			sprintf(temp, "Access violation during binding (%d)", bcode);
-			break;
-		case WSAEINPROGRESS:
-			sprintf(temp, "Service provider busy (%d)", bcode);
-			break;
-		case WSAEINVAL:
-			sprintf(temp, "Socket already bound (%d)", bcode);
-			break;
-		case WSAENOBUFS:
-			sprintf(temp, "Not enough buffers available (%d)", bcode);
-			break;
-		case WSAENOTSOCK:
-			sprintf(temp, "Invalid socket (%d)", bcode);
-			break;
-		default:
-			sprintf(temp, "Unknown error (%d)", bcode);
-			break;
+			case WSANOTINITIALISED :
+				sprintf(temp, "Winsock2 initialization problems (%d)", bcode);
+				break;
+			case WSAENETDOWN:
+				sprintf(temp, "Network subsystem failure (%d)", bcode);
+				break;
+			case WSAEADDRINUSE:
+				sprintf(temp, "Address+port already in use (%d)", bcode);
+				break;
+			case WSAEADDRNOTAVAIL:
+				sprintf(temp, "Address use not valid for this machine (%d)", bcode);
+				break;
+			case WSAEFAULT:
+				sprintf(temp, "Access violation during binding (%d)", bcode);
+				break;
+			case WSAEINPROGRESS:
+				sprintf(temp, "Service provider busy (%d)", bcode);
+				break;
+			case WSAEINVAL:
+				sprintf(temp, "Socket already bound (%d)", bcode);
+				break;
+			case WSAENOBUFS:
+				sprintf(temp, "Not enough buffers available (%d)", bcode);
+				break;
+			case WSAENOTSOCK:
+				sprintf(temp, "Invalid socket (%d)", bcode);
+				break;
+			default:
+				sprintf(temp, "Unknown error (%d)", bcode);
+				break;
 		}
 		ErrOut("ERROR: Unable to bind socket\n    Error code: %s\n",temp);
 
