@@ -18,22 +18,12 @@
 
 #include "particles.h"
 
-
-#if _MSC_VER >= 1000
-#pragma once
-#endif
-
 void SndAttackOK(NXWSOCKET  s, int serial);
 void SndDyevat(NXWSOCKET  s, int serial, short id);
 void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt);
 void SndRemoveitem(int serial);
 void SndShopgumpopen(NXWSOCKET  s, int serial);
 
-void soundeffect(NXWSOCKET s, UI16 sound);
-	//!< Play sound effect for player
-void soundeffect3(P_ITEM pi, UI16 sound);
-void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound);
-void soundeffect5(NXWSOCKET s, UI16 sound);
 void sysbroadcast(char *txt, ...);
 	//!< System broadcast in bold text
 void sysmessage(NXWSOCKET  s, const char *txt, ...);
@@ -76,24 +66,17 @@ void itemtalk( P_ITEM pi, char *txt);
 
 void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode );
 
-void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
 
 void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff2, char speed, char loop, char explode);
 void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed char z, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode);
 void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode,unsigned char unk1,unsigned char unk2,unsigned char ajust,unsigned char type);
 void movingeffect2(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode);
 
-void staticeffectUO3D(P_CHAR pc_cs, ParticleFx *sta, UI08 *particleSystem);
-void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem);
-void bolteffectUO3D(P_CHAR pc_cs, UI08 *particleSystem);
-void itemeffectUO3D(P_ITEM pi, ParticleFx *sta);
-
 void dolight(int s, char level);
 void updateskill(int s, int skillnum);
 void deathaction(P_CHAR player_id, P_ITEM corpse_id);
 	//!< Character does a certain action
-void deathmenu(int s);
-	//!< Character sees death menu
+void deathmenu(NXWSOCKET s);
 void SendPauseResumePkt(NXWSOCKET s, UI08 flag);
 void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial);
 void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z);
@@ -114,14 +97,10 @@ void endtrade(SERIAL serial);
 void tellmessage(int i, int s, char *txt);
 void gmyell(char *txt);
 
-UI16 goldsfx(int goldtotal);
-UI16 itemsfx(UI16 item);
-
-void weather(int s, unsigned char bolt);
+void weather(NXWSOCKET s);
 void dosocketmidi(int s);
 void wornitems(NXWSOCKET  s, P_CHAR pc);
 void bgsound(int s);
 void pweather(NXWSOCKET  s);
-
 
 #endif

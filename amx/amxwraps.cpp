@@ -2527,7 +2527,7 @@ NATIVE (_rgn_setWeather)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if(ps!=NULL) {
-			weather(ps->toInt(),0);
+			weather(ps->toInt());
 			pweather(ps->toInt());
 		}
 	}
@@ -2862,8 +2862,8 @@ NATIVE(_chr_sound)
 NATIVE(_itm_sound)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
-    VALIDATEPIR(pi, INVALID);
-	soundeffect3(pi, params[2]);
+	VALIDATEPIR(pi, INVALID);
+	pi->playSFX(params[2]);
 	return 0;
 }
 

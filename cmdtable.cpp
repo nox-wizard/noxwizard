@@ -1994,7 +1994,9 @@ void command_sfx(NXWSOCKET  s)
 {
 	if (tnum==3)
 	{
-		soundeffect(s, (strtonum(1)<<8)|(strtonum(2)%256) );
+		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(pc);
+		pc->playSFX((strtonum(1)<<8)|(strtonum(2)%256));
 	}
 }
 
@@ -2048,7 +2050,7 @@ void command_dry(NXWSOCKET  s)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if( ps!=NULL )
-			weather( ps->toInt(), 0 );
+			weather( ps->toInt() );
 	}
 }
 
@@ -2066,7 +2068,7 @@ void command_rain(NXWSOCKET  s)
 		for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps=sw.getClient();
 			if( ps!=NULL )
-				weather( ps->toInt(), 0 );
+				weather( ps->toInt() );
 		}
 	}
 
@@ -2077,7 +2079,7 @@ void command_rain(NXWSOCKET  s)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if( ps!=NULL )
-			weather( ps->toInt(), 0 );
+			weather( ps->toInt() );
 	}
 }
 
@@ -2093,7 +2095,7 @@ void command_snow(NXWSOCKET  s)
 		for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps=sw.getClient();
 			if( ps!=NULL )
-				weather( ps->toInt(), 0 );
+				weather( ps->toInt() );
 		}
 	}
 	
@@ -2103,7 +2105,7 @@ void command_snow(NXWSOCKET  s)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if( ps!=NULL )
-			weather( ps->toInt(), 0 );
+			weather( ps->toInt() );
 	}
 }
 

@@ -745,7 +745,7 @@ void WalkingHandleRainSnow(P_CHAR pc)
 		else
 			noweather[s]=0; // no rain & snow in static buildings+dungeons;
 		if (kk-noweather[s]!=0)
-			weather(s, 0); // iff outside-inside changes resend weather ...
+			weather(s); // iff outside-inside changes resend weather ...
 	// needs to be de-rem'd if weather is available again
   }
 }

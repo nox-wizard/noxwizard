@@ -556,22 +556,6 @@ void doubleclick(NXWCLIENT ps)
 			}
 		}
 		return; // case 15 (magic items)
-/*////////////////////REMOVE/////////////////////////////////////
-	case 18: // crystal ball?
-		switch (RandomNum(0, 9))
-		{
-		case 0: itemmessage(s, TRANSLATE("Seek out the mystic llama herder."), pi->getSerial32());									break;
-		case 1: itemmessage(s, TRANSLATE("Wherever you go, there you are."), pi->getSerial32());									break;
-		case 4: itemmessage(s, TRANSLATE("The message appears to be too cloudy to make anything out of it."), pi->getSerial32());	break;
-		case 5: itemmessage(s, TRANSLATE("You have just lost five strength.. not!"), pi->getSerial32());							break;
-		case 6: itemmessage(s, TRANSLATE("You're really playing a game you know"), pi->getSerial32());								break;
-		case 7: itemmessage(s, TRANSLATE("You will be successful in all you do."), pi->getSerial32());								break;
-		case 8: itemmessage(s, TRANSLATE("You are a person of culture."), pi->getSerial32());										break;
-		default: itemmessage(s, TRANSLATE("Give me a break! How much good fortune do you expect!"), pi->getSerial32());				break;
-		}// switch
-		soundeffect2(pc_currchar, 0x01EC);
-		return;// case 18 (crystal ball?)
-*/////////////////////ENDREMOVE/////////////////////////////////////
 	case ITYPE_POTION: // potions
 			if (pi->morey != 3)
 				pc->drink(pi);   //Luxor: delayed potions drinking
@@ -1222,7 +1206,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 				{
 					if (ISVALIDPI(pack)) {
 						pc->showContainer(pack);
-						SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay );
+						SetTimerSec( pc->objectdelay, SrvParms->objectdelay );
 					}
 					else
 						WarnOut("Pack animal %i has no backpack!\n",target->getSerial32());
@@ -1235,7 +1219,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 						{
 							pc->showContainer(pack);
 							pc->sysmsg(TRANSLATE("You successfully snoop the pack animal.") );
-							SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay+SrvParms->snoopdelay );
+							SetTimerSec( pc->objectdelay, SrvParms->objectdelay+SrvParms->snoopdelay );
 						}
 						else
 							WarnOut("Pack animal %i has no backpack!\n",target->getSerial32());
@@ -1246,7 +1230,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 						pc->IncreaseKarma( ServerScp::g_nSnoopKarmaLoss  );
 						pc->modifyFame( ServerScp::g_nSnoopFameLoss );
 						setCrimGrey(pc, ServerScp::g_nSnoopWillCriminal );
-						SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay+SrvParms->snoopdelay );
+						SetTimerSec( pc->objectdelay, SrvParms->objectdelay+SrvParms->snoopdelay );
 					}
 				}
 			}

@@ -442,8 +442,8 @@ void cItem::explode(NXWSOCKET  s)
     }
 	//End Luxor recursive explosions
 
-	staticeffect2(this, 0x36, 0xB0, 0x10, 0x80, 0x00);
-	soundeffect3(this, 0x0207);
+	staticFX(0x36B0, 0x10, 0x80, 0);
+	playSFX(0x0207);
 
 	len=morex/250; //4 square max damage at 100 alchemy
 	switch (morez)
@@ -471,6 +471,92 @@ void cItem::explode(NXWSOCKET  s)
 
 	Delete();
 
+}
+
+/*!
+ \author Akron
+ \brief Play the specified sound to the item
+ \param sound sound to play
+ \param s socket that hear the sound, if INVALID, all the near players hear the sound
+ \note replace old soundeffect3() and soundeffect5()
+ */
+void cItem::playSFX(UI16 sound, NXWSOCKET s)
+{
+	Location pos = getPosition();
+	pos.z = 0;
+
+	if ( s == INVALID )
+	{
+		SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
+	} else {		
+		NxwSocketWrapper sw;
+		sw.fillOnline( this );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWCLIENT ps_i=sw.getClient();
+			if(ps_i==NULL) continue;
+			P_CHAR pc_j=ps_i->currChar();
+			if( ISVALIDPC(pc_j))
+			{
+				SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, pos);
+			}
+		}
+	}
+}
+
+/*!
+ \author Akron
+ \brief play the static effect for the item
+ \note replace old staticeffect2()
+ */
+void cItem::staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx *str)
+{
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	MakeGraphicalEffectPkt(effect, 0x02, getSerial32(), getSerial32(), eff, getPosition(), getPosition(), speed, loop, 1, explode); 
+
+	if (!str) // no UO3D effect ? lets send old effect to all clients
+	{
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( this );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				Xsend(j, effect, 28);
+//AoS				Network->FlushBuffer(j);
+			 }
+		}
+		return;
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+		 NxwSocketWrapper sw;
+		 sw.fillOnline( this );
+		 for( sw.rewind(); !sw.isEmpty(); sw++ )
+		 {
+			 NXWSOCKET j=sw.getSocket();
+			 if( j!=INVALID )
+			 {
+				if (clientDimension[j]==2) // 2D client, send old style'd
+				{
+					Xsend(j, effect, 28);
+//AoS/					Network->FlushBuffer(j);
+				}
+				else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+				{
+					UI08 particleSystem[49];
+					particles::itemeffectUO3D(this, str, particleSystem);
+					Xsend(j, particleSystem, 49);
+//AoS/					Network->FlushBuffer(j);
+				}
+				else
+					LogError("Invalid Client Dimension: %i\n",clientDimension[j]);
+			}
+		}
+	}
 }
 
 /*

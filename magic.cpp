@@ -334,7 +334,7 @@ static void spellFX(SpellId spellnum, P_CHAR pcaster = NULL, P_CHAR pctarget = N
 	if ((!(ISVALIDPC(pcfrom)))&&(ISVALIDPC(pcto))) pcfrom = pcto;
 	if ((ISVALIDPC(pcfrom))&&(!(ISVALIDPC(pcto)))) pcto = pcfrom;
 
-	ParticleFx spfx, mpfx/*, postfx*/;
+	particles::ParticleFx spfx, mpfx/*, postfx*/;
 
 	mpfx.initWithSpellMoveEffect(spellnum);
 	spfx.initWithSpellStatEffect(spellnum);

@@ -360,7 +360,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 						if( pi->morey >= 0 && pi->morey < 25 )
 							if (pc->distFrom(pi)<=pi->morey)
 								if( (UI32)RandomNum(1,100) <= pi->morez )
-									soundeffect4(ps->toInt(), pi, pi->morex);
+									pi->playSFX(pi->morex, ps->toInt());
 						break;
 					case 117	:	// Boats
 						if( pi->type2 == 1 || pi->type2 == 2 )

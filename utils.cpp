@@ -134,37 +134,37 @@ static void doorsfx(P_ITEM pi, int x, int y)
 	{
 		if (((x>=0x0695)&&(x<0x06C5))|| // Open wooden / ratan door
 			((x>=0x06D5)&&(x<=0x06F4)))
-			soundeffect3(pi,OPENWOOD);
+			pi->playSFX(OPENWOOD);
 
 		if (((x>=0x0839)&&(x<=0x0848))|| // Open gate
 			((x>=0x084C)&&(x<=0x085B))||
 			((x>=0x0866)&&(x<=0x0875)))
-			soundeffect3(pi,OPENGATE);
+			pi->playSFX(OPENGATE);
 
 		if (((x>=0x0675)&&(x<0x0695))|| // Open metal
 			((x>=0x06C5)&&(x<0x06D5)))
-			soundeffect3(pi,OPENSTEEL);
+			pi->playSFX(OPENSTEEL);
 
 		if ((x>=0x0314)&&(x<=0x0365)) // Open secret
-			soundeffect3(pi,OPENSECRET);
+			pi->playSFX(OPENSECRET);
 	}
 	else if (y==1) // Request close door sfx
 	{
 		if (((x>=0x0695)&&(x<0x06C5))|| // close wooden / ratan door
 			((x>=0x06D5)&&(x<=0x06F4)))
-			soundeffect3(pi,CLOSEWOOD);
+			pi->playSFX(CLOSEWOOD);
 
 		if (((x>=0x0839)&&(x<=0x0848))|| // close gate
 			((x>=0x084C)&&(x<=0x085B))||
 			((x>=0x0866)&&(x<=0x0875)))
-			soundeffect3(pi,CLOSEGATE);
+			pi->playSFX(CLOSEGATE);
 
 		if (((x>=0x0675)&&(x<0x0695))|| // close metal
 			((x>=0x06C5)&&(x<0x06D5)))
-			soundeffect3(pi,CLOSESTEEL);
+			pi->playSFX(CLOSESTEEL);
 
 		if ((x>=0x0314)&&(x<=0x0365)) // close secret
-			soundeffect3(pi,CLOSESECRET);
+			pi->playSFX(CLOSESECRET);
 	}
 
 } // doorsfx() END

@@ -9,26 +9,39 @@
 
 /*!
 \file
-\brief ParticleFX class
+\brief particle data
 */
 #ifndef __PARTICLES_H__
 #define __PARTICLES_H__
+namespace particles
+{
+	class ParticleFx;
+}
 
 #include "magic.h"
 
-/*!
-\brief Handling of ParticleFX
-*/
-class ParticleFx {
-private:
+namespace particles
+{
 
-public:
-	int effect[18];
-	void initWithSpellStatEffects_item( magic::SpellId num);
-	void initWithSpellStatEffects_post( magic::SpellId num);
-	void initWithSpellStatEffects_pre( magic::SpellId num);
-	void initWithSpellStatEffect( magic::SpellId num );
-	void initWithSpellMoveEffect( magic::SpellId num );
-};
+	/*!
+	\brief Handling of ParticleFX
+	*/
+	class ParticleFx {
+	private:
 
+	public:
+		int effect[18];
+		void initWithSpellStatEffects_item( magic::SpellId num);
+		void initWithSpellStatEffects_post( magic::SpellId num);
+		void initWithSpellStatEffects_pre( magic::SpellId num);
+		void initWithSpellStatEffect( magic::SpellId num );
+		void initWithSpellMoveEffect( magic::SpellId num );
+	};
+
+	void staticeffectUO3D(P_CHAR pc_cs, ParticleFx *sta, UI08 *particleSystem);
+	void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem);
+	void bolteffectUO3D(P_CHAR pc_cs, UI08 *particleSystem);
+	void itemeffectUO3D(P_ITEM pi, ParticleFx *sta, UI08 *particleSystem);
+
+} // namespace
 #endif //__PARTICLES_H__

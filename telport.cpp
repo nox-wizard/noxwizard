@@ -406,7 +406,7 @@ void objTeleporters(P_CHAR pc)
 				if (pmi->type == 86)
 				{
 					if ((UI32)RandomNum(1, 100) <= pmi->morez)
-						soundeffect3(pmi, (pmi->morex << 8) + pmi->morey);
+						pmi->playSFX((pmi->morex << 8) + pmi->morey);
 				}
 			}
 	}

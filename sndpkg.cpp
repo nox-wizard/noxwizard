@@ -53,8 +53,7 @@ void gmyell(char *txt)
 }
 
 
-//keep the target highlighted so that we know who we're attacking =)
-//26/10/99//new packet
+//! keep the target highlighted so that we know who we're attacking =)
 void SndAttackOK(NXWSOCKET  s, int serial)
 {
 	UI08 attackok[5]={ 0xAA, 0x00, };
@@ -103,63 +102,6 @@ void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It i
 	ShortToCharPtr(0x0030, shopgumpopen +5);	// GumpID
 	Xsend(s, shopgumpopen, 7);
 //AoS/	Network->FlushBuffer(s);
-}
-
-
-/*!
-\brief play sound
-\param goldtotal ?
-\return soundsfx to play
-*/
-UI16 goldsfx(int goldtotal)
-{
-	UI16 sound;
-
-	if (goldtotal==1) 
-		sound = 0x0035;
-	else if (goldtotal<6)
-		sound = 0x0036;
-	else 
-		sound = 0x0037;
-
-	return sound;
-}
-
-/*!
-\brief play a sound based on item id
-
-added to do easy item sound effects based on an
-items id1 and id2 fields in struct items. Then just define the CASE statement
-with the proper sound function to play for a certain item as shown.
-
-\author Dupois Duke
-\date 09/10/1998 creation
-	  25/03/2001 new interface by duke
-\param item the item
-\return soundfx for the item
-\remarks \remark Use the DEFAULT case for ranges of items (like all ingots make the same thump).
-		 \remark Sounds: 
-			\li coins dropping (all the same no matter what amount because all id's equal 0x0EED
-			\li ingot dropping (makes a big thump - used the heavy gem sound)
-			\li gems dropping (two type broke them in half to make some sound different then others)
-*/
-UI16 itemsfx(UI16 item)
-{
-	UI16 sound = 0x0042;				// play default item move sfx // 00 48
-
-	if( item == ITEMID_GOLD )
-		sound = goldsfx(2);
-
-	else if( (item>=0x0F0F) && (item<=0x0F20) )	// Any gem stone (typically smaller)
-		sound = 0x0032;
-
-	else if( (item>=0x0F21) && (item<=0x0F30) )	// Any gem stone (typically larger)
-		sound = 0x0034;
-
-	else if( (item>=0x1BE3) && (item<=0x1BFA) )	// Any Ingot
-		sound = 0x0033;
-
-	return sound;
 }
 
 /*!
@@ -318,59 +260,9 @@ void dosocketmidi(NXWSOCKET s)
 	}
 }
 
-void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	pc->playSFX(sound);
-}
-
-void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only to me
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	pc->playSFX(sound, true);
-}
-
-
-void soundeffect3(P_ITEM pi, UI16 sound)
-{
-	VALIDATEPI(pi);
-	
-	Location pos = pi->getPosition();
-
-	pos.z = 0;
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pi );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWCLIENT ps_i=sw.getClient();
-		if(ps_i==NULL) continue;
-		P_CHAR pc_j=ps_i->currChar();
-		if( ISVALIDPC(pc_j))
-		{
-			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, pos);
-		}
-	}
-}
-
-void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound)
-{
-	VALIDATEPI(pi);
-
-	Location pos = pi->getPosition();
-
-	pos.z = 0;
-
-	SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
-}
-
 //xan : fast weather function.. maybe we should find a more complete system like the
 //old one below!
-void weather(NXWSOCKET  s, unsigned char bolt)
+void weather(NXWSOCKET  s)
 {
 	UI08 type = 0xFF, num = 0x40, temperature = 0x20;
 
@@ -1002,7 +894,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 //AoS/	Network->FlushBuffer(s);
 }
 
-// Send targetting cursor to client
+//! Send targetting cursor to client
 void sendTargetCursor(NXWSOCKET s, int a1, int a2, int a3, int a4) {
 	UI08 tarcrs[19]={ 0x6C, 0x00, };
 	SERIAL a = calcserial(a1, a2, a3, a4);
@@ -1440,67 +1332,6 @@ void itemtalk(P_ITEM pi, char *txt)
 // simply dont set them in that case
 // the last parameter is for particlesystem optimization only (dangerous). don't use unless you know 101% what you are doing.
 
-// staticeffect2 is for effects on items
-void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt,  ParticleFx *str, bool skip_old )
-{
-	VALIDATEPI(pi);
-
-	UI16 eff = (eff1<<8)|(eff2%256);
-	UI08 effect[28]={ 0x70, 0x00, };
-
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-	Location pos = pi->getPosition();
-
-	if (!skip_old)
-	{
-MakeGraphicalEffectPkt(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
-	}
-
-	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
-	{
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( pi );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-				Xsend(j, effect, 28);
-//AoS				Network->FlushBuffer(j);
-			 }
-		}
-		return;
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( pi );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if( j!=INVALID )
-			 {
-				if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
-				{
-					Xsend(j, effect, 28);
-//AoS/					Network->FlushBuffer(j);
-				}
-				else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-				{
-					itemeffectUO3D(pi, str);
-					unsigned char particleSystem[49];
-					Xsend(j, particleSystem, 49);
-//AoS/					Network->FlushBuffer(j);
-				}
-				else if (clientDimension[j] != 2 && clientDimension[j] !=3 )
-				{ sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
-			}
-		}
-	}
-}
-
 //	- Movingeffect3 is used to send an object from a char
 //    to another object (like purple potions)
 void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed char z, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode)
@@ -1701,16 +1532,20 @@ void deathaction(P_CHAR pc, P_ITEM pi)
 	}
 }
 
-void deathmenu(NXWSOCKET s) // Character sees death menu
+//! Character sees death menu
+void deathmenu(NXWSOCKET s)
 {
 	UI08 testact[2]={ 0x2C, 0x00 };
 	Xsend(s, testact, 2);
 //AoS/	Network->FlushBuffer(s);
 }
 
+/*!
+ \param s socket to send the packet to
+ \param flag 0=pause, 1=resume [uhm.... O_o ... or viceversa ? -_-;]
+ */
 void SendPauseResumePkt(NXWSOCKET s, UI08 flag)
 {
-/* Flag: 0=pause, 1=resume */ // uhm.... O_o ... or viceversa ? -_-;
 	UI08 m2[2]={ 0x33, 0x00 };
 
 	m2[1]=flag;
@@ -1878,7 +1713,6 @@ void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 colo
 	Xsend(s, text, len);
 //AoS/	Network->FlushBuffer(s);
 }
-
 
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen)
 {
@@ -2261,258 +2095,6 @@ void tellmessage(int i, int s, char *txt)
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl);
 	SendUnicodeSpeechMessagePkt(i, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl); //So Person who said it can see too
 
-}
-
-
-
-// particleSystem core functions, LB 2-April 2001
-
-// sta_str layout:
-
-// 0..3 already used in 2d-staticeffect
-// effect 4  -> tile1
-// effect 5  -> tile2
-// effect 6  -> speed1
-// effect 7  -> speed1
-// effect 8  -> effect1
-// effect 9  -> effect2
-// effect 10 -> reserved, dont use
-// effect 11 ->
-// effect 12 ->
-
-
-/*!
- \brief Write particleSystem packet for UO3D Static effects
- \author Unknown - pseudo-totally rewritten by Akron
- \param pc_cs source character
- \param sta effect
- \param particleSystem packet
- */
-void staticeffectUO3D(P_CHAR pc_cs, ParticleFx *sta, UI08 *particleSystem)
-{
-	VALIDATEPC(pc_cs);
-
-	particleSystem[0]= 0xc7;
-	particleSystem[1]= 0x3;
-
-	LongToCharPtr(pc_cs->getSerial32(), particleSystem+2);
-
-	particleSystem[6]= 0x0; // always 0 for this type
-	particleSystem[7]= 0x0;
-	particleSystem[8]= 0x0;
-	particleSystem[9]= 0x0;
-
-	particleSystem[10]= sta->effect[4]; // tileid1
-	particleSystem[11]= sta->effect[5]; // tileid2
-
-	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+12);
-	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+14);
-	particleSystem[16] = (UI08)pc_cs->getPosition().z;
-
-	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+17);
-	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+19);
-	particleSystem[21] = (UI08)pc_cs->getPosition().z;
-
-	particleSystem[22]= sta->effect[6]; // unkown1
-	particleSystem[23]= sta->effect[7]; // unkown2
-
-	particleSystem[24]=0x0; // only non zero for type 0
-	particleSystem[25]=0x0;
-
-	particleSystem[26]=0x1;
-	particleSystem[27]=0x0;
-
-	particleSystem[28]=0x0;
-	particleSystem[29]=0x0;
-	particleSystem[30]=0x0;
-	particleSystem[31]=0x0;
-	particleSystem[32]=0x0;
-	particleSystem[33]=0x0;
-	particleSystem[34]=0x0;
-	particleSystem[35]=0x0;
-
-	particleSystem[36]=sta->effect[8]; // effekt #
-	particleSystem[37]=sta->effect[9];
-
-	particleSystem[38]=sta->effect[11];
-	particleSystem[39]=sta->effect[12];
-
-	particleSystem[40]=0x00;
-	particleSystem[41]=0x00;
-
-	LongToCharPtr(pc_cs->getSerial32(), particleSystem+42);
-
-	particleSystem[46]=0x0; // layer, gets set afterwards for multi layering
-	particleSystem[47]=0x0; // has to be always 0 for all types
-	particleSystem[48]=0x0;
-}
-
-// ParticleFx layout:
-// 0..4 already used in 2d-move_effect
-
-// effect 5  -> tile1
-// effect 6  -> tile2
-// effect 7  -> speed1
-// effect 8  -> speed2
-// effect 9  -> effect1
-// effect 10 -> effect2
-// effect 11 -> impact effect1
-// effect 12 -> impact effect2
-// effect 13 -> unkown1, does nothing, but gets set on OSI shards
-// effect 14 -> unkown2
-// effect 15 -> adjust
-// effect 16 -> explode on impact
-
-/*!
- \brief Forge the particle system packet
- \author Unknown - pseudo-totally rewritten by Akron
- \param pc_cs source player
- \param pc_cd destination player
- \param eff effect
- \param particleSystem the package to write
- */
-void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem)
-{
-	VALIDATEPC(pc_cs);
-	VALIDATEPC(pc_cs);
-
-	particleSystem[0]=0xc7;
-	particleSystem[1]=0x0;
-
-	LongToCharPtr(pc_cs->getSerial32(), particleSystem+2);
-	LongToCharPtr(pc_cd->getSerial32(), particleSystem+6);
-
-	particleSystem[10]=eff->effect[5]; // tileid1
-	particleSystem[11]=eff->effect[6]; // tileid2
-
-	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+12);
-	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+14);
-	particleSystem[16] = (UI08)pc_cs->getPosition().z;
-	
-	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+17);
-	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+19);
-	particleSystem[21] = (UI08)pc_cs->getPosition().z;
-
-	particleSystem[22]= eff->effect[7]; // speed1
-	particleSystem[23]= eff->effect[8]; // speed2
-
-	particleSystem[24]=0x0;
-	particleSystem[25]=0x0;
-
-	particleSystem[26]=eff->effect[15]; // adjust
-	particleSystem[27]=eff->effect[16]; // explode
-
-	particleSystem[28]=0x0;
-	particleSystem[29]=0x0;
-	particleSystem[30]=0x0;
-	particleSystem[31]=0x0;
-	particleSystem[32]=0x0;
-	particleSystem[33]=0x0;
-	particleSystem[34]=0x0;
-	particleSystem[35]=0x0;
-
-	particleSystem[36]=eff->effect[9]; //  moving effekt
-	particleSystem[37]=eff->effect[10];
-	particleSystem[38]=eff->effect[11]; // effect on explode
-	particleSystem[39]=eff->effect[12];
-
-	particleSystem[40]=eff->effect[13]; // ??
-	particleSystem[41]=eff->effect[14];
-
-	particleSystem[42]=0x00;
-	particleSystem[43]=0x00;
-	particleSystem[44]=0x00;
-	particleSystem[45]=0x00;
-
-	particleSystem[46]=0xff; // layer, has to be 0xff in that modus
-
-	particleSystem[47]=eff->effect[17];
-	particleSystem[48]=0x0;
-}
-
-//! same sta-layout as staticeffectuo3d
-void itemeffectUO3D(P_ITEM pi, ParticleFx *sta)
-{
-	// please no optimization of p[...]=0's yet :)
-
-	VALIDATEPI(pi);
-
-	UI08 particleSystem[49];
-	particleSystem[0]=0xc7;
-	particleSystem[1]=0x2;
-
-	if ( !sta->effect[11] )
-	{
-		particleSystem[2]= pi->getSerial().ser1;
-		particleSystem[3]= pi->getSerial().ser2;
-		particleSystem[4]= pi->getSerial().ser3;
-		particleSystem[5]= pi->getSerial().ser4;
-	}
-	else
-	{
-		particleSystem[2]=0x00;
-		particleSystem[3]=0x00;
-		particleSystem[4]=0x00;
-		particleSystem[5]=0x00;
-	}
-
-	particleSystem[6]=0x0; // always 0 for this type
-	particleSystem[7]=0x0;
-	particleSystem[8]=0x0;
-	particleSystem[9]=0x0;
-
-	particleSystem[10]=sta->effect[4]; // tileid1
-	particleSystem[11]=sta->effect[5]; // tileid2
-
-	ShortToCharPtr(pi->getPosition().x, particleSystem+12);
-	ShortToCharPtr(pi->getPosition().y, particleSystem+14);
-	particleSystem[16]= (UI08)pi->getPosition().z;
-
-	ShortToCharPtr(pi->getPosition().x, particleSystem+17);
-	ShortToCharPtr(pi->getPosition().y, particleSystem+19);
-	particleSystem[21]= (UI08)pi->getPosition().z ;
-
-	particleSystem[22]= sta->effect[6]; // unkown1
-	particleSystem[23]= sta->effect[7]; // unkown2
-
-	particleSystem[24]=0x0; // only non zero for type 0
-	particleSystem[25]=0x0;
-
-	particleSystem[26]=0x1;
-	particleSystem[27]=0x0;
-
-	particleSystem[28]=0x0;
-	particleSystem[29]=0x0;
-	particleSystem[30]=0x0;
-	particleSystem[31]=0x0;
-	particleSystem[32]=0x0;
-	particleSystem[33]=0x0;
-	particleSystem[34]=0x0;
-	particleSystem[35]=0x0;
-
-	particleSystem[36]=sta->effect[8]; // effekt #
-	particleSystem[37]=sta->effect[9];
-
-	particleSystem[38]=0; // unknown
-	particleSystem[39]=1;
-
-	particleSystem[40]=0x00;
-	particleSystem[41]=0x00;
-
-	LongToCharPtr(pi->getSerial32(), particleSystem+42);
-
-	particleSystem[46]=0xff;
-
-	particleSystem[47]=0x0;
-	particleSystem[48]=0x0;
-
-}
-
-void bolteffectUO3D(P_CHAR pc_cs, UI08 *particleSystem)
-{
-#if 0
-	Magic->doStaticEffect(player, 30);
-#endif
 }
 
 void sysmessageflat(NXWSOCKET  s, short color, const char *txt)

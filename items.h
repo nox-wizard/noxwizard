@@ -19,6 +19,7 @@
 #include "magic.h"
 #include "item_array.h"
 #include "item.h"
+#include "particles.h"
 
 /*!
 \author Luxor
@@ -408,6 +409,10 @@ public:
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
 	void		explode(NXWSOCKET  s);
+
+public:
+	void		playSFX(UI16 sound, NXWSOCKET s = INVALID);
+	void		staticFX(UI16 eff, UI08 speed, UI08 loop, UI08 explode, particles::ParticleFx *str = NULL);
 //@}
 
 	LOGICAL		dye;		//!< Reserved: Can item be dyed by dye kit

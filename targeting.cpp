@@ -649,7 +649,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
                 if (!pc->checkSkill(TINKERING, 400, 1000))
                 {
                     sysmessage(s,TRANSLATE("You fail and destroy the key blank."));
-                    // soundeffect3( pi, <whatever> );
+                    // pi->playSFX(<whatever>);
                     pi->Delete();
                 }
                 else
@@ -658,7 +658,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
                     pi->more2=addid2[s];
                     pi->more3=addid3[s];
                     pi->more4=addid4[s];
-                    // soundeffect3( pi, <whatever> );
+                    // pi->playSFX(<whatever>);
                     sysmessage(s, TRANSLATE("You copy the key.")); //Morrolan can copy keys
                 }
             }
@@ -672,7 +672,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
             {
                 if(pi->type==ITYPE_CONTAINER) pi->type=ITYPE_LOCKED_ITEM_SPAWNER;
                 if(pi->type==ITYPE_UNLOCKED_CONTAINER) pi->type=ITYPE_LOCKED_CONTAINER;
-                // soundeffect3( pi, <whatever> );
+                // pi->playSFX(<whatever>);
                 sysmessage(s, TRANSLATE("You lock the container."));
                 return;
             }
@@ -686,21 +686,21 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
             {
                 if(pi->type==ITYPE_LOCKED_ITEM_SPAWNER) pi->type=ITYPE_CONTAINER;
                 if(pi->type==ITYPE_LOCKED_CONTAINER) pi->type=ITYPE_UNLOCKED_CONTAINER;
-                // soundeffect3( pi, <whatever> );
+                // pi->playSFX(<whatever>);
                 sysmessage(s, TRANSLATE("You unlock the container."));
                 return;
             }
             else if ((pi->type==ITYPE_DOOR)&&(item_inRange(pc,pi,2)))
             {
                 pi->type=ITYPE_LOCKED_DOOR;
-                // soundeffect3( pi, <whatever> );
+                // pi->playSFX(<whatever>);
                 sysmessage(s, TRANSLATE("You lock the door."));
                 return;
             }
             else if ((pi->type==ITYPE_LOCKED_DOOR)&&(item_inRange(pc,pi,2)))
             {
                 pi->type=ITYPE_DOOR;
-                // soundeffect3( pi, <whatever> );
+                // pi->playSFX(<whatever>);
                 sysmessage(s, TRANSLATE("You unlock the door."));
                 return;
             }

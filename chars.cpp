@@ -2197,7 +2197,7 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 \param explode true if should do a final explosion
 \param part particle effects structure
 */
-void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, ParticleFx* part)
+void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, particles::ParticleFx* part)
 {
 	VALIDATEPC(dst);
 
@@ -2234,7 +2234,7 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 				{
 					static UI08 particleSystem[49];
-					movingeffectUO3D(this, dst, part, particleSystem);
+					particles::movingeffectUO3D(this, dst, part, particleSystem);
 					Xsend(j, particleSystem, 49);
 				}
 				else
@@ -2253,7 +2253,7 @@ void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explod
 \param part optional particles data
 \note if part == NULL then id, speed and loop MUST be >= 0
 */
-void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, ParticleFx* part)
+void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, particles::ParticleFx* part)
 {
 	if (part!=NULL) {
 		if (id == 0xFF) id = (part->effect[0] << 8) + part->effect[1];
@@ -2293,7 +2293,7 @@ void cChar::staticFX(UI16 eff, UI08 speed, UI08 loop, ParticleFx* part)
 			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 			 {
 				static UI08 particleSystem[49];
-				staticeffectUO3D(this, part, particleSystem);
+				particles::staticeffectUO3D(this, part, particleSystem);
 
 				// allow to fire up to 4 layers at same time (like on OSI servers)
 				UI08	a1 = part->effect[10] & 0xFF,
@@ -2363,7 +2363,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 				{
 					UI08 particleSystem[49];
-					bolteffectUO3D(this, particleSystem);
+					particles::bolteffectUO3D(this, particleSystem);
 					Xsend(j, particleSystem, 49);
 //AoS/					Network->FlushBuffer(j);
 			 	}
@@ -3670,7 +3670,6 @@ void cChar::doGmEffect()
 		{
 		case 1:	// flamestrike
 			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
-			//soundeffect(s, 0x02, 0x08);
 			playSFX( 0x0802);
 			break;
 
@@ -4652,14 +4651,14 @@ void cChar::do_lsd()
 
 		if (rand()%33==0)
 		{
-			if (rand()%10>3) soundeffect5(socket, 0x00F8); // lsd sound :)
+			if (rand()%10>3) playSFX(0x00F8, true); // lsd sound :)
 			else
 			{
 				int snd=rand()%19;
 				if (snd>9) 
-					soundeffect5(socket,(0x01<<8)|((snd-10)%256));
+					playSFX((0x01<<8)|((snd-10)%256), true);
 				else 
-					soundeffect5(socket,246+snd);
+					playSFX(246+snd, true);
 			}
 		}
 	}
