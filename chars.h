@@ -513,7 +513,7 @@ class cChar : public cObject
 \name Appearence
 */
 	public:
-		std::string	title;
+		std::string		title;
 		UI16			oldhairstyle;
 		UI16			oldbeardstyle;
 		UI16			oldhaircolor;
@@ -828,9 +828,29 @@ public:
 
 	private:
 		wstring* speechCurrent;
+		
+		//Commands Params
+		std::string param1;
+		std::string param2;
+		std::string param3;
+		std::string param4;
+		std::string param5;
+		std::string param6;
+		std::string param7;
+		std::string param8;
+		
+
 		SI32	hirefee;
 
 	public:
+		
+		//! Reset all the Params strings
+		void resetCommandParams();
+		//! Set a Param
+		void setCommandParams(std::string, int); 
+		//! Get a Param
+		std::string getCommandParams(int);
+		
 		inline SI32 getHireFee()
 		{ return hirefee; }
 		inline void setHireFee(SI32 newfee)

@@ -346,6 +346,18 @@ cChar::cChar( SERIAL ser ) : cObject()
 	statGainedToday = 0;	//Luxor
 
 	speechCurrent = NULL; //Luxor
+
+	//Commands Params
+	param1="";
+	param2="";
+	param3="";
+	param4="";
+	param5="";
+	param6="";
+	param7="";
+	param8="";
+	
+
 	lastRunning = 0; //Luxor
 	path = NULL; //Luxor
 	spellTL = NULL; //Luxor
@@ -552,6 +564,65 @@ void cChar::checkSafeStats()
 	stm = qmin( dx, nSTM );
 	mn = qmin( in, nMN );
 }
+
+
+/*!
+\brief reset params strings
+\authors Frodo & Stonedz
+*/
+
+void cChar::resetCommandParams(){
+	param1="";
+	param2="";
+	param3="";
+	param4="";
+	param5="";
+	param6="";
+	param7="";
+	param8="";
+}
+
+/*!
+\brief set param string
+\authors Frodo & Stonedz
+*/
+
+void cChar::setCommandParams(std::string param, int number){
+	
+	switch(number){
+	case 1: param1=param;
+	case 2: param2=param;
+	case 3: param3=param;
+	case 4: param4=param;
+	case 5: param5=param;
+	case 6: param6=param;
+	case 7: param7=param;
+	case 8: param8=param;
+	default: return;
+	}
+}
+
+/*!
+\brief return a param string
+\authors Frodo & Stonedz
+*/
+
+std::string cChar::getCommandParams(int number){
+
+	switch(number){
+	case 1: return param1;
+	case 2: return param2;
+	case 3: return param3;
+	case 4: return param4;
+	case 5: return param5;
+	case 6: return param6;
+	case 7: return param7;
+	case 8: return param8;
+	default: return "";
+	}
+}
+
+
 
 /*!
 \brief return the guild type
