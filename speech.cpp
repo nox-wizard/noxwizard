@@ -2036,7 +2036,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
-	cUnicodeString* speechUni=new cUnicodeString( speech );
+	
+	pc->speechCurrent = new cUnicodeString( speech );
 
 	cUnicodeString* speechGhostUni=NULL;
 
@@ -2071,24 +2072,23 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}
 		else
 		{
-			talk.language = (DBYTE2WORD( 'E', 'N'  ) << 16 ) +
-							 DBYTE2WORD( 'U',  0 );
+			talk.language = calcserial( 'E', 'N', 'U',  0 );
 		}
 
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
 				speechGhostUni=new cUnicodeString();
-				makeGhost( speechUni, speechGhostUni );
+				makeGhost( pc->speechCurrent, speechGhostUni );
 			}
 			talk.msg=speechGhostUni;
 		}
 		else
-			talk.msg=speechUni;
+			talk.msg=pc->speechCurrent;
 		talk.send( ps );
 	}
 
 
-	delete speechUni;
+	delete pc->speechCurrent;
 	if( speechGhostUni!=NULL )
 		delete speechGhostUni;
 

@@ -317,6 +317,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	targetcallback = INVALID;
 
 	statGainedToday = 0;	//Luxor
+	speechCurrent=NULL; //Endymion
 }
 
 /*!

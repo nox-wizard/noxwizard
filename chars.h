@@ -22,7 +22,7 @@
 #include "msgboard.h"
 #include "target.h"
 #include "constants.h"
-
+#include "unicode.h"
 
 //@{
 /*!
@@ -811,7 +811,7 @@ class cChar : public cObject
 	public:
 
 
-
+		cUnicodeString* speechCurrent;
 		void 			updateStats(SI32 stat);
 
 		void 			setNextMoveTime(short tamediv=1);
