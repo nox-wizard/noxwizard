@@ -750,7 +750,7 @@ LOGICAL WalkSendToPlayers( P_CHAR pc, SI08 dir, Location oldpos, Location pos )
 
 		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) { // It's seen for the first time, send a draw packet
 			impowncreate( ps->toInt(), pc, 1 );
-			return true;
+			continue;
 		}
 
                 if ( !pc_curr->IsGM() ) { // Players only
@@ -846,7 +846,9 @@ bool WalkHandleCharsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 
 	NxwCharWrapper si;
 	//si.fillCharsNearXYZ( pc->getPosition(), VISRANGE +5, !pc->IsGM(), false );
-	si.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 1, !pc->IsGM(), false );
+
+	// Luxor: VISRANGE + 1 would be sufficient, but people experiencing lag won't see a lot of things then.
+	si.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 5, !pc->IsGM(), false );
 
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
@@ -900,11 +902,13 @@ bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	VALIDATEPCR(pc, false);
 
 	NXWCLIENT ps=pc->getClient();
+	if ( ps == NULL ) //Luxor
+		return false;
 
 	Location pcpos=pc->getPosition();
 	
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pcpos, VISRANGE, false );
+	si.fillItemsNearXYZ( pcpos, VISRANGE + 5, false );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 	
 		P_ITEM pi=si.getItem();
@@ -932,7 +936,7 @@ bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 				pc->playSFX(0x0204);
 			}
 		}
-		else */if( ps!=NULL )
+		else if( ps!=NULL )*/
 
 			if( pi->id()>=0x407C && pi->id()<=0x407E )
 			{
