@@ -600,7 +600,7 @@ static int command(void)
   int tok,ret;
   cell val;
   char *str;
-  int index,tag;
+  int index,tag=0;
   cell code_index;
 
   while (*lptr<=' ' && *lptr!='\0')
