@@ -1835,15 +1835,17 @@ void cChar::teleport()
 	}
 
 	setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-	UI08 removeitem[5]={0x1D, 0x00, 0x00, 0x00, 0x00};
-	NXWCLIENT ps = getClient();
+//	UI08 removeitem[5]={0x1D, 0x00, 0x00, 0x00, 0x00};
+//	NXWCLIENT ps = getClient();
 	NXWSOCKET socket = getSocket();
 
 	if ( socket!=INVALID )
 	{
 		UI08 goxyz[19]={0x20, 0x00, 0x05, 0xA8, 0x90, 0x01, 0x90, 0x00, 0x83, 0xFF, 0x00, 0x06, 0x08, 0x06, 0x49, 0x00, 0x00, 0x02, 0x00};
+		Location pos = getPosition();
 
 //		LongToCharPtr(getSerial32(), removeitem +1);
+
 		LongToCharPtr(getSerial32(), goxyz +1);
 		ShortToCharPtr(GetBodyType(), goxyz +5);
 		ShortToCharPtr(getSkinColor(), goxyz +8);

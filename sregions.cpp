@@ -281,7 +281,7 @@ void checkregion(P_CHAR pc)
 		*/
 		pc->runAmxEvent( EVENT_CHR_ONREGIONCHANGE, pc->getSerial32(), pc->region, calcreg);
 
-		s=calcSocketFromChar(i);
+		s = pc->getSocket();
 		if (s!=INVALID)
 		{
 			pweather(s);
