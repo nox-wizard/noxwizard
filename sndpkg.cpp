@@ -19,6 +19,7 @@
 #include "amx/amxcback.h"
 #include "tmpeff.h"
 #include "speech.h"
+#include "packets.h"
 
 void gmyell(char *txt)
 //Modified by N6 to use UNICODE packets
@@ -1446,18 +1447,15 @@ void tips(int s, int i) // Tip of the day window
 
 void deny(NXWSOCKET  k,P_CHAR pc, int sequence)
 {
-	unsigned char walkdeny[9]="\x21\x00\x01\x02\x01\x02\x00\x01";
-	Location charpos= pc->getPosition();
 
-	walkdeny[1]= sequence;
-	walkdeny[2]= charpos.x >> 8;
-	walkdeny[3]= charpos.x % 256;
-	walkdeny[4]= charpos.y >> 8;
-	walkdeny[5]= charpos.y % 256;
-	walkdeny[6]= pc->dir;
-	walkdeny[7]= charpos.dispz;
-	Xsend(k, walkdeny, 8);
-	walksequence[k]=-1;
+	cPacketWalkReject walkdeny;
+	walkdeny.sequence= sequence;
+	walkdeny.x= pc->getPosition().x;
+	walkdeny.y= pc->getPosition().y;
+	walkdeny.direction=pc->dir;
+	walkdeny.z= pc->getPosition().dispz;
+	walkdeny.send( pc->getClient() );
+	walksequence[k]=INVALID;
 
 }
 

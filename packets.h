@@ -1621,6 +1621,26 @@ enum NOTORIETY {
 	TRASLUCENT //!< unknown use (translucent (like 0x4000 hue))
 };
 
+#define PKG_WALK_REJECT 0x21;
+/*!
+\brief Character Move Reject
+\author Endymion
+\since 0.83
+\note 0x21
+*/
+class cPacketWalkReject : public cServerPacket {
+
+public:
+	eUI08   sequence;	//!< sequence
+	eUI16   x;	//!< x location
+	eUI16   y;	//!< y location
+	eUI08   direction;	//!< direction
+	eUI08   z;	//!< z location
+	cPacketWalkReject();
+
+};
+
+
 
 //@}
 
