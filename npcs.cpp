@@ -79,65 +79,6 @@ static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
 	return (haircolor);
 }
 
-void setrandomname(P_CHAR pc, char * namelist)
-{
-
-
-	VALIDATEPC(pc);
-
-	char sect[512];
-	int i=0,j=0;
-	char script1[1024];
-	cScpIterator* iter = NULL;
-
-	sprintf(sect, "SECTION RANDOMNAME %s", namelist);
-	iter = Scripts::Npc->getNewIterator(sect);
-	if (iter==NULL) {
-		//sprintf(chars[s].getCurrentNameC(), "Error Namelist %s Not Found", namelist);
-		//chars[s].setCurrentName("Error Namelist " + string(namelist) + " Not Found");
-		char tmp[30];
-		sprintf(tmp, "Namelist not found: %10s", namelist);
-		pc->setCurrentName(tmp);
-		return;
-	}
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	iter->rewind();
-
-	if(i>0)
-	{
-		i=rand()%(i);
-		loopexit=0;
-		do
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				if(j==i)
-				{
-					//strcpy(chars[s].name,(char*)script1);
-					pc->setCurrentName( script1 );
-					break;
-				}
-				else j++;
-			}
-		}
-		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
-	}
-
-}
-
 namespace npcs {	//Luxor
 
 
@@ -885,8 +826,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "NAMELIST" == script1 )
 								{
-									setrandomname(pc,const_cast<char*>(script2.c_str()));
-									pc->setRealName( pc->getCurrentNameC() );
+									pc->setCurrentName( cObject::getRandomScriptValue( string("RANDOMNAME"), script2 ) );
+									pc->setRealName( pc->getCurrentName() );
 									script1 = "DUMMY";
 								}
 								else if ( "NOTRAIN" == script1 )

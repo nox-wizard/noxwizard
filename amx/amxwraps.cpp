@@ -1822,7 +1822,7 @@ NATIVE(_itm_remove)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR(pi, INVALID);
-	pi->Delete();
+	pi->deleteItem();
 	return 0;
 }
 
@@ -1854,7 +1854,7 @@ NATIVE(_chr_remove)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    pc->Delete();
+    pc->deleteChar();
     return 0;
 }
 
@@ -1898,7 +1898,7 @@ NATIVE(_chr_fish)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    fishing::Fish (DEREF_P_CHAR(pc));
+    Fishing->Fish (DEREF_P_CHAR(pc));
     return 0;
 }
 
@@ -4092,7 +4092,8 @@ NATIVE(_chr_setRandomName)
 	amx_GetAddr(amx,params[2],&cstr);
 	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	setrandomname(pc, g_cAmxPrintBuffer);
+	std::string value( g_cAmxPrintBuffer );
+	pc->setCurrentName( cObject::getRandomScriptValue( string("RANDOMNAME"), value ) );
 	g_nAmxPrintPtr=0;
 	return 1;
 }
@@ -5181,7 +5182,7 @@ NATIVE ( _menu_create )
 	  return 0;
 	// TODO fix it!
 
-//	return ( menus::createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
+//	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
 }
 
 /*
@@ -5193,7 +5194,7 @@ NATIVE ( _menu_create )
 */
 NATIVE ( _menu_delete )
 {
-	return ( menus::deleteMenu( params[1] ) )? 1 : 0;
+	return ( menus.deleteMenu( params[1] ) )? 1 : 0;
 }
 
 /*
@@ -5206,11 +5207,11 @@ NATIVE ( _menu_delete )
 */
 NATIVE ( _menu_show )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL ) {
 		P_CHAR pc = pointers::findCharBySerial( params[2] );
 		VALIDATEPCR( pc, 0 );
-		return ( menus::showMenu( params[1], pc ) ? 1 : 0 );
+		return ( menus.showMenu( params[1], pc ) ? 1 : 0 );
 	}
 	return 0;
 }
@@ -5230,10 +5231,10 @@ NATIVE ( _menu_show )
 */
 NATIVE ( _menu_addButton )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-			((menus::cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
+			((cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
 			return 1;
 	}
 	return 0;
@@ -5249,10 +5250,10 @@ NATIVE ( _menu_addButton )
 */
 NATIVE ( _menu_addPage )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addPage( params[2] );
+		((cMenu*)menu)->addPage( params[2] );
 		return 1;
 	}
 	return 0;
@@ -5272,10 +5273,10 @@ NATIVE ( _menu_addPage )
 */
 NATIVE (  _menu_addResizeGump )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5295,10 +5296,10 @@ NATIVE (  _menu_addResizeGump )
 */
 NATIVE ( _menu_addPageButton )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
-		((menus::cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
+		((cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
 		return 1;
 	}
 	return 0;
@@ -5317,14 +5318,14 @@ NATIVE ( _menu_addPageButton )
 */
 NATIVE ( _menu_addText )
 {
-	P_MENU menu = menus::selectMenu( params[1] );
+	P_MENU menu = menus.selectMenu( params[1] );
 	if ( menu != NULL )
 	{
 		cell *cstr;
 		amx_GetAddr(amx,params[4],&cstr);
 		wstring s;
 		amx_GetStringUnicode( &s, cstr );
-		((menus::cMenu*)menu)->addText( params[2], params[3], s, params[5] );
+		((cMenu*)menu)->addText( params[2], params[3], s, params[5] );
 		return 1;
 	}
 	return 0;

@@ -15,8 +15,6 @@
 #ifndef NPCS_INCLUDE
 #define NPCS_INCLUDE
 
-void setrandomname(P_CHAR pc, char * namelist);
-
 namespace npcs
 {
 	enum {

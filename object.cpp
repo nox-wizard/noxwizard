@@ -52,7 +52,6 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 		if(i>0)
 		{
 			i=rand()%i;
-			++i;
 			iter = getScriptIterator( section, sectionId );
 			if (iter == 0)
 			{
