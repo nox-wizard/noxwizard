@@ -4140,9 +4140,10 @@ void cChar::pc_heartbeat()
 
 	if ( SrvParms->hunger_system && TIMEOUT( hungertime ) && SrvParms->hungerrate > 1 )
 	{
-		if ( !IsGMorCounselor() && hunger )
+		if ( !IsGMorCounselor() )
 		{
-			--hunger;
+			if( hunger )
+				--hunger;
 
 			switch( hunger )
 			{
@@ -4163,6 +4164,7 @@ void cChar::pc_heartbeat()
 			hungertime = uiCurrentTime+(SrvParms->hungerrate*MY_CLOCKS_PER_SEC); // Bookmark
 		}
 	}
+	
 	if ( SrvParms->hunger_system && TIMEOUT( hungerdamagetimer ) && SrvParms->hungerdamage > 0 ) // Damage them if they are very hungry
 	{
 		hungerdamagetimer=uiCurrentTime+(SrvParms->hungerdamagerate*MY_CLOCKS_PER_SEC); /** set new hungertime **/
