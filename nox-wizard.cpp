@@ -2542,6 +2542,8 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 
 		for( objs.rewind(); !objs.IsEmpty(); objs++ )
 		{
+			SERIAL mySerial=objs.getSerial();
+			LogMessage("Serial %d", objs.getSerial());
 			if( isCharSerial( objs.getSerial() ) )
 			{
 				if( first ) 
@@ -2592,7 +2594,7 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 				if( ((pc_j==NULL) ) &&
 					((pi_j==NULL) ) )
 				{
-					pi->Delete();
+					objects.eraseObject (pi);
 					++removed;
 				}
 			}
