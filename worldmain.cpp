@@ -1389,7 +1389,7 @@ void CWorldMain::binarySaveWorld()
 
 	if (SrvParms->server_log)
 		ServerLog.Write("Server data save\n");
-	sysbroadcast(TRANSLATE("World data saving..."));
+		sysbroadcast(TRANSLATE("World data saving...%d"), server_data.announceworldsaves);
 	InfoOut("World data saving..." );
 ////CHARS SAVE
 	std::string oldFileName( SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileBinaryExtension );

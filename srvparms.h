@@ -118,7 +118,7 @@ struct server_st
  unsigned int hungerdamagerate;
  char armoraffectmana; // Should armor slow mana regen ?
 
- char announceworldsaves;
+ unsigned int announceworldsaves;
 
  unsigned char auto_a_create; //Create accounts when people log in with unknown name/password
  unsigned int  auto_a_reload; //Auto reload accounts if file was touched, this stores the time interval in minutes.

@@ -477,7 +477,8 @@ static void exec_gy(char *txt);
 
 static void exec_save(char *dummy)
 {
-   sysbroadcast(TRANSLATE("World will be saved in 30 seconds.."));
+   if (server_data.announceworldsaves==1)//ANNOUNCE_SAVES in server.cfg
+   	sysbroadcast(TRANSLATE("World will be saved in 30 seconds..."));
 
    s_nSaveTime = uiCurrentTime+30*MY_CLOCKS_PER_SEC;
    if (s_nSaveTime==0) s_nSaveTime++; //just in case...
