@@ -104,7 +104,7 @@ void cScriptCommand::execute( NXWSOCKET s )
 		targ->code_callback = target_npcMenu;
 		targ->buffer[0]=str2num(param);
 		targ->send( getClientFromSocket(s) );
-		sysmessage( s, "Select location for NPC. [Number: %i]", targ->buffer[0]);
+		sysmessage( s, TRANSLATE("Select location for NPC. [Number: %i]"), targ->buffer[0]);
 		return;
 	} else if ( command == "NOP" ) {
 	    return;

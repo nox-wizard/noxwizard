@@ -423,7 +423,7 @@ void cHouse::transfer(SERIAL newOwner)
 	pKey->moreb4=(signed char)((getKeycode())&0xFF);
 	pKey->type=7;
 
-	sysmessage(oldOwner->getSocket(), "You have transferred your house to %s.", pc->getCurrentNameC());
+	sysmessage(oldOwner->getSocket(), TRANSLATE("You have transferred your house to %s."), pc->getCurrentNameC());
 }
 
 bool cMulti::isRealMulti()
@@ -1459,7 +1459,7 @@ void cHouses::target_houseOwner( NXWCLIENT ps, P_TARGET t )
 	NXWSOCKET s = ps->toInt();
 	if(pc->getSerial32() == curr->getSerial32())
 	{
-		sysmessage(s, "you already own this house!");
+		sysmessage(s, TRANSLATE("you already own this house!"));
 		return;
 	}
 
@@ -1516,11 +1516,11 @@ void cHouses::target_houseBan( NXWCLIENT ps, P_TARGET t )
 		if(!house->isBanned(pc))
 		{
 			house->addBan(pc);
-			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
+			sysmessage(s, TRANSLATE("%s has been banned from this house."), pc->getCurrentNameC());
 		}
 		else 
 		{
-			sysmessage(s, "That player is already on a house register.");
+			sysmessage(s, TRANSLATE("That player is already on a house register."));
 		}
 	}
 }
@@ -1542,18 +1542,18 @@ void cHouses::target_houseFriend( NXWCLIENT ps, P_TARGET t )
 	{
 		if(Friend->getSerial32() == curr->getSerial32())
 		{
-			sysmessage(s,"You cant do that!");
+			sysmessage(s,TRANSLATE("You can't do that!"));
 			return;
 		}
 		
 		if(! house->isFriend(Friend))
 		{
-			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
+			sysmessage(s, TRANSLATE("%s has been made a friend of the house."), Friend->getCurrentNameC());
 			house->addFriend(Friend);
 		}
 		else 
 		{
-			sysmessage(s, "That player is already a friend of the house.");
+			sysmessage(s, TRANSLATE("That player is already a friend of the house."));
 		}
 	}
 }

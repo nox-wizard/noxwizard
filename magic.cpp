@@ -70,7 +70,7 @@ LOGICAL checkMagicalSpeech( P_CHAR pc, char* speech )
 		return false;
 	SpellId spell = it->second;
 	if ( !pc->knowsSpell( spell ) ) {
-		pc->sysmsg("You don't know that spell yet.");
+		pc->sysmsg(TRANSLATE("You don't know that spell yet."));
 		return true;
 	}
 	beginCasting( spell, client, CASTINGTYPE_SPELL );
@@ -350,7 +350,7 @@ static bool checkResist(P_CHAR pa, P_CHAR pd, SpellId spellnumber)
 	}
 
 	if (chance(resistchance)) {
-		pd->sysmsg("You feel yourself resisting magical energy!");
+		pd->sysmsg(TRANSLATE("You feel yourself resisting magical energy!"));
 		return true;
 	} else return false;
 }
@@ -1225,7 +1225,7 @@ void castFieldSpell( P_CHAR pc, int x, int y, int z, int spellnumber)
 
 	if ((region[R].priv&RGNPRIV_GUARDED)&&(SrvParms->guardsactive)) 
 	{
-		pc->sysmsg("You cannot cast field spells in town! ");
+		pc->sysmsg(TRANSLATE("You cannot cast field spells in town! "));
 		return;
 	}
 
@@ -1524,7 +1524,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if ( ISVALIDPC( src ) && ISVALIDPI( pi ) ) {
 				if ( pi->type == ITYPE_RUNE ) {
 					if ((pi->morex < 10)&&(pi->morey < 10)) {
-						src->sysmsg("The rune is not marked yet.");
+						src->sysmsg(TRANSLATE("The rune is not marked yet."));
 					} else {
 						P_ITEM pgate = item::CreateFromScript( "$item_a_blue_moongate" );
 						VALIDATEPI( pgate );
@@ -1551,7 +1551,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 						spellFX( spellnumber, src );
 					}
 				} else
-					src->sysmsg("That is not a rune!!");
+					src->sysmsg(TRANSLATE("That is not a rune!!"));
 			}
 			break;
 
@@ -1815,7 +1815,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					spellFX(spellnumber, src, pd);
 				}
 				else {
-					src->sysmsg("That is not a rune!!");
+					src->sysmsg(TRANSLATE("That is not a rune!!"));
 				}// if a rune
 			}
 			break;
@@ -1823,18 +1823,18 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_RECALL:
 			if ((src!=NULL)&&(pi!=NULL)) {
 				if (src->IsOverWeight()) {
-					src->sysmsg("You're too heavy!");
+					src->sysmsg(TRANSLATE("You're too heavy!"));
 				} else {
 					if (pi->type==ITYPE_RUNE) {
 						if ((pi->morex < 10)&&(pi->morey < 10)) {
-							src->sysmsg("The rune is not marked yet.");
+							src->sysmsg(TRANSLATE("The rune is not marked yet."));
 						} else {
 							src->MoveTo( pi->morex, pi->morey, pi->morez );
 							src->teleport();
 							spellFX(spellnumber, src, pd);
 						} // if rune marked ok
 					} else {
-						src->sysmsg("That is not a rune!!");
+						src->sysmsg(TRANSLATE("That is not a rune!!"));
 					}// if a rune
 				} // if not overweight
 			} // if src & pi valids

@@ -403,7 +403,7 @@ const short NumberOfOres = sizeof(OreTable)/sizeof(Ore);
         sprintf(tmp,"%s Ore",orename);
         item::SpawnItem(s,cc,1,tmp,1,id1,id2,col1,col2,1,1);
 
-        sysmessage(s,"You place some %c%s ore in your pack.",tolower(*orename),orename+1);
+        sysmessage(s,TRANSLATE("You place some %c%s ore in your pack."),tolower(*orename),orename+1);
         return true;
     }
     return false;
@@ -1015,19 +1015,19 @@ void target_provocation2( NXWCLIENT ps, P_TARGET t )
 
 	if (Victim2->InGuardedArea())
 	{
-		sysmessage(s,"You cant do that in town!");
+		sysmessage(s,TRANSLATE("You can't do that in town!"));
 		return;
 	}
 	if (Victim1->isSameAs(Victim2))
 	{
-		sysmessage(s, "Silly bard! You can't get something to attack itself.");
+		sysmessage(s, TRANSLATE("Silly bard! You can't get something to attack itself."));
 		return;
 	}
 
 	int inst = Skills::GetInstrument(s);
 	if (inst==INVALID)
 	{
-		sysmessage(s, "You do not have an instrument to play on!");
+		sysmessage(s, TRANSLATE("You do not have an instrument to play on!"));
 		return;
 	}
 	if (Player->checkSkill( MUSICIANSHIP, 0, 1000))
@@ -1037,7 +1037,7 @@ void target_provocation2( NXWCLIENT ps, P_TARGET t )
 		{
 			if (Player->InGuardedArea() && ServerScp::g_nInstantGuard == 1) //Luxor
 				npcs::SpawnGuard(Player, Player, charpos.x+1, charpos.y, charpos.z); //ripper
-			sysmessage(s, "Your music succeeds as you start a fight.");
+			sysmessage(s, TRANSLATE("Your music succeeds as you start a fight."));
 		}
 		else
 		{

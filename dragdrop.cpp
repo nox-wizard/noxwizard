@@ -590,7 +590,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		{ //weapons layers
 			if ( (pi->layer == LAYER_2HANDWEAPON && ISVALIDPI(pc_currchar->getShield())) )
 			{
-				ps->sysmsg("You cannot wear two weapons.");
+				ps->sysmsg(TRANSLATE("You cannot wear two weapons."));
 				Sndbounce5(s);
 				if (ps->isDragging())
 				{
@@ -607,7 +607,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			{
 				if (pi->itmhand != 3 && pi->lodamage != 0 && pi->itmhand == pW->itmhand)
 				{
-					ps->sysmsg("You cannot wear two weapons.");
+					ps->sysmsg(TRANSLATE("You cannot wear two weapons."));
 					Sndbounce5(s);
 					if (ps->isDragging())
 					{

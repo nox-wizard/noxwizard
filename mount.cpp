@@ -104,7 +104,7 @@ void cChar::mounthorse( P_CHAR mount )
 		
 		std::map<SI32,SI32>::iterator iter = mountinfo.find(mount->getId());
 		if( iter==mountinfo.end() ) { //not mountable creature
-			sysmsg( "This is not a mountable creature" );
+			sysmsg(TRANSLATE( "This is not a mountable creature" ));
 			return;
 		}
 
@@ -247,7 +247,7 @@ void cChar::mounthorse( P_CHAR mount )
 			}
 		}
 
-		sysmsg( "Now you are riding %s", mount->getCurrentNameC());
+		sysmsg( TRANSLATE("Now you are riding %s"), mount->getCurrentNameC());
 
 		mount->war = 0;
 		mount->attackerserial=INVALID;

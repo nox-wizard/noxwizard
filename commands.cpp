@@ -207,7 +207,7 @@ namespace Commands
 
 		Spawns->doSpawnAll( r );
 
-		pc->sysmsg("[DONE] All NPCs/items spawned in spawn %d.", r );
+		pc->sysmsg(TRANSLATE("[DONE] All NPCs/items spawned in spawn %d."), r );
 	}
 
 	void RegSpawnNum (NXWSOCKET s, int r, int n) // rewrite by LB
@@ -575,10 +575,10 @@ namespace Commands
 					if(x==0)
 					{
 						pc->sysmsg("");
-						pc->sysmsg("Next unhandled page from %s", gmpages[i].name);
-						pc->sysmsg("Problem: %s.", gmpages[i].reason);
-						pc->sysmsg("Serial number %x", gmpages[i].serial.serial32);
-						pc->sysmsg("Paged at %s.", gmpages[i].timeofcall);
+						pc->sysmsg(TRANSLATE("Next unhandled page from %s"), gmpages[i].name);
+						pc->sysmsg(TRANSLATE("Problem: %s."), gmpages[i].reason);
+						pc->sysmsg(TRANSLATE("Serial number %x"), gmpages[i].serial.serial32);
+						pc->sysmsg(TRANSLATE("Paged at %s."), gmpages[i].timeofcall);
 					}
 					x++;
 				}
@@ -586,9 +586,9 @@ namespace Commands
 			if (x>0)
 			{
 				pc->sysmsg("");
-				pc->sysmsg("Total pages in queue: %i",x);
+				pc->sysmsg(TRANSLATE("Total pages in queue: %i"),x);
 			}
-			else pc->sysmsg("The GM queue is currently empty");
+			else pc->sysmsg(TRANSLATE("The GM queue is currently empty"));
 		} //end of first if
 		else //Player is a counselor so show counselor queue
 		{
@@ -599,10 +599,10 @@ namespace Commands
 					if(x==0)
 					{
 						pc->sysmsg("");
-						pc->sysmsg("Next unhandled page from %s", counspages[i].name);
-						pc->sysmsg("Problem: %s.", counspages[i].reason);
-						pc->sysmsg("Serial number %x", counspages[i].serial.serial32);
-						pc->sysmsg("Paged at %s.", counspages[i].timeofcall);
+						pc->sysmsg(TRANSLATE("Next unhandled page from %s"), counspages[i].name);
+						pc->sysmsg(TRANSLATE("Problem: %s."), counspages[i].reason);
+						pc->sysmsg(TRANSLATE("Serial number %x"), counspages[i].serial.serial32);
+						pc->sysmsg(TRANSLATE("Paged at %s."), counspages[i].timeofcall);
 					}
 					x++;
 				}
@@ -610,9 +610,9 @@ namespace Commands
 			if (x>0)
 			{
 				pc->sysmsg("");
-				pc->sysmsg("Total pages in queue: %i",x);
+				pc->sysmsg(TRANSLATE("Total pages in queue: %i"),x);
 			}
-			else pc->sysmsg("The Counselor queue is currently empty");
+			else pc->sysmsg(TRANSLATE("The Counselor queue is currently empty"));
 		}
 	}
 	// new wipe function, basically it prints output on the console when someone wipes so that

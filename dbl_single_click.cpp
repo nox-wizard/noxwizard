@@ -83,7 +83,7 @@ static bool Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 	if( chance(5) ) { // has item been destroyed ??
 		pi->hp--;
 		if ( pi->hp <= 0 ) {
-			pc->sysmsg("Your %s has been destroyed", pi->getCurrentNameC());
+			pc->sysmsg(TRANSLATE("Your %s has been destroyed"), pi->getCurrentNameC());
 			pi->Delete();
 			return true;
 		}

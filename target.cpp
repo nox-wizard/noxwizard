@@ -88,7 +88,7 @@ bool cObjectTarget::isValid()
 
 void cObjectTarget::error( NXWCLIENT ps )
 {
-	ps->sysmsg( "Invalid object" );
+	ps->sysmsg( TRANSLATE("Invalid object" ));
 }
 
 cCharTarget::cCharTarget() : cObjectTarget()
@@ -106,7 +106,7 @@ bool cCharTarget::isValid()
 
 void cCharTarget::error( NXWCLIENT ps )
 {
-	ps->sysmsg( "Invalid character" );
+	ps->sysmsg( TRANSLATE("Invalid character") );
 }
 
 cItemTarget::cItemTarget() : cObjectTarget()
@@ -124,7 +124,7 @@ bool cItemTarget::isValid()
 
 void cItemTarget::error( NXWCLIENT ps )
 {
-	ps->sysmsg( "Invalid item" );
+	ps->sysmsg( TRANSLATE("Invalid item") );
 }
 
 cLocationTarget::cLocationTarget() : cTarget( true )
@@ -142,7 +142,7 @@ bool cLocationTarget::isValid()
 
 void cLocationTarget::error( NXWCLIENT ps )
 {
-	ps->sysmsg( "Invalid location" );
+	ps->sysmsg(TRANSLATE( "Invalid location" ));
 }
 
 

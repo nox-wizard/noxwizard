@@ -605,12 +605,12 @@ int response(NXWSOCKET  s)
 					//I don't understand why i must check for animals stabled too... probably a bug
 					if ( sc.size()==0 )
 					{
-						sysmessage(s,TRANSLATE("You dont have pets following you"));
+						sysmessage(s,TRANSLATE("You don't have pets following you!"));
 						return 1;
 					}
 					if ( region[pc->region].priv&0x01 ) // Ripper..No pet attacking in town.
 					{
-						sysmessage(s,TRANSLATE("You cant have pets attack in town!"));
+						sysmessage(s,TRANSLATE("You can't have pets attack in town!"));
 						return 1;
 					}
 					pc->guarded = false;

@@ -119,7 +119,7 @@ void prison::jail( P_CHAR jailer, P_CHAR pc, UI32 secs )
 	if( pc->jailed ) 
 	{
 		if( ISVALIDPC( jailer ) )
-			jailer->sysmsg("That player is already in jail!");
+			jailer->sysmsg(TRANSLATE("That player is already in jail!"));
 		return;
 	}
 
@@ -152,7 +152,7 @@ void prison::jail( P_CHAR jailer, P_CHAR pc, UI32 secs )
 	pc->sysmsg(TRANSLATE("You are jailed !"));
 
 	if( ISVALIDPC( jailer ) )
-		jailer->sysmsg( "Player %s has been jailed in cell %i.", pc->getCurrentNameC(), cell->serial);
+		jailer->sysmsg(TRANSLATE("Player %s has been jailed in cell %i."), pc->getCurrentNameC(), cell->serial);
 
 }
 
@@ -215,8 +215,8 @@ void prison::release( P_CHAR releaser, P_CHAR pc )
 		pc->sysmsg(TRANSLATE( "Your jail time is over!" ));
 	}
 	else {
-		releaser->sysmsg("%s is now free", pc->getCurrentNameC());
-		pc->sysmsg( "%s have released you", releaser->getCurrentNameC() );
+		releaser->sysmsg(TRANSLATE("%s is now free"), pc->getCurrentNameC());
+		pc->sysmsg( TRANSLATE("%s have released you"), releaser->getCurrentNameC() );
 	}
 	
 

@@ -2017,7 +2017,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 								} else {
 
 									if (!pc_currchar->knowsSpell(static_cast<magic::SpellId>(book-1))) {
-										pc_currchar->sysmsg("You don't know that spell yet.");
+										pc_currchar->sysmsg(TRANSLATE("You don't know that spell yet."));
 									} else {
 										magic::beginCasting(static_cast<magic::SpellId>(book-1),ps,magic::CASTINGTYPE_SPELL);
 									} // if don't knows spell

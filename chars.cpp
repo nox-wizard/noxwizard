@@ -1187,7 +1187,7 @@ void cChar::MoveTo(Location newloc)
 
 	// <Luxor>
 	if ( newloc != getPosition() && casting && !npc ) {
-		sysmsg( "You stop casting the spell." );
+		sysmsg( TRANSLATE("You stop casting the spell.") );
 		casting = 0;
 		spell = magic::SPELL_INVALID;
 		spelltime = 0;
@@ -2959,15 +2959,15 @@ void cChar::possess(P_CHAR pc)
 			return;
 	} else { //Normal checks to prevent possessing a not permitted char
 		if ( pc->shopkeeper ) {
-			sysmsg( "You cannot use shopkeepers." );
+			sysmsg( TRANSLATE("You cannot use shopkeepers.") );
 			return;
 		}
 		if ( !pc->npc ) {
-			sysmsg( "You can only possess NPCs." );
+			sysmsg( TRANSLATE("You can only possess NPCs.") );
 			return;
 		}
 		if ( pc->possessorSerial != INVALID ) {
-				sysmsg( "This NPC is already possessed by someone!" );
+				sysmsg( TRANSLATE("This NPC is already possessed by someone!") );
 				return;
 		}
 	}
@@ -4993,26 +4993,26 @@ void cChar::do_lsd()
 		switch (rand()%9)
 		{
 			case 0:
-				sysmsg("Did you see the size of that chicken ?");
+				sysmsg(TRANSLATE("Did you see the size of that chicken ?"));
 			case 1:
-				sysmsg("Boy, i could swear i saw a three headed monkey!");
+				sysmsg(TRANSLATE("Boy, i could swear i saw a three headed monkey!"));
 			case 2:
-				sysmsg("Hey, this is better than a trip to las vegas!");
+				sysmsg(TRANSLATE("Hey, this is better than a trip to las vegas!"));
 			case 3:
-				sysmsg("Did you know that there are roots growing from my ears ?");
+				sysmsg(TRANSLATE("Did you know that there are roots growing from my ears ?"));
 			case 4:
-				sysmsg("I wonder how my head looks like without those purple antennas.");
+				sysmsg(TRANSLATE("I wonder how my head looks like without those purple antennas."));
 			case 5:
-				sysmsg("What was that?");
+				sysmsg(TRANSLATE("What was that?"));
 			case 6:
-				sysmsg("Did you see that?");
+				sysmsg(TRANSLATE("Did you see that?"));
 			case 7:
-				sysmsg("The rocks are lovely this time of year.");
+				sysmsg(TRANSLATE("The rocks are lovely this time of year."));
 			case 8:
-				sysmsg("I'll show you that damn rock there is weaker than my head!");
+				sysmsg(TRANSLATE("I'll show you that damn rock there is weaker than my head!"));
 			case 9:
 			default:
-				sysmsg("I don't really feel so good");
+				sysmsg(TRANSLATE("I don't really feel so good"));
 		}
 	}
 
