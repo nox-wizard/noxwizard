@@ -25,7 +25,7 @@ char* cPacket::getBeginValid() {
 \author Endymion
 \since 0.83
 */
-char* cPacket::getBeginValidForReceive() {
+char* cClientPacket::getBeginValidForReceive() {
 	return ( getBeginValid() +sizeof(cmd) );
 }
 
@@ -332,22 +332,26 @@ CREATE( Walk, PKG_WALK, 0x02 )
 CREATE( WalkAck, PKG_WALK_ACK, 0x03 )
 CREATE( WalkReject, PKG_WALK_REJECT, 0x08 )
 
+CREATE( CharProfileReqOnly, PKG_CHAR_PROFILE, 0x08 )
 CREATE( CharProfileReq, PKG_CHAR_PROFILE, 0x08 )
-CREATE( CharProfileUpdate, PKG_CHAR_PROFILE, 0x0C )
-RECEIVE( CharProfileUpdate ) {
+RECEIVE( CharProfileReq ) {
 	if( ps == NULL ) return; 
 	NXWSOCKET s=ps->toInt();
+	
 	int offset=1;
 	
-	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize -1, offset );
-	wchar_t t=0;
-	for( int i=0; ; ++i ) {
-		if( i%2==0 ) {
-			t=buffer[s][offset+i];
-		}
-		else {
-			t+=buffer[s][offset+i]<<8;
-			profile+= t;
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize, offset );
+	if( update ) { //complete packet so
+		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
+		wchar_t t=0;
+		for( int i=0; ; ++i ) {
+			if( i%2==0 ) {
+				t=buffer[s][offset+i];
+			}
+			else {
+				t+=buffer[s][offset+i]<<8;
+				profile+= t;
+			}
 		}
 	}
 }

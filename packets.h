@@ -37,10 +37,9 @@ protected:
 	UI16 headerSize;	//!< size of the header, not all the packet if size are variable ( NOT SENDED OR RECEIVED. USE INTERNAL )
 	UI08 cmd;		//!< packet id
 	char* getBeginValid();
-	char* getBeginValidForReceive();
-
 
 };
+
 
 /*!
 \brief Base class of all packets send from client to server
@@ -49,6 +48,7 @@ protected:
 */
 class cClientPacket : public cPacket {
 protected:
+	char* getBeginValidForReceive();
 	void getFromSocket( NXWSOCKET socket, char* b, int size, int& from );
 	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
 
@@ -78,10 +78,9 @@ typedef cServerPacket* P_SERVER_PACKET;	//!< pointer to cServerPacket
 
 
 
-
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
-///////////////////////// PACKETS ///////////////////////////////////////
+///////////////////////// PACKETS NOT WORK ///////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
 
@@ -1476,6 +1475,19 @@ public:
 
 };*/
 
+
+
+
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+/////////////////////ONLY WORKING PACKETS/////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+
+
+
 #define PKG_UNICODE_SPEECH 0xAE;
 /*!
 \brief Send speech ( unicode mode )
@@ -1655,24 +1667,24 @@ public:
 \since 0.83
 \note 0xB8
 */
-class cPacketCharProfileReq : public cClientPacket {
+class cPacketCharProfileReqOnly : public cClientPacket {
 private:
 	eUI16	size; //!< size
 public:
 	eBool	update; //!< update
 	eSERIAL chr; //!< character
 
-	cPacketCharProfileReq();
+	cPacketCharProfileReqOnly();
 
 };
 
 /*!
-\brief Char Profile Request
+\brief Char Profile Request ( maybe an update )
 \author Endymion
 \since 0.83
 \note 0xB8
 */
-class cPacketCharProfileUpdate : public cClientPacket {
+class cPacketCharProfileReq : public cClientPacket {
 private:
 	eUI16	size;	//!< size
 public:
@@ -1684,7 +1696,7 @@ private:
 public:
 	cUnicodeString profile;	//!< new profile, in unicode, not null terminated.
 
-	cPacketCharProfileUpdate();
+	cPacketCharProfileReq();
 	void receive( NXWCLIENT PS );
 
 };
