@@ -330,7 +330,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket )
 			sysbroadcast( (char*)msgPart, pc->getCurrentNameC() );
 
 	if ( acctno[ socket ] != -1 )
-		Accounts->SetOffline( acctno[ socket ] ); //Bug clearing logged in accounts!
+		accounts::SetOffline( acctno[ socket ] ); //Bug clearing logged in accounts!
 	acctno[ socket ] = INVALID;
 
 //	char val=0;
@@ -470,7 +470,7 @@ void cNetwork::LoginMain(int s)
 	acctno[s]=INVALID;
 
 	pSplit((char*)&buffer[s][31]);
-	i = Accounts->Authenticate((char*)&buffer[s][1], (char*)pass1);
+	i = accounts::Authenticate((char*)&buffer[s][1], (char*)pass1);
 
 	if( i >= 0 )
 		acctno[s] = i;
@@ -503,16 +503,16 @@ void cNetwork::LoginMain(int s)
 					Xsend(s, nopass, 2);
 					return;
 				}
-				acctno[s] = Accounts->CreateAccount(dummylogin, dummypass);
+				acctno[s] = accounts::CreateAccount(dummylogin, dummypass);
 			}
 		}
 	}
 
-	if (Accounts->IsOnline(acctno[s]) )
+	if (accounts::IsOnline(acctno[s]) )
 	{
           Xsend(s, acctused, 2);
           //<Luxor>: Let's kick the current player
-          chrSerial = Accounts->GetInWorld(acctno[s]);
+          chrSerial = accounts::GetInWorld(acctno[s]);
           if (chrSerial == INVALID)
                 return;
           P_CHAR pc = pointers::findCharBySerial(chrSerial);
@@ -526,7 +526,7 @@ void cNetwork::LoginMain(int s)
 	//ndEndy now better
 	if (acctno[s]!=INVALID)
 	{
-		Accounts->SetEntering(acctno[s]);
+		accounts::SetEntering(acctno[s]);
 		Login2(s);
 	}
 }
@@ -652,11 +652,11 @@ void cNetwork::GoodAuth(int s)
 
 	ShortToCharPtr(tlen, login04a +1);
 
-	Accounts->OnLogin(acctno[s],s);
+	accounts::OnLogin(acctno[s],s);
 
 	//Endy now much fast
 	NxwCharWrapper sc;
-	Accounts->GetAllChars( acctno[s], sc );
+	accounts::GetAllChars( acctno[s], sc );
 
 	ActivateFeatures(s);
 
@@ -717,7 +717,7 @@ void cNetwork::CharList(int s) // Gameserver login and character listing
 	acctno[s]=-1;
 
 	pSplit((char*)&buffer[s][35]);
-	i = Accounts->Authenticate((char*)&buffer[s][5], (char*)pass1);
+	i = accounts::Authenticate((char*)&buffer[s][5], (char*)pass1);
 
 	if( i >= 0 )
 		acctno[s] = i;
@@ -772,9 +772,9 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 	if (acctno[s]>INVALID)
 	{
 		int j=0;
-		Accounts->SetOffline(acctno[s]);
+		accounts::SetOffline(acctno[s]);
 		NxwCharWrapper sc;
-		Accounts->GetAllChars( acctno[s], sc );
+		accounts::GetAllChars( acctno[s], sc );
 		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 			P_CHAR pc_i=sc.getChar();
 			if(!ISVALIDPC(pc_i))
@@ -801,7 +801,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 				}
 			}
 
-			Accounts->SetOnline(acctno[s], pc_k);
+			accounts::SetOnline(acctno[s], pc_k);
 			pc_k->logout=INVALID;
 
 			currchar[s] = pc_k->getSerial32();
@@ -909,8 +909,8 @@ void cNetwork::startchar(int s)
 			currchar[s] = pcPos->getSerial32();
 			pcPos->setClient(new cNxwClientObj(s));
 			pc->setClient(NULL);
-			Accounts->SetOffline(pc->account);
-			Accounts->SetOnline(pc->account, pcPos);
+			accounts::SetOffline(pc->account);
+			accounts::SetOnline(pc->account, pcPos);
 		} else pc->possessedSerial = INVALID;
 	}
 	//</Luxor>
@@ -1056,7 +1056,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 		}
 	}
 
-	Accounts->SetOffline(pc->account);
+	accounts::SetOffline(pc->account);
 	if (valid)//||region[chars[p].region].priv&0x17)
 	{
 		pc->logout=INVALID; // LB bugfix, was timeout

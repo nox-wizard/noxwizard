@@ -923,7 +923,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 	P_CHAR TrashMeUp = NULL;
 	NxwCharWrapper sc;
 
-	Accounts->GetAllChars( acctno[s], sc );
+	accounts::GetAllChars( acctno[s], sc );
 
 	for ( i=0, sc.rewind(); !sc.isEmpty(); sc++)
 	{
@@ -965,7 +965,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 			
 			TrashMeUp->deleteChar();
 
-			Accounts->GetAllChars( acctno[s], sc );
+			accounts::GetAllChars( acctno[s], sc );
 			
 			delete_resend_char_1[3] = sc.size();
 

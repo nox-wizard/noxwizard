@@ -436,7 +436,7 @@ void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Ex
 		return;
 	} else if ( script1 == "INFORMATION" ) {
 		sprintf(tstring, TRANSLATE("Connected players [%i out of %i accounts] Items [] Characters []"),
-			now,Accounts->Count());
+			now,accounts::Count());
 
 		sysmessage(s, tstring);
 		return;

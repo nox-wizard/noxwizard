@@ -200,7 +200,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					//
 					hasInvalidAccount = true;
 				else
-					Accounts->AddCharToAccount( str2num(script2), pc );
+					accounts::AddCharToAccount( str2num(script2), pc );
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
 				pc->priv2=str2num(script2);
@@ -1166,7 +1166,7 @@ void CWorldMain::saveNewWorld()
 	if (SrvParms->server_log)
 		ServerLog.Write("Server data save\n");
 
-	Accounts->SaveAccounts();
+	accounts::SaveAccounts();
 
 	sysbroadcast(TRANSLATE("World data saving..."));
 

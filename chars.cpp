@@ -1537,7 +1537,7 @@ LOGICAL const cChar::IsOnline() const
 
 	if (npc) return false;
 	
-	if(Accounts->GetInWorld(account) == getSerial32())
+	if(accounts::GetInWorld(account) == getSerial32())
 		return true;
 
 	return false;
@@ -2691,12 +2691,12 @@ void cChar::possess(P_CHAR pc)
 	
 	//Set offline the old body, and online the new one
 	if (bSwitchBack) {
-		Accounts->SetOffline(pc->account);
-		Accounts->SetOnline(pc->account, pc);
+		accounts::SetOffline(pc->account);
+		accounts::SetOnline(pc->account, pc);
 
 	} else {
-		Accounts->SetOffline(account);
-		Accounts->SetOnline(account, pc);
+		accounts::SetOffline(account);
+		accounts::SetOnline(account, pc);
 	}
 	
 	//Let's go! :)
@@ -4192,9 +4192,9 @@ void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
 
 void cChar::pc_heartbeat()
 {
-	if ( Accounts->GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
+	if ( accounts::GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
 	{
-		Accounts->SetOffline( account);
+		accounts::SetOffline(account);
 		logout = INVALID;
 		teleport( TELEFLAG_NONE );
 		return;

@@ -961,7 +961,7 @@ void command_letusin(NXWSOCKET  s)
 	{
 		if ( acctno[a]>=0 )
 		{
-			Accounts->SetOffline(acctno[a]);
+			accounts::SetOffline(acctno[a]);
 			x++;
 		}
 	}
@@ -974,7 +974,7 @@ void command_readaccounts(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	Accounts->LoadAccounts();
+	accounts::LoadAccounts();
 	pc->sysmsg("Accounts reloaded...attention, if you changed exisiting(!) account numbers you should use the letusin command afterwards ");
 }
 
@@ -3241,7 +3241,7 @@ void command_password(NXWSOCKET  s)
 			return;
 		}
 
-		ret = Accounts->ChangePassword(pc->account, pwd);
+		ret = accounts::ChangePassword(pc->account, pwd);
 
 		if (ret==0) 
 			sprintf(pwd, "Password changed to %s", &tbuffer[Commands::cmd_offset+9]);

@@ -40,7 +40,6 @@ extern repsys_st repsys;
 extern resource_st resource;
 
 extern class CWorldMain		*cwmWorldState;
-extern class cAccounts		*Accounts;
 extern class cGuilds		*Guilds;
 extern class cMapStuff		*Map;
 extern class cTargets		*Targ;

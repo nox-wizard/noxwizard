@@ -202,8 +202,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Accounts
 	//
-	if (SrvParms->auto_a_reload > 0 && TIMEOUT( Accounts->lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
-		Accounts->CheckAccountFile();
+	if (SrvParms->auto_a_reload > 0 && TIMEOUT( accounts::lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
+		accounts::CheckAccountFile();
 	//
 	// Weather (change is handled by crontab)
 	//

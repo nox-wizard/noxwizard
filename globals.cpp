@@ -234,7 +234,6 @@ cRegion		*mapRegions;
 cGuilds		*Guilds;
 cMapStuff	*Map;
 cTargets	*Targ;
-cAccounts	*Accounts;
 cPartys		*Partys;
 //@}
 
