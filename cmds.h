@@ -14,12 +14,13 @@
 
 
 //#include <bitset>
+//#include "common_libs.h"
+//#include "nxwcommn.h"
 
 
 typedef cCommand* P_COMMAND;
 
-typedef std::map< string, P_COMMAND> td_cmdmap;
-typedef td_cmdmap::iterator td_cmditer;
+typedef std::map<string, P_COMMAND> CMDMAP;
 
 
 
@@ -30,11 +31,11 @@ class cCommand {
 
 public:
 
-	cCommand(char* cmd_name, long int cmd_priv, void callback());
+	cCommand(std::string cmd_name, SI32 cmd_priv, AmxFunction* callback());
 	
-	void (*cmd_extra) ();
-    char* cmd_name;
-	long int cmd_priv;  //stonedz: this should be a std::bitset (?)
+	std::string cmd_name;
+	SI32 cmd_priv;  //stonedz: this should be a std::bitset (?) //frodo: bitset later defined in cChar
+	AmxFunction* callback();
 };
 
 
@@ -47,14 +48,11 @@ class cCommandMap {
 public:
 	
 	cCommandMap();
-	P_COMMAND addGmCommand(char* name, int long priv, void callback());
-	P_COMMAND addGmCommand(P_COMMAND cmd);
-	P_COMMAND findCommand(char* name);
+	P_COMMAND addGmCommand(std::string name, SI32 priv, AmxFunction* callback());
+	P_COMMAND findCommand(std::string name);
 	
-	td_cmditer getIteratorBegin();
-	td_cmditer getIteratorEnd();
 
 private:
 
-	td_cmdmap command_map;
+	CMDMAP command_map;
 };

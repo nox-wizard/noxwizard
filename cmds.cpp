@@ -12,18 +12,18 @@
 //by Frodo & Stonedz
 //Work in progress...
 
-//#include "nxwcommn.h"
+
 #include "cmds.h"
 
 
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(char* name, long int priv, void command()) {
+cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback()) {
 
 	cmd_name=name;
 	cmd_priv=priv; //stonedz: should be a std::bitset (?)
-	cmd_extra= command;
+	callback()=command();
 }
 
 
@@ -33,44 +33,42 @@ cCommand::cCommand(char* name, long int priv, void command()) {
 
 cCommandMap::cCommandMap() {
 
-	// all addGmCommand(...); goes here
+	// all addGmCommand(...); here
 
 }
 
 
-P_COMMAND cCommandMap::addGmCommand(char* name, int long priv, void callback()) {
+P_COMMAND cCommandMap::addGmCommand(std::string name, SI32 priv, AmxFunction* callback()) {
 
 	P_COMMAND cmd= new cCommand(name, priv, callback());
-	P_COMMAND old= command_map[name];
     command_map[name]= cmd;
- 	return old;
+ 	return cmd;
 }
 
 
+
+/*	Frodo: probably useless (not me, this function :P)
 
 P_COMMAND cCommandMap::addGmCommand(P_COMMAND cmd) {
  	
 	P_COMMAND old= command_map[cmd->cmd_name];
     command_map[cmd->cmd_name]= cmd;
  	return old;
+} */
+
+
+
+P_COMMAND cCommandMap::findCommand(std::string name) {
+	
+CMDMAP::iterator iter( command_map.find( "name" ) );
+
+if ( iter != command_map.end() )	//command exists
+    return iter->second.callback;
+else
+    return NULL;					//command doesnt exist
 }
 
 
-
-P_COMMAND cCommandMap::findCommand(char* name) {
-    return command_map[name];
-}
-
-
-
-td_cmditer cCommandMap::getIteratorBegin() {			// Not sure if necessary 
-    return command_map.begin();
-}
-
-
-td_cmditer cCommandMap::getIteratorEnd() {			// Not sure if necessary
-    return command_map.end();
-}
 
 
 
