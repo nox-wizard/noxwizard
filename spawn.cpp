@@ -80,7 +80,7 @@ void cSpawnScripted::safeCreate( P_CHAR npc, cSpawnArea& single  )
 		npc->fz1 = INVALID;
 		single.current++;
 		single.nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
-		npc->spawnregion=this->serial;
+		npc->setSpawnRegion(this->serial);
 		single.npcs_spawned.insert( npc->getSerial32() );
 		npc->MoveTo( location );
 		npc->teleport();
@@ -492,7 +492,7 @@ void cSpawns::removeSpawnDinamic( P_ITEM pi )
 void cSpawns::removeSpawnDinamic( P_CHAR pc )
 {
 	VALIDATEPC(pc);
-	if( pc->spawnserial!=INVALID ) {
+	if( pc->getSpawnSerial()!=INVALID ) {
 		SPAWN_DINAMIC_DB::iterator iter= this->dinamic.find( pc->getSpawnSerial() );
 		if( iter!=this->dinamic.end() ) {
 			iter->second.remove( pc->getSerial32() );
@@ -597,6 +597,8 @@ void cSpawnDinamic::doSpawn()
 		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
 		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
 		UI16 maxSpawn=RandomNum(min,max);
+		if ( maxSpawn == 0 )
+			maxSpawn = 1;
 		if ( spawn->amount - this->current - maxSpawn < 0 )
 			maxSpawn=spawn->amount - this->current;
 		for ( int i = 0; i < maxSpawn;++i)
@@ -606,7 +608,7 @@ void cSpawnDinamic::doSpawn()
 				this->current++;
 				spawn->amount2=(unsigned short)this->current;
 				this->npcs_spawned.insert( npc->getSerial32() );
-				npc->spawnserial=this->item;
+				npc->setSpawnSerial(this->item);
 				npc->MoveTo( spawn->getPosition() );
 				npc->teleport();
 				#ifdef SPAR_I_LOCATION_MAP

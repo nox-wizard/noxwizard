@@ -220,7 +220,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	fy2=-1; //NPC Wander Point 2 y
 	fz1=0; //NPC Wander Point 1 z
 
-	spawnserial=INVALID; // Spawned by
+	setSpawnSerial(INVALID); // Spawned by
 	hidden=UNHIDDEN;
 	invistimeout=0;
 	ResetAttackFirst(); // 0 = defending, 1 = attacked first
@@ -301,7 +301,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	questBountyReward= 0;
 	questBountyPostSerial = 0;
 	murdererSer = 0;
-	spawnregion = INVALID;
+	setSpawnRegion(INVALID);
 	npc_type = 0;
 	stablemaster_serial = INVALID;
 	timeused_last = getclock();
@@ -594,14 +594,30 @@ void cChar::resetCommandParams(){
 void cChar::setCommandParams(int number, std::string param){
 	
 	switch(number){
-	case 1: param1 = param;
-	case 2: param2 = param;
-	case 3: param3 = param;
-	case 4: param4 = param;
-	case 5: param5 = param;
-	case 6: param6 = param;
-	case 7: param7 = param;
-	case 8: param8 = param;
+	case 1: 
+		param1 = param;
+		break;
+	case 2: 
+		param2 = param;
+		break;
+	case 3: 
+		param3 = param;
+		break;
+	case 4: 
+		param4 = param;
+		break;
+	case 5: 
+		param5 = param;
+		break;
+	case 6: 
+		param6 = param;
+		break;
+	case 7: 
+		param7 = param;
+		break;
+	case 8: 
+		param8 = param;
+		break;
 	default: return;
 	}
 }

@@ -593,6 +593,10 @@ void CWorldMain::loadChar() // Load a character from WSC
 				objects.updateCharSerial( i );
 //				setptr(&charsp[i%HASHMAX], x); //Load into charsp array
 			}
+			else if (!(strcmp(script1, "SPAWNSERIAL")))
+				pc->setSpawnSerial(str2num(script2));
+			else if (!(strcmp(script1, "SPAWNREGION")))
+				pc->setSpawnRegion(str2num(script2));
 			else if (!strcmp(script1, "SAY"))
 			{
 				pc->saycolor = (unsigned short)str2num(script2);
@@ -1092,6 +1096,11 @@ void loaditem()
 				pi->st2=str2num(script2);
 			else if (!(strcmp(script1, "SPD")))
 				pi->spd=str2num(script2);
+			else if (!(strcmp(script1, "SPAWNSERIAL")))
+				pi->setSpawnSerial(str2num(script2));
+			else if (!(strcmp(script1, "SPAWNREGION")))
+				pi->setSpawnRegion(str2num(script2));
+
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -1320,16 +1329,16 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 			if( pc->dead && pc->HasHumanBody() )
 				pc->morph( ((pc->getId() == BODY_FEMALE) ? (short)BODY_DEADFEMALE : (short)BODY_DEADMALE ), 0, 0, 0, 0, 0, NULL, true);
 
-			if ( pc->spawnserial != INVALID )
+			if ( pc->getSpawnSerial() != INVALID )
 			{
-				cSpawnDinamic *dynSpawner=Spawns->getDynamicSpawn(pc->spawnserial);
+				cSpawnDinamic *dynSpawner=Spawns->getDynamicSpawn(pc->getSpawnSerial());
 				if ( dynSpawner != NULL )
 					dynSpawner->addSpawned(pc);
 			}
-			else if ( pc->spawnregion != INVALID )
+			else if ( pc->getSpawnRegion() != INVALID )
 			{
 				// add the item to the static spawn region
-				cSpawnScripted *staticSpawner=Spawns->getScriptedSpawn(pc->spawnregion);
+				cSpawnScripted *staticSpawner=Spawns->getScriptedSpawn(pc->getSpawnRegion());
 				staticSpawner->addSpawned(pc);
 			}
 		}
@@ -1687,7 +1696,7 @@ void CWorldMain::SaveBinaryChar( fstream *out, P_CHAR pc)
 	valid=1;
 	if (pc->getSerial32() < 0) valid = 0;
 	if (pc->summontimer ) valid = 0; //xan : we don't save summoned stuff
-	if (pc->spawnregion!=INVALID || pc->spawnserial!=INVALID ) valid=0;
+	if (pc->getSpawnRegion()!=INVALID || pc->getSpawnSerial()!=INVALID ) valid=0;
 	if (valid)
 	{
 		out->write( reinterpret_cast<char *>(&charNumber), sizeof(charNumber));
@@ -2705,6 +2714,12 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "FOODY %i\n", pc->foodloc.y);
 			if (pc->foodloc.z!=dummy.foodloc.z)
 				fprintf(cWsc, "FOODZ %i\n", pc->foodloc.z);
+			// Spawns
+			if (pc->getSpawnSerial() != dummy.getSpawnSerial())
+				fprintf(cWsc, "SPAWNSERIAL %i\n", pc->getSpawnSerial());
+			if (pc->getSpawnRegion() != dummy.getSpawnRegion())
+				fprintf(cWsc, "SPAWNREGION %i\n", pc->getSpawnRegion());
+
 			// Dupois - Escort quests
 			if (pc->questType!=dummy.questType && pc->questType<1000)
 				fprintf(cWsc, "QUESTTYPE %i\n", pc->questType);
@@ -3031,6 +3046,11 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "SMELT %i\n", pi->smelt);
 		if (pi->itemSoundEffect!=dummy.itemSoundEffect)
 			fprintf(iWsc, "SOUNDFX %i\n", pi->itemSoundEffect);
+		// Spawns
+		if (pi->getSpawnSerial() != dummy.getSpawnSerial())
+			fprintf(cWsc, "SPAWNSERIAL %i\n", pi->getSpawnSerial());
+		if (pi->getSpawnRegion() != dummy.getSpawnRegion())
+			fprintf(cWsc, "SPAWNREGION %i\n", pi->getSpawnRegion());
 		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 		if (!pi->vendorDescription.empty())
 			fprintf(iWsc, "DESC %s\n", pi->vendorDescription.c_str() );

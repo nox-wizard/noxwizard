@@ -1489,10 +1489,10 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			pc->spattack = value;
 			break;
 		case NXW_CP_I_SPAWNREGION :				  		//dec value: 284;
-			pc->spawnregion = value;
+			pc->setSpawnRegion(value);
 			break;
 		case NXW_CP_I_SPAWNSERIAL :				  		//dec value: 285;
-			pc->spawnserial = value;
+			pc->setSpawnSerial(value);
 			break;
 		case NXW_CP_I_SPELL :			  				//dec value: 286;
 			pc->spell = static_cast<enum magic::SpellId>(value);
@@ -1800,8 +1800,8 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_SPADELAY , pc->spadelay )  			//dec value: 281;
 		CHECK(  NXW_CP_I_SPATIMER , pc->spatimer )  			//dec value: 282;
 		CHECK(  NXW_CP_I_SPATTACK , pc->spattack )  			//dec value: 283;
-		CHECK(  NXW_CP_I_SPAWNREGION , pc->spawnregion )  		//dec value: 284;
-		CHECK(  NXW_CP_I_SPAWNSERIAL , pc->spawnserial )  		//dec value: 285;
+		CHECK(  NXW_CP_I_SPAWNREGION , pc->getSpawnRegion() )  		//dec value: 284;
+		CHECK(  NXW_CP_I_SPAWNSERIAL , pc->getSpawnSerial() )  		//dec value: 285;
 		CHECK(  NXW_CP_I_SPELL , pc->spell )  				//dec value: 286;
 		CHECK(  NXW_CP_I_SPELLACTION , pc->spellaction )  		//dec value: 287;
 		CHECK(  NXW_CP_I_SPELLTIME , pc->spelltime )  			//dec value: 288;

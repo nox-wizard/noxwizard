@@ -691,7 +691,7 @@ bool checkReagents(P_CHAR pc, reag_st reagents)
 	VALIDATEPCR(pc, false);
 	reag_st fail;
 
-//	if( pc->IsGM() ) return true;
+	if( pc->IsGM() ) return true;
 
 	if ( pc->dontUseReagents() ) return true;
 	if (pc->npc) return true;

@@ -166,10 +166,10 @@ namespace character
 
 		UI32 pc_serial = pc->getSerial32();
 
-		if( pc->spawnregion!=INVALID )
-			Spawns->removeObject( pc->spawnregion, pc );
+		if( pc->getSpawnRegion()!=INVALID )
+			Spawns->removeObject( pc->getSpawnRegion(), pc );
 
-		if( pc->spawnserial!=INVALID )
+		if( pc->getSpawnSerial()!=INVALID )
 			Spawns->removeSpawnDinamic( pc );
 
 		pointers::delChar(pc);	//Luxor

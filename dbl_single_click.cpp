@@ -41,6 +41,7 @@
 #include "nox-wizard.h"
 #include "utils.h"
 #include "fishing.h"
+#include "spawn.h"
 
 /*!
 \brief apply wear out to item, delete if necessary
@@ -722,7 +723,16 @@ void doubleclick(NXWCLIENT ps)
 	case ITYPE_TREASURE_MAP:
 			Skills::Decipher(pi, s);
 			return;
-
+	case ITYPE_NPC_SPAWNER:
+	case ITYPE_ITEM_SPAWNER:
+		{
+		// reset dynamic spawners on double click
+		cSpawnDinamic *spawn = Spawns->getDynamicSpawn(pi->getSerial32());
+		spawn->remove(pi->getSerial32());
+		pi->amount2=0;
+		spawn->nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
+		return;
+		}
 	case ITYPE_DECIPHERED_MAP:
 			map1[ 1] = map2[1] = map3[1] = pi->getSerial().ser1;
 			map1[ 2] = map2[2] = map3[2] = pi->getSerial().ser2;
