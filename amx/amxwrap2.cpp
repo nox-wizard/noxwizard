@@ -54,12 +54,14 @@
 #include "version.h"
 #include "calendar.h"
 
-#define T_CHAR 0
-#define T_STRING 1
-#define T_INT 2
-#define T_BOOL 3
-#define T_SHORT 4
-#define T_UNICODE 5
+typedef enum {
+	T_CHAR = 0,
+	T_STRING,
+	T_INT,
+	T_BOOL,
+	T_SHORT,
+	T_UNICODE,
+} VAR_TYPE;
 
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
@@ -85,7 +87,7 @@ extern int g_nStringMode;
 //static void *getGuildPropertyPtr(int i, int property, int prop2);
 
 
-static int getPropertyType(int property)
+static VAR_TYPE getPropertyType(int property)
 {
 	if (property < 100) return T_BOOL;
 	if (property < 200) return T_CHAR;
@@ -2079,21 +2081,19 @@ static void *getCalPropertyPtr(int i, int property, int prop2)
 
 NATIVE2(_setGuildProperty)
 {
-	// params[1] = chr
+	// params[1] = guild
 	// params[2] = property
 	// params[3] = subproperty
 	// params[4] = value to set property to
 
 	SERIAL guild = params[1];
-	if( !Guildz.find( guild ) )
+	P_GUILD pGuild = Guildz.getGuild( guild );
+	if( pGuild==NULL )
 	{
 		LogError( "guild_setProperty called with invalid guild %d", guild );
 		return INVALID;
 	}
-	//
-	// Fetch a copy of the guild record from the database
-	//
-	cGuild *pGuild = Guildz.fetch();
+
 	P_CHAR pc;
 
 	int tp = getPropertyType(params[2]);
@@ -2101,57 +2101,22 @@ NATIVE2(_setGuildProperty)
 	cell *cptr;
 	amx_GetAddr(amx,params[4],&cptr);
 
-
-	if (tp==T_INT) {
+	switch( tp ) {
+	
+	case T_INT: {
 		int p = *cptr;
 
 		switch( params[2] )
 		{
 			case NXW_GP_I_GUILDMASTER :	  				//dec value: 200;
 				pc = pointers::findCharBySerial(p);
-				if( ISVALIDPC(pc) )
-				{
-					//
-					// Add new guildmaster as guild member
-					//
-					if( !pGuild->isMember( pc ) )
-					{
-						if( !pGuild->addMember( pc ) )
-							p = INVALID;
-					}
-					if( p != INVALID )
-					{
-						//
-						// Replace the old gamemaster
-						//
-						P_CHAR pOldGuildMaster = pointers::findCharBySerial( pGuild->getGuildMaster() );
-						pGuild->setGuildMaster( pc );
-						//
-						// Commit the changes
-						//
-						if( Guildz.update( pGuild ) )
-						{
-							//
-							// Notify the old guildmaster and log the replacement
-							//
-							if( ISVALIDPC( pOldGuildMaster ) )
-							{
-								LogWarning("Amxscript replaced guildmaster %d by character %d\n", pOldGuildMaster->getSerial32(), pc->getSerial32() );
-								if( pOldGuildMaster->IsOnline() )
-								{
-									pOldGuildMaster->sysmsg("Amxscript has replaced you as master for guild %s by %s", pGuild->getName().c_str(), pc->getCurrentNameC() );
-								}
-							}
-						}
-						else
-							p = INVALID;
-					}
-				}
-				else
-				{
-					LogError( "guild_setProperty called with invalid char %d", p );
-					p = INVALID;
-				}
+				VALIDATEPCR( pc, INVALID );
+
+				if( pc->getGuild()!=guild )
+					return INVALID;
+
+				pGuild->setGuildMaster( pc );
+
 				break;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
@@ -2160,8 +2125,10 @@ NATIVE2(_setGuildProperty)
 
 		return p;
 	}
-	if (tp==T_BOOL)
-	{
+	break;
+
+	case T_BOOL: {
+
 		bool p = *cptr ? true : false;
 
 		switch( params[2] )
@@ -2173,7 +2140,10 @@ NATIVE2(_setGuildProperty)
 		}
 		return p;
 	}
-	if (tp==T_SHORT) {
+	break;
+
+	case T_SHORT: {
+
 		short p = static_cast<short>(*cptr & 0xFFFF);
 		switch( params[2] )
 		{
@@ -2184,16 +2154,16 @@ NATIVE2(_setGuildProperty)
 		}
 		return p;
 	}
-	if (tp==T_CHAR) {
+	break;
+
+	case T_CHAR: {
+
 		char p = static_cast<char>(*cptr & 0xFF);
 
 		switch( params[2] )
 		{
 			case  NXW_GP_C_TYPE :				  		//dec value: 100;
-				if( pGuild->setType( p ) )
-					Guildz.update( pGuild );
-				else
-					LogError("guild_setProperty called with invalid type %d!\n", p );
+				pGuild->setType( static_cast<GUILD_TYPE>(p) );
 				break;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
@@ -2201,81 +2171,95 @@ NATIVE2(_setGuildProperty)
 		}
 		return p;
 	}
-	//we're here so we should get a ConOut format string, params[4] is the str format
+	break;
 
-	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-	switch( params[2] )
-	{
-		case NXW_GP_STR_NAME :			  				//dec value: 450;
-			pGuild->setName( g_cAmxPrintBuffer );
-			//
-			// Guild names have to be unique, so we have to account for a commit error
-			//
-			if( !Guildz.update( pGuild ) )
-				LogError("guild_setProperty called with invalid guildname %s!\n", g_cAmxPrintBuffer );
-			break;
-		case NXW_GP_STR_WEBPAGE :		  				//dec value: 451;
-			pGuild->setWebPage( g_cAmxPrintBuffer );
-			Guildz.update( pGuild );
-			break;
-		case NXW_GP_STR_CHARTER :		  				//dec value: 452;
-			pGuild->setCharter( g_cAmxPrintBuffer );
-			Guildz.update( pGuild );
-			break;
-		case NXW_GP_STR_ABBREVIATION :	  				//dec value: 453;
-			pGuild->setAbbreviation( g_cAmxPrintBuffer );
-			Guildz.update( pGuild );
-			break;
-		default :
-			ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
-			break;
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case NXW_GP_STR_NAME :			  				//dec value: 450;
+				pGuild->setName( g_cAmxPrintBuffer );
+				break;
+			case NXW_GP_STR_WEBPAGE :		  				//dec value: 451;
+				pGuild->setWebPage( g_cAmxPrintBuffer );
+				break;
+			case NXW_GP_STR_ABBREVIATION :	  				//dec value: 452;
+				pGuild->setAbbreviation( g_cAmxPrintBuffer );
+				break;
+			default :
+				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
 	}
-	g_nAmxPrintPtr=0;
-	return 0;
+	break;
+
+	case T_UNICODE: {
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		wstring w;
+		amx_GetStringUnicode( &w, cstr );
+
+		switch( params[2] )
+		{
+			case NXW_GP_UNI_CHARTER :
+				pGuild->setCharter( w );
+				break;
+			default :
+				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default: 
+		return INVALID;
+	}
 }
 
 NATIVE2(_getGuildProperty)
 {
 
 	SERIAL guild = params[1];
-	if( !Guildz.find( guild ) )
+	P_GUILD pGuild = Guildz.getGuild( guild );
+	if( pGuild==NULL )
 	{
 		LogError( "guild_setProperty called with invalid guild %d", guild );
 		return INVALID;
 	}
-	//
-	// Fetch a copy of the guild record from the database
-	//
-	cGuild *pGuild = Guildz.fetch();
 
-	int tp = getPropertyType(params[2]);
+	VARTYPE tp = getPropertyType(params[2]);
 
-	if (tp==T_INT)
-	{
+	switch( tp ) {
+	
+	case T_INT: {
+	
 		int p;
 		switch(params[2]) {
 			case NXW_GP_I_GUILDMASTER:
 				p = pGuild->getGuildMaster();
 				break;
-			case NXW_GP_I_MEMBERCOUNT:
-				p = pGuild->members.size();
-				break;
-			case NXW_GP_I_RECRUITCOUNT:
-				p = pGuild->recruits.size();
-				break;
 			default:
-
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
 				return INVALID;
 		}
 		cell i = p;
 		return i;
-	}
-	if (tp==T_BOOL)
-	{
+	} 
+	break;
+	
+	case T_BOOL: {
+
 		bool p; 
 		switch(params[2]) {
 			case INVALID:
@@ -2286,8 +2270,10 @@ NATIVE2(_getGuildProperty)
 		cell i = p;
 		return i;
 	}
-	if (tp==T_SHORT)
-	{
+	break;
+
+	case T_SHORT: {
+
 		short p;
 		switch(params[2]) {
 			case INVALID:
@@ -2298,7 +2284,10 @@ NATIVE2(_getGuildProperty)
 		cell i = p;
 		return i;
 	}
-	if (tp==T_CHAR) {
+	break;
+
+	case T_CHAR: {
+
 		char p; 
 		switch(params[2]) {
 			case NXW_GP_C_TYPE:
@@ -2311,30 +2300,58 @@ NATIVE2(_getGuildProperty)
 		cell i = p;
 		return i;
 	}
+	break;
 
-	//we're here so we should pass a string, params[4] is a str ptr
+	case T_STRING: {
 
-  	char str[100];
-	cell *cptr;
-	switch(params[2]) {
-		case NXW_GP_STR_NAME:
-		  	strcpy(str, pGuild->getName().c_str());
-			break;
-		case NXW_GP_STR_WEBPAGE:
-		  	strcpy(str, pGuild->getWebPage().c_str());
-			break;
-		case NXW_GP_STR_CHARTER:
-		  	strcpy(str, pGuild->getCharter().c_str());
-			break;
-		case NXW_GP_STR_ABBREVIATION:
-		  	strcpy(str, pGuild->getAbbreviation().c_str());
-			break;
-		default:
-			ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
-			return INVALID;
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case NXW_GP_STR_NAME:
+			  	strcpy(str, pGuild->getName().c_str());
+				break;
+			case NXW_GP_STR_WEBPAGE:
+			  	strcpy(str, pGuild->getWebPage().c_str());
+				break;
+			case NXW_GP_STR_ABBREVIATION:
+			  	strcpy(str, pGuild->getAbbreviation().c_str());
+				break;
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
 	}
-	amx_GetAddr(amx,params[4],&cptr);
-  	amx_SetString(cptr,str, g_nStringMode);
+	break;
 
-	return strlen(str);
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case NXW_GP_UNI_CHARTER :		
+				w = &pGuild->getCharter();
+				break;
+			default :
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
 }

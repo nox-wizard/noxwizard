@@ -391,14 +391,13 @@ const int NXW_SPEECH_EMOTE_ALL = 6;
 const int NXW_GP_C_TYPE = 100;
 //const int NXW_GP_I = 200;
 const int NXW_GP_I_GUILDMASTER = 200;
-const int NXW_GP_I_MEMBERCOUNT = 201;
-const int NXW_GP_I_RECRUITCOUNT = 202;
 //const int NXW_GP_S = 400;
 //const int NXW_GP_STR = 450;
 const int NXW_GP_STR_NAME = 450;
 const int NXW_GP_STR_WEBPAGE = 451;
-const int NXW_GP_STR_CHARTER = 452;
-const int NXW_GP_STR_ABBREVIATION = 453;
+const int NXW_GP_STR_ABBREVIATION = 452;
+//const int NXW_GP_UNI = 500;
+const int NXW_GP_UNI_CHARTER = 500;
 
 
 #endif //__AMXWRAPS_H__
