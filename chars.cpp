@@ -164,7 +164,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	shopkeeper = false; //true=npc shopkeeper
 	setOwnerSerial32Only(INVALID);
 	tamed = false; // True if NPC is tamed
-	robe = -1; // Serial number of generated death robe (If char is a ghost)
+	robe = INVALID; // Serial number of generated death robe (If char is a ghost)
 	SetKarma(0);
 	fame=0;
 	//pathnum = PATHNUM;
@@ -3362,7 +3362,7 @@ void cChar::checkEquipement()
 			if(poison && pi->poisoned) poison-=pi->poisoned;
 			if(poison<0) poison=0;
 
-			pi->setContSerial(-1);
+			pi->setContSerial(INVALID);
 			pi->MoveTo(charpos.x, charpos.y, charpos.z);
 
 			NxwSocketWrapper sw;

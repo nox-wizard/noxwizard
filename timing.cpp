@@ -373,11 +373,6 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	if( TIMEOUT( checknpcfollow ) )
 		checknpcfollow=(TIMERVAL)((R64) uiCurrentTime+(speed.npcfollowtime*MY_CLOCKS_PER_SEC));
 	//
-	//
-	// Special timers
-	//
-	timers::checkAllTimers();
-	//
 	// Html
 	//
 	if(SrvParms->html>0 && (htmltime<=uiCurrentTime ))

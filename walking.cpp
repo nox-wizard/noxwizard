@@ -647,7 +647,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 //</XAN>
 int npcSelectDir(P_CHAR pc_i, int j)
 {
-	VALIDATEPCR(pc_i, -1);
+	VALIDATEPCR(pc_i, INVALID);
 	if (pc_i->blocked)
 	{
 		short x=0;
@@ -668,7 +668,7 @@ int npcSelectDir(P_CHAR pc_i, int j)
 
 int npcSelectDirWarOld(P_CHAR pc_i, int j)
 {
-	VALIDATEPCR(pc_i, -1);
+	VALIDATEPCR(pc_i, INVALID);
 	if (pc_i->blocked)
 	{
 		short x=0;

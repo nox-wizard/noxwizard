@@ -37,10 +37,7 @@ using namespace std ;
 
 #include "client.h"
 
-void checkTimer (void);
-void initTimers (void);
 void initAmxEvents(void);
-int addTimer (int cback, int time, int more1=-1, int more2=-1);
 bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type);
 
 

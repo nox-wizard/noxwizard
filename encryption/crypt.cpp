@@ -42,7 +42,7 @@
 #include "crypt.h"
 
 #include "common.h"
-#include "console.h"
+#include "../console.h"
 
 
 

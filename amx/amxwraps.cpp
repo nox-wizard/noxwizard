@@ -213,69 +213,23 @@ NATIVE(_cfgServerOption)
   	return cfg_command(g_cAmxPrintBuffer);
 }
 
-/*
-\brief brings up a target, that will invoke the specific callback when the choice is made
-\author Xanathar
-\since 0.20
-\param 1: sockete
-\param 2: callback
-\param 3: format[]
-*/
-NATIVE(_getTarget)
-{
-	
-	NXWCLIENT ps = getClientFromSocket( params[1] );
-	if( ps==NULL ) return 0;
-	
-	cell *cstr;
-	amx_GetAddr(amx,params[3],&cstr);
-	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	g_nAmxPrintPtr=0;
-
-	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cTarget() );
-	targ->amx_callback = new AmxFunction( params[2] );
-	targ->code_callback = amxCallbackOld;
-	targ->send( ps );
-	ps->sysmsg( g_cAmxPrintBuffer );
-
-	return 0;
-}
-
-/*
-\brief add a timer to the timer queque
-\author Xanathar
-\since 0.20
-\param 1: function index
-\param 2: interval
-*/
-NATIVE(addTimer)
-{ 
-	return addTimer(params[1],params[2],params[3],params[4]); 
-}
-
-
-
 /*!
 \brief Prepares a socket for a menu, initializing it and destroying any previous menu
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 number of pages
 \param 3 number of item for page
 \return 0 if success, INVALID if error ( es socket invalid )
 */
 NATIVE(_mnu_Prepare)
 {
-	if ( params[1] < 0 )
-		return INVALID;
 
-	NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-	P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	if(pc->custmenu!=INVALID) {
 		Menus.removeMenu( pc->custmenu, pc );
@@ -292,22 +246,19 @@ NATIVE(_mnu_Prepare)
 \brief Set menu style and eventually the color
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 style
 \param 3 color ( default 0 )
 \return 0 if success, INVALID if error ( es socket invalid )
 */
 NATIVE(_mnu_SetStyle)
 {
-	if ( params[1] < 0 )
-		return INVALID;
-
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-    P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
+
 
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->style = params[2];
@@ -320,21 +271,18 @@ NATIVE(_mnu_SetStyle)
 \brief Set the menu title
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 title
 \return 0 if success, INVALID if error ( es socket invalid )
 */
 NATIVE(_mnu_SetTitle)
 {
-	if ( params[1] < 0 )
-		return INVALID;
 
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-    P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	cell *cstr;
 	amx_GetAddr(amx,params[2],&cstr);
@@ -355,21 +303,17 @@ NATIVE(_mnu_SetTitle)
 \brief Set the menu color
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 color
 \return 0 if success, INVALID if error ( es socket invalid )
 */
 NATIVE(_mnu_SetColor)
 {
-	if ( params[1] < 0 )
-		return INVALID;
-
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-	P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->color = params[2];
@@ -380,7 +324,7 @@ NATIVE(_mnu_SetColor)
 \brief Adds an item at a given position of a correctly inizialized menu
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 page number
 \param 3 index number
 \param 4 text
@@ -388,15 +332,11 @@ NATIVE(_mnu_SetColor)
 */
 NATIVE(_mnu_AddItem)
 {
-	if ( params[1] < 0 )
-		return INVALID;
-
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-    P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
@@ -416,20 +356,16 @@ NATIVE(_mnu_AddItem)
 \brief Show up the menu window
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \return 0 if success, INVALID if error ( es socket invalid )
 */
 NATIVE(_mnu_Show)
 {
-	if ( params[1] < 0 )
-		return INVALID;
-
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-    P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->show( pc );
@@ -440,22 +376,18 @@ NATIVE(_mnu_Show)
 \brief Set the callback for this menu events
 \author Xanathar, update Endymion
 \since 0.20
-\param 1 socket
+\param 1 character
 \param 2 callback
 \return 0 if success, INVALID if error ( es socket invalid )
 \note callback can be obtained by call to funcidx
 */
 NATIVE(_mnu_SetCallback)
 {
-	if ( params[1] < 0 )
-		return INVALID;
-
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL )
-		return INVALID;
-
-    P_CHAR pc = s->currChar();
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, INVALID );
+
+	if ( !pc->IsOnline() )
+		return INVALID;
 
 	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
 	menu->setCallBack( params[2] );
@@ -536,66 +468,22 @@ NATIVE(_sprintf)
 }
 
 /*
-\brief print a message to a given socket
-\author Xanathar
-\since 0.10
-\param 1: socket
-\param 2: text
-\return
-*/
-NATIVE(_nprintf)
-{
-  cell *cstr;
-
-  if ( params[1] < 0 || params[1] >= now ) // Luxor
-	  return 0;
-  
-  NXWCLIENT s = getClientFromSocket(params[1]);
-  if (s == NULL) return 0;
-  amx_GetAddr(amx,params[2],&cstr);
-  printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
-  g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-  s->sysmsg(g_cAmxPrintBuffer);
-  g_nAmxPrintPtr=0;
-  return 0;
-}
-
-/*
-\brief print a message to a given socket using a given color
-\author Xanathar
-\since 0.20
-\param 1: socket
-\param 2: color
-\param 3: text
-\return
-\bug there are a  if (params[1] < 0) return 0; i think not 0 buy INVALID or not?
-*/
-NATIVE(_ncprintf)
-{
-  cell *cstr;
-  if (params[1] < 0) return 0;
-  NXWCLIENT s = getClientFromSocket(params[1]);
-  amx_GetAddr(amx,params[3],&cstr);
-  printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
-  g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-  s->sysmsg(params[2],g_cAmxPrintBuffer);
-  g_nAmxPrintPtr=0;
-  return 0;
-}
-
-/*
-\brief Send a sysmessage to given socket using given color
+\brief Send a sysmessage to given character using given color
 \author Endymion
-\param 1 socket
+\param 1 character
 \param 2 color
 \param 3 text
 \return 1 or 0 if error
 */
-NATIVE(_sysmessage)
+NATIVE(_chr_message)
 {
 
 	P_CHAR pc = pointers::findCharBySerial( params[1] );
 	VALIDATEPCR( pc, false );
+
+	NXWCLIENT ps = pc->getClient();
+	if( ps==NULL )
+		return false;
 
 	cell *cstr;
 	amx_GetAddr(amx,params[3],&cstr);
@@ -603,70 +491,9 @@ NATIVE(_sysmessage)
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
 	
-	NXWCLIENT ps = pc->getClient();
-	if( ps==NULL )
-		return false;
-
 	ps->sysmsg( params[2], g_cAmxPrintBuffer );
 	return true;
 
-}
-
-/*
-\brief Send a sysmessage to given socket using given color, text is translated
-\author Endymion
-\param 1 socket
-\param 2 color
-\param 3 text to 
-\return 1 or 0 if error
-*/
-NATIVE(_sysmessageT)
-{
-
-	P_CHAR pc = pointers::findCharBySerial( params[1] );
-	VALIDATEPCR( pc, false );
-
-	cell *cstr;
-	amx_GetAddr(amx,params[3],&cstr);
-	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	g_nAmxPrintPtr=0;
-	
-	NXWCLIENT ps = pc->getClient();
-	if( ps==NULL )
-		return false;
-
-	ps->sysmsg( params[2], TRANSLATE( g_cAmxPrintBuffer ) );
-	return true;
-
-}
-
-
-/*
-\brief get the socket used by the given char
-\author Xanathar
-\since 0.60
-\param 1: character
-\return the socket, if error is INVALID
-*/
-NATIVE(_getSocketFromChar)
-{
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    if (ISVALIDPC(pc) && pc->getClient() != NULL) return pc->getClient()->toInt();
-    return INVALID;
-}
-
-/*
-\brief get current socket
-\author Xanathar
-\since 0.10
-\return the socket, if error is INVALID
-\note deprecated
-*/
-NATIVE(_getCurrentSocket)
-{
-	WarnOut("AMX function using obsolete getCurrentSocket() function!\n");
-	return g_nCurrentSocket;
 }
 
 /*
@@ -1266,24 +1093,6 @@ NATIVE(_setOwnSerialOnly)
 	VALIDATEPCR( pc, INVALID );
 	pc->setOwnerSerial32Only(params[2]);
 	return 0;
-}
-
-/*
-\brief get the character by given socket
-\author ??
-\since ??
-\param 1: the socket
-\return the character
-*/
-NATIVE(_getCharFromSocket)
-{
-	if ( params[1] < 0 )
-		return INVALID;
-    NXWCLIENT s = getClientFromSocket(params[1]);
-    if (s == NULL) return INVALID;
-    P_CHAR pc = s->currChar();
-    VALIDATEPCR(pc, INVALID);
-	return pc->getSerial32();
 }
 
 /*
@@ -2052,29 +1861,36 @@ NATIVE(_magic_castWeaken)
 \brief Send a complete network packet to given socket
 \author Xanathar
 \since 0.50
-\param 1: socket
+\param 1: character
 \param 2: lenght
 \param 3: data
 \return 0 or INVALID if not valid socket
 */
 NATIVE(_send_send)
-{ // sendToUoClient(socket, lenght, const data[]);
-  if ((params[2]<=0)||(params[2]>65535)) return INVALID;
+{ 
 
-  char *buf;
-  cell *cstr;
+	P_CHAR pc = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( pc, false );
 
-  buf = new char[params[2]];
+	NXWCLIENT ps = pc->getClient();
+	if ( ps == NULL )
+		return false;
 
-  amx_GetAddr(amx,params[3],&cstr);
 
-  for (int i=0; i<params[2]; i++)
-  {
-	  buf[i] = static_cast<char>(cstr[i] & 0xFF);
-  }
+	char *buf;
+	cell *cstr;
 
-  Xsend(params[1], buf, params[2]);
-  return 0;
+	buf = new char[params[2]];
+
+	amx_GetAddr(amx,params[3],&cstr);
+
+	for (int i=0; i<params[2]; i++)
+	{
+		buf[i] = static_cast<char>(cstr[i] & 0xFF);
+	}
+
+	Xsend( ps->toInt(), buf, params[2]);
+	return true;
 }
 
 
@@ -2105,15 +1921,24 @@ NATIVE(_chr_attackStuff)
 \brief Send an attack confirmation to given socket for the given character
 \author Xanathar
 \since 0.50
-\param 1: socket
-\param 2: character
+\param 1: character who
+\param 2: character to
 \return 0 or INVALID if not valid socket or character
 */
 NATIVE(_send_confirmAttack)
 {
     P_CHAR pc = pointers::findCharBySerial(params[2]);
-    VALIDATEPCR(pc, INVALID);
-    SndAttackOK(params[1], pc->getSerial32()); return 0;
+    VALIDATEPCR( pc, INVALID );
+
+	P_CHAR who = pointers::findCharBySerial( params[1] );
+	VALIDATEPCR( who, INVALID );
+
+	NXWCLIENT ps = who->getClient();
+	if ( ps == NULL )
+		return INVALID;
+
+    SndAttackOK( ps->toInt(), pc->getSerial32() ); 
+	return 0;
 }
 
 /*
@@ -2137,17 +1962,6 @@ NATIVE(_rcve_skillsRequest )
 {
 	return ( buffer[params[1]][5] == 5 );
 }
-
-
-/*
-\brief get number of active socket
-\author Xanathar
-\since 0.50
-\return socket count
-\note socket numeration is 0 based
-*/
-NATIVE(_getSocketCount)
-{ return now; }
 
 
 /*
@@ -2710,13 +2524,6 @@ NATIVE (_send_questArrow)
 	return 0;
 }
 
-NATIVE (_direct_castSpell)
-{
-//	Magic->NewCastSpell( params[1] );
-//	gic::castSpell(params[1]
-	return 0;
-}
-
 /*
 \brief given character do the specified action
 \author Xanathar
@@ -2734,25 +2541,6 @@ NATIVE (_chr_action)
 	return 0;
 }
 
-
-/*
-\brief set the hardcoded spell type
-\author Xanathar
-\since 0.53
-\param 1: socket
-\param 2: type
-\return old spell type or INVALID if not valid character or socket
-*/
-NATIVE (_direct_setSpellType)
-{
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL ) return INVALID;
-    P_CHAR pc = s->currChar();
-    VALIDATEPCR(pc, INVALID);
-    int ov = pc->spelltype;
-	pc->spelltype = static_cast<magic::CastingType>(params[2]);
-	return ov;
-}
 
 /*
 \brief Check the given skill in character
@@ -3448,21 +3236,6 @@ NATIVE(_send_staticfx)
 }
 
 /*
-\brief Get the serial from an item
-\author Luxor
-\since 0.7
-\param 1: item
-\return serial of item or INVALID if not valid item
-\note useless since i've changed the whole system to use serialz
-*/
-NATIVE(_getItemFromSerial)
-{
-    P_ITEM pi = pointers::findItemBySerial(params[1]);
-    VALIDATEPIR(pi, INVALID);
-    return pi->getSerial32();
-}
-
-/*
 \brief Release NPC
 \author Luxor
 \since 0.7
@@ -3505,21 +3278,6 @@ NATIVE(_chr_owns)
 	return 0;
 }
 
-
-/*
-\brief Get the serial from an character
-\author Luxor
-\since 0.7
-\param 1: character
-\return serial of character or INVALID if not valid character
-\note useless since i've changed the whole system to use serialz
-*/
-NATIVE(_getCharFromSer)
-{
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
-    return pc->getSerial32();
-}
 
 /*
 \brief Teleport a character
@@ -4339,53 +4097,6 @@ NATIVE(_chr_getLocalStrVar)
 	return false;
 }
 
-NATIVE( _var_get )
-{
-	//
-	//	Params[1]	serial of object or character
-	//	Params[2]	variable identifier
-	//
-	switch( amxVS.typeOfVariable( params[1], params[2] ) )
-	{
-		case AMXVARSRV_INTEGER		:
-			{
-				SI32 value;
-				amxVS.selectVariable( params[1], params[2], value );
-				return value;
-			}
-			break;
-		case AMXVARSRV_STRING		:
-			{
-				//
-				// Params[3]	- string reference
-				//
-				g_cAmxPrintBuffer[0] = '\0';
-				cell *cptr;
-				std::string str;
-				if( amxVS.selectVariable( params[1], params[2], str ) )
-				{
-					strcpy( g_cAmxPrintBuffer, str.c_str() );
-					amx_GetAddr( amx, params[3], &cptr );
-					amx_SetString( cptr, g_cAmxPrintBuffer, g_nStringMode);
-					return str.size();
-				}
-				return INVALID;
-			}
-			break;
-		case AMXVARSRV_INTEGERVECTOR	:
-			{
-				//
-				//	Params[3]	- index into vector
-				//
-				SI32 value;
-				amxVS.selectVariable( params[1], params[2], params[3], value );
-				return value;
-			}
-			break;
-	}
-	return INVALID;
-}
-
 NATIVE( _var_countLocalVar )
 {
 	return amxVS.countVariable( params[1] );
@@ -4866,26 +4577,6 @@ NATIVE(_guild_refuseRecruit)
 
 
 
-/*
-\brief Add a new timer
-\author Endymion
-\since 0.82
-\param 1: the object ( item or char )
-\param 2: secs
-\param 3: check event
-\param 4: flags
-\param 5: n
-\param 6: more1
-\param 7: more2
-\return none
-*/
-NATIVE(_timer_add)
-{	
-	cTimer timer( params[1], params[2], params[4], params[5], params[6], params[7]  );
-	timer.amxevent=new AmxEvent( params[3] );
-	timers::addTimer( params[1], timer );
-	return 0;
-}
 
 /*
 \brief Log a message
@@ -6014,37 +5705,23 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "callFunction3P", _callFunction3P },
  { "callFunction4P", _callFunction4P },
  { "callFunction5P", _callFunction5P },
- { "nprintf", _nprintf },
- { "ncprintf", _ncprintf },
- { "sysmessage", _sysmessage },
- { "ntprintf", _ntprintf },
  { "sprintf", _sprintf },
  { "bypass", _bypass },
  { "setWindowTitle", _setWindowTitle },
  { "getFrameStatus", _getFrameStatus },
- { "addTimer", addTimer },
  { "getNXWVersion", _getNXWVersion },
  { "getNXWVersionType", _getNXWVersionType },
  { "getNXWPlatform", _getNXWPlatform },
- { "getCurrentSocket", _getCurrentSocket },
  { "getStringMode", _getStringMode },
  { "setStringMode", _setStringMode },
- { "getSocketFromChar", _getSocketFromChar },
- { "getCharFromSocket", _getCharFromSocket },
- { "getCharFromSerial", _getCharFromSer },
- { "getItemFromSerial", _getItemFromSerial },
- { "getTarget", _getTarget },
  { "getCurrentTime", _getCurrentTime },
  { "getSystemTime", _getSystemTime },
- { "getSocketCount", _getSocketCount },
  { "cfgServerOption", _cfgServerOption },
  { "weblaunch", _weblaunch },
  { "broadcast", _sysbroadcast },
  { "getIntFromDefine", _getIntFromDefine },
-// Direct-access functions :
- { "direct_castSpell", _direct_castSpell },
- { "direct_setSpellType", _direct_setSpellType },
 // Charachter functions :
+ { "chr_message",  _chr_message },
  { "chr_addNPC",  _chr_addNPC},
  { "chr_canBroadcast", _canBroadcast },
  { "chr_canSeeSerials", _canSeeSerials},
@@ -6224,10 +5901,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_setLocalIntVec", _itm_setLocalIntVec },
  { "itm_sizeofLocalVar", _var_sizeofLocalVar },
 */
-//
-// New local property interface
-//
- { "var_get", _var_get },
 
 // Magic functions :
  { "magic_castField", _magic_castFieldSpell },
@@ -6255,11 +5928,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "send_statUpdate", _send_statUpdate },
  { "send_boltfx", _send_boltfx },
  { "send_questArrow", _send_questArrow },
-//
-// Receive functions
-//
- { "rcve_statsRequest", _rcve_statsRequest },
- { "rcve_skillsRequest", _rcve_skillsRequest },
 // Temp Effects functions :
  { "tempfx_activate", _tempfx_activate },
  { "tempfx_delete", _tempfx_delete },
@@ -6374,7 +6042,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "grecrui_getProperty", _guildRecruit_getProperty },
 
 // Timer function - Endymion
- { "timer_add", _timer_add },
 // Log message functions - Sparhawk
  { "log_message", _log_message },
  { "log_warning", _log_warning },

@@ -427,7 +427,7 @@ namespace item
 		sprintf(sect, "SECTION ITEMLIST %s", sItemList);
 
 		iter = Scripts::Items->getNewIterator(sect);
-		if (iter==NULL) return -1;
+		if (iter==NULL) return INVALID;
 
 		do  // -- count items storing item #'s in iList[]
 		{

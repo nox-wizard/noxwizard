@@ -1014,7 +1014,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pHold->type=ITYPE_CONTAINER;//Container
 	pHold->setPosition("z", -5);
 	pHold->priv=0;
-	pHold->setContSerial(-1);
+	pHold->setContSerial(INVALID);
 
 
 

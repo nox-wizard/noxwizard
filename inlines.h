@@ -46,17 +46,17 @@ inline int calcserial(unsigned char a1,unsigned char a2,unsigned char a3,unsigne
 inline int calcCharFromPtr(unsigned char *p)
 {
 	int serial;
-	if((serial=LongFromCharPtr(p)) < 0) return -1;
+	if((serial=LongFromCharPtr(p)) < 0) return INVALID;
 	if (ISVALIDPC(pointers::findCharBySerial(serial))) return (DEREF_P_CHAR(pointers::findCharBySerial(serial)));
-	else return (-1);
+	else return (INVALID);
 }
 
 inline int calcItemFromPtr(unsigned char *p)
 {
 	int serial;
-	if((serial=LongFromCharPtr(p)) < 0) return -1;
+	if((serial=LongFromCharPtr(p)) < 0) return INVALID;
 	if (ISVALIDPI(pointers::findItemBySerial(serial))) return (DEREF_P_ITEM(pointers::findItemBySerial(serial)));
-	else return (-1);
+	else return (INVALID);
 }
 
 /*inline int calcItemFromSer(unsigned char s1, unsigned char s2, unsigned char s3, unsigned char s4)
@@ -70,7 +70,7 @@ inline int calcItemFromPtr(unsigned char *p)
 inline int calcItemFromSer(int ser) // Aded by Magius(CHE) (2)
 {
 	if (ISVALIDPI(pointers::findItemBySerial(ser))) return (DEREF_P_ITEM(pointers::findItemBySerial(ser)));
-	else return (-1);
+	else return (INVALID);
 }
 
 //Modified by Luxor for the erasing of charcount
@@ -100,7 +100,7 @@ inline int calcItemFromSer(int ser) // Aded by Magius(CHE) (2)
 inline int calcCharFromSer(int serial)
 {
 	if (ISVALIDPC(pointers::findCharBySerial(serial))) return (DEREF_P_CHAR(pointers::findCharBySerial(serial)));
-	else return (-1);
+	else return (INVALID);
 }
 
 inline void SetTimerSec( TIMERVAL *timer, const short seconds)

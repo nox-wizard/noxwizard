@@ -1114,7 +1114,6 @@ void updateMenus();
 
 	TelnetInterface.Init();	// initialise remote admin interface
 
-	initTimers();
 	initAmxEvents();
 	LoadOverrides ();
 	initCronTab();
@@ -1342,7 +1341,6 @@ void updateMenus();
 		// Uncomment by Dupois July 18, 2000! see note above about InitKbThread()
 		//g_MenuCollector.cleanup();
 		checkkey();
-		checkTimer();
 		checkCronTab();
 		//OnLoop
 		AMXEXEC(AMXT_SPECIALS,2,0,AMX_AFTER);

@@ -127,7 +127,7 @@ void deleteItem( P_ITEM pi )
 	// - remove from pointer arrays
 	pointers::delItem(pi);	//Luxor
 
-	pi->setOwnerSerial32(-1);
+	pi->setOwnerSerial32(INVALID);
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
 		Books::books.erase( Books::books.find(pi->morez) );
