@@ -255,7 +255,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					sendtradestatus( DEREF_P_ITEM( piz ), DEREF_P_ITEM( container ) );
 				}
 			
-
+			/*
 			//<Luxor>
 			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
 			{
@@ -275,6 +275,26 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					pi->Refresh();
 					return;
                 		}
+			}
+			//</Luxor>
+			*/
+
+			//<Luxor>
+			g_bByPass = false;
+			pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
+			if (g_bByPass)
+			{
+				Sndbounce5(s);
+				if (client->isDragging())
+				{
+					client->resetDragging();
+					UpdateStatusWindow(s,pi);
+				}
+				pi->setContSerial( pi->getContSerial(true) );
+				pi->setPosition( pi->getOldPosition() );
+				pi->layer = pi->oldlayer;
+				pi->Refresh();
+				return;
 			}
 			//</Luxor>
 
@@ -1166,6 +1186,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 	if (buffer[s][5]!=(unsigned char)'\xFF')
 	{
+		/*
                 //<Luxor>
                 if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) {
 	        	g_bByPass = false;
@@ -1176,8 +1197,18 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
                         }
                 }
                 //</Luxor>
-                
-                pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
+		*/
+
+		//<Luxor>
+		g_bByPass = false;
+		pi->runAmxEvent( EVENT_IDROPINLAND, pi->getSerial32(), pc->getSerial32() );
+	        if (g_bByPass) {
+			pi->Refresh();
+			return;
+		}
+                //</Luxor>
+
+		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
 
 		P_ITEM p_boat = Boats->GetBoat(pi->getPosition());
@@ -1269,15 +1300,17 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		   abort=true;
 		   sysmessage(s,TRANSLATE("This aint your vendor!"));
 		}
-
+	/*
 	if (pCont->amxevents[EVENT_IONPUTITEM]!=NULL) {
 		g_bByPass = false;
 		pCont->amxevents[EVENT_IONPUTITEM]->Call( pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
 		if (g_bByPass) abort=true;
 	}
-
-	if(abort)
-	{//AntiChrist to preview item disappearing
+	*/
+	g_bByPass = false;
+	pCont->runAmxEvent( EVENT_IONPUTITEM, pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
+	if (g_bByPass) 
+	{	//AntiChrist to preview item disappearing
 		item_bounce6(ps,pItem);
 		return;
 	}

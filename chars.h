@@ -974,6 +974,10 @@ public:
 
 	public:
 		std::vector< UI32 >	lootVector;
+	
+	public:
+		LOGICAL			isValidAmxEvent( UI32 eventId );
+
 } PACK_NEEDED;
 
 void openspecialbank(NXWSOCKET s, int i);

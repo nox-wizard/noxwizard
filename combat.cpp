@@ -231,14 +231,22 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	if (!pc_def->npc) damage = (int)(damage / float(SrvParms->npcdamage));
 	if (damage<0) damage=0;
 
-	if (damage>0) {
-		if (ISVALIDPI(pWeapon)) {
-			if ((pWeapon->amxevents[EVENT_IONDAMAGE]!=NULL)) {
-				g_bByPass = false;
-				damage = pWeapon->amxevents[EVENT_IONDAMAGE]->Call(pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32());
-				if (g_bByPass==true) return;
-			}
-		}
+	//if (damage>0) {
+	//	if (ISVALIDPI(pWeapon)) {
+	//		if ((pWeapon->amxevents[EVENT_IONDAMAGE]!=NULL)) {
+	//			g_bByPass = false;
+	//			damage = pWeapon->amxevents[EVENT_IONDAMAGE]->Call(pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32());
+	//			if (g_bByPass==true) return;
+	//		}
+	//	}
+	//}
+
+	if (damage>0 && ISVALIDPI( pWeapon ) )
+	{
+		g_bByPass = false;
+		damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32() );
+		if (g_bByPass==true)
+			return;
 	}
 
 	//when hitten and damage >1, defender fails if casting a spell!

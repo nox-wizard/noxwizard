@@ -3137,9 +3137,11 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 
 	// call the Small function
 	// function(item, chr)
+	/*
 	if (pi->amxevents[EVENT_IONEQUIP] != NULL)
 		pi->amxevents[EVENT_IONEQUIP]->Call(pi->getSerial32(), s);
-
+	*/
+	runAmxEvent( EVENT_IONEQUIP, pi->getSerial32(), s );
 
 	// if bypass() function called return
 	if (g_bByPass == true)
@@ -3207,9 +3209,11 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	P_ITEM pack= getBackpack();
 
 	g_bByPass= false;
+	/*
 	if (pi->amxevents[EVENT_IONUNEQUIP] != NULL)
 		pi->amxevents[EVENT_IONUNEQUIP]->Call(pi->getSerial32(), s);
-
+	*/
+	pi->runAmxEvent( EVENT_IONUNEQUIP, pi->getSerial32(), s );
 	if (g_bByPass)
 		return 1;
 
@@ -3491,7 +3495,7 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 		WarnOut("cChar::doSingleclick couldn't find item serial: %d\n", serial);
 		return;
 	}
-
+	/*
 	if (pi->amxevents[EVENT_IONCLICK]!=NULL)
 	{
 		g_bByPass = false;
@@ -3499,7 +3503,11 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 		if ( g_bByPass==true )
 			return;
 	}
-
+	*/
+	g_bByPass = false;
+	pi->runAmxEvent( EVENT_IONCLICK, pi->getSerial32(), getSocket() );
+	if ( g_bByPass==true )
+		return;
 
 	pi->getName( itemname );
 
