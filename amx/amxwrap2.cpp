@@ -64,14 +64,14 @@
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
-static wstring emptyUnicodeString;
+static ustring emptyUnicodeString;
 
 static bool  	getCharBoolProperty(P_CHAR pc, int property, int prop2);
 static int   	getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
 static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
 static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
 static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
-static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 );
+static ustring* getCharUniProperty( P_CHAR pc, int property, int prop2 );
 
 
 static bool  	getItemBoolProperty(P_ITEM pi, int property, int prop2);
@@ -198,7 +198,7 @@ NATIVE2(_getCharProperty)
 		}
 		if (tp==T_UNICODE )
 		{
-			wstring* w=getCharUniProperty( pc, params[2], params[3] );
+			ustring* w=getCharUniProperty( pc, params[2], params[3] );
 			if( w==NULL ) w=&emptyUnicodeString;
 			cell *cptr;
 	  		amx_GetAddr(amx,params[4],&cptr);
@@ -961,11 +961,11 @@ NATIVE2(_setCharProperty)
 		switch( params[2] )
 		{
 			case NXW_CP_UNI_SPEECH_CURRENT :		
-				pc->setSpeechCurrent( new wstring() );
+				pc->setSpeechCurrent( new ustring() );
 				amx_GetStringUnicode( pc->getSpeechCurrent(), cstr );
 				break;
 			case NXW_CP_UNI_PROFILE :				
-				pc->setProfile( new wstring() );
+				pc->setProfile( new ustring() );
 				amx_GetStringUnicode( pc->getProfile(), cstr );
 				break;
 			default :
@@ -1985,7 +1985,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 	return const_cast<char*>(emptyString);
 }
 
-static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 )
+static ustring* getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{

@@ -264,7 +264,7 @@ void cNetwork::xSend( NXWSOCKET socket, const void *point, int length  ) // Buff
 	boutlength[ socket ] += length;
 }
 
-void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
+void cNetwork::xSend(NXWSOCKET socket, ustring& p, bool alsoTermination )
 {
 	if( socket == INVALID || socket > MAXCLIENT )
 	{
@@ -278,8 +278,8 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 	if ( boutlength[ socket ] + length > MAXBUFFER )
 		FlushBuffer( socket );
 
-	wstring::iterator point( p.begin() ), end( p.end() );
-	wchar_t* b = (wchar_t*)&outbuffer[ socket ][ boutlength[ socket ] ];
+	ustring::iterator point( p.begin() ), end( p.end() );
+	uchar_t* b = (uchar_t*)&outbuffer[ socket ][ boutlength[ socket ] ];
 
 	int i=0;
 	for( ; point!=end; point++, ++i )

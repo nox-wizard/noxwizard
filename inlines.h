@@ -126,30 +126,30 @@ inline std::string toString(double value)
 }
 
 /*
-\brief Convert a string to an wstring
+\brief Convert a string to an ustring
 \author Endymion
 \param from the source string
-\param to the dest wstring
+\param to the dest ustring
 */
-inline void string2wstring( string& from, wstring& to )
+inline void string2ustring( string& from, ustring& to )
 {
 	to.erase();
 	string::iterator iter( from.begin() ), end( from.end() );
 	for( ; iter!=end; iter++ ) {
-		to+=static_cast<wchar_t>(*iter);
+		to+=static_cast<uchar_t>(*iter);
 	}
 }
 
 /*
-\brief Convert a wstring to an string
+\brief Convert a ustring to an string
 \author Endymion
-\param from the source wstring
+\param from the source ustring
 \param to the dest string
 */
-inline void wstring2string( wstring& from, string& to )
+inline void ustring2string( ustring& from, string& to )
 {
 	to.erase();
-	wstring::iterator iter( from.begin() ), end( from.end() );
+	ustring::iterator iter( from.begin() ), end( from.end() );
 	for( ; iter!=end; iter++ ) {
 		to+=static_cast<char>(*iter);
 	}

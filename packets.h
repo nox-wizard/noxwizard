@@ -51,7 +51,7 @@ protected:
 	char* getBeginValidForReceive();
 	void getFromSocket( NXWSOCKET socket, char* b, int size, int& from );
 	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
-	void getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size=INVALID ); 
+	void getUnicodeStringFromSocket( NXWSOCKET s, ustring* c, int& from, int size=INVALID ); 
 
 public:
 	void receive( NXWCLIENT ps );
@@ -1508,7 +1508,7 @@ public:
 	eUI16	font;		//!< text font
 	eSERIAL	language;   //!< language
 	string	name;		//!< name of who speech ( 30 character )
-	wstring*	msg;	//!< message
+	ustring*	msg;	//!< message
 
 	cPacketUnicodeSpeech();
 	void send( NXWCLIENT ps );
@@ -1695,7 +1695,7 @@ public:
 private:
 	eUI16	len;	//!< # of unicode characters
 public:
-	wstring profile;	//!< new profile, in unicode, not null terminated.
+	ustring profile;	//!< new profile, in unicode, not null terminated.
 
 	cPacketCharProfileReq();
 	void receive( NXWCLIENT PS );
@@ -1716,8 +1716,8 @@ public:
 
 	std::string title;	//!< title
 
-	wstring* staticProfile;	//!< static profile, cant be edited 
-	wstring* profile;	//!< profile, can be edited
+	ustring* staticProfile;	//!< static profile, cant be edited 
+	ustring* profile;	//!< profile, can be edited
 
 	cPacketCharProfile();
 	void send( NXWCLIENT ps );
@@ -1837,7 +1837,7 @@ public:
 
 //	for everty vector item
 	eUI16 len; //!< text lenth for every unicode string	
-	std::vector< wstring >* texts; //!< text ( every string is NOT null terminated )
+	std::vector< ustring >* texts; //!< text ( every string is NOT null terminated )
 //end
 
 	cPacketMenu();
@@ -1848,7 +1848,7 @@ public:
 typedef struct {
 	eUI16	id; //!< textentries id
 	eUI16	textlength; //!< text length
-	wstring text; //!< text ( not nullterminated )
+	ustring text; //!< text ( not nullterminated )
 } text_entry_st;
 
 

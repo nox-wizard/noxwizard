@@ -17,10 +17,6 @@
 #define __TYPEDEFS_H__
 #include <set>
 
-#if (__GNUC__ == 2)
-typedef basic_string <unsigned int> wstring;
-#endif
-
 typedef double				R64;	//< 64 bits floating point
 typedef float				R32;	//< 32 bits floating point
 #ifdef  _MSC_VER
@@ -54,6 +50,11 @@ typedef unsigned char			UI08;		//!< unsigned 8 bits integer
 typedef signed char			SI08;		//!< signed 8 bits integer
 typedef bool				LOGICAL;	//!< boolean type
 typedef char				TEXT;		//!< character type
+
+
+typedef UI16 uchar_t;
+typedef basic_string <uchar_t> ustring;
+
 
 typedef UI08				ARMORCLASS;
 typedef UI16				BODYTYPE;
