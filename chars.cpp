@@ -1712,6 +1712,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
                         if ( distFrom( ps_w->currChar() ) > VISRANGE )
 				ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
 		}
+		sw.clear();
 	} else
 		cli->sendRemoveObject(static_cast<P_OBJECT>(this));
 
@@ -1729,6 +1730,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 					sendWornItems(ps_i->toInt());
 			}
 		}
+		sw.clear();
 	} else {
 		impowncreate( cli->toInt(), this, 1 );
 		if ( flags&TELEFLAG_SENDWORNITEMS )

@@ -626,7 +626,7 @@ void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlaye
 */
 void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
-
+	Location pos = Loc( x, y, 0 );
 	if( regions::isValidCoord( x, y ) )
 		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 			if( ix>=0 ) {
@@ -643,13 +643,16 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 							P_CHAR pc=pointers::findCharBySerial( *iter );
 							if( pc == 0 )
 								continue;
-							if(  !pc->isStabled() && !pc->mounted ) {
-								int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
-								if (iDist <= nDistance)
-									if ( ( !bOnlyPlayer && pc->npc ) ||
-										( !bExcludeOfflinePlayers || pc->IsOnline() ) )
-										this->insertSerial(pc->getSerial32());
-							}
+							if( pc->isStabled() || pc->mounted )
+								continue;
+							UI32 uiDist = UI32( dist( pos, pc->getPosition(), false ) );
+							if ( uiDist > nDistance )
+								continue;
+							if ( bOnlyPlayer && pc->npc )
+								continue;
+							if ( bExcludeOfflinePlayers && !pc->npc && !pc->IsOnline() )
+								continue;
+							insertSerial( pc->getSerial32() );
 						}
 					}
 				}

@@ -809,7 +809,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		//if (pc->hidden==1) walkok.notoriety=0x00;
 		//if (pc->isHidden()) walkok.notoriety=0x00;
 		walkok.send( pc->getClient() );
-		
+
 		walksequence[s]=sequence;
 		walksequence[s]%=255;
 	}
@@ -826,7 +826,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 		ConOut("dir-screwed : %i\n",dir);
 
 
-	if( oldx!=newx || oldy!=newy ) 
+	if( oldx!=newx || oldy!=newy )
 	{
 		//Luxor: moved WalkHandleItemsAtNewPos before socket check.
 		handleItemsAtNewPos( pc, oldx, oldy, newx, newy );
@@ -1018,14 +1018,14 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 				bOk = true;
 				break;
 			}
-			
+
 			// West
 			loc = Loc( pos.x - i, pos.y, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
 				bOk = true;
 				break;
 			}
-                        
+
 			// South
 			loc = Loc( pos.x, pos.y + i, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
@@ -1383,7 +1383,7 @@ void handleCharsAtNewPos( P_CHAR pc )
 
 	NxwCharWrapper sc;
 	P_CHAR pc_curr;
-	sc.fillCharsAtXY( pc->getPosition(), !pc->IsGM(), false );
+	sc.fillCharsAtXY( pc->getPosition(), !pc->IsGM(), true );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		pc_curr = sc.getChar();
@@ -1454,7 +1454,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 	NXWCLIENT ps = NULL;
 	NXWCLIENT cli = pc->getClient();
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE * 3, !pc->IsGM() );
+	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 1, !pc->IsGM(), pc->npc );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pc_curr = sc.getChar();
@@ -1488,9 +1488,9 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 
                 if ( !pc_curr->IsGM() ) { // Players only
 			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
-				return;
+				continue;
 			if ( pc->dead && !pc->war && !pc_curr->dead ) // Non-persecuting ghosts can be seen only by other ghosts
-				return;
+				continue;
 		}
 
 		UI08 flag, hi_color;
