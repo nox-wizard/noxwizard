@@ -93,7 +93,7 @@ public:
 	
 	cCommandMap();
 	P_COMMAND addGmCommand(std::string name, SI08 number ,AmxFunction* callback);
-	P_COMMAND findCommand(std::string name);
+	static bool Check(string& text);
 	
 
 };

@@ -103,17 +103,15 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 number, AmxFunction* 
 }
 
 
+static bool cCommandMap::Check(string& speech) {
 
-P_COMMAND cCommandMap::findCommand(std::string name) {
-	
-CMDMAP::iterator iter( command_map.find( "name" ) );
+std::map< std::string, P_COMMAND >::iterator iter( command_map.find( speech ) );
 
 if ( iter != command_map.end() )	//command exists
-    return iter->second.callback;
+    return TRUE;
 else
-    return NULL;					//command doesnt exist
+    return FALSE;					//command doesnt exist
 }
-
 
 
 
