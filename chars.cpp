@@ -1381,7 +1381,7 @@ void cChar::applyPoison(PoisonType poisontype, SI32 secs )
 */
 void cChar::unfreeze( LOGICAL calledByTempfx )
 {
-        if ( !calledByTempfx )
+    if( !calledByTempfx )
 		delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
 
 	if (priv2 & CHRPRIV2_FROZEN)

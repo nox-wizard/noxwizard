@@ -84,7 +84,7 @@ const int NXW_CP_B_DEAD = 1;
 const int NXW_CP_B_FREE = 2;
 const int NXW_CP_B_GUARDED = 3;
 const int NXW_CP_B_GUILDTRAITOR = 4;
-
+const int NXW_CP_B_JAILED = 5;
 const int NXW_CP_B_INCOGNITO = 6;
 const int NXW_CP_B_ONHORSE = 7;
 const int NXW_CP_B_POLYMORPH = 8;
@@ -96,6 +96,7 @@ const int NXW_CP_B_ISBEINGTRAINED = 13;
 const int NXW_CP_B_GUILDTOGGLE = 14;
 const int NXW_CP_B_OVERWEIGHTED = 15;
 const int NXW_CP_B_MOUNTED = 16;
+const int NXW_CP_B_FROZEN = 17;
 
 const int NXW_CP_C_BLOCKED = 101;
 const int NXW_CP_C_CELL = 102;

@@ -107,8 +107,7 @@ class cMenu : public cBasicMenu
 		std::vector<SERIAL>* switchs; //!< switch ids on after menu selection
 		std::map< SERIAL, std::wstring >* textResp; //!< edit field response
 
-		std::map< SERIAL, SERIAL > textEditSubProps; //!< sub props for property edit
-		std::map< SERIAL, SERIAL > checkboxSubProps; //!< sub props for property checkbox
+		std::map< SERIAL, SERIAL > propEditInfo; //!< sub props for property edit
 
 		UI32 addString( wstring& s );
 

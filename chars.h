@@ -993,7 +993,7 @@ public:
 		void			possess( P_CHAR pc );
 //@}
 
-		void			jail (SI32 seconds = INVALID);
+		void			jail (SI32 seconds = 60*60*24);
 		void			Kill();
 		void			kick();
 		void			goPlace(SI32);

@@ -102,30 +102,27 @@ void prison::safeoldsave()
 */
 void prison::jail( P_CHAR jailer, P_CHAR pc, UI32 secs )
 {
-	if( secs <= 0 ) 
-		return;
-	VALIDATEPC(jailer);
+
 	VALIDATEPC(pc);
 
 	if( pc->jailed ) 
 	{
-		jailer->sysmsg("That player is already in jail!");
+		if( ISVALIDPC( jailer ) )
+			jailer->sysmsg("That player is already in jail!");
 		return;
 	}
 
 	PRISONCELLVECTOR::iterator cell( prison::cells.begin() ), end( prison::cells.end() );
-	while( cell != end && !((*cell).free) ) ++cell;
+	while( (cell!=end) && !(cell->free) ) ++cell;
 
-	if( cell == end )
+	if( cell==end ) //no cell free
 	{
-		//
-		//no cell free
-		//
-		jailer->sysmsg(TRANSLATE("No free cells to jail %s"), pc->getRealNameC() );
+		if( ISVALIDPC( jailer ) )
+			jailer->sysmsg(TRANSLATE("No free cells to jail %s"), pc->getRealNameC() );
 		return;
 	}
 
-	(*cell).free = false;
+	cell->free = false;
 
 	cJailed j;
 
@@ -133,18 +130,18 @@ void prison::jail( P_CHAR jailer, P_CHAR pc, UI32 secs )
 	j.oldpos=pc->getPosition();
 	j.sec=secs;
 	j.timer=uiCurrentTime + MY_CLOCKS_PER_SEC *secs;
-	j.cell=(*cell).serial;
+	j.cell=cell->serial;
 	prison::jailed.push_back( j );
 
-	pc->MoveTo( (*cell).pos );
+	pc->MoveTo( cell->pos );
 	pc->jailed=true;
 	pc->teleport();
 
 
 	pc->sysmsg(TRANSLATE("You are jailed !"));
-	pc->sysmsg(TRANSLATE("You notice you just got something new at your backpack.."));
 
-	jailer->sysmsg( "Player %s has been jailed in cell %i.", pc->getCurrentNameC(), (*cell).serial);
+	if( ISVALIDPC( jailer ) )
+		jailer->sysmsg( "Player %s has been jailed in cell %i.", pc->getCurrentNameC(), cell->serial);
 
 }
 
@@ -187,13 +184,14 @@ void prison::release( P_CHAR releaser, P_CHAR pc )
 	JAILEDVECTOR::iterator j = prison::jailed.begin();
 	while(  j!=prison::jailed.end() && (*j).serial!=pc->getSerial32() )	j++;
 	if(j==prison::jailed.end()) {
-		if( ISVALIDPC( releaser ) ) releaser->sysmsg( "The player isn't jailed" );
+		if( ISVALIDPC( releaser ) ) 
+			releaser->sysmsg( "The player isn't jailed" );
 		return;
 	}
 
-	pc->MoveTo(  (*j).oldpos );
+	pc->MoveTo(  j->oldpos );
 
-	prison::freePrisonCell( (*j).cell );
+	prison::freePrisonCell( j->cell );
 	prison::jailed.erase( j );
 
 	pc->jailed=false;

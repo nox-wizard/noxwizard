@@ -40,6 +40,7 @@
 #include "range.h"
 #include "skills.h"
 #include "utils.h"
+#include "jail.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -689,6 +690,34 @@ NATIVE(_canSnoop)
 	VALIDATEPCR( pc, false );
 	return pc->CanSnoop();
 }
+
+/*
+\brief Jail the given character
+\author Endymion
+\since 0.10
+\param 1 the jailer ( can be INVALID )
+\param 2 the player
+\param 3 second ( if 0, release player if jailed )
+\return true or false ( false also if not valid character )
+*/
+NATIVE(_chr_jail)
+{
+
+	P_CHAR jailer = pointers::findCharBySerial( params[1] );
+
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, false );
+
+	if( params[3]==0 ) {
+		if( pc->jailed )
+			prison::release( jailer, pc );
+	}
+	else
+		prison::jail( jailer, pc, params[3] );
+
+	return 1;
+}
+
 
 /*
 \brief get the total gold in character bank box
@@ -5208,6 +5237,37 @@ NATIVE( _menu_addCheckTrans )
 }
 
 /*!
+\brief Add a new Cropped text at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 hue
+\param 7 text
+\return false if error, true else
+*/
+NATIVE( _menu_addCroppedText )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[7],&cstr);
+	printstring(amx,cstr,params+8,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	std::wstring s;
+	string2wstring( std::string( g_cAmxPrintBuffer ), s );
+
+	menu->addCroppedText( params[2], params[3], params[4], params[5], s, params[6] );
+
+	return 1;
+}
+
+/*!
 \brief Add a new gump at given menu
 \author Endymion
 \since 0.82
@@ -5572,6 +5632,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_canBroadcast", _canBroadcast },
  { "chr_canSeeSerials", _canSeeSerials},
  { "chr_canSnoop", _canSnoop},
+ { "chr_jail", _chr_jail },
  { "chr_countBankGold", _CountBankGold},
  { "chr_countGold", _CountGold},
  { "chr_countItems", _CountColoredItems},
@@ -5812,7 +5873,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "menu_addButtonFn", _menu_addButtonFn },
  { "menu_addCheckbox", _menu_addCheckbox },
  { "menu_addCheckTrans", _menu_addCheckTrans },
- { "menu_addCroppedText", _menu_addCheckTrans },
+ { "menu_addCroppedText", _menu_addCroppedText },
  { "menu_addGump", _menu_addGump },
  { "menu_addHtmlGump", _menu_addHtmlGump },
  { "menu_addInputField", _menu_addInputField },

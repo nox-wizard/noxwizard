@@ -299,8 +299,7 @@ void cMenu::clear()
 	buttonCallbacks.clear();
 
 	switchs = NULL;
-	textEditSubProps.clear();
-	checkboxSubProps.clear();
+	propEditInfo.clear();
 	commands.clear();
 	texts.clear();
 
@@ -392,20 +391,20 @@ void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 prop
 	VAR_TYPE t = getPropertyType( property );
 	if( t==T_BOOL ) 
 	{
-		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), 1 );
-		checkboxSubProps.insert( make_pair( property, subProperty ) );
+		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), property );
+		propEditInfo.insert( make_pair( property, subProperty ) );
 	}
 	else
 	{
 		addInputField( x, y, width, height, property, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
-		textEditSubProps.insert( make_pair( property, subProperty ) );
+		propEditInfo.insert( make_pair( property, subProperty ) );
 	}
 	
 }
 
 void cMenu::addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result )
 {
-	addCommand( "{checkbox %d %d %d %d %d %d}", x, y, off, on, result, checked );
+	addCommand( "{checkbox %d %d %d %d %d %d}", x, y, off, on, checked, result );
 }
 
 void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  )
@@ -467,7 +466,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	textResp = &p->text_entries;
 
 	if( button==buffer[3] ) {
-		std::map< SERIAL, SERIAL >::iterator propIter( textEditSubProps.begin() ), lastProp( textEditSubProps.end() );
+		std::map< SERIAL, SERIAL >::iterator propIter( propEditInfo.begin() ), lastProp( propEditInfo.end() );
 		for( ; propIter!=lastProp; ++propIter ) {
 			if( getPropertyType( propIter->first )!=T_BOOL ) {
 				std::wstring* data = getText( propIter->first );
@@ -517,13 +516,15 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 		case PROP_CHARACTER: {
 			P_CHAR pc = pointers::findCharBySerial( obj );
 			VALIDATEPC(pc);
-			setCharBoolProperty( pc, prop, subProp, subProp2, data );
+			if( data!=getCharBoolProperty( pc, prop, subProp ) )
+				setCharBoolProperty( pc, prop, subProp, subProp2, data );
 			}
 			break;
 		case PROP_ITEM : {
 			P_ITEM pi = pointers::findItemBySerial( obj );
 			VALIDATEPI(pi);
-			setItemBoolProperty( pi, prop, subProp, data );
+			if( data!=getItemBoolProperty( pi, prop, subProp ) )
+				setItemBoolProperty( pi, prop, subProp, data );
 			}
 			break;
 		case PROP_CALENDAR:
@@ -546,27 +547,32 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 			switch( t ) {
 				case T_CHAR : {
 					char value = str2num( data );
-					setCharCharProperty( pc, prop, subProp, subProp2, value );
+					if( value!=getCharCharProperty( pc, prop, subProp ) )
+						setCharCharProperty( pc, prop, subProp, subProp2, value );
 					}
 					break;
 				case T_INT: {
 					int value = str2num( data );
-					setCharIntProperty( pc, prop, subProp, subProp2, value );
+					if( value!=getCharIntProperty( pc, prop, subProp ) )
+						setCharIntProperty( pc, prop, subProp, subProp2, value );
 					}
 					break;
 				case T_SHORT: {
 					short value = str2num( data );
-					setCharShortProperty( pc, prop, subProp, subProp2, value );
+					if( value!=getCharShortProperty( pc, prop, subProp ) )
+						setCharShortProperty( pc, prop, subProp, subProp2, value );
 					}
 					break;
 				case T_STRING: {
 					std::string value;
 					wstring2string( data, value );
-					setCharStrProperty( pc, prop, subProp, subProp2, const_cast<char*>(value.c_str()) );
+					if( value!=std::string( getCharStrProperty( pc, prop, subProp ) ) )
+						setCharStrProperty( pc, prop, subProp, subProp2, const_cast<char*>(value.c_str()) );
 					}
 					break;
 				case T_UNICODE: {
-					setCharUniProperty( pc, prop, subProp, subProp2, data );
+					if( data!=getCharUniProperty( pc, prop, subProp ) )
+						setCharUniProperty( pc, prop, subProp, subProp2, data );
 					}
 					break;
 			}
@@ -579,27 +585,32 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 			switch( t ) {
 				case T_CHAR : {
 					char value = str2num( data );
-					setItemCharProperty( pi, prop, subProp, value );
+					if( value!=getItemCharProperty( pi, prop, subProp ) )
+						setItemCharProperty( pi, prop, subProp, value );
 					}
 					break;
 				case T_INT: {
 					int value = str2num( data );
-					setItemCharProperty( pi, prop, subProp, value );
+					if( value!=getItemIntProperty( pi, prop, subProp ) )
+						setItemIntProperty( pi, prop, subProp, value );
 					}
 					break;
 				case T_SHORT: {
 					short value = str2num( data );
-					setItemCharProperty( pi, prop, subProp, value );
+					if( value!=getItemShortProperty( pi, prop, subProp ) )
+						setItemShortProperty( pi, prop, subProp, value );
 					}
 					break;
 				case T_STRING: {
 					std::string value;
 					wstring2string( data, value );
-					setItemStrProperty( pi, prop, subProp, const_cast<char*>(value.c_str()) );
+					if( value!=std::string( getItemStrProperty( pi, prop, subProp ) ) )
+						setItemStrProperty( pi, prop, subProp, const_cast<char*>(value.c_str()) );
 					}
 					break;
 				case T_UNICODE:
-					setItemUniProperty( pi, prop, subProp, data );
+					if( data!=getItemUniProperty( pi, prop, subProp ) )
+						setItemUniProperty( pi, prop, subProp, data );
 					break;
 			}
 		}

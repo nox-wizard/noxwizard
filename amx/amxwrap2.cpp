@@ -595,26 +595,26 @@ void setItemStrProperty(P_ITEM pi, int property, int prop2, char* value )
 	switch( property )
 	{
 		case NXW_IP_STR_CREATOR :				   //dec value :  450;
-			pi->creator = g_cAmxPrintBuffer;
+			pi->creator = value;
 			break;
 		case NXW_IP_STR_DESCRIPTION :				   //dec value :  451;
 			//strcpy(pi->desc, g_cAmxPrintBuffer );
-			pi->vendorDescription = g_cAmxPrintBuffer;
+			pi->vendorDescription = value;
 			break;
 		case NXW_IP_STR_DISABLEDMSG :				   //dec value :  452;
 			if( pi->disabledmsg==NULL )
-				pi->disabledmsg = new std::string( g_cAmxPrintBuffer );
+				pi->disabledmsg = new std::string( value );
 			else
-				(*pi->disabledmsg) = g_cAmxPrintBuffer;
+				(*pi->disabledmsg) = value;
 			break;
 		case NXW_IP_STR_MURDERER :				   //dec value :  453;
-			pi->murderer = string(g_cAmxPrintBuffer);
+			pi->murderer = string(value);
 			break;
 		case NXW_IP_STR_NAME :					   //dec value :  454;
-			pi->setCurrentName(g_cAmxPrintBuffer);
+			pi->setCurrentName(value);
 			break;
 		case NXW_IP_STR_NAME2 :					   //dec value :  455;
-			pi->setSecondaryName(g_cAmxPrintBuffer);
+			pi->setSecondaryName(value);
 			break;
 		default :
 			ErrOut("itm_setProperty called with invalid property %d!\n", property );
@@ -1205,6 +1205,12 @@ void setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 			else
 				pc->ResetGuildTitleToggle();
 			break;
+		case NXW_CP_B_FROZEN :
+			if( value )
+				pc->freeze();
+			else 
+				pc->unfreeze();
+			break;
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
@@ -1731,6 +1737,7 @@ bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_GUARDED , pc->guarded )  			//dec value: 3;
 		CHECK(  NXW_CP_B_GUILDTRAITOR , pc->IsGuildTraitor() )  	//dec value: 4;
 		CHECK(  NXW_CP_B_INCOGNITO , pc->incognito )  			//dec value: 6;
+		CHECK(  NXW_CP_B_JAILED , pc->jailed )  			//dec value: 5;
 		CHECK(  NXW_CP_B_ONHORSE , pc->isMounting() )  			//dec value: 7;
 		CHECK(  NXW_CP_B_POLYMORPH , pc->polymorph)  			//dec value: 8;
 		CHECK(  NXW_CP_B_TAMED , pc->tamed )  				//dec value: 9;
@@ -1741,6 +1748,7 @@ bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_GUILDTOGGLE , pc->HasGuildTitleToggle() )  	//dec value: 14;
 		CHECK(  NXW_CP_B_OVERWEIGHTED, pc->IsOverWeight() )     	//dec value: 15;
 		CHECK(  NXW_CP_B_MOUNTED, pc->mounted )     	//dec value: 15;
+		CHECK(  NXW_CP_B_FROZEN, pc->IsFrozen() )     	//dec value: 15;
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return false;
