@@ -2140,16 +2140,17 @@ NATIVE2(_guild_setProperty)
 
 		printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
 		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		std::string str( g_cAmxPrintBuffer );
 		switch( params[2] )
 		{
 			case NXW_GP_STR_NAME :			  				//dec value: 450;
-				pGuild->setName( std::string( g_cAmxPrintBuffer ) );
+				pGuild->setName( str );
 				break;
 			case NXW_GP_STR_WEBPAGE :		  				//dec value: 451;
 				pGuild->webpage = g_cAmxPrintBuffer;
 				break;
 			case NXW_GP_STR_ABBREVIATION :	  				//dec value: 452;
-				pGuild->setAbbreviation( std::string( g_cAmxPrintBuffer ) );
+				pGuild->setAbbreviation( str );
 				break;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
