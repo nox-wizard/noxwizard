@@ -10,8 +10,6 @@
 
 //file cmds.cpp
 //by Frodo & Stonedz
-//Work in progress...
-
 
 
 #include "nxwcommn.h"
@@ -45,8 +43,18 @@
 #include "layer.h"
 #include "scripts.h"
 
+
+
+
 // Reference to static member
+
+
+
 std::map< std::string, P_COMMAND > cCommandMap::command_map;
+
+
+
+
 
 /*///////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +65,9 @@ std::map< std::string, P_COMMAND > cCommandMap::command_map;
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) {
+
+
+cCommand::cCommand(std::string name, SI08 number ,std::string callback) {
 
 	cmd_name=name;
 	cmd_level=number; 
@@ -65,117 +75,99 @@ cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) {
 }
 
 
-SI08 cCommand::getCommandLevel(P_COMMAND cmd) {
-	return cmd->cmd_level;
+
+SI08 cCommand::getCommandLevel() {
+	return this->cmd_level;
 }
 
 
-AmxFunction* cCommand::getCommandCallback(P_COMMAND cmd) {
-	return cmd->cmd_callback;
+
+void cCommand::call(NXWSOCKET s, P_CHAR curr_char){
+
+	char* callback = (char*)(this->cmd_callback).c_str();
+	
+	
+	AmxFunction* CommandFunction = NULL;      
+		
+		if(CommandFunction == NULL ) {
+	NXWCLIENT client= getClientFromSocket(s);
+		
+	
+	CommandFunction = new AmxFunction( callback ); 
+		client->sysmsg("%s blabla", callback);
+		}
+		else
+			
+			return;
+
+		CommandFunction->Call( curr_char->getSerial32() ); 
 }
 
 
-/*
-
-
-
-//Implementation of cCallCommand Class
-
-SERIAL cCallCommand::current_serial = 0;
-
-
-
-cCallCommand::cCallCommand(std::string params){
-
-	all_params=params;
-//	single_param=param;
-}
-
-
-cCallCommand::~cCallCommand() {
-}
-
-
-*/
 
 //Implementation of cCommandMap Class
 
-cCommandMap::cCommandMap() {
 
-	// all addGmCommand(...); goes here.
+
+cCommandMap::cCommandMap() { 
+ 
+   char str [150]; 
+   std::string var1, var3;
+   SI08 var2; 
+      
+   ifstream in; 
+      
+ 
+   in.open("small-scripts/commands.txt"); 
+      
+    while(!in.eof()){  
+      
+     in >> str ; 
+
+//	 if ( str[0]=='/' || str[0]=='\n' ) continue;
+      
+		var1=strtok(str,","); 
+		strupr(var1); 
+		var2=atoi(strtok(0,","));      
+		var3=strtok(0,","); 
+      
+		addGmCommand(var1,var2,var3); 
+     } 
 
 }
 
 
-P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* callback) {
+
+
+P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, std::string callback) {
 
 	P_COMMAND cmd= new cCommand(name, priv, callback);
-    command_map[name]= cmd;
+    command_map.insert(make_pair(name,cmd));
  	return cmd;
 }
 
 
-/*
-
-bool cCommandMap::Check( string& text ){
-	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( text ) );
-
-	if ( iter == command_map.end() )	//command not exists
-		return false;
-
-	//other checks..
-	return true;
-}
-
-*/
 
 
-P_COMMAND cCommandMap::findCommand(std::string name){
 
-	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( "name" ) );
+P_COMMAND cCommandMap::findCommand(char* name,NXWCLIENT client){
+
+
+	std::map< std::string, P_COMMAND >::iterator iter;
+
+	iter=command_map.find( name );
+
 
 	if ( iter != command_map.end() )	//command exists
 		return iter->second;
 	else
 		return NULL;					//command doesnt exist
-}
-
-
-/*
-
-
-//Implementation of cCallCommandMap Class
-
-
-cCallCommand* cCallCommand::findCallCommand(SERIAL cmd){
-
-	std::map< SERIAL, cCallCommand* >::iterator iter( callcommand_map.find( cmd ) );
-
-	if ( iter != callcommand_map.end() )	//command exists
-		return iter->second;
-	else
-		return NULL;					//command doesnt exist
-}
-
-
-
-
-SERIAL cCallCommand::addCallCommand(cCallCommand* called){
-
-	callcommand_map[++current_serial]=called;
-	return current_serial;
 
 }
 
 
 
-void cCallCommand::delCommand(SERIAL cmd){
 
-	callcommand_map.erase(cmd);
-}
-
-
-*/
 cCommandMap* commands = new cCommandMap();
 
 
@@ -190,15 +182,14 @@ cCommandMap* commands = new cCommandMap();
 
 
 
-//The function that is called after the control done in speech.cpp
+//This function is called after the control done in speech.cpp
 
 
 void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 	{
 	
 	NXWCLIENT client= getClientFromSocket(s);
-	//client->sysmsg("No Commands Avaible. Works in Progress, sorry :( !");
-	
+		
 		unsigned char *comm;
 		unsigned char nonuni[512];
 
@@ -215,10 +206,12 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		splitline();
 
 		if (tnum<1)	return;
+		
 		// Let's ignore the command prefix;
+		
 		comm = nonuni + 1;
 
-		P_COMMAND p_cmd= commands->findCommand((char*)comm);
+		P_COMMAND p_cmd= commands->findCommand((char*)comm,client);
 		
 		
 		if(p_cmd==NULL) {
@@ -229,26 +222,16 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		
 		//Control between cCommand privilege and cChar privilege.
 
-		if( (p_cmd->getCommandLevel(p_cmd)) > (pc_currchar->commandLevel) ){
-		client->sysmsg("You can't use this command!");
-			return;
+		if( (p_cmd->getCommandLevel()) > pc_currchar->commandLevel){
+		client->sysmsg("You can use this command!");
+		return;	
 		}
-
-		
-		// cCallCommand* called= new cCallCommand(speech);
-    
-
-		//SERIAL cmd_serial=called->addCallCommand(called);
-
-		AmxFunction* CommandFunction = NULL;      
-		if(CommandFunction == NULL ) 
-			CommandFunction = new AmxFunction("p_cmd->getCommandCallback"); 
-		CommandFunction->Call( pc_currchar->getSerial32() ); 
 		
 		
-		//Let's delete the temp object		
-			  
-		//called->delCommand(cmd_serial);     
+		//Let's call the Small Function
+		
+		p_cmd->call(s, pc_currchar);
+   
 		
 
 	}

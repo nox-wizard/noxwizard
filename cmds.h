@@ -10,13 +10,14 @@
 
 //file cmds.h
 //by Frodo & Stonedz
-//Work in progress...
+
 
 #ifndef __CMDS_H
 #define __CMDS_H
 
 #include "common_libs.h"
 #include "nxwcommn.h"		//for std classes
+
 
 
 enum PrivLevel
@@ -30,8 +31,10 @@ enum PrivLevel
 };
 
 
+
 typedef class cCommand* P_COMMAND;
-//typedef class cCallCommand* P_CALLCOMMAND;
+
+
 
 
 void Command( NXWSOCKET , char * );
@@ -42,70 +45,42 @@ void Command( NXWSOCKET , char * );
 \brief Declaration of cCommand Class
 */
 
+
 class cCommand {
 
 	private:
-	
-		std::string cmd_name;
+
+	    std::string cmd_name;
 		SI08 cmd_level;  
-		AmxFunction* cmd_callback;
+		std::string cmd_callback;
 
 	public:
 
-		cCommand( std::string& cmd_name, SI08 cmd_number, AmxFunction* callback );
-		SI08 getCommandLevel(P_COMMAND cmd);
-		AmxFunction* getCommandCallback(P_COMMAND cmd);
-		//void call( std::string params );
+		cCommand( std::string cmd_name, SI08 cmd_number, std::string callback );
+		SI08 getCommandLevel();
+		void call( NXWSOCKET s, P_CHAR current );
 
 };
 
 
-
-
-/*
-\brief Declaration of cCallCommand Class
- cCallCommand object is created every time a command is executed and goes in CALLCMDMAP. 
- it is destroyed when the command has finished
- All parameters given by the char who call the command goes in this obj.
-*/
-/*
-class cCallCommand 
-{
-
-private:
-
-	static SERIAL current_serial;
-	static std::map< SERIAL, cCallCommand* > callcommand_map;
-
-public:
-
-	cCallCommand(std::string all_params);
-	~cCallCommand();
-	std::string all_params;
-	static cCallCommand* findCallCommand(SERIAL cmd);
-	SERIAL addCallCommand(cCallCommand* called_command);	
-	void delCommand(SERIAL cmd);
-	//std::vector< string >* single_param;
-
-};
- 
-*/
 
 
 /*
 \brief Declaration of cCommandMap Class
 */
+
+
 class cCommandMap {
 
 private:
 
 	static std::map< std::string, P_COMMAND > command_map; //!< all commands
+
 public:
 	
 	cCommandMap();
-	static P_COMMAND addGmCommand(std::string name, SI08 number ,AmxFunction* callback);
-	//static bool Check(string& text);
-	static P_COMMAND findCommand(std::string name);
+	P_COMMAND addGmCommand(std::string name, SI08 number ,std::string callback);
+	P_COMMAND findCommand(char* name,NXWCLIENT client);
 
 };
 
