@@ -293,27 +293,35 @@ void buildhouse(int s, int i)
 		P_ITEM pKey=NULL;
 		P_ITEM pKey2=NULL;
 
+		P_ITEM pBackPack = pc->getBackpack();
+
 		//Key...
 		//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
 		if ((id%256 >=0x70) && (id%256 <=0x73))
 		{
 			sprintf(temp,"%s's tent key",pc->getCurrentNameC());
-			pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);//iron key for tents
-			pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);
+			pKey = item::CreateFromScript( "$item_iron_key", pBackPack ); //iron key for tents
+			pKey2= item::CreateFromScript( "$item_iron_key", pBackPack );
 		}
 		else if(id%256 <=0x18)
 		{
 			sprintf(temp,"%s's ship key",pc->getCurrentNameC());
-			pKey=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);//Boats -Rusty Iron Key
-			pKey2=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);
+			pKey= item::CreateFromScript( "$item_bronze_key", pBackPack ); //Boats -Rusty Iron Key
+			pKey2= item::CreateFromScript( "$item_bronze_key", pBackPack );
+			
 		}
 		else
 		{
 			sprintf(temp,"%s's house key",pc->getCurrentNameC());
-			pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);//gold key for everything else;
-			pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);
+			pKey= item::CreateFromScript( "$item_gold_key", pBackPack ); //gold key for everything else;
+			pKey2= item::CreateFromScript( "$item_gold_key", pBackPack );
 		}
 
+		VALIDATEPI( pKey )
+		VALIDATEPI( pKey2 )
+
+		pKey->Refresh();
+		pKey2->Refresh();
 
 		pHouse->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
 		pHouse->st2= pKey2->getSerial32();	// house, housesign and housekeys without having to loop trough
@@ -337,8 +345,9 @@ void buildhouse(int s, int i)
 		if(bankbox!=NULL) // we sould add a key in bankbox only if the player has a bankbox =)
 		{
 
-			P_ITEM p_key3=item::SpawnItem(s, currchar[s], 1, "a house key", 0, 0x100F, 0,1,1);
+			P_ITEM p_key3=item::CreateFromScript( "$item_gold_key" );
 			VALIDATEPI(p_key3);
+			p_key3->setCurrentName( "a house key" );
 			p_key3->more1=pHouse->getSerial().ser1;
 			p_key3->more2=pHouse->getSerial().ser2;
 			p_key3->more3=pHouse->getSerial().ser3;
@@ -514,11 +523,9 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 						char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 						sprintf( temp, TRANSLATE("A vendor deed for %s"), p_index->getCurrentNameC() );
-						P_ITEM pDeed = item::SpawnItem( s, 1, temp, 0, 0x14F0, 0, 1, 0 );
+						P_ITEM pDeed = item::CreateFromScript( "$item_employment_deed", pc->getBackpack() );
 						VALIDATEPI(pDeed);
 
-						pDeed->type = ITYPE_PLAYER_VENDOR_DEED;
-						pDeed->value = 2000;
 						pDeed->Refresh();
 						sprintf(temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
 						p_index->deleteChar();
