@@ -4847,22 +4847,42 @@ void cChar::resetProfile()
 	this->profile=NULL;
 }
 	
+/*
+\brief Return current speech
+\author Endymion
+\return current speech
+*/
 wstring* cChar::getSpeechCurrent()
 {
 	return this->speechCurrent;
 }
 
+/*
+\brief Set current speech
+\author Endymion
+\param speech the current speech
+\note NOT delete older speech
+*/
 void cChar::setSpeechCurrent( wstring* speech )
 {
-	deleteSpeechCurrent();
 	this->speechCurrent=speech;
 }
 
+/*
+\brief Reset current speech
+\author Endymion
+\note only set NULL, NOT delete older speech
+*/
 void cChar::resetSpeechCurrent()
 {
 	speechCurrent = NULL;
 }
 
+/*
+\brief Delete current speech
+\author Endymion
+\warning DELETE older speech string
+*/
 void cChar::deleteSpeechCurrent()
 {
 	if( speechCurrent!=NULL )
