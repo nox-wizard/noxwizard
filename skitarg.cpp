@@ -29,6 +29,7 @@
 #include "inlines.h"
 #include "range.h"
 #include "nox-wizard.h"
+#include "data.h"
 
 
 //Luxor: for AMX skills implementation
@@ -421,13 +422,14 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
 	NXWSOCKET s = ps->toInt();
 
     AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LUMBERJACKING,AMX_BEFORE);
-
+/*
     static TIMERVAL logtime[max_res_x][max_res_y];//see mine for values...they were 1000 also here
     static UI32 logamount[max_res_x][max_res_y];
+
     int a, b;
     unsigned int c;
     unsigned long int curtime=uiCurrentTime;
-
+*/
 	if( pc->isMounting() ) {
 		pc->sysmsg(TRANSLATE("You cannot do this on a horse"));
 		return;
@@ -460,6 +462,7 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
     if(pc->stm<0) pc->stm=0;
     if(pc->stm>pc->dx) pc->stm=pc->dx;
     pc->updateStats(2);
+/*
 
     if(resource.logarea<10) resource.logarea=10; //New -- Zippy
 
@@ -480,8 +483,10 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
         }
         LogMessage("[DONE]");
     }
+*/
 
 	pc->facexy( location.x, location.y );
+/*
 
     a= charpos.x / resource.logarea; //Zippy
     b= charpos.y / resource.logarea;
@@ -506,7 +511,7 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
         pc->sysmsg(TRANSLATE("There is no more wood here to chop."));
         return;
     }
-
+*/
     P_ITEM packnum = pc->getBackpack();
     if( !ISVALIDPI(packnum) ) {
     	pc->sysmsg(TRANSLATE("No backpack to store logs"));
@@ -515,7 +520,7 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
 
     pc->playAction( pc->isMounting() ? 0x1C : 0x0D );
     pc->playSFX(0x013E);
-
+/*
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
         pc->sysmsg(TRANSLATE("You chop for a while, but fail to produce any usable wood."));
@@ -526,8 +531,13 @@ void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
 
     if(logamount[a][b]>0)
 		logamount[a][b]--;
-
-    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), pc->getSerial32());
+*/
+	UI32 id = t->getModel();
+	map_st map;
+	data::seekMap( t->getLocation().x, t->getLocation().y, map );
+	if( !id )
+		id= map.id;
+    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), pc->getSerial32(), t->getLocation().x, t->getLocation().y, id);
 
     AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LUMBERJACKING,AMX_AFTER);
 }

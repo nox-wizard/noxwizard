@@ -11,12 +11,12 @@ extern UI32 resourcemapSerial ;
 class cResourceMap
 {
 	std::string filename;
-	LOGICAL persistent;
+	LOGICAL keepInMemory;
 	ResourceMapType type;
 	
 public:
-	cResourceMap(LOGICAL persistent=true);
-	cResourceMap(std::string filename);
+	cResourceMap(LOGICAL keepInMemory=true);
+	cResourceMap(std::string filename, LOGICAL keepInMemory=true);
 	~cResourceMap();
 	virtual void deserialize(istream *myStream);
 	virtual void serialize(ostream *myStream);
@@ -29,6 +29,8 @@ public:
 	{ this->type = type; };
 	inline ResourceMapType getType()
 	{ return this->type ; };
+	inline LOGICAL isInMemory()
+	{ return keepInMemory; };
 	virtual void setValue(SI32 value);
 	virtual SI32 getValue();
 	static cResourceMap * getMap(UI32 index);

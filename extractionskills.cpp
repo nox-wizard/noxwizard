@@ -284,7 +284,7 @@ void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 		pc->sysmsg(TRANSLATE("You can't mine that!"));
 		return;
 	}
-
+/*
 	P_RESOURCE res = ores.getResource( target );
 
 	ores.checkResource( target, res );
@@ -309,7 +309,7 @@ void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 			return; //Randomly deplete resources even when they fail 1/2 chance you'll loose ore.
 	}
 	ores.decreaseResource( target, res );
-
+*/
 	AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXMINING), pc->getSerial32(), target.x, target.y, id);
 	// AMXEXECSVTARGET(pc->getSerial32(),AMXT_SKITARGS,MINING,AMX_AFTER);
 }
