@@ -1196,6 +1196,7 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 	{
 		ShortToCharPtr(0, statstring +37);
 	}
+
 	//Changed, so ghosts can see their maximum hit points.
 	ShortToCharPtr(pc->getStrength(), statstring +39);
 
@@ -1214,8 +1215,10 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 
 	if (ghost) statstring[41]=0x00;
 
-	// packet #42 has some problems, dont try to be smart and replace the workaround by
-	// if (ghost) statstring[42]=0; else statstring[42]=1, LB
+	statstring[42]=0x01;					// Flag: 0x00  no more data following (end of packet here)
+								//       0x01  more data after this flag following
+								//       0x03  like 1, extended info
+								//       0x04  even more extended info (client 4.0 and above)
 
 	if (pc->GetBodyType() == BODY_FEMALE) statstring[43]=1;
 	else if (pc->GetBodyType() == BODY_DEADFEMALE) statstring[43]=1;
