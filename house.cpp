@@ -702,6 +702,8 @@ LOGICAL cHouses::house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk)
 	// NOTE: Socket and pc checking allready done in talking()
 	//
 	P_HOUSE house=cHouses::findHouse(pc->getPosition());
+	if ( house == NULL )
+		return false;
 	P_ITEM ihouse=pointers::findItemBySerial(house->getSerial());
 	//
 	// As we don't want a error logged when not in a house we cannot use VALIDATEPIR here
