@@ -1587,6 +1587,7 @@ static char getItemCharProperty( P_ITEM pi, int property, int prop2)
 	switch( property )
 	{
 		CHECK(NXW_IP_C_COLOR, (prop2>1) ? pi->color1 : pi->color2 )   		//dec value :  100;
+		CHECK(NXW_IP_C_CORPSE, pi->corpse )   		//dec value :  102;
 		CHECK(NXW_IP_C_DOORDIR, pi->doordir )   				//dec value :  103;
 		CHECK(NXW_IP_C_DOOROPEN, pi->dooropen )   				//dec value :  104;
 		CHECK(NXW_IP_C_DYE, pi->dye )   					//dec value :  105;
