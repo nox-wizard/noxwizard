@@ -1219,7 +1219,7 @@ void saveserverscript()
 	fprintf(file, "ERRORS_TO_CONSOLE %i\n",server_data.errors_to_console);
 	fprintf(file, "// path where the logs will be written, separator is '/', path must exists\n");
 	fprintf(file, "// and subdirectories \"speech\" and \"GM\" must also exist\n");
-	fprintf(file, "LOG_PATH logs/\n");
+	fprintf(file, "LOG_PATH %s\n",server_data.log_path);
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION TIMERS\n");
