@@ -89,6 +89,7 @@ void cGuild::load( cStringFile& file )
 					}
 					else
 					{
+						do file.read( l, r ); while( l!="}" );
 						LogError("Guild worldfile: Member %d of guild %d is not a valid character", memberSerial, serial );
 					}
 				}
@@ -114,6 +115,7 @@ void cGuild::load( cStringFile& file )
 					}
 					else // Skip recruit properties
 					{
+						do file.read( l, r ); while( l!="}" );
 						LogError("Guild worldfile: Recruit %d or Recruiter %d of guild %d is not a valid character", re, by, serial );
 					}
 				}
@@ -300,12 +302,28 @@ cGuildMember::~cGuildMember()
 
 void cGuildMember::load( cStringFile& file )
 {
-/*	
-	if( !strcmp( script1, "TITLE" ) )
-		members[ memberSerial ].setTitle( script2 );
-	else if( !strcmp( script1, "TOGGLE" ) )
-		members[ memberSerial ].setToggle( static_cast<GUILD_TITLE_TOGGLE>(str2num( script2 )) );
-*/
+	do {
+
+		std::string l, r;
+
+		file.read( l, r );
+		if( l.size==0 )
+			continue;
+
+		if( l[0]=='{' )
+			continue;
+		if( l[0]=='}' )
+			return;
+		
+		if( l=="TITLE" )
+			title=r;
+		else if( l=="TOGGLE" )
+			toggle=static_cast<GUILD_TITLE_TOGGLE>( str2num(r) );
+		else if( l=="RANK" )
+			rank=str2num(r);	
+		
+	}
+	while( true );
 }
 
 void cGuildMember::save( FILE* file )
@@ -334,13 +352,31 @@ cGuildRecruit::~cGuildRecruit()
 
 void cGuildRecruit::load( cStringFile& file )
 {
+	do {
+
+		std::string l, r;
+		file.read( l, r );
+
+		if( l.size==0 )
+			continue;
+
+		if( l[0]=='{' )
+			continue;
+		if( l[0]=='}' )
+			return;
+		
+		//if( l=="RECRUITER" )
+		//	recruiter=str2num(r);
+
+	}
+	while( true );
+
 }
 
 void cGuildRecruit::save( FILE* file )
 {
 	fprintf( file, "RECRUIT %d\n", serial );
 	fprintf( file, "{\n" );
-	fprintf( file, "DATERECRUITED\n" );
 	fprintf( file, "RECRUITER %d\n",	recruiter->serial );
 	fprintf( file, "}\n" );
 }
@@ -448,6 +484,8 @@ bool cGuildz::save( )
 	{
 		iter->second->save( file );
 	}
+
+	fclose( file );
 
 	return true;
 }
