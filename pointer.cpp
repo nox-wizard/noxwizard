@@ -281,7 +281,7 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
 namespace pointers {
 
 	std::map<SERIAL, vector <P_CHAR> > pStableMap;
-	std::map<SERIAL, P_CHAR > pMounted; 
+	std::map<SERIAL, P_CHAR > pMounted;
 
 	std::map<SERIAL, vector <P_CHAR> > pOwnCharMap;
 	std::map<SERIAL, vector <P_ITEM> > pOwnItemMap;
@@ -414,9 +414,10 @@ namespace pointers {
 	void delCharFromLocationMap( const P_CHAR pWho )
 	{
 		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( pWho->getLocationKey() );
+		SERIAL pWhoSerial = pWo->getSerial32();
 
 		for( ; it.first != it.second; ++it.first )
-			if( it.first->second->getSerial32() == pWho->getSerial32() )
+			if( it.first->second->getSerial32() == pWhoSerial32 )
 			{
 				pCharLocationMap.erase( it.first );
 				break;
@@ -565,9 +566,10 @@ namespace pointers {
 	void delItemFromLocationMap( const P_ITEM pWhat )
 	{
 		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( pWhat->getLocationKey() );
+		SERIAL	pWhatSerial = pWhat->getSerial32();
 
 		for( ; it.first != it.second; ++it.first )
-			if( it.first->second->getSerial32() == pWhat->getSerial32() )
+			if( it.first->second->getSerial32() == pWhatSerial32 )
 			{
 				pItemLocationMap.erase( it.first );
 				break;
