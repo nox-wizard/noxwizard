@@ -1,0 +1,6963 @@
+2004-05-09	ai_wintermute
+	* addmenu.cpp 1.34:
+	* amx/amxscript.cpp 1.35:
+	* amx/amxwrap2.cpp 1.87:
+	* data.cpp 1.18:
+	* encryption/clientcrypt.cpp 1.2:
+	* encryption/common.h 1.3:
+	* encryption/crypt.cpp 1.5:
+	* network.cpp 1.82:
+	* particles.cpp 1.5:
+	* race.cpp 1.19:
+	* srvparms.cpp 1.27:
+	* walking.cpp 1.70:
+	* worldmain.cpp 1.91:
+		bugfixes for warnings occuring on high warning levels
+
+2004-05-08	frodosf
+	* cmds.cpp 1.59:
+		params system bug fix
+
+2004-05-08	horiansf
+	* menu.cpp 1.55:
+	* menu.h 1.46:
+		increased MP_BUFFER in menu/gumps to 5, according to wintermutes 
+		telling how
+
+2004-05-07	frodosf
+	* amx/amxwrap2.cpp 1.86:
+	* chars.cpp 1.189:
+	* chars.h 1.111:
+	* cmds.cpp 1.58:
+		params system bug fix
+
+2004-05-03	stonedz
+	* gmpages.cpp 1.9:
+		clean
+
+2004-05-02	ai_wintermute
+	* network.cpp 1.81:
+		fixed a crash bug when logging out
+
+2004-05-01	ai_wintermute
+	* house.cpp 1.47:
+		gcc compile error fix
+
+2004-04-27	ai_wintermute
+	* house.cpp 1.46:
+		fixed typo
+
+2004-04-26	ai_wintermute
+	* guildstones.cpp 1.27:
+	* makefile.inc 1.20:
+	* vc7/NoxWizard.vcproj 1.4:
+		removed guildstone.cpp from project
+
+2004-04-25	ai_wintermute
+	* amx/amxwraps.cpp 1.137:
+	* boats.cpp 1.44:
+	* chars.cpp 1.187:
+	* constants.h 1.24:
+	* dbl_single_click.cpp 1.57:
+	* house.cpp 1.44:
+	* house.h 1.9:
+	* timing.cpp 1.31:
+	* worldmain.cpp 1.90:
+		finished boat system, no real multi
+
+	* boats.cpp 1.45:
+		bugfix for picky gcc errors
+
+	* amx/amxwraps.cpp 1.138:
+	* menu.cpp 1.54:
+	* menu.h 1.45:
+		groups enabled for menus
+
+	* chars.cpp 1.188:
+	* chars.h 1.110:
+	* constants.h 1.25:
+	* dragdrop.cpp 1.63:
+	* house.cpp 1.45:
+	* items.cpp 1.55:
+	* map.cpp 1.23:
+	* network.cpp 1.80:
+	* nox-wizard.cpp 1.95:
+	* set.cpp 1.49:
+	* walking.cpp 1.69:
+		bugfix for mantis 03, height calculation in multis, bugfix for 
+		some quick hacks introduced yesterday, and minor improvements
+
+2004-04-24	ai_wintermute
+	* boats.cpp 1.43:
+	* boats.h 1.20:
+	* dbl_single_click.cpp 1.56:
+	* house.cpp 1.43:
+	* house.h 1.8:
+	* worldmain.cpp 1.89:
+		additional fixes to boat system, fixed reloading boats during 
+		worldload
+
+2004-04-23	ai_wintermute
+	* amx/amxwrap2.cpp 1.85:
+	* boats.cpp 1.42:
+	* boats.h 1.19:
+	* dragdrop.cpp 1.62:
+	* house.cpp 1.42:
+	* house.h 1.7:
+	* items.cpp 1.54:
+	* network.cpp 1.79:
+	* nox-wizard.cpp 1.94:
+	* walking.cpp 1.68:
+	* worldmain.cpp 1.88:
+		changed house/boats to inherit from cMulti
+
+2004-04-21	ai_wintermute
+	* house.cpp 1.41:
+		bugfix fopr npcs triggering house speech
+
+2004-04-21	frodosf
+	* amx/amxwrap2.cpp 1.84:
+	* amx/amxwraps.h 1.33:
+	* chars.cpp 1.186:
+	* nox-wizard.cpp 1.93:
+		cp_commandlevel --->  cp_privlevel
+
+2004-04-20	ai_wintermute
+	* accounts.cpp 1.22:
+	* accounts.h 1.12:
+		added state query function for login state
+
+	* house.cpp 1.40:
+	* house.h 1.6:
+		additional functions for small api
+
+	* amx/amxwrap2.cpp 1.83:
+	* amx/amxwraps.cpp 1.135:
+	* amx/amxwraps.h 1.32:
+		additional functions for small api houses
+
+2004-04-20	frodosf
+	* amx/amxwraps.cpp 1.136:
+	* cmds.cpp 1.57:
+		new command system features (params)
+
+2004-04-18	ai_wintermute
+	* constants.h 1.23:
+	* dbl_single_click.cpp 1.55:
+	* house.cpp 1.39:
+	* house.h 1.5:
+	* itemid.cpp 1.17:
+	* map.cpp 1.22:
+	* map.h 1.6:
+	* srvparms.cpp 1.26:
+	* srvparms.h 1.15:
+	* utils.cpp 1.43:
+	* walking.cpp 1.67:
+	* worldmain.cpp 1.87:
+		reenabled house placing/deeding
+
+2004-04-16	ai_wintermute
+	* NoxWizard.dsp 1.20:
+		removed personal properties
+
+2004-04-15	ai_wintermute
+	* chars.cpp 1.184:
+	* magic.cpp 1.47:
+		mantis bugs 094, 095
+
+2004-04-15	frodosf
+	* amx/amxwrap2.cpp 1.82:
+	* amx/amxwraps.h 1.31:
+	* chars.cpp 1.183:
+	* chars.cpp 1.185:
+	* chars.h 1.108:
+	* chars.h 1.109:
+	* cmds.cpp 1.55:
+	* cmds.cpp 1.56:
+		new command system features (params)
+
+2004-04-14	ai_wintermute
+	* vc7/NoxWizard.vcproj 1.3:
+		replaced vc7 project with one delivered by Ummon, which includes 
+		the latest file changes
+
+2004-04-14	stonedz
+	* amx/amxwraps.cpp 1.134:
+		fix
+
+2004-04-11	ai_wintermute
+	* amx/amxwrap2.cpp 1.81:
+	* amx/amxwraps.cpp 1.133:
+	* nxwlogo.bmp 1.3:
+	* nxwlogo.bmp 1.4:
+	* resource.h 1.2:
+	* sndpkg.cpp 1.64:
+	* xwgui.aps 1.3:
+	* xwgui.aps 1.4:
+	* xwgui.rc 1.5:
+	* xwgui.rc 1.6:
+		accidenttally commented a part which was needed for displaying 
+		items in the world
+
+2004-04-10	ai_wintermute
+	* amx/amxwraps.cpp 1.132:
+		bugfix for amx exception for too long messages, max message 
+		length now 512 characters
+
+	* combat.cpp 1.56:
+		fixed bug with client crash on no bow ammunition
+
+	* chars.h 1.106:
+	* makefile.inc 1.19:
+	* scp_parser.cpp 1.16:
+	* scp_parser.h 1.10:
+		bugfix for broken linux compile
+
+	* chars.h 1.107:
+	* client.cpp 1.26:
+	* constants.h 1.22:
+	* items.cpp 1.53:
+	* nox-wizard.cpp 1.92:
+	* object.cpp 1.56:
+	* set.cpp 1.48:
+	* sndpkg.cpp 1.63:
+	* spawn.cpp 1.23:
+	* tmpeff.cpp 1.33:
+		mantis bugs 20, 87, 92, 57, 86, 62
+
+2004-04-10	stonedz
+	* gmpages.cpp 1.8:
+		clean
+
+2004-04-09	ai_wintermute
+	* NoxWizard.dsp 1.19:
+	* amx/amxwrap2.cpp 1.80:
+	* amx/amxwraps.cpp 1.130:
+	* amx/amxwraps.h 1.30:
+	* chars.cpp 1.182:
+	* chars.h 1.105:
+	* cmdtable.cpp 1.56:
+	* commands.cpp 1.36:
+	* common_libs.cpp 1.3:
+	* common_libs.h 1.18:
+	* compiler/sc1.c 1.11:
+	* compiler/sc3.c 1.4:
+	* constants.h 1.21:
+	* dragdrop.cpp 1.61:
+	* item.cpp 1.48:
+	* items.h 1.35:
+	* makefile.inc 1.18:
+	* npcs.cpp 1.74:
+	* race.cpp 1.18:
+	* scp_parser.cpp 1.15:
+	* scp_parser.h 1.9:
+	* sndpkg.cpp 1.62:
+	* spawn.cpp 1.22:
+	* speech.cpp 1.77:
+	* tmpeff.cpp 1.32:
+	* utils.cpp 1.42:
+	* worldmain.cpp 1.86:
+	* xwgui.aps 1.2:
+	* xwgui.rc 1.4:
+		mantis bugs: 16, 80, 47, 43, 48, 57, 21
+
+	* amx/amxwraps.cpp 1.131:
+		chr_morpoh and chr_unmorph set/reset polymorph attribute
+
+2004-04-09	frodosf
+	* amx/amxwraps.cpp 1.129:
+		new gmpages apis
+
+2004-04-08	ai_wintermute
+	* compiler/sc2.c 1.4:
+		fixed uninitialized value for tag
+
+	* amx/amxwraps.cpp 1.128:
+	* boats.cpp 1.41:
+	* chars.cpp 1.181:
+	* chars.h 1.104:
+	* cmdtable.cpp 1.55:
+	* common_libs.h 1.17:
+	* items.h 1.34:
+	* magic.cpp 1.46:
+	* map.cpp 1.21:
+	* map.h 1.5:
+	* nox-wizard.cpp 1.91:
+	* scp_parser.cpp 1.14:
+	* skitarg.cpp 1.54:
+	* spawn.cpp 1.21:
+	* targeting.cpp 1.81:
+	* telport.cpp 1.25:
+	* utils.cpp 1.41:
+	* utils.h 1.7:
+		fixed some warnings occuring on high warn levels
+
+2004-04-07	ai_wintermute
+	* guild.cpp 1.30:
+		fixed iso c++ compatibility error
+
+2004-04-06	stonedz
+	* gmpages.cpp 1.6:
+	* gmpages.h 1.7:
+		New gm paging system, compilable but not yet fully implemented, 
+		added page's indexes optimization
+
+	* gmpages.cpp 1.5:
+	* gmpages.h 1.5:
+	* gmpages.h 1.6:
+		bug fix (#0000079)
+
+	* amx/amxwraps.cpp 1.127:
+	* gmpages.cpp 1.7:
+		New gm paging system, compilable but not yet fully implemented,
+
+2004-04-05	ai_wintermute
+	* worldmain.cpp 1.85:
+		fixed iso c++ compatibility error
+
+2004-04-04	ai_wintermute
+	* accounts.cpp 1.21:
+	* accounts.h 1.11:
+	* amx/amxcback.cpp 1.12:
+	* amx/amxwrap2.cpp 1.79:
+	* amx/amxwraps.cpp 1.126:
+	* amx/amxwraps.h 1.29:
+	* chars.cpp 1.180:
+	* dragdrop.cpp 1.60:
+	* sregions.cpp 1.21:
+	* worldmain.cpp 1.84:
+		fixed some bugs in world save, equipping weapons and added 
+		support for account properties from small
+
+2004-04-03	ai_wintermute
+	* amx/amxscript.cpp 1.34:
+	* amx/amxwrap2.cpp 1.78:
+	* amx/amxwraps.cpp 1.125:
+	* amx/amxwraps.h 1.28:
+	* books.cpp 1.13:
+	* chars.cpp 1.179:
+	* guild.cpp 1.29:
+	* guild.h 1.20:
+	* item.cpp 1.47:
+	* items.cpp 1.52:
+	* jail.cpp 1.12:
+	* set.cpp 1.47:
+	* set.h 1.23:
+	* worldmain.cpp 1.83:
+		guild system finished, removed old guild sys
+
+2004-04-02	ai_wintermute
+	* amx/amxwraps.cpp 1.124:
+		removed old guildsystem
+
+	* NoxWizard.dsp 1.18:
+		debug build was not compiled with debug multithreaded, now fixed
+
+	* chars.cpp 1.178:
+	* combat.cpp 1.55:
+	* dbl_single_click.cpp 1.54:
+	* dragdrop.cpp 1.59:
+	* guild.cpp 1.28:
+	* guild.h 1.19:
+	* guildstones.cpp 1.26:
+	* magic.cpp 1.45:
+	* nox-wizard.cpp 1.90:
+	* object.h 1.35:
+	* range.cpp 1.6:
+	* range.h 1.7:
+	* rcvpkg.cpp 1.16:
+	* sndpkg.cpp 1.61:
+	* speech.cpp 1.76:
+	* thievery.cpp 1.22:
+	* walking.cpp 1.66:
+	* worldmain.cpp 1.82:
+		removed old guildsystem from source
+
+	* magic.cpp 1.44:
+		fixed little bug in eval intel
+
+2004-04-02	frodosf
+	* amx/amxwraps.cpp 1.123:
+		new gmpages apis
+
+2004-04-02	stonedz
+	* cmds.cpp 1.54:
+		clean of code
+
+	* gmpages.cpp 1.4:
+	* gmpages.h 1.4:
+		New gm paging system
+
+	* targeting.cpp 1.80:
+		bug fix (#0000050)
+
+	* gmpages.cpp 1.3:
+	* gmpages.h 1.3:
+		New gm paging system, compilable but not yet fully implemented, 
+		added getAllPagers() function
+
+	* amx/amxwraps.cpp 1.122:
+	* gmpages.cpp 1.2:
+	* gmpages.h 1.2:
+		New gm paging system, compilable but not yet fully implemented
+
+2004-04-01	ai_wintermute
+	* amx/amxwrap2.cpp 1.77:
+		changed guild_setProperty to include guild_type
+
+	* guild.cpp 1.27:
+	* guild.h 1.18:
+	* worldmain.cpp 1.81:
+		fixed guild recruit loading
+
+2004-04-01	stonedz
+	* NoxWizard.dsp 1.17:
+		Changes for gm paging system
+
+	* race.cpp 1.17:
+		bug fix (#0000069)
+
+	* gmpages.cpp 1.1:
+	* gmpages.h 1.1:
+		New gm paging system, compilable but not yet fully implemented
+
+2004-03-31	ai_wintermute
+	* worldmain.cpp 1.80:
+		fixed bug in worldsaving routine leading to problems with 
+		targetting locations after worldsave
+
+	* amx/amxwraps.cpp 1.121:
+		temporary disabled new gmpages
+
+2004-03-31	stonedz
+	* amx/amxwraps.cpp 1.120:
+	* items.cpp 1.51:
+	* items.h 1.33:
+		changes on comments for the wpsk var, it does not work
+
+2004-03-28	ai_wintermute
+	* chars.h 1.103:
+	* speech.cpp 1.74:
+	* worldmain.cpp 1.79:
+		privlevel now being saved in worldsave
+
+	* amx/amx.h 1.12:
+	* amx/amxwrap2.cpp 1.76:
+	* amx/amxwraps.cpp 1.119:
+	* amx/amxwraps.h 1.27:
+	* guild.cpp 1.26:
+	* guild.h 1.17:
+	* speech.cpp 1.75:
+		guild bugfixes and extensions
+
+	* cmds.cpp 1.53:
+		removed reference to command level and used Privlevel instead 
+		for internal command system
+
+2004-03-27	ai_wintermute
+	* amx/amxvarserver.cpp 1.7:
+	* amx/amxvarserver.cpp 1.8:
+	* amx/amxvarserver.cpp 1.9:
+	* amx/amxvarserver.h 1.4:
+	* amx/amxwrap2.cpp 1.75:
+	* chars.h 1.102:
+	* common_libs.h 1.16:
+	* data.cpp 1.17:
+	* encryption/common.h 1.2:
+	* encryption/crypt.cpp 1.3:
+	* encryption/crypt.cpp 1.4:
+	* encryption/crypt.h 1.3:
+	* house.cpp 1.37:
+	* house.cpp 1.38:
+	* house.h 1.4:
+	* itemid.cpp 1.16:
+	* map.cpp 1.20:
+	* network.cpp 1.78:
+	* nox-wizard.cpp 1.89:
+	* target.cpp 1.18:
+	* tmpeff.cpp 1.31:
+	* typedefs.h 1.45:
+		removed warnings occuring in bcb6
+
+	* amx/amx.c 1.15:
+	* amx/amx.c 1.16:
+	* amx/amx.h 1.10:
+	* amx/amx.h 1.11:
+	* amx/amx.h 1.9:
+	* amx/amxscript.cpp 1.31:
+	* amx/amxscript.cpp 1.32:
+	* amx/amxscript.cpp 1.33:
+	* amx/amxwraps.h 1.26:
+		improvements to error messaging in amx
+
+2004-03-26	ai_wintermute
+	* basics.cpp 1.5:
+	* basics.h 1.10:
+	* common_libs.h 1.15:
+	* globals.cpp 1.26:
+	* globals.h 1.31:
+	* inlines.h 1.17:
+	* nox-wizard.cpp 1.88:
+	* packets.cpp 1.55:
+	* packets.h 1.39:
+	* typedefs.h 1.44:
+		removed warnings occuring in bcb6
+
+	* srvparms.h 1.14:
+	* worldmain.cpp 1.78:
+	* worldmain.h 1.7:
+		started work on binary save, yet incomplete, not usable
+
+	* cmds.cpp 1.52:
+		fix for noxwizard dying on newline at end of commands.txt
+
+	* house.cpp 1.36:
+	* house.h 1.3:
+	* speech.cpp 1.73:
+	* timing.cpp 1.30:
+		started working on new house management, mostly empty functions 
+		right now
+
+2004-03-26	frodosf
+	* cmds.cpp 1.50:
+	* cmds.cpp 1.51:
+		preventing segmentation faults
+
+2004-03-25	frodosf
+	* cmds.cpp 1.49:
+		preventing segmentation faults
+
+2004-03-23	ai_wintermute
+	* amx/amx.c 1.14:
+	* amx/amxcons.c 1.3:
+	* amx/amxscript.cpp 1.30:
+	* amx/amxwrap2.cpp 1.74:
+		improved error messages for amx execution
+
+2004-03-16	ai_wintermute
+	* crontab.cpp 1.15:
+	* worldmain.cpp 1.77:
+	* worldmain.h 1.6:
+		guild bugfixes and extensions
+		bugfix for world being saved on backups
+
+	* chars.cpp 1.177:
+		fixed item equipping with malus > ability
+
+	* amx/amxwraps.h 1.25:
+		guild bugfixes and extensions
+
+2004-03-14	ai_wintermute
+	* amx/amxwraps.cpp 1.118:
+	* guild.cpp 1.25:
+	* guild.h 1.16:
+		Extensions to guild menu
+
+2004-03-10	frodosf
+	* amx/amxwraps.cpp 1.117:
+		gmpages
+
+2004-03-09	frodosf
+	* amx/amxwrap2.cpp 1.73:
+		little fixes
+
+	* amx/amxwraps.cpp 1.116:
+		GMpage functions
+
+	* nxwlogo.bmp 1.2:
+		new logo
+
+2004-02-29	ai_wintermute
+	* amx/amxwrap2.cpp 1.72:
+	* amx/amxwraps.cpp 1.115:
+	* guild.cpp 1.24:
+	* guild.h 1.15:
+		added more functionality for member searching and fealty voting.
+
+2004-02-29	frodosf
+	* cmds.cpp 1.48:
+	* cmds.h 1.36:
+		Command Levels implementation
+
+2004-02-29	stonedz
+	* amx/amxwraps.cpp 1.114:
+		Fix for guild_getMemberIndex(), name lenght excedes the limit of 
+		19 chars, the function is renamed guild_getMemberIdx()
+
+2004-02-28	faxsf
+	* makefile.inc 1.17:
+		modified makefile.inc with cmds.* files included
+
+2004-02-28	stonedz
+	* worldmain.cpp 1.76:
+		Clean
+
+	* chars.cpp 1.176:
+	* cmds.cpp 1.47:
+	* cmds.h 1.35:
+	* nox-wizard.cpp 1.87:
+	* worldmain.cpp 1.75:
+		Command priv level for charachters. Added a new variable "
+		COMMANDLEVEL" in charachter's save model. Corrected a little 
+		error in cmds.cpp
+
+2004-02-27	ai_wintermute
+	* guild.cpp 1.23:
+	* guild.h 1.14:
+		added support for guild::getMemberIndex from small (method is 
+		called getMemberPosition)
+
+	* amx/amxwraps.cpp 1.113:
+		added support for addRandomNpc  from small (takes xss npc list id)
+		added support for two guild functions necessary for small guild implementation
+
+2004-02-25	frodosf
+	* logsystem.cpp 1.5:
+		logmessage on console resumed
+
+2004-02-23	frodosf
+	* amx/amxwraps.cpp 1.112:
+		very little fix
+
+2004-02-21	frodosf
+	* skills.cpp 1.51:
+		little fixes
+
+2004-02-20	frodosf
+	* amx/amxwrap2.cpp 1.71:
+	* amx/amxwraps.cpp 1.111:
+	* cmds.cpp 1.43:
+	* cmds.cpp 1.44:
+	* cmds.cpp 1.45:
+	* cmds.cpp 1.46:
+	* cmds.h 1.33:
+	* cmds.h 1.34:
+		Last New Commands System Implementations
+
+2004-02-15	ai_wintermute
+	* guild.cpp 1.22:
+	* guild.h 1.13:
+		Addition to guilds for fealty selection
+
+	* network.cpp 1.77:
+		Decrypt network packet before executing amx override
+
+	* item.cpp 1.46:
+		Extension for XSS Scripts:
+		
+		added keyword CHANCE to CONTAINS
+		added keyword CONTAINSLIST for container items
+		syntax CONTAINSLIST $xsslistid AMOUNT <amount> CHANCE <Percentual chance to get item>
+
+	* range.cpp 1.5:
+	* range.h 1.6:
+	* set.cpp 1.46:
+		removed compile warnings
+
+	* mount.cpp 1.31:
+		Activate follow for pets on dismount
+
+	* npcs.cpp 1.73:
+		Activate CHANCE in LOOTITEM as Luxor has already implemented 
+		partially
+
+	* spawn.cpp 1.20:
+		Fix for uninitialized spawns throwing console errors
+
+	* data.h 1.9:
+		Multi Struct positions may be negative so use signed int
+
+	* combat.cpp 1.54:
+		Fixes for combat sys with npcs
+
+	* constants.h 1.20:
+	* globals.cpp 1.25:
+		Door types extended for gate ids
+
+	* scp_parser.cpp 1.13:
+		Slight enhancement to check for missing }
+
+2004-02-11	frodosf
+	* cmds.cpp 1.42:
+	* cmds.h 1.32:
+	* speech.cpp 1.72:
+		New Commands System Implementations
+
+2004-02-08	ai_wintermute
+	* encryption/AES.H 1.2:
+	* encryption/ClientCrypt.cpp 1.2:
+	* encryption/ClientCrypt.h 1.2:
+	* encryption/PLATFORM.H 1.2:
+	* encryption/TABLE.H 1.2:
+		remove troublemakers
+
+	* amx/amxwrap2.cpp 1.69:
+	* amx/amxwraps.cpp 1.110:
+		fixes for all the latest compile and link errors
+
+2004-02-08	frodosf
+	* amx/amxwrap2.cpp 1.70:
+	* cmds.cpp 1.41:
+	* cmds.h 1.31:
+	* speech.cpp 1.71:
+		New Commands System Bypassing
+
+2004-02-07	frodosf
+	* amx/amxwrap2.cpp 1.68:
+	* cmds.cpp 1.40:
+		New Commands System Implementations
+
+2004-02-06	ai_wintermute
+	* chars.h 1.101:
+	* cmds.cpp 1.38:
+	* cmds.h 1.29:
+	* cmdtable.cpp 1.54:
+	* commands.cpp 1.35:
+	* nox-wizard.cpp 1.86:
+	* packets.cpp 1.54:
+	* target.cpp 1.17:
+		fixes for all the latest compile and link errors
+
+2004-02-06	frodosf
+	* cmds.cpp 1.39:
+	* cmds.h 1.30:
+	* speech.cpp 1.70:
+		New Commands System Implementations
+
+2004-02-05	ai_wintermute
+	* client.cpp 1.25:
+		getLegacySocket is now inline
+
+	* combat.cpp 1.53:
+	* dragdrop.cpp 1.58:
+		fixed typo
+
+	* guild.cpp 1.21:
+	* guild.h 1.12:
+		added helper function for guildmaster
+
+	* chars.h 1.100:
+		fixed several more errors which occured in other files
+
+	* tmpeff.cpp 1.30:
+		fixed compile errors introduced by new flag system
+
+2004-02-05	frodosf
+	* amx/amxwraps.cpp 1.109:
+		little fixes
+
+2004-02-04	ai_wintermute
+	* chars.cpp 1.175:
+	* chars.h 1.99:
+		Making compilable code for guild functions again
+
+	* worldmain.cpp 1.74:
+		fixed syntax bug
+
+2004-01-12	frodosf
+	* amx/amxwraps.cpp 1.107:
+	* chars.cpp 1.173:
+		I've commented guild old lines that cause errors
+
+	* amx/amxwraps.cpp 1.108:
+	* chars.cpp 1.174:
+		This kind of fixes affects to  many parts of the code... i 
+		resume the old code
+
+2004-01-09	frodosf
+	* cmds.cpp 1.37:
+		Commands System
+		work in progress :)
+
+2004-01-03	frodosf
+	* amx/amxwraps.cpp 1.106:
+		map_getZ(x,y)  Implementation
+
+2003-12-31	ai_wintermute
+	* chars.h 1.98:
+		Bugfix for static const initializers in chars.h which don't work 
+		in visual c++
+
+2003-12-31	frodosf
+	* cmds.cpp 1.36:
+		Commands System
+		work in progress :)
+
+2003-12-27	kheru
+	* chars.cpp 1.172:
+		clean, and indent
+
+	* chars.cpp 1.170:
+	* chars.h 1.96:
+	* chars.h 1.97:
+	* cmdtable.cpp 1.53:
+	* items.h 1.32:
+	* object.h 1.34:
+		fix
+
+	* cmds.h 1.28:
+		....... "newline at end of file" :/
+
+	* constants.h 1.19:
+	* srvparms.cpp 1.25:
+		multiserver patch
+
+	* sndpkg.cpp 1.58:
+	* sndpkg.h 1.30:
+	* trigger.cpp 1.43:
+		*** empty log message ***
+
+2003-12-27	dgp85
+	* chars.cpp 1.168:
+	* chars.h 1.95:
+	* items.cpp 1.50:
+	* items.h 1.31:
+	* object.cpp 1.55:
+	* object.h 1.33:
+		more inlining...
+
+	* chars.cpp 1.171:
+		fixing
+
+	* amx/amxwraps.cpp 1.104:
+	* chars.cpp 1.169:
+	* commands.cpp 1.34:
+	* sndpkg.cpp 1.60:
+	* sndpkg.h 1.29:
+		other cleanups
+
+	* amx/amxwrap2.cpp 1.67:
+	* amx/amxwraps.cpp 1.103:
+	* chars.cpp 1.165:
+	* chars.cpp 1.166:
+	* chars.h 1.92:
+	* chars.h 1.93:
+	* cmdtable.cpp 1.51:
+	* cmdtable.cpp 1.52:
+	* constants.h 1.18:
+	* dbl_single_click.cpp 1.53:
+	* dragdrop.cpp 1.56:
+	* dragdrop.cpp 1.57:
+	* magic.cpp 1.42:
+	* magic.cpp 1.43:
+	* map.cpp 1.19:
+	* network.cpp 1.75:
+	* network.cpp 1.76:
+	* nox-wizard.cpp 1.85:
+	* npcai.cpp 1.28:
+	* npcs.cpp 1.71:
+	* npcs.cpp 1.72:
+	* skitarg.cpp 1.53:
+	* sndpkg.cpp 1.59:
+	* timing.cpp 1.29:
+	* tmpeff.cpp 1.28:
+	* tmpeff.cpp 1.29:
+	* walking.cpp 1.65:
+	* worldmain.cpp 1.73:
+		optimising... cleaning up... port to standard c++... work in 
+		progress (give me some time please)
+
+	* chars.cpp 1.167:
+	* chars.h 1.94:
+		finished inlining of functions
+
+2003-12-27	frodosf
+	* amx/amxwraps.cpp 1.105:
+		map_getZ(x,y)  Implementation
+
+	* cmds.cpp 1.33:
+	* cmds.cpp 1.34:
+	* cmds.cpp 1.35:
+	* cmds.h 1.27:
+		Commands System
+		work in progress :)
+
+2003-12-26	dgp85
+	* addmenu.cpp 1.33:
+	* chars.cpp 1.164:
+	* chars.h 1.91:
+	* client.cpp 1.24:
+	* client.h 1.13:
+	* cmdtable.cpp 1.50:
+	* packets.cpp 1.53:
+		fixes errors with bcb
+
+2003-12-24	endymionsf
+	* NoxWizard.dsp 1.16:
+	* amx/amxwrap2.cpp 1.66:
+	* amx/amxwraps.cpp 1.102:
+	* amx/amxwraps.h 1.24:
+	* chars.cpp 1.163:
+	* client.cpp 1.23:
+	* client.h 1.12:
+	* cmds.cpp 1.24:
+	* cmds.cpp 1.28:
+	* cmds.cpp 1.29:
+	* cmds.h 1.22:
+	* cmds.h 1.24:
+	* cmds.h 1.25:
+	* cmdtable.cpp 1.49:
+	* cmdtable.h 1.11:
+	* commands.cpp 1.33:
+	* globals.cpp 1.24:
+	* globals.h 1.30:
+	* network.cpp 1.74:
+	* nox-wizard.cpp 1.84:
+	* worldmain.cpp 1.72:
+		new cmds
+
+2003-12-24	frodosf
+	* cmds.cpp 1.25:
+	* cmds.cpp 1.26:
+	* cmds.cpp 1.27:
+	* cmds.cpp 1.30:
+	* cmds.cpp 1.31:
+	* cmds.cpp 1.32:
+	* cmds.h 1.23:
+	* cmds.h 1.26:
+		Commands System
+		work in progress :)
+
+2003-12-23	endymionsf
+	* chars.cpp 1.162:
+	* chars.h 1.89:
+	* chars.h 1.90:
+	* cmds.h 1.18:
+	* cmds.h 1.19:
+		new cmds
+
+2003-12-23	frodosf
+	* cmds.cpp 1.23:
+	* cmds.h 1.20:
+	* cmds.h 1.21:
+		Commands System
+		work in progress :)
+
+2003-12-21	endymionsf
+	* amx/amxscript.cpp 1.29:
+	* speech.cpp 1.68:
+		removed socket from scripts
+
+2003-12-21	dgp85
+	* encryption/aes.h 1.1:
+	* encryption/clientcrypt.cpp 1.1:
+	* encryption/clientcrypt.h 1.1:
+	* encryption/crypt.h 1.2:
+	* encryption/platform.h 1.1:
+	* encryption/table.h 1.1:
+		fix cases of filenames (for unix)
+
+	* addmenu.cpp 1.32:
+	* boats.cpp 1.40:
+	* chars.cpp 1.161:
+	* client.cpp 1.22:
+	* cmdtable.cpp 1.48:
+	* data.cpp 1.16:
+	* dbl_single_click.cpp 1.52:
+	* guildstones.cpp 1.25:
+	* map.cpp 1.18:
+	* menu.h 1.44:
+	* network.cpp 1.73:
+	* packets.h 1.38:
+	* skitarg.cpp 1.52:
+	* sndpkg.cpp 1.57:
+	* speech.cpp 1.69:
+	* target.h 1.8:
+	* targeting.cpp 1.79:
+	* thievery.cpp 1.21:
+	* trigger.cpp 1.42:
+	* utils.cpp 1.40:
+	* walking.cpp 1.64:
+	* weight.cpp 1.11:
+		fixes most of the warnings compiling under linux (with gcc 3.3.2)
+		
+
+2003-12-18	stonedz
+	* cmds.cpp 1.22:
+		some adds, work in progress not yet compilable.
+
+2003-12-14	ai_wintermute
+	* accounts.cpp 1.20:
+	* accounts.h 1.10:
+	* chars.cpp 1.160:
+	* chars.h 1.88:
+	* network.cpp 1.72:
+	* network.h 1.13:
+		Client encryption integrated
+		Bugfix for core dump on client login
+
+2003-12-09	frodosf
+	* cmds.cpp 1.19:
+		Commands System
+		work in progress :)
+
+2003-12-09	stonedz
+	* cmds.cpp 1.20:
+	* cmds.cpp 1.21:
+	* cmds.h 1.16:
+	* cmds.h 1.17:
+		Commands handling system, work in progress. Not yet compilable
+
+2003-12-08	frodosf
+	* cmds.cpp 1.16:
+	* cmds.cpp 1.17:
+	* cmds.cpp 1.18:
+	* cmds.h 1.13:
+	* cmds.h 1.14:
+	* cmds.h 1.15:
+		Commands System
+		work in progress :)
+
+2003-12-07	ai_wintermute
+	* chars.cpp 1.159:
+		Bugfix for sysmessage to npc, which might crash server
+
+	* magic.cpp 1.41:
+		Bugfix for gate collision check, checking neighboring tiles, too
+
+	* npcai.cpp 1.27:
+	* object.cpp 1.54:
+	* spawn.cpp 1.19:
+	* target.cpp 1.16:
+	* weight.cpp 1.10:
+		npcai.cpp: fixed npcs talking to each other
+		weight.cpp: fixed mounts taken into player weight
+		target.cpp: Target Locations now always return a valid location, allowing spells to be targetted on ground
+		spawn.cpp: Fixed a possible error in dynamic spawns when they don't have a valid morex (which configures the spawning object)
+		object.cpp: optimized a loop for selecting a random item from a list(also fixing a possible error)
+
+	* dbl_single_click.cpp 1.51:
+		Extensions for GM or Counselors
+
+	* archive.cpp 1.22:
+	* books.cpp 1.12:
+		Books working on visual c++ compilers, too
+
+2003-12-07	frodosf
+	* cmds.cpp 1.15:
+	* cmds.h 1.12:
+		Commands System
+		work in progress :)
+
+2003-12-06	frodosf
+	* cmds.cpp 1.14:
+		Commands System
+		work in progress :)
+
+2003-12-05	frodosf
+	* cmds.cpp 1.13:
+	* cmds.h 1.11:
+		Commands System
+		work in progress :)
+
+2003-12-04	endymionsf
+	* amx/amxcback.cpp 1.11:
+	* chars.cpp 1.158:
+	* dbl_single_click.cpp 1.50:
+	* dragdrop.cpp 1.55:
+	* extractionskills.cpp 1.19:
+	* magic.cpp 1.40:
+	* menu.cpp 1.53:
+	* network.cpp 1.71:
+	* oldmenu.cpp 1.25:
+	* skills.cpp 1.50:
+	* skitarg.cpp 1.51:
+	* target.cpp 1.15:
+	* thievery.cpp 1.20:
+	* trade.cpp 1.30:
+	* vc7/NoxWizard.vcproj 1.2:
+		removed socket from scripts
+
+2003-12-02	endymionsf
+	* network.cpp 1.70:
+	* skitarg.cpp 1.50:
+		update to standard
+
+	* NoxWizard.dsp 1.15:
+	* NoxWizard.dsw 1.2:
+	* amx/amxcback.cpp 1.10:
+	* amx/amxcback.h 1.6:
+	* amx/amxwraps.cpp 1.101:
+	* archive.cpp 1.21:
+	* boats.cpp 1.39:
+	* chars.cpp 1.157:
+	* encryption/crypt.cpp 1.2:
+	* inlines.h 1.16:
+	* item.cpp 1.45:
+	* nox-wizard.cpp 1.83:
+	* timers.cpp 1.12:
+	* timers.h 1.6:
+	* timing.cpp 1.28:
+	* walking.cpp 1.63:
+		removed unused stuff and socket from scripts
+
+2003-11-30	endymionsf
+	* vc7/NoxWizard.sln 1.1:
+	* vc7/NoxWizard.vcproj 1.1:
+		added project for vc7, but i have a linker problem with stlport
+
+2003-11-30	stonedz
+	* cmds.cpp 1.12:
+	* cmds.h 1.10:
+		some little adds, work in progress, not yet compilable.
+
+2003-11-29	stonedz
+	* cmds.cpp 1.11:
+	* cmds.h 1.9:
+		some little adds, work in progress, not yet compilable.
+
+	* cmds.cpp 1.10:
+	* cmds.cpp 1.9:
+	* cmds.h 1.8:
+		some little adds, work in progress
+
+2003-11-28	stonedz
+	* cmds.cpp 1.7:
+	* cmds.h 1.6:
+		some little adds, work in progress:
+		added some todo's and comments.
+
+	* cmds.cpp 1.8:
+	* cmds.h 1.7:
+		sorry, I've forgot something :P
+
+2003-11-27	frodosf
+	* cmds.cpp 1.6:
+		Commands System
+		work in progress :)
+
+2003-11-26	frodosf
+	* cmds.cpp 1.2:
+	* cmds.cpp 1.4:
+	* cmds.cpp 1.5:
+	* cmds.h 1.2:
+	* cmds.h 1.4:
+	* cmds.h 1.5:
+		Commands System
+		work in progress :)
+
+2003-11-26	stonedz
+	* cmds.cpp 1.3:
+	* cmds.h 1.3:
+		some little adds, work in progress
+
+2003-11-25	endymionsf
+	* cmds.cpp 1.1:
+	* cmds.h 1.1:
+		added temp cmds files.. related to new commands
+
+2003-10-15	sparhawksf
+	* target.cpp 1.14:
+		BUGFIX:
+		* assigning -1 to an unsigned integer gives unexpected results. changed temp int type to signed
+
+	* makefile.inc 1.16:
+		BUGFIX:
+		* removed obsolete references to organisation.h and organisation.cpp
+
+	* guild.cpp 1.20:
+		BUGFIX:
+		-cGuildMember.rank is an integer and should not be assigned NULL
+		-string size test. changed std::string.size member reference to std::string.size() method
+
+2003-09-28	endymionsf
+	* packets.cpp 1.52:
+	* party.cpp 1.20:
+		fixed party private message
+
+2003-09-27	endymionsf
+	* amx/amxwraps.cpp 1.99:
+	* menu.cpp 1.52:
+		fix for guild
+
+	* guild.cpp 1.19:
+		fix
+
+	* amx/amxwraps.cpp 1.100:
+		new guild
+
+2003-09-26	endymionsf
+	* party.cpp 1.19:
+		fix
+
+2003-09-25	endymionsf
+	* chars.cpp 1.156:
+	* chars.h 1.87:
+	* guild.cpp 1.18:
+	* guild.h 1.11:
+		new guild 60%
+
+	* amx/amxwrap2.cpp 1.64:
+	* amx/amxwraps.cpp 1.98:
+	* amx/amxwraps.h 1.23:
+	* typedefs.h 1.42:
+		new guilds 60%
+
+	* packets.cpp 1.51:
+		now Linux compile?
+
+	* client.cpp 1.21:
+	* client.h 1.11:
+	* globals.cpp 1.23:
+	* globals.h 1.29:
+	* html.cpp 1.12:
+	* network.cpp 1.69:
+	* nox-wizard.cpp 1.82:
+	* remadmin.cpp 1.13:
+	* sndpkg.cpp 1.56:
+	* sregions.cpp 1.20:
+	* trigger.cpp 1.41:
+		clean
+
+	* client.cpp 1.20:
+	* client.h 1.10:
+	* globals.cpp 1.22:
+	* globals.h 1.28:
+	* network.cpp 1.68:
+	* typedefs.h 1.43:
+		fIXed problem for login, and clean
+
+2003-09-25	luxornox
+	* amx/amxwrap2.cpp 1.65:
+		*** empty log message ***
+
+2003-09-24	endymionsf
+	* amx/amxwrap2.cpp 1.63:
+	* chars.cpp 1.155:
+		new guilds 50%
+
+	* guild.cpp 1.17:
+	* guild.h 1.10:
+	* set.cpp 1.45:
+	* set.h 1.22:
+	* typedefs.h 1.41:
+	* worldmain.cpp 1.71:
+	* worldmain.h 1.5:
+		new guild 50%
+
+2003-09-23	sparhawksf
+	* amx/amxwraps.cpp 1.97:
+		gcc 3.3 compatability fix
+
+2003-09-22	endymionsf
+	* organisation.cpp 1.15:
+	* organisation.h 1.13:
+		not needed
+
+	* NoxWizard.dsp 1.13:
+	* chars.cpp 1.154:
+	* client.cpp 1.19:
+	* client.h 1.9:
+	* cmdtable.cpp 1.47:
+	* dragdrop.cpp 1.54:
+	* globals.cpp 1.21:
+	* globals.h 1.27:
+	* house.cpp 1.35:
+	* menu.cpp 1.51:
+	* menu.h 1.43:
+	* network.cpp 1.67:
+	* nox-wizard.cpp 1.81:
+	* tmpeff.cpp 1.27:
+	* typedefs.h 1.40:
+	* walking.cpp 1.62:
+		clean and prepare for encryption
+
+	* NoxWizard.dsp 1.14:
+		*** empty log message ***
+
+	* encryption/AES.H 1.1:
+	* encryption/ClientCrypt.cpp 1.1:
+	* encryption/ClientCrypt.h 1.1:
+	* encryption/PLATFORM.H 1.1:
+	* encryption/TABLE.H 1.1:
+	* encryption/common.h 1.1:
+	* encryption/crypt.cpp 1.1:
+	* encryption/crypt.h 1.1:
+		encryption of uo client by wintermute
+
+2003-09-21	endymionsf
+	* chars.cpp 1.153:
+	* chars.h 1.86:
+	* dragdrop.cpp 1.53:
+		now loot work correct
+
+	* cmdtable.cpp 1.46:
+		fix to 'add command
+
+	* amx/amxwrap2.cpp 1.62:
+	* amx/amxwraps.cpp 1.96:
+	* amx/amxwraps.h 1.22:
+	* client.cpp 1.18:
+	* client.h 1.8:
+	* network.cpp 1.66:
+	* nox-wizard.cpp 1.80:
+	* packets.cpp 1.50:
+	* packets.h 1.37:
+	* party.cpp 1.18:
+	* party.h 1.14:
+	* srvparms.cpp 1.24:
+	* target.cpp 1.13:
+	* target.h 1.7:
+	* typedefs.h 1.39:
+		rewrited party.. now work perfect
+
+2003-09-21	luxornox
+	* magic.cpp 1.38:
+	* magic.cpp 1.39:
+		*** empty log message ***
+
+2003-09-20	endymionsf
+	* dbl_single_click.cpp 1.49:
+		fix for dye segfault
+
+	* addmenu.cpp 1.31:
+	* menu.cpp 1.50:
+		fix to addProp to item and fix for make menu unmoveable
+
+2003-09-19	endymionsf
+	* addmenu.cpp 1.27:
+	* addmenu.cpp 1.28:
+	* addmenu.cpp 1.29:
+	* chars.cpp 1.151:
+	* chars.cpp 1.152:
+	* chars.h 1.84:
+	* chars.h 1.85:
+	* cmdtable.cpp 1.44:
+		fix
+
+	* addmenu.cpp 1.30:
+	* cmdtable.cpp 1.45:
+		fix for makemenu crash, fixed 'set
+
+2003-09-18	endymionsf
+	* dragdrop.cpp 1.51:
+	* globals.cpp 1.20:
+	* globals.h 1.26:
+	* items.cpp 1.48:
+	* items.h 1.30:
+	* network.cpp 1.64:
+	* nox-wizard.cpp 1.78:
+	* sndpkg.cpp 1.54:
+	* sndpkg.h 1.28:
+	* trade.cpp 1.28:
+		clean and lag remove
+
+	* amx/amxscript.cpp 1.28:
+	* amx/amxscript.h 1.12:
+	* amx/amxwraps.cpp 1.94:
+	* target.cpp 1.12:
+	* target.h 1.6:
+		added target_* api
+
+	* chars.cpp 1.149:
+		fixed invisible character
+
+	* addmenu.cpp 1.25:
+		fix for gm
+
+	* addmenu.cpp 1.26:
+	* amx/amxwrap2.cpp 1.61:
+	* amx/amxwraps.cpp 1.95:
+	* chars.cpp 1.150:
+	* chars.h 1.83:
+	* cmdtable.cpp 1.43:
+	* combat.cpp 1.52:
+	* commands.cpp 1.32:
+	* dbl_single_click.cpp 1.48:
+	* dragdrop.cpp 1.52:
+	* fishing.cpp 1.25:
+	* guildstones.cpp 1.24:
+	* item.cpp 1.44:
+	* items.cpp 1.49:
+	* magic.cpp 1.37:
+	* mount.cpp 1.30:
+	* network.cpp 1.65:
+	* newbie.cpp 1.12:
+	* nox-wizard.cpp 1.79:
+	* npcs.cpp 1.70:
+	* nxw_utils.cpp 1.7:
+	* object.cpp 1.53:
+	* object.h 1.32:
+	* pointer.cpp 1.29:
+	* skitarg.cpp 1.49:
+	* sndpkg.cpp 1.55:
+	* speech.cpp 1.67:
+	* telport.cpp 1.24:
+	* titles.cpp 1.8:
+	* trade.cpp 1.29:
+	* trigger.cpp 1.40:
+	* utils.cpp 1.39:
+	* walking.cpp 1.61:
+	* worldmain.cpp 1.70:
+		clean, moved xskin -> old_color and xid -> old_id into cObject 
+		for future cObject::moprh
+
+	* addmenu.cpp 1.24:
+	* amx/amxscript.cpp 1.27:
+	* amx/amxwrap2.cpp 1.60:
+	* boats.cpp 1.38:
+	* chars.cpp 1.148:
+	* chars.h 1.82:
+	* client.cpp 1.17:
+	* cmdtable.cpp 1.42:
+	* combat.cpp 1.51:
+	* commands.cpp 1.31:
+	* containers.cpp 1.17:
+	* dbl_single_click.cpp 1.47:
+	* dragdrop.cpp 1.50:
+	* extractionskills.cpp 1.18:
+	* fishing.cpp 1.24:
+	* guildstones.cpp 1.23:
+	* house.cpp 1.34:
+	* item.cpp 1.43:
+	* itemid.cpp 1.15:
+	* items.cpp 1.47:
+	* items.h 1.29:
+	* magic.cpp 1.36:
+	* map.cpp 1.17:
+	* mount.cpp 1.29:
+	* nox-wizard.cpp 1.77:
+	* object.cpp 1.52:
+	* object.h 1.31:
+	* pointer.cpp 1.28:
+	* set.cpp 1.44:
+	* skills.cpp 1.49:
+	* skitarg.cpp 1.48:
+	* sndpkg.cpp 1.53:
+	* speech.cpp 1.66:
+	* targeting.cpp 1.78:
+	* thievery.cpp 1.19:
+	* timing.cpp 1.27:
+	* tmpeff.cpp 1.26:
+	* trade.cpp 1.27:
+	* trigger.cpp 1.39:
+	* typedefs.h 1.38:
+	* utils.cpp 1.38:
+	* walking.cpp 1.60:
+	* worldmain.cpp 1.69:
+		clean
+
+	* amx/amxscript.cpp 1.26:
+	* amx/amxscript.h 1.11:
+	* extractionskills.cpp 1.17:
+	* skitarg.cpp 1.47:
+	* thievery.cpp 1.18:
+		modified callback of amx skill targ
+
+2003-09-17	endymionsf
+	* addmenu.cpp 1.20:
+	* addmenu.h 1.10:
+	* dbl_single_click.cpp 1.45:
+	* items.cpp 1.45:
+	* skills.h 1.11:
+	* skitarg.cpp 1.45:
+	* targeting.cpp 1.76:
+		there is only a problem into execMake with script command
+
+	* addmenu.cpp 1.22:
+	* boats.cpp 1.37:
+	* client.cpp 1.16:
+	* cmdtable.cpp 1.40:
+	* combat.cpp 1.50:
+	* commands.cpp 1.30:
+	* containers.cpp 1.16:
+	* dbl_single_click.cpp 1.46:
+	* dragdrop.cpp 1.49:
+	* extractionskills.cpp 1.16:
+	* fishing.cpp 1.23:
+	* guildstones.cpp 1.22:
+	* house.cpp 1.33:
+	* item.cpp 1.42:
+	* itemid.cpp 1.14:
+	* items.cpp 1.46:
+	* items.h 1.28:
+	* magic.cpp 1.33:
+	* map.cpp 1.16:
+	* mount.cpp 1.28:
+	* nox-wizard.cpp 1.76:
+	* targeting.cpp 1.77:
+	* telport.cpp 1.23:
+	* thievery.cpp 1.17:
+	* timing.cpp 1.26:
+	* tmpeff.cpp 1.25:
+	* trade.cpp 1.26:
+	* trigger.cpp 1.38:
+	* trigger.h 1.5:
+	* utils.cpp 1.37:
+	* worldmain.cpp 1.68:
+		move id and color to cObject, fixed xss local var read
+
+	* amx/amxwraps.cpp 1.92:
+	* target.cpp 1.10:
+	* target.h 1.5:
+		new target
+
+	* amx/amxscript.cpp 1.25:
+	* amx/amxwrap2.cpp 1.59:
+	* amx/amxwraps.cpp 1.91:
+	* npcs.cpp 1.68:
+	* nxw_utils.cpp 1.6:
+	* object.h 1.30:
+	* pointer.cpp 1.27:
+	* set.cpp 1.43:
+	* skills.cpp 1.48:
+	* skitarg.cpp 1.46:
+	* sndpkg.cpp 1.52:
+	* speech.cpp 1.65:
+		*** empty log message ***
+
+	* addmenu.cpp 1.21:
+	* addmenu.h 1.11:
+	* packets.cpp 1.48:
+	* packets.h 1.36:
+	* skills.h 1.12:
+	* utils.cpp 1.36:
+		fix now makemenu work right i think
+
+2003-09-17	luxornox
+	* addmenu.cpp 1.23:
+	* amx/amxwraps.cpp 1.93:
+	* chars.cpp 1.147:
+	* chars.h 1.81:
+	* cmdtable.cpp 1.41:
+	* constants.h 1.17:
+	* magic.cpp 1.34:
+	* magic.cpp 1.35:
+	* npcs.cpp 1.69:
+	* object.cpp 1.51:
+	* packets.cpp 1.49:
+	* target.cpp 1.11:
+	* walking.cpp 1.59:
+		*** empty log message ***
+
+2003-09-16	endymionsf
+	* client.cpp 1.15:
+	* client.h 1.7:
+	* cmdtable.cpp 1.38:
+	* cmdtable.h 1.9:
+	* commands.cpp 1.28:
+	* nox-wizard.cpp 1.74:
+	* oldmenu.h 1.19:
+	* party.cpp 1.16:
+	* party.h 1.13:
+	* skills.cpp 1.47:
+	* skills.h 1.10:
+	* skitarg.cpp 1.43:
+	* sndpkg.cpp 1.50:
+	* sndpkg.h 1.26:
+	* target.cpp 1.8:
+	* target.h 1.3:
+	* targeting.cpp 1.74:
+	* targeting.h 1.13:
+	* trigger.cpp 1.37:
+	* utils.cpp 1.34:
+		draft of makemenu and new target
+
+	* addmenu.cpp 1.19:
+	* addmenu.h 1.9:
+		*** empty log message ***
+
+	* NoxWizard.dsp 1.12:
+	* addmenu.cpp 1.18:
+	* addmenu.h 1.8:
+	* amx/amxwrap2.cpp 1.58:
+	* amx/amxwraps.cpp 1.90:
+	* amx/amxwraps.h 1.21:
+	* cmdtable.cpp 1.39:
+	* cmdtable.h 1.10:
+	* commands.cpp 1.29:
+	* commands.h 1.4:
+	* crontab.cpp 1.14:
+	* dbl_single_click.cpp 1.44:
+	* globals.cpp 1.19:
+	* globals.h 1.25:
+	* guildstones.cpp 1.21:
+	* house.cpp 1.32:
+	* menu.cpp 1.49:
+	* menu.h 1.42:
+	* network.cpp 1.63:
+	* nox-wizard.cpp 1.75:
+	* nox-wizard.h 1.7:
+	* npcs.cpp 1.67:
+	* npcs.h 1.10:
+	* oldmenu.cpp 1.24:
+	* oldmenu.h 1.20:
+	* party.cpp 1.17:
+	* skitarg.cpp 1.44:
+	* sndpkg.cpp 1.51:
+	* sndpkg.h 1.27:
+	* speech.cpp 1.64:
+	* target.cpp 1.9:
+	* target.h 1.4:
+	* targeting.cpp 1.75:
+	* targeting.h 1.14:
+	* utils.cpp 1.35:
+	* utils.h 1.6:
+		95% of makemenu and target
+
+2003-09-16	luxornox
+	* chars.cpp 1.146:
+	* chars.h 1.80:
+	* item.cpp 1.41:
+	* makefile.inc 1.15:
+		*** empty log message ***
+
+2003-09-15	endymionsf
+	* dbl_single_click.cpp 1.43:
+	* menu.h 1.41:
+	* nox-wizard.cpp 1.73:
+	* skills.cpp 1.46:
+	* skills.h 1.9:
+	* skitarg.cpp 1.42:
+	* targeting.cpp 1.73:
+	* targeting.h 1.12:
+	* thievery.cpp 1.16:
+	* utils.cpp 1.33:
+		new draft of makemenu and target
+
+	* speech.cpp 1.63:
+		draft for makemenu and new target
+
+	* abstraction/endian.h 1.5:
+	* amx/amxcback.cpp 1.9:
+	* amx/amxcback.h 1.5:
+	* amx/amxwrap2.cpp 1.57:
+	* amx/amxwraps.cpp 1.89:
+	* amx/amxwraps.h 1.20:
+	* cmdtable.cpp 1.37:
+	* cmdtable.h 1.8:
+	* commands.cpp 1.27:
+	* commands.h 1.3:
+	* guildstones.cpp 1.20:
+	* house.cpp 1.31:
+	* house.h 1.2:
+	* inlines.h 1.15:
+	* network.cpp 1.62:
+	* packets.cpp 1.47:
+	* packets.h 1.35:
+	* party.h 1.12:
+	* scripts.cpp 1.8:
+	* skills.cpp 1.45:
+	* skills.h 1.8:
+	* srvparms.h 1.13:
+	* target.cpp 1.7:
+	* target.h 1.2:
+	* targeting.cpp 1.72:
+	* targeting.h 1.11:
+	* thievery.cpp 1.15:
+	* timing.cpp 1.25:
+	* worldmain.cpp 1.67:
+		draft of new makemenu and target
+
+	* archive.cpp 1.20:
+	* client.cpp 1.14:
+	* client.h 1.6:
+		draft for makemenu and new target handling
+
+	* extractionskills.cpp 1.15:
+	* fishing.cpp 1.22:
+	* fishing.h 1.9:
+	* globals.cpp 1.18:
+	* globals.h 1.24:
+		draft of new makemenu and new target
+
+2003-09-15	luxornox
+	* ai.cpp 1.11:
+	* ai.h 1.8:
+	* chars.cpp 1.145:
+	* chars.h 1.79:
+	* magic.cpp 1.30:
+	* magic.cpp 1.31:
+	* magic.cpp 1.32:
+	* magic.h 1.10:
+	* magic.h 1.11:
+	* map.cpp 1.15:
+	* map.h 1.4:
+	* nox-wizard.cpp 1.72:
+	* npcai.cpp 1.26:
+	* party.cpp 1.15:
+	* walking.cpp 1.58:
+		*** empty log message ***
+
+2003-09-14	luxornox
+	* dbl_single_click.cpp 1.42:
+	* magic.cpp 1.28:
+	* magic.cpp 1.29:
+	* skitarg.cpp 1.41:
+	* utils.cpp 1.32:
+		*** empty log message ***
+
+2003-09-13	endymionsf
+	* addmenu.cpp 1.17:
+	* addmenu.h 1.7:
+	* amx/amxwraps.cpp 1.88:
+	* client.cpp 1.13:
+	* client.h 1.5:
+	* dbl_single_click.cpp 1.41:
+	* globals.cpp 1.17:
+	* globals.h 1.23:
+	* menu.cpp 1.48:
+	* menu.h 1.40:
+	* network.cpp 1.61:
+	* skills.cpp 1.44:
+	* skills.h 1.7:
+	* skitarg.cpp 1.40:
+	* sndpkg.cpp 1.49:
+	* targeting.cpp 1.71:
+	* trigger.cpp 1.36:
+	* typedefs.h 1.37:
+	* utils.cpp 1.31:
+		new makemenu 1/2
+
+2003-09-13	luxornox
+	* dbl_single_click.cpp 1.40:
+	* dragdrop.cpp 1.46:
+	* dragdrop.cpp 1.47:
+	* dragdrop.cpp 1.48:
+	* magic.cpp 1.25:
+	* magic.cpp 1.26:
+	* magic.cpp 1.27:
+	* magic.h 1.8:
+	* magic.h 1.9:
+	* speech.cpp 1.61:
+	* speech.cpp 1.62:
+		*** empty log message ***
+
+2003-09-12	luxornox
+	* amx/amxwraps.cpp 1.87:
+	* chars.h 1.78:
+	* combat.cpp 1.49:
+	* dbl_single_click.cpp 1.39:
+	* dragdrop.cpp 1.45:
+	* magic.cpp 1.23:
+	* magic.cpp 1.24:
+	* magic.h 1.7:
+	* object.cpp 1.50:
+	* skills.cpp 1.43:
+	* tmpeff.cpp 1.24:
+		*** empty log message ***
+
+2003-09-11	luxornox
+	* chars.cpp 1.144:
+	* combat.cpp 1.48:
+	* magic.cpp 1.20:
+	* magic.cpp 1.21:
+	* magic.cpp 1.22:
+	* scp_parser.cpp 1.12:
+	* scp_parser.h 1.8:
+	* sndpkg.cpp 1.48:
+	* tmpeff.cpp 1.23:
+	* walking.cpp 1.57:
+		*** empty log message ***
+
+2003-09-10	endymionsf
+	* addmenu.cpp 1.15:
+	* oldmenu.cpp 1.22:
+	* oldmenu.h 1.17:
+		fix
+
+	* addmenu.cpp 1.16:
+	* npcs.cpp 1.66:
+	* oldmenu.cpp 1.23:
+	* oldmenu.h 1.18:
+		fixed mnu_ and add menu... now work correct and faster :P
+
+	* chars.h 1.77:
+	* debug.h 1.8:
+	* nox-wizard.cpp 1.71:
+	* srvparms.cpp 1.23:
+	* srvparms.h 1.12:
+	* typedefs.h 1.36:
+		clean
+
+2003-09-09	endymionsf
+	* npcs.cpp 1.64:
+	* scp_parser.cpp 1.11:
+		fixed creature info
+
+	* addmenu.cpp 1.14:
+	* addmenu.h 1.6:
+	* amx/amxwraps.cpp 1.86:
+	* menu.cpp 1.47:
+	* menu.h 1.39:
+	* npcs.cpp 1.65:
+	* oldmenu.cpp 1.21:
+	* oldmenu.h 1.16:
+	* utils.cpp 1.30:
+		some fix, added support for same id for checkbox and radio 
+		button
+
+2003-09-08	endymionsf
+	* addmenu.cpp 1.13:
+	* amx/amxwrap2.cpp 1.55:
+	* amx/amxwraps.h 1.18:
+	* area.cpp 1.10:
+	* containers.cpp 1.15:
+	* data.cpp 1.15:
+	* dbl_single_click.cpp 1.38:
+	* fishing.cpp 1.21:
+	* globals.h 1.22:
+	* house.cpp 1.30:
+	* html.cpp 1.11:
+	* itemid.cpp 1.13:
+	* magic.cpp 1.19:
+	* mount.cpp 1.27:
+	* msgboard.cpp 1.13:
+	* network.cpp 1.59:
+	* nox-wizard.cpp 1.70:
+	* npcai.cpp 1.25:
+	* npcs.cpp 1.63:
+	* npcs.h 1.9:
+	* object.cpp 1.49:
+	* race.cpp 1.15:
+	* scripts.cpp 1.7:
+	* scripts.h 1.4:
+	* sndpkg.cpp 1.47:
+	* spawn.cpp 1.18:
+	* speech.cpp 1.60:
+	* titles.cpp 1.7:
+	* trigger.cpp 1.35:
+		end creatures info, race work in progress
+
+	* amx/amxwraps.cpp 1.84:
+	* items.cpp 1.44:
+	* set.cpp 1.42:
+		new amx function ( need also to add race_* )
+
+	* menu.h 1.38:
+	* network.cpp 1.60:
+	* race.cpp 1.16:
+	* race.h 1.8:
+	* set.h 1.21:
+		added race stuff
+
+	* amx/amxscript.cpp 1.24:
+	* amx/amxscript.h 1.10:
+	* amx/amxwrap2.cpp 1.56:
+	* amx/amxwraps.cpp 1.85:
+	* amx/amxwraps.h 1.19:
+		added race native and function findNativeNotPresent for fast 
+		find or lost native
+
+2003-09-08	luxornox
+	* chars.h 1.76:
+	* constants.h 1.16:
+	* dbl_single_click.cpp 1.37:
+	* magic.cpp 1.18:
+	* magic.h 1.6:
+	* menu.h 1.37:
+	* object.h 1.29:
+	* tmpeff.cpp 1.22:
+		*** empty log message ***
+
+2003-09-07	endymionsf
+	* data.cpp 1.14:
+	* menu.cpp 1.45:
+		now visual c++ compile
+
+	* amx/amxwrap2.cpp 1.54:
+	* amx/amxwraps.cpp 1.81:
+	* amx/amxwraps.h 1.17:
+	* chars.cpp 1.142:
+	* chars.h 1.74:
+	* constants.h 1.14:
+	* globals.cpp 1.16:
+	* globals.h 1.21:
+	* menu.cpp 1.42:
+	* menu.h 1.33:
+	* nox-wizard.cpp 1.68:
+	* nox-wizard.h 1.6:
+	* npcs.cpp 1.61:
+	* npcs.h 1.8:
+	* skills.cpp 1.42:
+	* sndpkg.cpp 1.46:
+	* srvparms.cpp 1.21:
+	* srvparms.h 1.11:
+	* typedefs.h 1.35:
+	* utils.cpp 1.29:
+	* walking.cpp 1.56:
+		new creatures handled by xss and restyle.. needed for .. not 
+		remeber now.. a stuff for end menu.. ah yes for tracking
+
+	* NoxWizard.dsp 1.11:
+	* chars.cpp 1.143:
+	* client.cpp 1.12:
+	* dbl_single_click.cpp 1.36:
+	* menu.cpp 1.46:
+	* nxw_utils.cpp 1.5:
+	* race.cpp 1.14:
+	* race.h 1.7:
+	* racerequiredtype.cpp 1.6:
+	* racerequiredtype.h 1.2:
+	* racetype.cpp 1.6:
+	* racetype.h 1.2:
+	* set.cpp 1.41:
+	* trigger.cpp 1.34:
+		race menu working and some fix : spell book and mount added at 
+		weight
+
+	* amx/amxwraps.cpp 1.83:
+		fixed morph.. before it not change name right
+
+2003-09-07	luxornox
+	* addmenu.cpp 1.12:
+	* amx/amxwraps.cpp 1.82:
+	* boats.cpp 1.36:
+	* boats.h 1.18:
+	* chars.h 1.75:
+	* cmdtable.cpp 1.36:
+	* combat.cpp 1.47:
+	* commands.cpp 1.26:
+	* constants.h 1.15:
+	* dbl_single_click.cpp 1.35:
+	* dragdrop.cpp 1.44:
+	* extractionskills.cpp 1.14:
+	* fishing.cpp 1.20:
+	* house.cpp 1.29:
+	* inlines.h 1.14:
+	* item.cpp 1.40:
+	* items.cpp 1.43:
+	* magic.cpp 1.17:
+	* makefile.inc 1.14:
+	* map.cpp 1.14:
+	* menu.cpp 1.43:
+	* menu.h 1.34:
+	* network.cpp 1.58:
+	* nox-wizard.cpp 1.69:
+	* npcs.cpp 1.62:
+	* oldmenu.cpp 1.20:
+	* oldmenu.h 1.15:
+	* srvparms.cpp 1.22:
+	* targeting.cpp 1.70:
+	* worldmain.cpp 1.66:
+	* worldmain.h 1.4:
+		Muls file handling speed improved. A lot of compiling issues 
+		with linux solved.
+
+	* data.cpp 1.13:
+	* data.h 1.8:
+	* menu.cpp 1.44:
+	* menu.h 1.35:
+	* menu.h 1.36:
+	* muls.cpp 1.32:
+	* muls.h 1.23:
+		*** empty log message ***
+
+2003-09-06	endymionsf
+	* amx/amxwraps.cpp 1.80:
+	* cmdtable.cpp 1.35:
+	* cmdtable.h 1.7:
+	* constants.h 1.13:
+	* globals.cpp 1.15:
+	* globals.h 1.20:
+	* network.cpp 1.57:
+	* nox-wizard.cpp 1.67:
+	* packets.cpp 1.46:
+	* packets.h 1.34:
+	* sndpkg.cpp 1.45:
+	* targeting.cpp 1.69:
+		new tracking
+
+2003-09-05	endymionsf
+	* amx/amxwrap2.cpp 1.51:
+	* amx/amxwraps.cpp 1.78:
+	* amx/amxwraps.h 1.14:
+		removed dualbyte property
+
+	* amx/amxwraps.cpp 1.77:
+	* menu.cpp 1.41:
+	* menu.h 1.32:
+	* oldmenu.cpp 1.19:
+		new menu.. some fix
+
+	* amx/amxwrap2.cpp 1.52:
+	* amx/amxwrap2.cpp 1.53:
+	* amx/amxwraps.cpp 1.79:
+	* amx/amxwraps.h 1.15:
+	* amx/amxwraps.h 1.16:
+	* chars.cpp 1.141:
+	* chars.h 1.73:
+	* dbl_single_click.cpp 1.34:
+	* msgboard.cpp 1.12:
+	* nox-wizard.cpp 1.66:
+	* npcai.cpp 1.24:
+	* npcs.cpp 1.60:
+	* skitarg.cpp 1.39:
+	* spawn.cpp 1.17:
+	* speech.cpp 1.59:
+	* targeting.cpp 1.68:
+	* timing.cpp 1.24:
+	* walking.cpp 1.55:
+		clean
+
+	* amx/amxwrap2.cpp 1.50:
+	* amx/amxwraps.cpp 1.76:
+	* amx/amxwraps.h 1.13:
+	* chars.cpp 1.140:
+	* chars.h 1.72:
+	* jail.cpp 1.11:
+	* menu.cpp 1.40:
+	* menu.h 1.31:
+		new menu
+
+2003-09-04	endymionsf
+	* amx/amxwrap2.cpp 1.49:
+	* cmdtable.cpp 1.34:
+	* cmdtable.h 1.6:
+	* commands.cpp 1.25:
+	* commands.h 1.2:
+	* menu.cpp 1.39:
+	* menu.h 1.30:
+	* packets.cpp 1.45:
+	* packets.h 1.33:
+		new menu system
+
+2003-09-03	endymionsf
+	* amx/amxwraps.cpp 1.75:
+	* cmdtable.cpp 1.33:
+	* cmdtable.h 1.5:
+	* menu.cpp 1.38:
+	* set.cpp 1.40:
+	* targeting.cpp 1.67:
+	* targeting.h 1.10:
+		new menu system
+
+2003-09-01	endymionsf
+	* NoxWizard.ncb 1.2:
+		not needed
+
+	* chars.cpp 1.139:
+	* magic.h 1.5:
+		*** empty log message ***
+
+	* NoxWizard.dsp 1.10:
+	* accounts.cpp 1.19:
+	* addmenu.cpp 1.11:
+	* addmenu.h 1.5:
+	* ai.cpp 1.10:
+	* amx/amxcback.cpp 1.8:
+	* amx/amxcback.h 1.4:
+	* amx/amxvarserver.cpp 1.6:
+	* amx/amxwrap2.cpp 1.48:
+	* amx/amxwraps.cpp 1.74:
+	* amx/amxwraps.h 1.12:
+	* archive.cpp 1.19:
+	* area.cpp 1.9:
+	* basics.cpp 1.4:
+	* basics.h 1.9:
+	* boats.cpp 1.35:
+	* books.cpp 1.11:
+	* bounty.cpp 1.4:
+	* calendar.cpp 1.7:
+	* char_array.cpp 1.2:
+	* char_array.h 1.5:
+	* chars.cpp 1.138:
+	* chars.h 1.71:
+	* client.cpp 1.11:
+	* client.h 1.4:
+	* cmdtable.cpp 1.32:
+	* combat.cpp 1.46:
+	* commands.cpp 1.24:
+	* console.cpp 1.4:
+	* containers.cpp 1.14:
+	* crontab.cpp 1.13:
+	* dbl_single_click.cpp 1.33:
+	* debug.cpp 1.3:
+	* dragdrop.cpp 1.43:
+	* extractionskills.cpp 1.13:
+	* extractionskills.h 1.8:
+	* fishing.cpp 1.19:
+	* gamedate.cpp 1.9:
+	* globals.cpp 1.14:
+	* globals.h 1.19:
+	* guild.cpp 1.16:
+	* guildstones.cpp 1.19:
+	* house.cpp 1.28:
+	* html.cpp 1.10:
+	* inlines.h 1.13:
+	* item.cpp 1.39:
+	* item_array.cpp 1.2:
+	* item_array.h 1.3:
+	* itemid.cpp 1.12:
+	* items.cpp 1.42:
+	* items.h 1.27:
+	* jail.cpp 1.10:
+	* logsystem.cpp 1.4:
+	* logsystem.h 1.5:
+	* magic.cpp 1.16:
+	* magic.h 1.4:
+	* map.cpp 1.13:
+	* map.h 1.3:
+	* menu.cpp 1.37:
+	* mount.cpp 1.26:
+	* msgboard.cpp 1.11:
+	* muls.cpp 1.31:
+	* network.cpp 1.56:
+	* newbie.cpp 1.11:
+	* nox-wizard.cpp 1.65:
+	* npcai.cpp 1.23:
+	* npcs.cpp 1.59:
+	* nxw_utils.cpp 1.4:
+	* nxwcommn.h 1.12:
+	* object.cpp 1.48:
+	* object.h 1.28:
+	* oldmenu.cpp 1.18:
+	* organisation.cpp 1.14:
+	* packets.cpp 1.44:
+	* party.cpp 1.14:
+	* pointer.cpp 1.26:
+	* pointer.h 1.14:
+	* race.cpp 1.13:
+	* raceskill.cpp 1.6:
+	* range.cpp 1.4:
+	* range.h 1.5:
+	* rcvpkg.cpp 1.15:
+	* regions.cpp 1.8:
+	* remadmin.cpp 1.12:
+	* scp_parser.cpp 1.10:
+	* scripts.cpp 1.6:
+	* set.cpp 1.39:
+	* skills.cpp 1.41:
+	* skitarg.cpp 1.38:
+	* sndpkg.cpp 1.44:
+	* spawn.cpp 1.16:
+	* speech.cpp 1.58:
+	* sregions.cpp 1.19:
+	* srvparms.cpp 1.20:
+	* target.cpp 1.6:
+	* targeting.cpp 1.66:
+	* telport.cpp 1.22:
+	* thievery.cpp 1.14:
+	* timers.cpp 1.11:
+	* timing.cpp 1.23:
+	* titles.cpp 1.6:
+	* tmpeff.cpp 1.21:
+	* trade.cpp 1.25:
+	* trigger.cpp 1.33:
+	* trigger.h 1.4:
+	* utils.cpp 1.28:
+	* utils.h 1.5:
+	* walking.cpp 1.54:
+	* weight.cpp 1.9:
+	* worldmain.cpp 1.65:
+		clean
+
+2003-08-31	endymionsf
+	* accounts.cpp 1.18:
+	* accounts.h 1.9:
+	* amx/amx_api.h 1.14:
+	* amx/amxscript.cpp 1.23:
+	* amx/amxwrap2.cpp 1.47:
+	* amx/amxwraps.cpp 1.73:
+	* amx/amxwraps.h 1.11:
+	* area.cpp 1.8:
+	* area.h 1.6:
+	* basics.cpp 1.3:
+	* basics.h 1.8:
+	* boats.cpp 1.34:
+	* boats.h 1.17:
+	* books.cpp 1.10:
+	* chars.cpp 1.137:
+	* chars.h 1.70:
+	* classes.h 1.23:
+	* cmdtable.cpp 1.31:
+	* crontab.cpp 1.12:
+	* dragdrop.cpp 1.42:
+	* fishing.cpp 1.18:
+	* fishing.h 1.8:
+	* globals.cpp 1.13:
+	* globals.h 1.18:
+	* guild.cpp 1.15:
+	* menu.cpp 1.36:
+	* menu.h 1.29:
+	* nox-wizard.cpp 1.64:
+	* nxwcommn.h 1.11:
+	* party.cpp 1.13:
+	* party.h 1.11:
+	* rcvpkg.cpp 1.14:
+	* remadmin.cpp 1.11:
+	* skills.h 1.6:
+	* skitarg.cpp 1.37:
+	* sndpkg.cpp 1.43:
+	* spawn.cpp 1.15:
+	* spawn.h 1.10:
+	* targeting.cpp 1.65:
+	* targeting.h 1.9:
+	* thievery.cpp 1.13:
+	* timing.cpp 1.22:
+	* trade.cpp 1.24:
+	* utils.cpp 1.27:
+	* walking.cpp 1.53:
+	* weight.cpp 1.8:
+	* weight.h 1.2:
+	* worldmain.cpp 1.64:
+	* worldmain.h 1.3:
+		work in progress new menu
+
+2003-08-29	endymionsf
+	* NoxWizard.dsp 1.8:
+	* accounts.cpp 1.16:
+	* accounts.h 1.7:
+	* addmenu.cpp 1.8:
+	* addmenu.h 1.3:
+	* boats.cpp 1.32:
+	* boats.h 1.15:
+	* chars.cpp 1.135:
+	* chars.h 1.68:
+	* client.h 1.2:
+	* cmdtable.cpp 1.29:
+	* cmdtable.h 1.3:
+	* commands.cpp 1.22:
+	* crontab.cpp 1.10:
+	* dbl_single_click.cpp 1.31:
+	* dragdrop.cpp 1.40:
+	* gamedate.cpp 1.7:
+	* globals.h 1.16:
+	* guildstones.cpp 1.17:
+	* gumps.cpp 1.22:
+	* gumps.h 1.2:
+	* html.cpp 1.8:
+	* map.cpp 1.11:
+	* menu.cpp 1.34:
+	* menu.h 1.27:
+	* network.cpp 1.54:
+	* network.h 1.11:
+	* nox-wizard.cpp 1.61:
+	* npcs.cpp 1.57:
+	* nxwcommn.h 1.9:
+	* oldmenu.cpp 1.16:
+	* oldmenu.h 1.13:
+	* organisation.cpp 1.12:
+	* organisation.h 1.11:
+	* packets.h 1.31:
+	* party.cpp 1.10:
+	* party.h 1.9:
+	* poll.cpp 1.8:
+	* poll.h 1.6:
+	* remadmin.cpp 1.9:
+	* skills.cpp 1.39:
+	* skitarg.cpp 1.35:
+	* srvparms.cpp 1.18:
+	* targeting.cpp 1.63:
+	* thievery.cpp 1.11:
+	* timers.cpp 1.9:
+	* timing.cpp 1.20:
+	* tmpeff.cpp 1.19:
+	* trigger.cpp 1.31:
+	* typedefs.h 1.33:
+	* utils.cpp 1.25:
+	* utils.h 1.3:
+	* walking.cpp 1.51:
+	* worldmain.cpp 1.62:
+		adding new menu system
+
+	* collector.h 1.2:
+	* custmenu.cpp 1.5:
+	* custmenu.h 1.3:
+	* data.cpp 1.12:
+	* data.h 1.7:
+	* gumps.cpp 1.24:
+	* gumps.h 1.4:
+	* nxwGump.cpp 1.11:
+	* nxwGump.h 1.7:
+	* nxwString.cpp 1.6:
+	* nxwString.h 1.6:
+	* nxwStringList.cpp 1.6:
+	* nxwStringList.h 1.6:
+		removed unused files
+
+	* NoxWizard.dsp 1.9:
+	* accounts.cpp 1.17:
+	* accounts.h 1.8:
+	* addmenu.cpp 1.10:
+	* addmenu.cpp 1.9:
+	* addmenu.h 1.4:
+	* amx/amxcback.cpp 1.7:
+	* amx/amxcback.h 1.3:
+	* amx/amxscript.cpp 1.22:
+	* amx/amxscript.h 1.9:
+	* amx/amxwrap2.cpp 1.46:
+	* amx/amxwraps.cpp 1.71:
+	* amx/amxwraps.cpp 1.72:
+	* amx/amxwraps.h 1.10:
+	* boats.cpp 1.33:
+	* boats.h 1.16:
+	* chars.cpp 1.136:
+	* chars.h 1.69:
+	* client.h 1.3:
+	* cmdtable.cpp 1.30:
+	* cmdtable.h 1.4:
+	* commands.cpp 1.23:
+	* crontab.cpp 1.11:
+	* dbl_single_click.cpp 1.32:
+	* dragdrop.cpp 1.41:
+	* gamedate.cpp 1.8:
+	* globals.h 1.17:
+	* guildstones.cpp 1.18:
+	* gumps.cpp 1.23:
+	* gumps.h 1.3:
+	* html.cpp 1.9:
+	* map.cpp 1.12:
+	* menu.cpp 1.35:
+	* menu.h 1.28:
+	* muls.cpp 1.30:
+	* muls.h 1.22:
+	* network.cpp 1.55:
+	* network.h 1.12:
+	* nox-wizard.cpp 1.62:
+	* nox-wizard.cpp 1.63:
+	* npcs.cpp 1.58:
+	* nxwcommn.h 1.10:
+	* oldmenu.cpp 1.17:
+	* oldmenu.h 1.14:
+	* organisation.cpp 1.13:
+	* organisation.h 1.12:
+	* packets.h 1.32:
+	* party.cpp 1.11:
+	* party.cpp 1.12:
+	* party.h 1.10:
+	* poll.cpp 1.9:
+	* poll.h 1.7:
+	* remadmin.cpp 1.10:
+	* skills.cpp 1.40:
+	* skitarg.cpp 1.36:
+	* srvparms.cpp 1.19:
+	* targeting.cpp 1.64:
+	* thievery.cpp 1.12:
+	* timers.cpp 1.10:
+	* timing.cpp 1.21:
+	* tmpeff.cpp 1.20:
+	* trigger.cpp 1.32:
+	* typedefs.h 1.34:
+	* utils.cpp 1.26:
+	* utils.h 1.4:
+	* walking.cpp 1.52:
+	* worldmain.cpp 1.63:
+		new menu system
+
+2003-08-27	luxornox
+	* data.cpp 1.11:
+		data.* muls handling system re-inserted to get significant speed 
+		improvements.
+
+	* amx/amxwraps.cpp 1.70:
+	* boats.cpp 1.31:
+	* data.cpp 1.10:
+	* data.h 1.6:
+	* map.cpp 1.10:
+	* muls.cpp 1.29:
+	* muls.h 1.21:
+	* npcs.cpp 1.56:
+	* nxwcommn.h 1.8:
+	* srvparms.cpp 1.17:
+	* targeting.cpp 1.62:
+	* worldmain.cpp 1.61:
+		*** empty log message ***
+
+2003-08-24	endymionsf
+	* NoxWizard.dsp 1.7:
+		updated project
+
+	* muls.cpp 1.25:
+	* muls.h 1.17:
+		tiledata, map, statics, multi OK
+
+	* muls.cpp 1.28:
+	* muls.h 1.20:
+		working cache for tiledata, statics, multi TESTED -  new muls 
+		done
+
+	* muls.cpp 1.27:
+	* muls.h 1.19:
+		now verdata info are loaded right, tested for tiledata, multi
+
+	* muls.cpp 1.26:
+	* muls.h 1.18:
+	* srvparms.cpp 1.16:
+	* srvparms.h 1.10:
+		added into server.cfg *_CACHE for caching mul, and cleaned code
+
+	* data.cpp 1.9:
+	* data.h 1.5:
+		replaced by new muls
+
+2003-08-23	endymionsf
+	* muls.cpp 1.20:
+	* muls.h 1.14:
+		now link
+
+	* muls.cpp 1.24:
+	* muls.h 1.16:
+		now is more standard
+
+	* boats.cpp 1.30:
+	* house.cpp 1.27:
+	* network.cpp 1.53:
+	* worldmain.cpp 1.60:
+		clean for new muls
+
+	* classes.h 1.22:
+	* globals.cpp 1.12:
+	* globals.h 1.15:
+	* muls.cpp 1.19:
+	* muls.cpp 1.21:
+	* muls.cpp 1.23:
+	* muls.h 1.13:
+	* nox-wizard.cpp 1.60:
+	* srvparms.cpp 1.15:
+	* srvparms.h 1.9:
+	* targeting.cpp 1.61:
+		clean
+
+	* muls.cpp 1.18:
+	* muls.cpp 1.22:
+	* muls.h 1.12:
+	* muls.h 1.15:
+		new muls
+
+2003-08-22	endymionsf
+	* muls.cpp 1.11:
+	* muls.h 1.3:
+		adding new muls file management
+
+	* muls.cpp 1.14:
+	* muls.cpp 1.15:
+	* muls.h 1.6:
+	* muls.h 1.7:
+		wip
+
+	* muls.cpp 1.17:
+	* muls.h 1.9:
+		work in prog
+
+	* muls.cpp 1.12:
+	* muls.cpp 1.13:
+	* muls.cpp 1.16:
+	* muls.h 1.4:
+	* muls.h 1.5:
+	* muls.h 1.8:
+	* nxwcommn.h 1.7:
+		work in progress
+
+	* amx/amxwraps.cpp 1.69:
+	* boats.cpp 1.29:
+	* map.cpp 1.9:
+	* muls.h 1.10:
+	* muls.h 1.11:
+	* npcs.cpp 1.55:
+	* srvparms.cpp 1.14:
+	* targeting.cpp 1.60:
+	* worldmain.cpp 1.59:
+		new muls
+
+2003-08-21	endymionsf
+	* boats.cpp 1.28:
+	* boats.h 1.14:
+		now link
+
+	* boats.cpp 1.27:
+	* boats.h 1.13:
+	* chars.cpp 1.134:
+		clean
+
+2003-08-19	endymionsf
+	* boats.cpp 1.26:
+	* chars.cpp 1.133:
+	* data.cpp 1.8:
+	* map.cpp 1.8:
+	* walking.cpp 1.50:
+		fixed warning
+
+	* NoxWizard.dsp 1.6:
+		updated visual c++ project
+
+2003-08-12	sparhawksf
+	* pointer.cpp 1.25:
+		Preparing to replace mapregions
+
+2003-08-10	dgp85
+	* data.cpp 1.7:
+		missed a save
+
+2003-08-09	dgp85
+	* nox-bcb6.mak 1.10:
+	* nox-bcb6.mak 1.9:
+		fixed bcb6 makefile
+
+	* data.cpp 1.6:
+	* map.cpp 1.7:
+		fixed for win32 compatibility
+
+2003-08-06	luxornox
+	* ai.h 1.6:
+	* ai.h 1.7:
+	* map.cpp 1.6:
+		*** empty log message ***
+
+2003-08-04	luxornox
+	* chars.cpp 1.132:
+	* dbl_single_click.cpp 1.30:
+	* dragdrop.cpp 1.39:
+	* map.cpp 1.5:
+	* spawn.cpp 1.14:
+	* telport.cpp 1.21:
+		*** empty log message ***
+
+2003-08-03	luxornox
+	* amx/amxwraps.cpp 1.68:
+	* boats.cpp 1.25:
+	* boats.h 1.12:
+	* cache.cpp 1.14:
+	* chars.cpp 1.131:
+	* classes.h 1.21:
+	* cmdtable.cpp 1.28:
+	* combat.cpp 1.45:
+	* commands.cpp 1.21:
+	* data.cpp 1.5:
+	* data.h 1.4:
+	* dbl_single_click.cpp 1.29:
+	* dragdrop.cpp 1.38:
+	* extractionskills.cpp 1.12:
+	* fishing.cpp 1.17:
+	* globals.cpp 1.11:
+	* globals.h 1.14:
+	* house.cpp 1.26:
+	* item.cpp 1.38:
+	* items.cpp 1.41:
+	* magic.cpp 1.15:
+	* makefile.inc 1.13:
+	* map.cpp 1.2:
+	* map.h 1.2:
+	* mapstuff.cpp 1.11:
+	* mount.cpp 1.25:
+	* nox-wizard.cpp 1.59:
+	* npcs.cpp 1.54:
+	* nxwcommn.h 1.6:
+	* spawn.cpp 1.12:
+	* src.kdevelop 1.3:
+	* src.kdevses 1.4:
+	* srvparms.cpp 1.13:
+	* targeting.cpp 1.59:
+	* typedefs.h 1.32:
+	* utils.cpp 1.24:
+	* walking.cpp 1.47:
+	* worldmain.cpp 1.58:
+		New data handling system implementation.
+
+	* cache.cpp 1.15:
+	* cache.h 1.9:
+	* data.cpp 1.2:
+	* data.cpp 1.3:
+	* data.h 1.2:
+	* data.h 1.3:
+	* map.cpp 1.3:
+	* map.cpp 1.4:
+	* mapstuff.cpp 1.12:
+	* muls.cpp 1.10:
+	* muls.h 1.2:
+	* spawn.cpp 1.13:
+	* spawn.h 1.9:
+	* telport.cpp 1.20:
+	* walking.cpp 1.48:
+	* walking.cpp 1.49:
+		*** empty log message ***
+
+	* data.cpp 1.4:
+		New MULs data handling system completed.
+
+2003-08-02	luxornox
+	* set.cpp 1.38:
+		*** empty log message ***
+
+2003-07-31	sparhawksf
+	* chars.cpp 1.129:
+	* chars.h 1.67:
+	* nox-wizard.cpp 1.58:
+		Preparing to replace mapregions
+		Moved cChar::increaseKarma() and cChar::modifyFame from nox-wizard.cpp to chars.cpp
+
+	* pointer.cpp 1.24:
+	* pointer.h 1.13:
+	* timing.cpp 1.19:
+		Preparing to replace mapRegions
+
+	* addmenu.cpp 1.7:
+		fix for bug 24: seed problem in custom menu's
+
+	* chars.cpp 1.130:
+	* typedefs.h 1.31:
+		Preparing to replace mapregions
+
+2003-07-30	luxornox
+	* data.cpp 1.1:
+	* data.h 1.1:
+		New Data files handling system
+
+2003-07-29	sparhawksf
+	* boats.cpp 1.24:
+	* chars.cpp 1.128:
+	* dragdrop.cpp 1.37:
+	* house.cpp 1.25:
+	* item.cpp 1.37:
+	* items.cpp 1.40:
+	* mount.cpp 1.24:
+	* nox-wizard.cpp 1.57:
+	* npcs.cpp 1.52:
+	* npcs.cpp 1.53:
+	* object.cpp 1.47:
+	* object.h 1.27:
+	* pointer.cpp 1.23:
+	* pointer.h 1.12:
+	* speech.cpp 1.57:
+	* targeting.cpp 1.58:
+	* typedefs.h 1.30:
+	* worldmain.cpp 1.57:
+		Preparing to replace mapRegions
+
+2003-07-29	luxornox
+	* ai.cpp 1.9:
+	* ai.h 1.5:
+	* los.cpp 1.9:
+	* los.h 1.3:
+	* makefile 1.4:
+	* makefile.inc 1.12:
+	* map.cpp 1.1:
+	* map.h 1.1:
+	* nxwcommn.h 1.5:
+		*** empty log message ***
+
+2003-07-28	sparhawksf
+	* nox-wizard.cpp 1.56:
+		Fixed bug where player to vendor sell bug vendor took your money 
+		instead of adding the sales amount to it
+
+	* pointer.cpp 1.21:
+	* pointer.cpp 1.22:
+	* pointer.h 1.10:
+	* pointer.h 1.11:
+		Preparing to replace mapRegions
+
+	* network.cpp 1.52:
+		Cleaned up host deny parsing
+
+2003-07-28	luxornox
+	* ai.cpp 1.8:
+	* ai.h 1.4:
+		*** empty log message ***
+
+2003-07-27	sparhawksf
+	* npcs.cpp 1.48:
+	* object.cpp 1.43:
+		AddRandomNPC now uses cObject::getRandomScriptValue( <section>, <
+		sectionid> );
+
+	* amx/amxwraps.cpp 1.67:
+	* npcs.cpp 1.46:
+	* tmpeff.cpp 1.18:
+		Replaced setrandomname by cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* item.cpp 1.35:
+	* npcs.cpp 1.45:
+	* object.cpp 1.41:
+	* object.h 1.26:
+		Replaced setrandom(hair)color by cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* npcs.cpp 1.47:
+	* object.cpp 1.42:
+		AddRandomLoot now uses cObject::getRandomScriptValue( <section>, 
+		<sectionid> );
+
+	* nxwGump.cpp 1.10:
+		Refixed 'tweak bug due to cvs rollback
+
+	* object.cpp 1.45:
+		Fixed stupid bug in getRamdomScriptValue()
+
+	* archive.cpp 1.18:
+	* boats.cpp 1.23:
+	* chars.cpp 1.127:
+	* dragdrop.cpp 1.36:
+	* house.cpp 1.24:
+	* item.cpp 1.36:
+	* items.cpp 1.39:
+	* makefile 1.3:
+	* mount.cpp 1.23:
+	* nox-wizard.cpp 1.55:
+	* npcai.cpp 1.22:
+	* npcs.cpp 1.51:
+	* pointer.cpp 1.18:
+	* pointer.h 1.8:
+	* speech.cpp 1.56:
+	* targeting.cpp 1.57:
+	* worldmain.cpp 1.56:
+		Preparing to replace mapRegions, conditional seperation between 
+		old and new code
+
+	* object.cpp 1.46:
+		Removed debug conout
+
+	* npcs.cpp 1.49:
+	* object.cpp 1.44:
+		SpawnRandomMonster now uses cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* npcs.cpp 1.50:
+	* pointer.cpp 1.16:
+	* pointer.cpp 1.17:
+	* pointer.cpp 1.19:
+	* pointer.cpp 1.20:
+	* pointer.h 1.7:
+	* pointer.h 1.9:
+	* timing.cpp 1.18:
+		Preparing to replace mapRegions
+
+2003-07-27	luxornox
+	* chars.cpp 1.126:
+	* chars.h 1.66:
+	* combat.cpp 1.43:
+	* combat.cpp 1.44:
+	* magic.cpp 1.14:
+	* walking.cpp 1.46:
+		*** empty log message ***
+
+2003-07-26	kheru
+	* items.cpp 1.37:
+		little fix
+
+2003-07-26	dgp85
+	* walking.cpp 1.42:
+		fixes bug #0000168 - Thanks Wintermute
+
+	* cache.cpp 1.11:
+	* cache.cpp 1.12:
+	* cache.h 1.8:
+		reverted cache.cpp to the 13 july
+
+	* books.cpp 1.8:
+		removed #ifndef _MSC_VER... at least with the 7 & STLPort works 
+		fine
+
+	* NoxWizard.dsp 1.4:
+		added ai.cpp to the project
+
+	* cache.cpp 1.10:
+	* oldmenu.cpp 1.14:
+	* oldmenu.h 1.11:
+		fixed bug 0000165, added menus namespace to oldmenu.[cpp|h], 
+		oldmenu is not compiled under linux, strange, isnt it?
+
+	* worldmain.cpp 1.54:
+		fixed typo, bug #0000167 - Thanks Wintermute
+
+2003-07-26	luxornox
+	* NoxWizard.dsp 1.5:
+	* abstraction/endian.cpp 1.9:
+	* accounts.cpp 1.15:
+	* accounts.h 1.6:
+	* amx/amxwrap2.cpp 1.45:
+	* amx/amxwraps.cpp 1.66:
+	* archive.cpp 1.17:
+	* archive.h 1.7:
+	* area.cpp 1.7:
+	* area.h 1.5:
+	* basics.h 1.7:
+	* boats.cpp 1.22:
+	* boats.h 1.11:
+	* books.cpp 1.9:
+	* cache.cpp 1.13:
+	* chars.cpp 1.124:
+	* chars.h 1.65:
+	* classes.h 1.20:
+	* client.cpp 1.10:
+	* cmdtable.cpp 1.27:
+	* combat.cpp 1.42:
+	* commands.cpp 1.20:
+	* compiler/sc1.c 1.10:
+	* compiler/sc6.c 1.7:
+	* constants.h 1.12:
+	* containers.cpp 1.13:
+	* crontab.cpp 1.9:
+	* dbl_single_click.cpp 1.28:
+	* dragdrop.cpp 1.35:
+	* extractionskills.cpp 1.11:
+	* extractionskills.h 1.7:
+	* fishing.cpp 1.16:
+	* fishing.h 1.7:
+	* gamedate.cpp 1.6:
+	* gamedate.h 1.6:
+	* globals.cpp 1.10:
+	* globals.h 1.13:
+	* guild.cpp 1.14:
+	* guild.h 1.9:
+	* gumps.cpp 1.21:
+	* house.cpp 1.23:
+	* html.cpp 1.7:
+	* inlines.h 1.12:
+	* item.cpp 1.34:
+	* itemid.cpp 1.11:
+	* items.cpp 1.38:
+	* items.h 1.26:
+	* jail.cpp 1.9:
+	* jail.h 1.8:
+	* los.cpp 1.8:
+	* magic.cpp 1.13:
+	* makefile 1.2:
+	* mapstuff.cpp 1.10:
+	* menu.cpp 1.33:
+	* menu.h 1.26:
+	* mount.cpp 1.22:
+	* muls.cpp 1.9:
+	* network.cpp 1.51:
+	* nox-wizard.cpp 1.54:
+	* npcai.cpp 1.21:
+	* npcs.cpp 1.44:
+	* nxwString.cpp 1.5:
+	* nxwString.h 1.5:
+	* nxwStringList.cpp 1.5:
+	* nxwStringList.h 1.5:
+	* object.cpp 1.40:
+	* object.h 1.25:
+	* oldmenu.cpp 1.15:
+	* oldmenu.h 1.12:
+	* organisation.cpp 1.11:
+	* organisation.h 1.10:
+	* packets.cpp 1.43:
+	* particles.cpp 1.4:
+	* particles.h 1.4:
+	* party.cpp 1.9:
+	* party.h 1.8:
+	* pointer.cpp 1.15:
+	* pointer.h 1.6:
+	* poll.cpp 1.7:
+	* poll.h 1.5:
+	* race.cpp 1.12:
+	* race.h 1.6:
+	* raceability.cpp 1.5:
+	* racegender.cpp 1.5:
+	* racerequiredtype.cpp 1.5:
+	* racescriptentry.cpp 1.5:
+	* raceskill.cpp 1.5:
+	* racetokenizer.cpp 1.5:
+	* racetype.cpp 1.5:
+	* rcvpkg.cpp 1.13:
+	* regions.cpp 1.7:
+	* regions.h 1.9:
+	* remadmin.cpp 1.8:
+	* scp_parser.cpp 1.9:
+	* scp_parser.h 1.7:
+	* set.cpp 1.37:
+	* set.h 1.20:
+	* skills.cpp 1.38:
+	* skills.h 1.5:
+	* skitarg.cpp 1.34:
+	* sndpkg.cpp 1.42:
+	* sndpkg.h 1.25:
+	* spawn.cpp 1.11:
+	* spawn.h 1.8:
+	* speech.cpp 1.55:
+	* src.kdevelop 1.2:
+	* src.kdevses 1.3:
+	* sregions.cpp 1.18:
+	* srvparms.cpp 1.12:
+	* target.cpp 1.5:
+	* targeting.cpp 1.56:
+	* targeting.h 1.8:
+	* telport.cpp 1.19:
+	* thievery.cpp 1.10:
+	* timers.cpp 1.8:
+	* timers.h 1.5:
+	* timing.cpp 1.17:
+	* trade.cpp 1.23:
+	* trade.h 1.6:
+	* trigger.cpp 1.30:
+	* typedefs.h 1.29:
+	* utils.cpp 1.23:
+	* walking.cpp 1.44:
+	* weight.cpp 1.7:
+	* worldmain.cpp 1.55:
+	* xwgui.rc 1.3:
+		CVS restored to 23 July 2003 for stability reasons.
+
+	* chars.cpp 1.123:
+	* chars.cpp 1.125:
+	* set.cpp 1.36:
+	* walking.cpp 1.41:
+	* walking.cpp 1.43:
+	* walking.cpp 1.45:
+		*** empty log message ***
+
+2003-07-25	kheru
+	* sndpkg.cpp 1.35:
+	* sndpkg.h 1.20:
+	* sregions.cpp 1.14:
+		make SendSetWeather function.
+
+	* client.cpp 1.8:
+	* sndpkg.cpp 1.36:
+	* sndpkg.cpp 1.37:
+	* sndpkg.h 1.21:
+	* sregions.cpp 1.15:
+		*** empty log message ***
+
+2003-07-25	dgp85
+	* amx/amxwraps.cpp 1.63:
+	* boats.cpp 1.21:
+	* items.cpp 1.36:
+	* items.h 1.25:
+	* sndpkg.cpp 1.41:
+	* sndpkg.h 1.24:
+		more sndpkg clenup
+
+	* amx/amxwraps.cpp 1.62:
+	* chars.cpp 1.117:
+	* chars.h 1.60:
+	* cmdtable.cpp 1.26:
+	* dbl_single_click.cpp 1.27:
+	* inlines.h 1.11:
+	* items.cpp 1.35:
+	* items.h 1.24:
+	* magic.cpp 1.11:
+	* particles.cpp 1.2:
+	* particles.h 1.2:
+	* skills.cpp 1.37:
+	* skitarg.cpp 1.33:
+	* sndpkg.cpp 1.38:
+	* sndpkg.h 1.22:
+	* targeting.cpp 1.53:
+	* telport.cpp 1.18:
+	* thievery.cpp 1.9:
+	* timing.cpp 1.16:
+	* utils.cpp 1.22:
+	* walking.cpp 1.39:
+		
+		
+		More sndpkg cleanup.
+		Removed soundeffect* functions (moved to cChar::playSFX and new cItem::playSFX)
+		Created cItem::playSFX & cItem::staticFX
+		Created namespace particles (into particles.[cpp|h] files)
+		Moved UO3D packet generation into particles.
+
+	* chars.cpp 1.119:
+	* chars.h 1.62:
+	* combat.cpp 1.41:
+	* sndpkg.cpp 1.40:
+	* sndpkg.h 1.23:
+	* targeting.cpp 1.54:
+		more sndpkg cleanup
+
+	* chars.cpp 1.118:
+	* chars.h 1.61:
+	* client.cpp 1.9:
+	* dragdrop.cpp 1.34:
+	* mount.cpp 1.21:
+	* sndpkg.cpp 1.39:
+		more sndpkg cleans
+
+	* amx/amxwraps.cpp 1.64:
+	* chars.cpp 1.120:
+	* chars.h 1.63:
+	* particles.cpp 1.3:
+	* particles.h 1.3:
+	* set.cpp 1.35:
+	* set.h 1.19:
+	* sregions.cpp 1.17:
+	* targeting.cpp 1.55:
+		closed bug 0000157, movingfx with items, next: staticfx and 
+		boltfx
+
+	* amx/amxwraps.cpp 1.65:
+	* chars.cpp 1.121:
+	* chars.h 1.64:
+	* magic.cpp 1.12:
+	* npcai.cpp 1.20:
+	* object.cpp 1.39:
+	* object.h 1.24:
+		completed 0000157
+
+2003-07-25	sparhawksf
+	* sregions.cpp 1.16:
+	* walking.cpp 1.40:
+		gcc 3.3 compatability fix and some code cleaning
+
+	* chars.cpp 1.122:
+		Minor change to hunger msg's. When hunger=0 starvation msg will 
+		be displayed until hunger changes or pc dies
+
+	* pointer.cpp 1.14:
+		Commented out debug conouts
+
+2003-07-24	dgp85
+	* chars.cpp 1.116:
+	* chars.h 1.59:
+	* sndpkg.cpp 1.34:
+	* sndpkg.h 1.19:
+	* targeting.cpp 1.52:
+		bolteffect2 -> cChar::circleFX
+
+	* amx/amxwraps.cpp 1.59:
+	* chars.cpp 1.113:
+	* chars.h 1.57:
+	* sndpkg.cpp 1.31:
+	* sndpkg.h 1.16:
+		movingeffect moved into cChar class... and also fixed the 
+		movingeffectUO3D function... preparing a particle system 
+		rewrite...
+
+	* chars.cpp 1.112:
+	* chars.h 1.56:
+	* classes.h 1.19:
+	* itemid.cpp 1.10:
+	* items.cpp 1.34:
+	* items.h 1.23:
+	* typedefs.h 1.27:
+	* weight.cpp 1.6:
+	* weight.h 1.1:
+		inlined some functions, const'ed others, aka optimisation. The 
+		compiled output is bigger, but it's faster
+
+	* accounts.cpp 1.12:
+	* fishing.h 1.6:
+		fixed doxygen doc
+
+	* walking.cpp 1.38:
+		optimized and inlined get[Left|Right]Dir
+
+	* amx/amxwraps.cpp 1.61:
+	* chars.cpp 1.115:
+	* sndpkg.cpp 1.33:
+	* sndpkg.h 1.18:
+	* targeting.cpp 1.51:
+	* trigger.cpp 1.29:
+		bolteffect -> cChar::boltFX
+
+	* walking.cpp 1.36:
+		light codeclean, checking bug #0000158
+
+	* constants.h 1.11:
+	* object.cpp 1.34:
+	* object.h 1.21:
+	* skitarg.cpp 1.32:
+	* walking.cpp 1.37:
+		cleanup - doc cleanup - optimized cObject get functions to be 
+		inlined
+
+	* amx/amxwraps.cpp 1.60:
+	* chars.cpp 1.114:
+	* chars.h 1.58:
+	* dragdrop.cpp 1.33:
+	* item.cpp 1.33:
+	* nox-wizard.cpp 1.53:
+	* npcs.cpp 1.43:
+	* npcs.h 1.7:
+	* object.cpp 1.38:
+	* object.h 1.23:
+	* pointer.cpp 1.13:
+	* rcvpkg.cpp 1.12:
+	* sndpkg.cpp 1.32:
+	* sndpkg.h 1.17:
+	* targeting.cpp 1.50:
+	* telport.cpp 1.17:
+	* timing.cpp 1.15:
+	* tmpeff.cpp 1.17:
+		cleaned up the mix from spar and mine fixes, moved staticeffect 
+		in cChar
+
+	* accounts.cpp 1.13:
+	* accounts.cpp 1.14:
+		ehm, typo sorry
+
+	* typedefs.h 1.28:
+		cleanup
+
+	* nox-wizard.cpp 1.52:
+	* remadmin.cpp 1.7:
+	* xwgui.rc 1.2:
+		updated the website, was linking to the old sunsite one
+
+	* accounts.cpp 1.11:
+	* accounts.h 1.5:
+	* amx/amxwrap2.cpp 1.44:
+	* amx/amxwraps.cpp 1.57:
+	* archive.cpp 1.16:
+	* basics.h 1.6:
+	* boats.cpp 1.20:
+	* boats.h 1.10:
+	* cache.cpp 1.9:
+	* chars.cpp 1.111:
+	* classes.h 1.18:
+	* cmdtable.cpp 1.25:
+	* commands.cpp 1.19:
+	* constants.h 1.10:
+	* containers.cpp 1.12:
+	* dbl_single_click.cpp 1.26:
+	* dragdrop.cpp 1.32:
+	* extractionskills.cpp 1.10:
+	* extractionskills.h 1.6:
+	* gamedate.cpp 1.5:
+	* gamedate.h 1.5:
+	* globals.cpp 1.9:
+	* globals.h 1.12:
+	* guild.cpp 1.13:
+	* guild.h 1.8:
+	* gumps.cpp 1.20:
+	* house.cpp 1.22:
+	* html.cpp 1.6:
+	* item.cpp 1.31:
+	* items.cpp 1.33:
+	* items.h 1.22:
+	* jail.cpp 1.8:
+	* jail.h 1.7:
+	* los.cpp 1.7:
+	* mapstuff.cpp 1.9:
+	* menu.cpp 1.32:
+	* menu.h 1.25:
+	* mount.cpp 1.20:
+	* muls.cpp 1.8:
+	* network.cpp 1.50:
+	* nox-wizard.cpp 1.51:
+	* npcai.cpp 1.19:
+	* npcs.cpp 1.37:
+	* nxwString.cpp 1.4:
+	* nxwString.h 1.4:
+	* nxwStringList.cpp 1.4:
+	* nxwStringList.h 1.4:
+	* object.cpp 1.33:
+	* object.h 1.20:
+	* oldmenu.cpp 1.13:
+	* oldmenu.h 1.10:
+	* organisation.cpp 1.10:
+	* organisation.h 1.9:
+	* party.cpp 1.8:
+	* party.h 1.7:
+	* pointer.cpp 1.11:
+	* poll.cpp 1.6:
+	* poll.h 1.4:
+	* race.cpp 1.11:
+	* race.h 1.5:
+	* regions.cpp 1.6:
+	* regions.h 1.8:
+	* remadmin.cpp 1.6:
+	* scp_parser.cpp 1.8:
+	* scp_parser.h 1.6:
+	* set.cpp 1.34:
+	* set.h 1.18:
+	* skills.cpp 1.36:
+	* sndpkg.cpp 1.30:
+	* sndpkg.h 1.15:
+	* spawn.cpp 1.10:
+	* spawn.h 1.7:
+	* speech.cpp 1.54:
+	* sregions.cpp 1.13:
+	* srvparms.cpp 1.11:
+	* targeting.cpp 1.49:
+	* targeting.h 1.7:
+	* telport.cpp 1.16:
+	* timers.cpp 1.7:
+	* timers.h 1.4:
+	* timing.cpp 1.13:
+	* trade.cpp 1.22:
+	* trigger.cpp 1.28:
+	* typedefs.h 1.26:
+	* utils.cpp 1.21:
+	* walking.cpp 1.35:
+	* worldmain.cpp 1.53:
+		reapplied the last codecleans
+
+2003-07-24	sparhawksf
+	* amx/amxwraps.cpp 1.58:
+	* npcs.cpp 1.40:
+	* npcs.h 1.6:
+	* object.cpp 1.37:
+		Replaced setrandomname by cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* item.cpp 1.32:
+	* npcs.cpp 1.38:
+	* npcs.h 1.4:
+	* object.cpp 1.35:
+	* object.h 1.22:
+		Removing redundant code
+		Added cObject::getRandomScriptValue( <section>, <sectionid> );
+		Removed addrandomcolor
+
+	* npcs.cpp 1.41:
+		Replaced setrandomhaircolor by cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* npcs.cpp 1.39:
+	* npcs.h 1.5:
+	* object.cpp 1.36:
+	* tmpeff.cpp 1.16:
+		Replaced getRandomName() by cObject::getRandomScriptValue( <
+		section>, <sectionid> );
+
+	* npcs.cpp 1.42:
+	* pointer.cpp 1.12:
+	* pointer.h 1.5:
+	* timing.cpp 1.14:
+		Preparing to replace mapRegions
+
+2003-07-23	dgp85
+	* common_libs.h 1.13:
+		clean-up, light abstraction for a possible sun solaris support
+
+	* amx/amx.c 1.13:
+	* amx/amx.h 1.8:
+	* amx/amx_api.h 1.13:
+	* cmdtable.cpp 1.21:
+	* commands.cpp 1.16:
+	* commands.cpp 1.17:
+	* commands.cpp 1.18:
+	* npcs.cpp 1.35:
+		x86_64 fixes
+
+	* race.cpp 1.9:
+		x86_64
+
+	* amx/amxwraps.cpp 1.56:
+	* boats.cpp 1.19:
+	* boats.h 1.9:
+	* cache.cpp 1.7:
+	* cache.h 1.6:
+	* chars.cpp 1.109:
+	* classes.h 1.17:
+	* cmdtable.cpp 1.23:
+	* common_libs.h 1.14:
+	* compiler/sc1.c 1.9:
+	* compiler/sc6.c 1.6:
+	* dbl_single_click.cpp 1.25:
+	* dragdrop.cpp 1.31:
+	* fishing.cpp 1.15:
+	* fishing.h 1.5:
+	* globals.cpp 1.8:
+	* globals.h 1.10:
+	* gumps.cpp 1.19:
+	* house.cpp 1.21:
+	* network.cpp 1.49:
+	* nox-wizard.cpp 1.48:
+	* npcs.cpp 1.36:
+	* regions.h 1.7:
+	* skills.h 1.4:
+	* speech.cpp 1.53:
+	* targeting.cpp 1.47:
+	* targeting.h 1.6:
+	* timing.cpp 1.11:
+	* trigger.cpp 1.27:
+	* typedefs.h 1.24:
+	* utils.cpp 1.20:
+	* walking.cpp 1.34:
+	* weight.cpp 1.5:
+		codecleans as of 13/07 reapplied
+
+	* cmdtable.cpp 1.22:
+		x86_64 fix
+
+	* abstraction/endian.cpp 1.8:
+	* accounts.cpp 1.10:
+	* archive.cpp 1.14:
+	* archive.h 1.6:
+	* cache.cpp 1.8:
+	* cache.h 1.7:
+	* chars.cpp 1.110:
+	* client.cpp 1.7:
+	* cmdtable.cpp 1.24:
+	* combat.cpp 1.40:
+	* containers.cpp 1.11:
+	* crontab.cpp 1.8:
+	* extractionskills.cpp 1.9:
+	* extractionskills.h 1.5:
+	* globals.h 1.11:
+	* guild.cpp 1.12:
+	* itemid.cpp 1.9:
+	* jail.cpp 1.7:
+	* jail.h 1.6:
+	* los.cpp 1.6:
+	* menu.cpp 1.31:
+	* mount.cpp 1.19:
+	* muls.cpp 1.7:
+	* nox-wizard.cpp 1.49:
+	* oldmenu.cpp 1.12:
+	* packets.cpp 1.42:
+	* party.cpp 1.7:
+	* party.h 1.6:
+	* poll.cpp 1.5:
+	* race.cpp 1.10:
+	* raceability.cpp 1.4:
+	* racegender.cpp 1.4:
+	* racerequiredtype.cpp 1.4:
+	* racescriptentry.cpp 1.4:
+	* raceskill.cpp 1.4:
+	* racetokenizer.cpp 1.4:
+	* racetype.cpp 1.4:
+	* regions.cpp 1.5:
+	* set.cpp 1.33:
+	* skitarg.cpp 1.31:
+	* target.cpp 1.4:
+	* targeting.cpp 1.48:
+	* timers.cpp 1.6:
+	* timing.cpp 1.12:
+	* trade.cpp 1.21:
+	* trade.h 1.5:
+	* typedefs.h 1.25:
+	* worldmain.cpp 1.52:
+		codecleans as of 15/07 (part1) reapplied
+
+	* archive.cpp 1.15:
+	* area.cpp 1.6:
+	* area.h 1.4:
+	* chars.h 1.55:
+	* nox-wizard.cpp 1.50:
+	* spawn.cpp 1.9:
+	* spawn.h 1.6:
+		codecleans as of 15/07 (part2) reapplied
+
+2003-07-23	sparhawksf
+	* ai.cpp 1.7:
+		Bugfix 0000160, fixed vc++ compilation error
+
+	* mapstuff.cpp 1.8:
+	* pointer.cpp 1.10:
+		gcc 3.3 compatability fix and some code cleaning
+
+	* archive.cpp 1.13:
+	* archive.h 1.5:
+	* chars.cpp 1.108:
+	* commands.cpp 1.15:
+	* dragdrop.cpp 1.30:
+	* house.cpp 1.20:
+	* item.cpp 1.30:
+	* nox-wizard.cpp 1.47:
+	* npcs.cpp 1.34:
+	* pointer.cpp 1.9:
+	* skitarg.cpp 1.30:
+	* targeting.cpp 1.46:
+	* worldmain.cpp 1.51:
+		Simplifying and cleaning of object storage and indexing
+
+	* typedefs.h 1.23:
+		Fixed typedefs for Borland c++
+
+2003-07-22	sparhawksf
+	* accounts.cpp 1.9:
+	* amx/amxwraps.cpp 1.55:
+	* archive.cpp 1.12:
+	* archive.h 1.4:
+	* chars.cpp 1.107:
+	* chars.h 1.54:
+	* combat.cpp 1.39:
+	* commands.cpp 1.14:
+	* dbl_single_click.cpp 1.24:
+	* dragdrop.cpp 1.29:
+	* guildstones.cpp 1.16:
+	* house.cpp 1.19:
+	* item.cpp 1.29:
+	* items.cpp 1.32:
+	* items.h 1.21:
+	* magic.cpp 1.10:
+	* mount.cpp 1.18:
+	* msgboard.cpp 1.10:
+	* nox-wizard.cpp 1.46:
+	* nxw_utils.cpp 1.3:
+	* object.cpp 1.32:
+	* object.h 1.19:
+	* race.cpp 1.8:
+	* skills.cpp 1.35:
+	* skitarg.cpp 1.29:
+	* sndpkg.cpp 1.29:
+	* spawn.cpp 1.8:
+	* speech.cpp 1.52:
+	* targeting.cpp 1.45:
+	* telport.cpp 1.15:
+	* trigger.cpp 1.26:
+	* worldmain.cpp 1.50:
+		Replaced cItem::deleteItem(),cChar::deleteChar by cObject::
+		Delete(),cItem::Delete(),cChar::Delete()
+
+	* boats.cpp 1.18:
+		Minor code cleaning
+
+	* archive.cpp 1.11:
+	* boats.cpp 1.17:
+	* chars.cpp 1.105:
+	* chars.cpp 1.106:
+	* dragdrop.cpp 1.28:
+	* house.cpp 1.18:
+	* item.cpp 1.28:
+	* items.cpp 1.31:
+	* mount.cpp 1.17:
+	* nox-wizard.cpp 1.45:
+	* npcs.cpp 1.33:
+	* pointer.cpp 1.8:
+	* pointer.h 1.4:
+	* speech.cpp 1.51:
+	* targeting.cpp 1.44:
+	* worldmain.cpp 1.49:
+		Preparing to replace mapRegions
+
+2003-07-21	dgp85
+	* nox-bcb6.mak 1.8:
+		added ai.cpp to the bcb makefile
+
+2003-07-21	sparhawksf
+	* npcai.cpp 1.18:
+		Changed c style InitNpcSpells() parsing to c++
+
+	* chars.cpp 1.104:
+		Removed container clear() from constructor
+
+	* npcs.cpp 1.30:
+		Extending .xss tag parametrization
+		Preperation of new npc tag LOOTITEM <itemid> AMOUNT <min> <max> CHANCE <%>
+
+	* scripts.cpp 1.5:
+		Fixed bug in getRangedValue() which causes segfault when using c+
+		+ strings
+
+	* npcs.cpp 1.32:
+		Fixed bug in getRangedValue() which causes segfault when using c++ strings
+		Redoing commits 1.27 to 1.30
+
+	* set.cpp 1.32:
+		Code cleaning, speed optimization and general bug fixing
+
+	* npcs.cpp 1.31:
+		Going back to revision 1.26 due to runtime errors
+
+2003-07-21	luxornox
+	* chars.cpp 1.103:
+	* chars.h 1.53:
+	* walking.cpp 1.33:
+	* walking.h 1.4:
+		*** empty log message ***
+
+2003-07-20	sparhawksf
+	* npcs.cpp 1.27:
+		Improved error handling and code cleaning
+
+	* npcs.cpp 1.28:
+		Changed c string AddNpc parsing into c++
+
+	* chars.cpp 1.102:
+		Minor optimization of creating loot
+
+	* npcs.cpp 1.29:
+		Changed c style AddRandomLoot parsing to c++
+
+	* archive.cpp 1.10:
+		Bug Fix: cAllObjectsIterator.IsEmpty not returning end of 
+		objects reached correctly!!!!
+
+2003-07-20	luxornox
+	* range.h 1.4:
+	* walking.cpp 1.32:
+		*** empty log message ***
+
+2003-07-19	dgp85
+	* amx/amx.c 1.12:
+	* amx/amx.h 1.7:
+	* amx/amxcons.c 1.2:
+	* amx/amxcore.c 1.2:
+	* amx/amxfile.h 1.2:
+	* amx/amxvarserver.cpp 1.5:
+	* amx/amxvarserver.h 1.3:
+	* amx/amxwrap2.cpp 1.43:
+	* amx/float.cpp 1.2:
+	* compiler/amx.h 1.2:
+	* compiler/osdefs.h 1.2:
+	* compiler/sc.h 1.2:
+	* compiler/sc1.c 1.8:
+	* compiler/sc2.c 1.3:
+	* compiler/sc3.c 1.3:
+	* compiler/sc4.c 1.2:
+	* compiler/sc5.c 1.3:
+	* compiler/sc5.scp 1.2:
+	* compiler/sc6.c 1.5:
+	* compiler/sc7.c 1.2:
+	* compiler/sc7.scp 1.2:
+	* compiler/sclist.c 1.2:
+	* compiler/scvars.c 1.2:
+		comments clean, removed unused .h
+
+	* books.cpp 1.7:
+		re-applied 1.5 revision
+
+2003-07-19	sparhawksf
+	* item.cpp 1.27:
+		new feature: CONTAINS <item> [<amount>] tag for items in .xss 
+		scripts. When the item is an container CONTAINS will add <item> 
+		to container, the <amount> parameter is optional and defaults to 
+		1
+
+	* items.cpp 1.30:
+		removed obsolete code
+
+	* area.cpp 1.5:
+	* containers.cpp 1.10:
+		changed c style string handling to c++
+
+2003-07-19	luxornox
+	* chars.cpp 1.100:
+	* chars.cpp 1.101:
+	* chars.h 1.51:
+	* chars.h 1.52:
+	* combat.cpp 1.35:
+	* combat.cpp 1.36:
+	* combat.cpp 1.37:
+	* combat.cpp 1.38:
+	* house.cpp 1.17:
+	* mapstuff.cpp 1.7:
+	* npcai.cpp 1.15:
+	* npcai.cpp 1.16:
+	* npcai.cpp 1.17:
+	* npcs.cpp 1.26:
+	* object.cpp 1.31:
+	* range.cpp 1.3:
+	* range.h 1.2:
+	* range.h 1.3:
+	* sndpkg.cpp 1.28:
+	* version.h 1.2:
+	* walking.cpp 1.29:
+	* walking.cpp 1.30:
+	* walking.cpp 1.31:
+	* walking.h 1.3:
+		*** empty log message ***
+
+2003-07-18	dgp85
+	* amx/amx.c 1.11:
+	* amx/amx.h 1.6:
+	* amx/amx_api.h 1.12:
+	* compiler/sc1.c 1.7:
+		reapply of alpha fixes
+
+2003-07-18	sparhawksf
+	* boats.cpp 1.16:
+	* boats.h 1.8:
+	* html.cpp 1.5:
+	* scripts.cpp 1.4:
+	* scripts.h 1.3:
+	* telport.cpp 1.13:
+	* telport.cpp 1.14:
+	* trigger.cpp 1.25:
+		gcc 3.3 compatability fix.
+
+	* common_libs.h 1.12:
+		Added #include <queue> needed in ai.h
+
+	* chars.cpp 1.99:
+	* chars.h 1.50:
+	* worldmain.cpp 1.48:
+		ReAdded alias for ONDEATH and ONDIED events resp. ONBEFOREDEATH 
+		and ONAFTERDEATH
+
+2003-07-18	luxornox
+	* ai.cpp 1.3:
+	* ai.h 1.3:
+	* chars.cpp 1.98:
+	* chars.h 1.49:
+	* combat.cpp 1.34:
+	* set.cpp 1.29:
+	* set.h 1.16:
+	* walking.cpp 1.25:
+	* walking.h 1.2:
+		A* pathfinding algorithm implementation. Luxor
+
+	* ai.cpp 1.4:
+	* ai.cpp 1.5:
+	* ai.cpp 1.6:
+	* set.cpp 1.30:
+	* set.cpp 1.31:
+	* set.h 1.17:
+	* walking.cpp 1.26:
+	* walking.cpp 1.27:
+	* walking.cpp 1.28:
+		*** empty log message ***
+
+2003-07-17	endymionsf
+	* amx/amxwrap2.cpp 1.40:
+	* boats.cpp 1.10:
+	* chars.cpp 1.92:
+	* cmdtable.cpp 1.17:
+	* dbl_single_click.cpp 1.22:
+	* dragdrop.cpp 1.24:
+	* gumps.cpp 1.16:
+	* house.cpp 1.13:
+	* los.cpp 1.4:
+	* mapstuff.cpp 1.4:
+	* npcai.cpp 1.13:
+	* npcs.cpp 1.23:
+	* pointer.cpp 1.6:
+	* set.cpp 1.22:
+	* skills.cpp 1.33:
+	* sndpkg.cpp 1.24:
+	* speech.cpp 1.48:
+	* targeting.cpp 1.38:
+	* telport.cpp 1.11:
+	* trigger.cpp 1.23:
+	* walking.cpp 1.21:
+	* worldmain.cpp 1.41:
+		clean
+
+2003-07-17	dgp85
+	* archive.cpp 1.8:
+	* basics.h 1.4:
+	* boats.cpp 1.13:
+	* cache.cpp 1.5:
+	* chars.cpp 1.95:
+	* classes.h 1.15:
+	* cmdtable.cpp 1.19:
+	* commands.cpp 1.12:
+	* dragdrop.cpp 1.26:
+	* globals.cpp 1.6:
+	* globals.h 1.8:
+	* house.cpp 1.14:
+	* item.cpp 1.25:
+	* items.cpp 1.27:
+	* mount.cpp 1.15:
+	* network.cpp 1.46:
+	* nox-wizard.cpp 1.43:
+	* npcs.cpp 1.24:
+	* party.cpp 1.5:
+	* party.h 1.4:
+	* regions.cpp 1.3:
+	* regions.h 1.4:
+	* set.cpp 1.23:
+	* spawn.cpp 1.6:
+	* spawn.h 1.4:
+	* speech.cpp 1.49:
+	* srvparms.cpp 1.9:
+	* targeting.cpp 1.40:
+	* timing.cpp 1.9:
+	* typedefs.h 1.21:
+	* worldmain.cpp 1.45:
+		converted some static classes to namespaces, code cleans, fixed 
+		bug #0000153...
+
+	* set.cpp 1.26:
+		remove warning
+
+	* accounts.cpp 1.7:
+	* accounts.h 1.3:
+	* chars.cpp 1.93:
+	* cmdtable.cpp 1.18:
+	* globals.cpp 1.5:
+	* globals.h 1.7:
+	* html.cpp 1.3:
+	* network.cpp 1.44:
+	* nox-wizard.cpp 1.42:
+	* remadmin.cpp 1.4:
+	* sndpkg.cpp 1.25:
+	* timing.cpp 1.8:
+	* utils.cpp 1.18:
+	* worldmain.cpp 1.43:
+		moved cAccounts static class to accounts:: namespace
+
+	* boats.cpp 1.11:
+	* boats.h 1.4:
+	* dragdrop.cpp 1.25:
+	* typedefs.h 1.19:
+	* walking.cpp 1.22:
+	* worldmain.cpp 1.42:
+		gcc fixes, warning fixes, added one doxygen doc
+
+	* amx/amxwrap2.cpp 1.41:
+	* chars.cpp 1.96:
+	* constants.h 1.8:
+	* gumps.cpp 1.17:
+	* house.cpp 1.15:
+	* object.cpp 1.29:
+	* object.h 1.17:
+	* targeting.cpp 1.42:
+	* trade.cpp 1.19:
+	* walking.cpp 1.23:
+	* worldmain.cpp 1.46:
+		get/set Position cleanup
+
+	* amx/amxwraps.cpp 1.53:
+	* extractionskills.cpp 1.7:
+	* extractionskills.h 1.3:
+	* gamedate.cpp 1.3:
+	* gamedate.h 1.3:
+	* guild.cpp 1.10:
+	* guild.h 1.6:
+	* items.cpp 1.28:
+	* items.h 1.19:
+	* jail.cpp 1.5:
+	* jail.h 1.4:
+	* menu.cpp 1.29:
+	* menu.h 1.23:
+	* network.cpp 1.47:
+	* nxwString.cpp 1.2:
+	* nxwString.h 1.2:
+	* nxwStringList.cpp 1.2:
+	* nxwStringList.h 1.2:
+	* oldmenu.cpp 1.10:
+	* oldmenu.h 1.8:
+	* organisation.cpp 1.8:
+	* organisation.h 1.7:
+	* poll.cpp 1.3:
+	* poll.h 1.2:
+	* race.cpp 1.6:
+	* race.h 1.3:
+	* scp_parser.cpp 1.6:
+	* scp_parser.h 1.4:
+	* set.cpp 1.24:
+	* set.h 1.13:
+	* sregions.cpp 1.10:
+	* targeting.cpp 1.41:
+	* targeting.h 1.4:
+	* timers.cpp 1.4:
+	* timers.h 1.2:
+		misc code clean
+
+	* muls.cpp 1.5:
+	* nxwGump.h 1.5:
+		doxygen fixes
+
+	* regions.h 1.5:
+		corrected missing commit
+
+	* boats.cpp 1.14:
+	* boats.h 1.6:
+	* sregions.cpp 1.11:
+		code clean
+
+	* boats.cpp 1.12:
+	* boats.h 1.5:
+	* chars.cpp 1.94:
+	* classes.h 1.14:
+	* jail.cpp 1.4:
+	* jail.h 1.3:
+	* mapstuff.cpp 1.5:
+	* network.cpp 1.45:
+	* object.cpp 1.28:
+	* object.h 1.16:
+	* race.cpp 1.5:
+	* race.h 1.2:
+	* sndpkg.cpp 1.26:
+	* sndpkg.h 1.13:
+	* targeting.cpp 1.39:
+	* typedefs.h 1.20:
+	* worldmain.cpp 1.44:
+		changed x/y coords from UI32 to UI16
+
+2003-07-17	sparhawksf
+	* guildstones.cpp 1.14:
+		gcc 3.3 compatability fix.
+
+	* abstraction/endian.cpp 1.7:
+	* accounts.cpp 1.8:
+	* accounts.h 1.4:
+	* addmenu.cpp 1.6:
+	* amx/amx.c 1.10:
+	* amx/amx.h 1.5:
+	* amx/amx_api.h 1.11:
+	* amx/amxwrap2.cpp 1.42:
+	* amx/amxwraps.cpp 1.54:
+	* archive.cpp 1.9:
+	* archive.h 1.3:
+	* area.cpp 1.4:
+	* area.h 1.3:
+	* basics.h 1.5:
+	* boats.cpp 1.15:
+	* boats.h 1.7:
+	* books.cpp 1.6:
+	* cache.cpp 1.6:
+	* cache.h 1.5:
+	* chars.cpp 1.97:
+	* chars.h 1.48:
+	* classes.h 1.16:
+	* client.cpp 1.6:
+	* cmdtable.cpp 1.20:
+	* combat.cpp 1.33:
+	* commands.cpp 1.13:
+	* compiler/sc1.c 1.6:
+	* compiler/sc6.c 1.4:
+	* constants.h 1.9:
+	* containers.cpp 1.9:
+	* crontab.cpp 1.7:
+	* dbl_single_click.cpp 1.23:
+	* dragdrop.cpp 1.27:
+	* extractionskills.cpp 1.8:
+	* extractionskills.h 1.4:
+	* fishing.cpp 1.14:
+	* fishing.h 1.4:
+	* gamedate.cpp 1.4:
+	* gamedate.h 1.4:
+	* globals.cpp 1.7:
+	* globals.h 1.9:
+	* guild.cpp 1.11:
+	* guild.h 1.7:
+	* guildstones.cpp 1.15:
+	* gumps.cpp 1.18:
+	* house.cpp 1.16:
+	* html.cpp 1.4:
+	* item.cpp 1.26:
+	* itemid.cpp 1.8:
+	* items.cpp 1.29:
+	* items.h 1.20:
+	* jail.cpp 1.6:
+	* jail.h 1.5:
+	* los.cpp 1.5:
+	* mapstuff.cpp 1.6:
+	* menu.cpp 1.30:
+	* menu.h 1.24:
+	* mount.cpp 1.16:
+	* muls.cpp 1.6:
+	* network.cpp 1.48:
+	* network.h 1.10:
+	* nox-wizard.cpp 1.44:
+	* npcai.cpp 1.14:
+	* npcs.cpp 1.25:
+	* nxwGump.cpp 1.9:
+	* nxwGump.h 1.6:
+	* nxwString.cpp 1.3:
+	* nxwString.h 1.3:
+	* nxwStringList.cpp 1.3:
+	* nxwStringList.h 1.3:
+	* object.cpp 1.30:
+	* object.h 1.18:
+	* oldmenu.cpp 1.11:
+	* oldmenu.h 1.9:
+	* organisation.cpp 1.9:
+	* organisation.h 1.8:
+	* packets.cpp 1.41:
+	* party.cpp 1.6:
+	* party.h 1.5:
+	* pointer.cpp 1.7:
+	* poll.cpp 1.4:
+	* poll.h 1.3:
+	* race.cpp 1.7:
+	* race.h 1.4:
+	* raceability.cpp 1.3:
+	* racegender.cpp 1.3:
+	* racerequiredtype.cpp 1.3:
+	* racescriptentry.cpp 1.3:
+	* raceskill.cpp 1.3:
+	* racetokenizer.cpp 1.3:
+	* racetype.cpp 1.3:
+	* range.cpp 1.2:
+	* regions.cpp 1.4:
+	* regions.h 1.6:
+	* remadmin.cpp 1.5:
+	* scp_parser.cpp 1.7:
+	* scp_parser.h 1.5:
+	* set.cpp 1.28:
+	* set.h 1.15:
+	* skills.cpp 1.34:
+	* skills.h 1.3:
+	* skitarg.cpp 1.28:
+	* sndpkg.cpp 1.27:
+	* sndpkg.h 1.14:
+	* spawn.cpp 1.7:
+	* spawn.h 1.5:
+	* speech.cpp 1.50:
+	* src.kdevses 1.2:
+	* sregions.cpp 1.12:
+	* srvparms.cpp 1.10:
+	* target.cpp 1.3:
+	* targeting.cpp 1.43:
+	* targeting.h 1.5:
+	* telport.cpp 1.12:
+	* timers.cpp 1.5:
+	* timers.h 1.3:
+	* timing.cpp 1.10:
+	* trade.cpp 1.20:
+	* trade.h 1.4:
+	* trigger.cpp 1.24:
+	* typedefs.h 1.22:
+	* utils.cpp 1.19:
+	* walking.cpp 1.24:
+	* weight.cpp 1.4:
+	* worldmain.cpp 1.47:
+		RESTORING CVS TO JUNE 14TH DUE TO SERVER INSTABILITY
+
+2003-07-17	luxornox
+	* set.cpp 1.25:
+	* set.h 1.14:
+		fillItemsAtXY fix. Luxor
+
+	* ai.cpp 1.1:
+	* ai.h 1.1:
+		A* pathfinding algorithm first upload.
+
+	* makefile.inc 1.11:
+		ai.h ai.cpp added.
+
+	* set.cpp 1.27:
+		fillItemsAtXY definitive fix. Luxor
+
+	* ai.cpp 1.2:
+	* ai.h 1.2:
+		clean
+
+2003-07-16	endymionsf
+	* boats.cpp 1.8:
+		fixing position
+
+	* cmdtable.cpp 1.16:
+		fix
+
+	* chars.cpp 1.87:
+		fixed teleport problem
+
+	* boats.cpp 1.9:
+	* chars.cpp 1.88:
+	* chars.h 1.46:
+		*** empty log message ***
+
+	* containers.cpp 1.8:
+	* house.cpp 1.12:
+	* items.cpp 1.26:
+	* items.h 1.18:
+	* targeting.cpp 1.37:
+	* telport.cpp 1.10:
+	* trade.cpp 1.18:
+	* utils.cpp 1.17:
+	* walking.cpp 1.19:
+		clean
+
+	* object.cpp 1.27:
+	* object.h 1.15:
+		clean stupid stuff
+
+	* chars.cpp 1.91:
+		fix to position
+
+	* walking.cpp 1.20:
+		clean and little fix
+
+2003-07-16	sparhawksf
+	* nxwGump.cpp 1.8:
+	* nxwGump.h 1.3:
+		Working on concurrent small gump handling
+
+	* timing.cpp 1.7:
+		gcc 3.3 compatability fix.
+
+	* chars.cpp 1.89:
+	* chars.cpp 1.90:
+	* chars.h 1.47:
+	* worldmain.cpp 1.40:
+		Added alias for ONDEATH and ONDIED events resp. ONBEFOREDEATH 
+		and ONAFTERDEATH
+
+	* nxwGump.h 1.4:
+		Commented out nested typedefs as vc++ parser goes crazy....we''
+		ll have to do the same job without the typedefs :(
+
+2003-07-15	endymionsf
+	* nox-wizard.cpp 1.39:
+		fixed gold spawn
+
+2003-07-15	dgp85
+	* books.cpp 1.4:
+		books totally working
+
+	* amx/amx.c 1.9:
+	* amx/amx_api.h 1.10:
+		I hate VC++, you know
+
+	* cmdtable.cpp 1.15:
+	* crontab.cpp 1.6:
+	* globals.h 1.6:
+	* nox-wizard.cpp 1.40:
+	* timing.cpp 1.6:
+	* trade.cpp 1.17:
+	* trade.h 1.3:
+	* typedefs.h 1.17:
+	* worldmain.cpp 1.38:
+		moved cRestockMgr (whatever) to restocks:: namespace
+
+	* books.cpp 1.5:
+		users of vc++ couldn't use books
+
+	* archive.cpp 1.6:
+	* chars.h 1.45:
+	* spawn.cpp 1.5:
+	* spawn.h 1.3:
+		fixed dinamic -> dynamic
+
+	* area.cpp 1.3:
+	* area.h 1.2:
+	* nox-wizard.cpp 1.38:
+	* spawn.cpp 1.4:
+	* spawn.h 1.2:
+		converted cAreas to areas:: namespace
+
+	* fishing.h 1.3:
+		doxygen fix
+
+	* abstraction/endian.cpp 1.6:
+	* accounts.cpp 1.6:
+	* archive.cpp 1.7:
+	* archive.h 1.2:
+	* cache.cpp 1.4:
+	* cache.h 1.4:
+	* chars.cpp 1.86:
+	* client.cpp 1.5:
+	* combat.cpp 1.32:
+	* containers.cpp 1.7:
+	* extractionskills.cpp 1.6:
+	* extractionskills.h 1.2:
+	* guild.cpp 1.9:
+	* itemid.cpp 1.7:
+	* jail.cpp 1.3:
+	* jail.h 1.2:
+	* los.cpp 1.3:
+	* menu.cpp 1.28:
+	* mount.cpp 1.14:
+	* muls.cpp 1.4:
+	* nox-wizard.cpp 1.41:
+	* oldmenu.cpp 1.9:
+	* packets.cpp 1.40:
+	* party.cpp 1.4:
+	* party.h 1.3:
+	* poll.cpp 1.2:
+	* race.cpp 1.4:
+	* raceability.cpp 1.2:
+	* racegender.cpp 1.2:
+	* racerequiredtype.cpp 1.2:
+	* racescriptentry.cpp 1.2:
+	* raceskill.cpp 1.2:
+	* racetokenizer.cpp 1.2:
+	* racetype.cpp 1.2:
+	* regions.cpp 1.2:
+	* set.cpp 1.21:
+	* skitarg.cpp 1.27:
+	* target.cpp 1.2:
+	* targeting.cpp 1.36:
+	* timers.cpp 1.3:
+	* typedefs.h 1.18:
+	* worldmain.cpp 1.39:
+		code clean (a lot of)
+
+2003-07-15	sparhawksf
+	* addmenu.cpp 1.5:
+	* npcs.cpp 1.22:
+		gcc 3.3 compatability fix.
+
+2003-07-14	dgp85
+	* compiler/sc1.c 1.5:
+	* makefile.debug 1.3:
+	* network.cpp 1.42:
+	* network.h 1.9:
+	* skitarg.cpp 1.26:
+	* trade.cpp 1.16:
+		fixed warnings, commented out some functions (check for #if 0)
+
+	* items.cpp 1.24:
+	* items.h 1.17:
+		#if 0 on cWeapon and cContainer
+
+	* items.cpp 1.25:
+		*** empty log message ***
+
+2003-07-14	sparhawksf
+	* dragdrop.cpp 1.22:
+		Fixed item event ONTAKEFROMCONTAINER
+
+	* dragdrop.cpp 1.23:
+		Removed obsolete debug conouts
+
+	* network.cpp 1.43:
+		gcc 3.3 compatability fix.
+
+	* nxwGump.cpp 1.7:
+		Fixing small gump handling. Temp fix to be able to repeatedly 
+		update same var. Concurrent use and callback will follow
+
+2003-07-13	dgp85
+	* typedefs.h 1.15:
+		fixed borland typedefs
+
+	* targeting.cpp 1.32:
+	* telport.cpp 1.9:
+		fixed assignment in comparison
+
+	* scp_parser.cpp 1.5:
+		fixes bug #0000109 - $varname is evaluated always, even if 
+		commented
+
+	* newbie.cpp 1.10:
+	* trade.cpp 1.15:
+		remove two unused variables
+
+	* amx/amx.h 1.2:
+	* compiler/sc1.c 1.3:
+		fixed 64-bit compatibility
+
+	* amx/amx.c 1.3:
+	* amx/amx.c 1.4:
+	* amx/amx.c 1.5:
+	* amx/amx.c 1.6:
+	* amx/amx.c 1.7:
+	* amx/amx.c 1.8:
+	* amx/amx.h 1.3:
+	* amx/amx.h 1.4:
+	* amx/amx_api.h 1.8:
+	* amx/amx_api.h 1.9:
+		continue fixes for alphas and sparcs
+
+	* cache.cpp 1.3:
+	* cache.h 1.3:
+	* classes.h 1.12:
+	* makefile.debug 1.2:
+	* speech.cpp 1.46:
+	* trigger.cpp 1.22:
+	* utils.cpp 1.16:
+	* weight.cpp 1.3:
+		cleaned up cache.[cpp|h], removed unused variables, fixed 
+		warnings
+
+	* amx/amxwraps.cpp 1.52:
+	* boats.cpp 1.7:
+	* boats.h 1.3:
+	* chars.cpp 1.85:
+	* classes.h 1.13:
+	* cmdtable.cpp 1.14:
+	* compiler/sc1.c 1.4:
+	* compiler/sc6.c 1.3:
+	* dbl_single_click.cpp 1.21:
+	* dragdrop.cpp 1.21:
+	* fishing.cpp 1.13:
+	* fishing.h 1.2:
+	* globals.cpp 1.4:
+	* globals.h 1.5:
+	* gumps.cpp 1.15:
+	* house.cpp 1.11:
+	* network.cpp 1.41:
+	* nox-wizard.cpp 1.37:
+	* npcs.cpp 1.21:
+	* regions.h 1.3:
+	* skills.h 1.2:
+	* speech.cpp 1.47:
+	* targeting.cpp 1.35:
+	* targeting.h 1.3:
+	* timing.cpp 1.5:
+	* typedefs.h 1.16:
+	* walking.cpp 1.18:
+		a LOT of changes, global classes converted in namespaces, final 
+		non-x86 fixes, code cleans
+
+2003-07-13	sparhawksf
+	* nxwGump.cpp 1.6:
+		Fixed gump bug. Multiple users can now open the same gump 
+		without losing callback
+
+	* gumps.cpp 1.14:
+		Fixed bug 0000147 (House menu gump server segfaults when 
+		changing house sign)
+
+	* mount.cpp 1.12:
+		gcc 3.3 compatability fix.
+
+	* gumps.cpp 1.13:
+		Fixed bug 0000144 (The house menu method in gumps.cpp calculates 
+		a wrong packet length if a house has been renamed)
+
+	* chars.cpp 1.84:
+	* chars.h 1.44:
+	* worldmain.cpp 1.37:
+		added character event @ONDIED which at the end of the death 
+		process returns serial of char who died and serial of corpse
+
+	* mount.cpp 1.13:
+		Fixed endless loop in loadmounts
+
+2003-07-13	luxornox
+	* chars.cpp 1.83:
+	* walking.cpp 1.17:
+		npcs walking on mountains bug FIXED. Luxor
+
+	* npcai.cpp 1.12:
+	* targeting.cpp 1.33:
+		Corpses fix.
+
+	* targeting.cpp 1.34:
+		corpses decay fix.
+
+2003-07-12	endymionsf
+	* amx/amxwraps.cpp 1.51:
+		fix my guilty
+
+	* chars.cpp 1.81:
+	* chars.h 1.43:
+	* fishing.cpp 1.12:
+	* guildstones.cpp 1.13:
+	* newbie.cpp 1.9:
+		fixing amount
+
+	* item.cpp 1.22:
+	* item.cpp 1.23:
+	* item.h 1.6:
+	* newbie.cpp 1.8:
+	* nox-wizard.cpp 1.35:
+	* npcs.cpp 1.19:
+	* skills.cpp 1.32:
+	* trade.cpp 1.14:
+		fixed amount
+
+	* targeting.cpp 1.31:
+		removed $item_hardcoed for $item_raw_bird
+
+	* dbl_single_click.cpp 1.20:
+	* item.cpp 1.24:
+	* item.h 1.7:
+	* magic.cpp 1.9:
+	* nox-wizard.cpp 1.36:
+	* skills.cpp 1.31:
+	* skitarg.cpp 1.24:
+	* speech.cpp 1.44:
+	* speech.cpp 1.45:
+	* targeting.cpp 1.29:
+	* telport.cpp 1.8:
+		*** empty log message ***
+
+	* amx/amxwraps.cpp 1.49:
+		restyle
+
+	* amx/amxwraps.cpp 1.50:
+		added new function, removed some.. about create item into bank 
+		or backpack
+
+	* targeting.cpp 1.30:
+		fixed rawbird
+
+	* skitarg.cpp 1.25:
+		modified to make more osi style
+
+	* npcs.cpp 1.18:
+		fix amount
+
+2003-07-12	sparhawksf
+	* npcs.cpp 1.20:
+		(Re)Added AMOUNT tag to fix PACKITEM xyz AMOUNT n constructs in 
+		npc xss scripts
+
+	* chars.h 1.40:
+	* combat.cpp 1.29:
+		gcc 3.3 compatability fix. Gcc sometimes has problems with 
+		ISVALID and DEREF macros. Also cleaned up docChar::doCombat() 
+		somewhat.
+
+	* mapstuff.cpp 1.3:
+		gcc 3.3 compatability fix. Replaced if by case statement in 
+		cMapStuff::MapElevation()
+
+	* guildstones.cpp 1.12:
+		gcc 3.3 compatability fix. Gcc sometimes has problems with 
+		ISVALID and DEREF macros. Commented out redundant ISVALID checks 
+		in menu
+
+	* chars.cpp 1.82:
+		Fixed ONKILL event (feature 0000129) ONKILL is now called for 
+		each attacker of the victim who died, not just in pvp 
+		situations.
+
+2003-07-12	luxornox
+	* chars.cpp 1.79:
+	* chars.h 1.41:
+	* combat.cpp 1.30:
+	* walking.cpp 1.15:
+		combat system adjustment. mount fix.
+
+	* chars.cpp 1.80:
+	* chars.h 1.42:
+	* combat.cpp 1.31:
+	* mount.cpp 1.11:
+	* walking.cpp 1.16:
+		*** empty log message ***
+
+2003-07-11	dgp85
+	* amx/amxscript.cpp 1.21:
+	* targeting.cpp 1.28:
+	* trigger.cpp 1.21:
+	* typedefs.h 1.13:
+		fixes for 64-bit archs
+
+	* typedefs.h 1.14:
+		fixed
+
+2003-07-10	endymionsf
+	* item.cpp 1.21:
+	* item.h 1.5:
+	* utils.cpp 1.15:
+		make createByDef with amount
+
+	* skitarg.cpp 1.23:
+		finished tailoring and tannering
+
+	* classes.h 1.10:
+	* skitarg.cpp 1.22:
+	* targeting.cpp 1.27:
+		removing unused cut cloth target
+
+	* classes.h 1.11:
+	* skills.cpp 1.28:
+	* utils.cpp 1.14:
+		fixed problem with make
+
+	* amx/amxwraps.cpp 1.48:
+		added amount into createbydef
+
+	* house.cpp 1.10:
+	* newbie.cpp 1.7:
+	* skills.cpp 1.29:
+	* skills.cpp 1.30:
+	* trigger.cpp 1.20:
+		*** empty log message ***
+
+2003-07-09	endymionsf
+	* organisation.h 1.5:
+		fix?
+
+	* organisation.h 1.4:
+		fix i hope now compile.. someone test it. i have vc not gcc :(
+
+	* amx/amxwraps.cpp 1.47:
+		added GetIntFromDefine
+
+	* commands.cpp 1.11:
+		fixed dye exploit
+
+	* network.cpp 1.40:
+	* organisation.h 1.6:
+		*** empty log message ***
+
+	* network.cpp 1.39:
+		fixed exploit
+
+	* skills.cpp 1.27:
+		removed warning on console when "Race advance. "
+
+2003-07-08	luxornox
+	* combat.cpp 1.28:
+		*** empty log message ***
+
+2003-07-07	luxornox
+	* trigger.cpp 1.19:
+		crash fix.
+
+2003-07-06	luxornox
+	* chars.cpp 1.77:
+	* skitarg.cpp 1.21:
+		meditation speed up. poisoning fix.
+
+	* chars.cpp 1.78:
+	* combat.cpp 1.20:
+	* combat.cpp 1.21:
+	* combat.cpp 1.22:
+	* combat.cpp 1.23:
+	* combat.cpp 1.24:
+	* combat.cpp 1.25:
+	* combat.cpp 1.26:
+	* combat.cpp 1.27:
+		*** empty log message ***
+
+2003-06-30	endymionsf
+	* trigger.cpp 1.17:
+		added amount param for IADD
+
+	* combat.cpp 1.19:
+	* trigger.cpp 1.18:
+		fix
+
+2003-06-30	sparhawksf
+	* amx/amxvarserver.cpp 1.4:
+		gcc 3.3 compatability fix. Added a bogus statement in destructor 
+		of amxIntegerVector to prevent internal compiler error
+
+2003-06-29	endymionsf
+	* amx/amxwraps.cpp 1.46:
+		adding temfx_delete and isActive at small API
+
+	* object.cpp 1.26:
+	* object.h 1.14:
+	* tmpeff.cpp 1.15:
+	* tmpeff.h 1.6:
+		adding to small API tempfx_delete and isActive
+
+2003-06-27	endymionsf
+	* combat.cpp 1.18:
+		modified ONCOMBAT.. see forum
+
+2003-06-26	endymionsf
+	* dragdrop.cpp 1.20:
+		fixed spellbook
+
+2003-06-26	sparhawksf
+	* gamedate.cpp 1.2:
+	* gamedate.h 1.2:
+	* organisation.cpp 1.5:
+	* organisation.cpp 1.6:
+	* organisation.cpp 1.7:
+	* organisation.h 1.2:
+	* organisation.h 1.3:
+		Preparation for a completely new guild implementation
+
+2003-06-25	endymionsf
+	* dragdrop.cpp 1.19:
+		some fix fo lamer bug
+
+	* newbie.cpp 1.6:
+	* targeting.cpp 1.26:
+	* utils.cpp 1.13:
+		fixed amount defined in XSS
+
+2003-06-24	endymionsf
+	* item.cpp 1.20:
+		fixed problem with HP
+
+2003-06-22	dgp85
+	* chars.h 1.39:
+	* dragdrop.cpp 1.18:
+	* guild.cpp 1.8:
+	* guild.h 1.5:
+	* nox-wizard.cpp 1.34:
+	* skitarg.cpp 1.20:
+	* targeting.cpp 1.25:
+	* trade.cpp 1.13:
+	* worldmain.cpp 1.36:
+		doxy fixes, warning fixes
+
+2003-06-18	kheru
+	* msgboard.cpp 1.9:
+	* utils.cpp 1.12:
+		some clean, remove deprecated calcSerFromChar
+
+2003-06-15	kheru
+	* dragdrop.cpp 1.17:
+	* guildstones.cpp 1.11:
+	* gumps.cpp 1.12:
+	* nox-wizard.cpp 1.33:
+	* utils.cpp 1.11:
+		some clean...
+
+2003-06-13	kheru
+	* chars.cpp 1.76:
+	* set.cpp 1.20:
+		some doxygen clean
+
+2003-06-12	endymionsf
+	* targeting.cpp 1.24:
+		crash fix i hope
+
+2003-06-12	kheru
+	* amx/amxwrap2.cpp 1.39:
+		Set Skin color fix
+
+2003-06-12	sparhawksf
+	* globals.h 1.4:
+	* regions.h 1.2:
+	* typedefs.h 1.12:
+		Moved region_st from typedefs.h to regions.h
+
+	* sregions.cpp 1.9:
+		Fixed inconsequent if..else if in loadregion
+
+2003-06-10	endymionsf
+	* amx/amxwraps.cpp 1.45:
+		added isWeaponLike
+
+	* guildstones.cpp 1.10:
+		fix
+
+	* itemid.cpp 1.5:
+	* itemid.h 1.2:
+		added is weaponLike
+
+2003-06-10	dgp85
+	* skills.cpp 1.26:
+	* trigger.cpp 1.16:
+		doxygen's fixes
+
+2003-06-10	sparhawksf
+	* itemid.cpp 1.6:
+	* itemid.h 1.3:
+		Fixed compilation error, inline isWeaponlike declared in .h but 
+		implementation in .cpp. Removed inline declaration as a function 
+		call has less overhead here.
+
+2003-06-09	kheru
+	* amx/amxwraps.cpp 1.44:
+	* classes.h 1.9:
+	* dragdrop.cpp 1.16:
+	* guildstones.cpp 1.9:
+	* gumps.cpp 1.11:
+	* skills.cpp 1.25:
+	* targeting.cpp 1.23:
+	* trigger.cpp 1.15:
+	* trigger.h 1.3:
+		clean ...
+
+2003-06-09	sparhawksf
+	* mapstuff.cpp 1.2:
+		gcc 3.3 compatability fix. Merged DynTil() into 
+		canMonsterMoveHere() to fix gcc quirk
+
+	* accounts.cpp 1.5:
+		gcc 3.3 compatability fix. Commented out string erase and vector 
+		clean in account initializer
+
+	* amx/amxwrap2.cpp 1.38:
+		gcc 3.3 compatability fix. Gcc still has porblems with large 
+		switches. Split setcharproperty into several static funcs
+
+	* organisation.cpp 1.4:
+		Preparation for a completely new guild implementation
+
+2003-06-08	endymionsf
+	* amx/amx_dbg.c 1.2:
+		fidor fix
+
+2003-06-08	dgp85
+	* classes.h 1.8:
+	* oldmenu.cpp 1.8:
+		doxygen fixes
+
+	* cmdtable.h 1.2:
+		fixed buildSteps declaration
+
+2003-06-07	endymionsf
+	* dragdrop.cpp 1.15:
+		fix for item disappear and clean and power up
+
+	* amx/amxwraps.cpp 1.43:
+		fix now tweakwork again.. problme with native not defined
+
+2003-06-07	dgp85
+	* item.cpp 1.19:
+	* object.cpp 1.25:
+	* packets.cpp 1.39:
+		doxygen fixes
+
+	* amx/amxwraps.cpp 1.42:
+		removed doxygen doc for natives (creates problems)
+
+2003-06-06	endymionsf
+	* amx/amxwraps.cpp 1.40:
+		added set function for guilds
+
+	* amx/amxwraps.cpp 1.41:
+		fix
+
+	* amx/amxwrap2.cpp 1.37:
+		fixed
+
+	* amx/amxwrap2.cpp 1.36:
+	* amx/amxwraps.h 1.9:
+		added CP_GUILD
+
+2003-06-05	endymionsf
+	* guild.cpp 1.6:
+	* worldmain.h 1.2:
+		now charter is unicode
+
+	* guild.h 1.4:
+	* set.cpp 1.18:
+	* set.h 1.12:
+		added new set function for guild
+
+	* amx/amxwrap2.cpp 1.35:
+	* amx/amxwraps.cpp 1.39:
+	* amx/amxwraps.h 1.8:
+		ending new guilds
+
+	* chars.cpp 1.75:
+	* guild.cpp 1.4:
+	* guild.cpp 1.5:
+	* guild.cpp 1.7:
+	* guild.h 1.2:
+	* guild.h 1.3:
+		ending new guild
+
+	* set.cpp 1.19:
+		added set for guild
+
+2003-06-05	kheru
+	* containers.cpp 1.6:
+		*** empty log message ***
+
+2003-06-05	sparhawksf
+	* item.cpp 1.18:
+	* object.cpp 1.24:
+	* object.h 1.13:
+	* scripts.cpp 1.3:
+	* scripts.h 1.2:
+		gcc 3.3 compatability fix. Gcc still has porblems with large 
+		switches.
+
+2003-06-04	endymionsf
+	* containers.cpp 1.5:
+	* trigger.cpp 1.13:
+		fix for IDADD and cItem::putInto
+
+	* fishing.cpp 1.11:
+	* nox-wizard.cpp 1.32:
+		fix
+
+	* nox-wizard.cpp 1.31:
+	* srvparms.cpp 1.8:
+		full working check
+
+	* crontab.cpp 1.5:
+	* extractionskills.cpp 1.5:
+	* gumps.cpp 1.10:
+	* nox-wizard.cpp 1.29:
+	* nox-wizard.cpp 1.30:
+	* remadmin.cpp 1.3:
+	* skills.cpp 1.24:
+	* trigger.cpp 1.14:
+		*** empty log message ***
+
+	* amx/amxcback.cpp 1.6:
+	* amx/amxscript.cpp 1.20:
+	* amx/amxscript.h 1.8:
+	* amx/amxwraps.cpp 1.38:
+	* skitarg.cpp 1.19:
+	* speech.cpp 1.43:
+	* tmpeff.cpp 1.14:
+	* trigger.cpp 1.12:
+	* utils.cpp 1.10:
+		clean
+
+	* organisation.cpp 1.3:
+		make compileable
+
+	* chars.cpp 1.74:
+		fixed curse problem ( sam eof dragon ai i think )
+
+2003-06-03	endymionsf
+	* nox-wizard.cpp 1.26:
+		fixed item disappear
+
+	* targeting.cpp 1.22:
+	* utils.cpp 1.9:
+		added amount definition in XSS script ( ITEMLIST, ADDITEM )
+
+	* srvparms.cpp 1.5:
+	* srvparms.h 1.6:
+		added sell
+
+	* item.cpp 1.17:
+	* nox-wizard.cpp 1.27:
+	* npcs.cpp 1.17:
+	* nxwgui.cpp 1.4:
+	* speech.cpp 1.42:
+	* srvparms.cpp 1.6:
+	* srvparms.h 1.8:
+	* telport.cpp 1.7:
+		*** empty log message ***
+
+	* skills.cpp 1.23:
+	* skitarg.cpp 1.18:
+		clean
+
+	* nox-wizard.cpp 1.28:
+	* ntservice.cpp 1.2:
+	* nxwgui.cpp 1.3:
+		adding -check option to small
+
+	* srvparms.cpp 1.7:
+	* srvparms.h 1.7:
+		adding "check" mode for nox, whenn server start call three 
+		function for every item, npc and player character ( USEFULL for 
+		check consistanci or modify something )
+
+	* item.cpp 1.16:
+	* npcs.cpp 1.16:
+		vendor restyle
+
+	* newbie.cpp 1.5:
+		now also PACKITEM, BACKITEM have amount param
+
+2003-06-02	kheru
+	* amx/amxcback.cpp 1.5:
+	* amx/amxwrap2.cpp 1.34:
+	* amx/amxwraps.cpp 1.37:
+	* chars.cpp 1.73:
+	* dragdrop.cpp 1.14:
+	* fishing.cpp 1.10:
+	* guildstones.cpp 1.8:
+	* inlines.h 1.9:
+	* item.cpp 1.15:
+	* magic.cpp 1.8:
+	* mount.cpp 1.10:
+	* nox-wizard.cpp 1.25:
+	* npcai.cpp 1.11:
+	* npcs.cpp 1.15:
+	* nxwGump.cpp 1.5:
+	* party.cpp 1.3:
+	* skills.cpp 1.22:
+	* sndpkg.cpp 1.23:
+	* sndpkg.h 1.12:
+	* targeting.cpp 1.21:
+	* telport.cpp 1.6:
+	* walking.cpp 1.14:
+		clean
+
+	* inlines.h 1.10:
+		clean, freebsd fix
+
+2003-06-01	dgp85
+	* nox-bcb6.mak 1.7:
+		added orgnisation.cpp to the makefile
+
+2003-06-01	sparhawksf
+	* makefile.inc 1.10:
+	* organisation.cpp 1.1:
+	* organisation.cpp 1.2:
+	* organisation.h 1.1:
+		Preparation for a completely new guild implementation
+
+2003-06-01	luxornox
+	* network.cpp 1.38:
+		Crash fix.
+
+	* amx/amxwraps.cpp 1.36:
+		nprintf fix.
+
+	* item.cpp 1.14:
+		Random Item creation bug fix.
+
+	* speech.cpp 1.41:
+		vendor gold fix
+
+	* skitarg.cpp 1.17:
+		GCC warning removed.
+
+2003-05-31	endymionsf
+	* classes.h 1.6:
+	* house.cpp 1.8:
+	* npcs.cpp 1.12:
+	* skills.cpp 1.20:
+	* skills.cpp 1.21:
+	* speech.cpp 1.39:
+	* targeting.cpp 1.19:
+	* trade.cpp 1.12:
+	* utils.cpp 1.8:
+		*** empty log message ***
+
+	* skitarg.cpp 1.15:
+		clean
+
+2003-05-31	sparhawksf
+	* nxwGump.cpp 1.3:
+		gcc 3.3 compatability fix
+
+2003-05-31	luxornox
+	* boats.cpp 1.6:
+	* chars.cpp 1.71:
+	* classes.h 1.7:
+	* cmdtable.cpp 1.13:
+	* combat.cpp 1.17:
+	* commands.cpp 1.10:
+	* dbl_single_click.cpp 1.19:
+	* guildstones.cpp 1.7:
+	* house.cpp 1.9:
+	* item.cpp 1.13:
+	* item.h 1.4:
+	* mount.cpp 1.9:
+	* nox-wizard.cpp 1.24:
+	* npcs.cpp 1.13:
+	* skitarg.cpp 1.16:
+	* speech.cpp 1.40:
+	* targeting.cpp 1.20:
+	* trigger.cpp 1.11:
+		SpawnItem function removed.
+
+	* gumps.cpp 1.9:
+	* nxwGump.cpp 1.4:
+		Small gumps fix.
+
+	* amx/amxwraps.cpp 1.34:
+	* amx/amxwraps.cpp 1.35:
+	* chars.cpp 1.72:
+	* npcs.cpp 1.14:
+		*** empty log message ***
+
+2003-05-30	endymionsf
+	* npcs.cpp 1.11:
+	* speech.cpp 1.37:
+	* trigger.cpp 1.9:
+	* worldmain.cpp 1.35:
+		movgin trigword to string from []
+
+	* fishing.cpp 1.9:
+	* guild.cpp 1.3:
+	* magic.cpp 1.7:
+	* newbie.cpp 1.4:
+		clean.. replace use of id for spawn for more safe scriptid
+
+	* nox-wizard.cpp 1.23:
+	* skills.cpp 1.19:
+	* spawn.cpp 1.3:
+	* trigger.cpp 1.10:
+		clean from create by id to scripid
+
+	* amx/amxwrap2.cpp 1.32:
+	* amx/amxwrap2.cpp 1.33:
+	* amx/amxwraps.cpp 1.33:
+	* chars.h 1.38:
+	* commands.cpp 1.9:
+	* item.cpp 1.11:
+	* item.cpp 1.12:
+	* item.h 1.2:
+	* item.h 1.3:
+	* msgboard.cpp 1.8:
+	* titles.cpp 1.5:
+	* typedefs.h 1.11:
+		*** empty log message ***
+
+	* npcai.cpp 1.10:
+	* npcs.cpp 1.10:
+	* titles.cpp 1.4:
+	* worldmain.cpp 1.34:
+		moving title from [] to string ( TODO make member function )
+
+2003-05-30	sparhawksf
+	* dbl_single_click.cpp 1.18:
+	* items.cpp 1.23:
+		gcc 3.3 compatability fix
+
+2003-05-30	luxornox
+	* speech.cpp 1.38:
+		@ONSPEECH event fix.
+
+2003-05-29	endymionsf
+	* amx/amxwrap2.cpp 1.28:
+	* amx/amxwraps.h 1.7:
+		added CP_SCRIPTID
+
+	* object.h 1.11:
+		my guilty, fix
+
+	* chars.cpp 1.68:
+	* chars.h 1.35:
+		memory usage
+
+	* npcs.cpp 1.9:
+		adding CP_SCRIPTID
+
+	* chars.h 1.33:
+	* items.h 1.14:
+	* object.h 1.9:
+		return oild amxEvent system
+
+	* amx/amxcback.cpp 1.4:
+	* amx/amxwrap2.cpp 1.29:
+	* amx/amxwrap2.cpp 1.30:
+	* amx/amxwraps.cpp 1.32:
+	* chars.cpp 1.67:
+	* chars.cpp 1.69:
+	* chars.cpp 1.70:
+	* chars.h 1.36:
+	* chars.h 1.37:
+	* combat.cpp 1.16:
+	* dbl_single_click.cpp 1.16:
+	* dbl_single_click.cpp 1.17:
+	* dragdrop.cpp 1.13:
+	* gumps.cpp 1.8:
+	* item.cpp 1.10:
+	* items.cpp 1.21:
+	* items.cpp 1.22:
+	* items.h 1.16:
+	* magic.cpp 1.6:
+	* mount.cpp 1.8:
+	* msgboard.cpp 1.7:
+	* nox-wizard.cpp 1.22:
+	* npcai.cpp 1.9:
+	* object.cpp 1.23:
+	* object.h 1.10:
+	* object.h 1.12:
+	* rcvpkg.cpp 1.11:
+	* skills.cpp 1.18:
+	* skitarg.cpp 1.14:
+	* speech.cpp 1.36:
+	* sregions.cpp 1.8:
+	* targeting.cpp 1.18:
+	* thievery.cpp 1.8:
+	* trade.cpp 1.11:
+	* trigger.cpp 1.8:
+	* walking.cpp 1.13:
+	* worldmain.cpp 1.30:
+	* worldmain.cpp 1.31:
+	* worldmain.cpp 1.32:
+	* worldmain.cpp 1.33:
+		*** empty log message ***
+
+	* chars.cpp 1.65:
+	* chars.h 1.32:
+		adding for future restyle of menu.. not used now
+
+	* chars.cpp 1.66:
+	* chars.h 1.34:
+		return to old amxEvent system
+
+	* object.cpp 1.22:
+		returnto OldAmxEvent system
+
+	* items.cpp 1.20:
+	* items.h 1.15:
+		return to old AmxEvent system
+
+	* amx/amxwrap2.cpp 1.31:
+		move title from [] to string
+
+2003-05-29	luxornox
+	* amx/amxwraps.cpp 1.31:
+	* gumps.cpp 1.7:
+	* nxwGump.cpp 1.2:
+	* nxwGump.h 1.2:
+		Users defined small gumps support added.
+
+2003-05-28	kheru
+	* containers.cpp 1.4:
+		containers.cpp
+
+	* targeting.cpp 1.15:
+		clean ...
+
+	* amx/amxwraps.cpp 1.30:
+	* dragdrop.cpp 1.12:
+	* targeting.cpp 1.16:
+	* targeting.cpp 1.17:
+	* thievery.cpp 1.7:
+	* worldmain.cpp 1.29:
+		clean
+
+	* chars.cpp 1.64:
+	* chars.h 1.31:
+	* commands.cpp 1.8:
+	* dbl_single_click.cpp 1.15:
+	* fishing.cpp 1.8:
+	* gumps.cpp 1.6:
+	* item.cpp 1.9:
+	* items.cpp 1.19:
+	* items.h 1.13:
+	* nox-wizard.cpp 1.21:
+	* nox-wizard.h 1.5:
+	* npcs.cpp 1.8:
+	* nxw_utils.cpp 1.2:
+	* race.cpp 1.3:
+	* skitarg.cpp 1.13:
+	* sndpkg.cpp 1.22:
+	* targeting.cpp 1.14:
+	* telport.cpp 1.5:
+	* tmpeff.cpp 1.13:
+	* trigger.cpp 1.7:
+	* worldmain.cpp 1.28:
+		clean, change api: (usepotion, cChar::playSFX)
+
+	* skills.cpp 1.17:
+		clean potion typo
+
+2003-05-28	dgp85
+	* common_libs.h 1.11:
+	* debug.h 1.7:
+	* nox-wizard.cpp 1.20:
+	* typedefs.h 1.10:
+		mingw32 compatibility
+
+	* amx/amxwraps.cpp 1.29:
+	* menu.cpp 1.27:
+		compiling problems fixed under gcc
+
+2003-05-27	kheru
+	* chars.cpp 1.63:
+	* commands.cpp 1.7:
+	* dbl_single_click.cpp 1.14:
+	* dragdrop.cpp 1.11:
+	* extractionskills.cpp 1.4:
+	* fishing.cpp 1.7:
+	* msgboard.cpp 1.6:
+	* npcs.cpp 1.7:
+	* skitarg.cpp 1.12:
+	* sndpkg.cpp 1.21:
+	* sndpkg.h 1.11:
+	* targeting.cpp 1.13:
+	* thievery.cpp 1.6:
+	* trade.cpp 1.10:
+		clean, change [gold|item]sfx api
+
+	* skills.cpp 1.15:
+	* sndpkg.cpp 1.20:
+		clean
+
+	* chars.cpp 1.61:
+	* cmdtable.cpp 1.12:
+	* commands.cpp 1.6:
+	* dbl_single_click.cpp 1.13:
+	* dragdrop.cpp 1.10:
+	* extractionskills.cpp 1.3:
+	* fishing.cpp 1.6:
+	* nox-wizard.cpp 1.19:
+	* skills.cpp 1.14:
+	* skitarg.cpp 1.11:
+	* sndpkg.cpp 1.19:
+	* sndpkg.h 1.10:
+	* targeting.cpp 1.12:
+	* thievery.cpp 1.5:
+	* timing.cpp 1.4:
+		clean... and change  API (soundeffect*)
+
+2003-05-27	endymionsf
+	* npcs.cpp 1.6:
+		adding ONCHECKAI
+
+	* items.cpp 1.17:
+	* items.h 1.12:
+		pile crash fix
+
+	* chars.h 1.29:
+	* npcai.cpp 1.7:
+		adding npcai small controlled
+
+	* amx/amxscript.cpp 1.18:
+		fix for gcc
+
+	* chars.cpp 1.62:
+	* chars.h 1.30:
+	* worldmain.cpp 1.26:
+		adding @ONCHECKNPCAI
+
+	* npcs.cpp 1.5:
+		adding small ai cointrolled
+
+	* amx/amxscript.cpp 1.15:
+	* amx/amxscript.cpp 1.19:
+	* amx/amxscript.h 1.5:
+	* amx/amxscript.h 1.7:
+	* amx/amxwraps.cpp 1.28:
+	* containers.cpp 1.3:
+	* menu.cpp 1.22:
+	* menu.cpp 1.23:
+	* menu.cpp 1.24:
+	* menu.cpp 1.25:
+	* menu.cpp 1.26:
+	* menu.h 1.17:
+	* menu.h 1.18:
+	* menu.h 1.19:
+	* menu.h 1.20:
+	* menu.h 1.21:
+	* menu.h 1.22:
+	* npcai.h 1.3:
+	* oldmenu.cpp 1.3:
+	* oldmenu.cpp 1.4:
+	* oldmenu.cpp 1.5:
+	* oldmenu.cpp 1.6:
+	* oldmenu.cpp 1.7:
+	* oldmenu.h 1.2:
+	* oldmenu.h 1.3:
+	* oldmenu.h 1.4:
+	* oldmenu.h 1.5:
+	* oldmenu.h 1.6:
+	* oldmenu.h 1.7:
+	* packets.cpp 1.38:
+	* packets.h 1.30:
+	* worldmain.cpp 1.27:
+		*** empty log message ***
+
+	* amx/amxscript.cpp 1.14:
+	* amx/amxscript.h 1.4:
+		added AmxFunction
+
+	* amx/amxscript.cpp 1.16:
+	* amx/amxscript.h 1.6:
+		documented
+
+	* amx/amxscript.cpp 1.13:
+	* amx/amxscript.h 1.3:
+		clean and added AmxFunction
+
+	* npcai.cpp 1.8:
+		added @onCHECKAI
+
+2003-05-27	dgp85
+	* nox-bcb6.mak 1.6:
+		also menu.cpp was missing
+
+	* items.cpp 1.18:
+		fixed items compare (the color wasn't compared, was compared the 
+		functions)
+
+	* nox-bcb6.mak 1.5:
+		added oldmenu.cpp to the list of units to compile
+
+	* amx/amxvarserver.cpp 1.3:
+		fixed compilation problems under standard c++ compilers
+
+2003-05-27	luxornox
+	* item.cpp 1.8:
+	* object.cpp 1.20:
+	* skills.cpp 1.16:
+		Alchemy and crash fix.
+
+	* object.cpp 1.21:
+		*** empty log message ***
+
+	* amx/amxscript.cpp 1.17:
+		gcc compiling fix.
+
+2003-05-26	endymionsf
+	* dragdrop.cpp 1.9:
+		fixed crash
+
+	* object.cpp 1.18:
+	* object.h 1.7:
+	* tmpeff.cpp 1.10:
+		fixing temfx
+
+	* object.cpp 1.17:
+		tempfx fix but temporanei
+
+2003-05-26	luxornox
+	* tmpeff.cpp 1.12:
+		Crash fix.
+
+	* tmpeff.cpp 1.11:
+	* typedefs.h 1.9:
+		Tempfx fix.
+
+	* common_libs.h 1.10:
+	* object.cpp 1.19:
+	* object.h 1.8:
+		GCC Compiling fix.
+
+2003-05-25	endymionsf
+	* npcai.h 1.2:
+		adding amx ai
+
+	* menu.cpp 1.21:
+	* oldmenu.cpp 1.2:
+		fix
+
+	* npcai.cpp 1.6:
+	* npcs.cpp 1.4:
+		adding ai small handled
+
+	* menu.cpp 1.20:
+	* menu.h 1.16:
+	* packets.cpp 1.37:
+	* packets.h 1.29:
+		resyle menu work in progress
+
+	* amx/amxwraps.cpp 1.26:
+	* oldmenu.cpp 1.1:
+	* oldmenu.h 1.1:
+		resyle menu
+
+	* NoxWizard.dsp 1.3:
+		added old menu
+
+	* npcai.cpp 1.5:
+		adding small ai
+
+	* chars.cpp 1.60:
+	* chars.h 1.28:
+		adding npc ai small controlled
+
+	* set.cpp 1.17:
+	* set.h 1.11:
+		added copy to anxSet
+
+2003-05-25	luxornox
+	* magic.cpp 1.5:
+	* magic.h 1.3:
+	* timing.cpp 1.3:
+	* walking.cpp 1.11:
+		Gate travel spell implemented.
+
+	* chars.cpp 1.59:
+		Wrong comment removed.
+
+	* combat.cpp 1.14:
+	* combat.cpp 1.15:
+		*** empty log message ***
+
+	* amx/amxwraps.cpp 1.27:
+	* chars.cpp 1.58:
+	* chars.h 1.27:
+	* commands.cpp 1.5:
+	* constants.h 1.7:
+	* mount.cpp 1.7:
+	* network.cpp 1.37:
+	* skills.cpp 1.13:
+	* tmpeff.cpp 1.9:
+	* walking.cpp 1.12:
+		Lag reducement.
+
+2003-05-24	kheru
+	* worldmain.cpp 1.25:
+		FIX emotecolor save :(
+
+	* commands.cpp 1.4:
+		FIX dye item & dye char
+
+	* constants.h 1.6:
+	* dbl_single_click.cpp 1.12:
+	* house.cpp 1.6:
+	* house.cpp 1.7:
+	* sndpkg.cpp 1.17:
+	* sndpkg.cpp 1.18:
+	* sndpkg.h 1.9:
+	* targeting.cpp 1.11:
+		*** empty log message ***
+
+	* archive.cpp 1.5:
+	* chars.cpp 1.57:
+	* client.cpp 1.4:
+	* cmdtable.cpp 1.11:
+		clean
+
+2003-05-24	endymionsf
+	* amx/amxvarserver.cpp 1.2:
+	* amx/amxvarserver.h 1.2:
+		*** empty log message ***
+
+2003-05-23	kheru
+	* amx/amxwrap2.cpp 1.27:
+	* chars.cpp 1.56:
+	* chars.h 1.26:
+	* combat.cpp 1.13:
+	* dragdrop.cpp 1.8:
+	* guildstones.cpp 1.6:
+	* gumps.cpp 1.5:
+	* network.cpp 1.36:
+	* newbie.cpp 1.3:
+	* nox-wizard.cpp 1.18:
+	* npcs.cpp 1.3:
+	* race.cpp 1.2:
+	* skills.cpp 1.12:
+	* skitarg.cpp 1.10:
+	* sndpkg.cpp 1.15:
+	* sndpkg.h 1.8:
+	* speech.cpp 1.35:
+	* targeting.cpp 1.10:
+	* telport.cpp 1.4:
+	* titles.cpp 1.3:
+	* trigger.cpp 1.6:
+	* utils.cpp 1.7:
+	* worldmain.cpp 1.24:
+		Convert "public: UI08 id1,id2,xid1,xid2" into "private: UI16 id, xid"
+		Convert "public: UI08 skin1,skin2,xskin1,xskin2" into "private: UI16 skin,xskin"
+		Convert "UI08 saycolor1,saycolor2" into "UI16 saycolor"
+		Convert "UI08 emotecolor1,emotecolor2" into "UI16 emotecolor"
+		Added SendDrawPlayerPkt and adjust tips()
+
+	* sndpkg.cpp 1.16:
+		FIX statwindow !!!
+
+2003-05-22	kheru
+	* chars.cpp 1.55:
+		FIX!!!
+
+	* sndpkg.cpp 1.13:
+	* sndpkg.cpp 1.14:
+		FIXXXXXXXXX
+
+2003-05-22	endymionsf
+	* skills.cpp 1.11:
+		crash fix for race system
+
+2003-05-22	luxornox
+	* amx/amxwraps.cpp 1.25:
+		chr_speech fix.
+
+2003-05-21	kheru
+	* amx/amxwraps.cpp 1.24:
+	* archive.cpp 1.4:
+	* chars.cpp 1.54:
+	* cmdtable.cpp 1.10:
+	* crontab.cpp 1.4:
+	* guildstones.cpp 1.5:
+	* mount.cpp 1.6:
+	* msgboard.cpp 1.5:
+	* network.cpp 1.35:
+	* sndpkg.cpp 1.12:
+	* sndpkg.h 1.7:
+	* speech.cpp 1.33:
+	* walking.cpp 1.10:
+		Bash Me\!, Heavy FIX, clean :(
+
+2003-05-21	luxornox
+	* speech.cpp 1.34:
+		@ONSPEECH fix
+
+2003-05-20	kheru
+	* chars.cpp 1.53:
+		SHAME on ME! :'(
+
+2003-05-20	endymionsf
+	* set.cpp 1.14:
+	* set.h 1.8:
+		restyle set
+
+	* amx/amxwraps.cpp 1.20:
+		set restyle
+
+	* amx/amxwraps.cpp 1.22:
+	* amx/amxwraps.cpp 1.23:
+	* set.cpp 1.13:
+	* set.cpp 1.15:
+	* set.cpp 1.16:
+	* set.h 1.10:
+	* set.h 1.9:
+		*** empty log message ***
+
+	* amx/amxwraps.cpp 1.19:
+	* amx/amxwraps.cpp 1.21:
+	* set.cpp 1.12:
+	* set.h 1.7:
+		clean
+
+	* amx/amxscript.cpp 1.12:
+		removed warning
+
+2003-05-19	kheru
+	* walking.cpp 1.9:
+		little clean, little fix , new comments! That's all Folks ^^
+
+	* chars.cpp 1.52:
+	* dragdrop.cpp 1.7:
+	* sndpkg.cpp 1.11:
+	* sndpkg.h 1.6:
+	* sregions.cpp 1.7:
+	* trade.cpp 1.9:
+		little clean, FIX , new comments
+
+	* boats.cpp 1.5:
+	* sndpkg.cpp 1.10:
+	* sndpkg.h 1.5:
+		little clean, little fix, new comments ;P (little ...? -_-')
+
+	* cmdtable.cpp 1.9:
+	* fishing.cpp 1.5:
+		*** empty log message ***
+
+2003-05-19	endymionsf
+	* amx/amxwraps.cpp 1.18:
+		*** empty log message ***
+
+	* amx/amxwraps.cpp 1.17:
+		restyle of set
+
+2003-05-18	kheru
+	* client.cpp 1.3:
+	* skills.cpp 1.10:
+	* skitarg.cpp 1.9:
+	* sndpkg.cpp 1.8:
+	* sndpkg.cpp 1.9:
+	* sndpkg.h 1.3:
+	* sndpkg.h 1.4:
+		little clean, little fix, new comments ;P
+
+2003-05-17	kheru
+	* set.cpp 1.10:
+		temp. fix :/
+
+	* amx/amxwraps.cpp 1.15:
+	* amx/amxwraps.cpp 1.16:
+	* set.cpp 1.11:
+		*** empty log message ***
+
+	* amx/amxwraps.cpp 1.14:
+	* dragdrop.cpp 1.6:
+	* extractionskills.cpp 1.2:
+	* fishing.cpp 1.4:
+	* guildstones.cpp 1.4:
+	* gumps.cpp 1.4:
+	* house.cpp 1.5:
+	* itemid.cpp 1.4:
+	* items.cpp 1.16:
+	* mount.cpp 1.5:
+	* msgboard.cpp 1.4:
+	* network.cpp 1.34:
+	* nox-wizard.cpp 1.17:
+		little clean, little fix, new comments ;P
+
+2003-05-16	endymionsf
+	* amx/amxwrap2.cpp 1.26:
+	* amx/amxwraps.h 1.6:
+		added CP_MOUNTED
+
+	* NoxWizard.dsp 1.1:
+	* NoxWizard.dsw 1.1:
+	* NoxWizard.ncb 1.1:
+	* NoxWizard.opt 1.1:
+		added microsoft visual c++ 6 project file
+
+	* fishing.cpp 1.2:
+	* items.cpp 1.14:
+	* items.cpp 1.15:
+		fix
+
+	* chars.cpp 1.47:
+	* chars.h 1.23:
+	* npcs.h 1.3:
+		vendor fix
+
+	* item.cpp 1.7:
+	* trade.cpp 1.6:
+		1 part of vendor fix
+
+	* containers.cpp 1.2:
+	* items.h 1.11:
+		added putInto function
+
+	* item.cpp 1.6:
+	* items.cpp 1.13:
+	* nox-wizard.cpp 1.15:
+		*** empty log message ***
+
+	* fishing.cpp 1.3:
+	* nox-wizard.cpp 1.16:
+		clean
+
+	* amx/amxwraps.cpp 1.13:
+		restyle amxset
+
+	* NoxWizard.dsp 1.2:
+	* NoxWizard.opt 1.2:
+		fix problem with include
+
+	* set.cpp 1.9:
+	* set.h 1.6:
+		restyle max set
+
+2003-05-16	kheru
+	* addmenu.cpp 1.4:
+	* amx/amxwraps.cpp 1.12:
+	* archive.cpp 1.2:
+	* archive.cpp 1.3:
+	* boats.cpp 1.4:
+	* bounty.cpp 1.3:
+	* calendar.cpp 1.5:
+	* calendar.cpp 1.6:
+	* chars.cpp 1.50:
+	* chars.cpp 1.51:
+	* chars.h 1.25:
+	* client.cpp 1.2:
+	* cmdtable.cpp 1.7:
+	* cmdtable.cpp 1.8:
+	* commands.cpp 1.3:
+	* crontab.cpp 1.3:
+	* custmenu.cpp 1.4:
+	* dbl_single_click.cpp 1.10:
+	* dbl_single_click.cpp 1.11:
+		little clean, little fix, new comments ;P
+
+2003-05-16	luxornox
+	* chars.cpp 1.49:
+	* chars.h 1.24:
+	* object.cpp 1.16:
+	* tmpeff.cpp 1.7:
+	* tmpeff.h 1.5:
+		Tempfx restyle
+
+	* tmpeff.cpp 1.8:
+	* trade.cpp 1.7:
+		Crash fix.
+
+	* chars.cpp 1.48:
+	* object.cpp 1.15:
+	* tmpeff.cpp 1.6:
+	* tmpeff.h 1.4:
+		Tempfx restyle.
+
+	* NoxWizard.opt 1.3:
+		*** empty log message ***
+
+	* trade.cpp 1.8:
+		Crash fix
+
+2003-05-15	endymionsf
+	* amx/amxwraps.cpp 1.11:
+	* item.cpp 1.5:
+	* items.cpp 1.12:
+	* items.h 1.10:
+		fix
+
+	* skills.cpp 1.9:
+		now alchemy create XSS potions
+
+	* combat.cpp 1.12:
+		fix to combat
+
+	* object.cpp 1.14:
+		crash fix
+
+2003-05-15	luxornox
+	* chars.cpp 1.46:
+	* object.cpp 1.13:
+	* object.h 1.6:
+	* timing.cpp 1.2:
+	* tmpeff.cpp 1.5:
+	* tmpeff.h 1.3:
+		Tempfx code restyle.
+
+	* tmpeff.cpp 1.4:
+		tempfx bugfix.
+
+2003-05-14	luxornox
+	* items.cpp 1.11:
+	* trade.cpp 1.5:
+		Dupe fix.
+
+	* speech.cpp 1.32:
+		crash fix
+
+	* amx/amxwrap2.cpp 1.25:
+		Crash fix
+
+2003-05-13	luxornox
+	* dbl_single_click.cpp 1.9:
+	* tmpeff.cpp 1.3:
+		crash fix.
+
+	* makefile.inc 1.9:
+	* menu.cpp 1.19:
+		Gcc fix.
+
+	* packets.cpp 1.36:
+		Unicode receive fix.
+
+2003-05-12	endymionsf
+	* menu.cpp 1.18:
+		old menu now work for send.. so now working to handle response :
+		P
+
+	* menu.cpp 1.17:
+	* menu.h 1.15:
+		old  menu replace second draft
+
+	* amx/amxwraps.cpp 1.10:
+		restyle
+
+	* menu.cpp 1.16:
+	* menu.h 1.14:
+		added cOldMenu for replace old menu ( try of new menu )
+
+2003-05-12	dgp85
+	* .cvsignore 1.2:
+		ignoring compilation output from borland's compiler
+
+	* nox-bcb6.mak 1.4:
+		fixed bcb makefile
+
+2003-05-11	endymionsf
+	* speech.cpp 1.31:
+		fixed ghost speech
+
+	* common_libs.h 1.9:
+		now visual c++ 6 with STLport work right
+
+	* amx/amxwraps.cpp 1.9:
+		fix bug #59 ( setEvent was possible only after delEvent )
+
+	* network.cpp 1.32:
+		fix
+
+	* menu.cpp 1.14:
+	* menu.h 1.12:
+		my menu implementation
+
+	* menu.cpp 1.15:
+	* menu.h 1.13:
+		make compilable for vc 6
+
+	* network.cpp 1.33:
+		removing warning
+
+	* chars.cpp 1.45:
+		fix and clean for curent speech
+
+2003-05-11	luxornox
+	* chars.cpp 1.44:
+	* chars.h 1.22:
+	* inlines.h 1.8:
+	* network.cpp 1.30:
+	* network.h 1.8:
+	* packets.cpp 1.33:
+	* packets.h 1.28:
+	* rcvpkg.cpp 1.9:
+	* speech.cpp 1.30:
+	* worldmain.cpp 1.23:
+		wstring fix.
+
+	* network.cpp 1.31:
+	* packets.cpp 1.34:
+		Unicode xSend fix.
+
+	* rcvpkg.cpp 1.10:
+		Crash fix.
+
+	* typedefs.h 1.8:
+		gcc2 compatibility fix.
+
+	* amx/amx_api.h 1.7:
+	* amx/amxscript.cpp 1.11:
+	* amx/amxwrap2.cpp 1.24:
+		wstring fix
+
+	* object.cpp 1.12:
+	* packets.cpp 1.35:
+		crash fix
+
+2003-05-10	endymionsf
+	* menu.cpp 1.13:
+	* menu.h 1.11:
+		clean
+
+	* common_libs.h 1.8:
+		make stlport under vc6 compilable
+
+	* books.cpp 1.3:
+		temp fix
+
+2003-05-10	luxornox
+	* speech.cpp 1.28:
+		crash fix.
+
+	* amx/amxwrap2.cpp 1.23:
+	* speech.cpp 1.29:
+		Crash fixes.
+
+2003-05-09	endymionsf
+	* network.cpp 1.26:
+	* network.h 1.6:
+	* packets.cpp 1.26:
+	* rcvpkg.cpp 1.6:
+	* worldmain.cpp 1.19:
+		clean for unicode management
+
+	* chars.h 1.20:
+	* packets.cpp 1.29:
+	* packets.h 1.26:
+	* speech.cpp 1.25:
+	* worldmain.cpp 1.20:
+		clean of unicode management
+
+	* menu.cpp 1.12:
+	* menu.h 1.9:
+	* packets.cpp 1.32:
+		working for menu
+
+	* rcvpkg.cpp 1.7:
+		clea of unicode management
+
+	* worldmain.cpp 1.21:
+		profile save fix
+
+	* inlines.h 1.6:
+		gcc compilable by GHisha
+
+	* packets.cpp 1.30:
+		clean for menu
+
+	* network.cpp 1.27:
+	* packets.cpp 1.27:
+	* packets.cpp 1.28:
+		clean unicode management
+
+	* amx/amxwrap2.cpp 1.21:
+		now regen work
+
+	* amx/amxscript.cpp 1.9:
+	* menu.h 1.10:
+	* unicode.cpp 1.17:
+	* unicode.h 1.19:
+		*** empty log message ***
+
+	* network.cpp 1.28:
+		work now?
+
+	* amx/amxscript.cpp 1.8:
+	* amx/amxwrap2.cpp 1.20:
+		csa
+
+2003-05-09	kheru
+	* makefile.inc 1.8:
+		remove cUnicodeString class
+
+2003-05-09	luxornox
+	* chars.cpp 1.42:
+	* speech.cpp 1.26:
+	* typedefs.h 1.6:
+		Speech fix.
+
+	* amx/amx_api.h 1.6:
+	* amx/amxscript.cpp 1.10:
+	* amx/amxwrap2.cpp 1.22:
+	* chars.cpp 1.43:
+	* chars.h 1.21:
+	* inlines.h 1.7:
+	* network.cpp 1.29:
+	* network.h 1.7:
+	* packets.cpp 1.31:
+	* packets.h 1.27:
+	* rcvpkg.cpp 1.8:
+	* speech.cpp 1.27:
+	* typedefs.h 1.7:
+	* worldmain.cpp 1.22:
+		speech fix
+
+	* amx/amx_api.h 1.5:
+	* amx/amxscript.h 1.2:
+	* typedefs.h 1.5:
+		GCC2 compiling fix.
+
+2003-05-08	endymionsf
+	* chars.cpp 1.41:
+		clean of unicode manahement
+
+	* amx/amx_api.h 1.4:
+	* amx/amxscript.cpp 1.7:
+	* amx/amxwrap2.cpp 1.19:
+	* chars.h 1.19:
+	* menu.cpp 1.11:
+	* menu.h 1.8:
+	* packets.cpp 1.25:
+	* packets.h 1.25:
+		clean of unicode management
+
+	* set.cpp 1.7:
+	* set.h 1.4:
+		loop fix?
+
+	* set.cpp 1.8:
+	* set.h 1.5:
+		now set are true set.. unique container ^^
+
+	* inlines.h 1.5:
+		clean unicode management
+
+	* speech.cpp 1.24:
+		clean of unnicode management
+
+2003-05-08	luxornox
+	* network.cpp 1.25:
+		Loop fix.
+
+	* chars.cpp 1.40:
+	* speech.cpp 1.23:
+		SpeechCurrent fix.
+
+2003-05-07	luxornox
+	* network.cpp 1.24:
+		Network Mod
+
+	* combat.cpp 1.11:
+		Combat system fix.
+
+	* chars.cpp 1.39:
+	* speech.cpp 1.21:
+	* speech.cpp 1.22:
+		*** empty log message ***
+
+2003-05-06	kheru
+	* amx/amxwraps.cpp 1.7:
+	* chars.cpp 1.36:
+	* nox-wizard.cpp 1.14:
+	* nox-wizard.h 1.4:
+	* npcai.cpp 1.4:
+	* rcvpkg.cpp 1.5:
+	* targeting.cpp 1.8:
+		change npcattacktarget params into PCHARs
+
+	* classes.h 1.5:
+	* inlines.h 1.4:
+	* msgboard.cpp 1.3:
+	* network.cpp 1.23:
+	* pointer.cpp 1.5:
+	* skills.cpp 1.7:
+	* trade.cpp 1.4:
+	* utils.cpp 1.6:
+		clean, fix #0000044, remove useless func.
+
+	* chars.cpp 1.33:
+	* sregions.cpp 1.5:
+	* sregions.h 1.3:
+	* walking.cpp 1.8:
+		little clean
+
+	* chars.cpp 1.34:
+	* sregions.cpp 1.6:
+		*** empty log message ***
+
+	* chars.cpp 1.37:
+	* chars.h 1.18:
+	* mount.cpp 1.4:
+	* speech.cpp 1.20:
+	* targeting.cpp 1.9:
+	* trigger.cpp 1.5:
+		little clean, import openSpecialBank in cChar
+
+2003-05-06	endymionsf
+	* chars.cpp 1.35:
+		now hunger can be disabled
+
+	* items.cpp 1.10:
+		fix for explosion
+
+	* amx/amxwraps.cpp 1.8:
+		now magic_* don't consume rea
+
+	* nox-wizard.cpp 1.13:
+	* nox-wizard.h 1.3:
+		added event ONBEGINATTACKand ONBEGINDEFENSE also when an npc 
+		attack a player
+
+	* menu.cpp 1.10:
+	* menu.cpp 1.8:
+		fix
+
+	* menu.cpp 1.9:
+	* menu.h 1.7:
+		fixeses
+
+	* dbl_single_click.cpp 1.8:
+		carsh fix
+
+	* packets.cpp 1.24:
+	* packets.h 1.24:
+		anotther fix for menu
+
+	* set.cpp 1.6:
+	* set.h 1.3:
+		moved from vector to set because NxwSet MUST HAVE UNIQUE SERIAL 
+		INSIDE
+
+	* menu.cpp 1.6:
+	* menu.cpp 1.7:
+	* menu.h 1.6:
+		*** empty log message ***
+
+	* amx/amxwrap2.cpp 1.18:
+		adde get fot IP_CORPSE
+
+	* srvparms.cpp 1.4:
+	* srvparms.h 1.5:
+		now hunger system can be disabled
+
+	* inlines.h 1.3:
+		useful inline for format string ( another general methos i don't 
+		know )
+
+2003-05-06	luxornox
+	* chars.cpp 1.38:
+	* combat.cpp 1.10:
+	* object.cpp 1.11:
+	* skills.cpp 1.8:
+	* skitarg.cpp 1.8:
+		New AmxEvent system now works fine. Wrestling adjustment.
+
+2003-05-05	kheru
+	* char_array.h 1.4:
+	* combat.cpp 1.8:
+	* combat.cpp 1.9:
+		little clean
+
+	* dbl_single_click.cpp 1.6:
+	* object.cpp 1.8:
+	* worldmain.cpp 1.15:
+		little fix
+
+2003-05-05	endymionsf
+	* menu.cpp 1.2:
+	* menu.h 1.2:
+		second draft
+
+	* packets.cpp 1.23:
+		work in progress
+
+	* packets.cpp 1.21:
+	* packets.h 1.22:
+		packets for menu
+
+	* object.cpp 1.9:
+		fix
+
+	* amx/amxwrap2.cpp 1.17:
+		clean api
+
+	* packets.cpp 1.22:
+	* packets.h 1.23:
+		for menu working
+
+	* amx/amxwraps.cpp 1.6:
+		added stable and unStable to small API
+
+	* nox-wizard.cpp 1.11:
+		stable claen
+
+	* object.cpp 1.10:
+		fixed now
+
+	* menu.cpp 1.3:
+	* menu.cpp 1.4:
+	* menu.cpp 1.5:
+	* menu.h 1.3:
+	* menu.h 1.4:
+	* menu.h 1.5:
+		*** empty log message ***
+
+	* chars.cpp 1.32:
+	* chars.h 1.17:
+	* classes.h 1.4:
+	* cmdtable.cpp 1.6:
+	* dbl_single_click.cpp 1.7:
+	* globals.cpp 1.3:
+	* globals.h 1.3:
+	* gumps.cpp 1.3:
+	* network.cpp 1.22:
+	* nox-wizard.cpp 1.12:
+	* nox-wizard.cpp 1.9:
+	* trigger.cpp 1.4:
+		clean
+
+	* menu.cpp 1.1:
+	* menu.h 1.1:
+		creation, new menu system ( temp because need not modify spar 
+		implementation ) after can be moved here spar system ( ps lux 
+		dont remove )
+
+	* chars.cpp 1.31:
+	* chars.h 1.16:
+		added stable, unStable, isStabled method to cChar
+
+	* pointer.cpp 1.4:
+	* set.cpp 1.5:
+	* sndpkg.cpp 1.7:
+	* speech.cpp 1.19:
+	* walking.cpp 1.7:
+	* worldmain.cpp 1.18:
+		stable clean
+
+2003-05-05	sparhawksf
+	* amx/amxwrap2.cpp 1.15:
+	* dbl_single_click.cpp 1.5:
+	* item.cpp 1.2:
+	* items.cpp 1.8:
+	* items.h 1.8:
+	* trigger.cpp 1.3:
+	* worldmain.cpp 1.14:
+		replaced char disabledmsg[] by std::string disabledmsg in cItem
+		fixed DISABLEMSG value not saved to item worldfile
+
+	* amx/amxwrap2.cpp 1.14:
+	* chars.cpp 1.29:
+	* items.cpp 1.7:
+	* items.h 1.7:
+	* speech.cpp 1.18:
+	* worldmain.cpp 1.13:
+		replaced char desc[100] in cItem by std::string 
+		vendorDescription
+
+	* amx/amxwrap2.cpp 1.16:
+	* chars.cpp 1.30:
+	* gumps.cpp 1.2:
+	* item.cpp 1.4:
+	* items.cpp 1.9:
+	* items.h 1.9:
+	* skills.cpp 1.6:
+	* skitarg.cpp 1.7:
+	* worldmain.cpp 1.17:
+		replaced char creator[50] by std::string creator in cItem
+
+	* accounts.cpp 1.4:
+	* addmenu.cpp 1.3:
+	* area.cpp 1.2:
+	* boats.cpp 1.3:
+	* bounty.cpp 1.2:
+	* cmdtable.cpp 1.5:
+	* combat.cpp 1.7:
+	* commands.cpp 1.2:
+	* console.cpp 1.3:
+	* dragdrop.cpp 1.5:
+	* guildstones.cpp 1.3:
+	* house.cpp 1.4:
+	* html.cpp 1.2:
+	* item.cpp 1.3:
+	* itemid.cpp 1.3:
+	* magic.cpp 1.4:
+	* mount.cpp 1.3:
+	* msgboard.cpp 1.2:
+	* newbie.cpp 1.2:
+	* nox-wizard.cpp 1.10:
+	* scripts.cpp 1.2:
+	* skills.cpp 1.5:
+	* skitarg.cpp 1.6:
+	* sndpkg.cpp 1.6:
+	* spawn.cpp 1.2:
+	* sregions.cpp 1.4:
+	* targeting.cpp 1.7:
+	* telport.cpp 1.3:
+	* titles.cpp 1.2:
+	* trade.cpp 1.3:
+	* utils.cpp 1.5:
+	* worldmain.cpp 1.16:
+		Removed all unneeded char* casts
+
+2003-05-04	kheru
+	* char_array.h 1.3:
+	* debug.h 1.6:
+	* globals.cpp 1.2:
+	* globals.h 1.2:
+	* item_array.h 1.2:
+		little clean, trash schei___ (shit?) ;P
+
+	* translation.cpp 1.3:
+		*** empty log message ***
+
+	* nox-wizard.cpp 1.7:
+		clean
+
+2003-05-04	dgp85
+	* char_array.h 1.2:
+		fixed where & command_setpriv3
+
+2003-05-04	sparhawksf
+	* amx/amxcback.cpp 1.3:
+	* amx/amxwraps.cpp 1.3:
+	* amx/amxwraps.cpp 1.4:
+	* amx/amxwraps.cpp 1.5:
+	* chars.cpp 1.25:
+	* chars.cpp 1.26:
+	* chars.cpp 1.27:
+	* chars.cpp 1.28:
+	* chars.h 1.14:
+	* chars.h 1.15:
+	* combat.cpp 1.5:
+	* combat.cpp 1.6:
+	* dbl_single_click.cpp 1.4:
+	* dragdrop.cpp 1.4:
+	* items.cpp 1.5:
+	* items.cpp 1.6:
+	* items.h 1.6:
+	* magic.cpp 1.3:
+	* mount.cpp 1.2:
+	* nox-wizard.cpp 1.8:
+	* npcai.cpp 1.3:
+	* object.cpp 1.5:
+	* object.cpp 1.6:
+	* object.cpp 1.7:
+	* object.h 1.4:
+	* object.h 1.5:
+	* rcvpkg.cpp 1.4:
+	* skills.cpp 1.4:
+	* skitarg.cpp 1.5:
+	* speech.cpp 1.17:
+	* sregions.cpp 1.3:
+	* targeting.cpp 1.5:
+	* targeting.cpp 1.6:
+	* thievery.cpp 1.3:
+	* thievery.cpp 1.4:
+	* trade.cpp 1.2:
+	* walking.cpp 1.5:
+	* walking.cpp 1.6:
+	* worldmain.cpp 1.11:
+	* worldmain.cpp 1.12:
+		Moved amx event handler to cObject, reduced mem usage, cleaner 
+		interface
+
+2003-05-04	endymionsf
+	* packets.cpp 1.20:
+		little fix, my guilty
+
+	* chars.cpp 1.24:
+		safedelete fix
+
+	* network.cpp 1.21:
+	* packets.cpp 1.19:
+	* packets.h 1.21:
+	* rcvpkg.cpp 1.3:
+	* rcvpkg.h 1.3:
+		clean
+
+	* worldmain.cpp 1.10:
+		now unicode string are saved rigth
+
+2003-05-04	luxornox
+	* chars.cpp 1.22:
+	* chars.cpp 1.23:
+		Meditation fix.
+
+	* chars.cpp 1.21:
+		gcc warning fix.
+
+2003-05-03	endymionsf
+	* abstraction/endian.cpp 1.5:
+	* network.cpp 1.20:
+		profile now work at 100%
+
+	* npcs.cpp 1.2:
+		added REGEN_HP, REGEN_ST, REGEN_MN for XSS modify of stats regen 
+		rate of npcs
+
+	* combat.cpp 1.4:
+		removed stun block on horse ( my stupidity )
+
+	* constants.h 1.4:
+		adding stat regen into cChar ecc
+
+	* chars.cpp 1.19:
+	* chars.h 1.12:
+		stats regen rate into cChar working
+
+	* unicode.cpp 1.16:
+	* unicode.h 1.18:
+		added copy constructor for another cUnicodeString
+
+	* abstraction/endian.cpp 1.4:
+	* packets.cpp 1.18:
+		fix
+
+	* chars.cpp 1.20:
+	* chars.h 1.13:
+		regen rate work in progress
+
+	* amx/amxwrap2.cpp 1.12:
+	* amx/amxwraps.h 1.4:
+	* walking.cpp 1.4:
+	* worldmain.cpp 1.9:
+		stat regen rate
+
+	* amx/amxwraps.h 1.5:
+		stat regen rate small api
+
+	* abstraction/endian.cpp 1.2:
+	* abstraction/endian.h 1.3:
+		adding overload operator
+
+	* abstraction/endian.cpp 1.3:
+	* abstraction/endian.h 1.4:
+		i'm not able to wrtite overload operator from eUI16 to UI16 so 
+		use stupid get method
+
+	* chars.cpp 1.18:
+	* chars.h 1.11:
+		added destructor for cChar
+
+	* constants.h 1.5:
+	* typedefs.h 1.4:
+		regen working in porgress
+
+	* typedefs.h 1.3:
+		adding regen rate into cChar and restily,m clean and doc
+
+	* packets.cpp 1.17:
+	* packets.h 1.20:
+		added profile packet update recieve
+
+	* packets.cpp 1.16:
+	* packets.h 1.19:
+	* sndpkg.cpp 1.5:
+		moving to new packet system
+
+	* network.cpp 1.19:
+		profile now work right on read
+
+	* unicode.cpp 1.15:
+	* unicode.h 1.17:
+		cleaned, documented and added some new function
+
+	* amx/amxwrap2.cpp 1.13:
+		stat regen rate added to small api
+
+2003-05-02	endymionsf
+	* combat.cpp 1.3:
+		wrest punch cant freeze player on horse now
+
+	* network.cpp 1.18:
+		added feature send
+
+	* network.cpp 1.17:
+	* packets.h 1.17:
+		make vc compilable
+
+	* unicode.cpp 1.14:
+	* worldmain.cpp 1.8:
+		now worldsave and read of unicode string work right :)
+
+	* abstraction/endian.h 1.2:
+		make compilable on vc
+
+	* packets.cpp 1.15:
+	* packets.h 1.18:
+		added features packet
+
+	* worldmain.cpp 1.7:
+		added save fìor unicode strig.. not work right read
+
+	* db/db.h 1.1:
+		db module creation
+
+2003-05-02	dgp85
+	* logsystem.cpp 1.3:
+	* logsystem.h 1.3:
+	* logsystem.h 1.4:
+		fixed the previous ci (commited a incomplete file)
+
+	* abstraction/endian.cpp 1.1:
+	* abstraction/endian.h 1.1:
+	* common_libs.h 1.6:
+	* endian.cpp 1.2:
+	* endian.h 1.2:
+	* makefile.inc 1.7:
+	* nox-bcb6.mak 1.3:
+	* nxwcommn.h 1.4:
+		completely fixed the split of endians - created abstraction 
+		subdir for compiler/platform abstraction layer
+
+	* common_libs.h 1.7:
+		fixed a problem compiling with vc++
+
+	* common_libs.h 1.5:
+	* endian.cpp 1.1:
+	* endian.h 1.1:
+	* makefile.inc 1.6:
+	* nox-bcb6.mak 1.2:
+	* nxwcommn.h 1.3:
+	* typedefs.h 1.2:
+	* unicode.cpp 1.13:
+	* unicode.h 1.16:
+		splitted unicode.cpp, fixed platform/compiler abstraction
+
+	* amx/amxscript.cpp 1.6:
+	* basics.cpp 1.2:
+	* basics.h 1.3:
+	* chars.cpp 1.17:
+	* common_libs.h 1.4:
+	* logsystem.cpp 1.2:
+	* logsystem.h 1.2:
+	* network.cpp 1.15:
+	* nox-wizard.cpp 1.6:
+	* nox-wizard.h 1.2:
+	* object.cpp 1.4:
+	* packets.h 1.16:
+	* scp_parser.cpp 1.4:
+	* scp_parser.h 1.3:
+	* utils.cpp 1.4:
+	* utils.h 1.2:
+		fixed problems with doxygen and with compile under unix without 
+		gcc
+
+2003-05-02	kheru
+	* network.cpp 1.16:
+		fix little endianess ;P
+
+2003-05-01	endymionsf
+	* network.cpp 1.12:
+	* packets.cpp 1.13:
+	* packets.h 1.15:
+		profile work in progress ( 80% )
+
+	* amx/amxwrap2.cpp 1.9:
+		added unicode string support for small API
+
+	* network.cpp 1.13:
+	* packets.cpp 1.14:
+		working on profile
+		DONE can be modified by small
+		TODO saving
+		TODO can be modified in client
+
+	* worldmain.cpp 1.6:
+		adding world save and read of unicode string
+
+	* speech.cpp 1.16:
+		ops :P
+
+	* amx/amxwrap2.cpp 1.10:
+	* amx/amxwrap2.cpp 1.11:
+	* chars.cpp 1.14:
+	* chars.cpp 1.15:
+	* chars.h 1.8:
+	* chars.h 1.9:
+	* network.cpp 1.14:
+	* speech.cpp 1.14:
+		clean
+
+	* unicode.cpp 1.11:
+	* unicode.h 1.14:
+		work?
+
+	* amx/amxwraps.h 1.3:
+		added support for unicode strig
+
+	* unicode.cpp 1.12:
+	* unicode.h 1.15:
+		now MUST work. else mind crash
+
+	* packets.cpp 1.10:
+	* packets.cpp 1.11:
+	* packets.h 1.12:
+	* packets.h 1.13:
+	* unicode.h 1.12:
+		profile work in progress
+
+	* chars.cpp 1.13:
+	* chars.h 1.7:
+		adding profile
+
+	* chars.cpp 1.16:
+	* chars.h 1.10:
+	* speech.cpp 1.15:
+		fix for speech memory use
+
+2003-05-01	kheru
+	* network.cpp 1.11:
+		W.i.P. #0000013
+
+2003-05-01	luxornox
+	* chars.h 1.6:
+	* items.h 1.5:
+	* object.h 1.3:
+	* packets.cpp 1.12:
+	* packets.h 1.14:
+	* unicode.h 1.13:
+		*** empty log message ***
+
+2003-04-30	endymionsf
+	* set.cpp 1.3:
+	* set.h 1.2:
+		restyle of amx set
+
+	* packets.cpp 1.9:
+	* packets.h 1.11:
+		profile working in progress
+
+	* amx/amxwraps.cpp 1.2:
+		working on amx set
+
+	* amx/amxscript.cpp 1.4:
+		fix
+
+	* packets.cpp 1.5:
+		added packet for map
+
+	* chars.cpp 1.8:
+		modify to damage unfreeze
+
+	* packets.h 1.6:
+		added packets for map management
+
+	* unicode.cpp 1.10:
+	* unicode.h 1.11:
+	* walking.cpp 1.2:
+		*** empty log message ***
+
+	* packets.cpp 1.7:
+	* packets.h 1.8:
+	* packets.h 1.9:
+	* sndpkg.cpp 1.4:
+	* walking.cpp 1.3:
+		moving to new packet system
+
+	* packets.cpp 1.8:
+	* packets.h 1.10:
+		working on char profile ( BUG 19 )
+
+	* packets.cpp 1.6:
+	* packets.h 1.7:
+		added some movement packet
+
+	* amx/amxscript.cpp 1.3:
+	* amx/amxwrap2.cpp 1.8:
+		now work
+
+2003-04-30	dgp85
+	* accounts.cpp 1.2:
+	* addmenu.cpp 1.2:
+	* amx/amxcback.cpp 1.2:
+	* amx/amxscript.cpp 1.5:
+	* calendar.cpp 1.3:
+	* chars.cpp 1.9:
+	* dbl_single_click.cpp 1.2:
+	* dragdrop.cpp 1.3:
+	* guild.cpp 1.2:
+	* jail.cpp 1.2:
+	* los.cpp 1.2:
+	* muls.cpp 1.3:
+	* object.cpp 1.3:
+	* skitarg.cpp 1.4:
+	* thievery.cpp 1.2:
+	* timers.cpp 1.2:
+	* weight.cpp 1.2:
+	* worldmain.cpp 1.4:
+		removed \return void
+
+	* accounts.cpp 1.3:
+	* accounts.h 1.2:
+	* boats.cpp 1.2:
+	* boats.h 1.2:
+	* books.cpp 1.2:
+	* books.h 1.2:
+	* cache.cpp 1.2:
+	* cache.h 1.2:
+	* calendar.cpp 1.4:
+	* calendar.h 1.2:
+	* chars.cpp 1.10:
+	* chars.cpp 1.7:
+	* chars.h 1.4:
+	* classes.h 1.3:
+	* cmdtable.cpp 1.4:
+	* common_libs.cpp 1.2:
+	* common_libs.h 1.3:
+	* compiler/sc1.c 1.2:
+	* compiler/sc2.c 1.2:
+	* compiler/sc3.c 1.2:
+	* compiler/sc5.c 1.2:
+	* compiler/sc6.c 1.2:
+	* console.cpp 1.2:
+	* console.h 1.2:
+	* console.h 1.3:
+	* constants.h 1.2:
+	* custmenu.cpp 1.3:
+	* custmenu.h 1.2:
+	* debug.cpp 1.2:
+	* debug.h 1.5:
+	* encryption.cpp 1.2:
+	* guildstones.cpp 1.2:
+	* house.cpp 1.3:
+	* items.cpp 1.4:
+	* items.h 1.3:
+	* items.h 1.4:
+	* magic.cpp 1.2:
+	* magic.h 1.2:
+	* muls.cpp 1.2:
+	* network.cpp 1.10:
+	* network.cpp 1.8:
+	* network.cpp 1.9:
+	* network.h 1.4:
+	* nox-wizard.cpp 1.3:
+	* nox-wizard.cpp 1.4:
+	* npcai.cpp 1.2:
+	* nxwgui.cpp 1.2:
+	* packets.cpp 1.4:
+	* packets.h 1.5:
+	* party.cpp 1.2:
+	* party.h 1.2:
+	* pointer.cpp 1.2:
+	* pointer.cpp 1.3:
+	* pointer.h 1.2:
+	* prototypes.h 1.2:
+	* remadmin.h 1.2:
+	* scp_parser.cpp 1.2:
+	* scp_parser.h 1.2:
+	* set.cpp 1.2:
+	* sndpkg.cpp 1.3:
+	* speech.cpp 1.13:
+	* sregions.cpp 1.2:
+	* srvparms.cpp 1.3:
+	* srvparms.h 1.3:
+	* targeting.cpp 1.3:
+	* targeting.cpp 1.4:
+	* targeting.h 1.2:
+	* telport.cpp 1.2:
+	* tmpeff.cpp 1.2:
+	* tmpeff.h 1.2:
+	* translation.cpp 1.2:
+	* trigger.cpp 1.2:
+	* trigger.h 1.2:
+	* utils.cpp 1.2:
+	* worldmain.cpp 1.3:
+	* worldmain.cpp 1.5:
+		clean up warnings, doxygen, english corrections
+
+	* nox-wizard.cpp 1.5:
+		fix bug 0000032
+
+	* addmenu.h 1.2:
+	* amx/amxcback.h 1.2:
+	* basics.h 1.2:
+	* chars.cpp 1.12:
+	* chars.h 1.5:
+	* constants.h 1.3:
+	* dbl_single_click.cpp 1.3:
+	* dbl_single_click.h 1.1:
+	* fishing.h 1.1:
+	* gumps.h 1.1:
+	* html.h 1.1:
+	* inlines.h 1.2:
+	* los.h 1.2:
+	* makefile.inc 1.5:
+	* network.h 1.5:
+	* newbie.h 1.1:
+	* nox-wizard.h 1.1:
+	* npcs.h 1.2:
+	* nxw_utils.h 1.2:
+	* nxwcommn.h 1.2:
+	* pointer.h 1.3:
+	* prototypes.h 1.3:
+	* rcvpkg.cpp 1.2:
+	* rcvpkg.h 1.2:
+	* scripts.h 1.1:
+	* set.cpp 1.4:
+	* skills.h 1.1:
+	* sndpkg.h 1.2:
+	* sregions.h 1.2:
+	* srvparms.h 1.4:
+	* telport.h 1.1:
+	* timing.h 1.1:
+	* titles.h 1.1:
+	* trade.h 1.2:
+	* utils.cpp 1.3:
+	* utils.h 1.1:
+	* walking.h 1.1:
+		splitted prototypes.h into many .h
+
+2003-04-30	kheru
+	* scp_parser.cpp 1.3:
+		doxygen doc.
+
+2003-04-30	luxornox
+	* chars.cpp 1.11:
+		Now damaged people are correctly unfreezed.
+
+2003-04-29	endymionsf
+	* amx/amxwrap2.cpp 1.4:
+		prepare to evetn ONHEAR
+
+	* unicode.h 1.9:
+		remove gcc warning
+
+	* combat.cpp 1.2:
+		last target attack to an hidden char fix
+
+	* speech.cpp 1.12:
+	* unicode.cpp 1.9:
+		working
+
+	* speech.cpp 1.4:
+		now also for ghost is unicode right.. but need a test :P
+
+	* speech.cpp 1.10:
+		preapare to event ONHEAR
+
+	* items.cpp 1.3:
+		potion fix but useless.. problem are set
+
+	* speech.cpp 1.11:
+		working on event ONHEAR
+
+	* speech.cpp 1.8:
+		clean code
+
+	* packets.cpp 1.3:
+	* packets.h 1.4:
+	* speech.cpp 1.5:
+	* unicode.h 1.8:
+		now work with new packet system
+
+	* chars.cpp 1.6:
+	* chars.h 1.3:
+	* speech.cpp 1.9:
+		for new event on hear player
+
+	* amx/amxwrap2.cpp 1.5:
+		wonrking on event ONHEAR
+
+	* amx/amxwrap2.cpp 1.3:
+	* amx/amxwraps.h 1.2:
+		working for event ONHEAR
+
+	* amx/amx_api.cpp 1.1:
+		amx unicode string
+
+	* packets.h 1.3:
+	* unicode.h 1.6:
+		packets now i hope work right
+
+	* speech.cpp 1.6:
+		fix for macro speech
+
+	* amx/amxwrap2.cpp 1.6:
+	* amx/amxwrap2.cpp 1.7:
+	* speech.cpp 1.7:
+	* unicode.cpp 1.6:
+	* unicode.cpp 1.7:
+	* unicode.cpp 1.8:
+	* unicode.h 1.10:
+	* unicode.h 1.5:
+	* unicode.h 1.7:
+		*** empty log message ***
+
+2003-04-29	kheru
+	* makefile.inc 1.4:
+		makefile updates...
+
+	* amx/amx_api.h 1.2:
+		*** empty log message ***
+
+	* makefile.inc 1.3:
+		add unicode.cpp to makefile ;)
+
+	* network.cpp 1.7:
+		more verbose on 0xB8 pkt warning
+
+2003-04-29	luxornox
+	* amx/amx.c 1.2:
+	* amx/amx_api.h 1.3:
+	* amx/amxscript.cpp 1.2:
+		Amx compiling fix.
+
+	* amx/amx_api.cpp 1.2:
+		*** empty log message ***
+
+2003-04-28	kheru
+	* calendar.cpp 1.2:
+	* debug.h 1.2:
+	* network.cpp 1.2:
+	* network.cpp 1.3:
+	* network.cpp 1.4:
+	* srvparms.cpp 1.2:
+	* srvparms.h 1.2:
+		enable/disable client features ...
+
+	* chars.cpp 1.5:
+	* classes.h 1.2:
+	* debug.h 1.4:
+	* skitarg.cpp 1.3:
+	* targeting.cpp 1.2:
+		little clean
+
+	* cmdtable.cpp 1.2:
+		fix ..
+
+	* unicode.cpp 1.2:
+	* unicode.h 1.2:
+		unicode now
+
+	* unicode.cpp 1.3:
+		*** empty log message ***
+
+2003-04-28	endymionsf
+	* packets.cpp 1.2:
+	* packets.h 1.2:
+	* unicode.cpp 1.4:
+	* unicode.h 1.3:
+		speech packet now gcc compilable i hope
+
+	* speech.cpp 1.3:
+		update for unicode
+
+	* custmenu.cpp 1.2:
+	* debug.h 1.3:
+	* network.cpp 1.6:
+	* network.h 1.3:
+		workaround
+
+	* unicode.cpp 1.5:
+	* unicode.h 1.4:
+		make gcc compilable and other
+
+2003-04-28	luxornox
+	* cmdtable.cpp 1.3:
+	* network.cpp 1.5:
+	* network.h 1.2:
+	* nox-wizard.cpp 1.2:
+	* object.cpp 1.2:
+	* object.h 1.2:
+	* remadmin.cpp 1.2:
+		Memory requirements improvements (more to come).
+		Compiling fixes.
+
+	* amx/amxwrap2.cpp 1.2:
+	* chars.cpp 1.4:
+	* house.cpp 1.2:
+	* items.cpp 1.2:
+	* items.h 1.2:
+	* skitarg.cpp 1.2:
+		*** empty log message ***
+
+2003-04-27	dgp85
+	* common_libs.h 1.2:
+		more precise the danger using gcc3
+
+2003-04-27	luxornox
+	* worldmain.cpp 1.2:
+		Items dx2 bug fixed.
+
+	* chars.cpp 1.2:
+	* chars.cpp 1.3:
+	* chars.h 1.2:
+	* crontab.cpp 1.2:
+	* dragdrop.cpp 1.2:
+	* skills.cpp 1.3:
+	* sndpkg.cpp 1.2:
+		*** empty log message ***
+
+	* itemid.cpp 1.2:
+	* makefile.inc 1.2:
+	* skills.cpp 1.2:
+	* speech.cpp 1.2:
+		cvs sync
+
+2003-04-26	luxornox
+	* .cvsignore 1.1.1.1:
+	* AUTHORS.txt 1.1.1.1:
+	* COPYING.txt 1.1.1.1:
+	* LICENSE.txt 1.1.1.1:
+	* accounts.cpp 1.1.1.1:
+	* accounts.h 1.1.1.1:
+	* addmenu.cpp 1.1.1.1:
+	* addmenu.h 1.1.1.1:
+	* amx/amx.c 1.1.1.1:
+	* amx/amx.h 1.1.1.1:
+	* amx/amx_api.h 1.1.1.1:
+	* amx/amx_comp.c 1.1.1.1:
+	* amx/amx_comp.h 1.1.1.1:
+	* amx/amx_dbg.c 1.1.1.1:
+	* amx/amxcback.cpp 1.1.1.1:
+	* amx/amxcback.h 1.1.1.1:
+	* amx/amxcons.c 1.1.1.1:
+	* amx/amxcore.c 1.1.1.1:
+	* amx/amxfile.cpp 1.1.1.1:
+	* amx/amxfile.h 1.1.1.1:
+	* amx/amxscript.cpp 1.1.1.1:
+	* amx/amxscript.h 1.1.1.1:
+	* amx/amxvarserver.cpp 1.1.1.1:
+	* amx/amxvarserver.h 1.1.1.1:
+	* amx/amxwrap2.cpp 1.1.1.1:
+	* amx/amxwraps.cpp 1.1.1.1:
+	* amx/amxwraps.h 1.1.1.1:
+	* amx/float.cpp 1.1.1.1:
+	* archive.cpp 1.1.1.1:
+	* archive.h 1.1.1.1:
+	* area.cpp 1.1.1.1:
+	* area.h 1.1.1.1:
+	* basics.cpp 1.1.1.1:
+	* basics.h 1.1.1.1:
+	* boats.cpp 1.1.1.1:
+	* boats.h 1.1.1.1:
+	* books.cpp 1.1.1.1:
+	* books.h 1.1.1.1:
+	* bounty.cpp 1.1.1.1:
+	* bounty.h 1.1.1.1:
+	* cache.cpp 1.1.1.1:
+	* cache.h 1.1.1.1:
+	* calendar.cpp 1.1.1.1:
+	* calendar.h 1.1.1.1:
+	* changelog.txt 1.1.1.1:
+	* char_array.cpp 1.1.1.1:
+	* char_array.h 1.1.1.1:
+	* chars.cpp 1.1.1.1:
+	* chars.h 1.1.1.1:
+	* classes.h 1.1.1.1:
+	* client.cpp 1.1.1.1:
+	* client.h 1.1.1.1:
+	* cmdtable.cpp 1.1.1.1:
+	* cmdtable.h 1.1.1.1:
+	* collector.h 1.1.1.1:
+	* combat.cpp 1.1.1.1:
+	* commands.cpp 1.1.1.1:
+	* commands.h 1.1.1.1:
+	* common_libs.cpp 1.1.1.1:
+	* common_libs.h 1.1.1.1:
+	* compiler/amx.h 1.1.1.1:
+	* compiler/osdefs.h 1.1.1.1:
+	* compiler/sc.def 1.1.1.1:
+	* compiler/sc.h 1.1.1.1:
+	* compiler/sc1.c 1.1.1.1:
+	* compiler/sc2.c 1.1.1.1:
+	* compiler/sc3.c 1.1.1.1:
+	* compiler/sc4.c 1.1.1.1:
+	* compiler/sc5.c 1.1.1.1:
+	* compiler/sc5.scp 1.1.1.1:
+	* compiler/sc6.c 1.1.1.1:
+	* compiler/sc7.c 1.1.1.1:
+	* compiler/sc7.scp 1.1.1.1:
+	* compiler/scexpand.c 1.1.1.1:
+	* compiler/sclib.c 1.1.1.1:
+	* compiler/sclist.c 1.1.1.1:
+	* compiler/scpack.c 1.1.1.1:
+	* compiler/scvars.c 1.1.1.1:
+	* console.cpp 1.1.1.1:
+	* console.h 1.1.1.1:
+	* constants.h 1.1.1.1:
+	* containers.cpp 1.1.1.1:
+	* containers.h 1.1.1.1:
+	* crontab.cpp 1.1.1.1:
+	* crontab.h 1.1.1.1:
+	* custmenu.cpp 1.1.1.1:
+	* custmenu.h 1.1.1.1:
+	* dbl_single_click.cpp 1.1.1.1:
+	* debug.cpp 1.1.1.1:
+	* debug.h 1.1.1.1:
+	* doxygen 1.1.1.1:
+	* dragdrop.cpp 1.1.1.1:
+	* dragdrop.h 1.1.1.1:
+	* encryption.cpp 1.1.1.1:
+	* encryption.h 1.1.1.1:
+	* extractionskills.cpp 1.1.1.1:
+	* extractionskills.h 1.1.1.1:
+	* fishing.cpp 1.1.1.1:
+	* gamedate.cpp 1.1.1.1:
+	* gamedate.h 1.1.1.1:
+	* globals.cpp 1.1.1.1:
+	* globals.h 1.1.1.1:
+	* guild.cpp 1.1.1.1:
+	* guild.h 1.1.1.1:
+	* guildstones.cpp 1.1.1.1:
+	* gumps.cpp 1.1.1.1:
+	* house.cpp 1.1.1.1:
+	* house.h 1.1.1.1:
+	* html.cpp 1.1.1.1:
+	* inlines.h 1.1.1.1:
+	* item.cpp 1.1.1.1:
+	* item.h 1.1.1.1:
+	* item_array.cpp 1.1.1.1:
+	* item_array.h 1.1.1.1:
+	* itemid.cpp 1.1.1.1:
+	* itemid.h 1.1.1.1:
+	* items.cpp 1.1.1.1:
+	* items.h 1.1.1.1:
+	* jail.cpp 1.1.1.1:
+	* jail.h 1.1.1.1:
+	* layer.h 1.1.1.1:
+	* logsystem.cpp 1.1.1.1:
+	* logsystem.h 1.1.1.1:
+	* los.cpp 1.1.1.1:
+	* los.h 1.1.1.1:
+	* magic.cpp 1.1.1.1:
+	* magic.h 1.1.1.1:
+	* makefile 1.1.1.1:
+	* makefile.beos 1.1.1.1:
+	* makefile.debug 1.1.1.1:
+	* makefile.freebsd 1.1.1.1:
+	* makefile.gcc2 1.1.1.1:
+	* makefile.inc 1.1.1.1:
+	* makefile.linux 1.1.1.1:
+	* makefile.mingw32 1.1.1.1:
+	* makefile.openbsd 1.1.1.1:
+	* mapstuff.cpp 1.1.1.1:
+	* mount.cpp 1.1.1.1:
+	* mount.h 1.1.1.1:
+	* msgboard.cpp 1.1.1.1:
+	* msgboard.h 1.1.1.1:
+	* muls.cpp 1.1.1.1:
+	* muls.h 1.1.1.1:
+	* network.cpp 1.1.1.1:
+	* network.h 1.1.1.1:
+	* newbie.cpp 1.1.1.1:
+	* nox-bcb6.mak 1.1.1.1:
+	* nox-wizard.cpp 1.1.1.1:
+	* npcai.cpp 1.1.1.1:
+	* npcai.h 1.1.1.1:
+	* npcs.cpp 1.1.1.1:
+	* npcs.h 1.1.1.1:
+	* ntservice.cpp 1.1.1.1:
+	* ntservice.h 1.1.1.1:
+	* nxwGump.cpp 1.1.1.1:
+	* nxwGump.h 1.1.1.1:
+	* nxwString.cpp 1.1.1.1:
+	* nxwString.h 1.1.1.1:
+	* nxwStringList.cpp 1.1.1.1:
+	* nxwStringList.h 1.1.1.1:
+	* nxw_utils.cpp 1.1.1.1:
+	* nxw_utils.h 1.1.1.1:
+	* nxwcommn.h 1.1.1.1:
+	* nxwgui.cpp 1.1.1.1:
+	* nxwgui.h 1.1.1.1:
+	* nxwgui.ico 1.1.1.1:
+	* nxwlogo.bmp 1.1.1.1:
+	* object.cpp 1.1.1.1:
+	* object.h 1.1.1.1:
+	* osdefs.h 1.1.1.1:
+	* packets.cpp 1.1.1.1:
+	* packets.h 1.1.1.1:
+	* particles.cpp 1.1.1.1:
+	* particles.h 1.1.1.1:
+	* party.cpp 1.1.1.1:
+	* party.h 1.1.1.1:
+	* pointer.cpp 1.1.1.1:
+	* pointer.h 1.1.1.1:
+	* poll.cpp 1.1.1.1:
+	* poll.h 1.1.1.1:
+	* prototypes.h 1.1.1.1:
+	* race.cpp 1.1.1.1:
+	* race.h 1.1.1.1:
+	* raceability.cpp 1.1.1.1:
+	* raceability.h 1.1.1.1:
+	* racegender.cpp 1.1.1.1:
+	* racegender.h 1.1.1.1:
+	* racerequiredtype.cpp 1.1.1.1:
+	* racerequiredtype.h 1.1.1.1:
+	* racescriptentry.cpp 1.1.1.1:
+	* racescriptentry.h 1.1.1.1:
+	* raceskill.cpp 1.1.1.1:
+	* raceskill.h 1.1.1.1:
+	* racestartitem.cpp 1.1.1.1:
+	* racestartitem.h 1.1.1.1:
+	* racetokenizer.cpp 1.1.1.1:
+	* racetokenizer.h 1.1.1.1:
+	* racetype.cpp 1.1.1.1:
+	* racetype.h 1.1.1.1:
+	* range.cpp 1.1.1.1:
+	* range.h 1.1.1.1:
+	* rcvpkg.cpp 1.1.1.1:
+	* rcvpkg.h 1.1.1.1:
+	* regions.cpp 1.1.1.1:
+	* regions.h 1.1.1.1:
+	* remadmin.cpp 1.1.1.1:
+	* remadmin.h 1.1.1.1:
+	* resource.h 1.1.1.1:
+	* sc.ico 1.1.1.1:
+	* sclinux.h 1.1.1.1:
+	* scp_parser.cpp 1.1.1.1:
+	* scp_parser.h 1.1.1.1:
+	* scripts.cpp 1.1.1.1:
+	* set.cpp 1.1.1.1:
+	* set.h 1.1.1.1:
+	* skills.cpp 1.1.1.1:
+	* skitarg.cpp 1.1.1.1:
+	* small_license.txt 1.1.1.1:
+	* sndpkg.cpp 1.1.1.1:
+	* sndpkg.h 1.1.1.1:
+	* spawn.cpp 1.1.1.1:
+	* spawn.h 1.1.1.1:
+	* speech.cpp 1.1.1.1:
+	* speech.h 1.1.1.1:
+	* src.filelist 1.1.1.1:
+	* src.kdevelop 1.1.1.1:
+	* src.kdevses 1.1.1.1:
+	* sregions.cpp 1.1.1.1:
+	* sregions.h 1.1.1.1:
+	* srvparms.cpp 1.1.1.1:
+	* srvparms.h 1.1.1.1:
+	* target.cpp 1.1.1.1:
+	* target.h 1.1.1.1:
+	* targeting.cpp 1.1.1.1:
+	* targeting.h 1.1.1.1:
+	* telport.cpp 1.1.1.1:
+	* thievery.cpp 1.1.1.1:
+	* timers.cpp 1.1.1.1:
+	* timers.h 1.1.1.1:
+	* timing.cpp 1.1.1.1:
+	* titles.cpp 1.1.1.1:
+	* tmpeff.cpp 1.1.1.1:
+	* tmpeff.h 1.1.1.1:
+	* toolbar1.bmp 1.1.1.1:
+	* trade.cpp 1.1.1.1:
+	* trade.h 1.1.1.1:
+	* translation.cpp 1.1.1.1:
+	* translation.h 1.1.1.1:
+	* trigger.cpp 1.1.1.1:
+	* trigger.h 1.1.1.1:
+	* typedefs.h 1.1.1.1:
+	* unicode.cpp 1.1.1.1:
+	* unicode.h 1.1.1.1:
+	* utils.cpp 1.1.1.1:
+	* version.h 1.1.1.1:
+	* walking.cpp 1.1.1.1:
+	* weight.cpp 1.1.1.1:
+	* worldmain.cpp 1.1.1.1:
+	* worldmain.h 1.1.1.1:
+	* xwgui.aps 1.1.1.1:
+	* xwgui.rc 1.1.1.1:
+		src module creation.
+
