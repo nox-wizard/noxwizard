@@ -343,23 +343,29 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 								if( (UI32)RandomNum(1,100) <= pi->morez )
 									soundeffect4(ps->toInt(), pi, pi->morex);
 						break;
-					case 117	:	// Boats
-						if( pi->type2 == 1 || pi->type2 == 2 )
-							if( TIMEOUT( pi->gatetime ) )
-							{
-								if (pi->type2==1)
-									Boats->Move(ps->toInt(),pi->dir,pi);
-								else
-								{
-									int dir=pi->dir+4;
-									dir%=8;
-									Boats->Move(ps->toInt(),dir,pi);
-								}
-								pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
-							}
-						break;
 				}
 			}
+		}
+		// Check boats extra, or else they will only be updated every CHECK_ITEMS time
+		std::map<int,P_BOAT>::iterator iter_boat;
+		for ( iter_boat= s_boat.begin();iter_boat != s_boat.end();iter_boat++)
+		{
+			P_BOAT boat=iter_boat->second;
+			P_ITEM pi=boat->getShipLink();
+			if( pi->type2 == 1 || pi->type2 == 2 )
+				if( TIMEOUT( pi->gatetime ) )
+				{
+					if (pi->type2==1)
+						Boats->Move(ps->toInt(),pi->dir,pi);
+					else
+					{
+						int dir=pi->dir+4;
+						dir%=8;
+						Boats->Move(ps->toInt(),dir,pi);
+					}
+					pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
+
+				}
 		}
 	}//for i<now
 

@@ -658,6 +658,9 @@ void doubleclick(NXWCLIENT ps)
 	case ITYPE_BOATDEED:
 			cBoat::buildShip(pc, pi);
 			return;
+	case ITYPE_MULTIDEED:
+			cMulti::buildmulti(pc, pi);
+			return;
 	case ITYPE_RENAME_DEED:
 			pc->namedeedserial = pi->getSerial32();
 			pc->sysmsg( TRANSLATE("Enter your new name."));

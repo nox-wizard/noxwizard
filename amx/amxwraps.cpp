@@ -6792,7 +6792,7 @@ NATIVE ( _house_makeKeys )
 	P_CHAR pc = pointers::findCharBySerial(params[2]);
 	if (ISVALIDPC(pc) )
 	{
-		cHouses::makeKeys(house,pc);
+		cMulti::makeKeys(house,pc);
 		return true;
 	}
 	else

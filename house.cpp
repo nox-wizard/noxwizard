@@ -62,6 +62,16 @@ cMulti::cMulti()
 	norealmulti=0;
 	keycode=0;
 	boat=false;
+	serial=INVALID;
+	nokey=false;
+	char_x=0;
+	char_y=0;
+	char_z=0;
+	spacex1=0;
+	spacex2=0;
+	spacey1=0;
+	spacey2=0;
+	deed=INVALID;
 }
 
 SERIAL cMulti::getSerial()
@@ -88,6 +98,181 @@ void cMulti::setCorners(SI32 x1, SI32 x2, SI32 y1, SI32 y2 )
 	this->spacex2=x2;
 	this->spacey1=y1;
 	this->spacey2=y2;
+}
+
+ 
+/*!
+\author Wintermute
+\brief Build a multi
+Create an image of the multi at the mouse pointer, allowing the char to drag it to the right position
+\param builder, the char, who is building the house
+\param deed, the deed that is used to build
+*/
+
+void cMulti::buildmulti( P_CHAR builder, P_ITEM deed)
+{
+	NXWCLIENT ps = builder->getClient();
+	SI16 id = INVALID;
+	P_TARGET targ = NULL;
+	P_ITEM pMulti = item::CreateFromScript( "$item_hardcoded" );
+	VALIDATEPI(pMulti);
+	builder->fx1=deed->getSerial32();
+	id = pMulti->getId();
+	if (ps->isDragging()) 
+	{
+		ps->resetDragging();
+		// UpdateStatusWindow(builder->getSocket(),pi);
+	}
+
+	pMulti->setDecay( false );
+	pMulti->setNewbie( false );
+	pMulti->setDispellable( false );
+	pMulti->setOwnerSerial32(builder->getSerial32());
+	pMulti->setPosition (0,0,0);
+
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
+	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
+	targ->code_callback=cMulti::target_buildmulti;
+	targ->buffer[0]=pMulti->getSerial32();
+	targ->send( ps );
+}
+
+/*!
+\author Wintermute, original code by Zippy
+\brief Build a multi real
+
+Triggered by double clicking a deed-> the deed's morex is read
+for the house section in house.cpp. Extra items can be added
+using HOUSE ITEM, (this includes all doors!) and locked "LOCK"
+Space around the house with SPACEX/Y and CHAR offset CHARX/Y/Z
+*/
+void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
+{
+	NXWSOCKET s = ps->toInt();
+	SERIAL multiserial=t->buffer[0];
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+	P_ITEM pMulti=pointers::findItemBySerial(multiserial);
+	P_ITEM deed= pointers::findItemBySerial(pc->fx1);
+
+	int multinumber;
+	UI32 x, y;
+	SI32 k, icount=0;
+	signed char z;
+	cMulti *newMulti = new cMulti();
+	newMulti->setSerial(pMulti->getSerial32());
+	newMulti->createMulti(deed->morex, pMulti);
+
+
+	x = t->getLocation().x; //where they targeted
+	y = t->getLocation().y;
+	z = t->getLocation().z;
+
+	Location charpos= pc->getPosition();
+
+	SI16 id = pMulti->getId(); //house ID
+
+	if(!pc->IsGM() && SrvParms->houseintown==0)
+	{
+		if ((region[calcRegionFromXY(x,y)].priv & RGNPRIV_GUARDED) ) // popy
+		{
+			sysmessage(s,TRANSLATE(" You cannot build that in town!"));
+			pMulti->Delete();
+			return;
+		}
+	}
+
+#define XBORDER 200
+#define YBORDER 200
+
+	//XAN : House placing fix :)
+	if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
+	{
+		sysmessage(s, TRANSLATE("You cannot build your structure there!"));
+		return;
+	}
+
+	for (k=-newMulti->getLeftXRange();k<newMulti->getRightXRange();k++)//check the SPACEX and SPACEY to make sure they are valid locations....
+	{
+		for (SI32 l=-newMulti->getUpperYRange();l<newMulti->getLowerYRange();l++)
+		{
+			Location loc;
+			loc.x=x+k;
+			loc.y=y+l;
+			loc.z=z;
+
+			Location newpos = Loc( x+k, y+l, z );
+			if ( (isWalkable( newpos ) == illegal_z ) &&
+				((charpos.x != x+k)&&(charpos.y != y+l)) )
+				/*This will take the char making the house out of the space check, be careful
+				you don't build a house on top of your self..... this had to be done So you
+				could extra space around houses, (12+) and they would still be buildable.*/
+			{
+				sysmessage(s, TRANSLATE("You cannot build your structure there."));
+				pMulti->Delete();
+				delete newMulti;
+				return;
+				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
+			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
+
+			P_HOUSE house2=cHouses::findHouse(loc);
+			if ( house2 == NULL )
+				continue;
+			P_ITEM pi_ii=pointers::findItemBySerial(house2->getSerial());
+			if ((ISVALIDPI(pi_ii) && (newMulti->isRealMulti())) || (house2 != NULL ))
+			{
+				sysmessage(s,TRANSLATE("You cant build structures inside structures"));
+				pMulti->Delete();
+				delete newMulti;
+				return;
+			}
+		}
+	}
+
+
+	if (id == INVALID)
+		return;
+	pMulti->setPosition (t->getLocation());
+	if (pMulti->isInWorld()) 
+	{
+		mapRegions->add(pMulti);
+	}
+
+	multinumber=deed->morex;
+	if ( deed != 0 )
+		deed->Delete(); // this will del the deed no matter where it is
+
+	pc->fx1=-1; //reset fx1 so it does not interfere
+	// bugfix LB ... was too early reseted
+
+	if ( !newMulti->nokey)
+		cMulti::makeKeys(newMulti, pc);
+	cHouses::makeHouseItems(multinumber, pc, pMulti);
+		
+    NxwSocketWrapper sw;
+	sw.fillOnline( pc, false );
+    for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+		NXWCLIENT ps_i = sw.getClient();
+		if(ps_i==NULL) 
+			continue;
+		P_CHAR pc_i=ps_i->currChar();
+		if(ISVALIDPC(pc_i))
+			pc_i->teleport();
+	}
+            //</Luxor>
+	if (newMulti->isRealMulti())
+	{
+		int newx, newy, newz;
+		newMulti->getCharPos(newx, newy, newz);
+		charpos.x= x+newx; //move char inside house
+		charpos.y= y+newy;
+		charpos.dispz= charpos.z= z+newz;
+
+		pc->setPosition( charpos );
+		//ConOut("Z: %i Offset: %i Char: %i Total: %i\n",z,cz,chars[currchar[s]].z,z+cz);
+		pc->teleport();
+	}
 }
 
 /*!

@@ -1774,10 +1774,11 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 	P_ITEM p_boat = Boats->GetBoat(getPosition());
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
-		Location boatpos = getPosition();
+/*		Location boatpos = getPosition();
 		boatpos.z = p_boat->getPosition().z +3;
 		boatpos.dispz = p_boat->getPosition().dispz +3;
 		setPosition( boatpos );
+		*/
 	} else
 		setMultiSerial(INVALID);
 

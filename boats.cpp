@@ -20,6 +20,7 @@
 #include "inlines.h"
 #include "scripts.h"
 #include "house.h"
+#include "network.h"
 
 BOATS	s_boat;
 
@@ -385,7 +386,48 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	hold->setId( tempID );
 
 	TurnShip( pi->more1, dir, p1, p2, tiller, hold );
+	P_BOAT pBoat=search_boat(pi->getSerial32());
+	NxwItemWrapper itemsNear;
+	// maximum radius of a boat is 6 ?
+	itemsNear.fillItemsNearXYZ(bpos, 6, true);
+	UI08 xdist, ydist;
+	// north south elongation uses standard spacex1 and spacey1
+	if ( dir == 0 || dir == 4 )
+	{
+		xdist = pBoat->getLeftXRange();
+		ydist = pBoat->getUpperYRange();
+	}
+	// east west elongation uses spacey1 and spacex1 
+	if ( dir == 2 || dir == 6 )
+	{
+		xdist = pBoat->getUpperYRange();
+		ydist = pBoat->getLeftXRange();
+	}    
+	for( itemsNear.rewind(); !itemsNear.isEmpty(); itemsNear++ ) 
+	{
+		P_ITEM pi_2=itemsNear.getItem();
+		if(!ISVALIDPI(pi_2) ||pi_2== pi||pi_2==pBoat->getTiller()||pi_2==pBoat->getLeftPlank()||pi_2==pBoat->getRightPlank()||pi_2==pBoat->getHold())
+			continue;
+		Location itemPos=pi->getPosition ();
+		if (( abs(bpos.x-itemPos.x) <= xdist) && ( abs(bpos.y-itemPos.y) <= ydist) )
+		{
+			TurnStuff_i(pi, pi_2, dir,0);
+		}
 
+	}
+		
+	NxwCharWrapper charsNear;
+	charsNear.fillCharsNearXYZ(bpos, 6, true, false);
+    for( charsNear.rewind(); !charsNear.isEmpty(); charsNear++ ) 
+	{
+		P_CHAR pc=charsNear.getChar();
+		Location charPos=pc->getPosition ();
+		if (( abs(bpos.x-charPos.x) <= xdist) && ( abs(bpos.y-charPos.y) <= ydist)  )
+		{
+			TurnStuff_c(pi, pc, dir,0);
+		}
+
+	}
 	p1->Refresh();
 	p2->Refresh();
 	hold->Refresh();
@@ -761,6 +803,24 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 		//char tmp[200];
 		//sprintf(tmp,"%s%s", "a ship named ", &msg[9]);
 		//tiller->setCurrentName(tmp);
+		return true;
+	}
+	if( talk.substr(0, 6) == "REDEED" )
+	{
+		int deedNumber=boat->getDeed();
+		P_ITEM piDeed = item::CreateFromScript( deedNumber, pc->getBackpack () );
+		if ( ISVALIDPI (piDeed))
+		{
+			// remove ship
+			boat->getTiller()->Delete ();
+			boat->getLeftPlank()->Delete ();
+			boat->getRightPlank ()-> Delete();
+			boat->getHold ()->Delete ();
+			boat->remove ();
+			pBoat->Delete ();
+			delete boat;
+		}
+
 		return true;
 	}
 	return false;
@@ -1182,13 +1242,14 @@ void cBoat::OpenPlank(P_ITEM pi)
 		case 0xE9: pi->setId( 0x3E89 ); break;
 		case 0xB1: pi->setId( 0x3ED5 ); break;
 		case 0xB2: pi->setId( 0x3ED3 ); break;
-		case 0x8A: pi->setId( 0x3E86 ); break;
-		case 0x85: pi->setId( 0x3E89 ); break;
+		case 0x8A: pi->setId( 0x3E89 ); break;
+		case 0x85: pi->setId( 0x3E84 ); break;
 		//Close Plank->
 		case 0xD3: pi->setId( 0x3EB2 ); break;
 		case 0x86: pi->setId( 0x3E8A ); break;
 		case 0xD5: pi->setId( 0x3EB1 ); break;
-		case 0x89: pi->setId( 0x3E85 ); break;
+		case 0x89: pi->setId( 0x3E8A ); break;
+		case 0x84: pi->setId( 0x3E85 ); break;
 		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->getId()); break;
 	}
 }
@@ -1360,45 +1421,77 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 	serial= pBoat->getSerial32();
 
-/*wait until set hav appropriate function
-	for (a=0;a<imultisp[serial%HASHMAX].max;a++)  // move all item upside the boat
+	NxwItemWrapper itemsNear;
+	// maximum radius of a boat is 6 ?
+	itemsNear.fillItemsNearXYZ(boatpos, 6, true);
+	UI08 size=pBoat->more1;
+	UI08 xdist, ydist;
+	// north south elongation uses standard spacex1 and spacey1
+	if ( dir == 0 || dir == 4 )
 	{
-		c=imultisp[serial%HASHMAX].pointer[a];
-		if(c!=-1)
-		{
-			P_ITEM pi= MAKE_ITEMREF_LOGGED(c,err);
-			if(!err)
-			{
-				mapRegions->remove(pi);
-				Location itmpos= pi->getPosition();
-				itmpos.x+= tx;
-				itmpos.y+= ty;
-				pi->setPosition( itmpos );
-				pi->Refresh();
-				mapRegions->add(pi);
-			}
-		}
+		xdist = boat->getLeftXRange();
+		ydist = boat->getUpperYRange();
+	}
+	// east west elongation uses spacey1 and spacex1 
+	if ( dir == 2 || dir == 6 )
+	{
+		xdist = boat->getUpperYRange();
+		ydist = boat->getLeftXRange();
 	}
 
-	for (a=0;a<cmultisp[serial%HASHMAX].max;a++) // move all char upside the boat
+    for( itemsNear.rewind(); !itemsNear.isEmpty(); itemsNear++ ) 
 	{
-		c=cmultisp[serial%HASHMAX].pointer[a];
-		if (c!=-1)
+		P_ITEM pi=itemsNear.getItem();
+		if(!ISVALIDPI(pi) ||pi== pBoat||pi==boat->getTiller()||pi==boat->getLeftPlank()||pi==boat->getRightPlank()||pi==boat->getHold())
+			continue;
+		Location itemPos=pi->getPosition ();
+		if (( abs(boatpos.x-itemPos.x) <= xdist) && ( abs(boatpos.y-itemPos.y) <= ydist) )
 		{
-		   pc_c=MAKE_CHARREF_LOGGED(c,err);
-		   if (!err)
-		   {
-			   Location charpos= pc_c->getPosition();
-			   mapRegions->remove(pc_c);
-			   charpos.x+= tx;
-			   charpos.y+= ty;
-			   pc_c->MoveTo(charpos);
-			   pc_c->teleport();
-			   mapRegions->add(pc_c);
-		   }
+			mapRegions->remove(pi);
+			itemPos.x+= tx;
+			itemPos.y+= ty;
+			pi->setPosition( itemPos );
+			pi->Refresh();
+			mapRegions->add(pi);
 		}
+
 	}
-*/
+		
+	NxwCharWrapper charsNear;
+	charsNear.fillCharsNearXYZ(boatpos, 6, true, false);
+    for( charsNear.rewind(); !charsNear.isEmpty(); charsNear++ ) 
+	{
+		P_CHAR pc=charsNear.getChar();
+		Location charPos=pc->getPosition ();
+		if (( abs(boatpos.x-charPos.x) <= xdist) && ( abs(boatpos.y-charPos.y) <= ydist)  )
+		{
+			mapRegions->remove(pc);
+			charPos.x+= tx;
+			charPos.y+= ty;
+			if ( charPos.z - boatpos.z <= 3 )
+			{
+				charPos.z=boatpos.z+3;
+				charPos.dispz=charPos.z;
+			}
+			pc->setPosition( charPos );
+			pc->teleport();
+			mapRegions->add(pc);
+		}
+
+	}
+
+	NXWCLIENT ps=getClientFromSocket( s);
+	P_CHAR pc=ps->currChar();
+    NxwSocketWrapper sw;
+	sw.fillOnline( pc, false );
+    for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+		NXWCLIENT ps_i = sw.getClient();
+		if(ps_i==NULL) 
+			continue;
+		P_CHAR pc_i=ps_i->currChar();
+		if(ISVALIDPC(pc_i))
+			pc_i->teleport();
+	}
 
 	SendPauseResumePkt(s, 0x00);
 	pBoat->Refresh();
@@ -1444,7 +1537,7 @@ void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
 		ps->resetDragging();
 		// UpdateStatusWindow(builder->getSocket(),pi);
 	}
-
+	shipdeed->setNewbie(true);
 	piShip->setDecay( false );
 	piShip->setNewbie( false );
 	piShip->setDispellable( false );
@@ -1529,7 +1622,7 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	
 	int shipnumber;
 	UI32 x, y;
-	SI32 k, icount=0;
+	SI32 icount=0;
 	signed char z;
 	int boat=0;//Boats
 
@@ -1540,7 +1633,6 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	y = t->getLocation().y;
 	z = t->getLocation().z;
 
-	Location charpos= pc->getPosition();
 
 	SI16 id = iShip->getId(); //house ID
 #ifndef XBORDER
@@ -1569,58 +1661,14 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 		}
 	}*/
 
-
-	for (k=-pShip->getLeftXRange();k<pShip->getRightXRange();k++)//check the SPACEX and SPACEY to make sure they are valid locations....
+	if (!pShip->good_position(iShip, t->getLocation(), 0))
 	{
-		for (SI32 l=-pShip->getUpperYRange();l<pShip->getLowerYRange();l++)
-		{
-			Location loc;
-			loc.x=x+k;
-			loc.y=y+l;
-			loc.z=z;
-
-			Location newpos = Loc( x+k, y+l, z );
-			if ( (isWalkable( newpos, WALKFLAG_CHARS|WALKFLAG_DYNAMIC) == illegal_z ) &&
-				((charpos.x != x+k)&&(charpos.y != y+l)) )
-				/*This will take the char making the house out of the space check, be careful
-				you don't build a house on top of your self..... this had to be done So you
-				could extra space around houses, (12+) and they would still be buildable.*/
-			{
-				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
-				cBoat::remove_boat(iShip);
-				pShip->remove();
-				iShip->Delete();
-				delete pShip;
-				return;
-				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
-			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
-			if ( isWalkable( newpos, WALKFLAG_STATIC) != illegal_z  )
-				/*This will test if the ship is placed on the ground*/
-			{
-				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
-				cBoat::remove_boat(iShip);
-				pShip->remove();
-				iShip->Delete();
-				delete pShip;
-				return;
-				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
-			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
-
-
-			P_HOUSE house2=cHouses::findHouse(loc);
-			if ( house2 == NULL )
-				continue;
-			P_ITEM pi_ii=pointers::findItemBySerial(house2->getSerial());
-			if (ISVALIDPI(pi_ii) )
-			{
-				sysmessage(s,TRANSLATE("You cant build structures inside structures"));
-				cBoat::remove_boat(iShip);
-				pShip->remove();
-				iShip->Delete();
-				delete pShip;
-				return;
-			}
-		}
+		sysmessage(s, TRANSLATE("You cannot build your structure there."));
+		cBoat::remove_boat(iShip);
+		pShip->remove();
+		iShip->Delete();
+		delete pShip;
+		return;
 	}
 
 
@@ -1634,6 +1682,8 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 
 	P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
 	shipnumber=pFx1->morex;
+	// Link the shipnumber to intelligence attribute
+	iShip->in=shipnumber;
 	if ( pFx1 != 0 )
 		pFx1->Delete(); // this will del the deed no matter where it is
 
@@ -1642,7 +1692,7 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 
 	cMulti::makeKeys(pShip, pc);
 	cHouses::makeHouseItems(shipnumber, pc, iShip);
-	cBoat::makeBoatItems(iShip);		
+	cBoat::makeBoatItems(iShip);	
 	pShip->setTiller(pointers::findItemBySerial(calcserial(iShip->moreb1, iShip->moreb2,iShip->moreb3, iShip->moreb4)));
 	pShip->setLeftPlank(pointers::findItemBySerial(iShip->morex));
 	pShip->setRightPlank(pointers::findItemBySerial(iShip->morey));

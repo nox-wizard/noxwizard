@@ -57,6 +57,8 @@ public:
 	void createMulti(UI32 multinumber, P_ITEM multiItem);
 	bool isRealMulti();
 	static void makeKeys(cMulti* pMulti, P_CHAR pc);
+	static void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t );
+	static void cMulti::buildmulti( P_CHAR builder, P_ITEM deed);
 
 };
 

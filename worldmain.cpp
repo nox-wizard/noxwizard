@@ -1166,12 +1166,34 @@ void loaditem()
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{
+			std::string oldname=pi->getCurrentName();
+			SI16 oldid = pi->getId();
 			cBoat *boat=new cBoat();
+			int multinumber = pi->in;
+			if ( multinumber == 0 )
+			{
+// old boat save, we need to calculate the multinumber
+				if ( oldid >= 0x4000 && oldid <= 0x04003 )
+					multinumber=20;
+				if ( oldid >= 0x4004 && oldid <= 0x4007 )
+					multinumber=21;
+				if ( oldid >= 0x4008 && oldid <= 0x400b )
+					multinumber=22;
+				if ( oldid >= 0x400c && oldid <= 0x400f )
+					multinumber=23;
+				if ( oldid >= 0x4010 && oldid <= 0x4013 )
+					multinumber=24;
+				if ( oldid >= 0x4014 && oldid <= 0x4017 )
+					multinumber=25;
+			}
+			boat->createMulti(multinumber, pi);
 			boat->setHold(pi->morez);
 			boat->setLeftPlank(pi->morex);
 			boat->setRightPlank (pi->morey);
 			boat->setTiller (((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4);
 			boat->setSerial(pi->getSerial32());
+			pi->setId(oldid);
+			pi->setCurrentName (oldname.c_str ());
 			cBoat::insert_boat(pi, boat);
 		}
 
