@@ -133,8 +133,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if (g_bByPass==true) 
 			return;
 		if (!npc) {
-			
-			( chance(30) ) ? doMissedSoundEffect() : pc_def->doCombatSoundEffect(def_fightskill, def_Weapon);
+			( chance(30) || def_fightskill == ARCHERY ) ? doMissedSoundEffect() : pc_def->doCombatSoundEffect(def_fightskill, def_Weapon);
 		}
 		if (fightskill == ARCHERY) {
 			if (chance(33)) {
