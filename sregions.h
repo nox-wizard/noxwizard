@@ -11,7 +11,7 @@
 #define _SREGIONS_H
 
 void loadregions();
-void checkregion(int i);
+void checkregion(P_CHAR pc);
 short calcRegionFromXY(Location pos);	// added by Anthalir
 short calcRegionFromXY(int x, int y);
 void check_region_weatherchange ();

@@ -191,7 +191,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	fy2=-1; //NPC Wander Point 2 y
 	fz1=0; //NPC Wander Point 1 z
 	spawnserial=INVALID; // Spawned by
-	hidden=0; // 0 = not hidden, 1 = hidden, 2 = invisible spell
+	hidden=UNHIDDEN;
 	invistimeout=0;
 	ResetAttackFirst(); // 0 = defending, 1 = attacked first
 	onhorse=false; // On a horse?
@@ -1834,40 +1834,32 @@ void cChar::teleport()
 		setMultiSerial(-1);
 	}
 
-	
 	setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-	NXWCLIENT ps=getClient();
-	NXWSOCKET socket= (ps!=NULL)? ps->toInt() : INVALID;
+	UI08 removeitem[5]={0x1D, 0x00, 0x00, 0x00, 0x00};
+	NXWCLIENT ps = getClient();
+	NXWSOCKET socket = getSocket();
 
 	if ( socket!=INVALID )
 	{
-		removeitem[1]= getSerial().ser1;
-		removeitem[2]= getSerial().ser2;
-		removeitem[3]= getSerial().ser3;
-		removeitem[4]= getSerial().ser4;
+		UI08 goxyz[19]={0x20, 0x00, 0x05, 0xA8, 0x90, 0x01, 0x90, 0x00, 0x83, 0xFF, 0x00, 0x06, 0x08, 0x06, 0x49, 0x00, 0x00, 0x02, 0x00};
 
-		unsigned char goxyz[20]="\x20\x00\x05\xA8\x90\x01\x90\x00\x83\xFF\x00\x06\x08\x06\x49\x00\x00\x02\x00";
-		goxyz[1]= getSerial().ser1;
-		goxyz[2]= getSerial().ser2;
-		goxyz[3]= getSerial().ser3;
-		goxyz[4]= getSerial().ser4;
-		goxyz[5]= id1;
-		goxyz[6]= id2;
-		goxyz[8]= skin1;
-		goxyz[9]= skin2;
+//		LongToCharPtr(getSerial32(), removeitem +1);
+		LongToCharPtr(getSerial32(), goxyz +1);
+		ShortToCharPtr(GetBodyType(), goxyz +5);
+		ShortToCharPtr(getSkinColor(), goxyz +8);
+
 		if(poisoned)
 			goxyz[10] |= 0x04;
 		else
 			goxyz[10] = 0x00;
 		if (IsHidden())
 			goxyz[10] |= 0x80;
-		goxyz[11]= getPosition("x") >> 8;
-		goxyz[12]= getPosition("x") % 256;
-		goxyz[13]= getPosition("y") >> 8;
-		goxyz[14]= getPosition("y") % 256;
+
+		ShortToCharPtr(pos.x, goxyz +11);
+		ShortToCharPtr(pos.y, goxyz +13);
 		goxyz[17]= dir | 0x80;
-		goxyz[18]= getPosition("dz");
+		goxyz[18]= pos.dispz;
+
 		Xsend(socket, goxyz, 19);
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -1923,7 +1915,7 @@ void cChar::teleport()
 	if (perm[socket])
 		dolight(socket, worldcurlevel);
 
-	checkregion( DEREF_P_CHAR(this) );
+	checkregion(this);
 	if(socket!=INVALID)
 		pweather(socket);
 }
@@ -2763,9 +2755,9 @@ void cChar::jail (SI32 seconds)
 */
 void cChar::kick ()
 {
-    NXWSOCKET j=calcSocketFromChar(DEREF_P_CHAR(this));
+    NXWSOCKET j = getSocket();
     if(j > INVALID) {
-        sysmessage(j, TRANSLATE("You have been kicked!"));
+        sysmsg(TRANSLATE("You have been kicked!"));
         Network->Disconnect(j);
     }
 }
@@ -3279,8 +3271,8 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 {
 	checkSafeStats();
 
-    NXWSOCKET s= calcSocketFromChar(DEREF_P_CHAR(this));
-	P_ITEM pack= getBackpack();
+	NXWSOCKET s = getSocket();
+	P_ITEM pack = getBackpack();
 
 	g_bByPass= false;
 	/*
@@ -3779,7 +3771,7 @@ void cChar::doGmEffect()
 
 void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 {
-	NXWSOCKET socket = calcSocketFromChar( DEREF_P_CHAR(showToWho) );
+	NXWSOCKET socket = showToWho->getSocket();
 	if (socket < 0 || socket > now) return;
 
 	char temp[TEMP_STR_SIZE];

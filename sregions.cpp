@@ -265,9 +265,9 @@ short calcRegionFromXY(int x, int y)
 
 }
 
-void checkregion(int i)
+void checkregion(P_CHAR pc)
 {
-	P_CHAR pc = MAKE_CHAR_REF( i );
+//	P_CHAR pc = MAKE_CHAR_REF( i );
 	VALIDATEPC( pc );
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	int calcreg, s, j;
