@@ -547,11 +547,12 @@ void cSpawns::doRegionClearSpawn(UI32 region, SPAWNTYPE_ENUM clearWhat)
 		{
 			// Spawn for all regions
 			LOGICAL found=false;
-			cSpawnArea *mySpawnArea = iter_scr->second.singles.begin();
-			for ( ; mySpawnArea!=iter_scr->second.singles.end();mySpawnArea++)
+			SPAWNAREA_VECTOR spawnAreas=iter_scr->second.singles;
+			SPAWNAREA_VECTOR::iterator areaIter=spawnAreas.begin();
+			for ( ; areaIter!=spawnAreas.end();areaIter++)
 			{
-				AREA_ITER myArea = mySpawnArea->where;
-				short areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y1);
+				cSpawnArea* myArea= areaIter;
+				short areaRegionNumber = calcRegionFromXY(myArea->where->second.x1, myArea->where->second.y1);
 				// test the corners of the spawn area if they are within the region, as soon as we find one
 				// break out of the for
 				// upper left
@@ -561,21 +562,21 @@ void cSpawns::doRegionClearSpawn(UI32 region, SPAWNTYPE_ENUM clearWhat)
 					break;
 				}
 				// lower left
-				areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y2);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x1, myArea->where->second.y2);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
 					break;
 				}
 				// upper right
-				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y1);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x2, myArea->where->second.y1);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
 					break;
 				}
 				// lower right
-				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y2);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x2, myArea->where->second.y2);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
@@ -613,11 +614,12 @@ void cSpawns::doRegionSpawn(UI32 region, SPAWNFLAG_ENUM spawnWhat, UI32 amount)
 		else
 		{
 			LOGICAL found=false;
-			cSpawnArea *mySpawnArea = iter_scr->second.singles.begin();
-			for ( ; mySpawnArea!=iter_scr->second.singles.end();mySpawnArea++)
+			SPAWNAREA_VECTOR spawnAreas=iter_scr->second.singles;
+			SPAWNAREA_VECTOR::iterator areaIter=spawnAreas.begin();
+			for ( ; areaIter!=spawnAreas.end();areaIter++)
 			{
-				AREA_ITER myArea = mySpawnArea->where;
-				short areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y1);
+				cSpawnArea* myArea= areaIter;
+				short areaRegionNumber = calcRegionFromXY(myArea->where->second.x1, myArea->where->second.y1);
 				// test the corners of the spawn area if they are within the region, as soon as we find one
 				// break out of the for
 				// upper left
@@ -627,21 +629,21 @@ void cSpawns::doRegionSpawn(UI32 region, SPAWNFLAG_ENUM spawnWhat, UI32 amount)
 					break;
 				}
 				// lower left
-				areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y2);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x1, myArea->where->second.y2);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
 					break;
 				}
 				// upper right
-				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y1);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x2, myArea->where->second.y1);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
 					break;
 				}
 				// lower right
-				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y2);
+				areaRegionNumber = calcRegionFromXY(myArea->where->second.x2, myArea->where->second.y2);
 				if ( region == areaRegionNumber )
 				{
 					found=true;
