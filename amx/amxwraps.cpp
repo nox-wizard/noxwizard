@@ -2896,10 +2896,10 @@ NATIVE( _set_addNpcsNearXY )
 NATIVE( _set_addNpcsNearObj ) 
 {
 	if( isCharSerial( params[2] ) ) {
-		amxSet::addNpcsNear( params[1], pointers::findCharBySerial(params[2]), params[3] );
+		amxSet::addNpcsNearObj( params[1], pointers::findCharBySerial(params[2]), params[3] );
 	}
 	else {
-		amxSet::addNpcsNear( params[1], pointers::findItemBySerial(params[2]), params[3] );
+		amxSet::addNpcsNearObj( params[1], pointers::findItemBySerial(params[2]), params[3] );
 	}
 	return 0;
 }
