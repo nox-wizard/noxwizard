@@ -87,6 +87,8 @@ public:
 	void fillCoOwners ( SERIAL house );
 	void fillFriends ( SERIAL house );
 	void fillBanned ( SERIAL house );
+	void fillCharsInsideHouse(SERIAL house, UI32 scriptID=INVALID);
+	void fillCharsOutsideHouse(SERIAL house, UI32 scriptID=INVALID);
 };
 
 class NxwItemWrapper : public NxwSerialWrapper {
@@ -107,6 +109,8 @@ public:
 	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, LOGICAL bExcludeNotMovableItems = true);
 	void fillGuilds( SERIAL guild, int options=0 );
 	void fillHousesOwned( SERIAL chr);
+	void fillItemsInsideHouse( SERIAL house, SI32 scriptID=INVALID);
+	void fillItemsOutsideHouse( SERIAL house, SI32 scriptID=INVALID);
 
 };
 
@@ -171,6 +175,10 @@ namespace amxSet {
 	void addHouseFriends( SERIAL iSet, SERIAL house  );
 	void addHouseBans( SERIAL iSet, SERIAL house  );
 	void addOwnHouses( SERIAL iSet, SERIAL chr  );
+	void addCharsInsideHouse( SERIAL iSet, SERIAL house);
+	void addCharsOutsideHouse( SERIAL iSet, SERIAL house);
+	void addItemsInsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID= INVALID);
+	void addItemsOutsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID= INVALID);
 
 
 }

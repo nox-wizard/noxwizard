@@ -221,7 +221,7 @@ void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, LOGICAL excludeN
 	if( iter != g_oSet.end() )
 	{
 		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
-		si->fillItemsNearXYZ( x, y, distance, excludeNotMovable );
+		si->fillItemsNearXYZ( x, y, distance, excludeNotMovable);
 		si->rewind();
 	}
 }
@@ -370,6 +370,50 @@ void addOwnHouses( SERIAL iSet, SERIAL chr  )
 	{
 		NxwItemWrapper* si = static_cast<NxwItemWrapper*>( iter->second );
 		si->fillHousesOwned( chr );
+		si->rewind();
+	}
+}
+
+void addCharsInsideHouse( SERIAL iSet, SERIAL house)
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillCharsInsideHouse( house );
+		sc->rewind();
+	}
+}
+
+void addCharsOutsideHouse( SERIAL iSet, SERIAL house)
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillCharsOutsideHouse( house );
+		sc->rewind();
+	}
+}
+
+void addItemsInsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID)
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemsInsideHouse( house );
+		si->rewind();
+	}
+}
+
+void addItemsOutsideHouse( SERIAL iSet, SERIAL house, SI32 scriptID)
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+		si->fillItemsOutsideHouse( house );
 		si->rewind();
 	}
 }
@@ -961,6 +1005,102 @@ void NxwCharWrapper::fillBanned( SERIAL house )
 }
 
 /*!
+\brief Fills a set with a list of pcs and npcs inside (meaning within the house limits)
+\author Wintermute
+\param house the house
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillCharsInsideHouse( SERIAL house , UI32 scriptID)
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		P_ITEM iHouse = pointers::findItemBySerial(pHouse->getSerial());
+		if ( !ISVALIDPI(iHouse))
+			return;
+		Location housepos = iHouse->getPosition();
+		if( mapRegions->isValidCoord( housepos.x, housepos.y ) )
+			for( SI32 ix=housepos.x-REGION_GRIDSIZE; ix<=housepos.x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) 
+			{
+				if( ix>=0 ) 
+				{
+					for( SI32 iy=housepos.y-REGION_COLSIZE; iy<=housepos.y+REGION_COLSIZE; iy+=REGION_COLSIZE ) 
+					{
+						if( iy>=0 && mapRegions->isValidCoord( housepos.x, housepos.y ) ) 
+						{
+							UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+								nowy= (UI16)(iy/REGION_COLSIZE);
+
+							if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+								continue;
+
+							SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() ),
+										end( mapRegions->regions[nowx][nowy].charsInRegions.end() );
+							for( ; iter != end; ++iter ) 
+							{
+								P_CHAR pc=pointers::findCharBySerial( *iter );
+								if( pc == 0 )
+									continue;
+								if ( pHouse->isInsideHouse(pc))
+									this->insertSerial(pc->getSerial32());
+							}
+						}
+					}
+				}
+			}
+	}
+}
+
+
+/*!
+\brief Fills a set with a list of house coowners
+\author Wintermute
+\param house the house
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillCharsOutsideHouse( SERIAL house , UI32 scriptID)
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		P_ITEM iHouse = pointers::findItemBySerial(pHouse->getSerial());
+		if ( !ISVALIDPI(iHouse))
+			return;
+		Location housepos = iHouse->getPosition();
+		if( mapRegions->isValidCoord( housepos.x, housepos.y ) )
+			for( SI32 ix=housepos.x-REGION_GRIDSIZE; ix<=housepos.x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) 
+			{
+				if( ix>=0 ) 
+				{
+					for( SI32 iy=housepos.y-REGION_COLSIZE; iy<=housepos.y+REGION_COLSIZE; iy+=REGION_COLSIZE ) 
+					{
+						if( iy>=0 && mapRegions->isValidCoord( housepos.x, housepos.y ) ) 
+						{
+							UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+								nowy= (UI16)(iy/REGION_COLSIZE);
+
+							if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+								continue;
+
+							SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() ),
+										end( mapRegions->regions[nowx][nowy].charsInRegions.end() );
+							for( ; iter != end; ++iter ) 
+							{
+								P_CHAR pc=pointers::findCharBySerial( *iter );
+								if( pc == 0 )
+									continue;
+								if ( ! pHouse->isInsideHouse(pc) && pHouse->inHouse(pc))
+									this->insertSerial(pc->getSerial32());
+							}
+						}
+					}
+				}
+			}
+	}
+}
+
+
+/*!
 \brief Constructor
 */
 NxwItemWrapper::NxwItemWrapper() { };
@@ -1071,7 +1211,7 @@ void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 \param bExcludeNotMovableItems if true exluce not movable items
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL bExcludeNotMovableItems )
+void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL bExcludeNotMovableItems)
 {
 	if( mapRegions->isValidCoord( x, y ) )
 	{
@@ -1125,6 +1265,122 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL b
 void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, LOGICAL bExcludeNotMovableItems )
 {
 	fillItemsNearXYZ( (UI16)location.x, (UI16)location.y, nDistance, bExcludeNotMovableItems );
+}
+
+/*!
+\brief Fills with a list of items inside the given house
+\author Wintermute
+\param house the house
+\param scriptID: filter for items only with given scriptID
+*/
+
+void NxwItemWrapper::fillItemsInsideHouse ( SERIAL house, SI32 type )
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		P_ITEM iHouse = pointers::findItemBySerial(pHouse->getSerial());
+		if ( !ISVALIDPI(iHouse))
+			return;
+		Location housepos = iHouse->getPosition();
+
+		if( mapRegions->isValidCoord( housepos.x, housepos.y ) )
+		{
+			SI32 width=REGION_GRIDSIZE;
+			for( SI32 ix=housepos.x-width; ix<=housepos.x+width; ix+=REGION_GRIDSIZE ) 
+			{
+				SI32 height=REGION_GRIDSIZE;
+				if( ix>=0 ) 
+				{
+					for( SI32 iy=housepos.y-height; iy<=housepos.y+height; iy+=REGION_COLSIZE ) 
+					{
+						if( iy>=0 && mapRegions->isValidCoord( housepos.x, housepos.y ) ) 
+						{
+							UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+								nowy= (UI16)(iy/REGION_COLSIZE);
+
+							if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
+								continue;
+
+							SERIAL_SET::iterator	iter= mapRegions->regions[nowx][nowy].itemsInRegions.begin();
+							for( SI32 i=0 ; i < mapRegions->regions[nowx][nowy].itemsInRegions.size(); ++i ) 
+							{
+								P_ITEM pi=pointers::findItemBySerial( *iter++ );
+								if( pi != 0 )
+									if( pi->isInWorld() ) 
+									{
+										if ( pHouse->isInsideHouse(pi))
+										{
+											if ( type != INVALID && pi->type != type )
+												continue;
+											insertItem(pi);
+										}
+									}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+/*!
+\brief Fills with a list of items inside the given house
+\author Wintermute
+\param house the house
+\param scriptID: filter for items only with given scriptID
+*/
+
+void NxwItemWrapper::fillItemsOutsideHouse ( SERIAL house, SI32 type )
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		P_ITEM iHouse = pointers::findItemBySerial(pHouse->getSerial());
+		if ( !ISVALIDPI(iHouse))
+			return;
+		Location housepos = iHouse->getPosition();
+
+		if( mapRegions->isValidCoord( housepos.x, housepos.y ) )
+		{
+			SI32 width=REGION_GRIDSIZE;
+			for( SI32 ix=housepos.x-width; ix<=housepos.x+width; ix+=REGION_GRIDSIZE ) 
+			{
+				SI32 height=REGION_GRIDSIZE;
+				if( ix>=0 ) 
+				{
+					for( SI32 iy=housepos.y-height; iy<=housepos.y+height; iy+=REGION_COLSIZE ) 
+					{
+						if( iy>=0 && mapRegions->isValidCoord( housepos.x, housepos.y ) ) 
+						{
+							UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+								nowy= (UI16)(iy/REGION_COLSIZE);
+
+							if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
+								continue;
+
+							SERIAL_SET::iterator	iter= mapRegions->regions[nowx][nowy].itemsInRegions.begin();
+							for( SI32 i=0 ; i < mapRegions->regions[nowx][nowy].itemsInRegions.size(); ++i ) 
+							{
+								P_ITEM pi=pointers::findItemBySerial( *iter++ );
+								if( pi != 0 )
+									if( pi->isInWorld() ) 
+									{
+										if ( ! pHouse->isInsideHouse(pi) && pHouse->inHouse(pi))
+										{
+											if ( type != INVALID && pi->type != type )
+												continue;
+											insertItem(pi);
+										}
+									}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 /*!

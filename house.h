@@ -96,6 +96,7 @@ public:
 	bool isInsideHouse(Location where);
 	bool isInsideHouse(int x, int y, int z);
 	bool inHouse(P_ITEM pi);
+	bool inHouse(P_CHAR pc);
 	bool inHouse(Location where);
 	bool inHouse(int x, int y);
 	void remove();

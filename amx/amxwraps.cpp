@@ -3203,6 +3203,88 @@ NATIVE( _set_getOwnedHouses )
 	return 0;
 }
 
+/*
+\brief Add to given set all items inside house
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\param 3 optional a type to filter the returned items
+\return 0
+*/
+NATIVE( _set_getItemsInHouse )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addItemsInsideHouse( params[1], params[2], params[3] );
+	return 0;
+}
+
+
+/*
+\brief Add to given set all items inside house
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\param 3 optional a type to filter the returned items
+\return 0
+*/
+NATIVE( _set_getItemsOutsideHouse )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addItemsOutsideHouse( params[1], params[2], params[3] );
+	return 0;
+}
+
+/*
+\brief Add to given set all items inside house
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\param 3 optional a type to filter the returned items
+\return 0
+*/
+NATIVE( _set_getCharsInHouse )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addCharsInsideHouse( params[1], params[2] );
+	return 0;
+}
+
+
+/*
+\brief Add to given set all items inside house
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\param 3 optional a type to filter the returned items
+\return 0
+*/
+NATIVE( _set_getCharsOutsideHouse )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addCharsOutsideHouse( params[1], params[2] );
+	return 0;
+}
+
 /*!
 \brief Add to given set all race
 \author Endymion
@@ -7558,11 +7640,17 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addGuilds", _set_addGuilds },
  { "set_addAllRaces", _set_addAllRaces },
  { "set_getRaceStuff", _set_getRaceStuff },
+
  // House sets
  { "set_addCoOwners", _set_addHouseCoowners },
  { "set_addFriends", _set_addHouseFriends },
  { "set_addBanned", _set_addHouseBans },
  { "set_getOwnedHouses", _set_getOwnedHouses },
+ { "set_getItemsInHouse", _set_getItemsInHouse },
+ { "set_getItemsOutsideHouse", _set_getItemsOutsideHouse },
+ { "set_getCharsInHouse", _set_getCharsInHouse },
+ { "set_getCharsOutsideHouse", _set_getCharsOutsideHouse },
+ 
  // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk

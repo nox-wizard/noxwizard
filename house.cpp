@@ -1087,6 +1087,12 @@ bool cHouse::inHouse(P_ITEM pi)
 	return inHouse(itemLoc.x, itemLoc.y);
 }
 
+bool cHouse::inHouse(P_CHAR pc)
+{
+	Location charLoc=pc->getPosition();
+	return inHouse(charLoc.x, charLoc.y);
+}
+
 bool cHouse::inHouse(Location where)
 {
 	return inHouse(where.x, where.y);
@@ -2092,6 +2098,7 @@ void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
 							pi_l->more4=multi->getSerial().ser4;
 						}
 					}
+
 					if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 					{
 						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
