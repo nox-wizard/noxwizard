@@ -905,7 +905,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 			pi->morez = 0; // All Region
 		}
 	}
-
+	pointers::updContMap(pi);
 	pi->Refresh();
 
 	return pi;
@@ -2259,15 +2259,45 @@ void cChar::Delete()
 		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSpawnSerial());
 		spawn->remove(this->getSerial32());
 	}
-    NxwSocketWrapper sc;
-    sc.fillOnline( this );
-	for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
-		NXWCLIENT ps = sc.getClient();
-		if ( ps != NULL )
-			ps->sendRemoveObject( static_cast<P_OBJECT>(this) );
-	}
 
-	archive::character::Delete( this );
+// 	archive::character::Delete( this );
+		VALIDATEPC( this );
+
+		this->setRace(0);
+
+
+		amxVS.deleteVariable( this->getSerial32() );
+
+		UI32 pc_serial = this->getSerial32();
+
+		if( this->getSpawnRegion()!=INVALID )
+			Spawns->removeObject( this->getSpawnRegion(), this );
+
+		if( this->getSpawnSerial()!=INVALID )
+			Spawns->removeSpawnDinamic( this );
+
+		NxwItemWrapper si;
+		P_ITEM pi;
+		si.fillItemWeared( this, true, true, false );
+		for( si.rewind(); !si.isEmpty(); si++ ) 
+		{
+			pi = si.getItem();
+			if ( !ISVALIDPI(pi) )
+				continue;
+			pi->Delete();
+		}
+
+		pointers::delChar(this);	//Luxor
+
+		NxwSocketWrapper sw;
+		sw.fillOnline( this );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET j=sw.getSocket();
+			if( j!=INVALID )
+				SendDeleteObjectPkt(j, pc_serial);
+		}
+	delete this;
 }
 
 /*!

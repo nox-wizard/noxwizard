@@ -585,7 +585,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'S':
 		case 's':
-			if (!strcmp(script1, "SERIAL"))
+			if( !strcmp(script1, "SCRIPTID") )
+				pc->setScriptID(str2num(script2));
+			else if (!strcmp(script1, "SERIAL"))
 			{
 				i = str2num(script2);
 				//if (charcount2<=i) charcount2=i+1;
@@ -1326,7 +1328,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 	cHouses::load();
 
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	// Spawns->clearDynamic();
 	cAllObjectsIter objs;
 	P_CHAR pc = NULL;
 	P_ITEM pi = NULL;
@@ -2742,9 +2744,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 
 			if (pc->gmrestrict!=dummy.gmrestrict)
 				fprintf(cWsc, "GMRESTRICT %i\n", pc->gmrestrict);
-		
-			if (pc->commandLevel!=dummy.commandLevel)
-				fprintf(cWsc, "COMMANDLEVEL %i\n", pc->commandLevel);
+			if( pc->getScriptID()!=dummy.getScriptID() )
+				fprintf(cWsc, "SCRIPTID %u\n", pc->getScriptID());		
 
 			if( pc->npc && pc->npcMoveSpeed != NPCSPEED )
 				fprintf(cWsc, "MOVESPEED %f\n", pc->npcMoveSpeed );

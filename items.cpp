@@ -1088,6 +1088,21 @@ void cItem::Delete()
 		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSpawnSerial());
 		spawn->remove(this->getSerial32());
 	}
+	if ( this->type == ITYPE_NPC_SPAWNER || this->type==ITYPE_ITEM_SPAWNER)
+	{
+		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSerial32());
+		spawn->clear();
+	}
+	if( type == ITYPE_CONTAINER || ( !SrvParms->lootdecayswithcorpse && corpse ) )
+	{
+		NxwItemWrapper si;
+		si.fillItemsInContainer( this, false );
+		for( si.rewind(); !si.isEmpty(); si++ )
+		{
+			P_ITEM pj = si.getItem();
+			pj->Delete();
+		}
+	}
 
 	archive::deleteItem(this);
 }

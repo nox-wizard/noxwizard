@@ -2051,11 +2051,11 @@ NATIVE(_tempfx_activate)
 	}
 	if ( isCharSerial(params[3]) )
 	{
-		src = (P_OBJECT)pointers::findCharBySerial(params[3]);
+		dest = (P_OBJECT)pointers::findCharBySerial(params[3]);
 	}
 	else if ( isItemSerial(params[3]) )
 	{
-		src = (P_OBJECT)pointers::findItemBySerial(params[3]);
+		dest = (P_OBJECT)pointers::findItemBySerial(params[3]);
 	}
 
 	tempfx::add(src, dest, params[1], (params[4])&0xFF, (params[4]>>8)&0xFF,

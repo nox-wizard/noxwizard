@@ -162,6 +162,7 @@ namespace character
 
 		pc->setRace(0);
 
+
 		amxVS.deleteVariable( pc->getSerial32() );
 
 		UI32 pc_serial = pc->getSerial32();
@@ -182,6 +183,17 @@ namespace character
 			if( j!=INVALID )
 				SendDeleteObjectPkt(j, pc_serial);
 		}
+		NxwItemWrapper si;
+		P_ITEM pi;
+		si.fillItemWeared( pc, true, true, false );
+		for( si.rewind(); !si.isEmpty(); si++ ) 
+		{
+			pi = si.getItem();
+			if ( !ISVALIDPI(pi) )
+				continue;
+			pi->Delete();
+		}
+
 		safedelete(pc);
 	}
 
