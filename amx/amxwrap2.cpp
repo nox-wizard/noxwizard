@@ -159,10 +159,10 @@ NATIVE2(_getCharProperty)
 		int tp = getPropertyType(params[2]);
 		if (tp==T_INT)
 		{
-			cell *cptr2;
+			/*cell *cptr2;
 			amx_GetAddr(amx,params[4],&cptr2);
-			int prop3 = *cptr2;
-			int p = getCharIntProperty( pc, params[2], params[3], prop3);
+			int prop3 = *cptr2;*/
+			int p = getCharIntProperty( pc, params[2], params[3], params[4]);
 			cell i = p;
 			return i;
 		}
