@@ -105,9 +105,7 @@ namespace Translation
 							ConOut("[FAIL]\n");
 							bWereErrors = true;
 						}
-						char buf[2000];
-						sprintf(buf, "Incorrect translation at line %i.You have used a bad char like %c.Translation will be ignored.\n", line, buffer[i]);
-						ConOut("%s",buf);
+						ConOut("Incorrect translation at line %i.You have used a bad char like %c.Translation will be ignored.\n", line, buffer[i]);
 						bError = true;
 					}
 				}
@@ -130,9 +128,7 @@ namespace Translation
 								ConOut("[FAIL]\n");
 								bWereErrors = true;
 							}
-							char buf[2000];
-							sprintf(buf, "Incorrect translation of \"%s\" in \"%s\" at line %i.Translation will be ignored.\n", buffer, ptr, line);
-							ConOut("%s",buf);
+							ConOut("Incorrect translation of \"%s\" in \"%s\" at line %i.Translation will be ignored.\n", buffer, ptr, line);
 							bError = true;
 							break;
 						} // if not ok 
