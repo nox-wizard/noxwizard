@@ -237,9 +237,9 @@ void dosocketmidi(NXWSOCKET s)
 	char sect[512];
 
 	if (pc->war)
-		strcpy(sect, "MIDILIST COMBAT");
+		strcpy(sect, "SECTION MIDILIST COMBAT");
 	else
-		sprintf(sect, "MIDILIST %i", region[pc->region].midilist);
+		sprintf(sect, "SECTION MIDILIST %i", region[pc->region].midilist);
 
 	iter = Scripts::Regions->getNewIterator(sect);
 	if (iter==NULL) return;
