@@ -123,4 +123,7 @@ public:
 
 };
 
+extern cAccounts* Accounts;
+
+
 #endif // __ACCOUNTS_H__

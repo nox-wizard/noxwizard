@@ -117,10 +117,11 @@ class cMenu : public cBasicMenu
 		void removeCommand( std::string& command );
 		void removeCommand( char* s, ... );
 
-		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, bool data );
-		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, std::wstring& data );
-		bool getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp );
-		std::wstring getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp );
+		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, bool data );
+		void setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring& data );
+		
+		bool getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
+		std::wstring getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 );
 
 	protected:
 		std::vector< std::string >	commands; //!< all commands
@@ -163,7 +164,7 @@ class cMenu : public cBasicMenu
 		void addGump( UI32 x, UI32 y, UI32 gump, UI32 hue );
 		void addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& html, UI32 hasBack, UI32 canScroll );
 		void addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue = 0 );
-		void addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue = 0 );
+		void addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue = 0, UI32 subProperty2 = INVALID );
 		void addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  );
 		void addResizeGump( UI32 x, UI32 y, UI32 gumpId, UI32 width, UI32 height );
 		void addText( UI32 x, UI32 y, wstring& data, UI32 hue = 0 );

@@ -679,12 +679,8 @@ public:
 		void		resetResists();
 		void		resetLockSkills();
 
-	private:
-		wstring* profile; //!< player profile
 	public:
-		wstring* getProfile();
-		void setProfile( wstring* profile );
-		void resetProfile();
+		wstring profile; //!< player profile
 
 	private:
 		wstring* speechCurrent;

@@ -9,7 +9,7 @@
 
 #include "nxwcommn.h"
 
-cAreas*	Areas;
+cAreas*	Areas=NULL;
 
 
 cAreas::cAreas() 

@@ -15,6 +15,9 @@
 #include "network.h"
  
 
+cAccounts* Accounts=NULL;
+
+
 /*!
 \brief Constructor
 \author Endymion

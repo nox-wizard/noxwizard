@@ -121,4 +121,7 @@ public:
 
 };
 
+extern cSpawns* Spawns;
+
+
 #endif

@@ -47,4 +47,7 @@ public:
 
 };
 
+extern cAreas* Areas;
+
+
 #endif

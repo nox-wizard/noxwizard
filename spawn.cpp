@@ -10,7 +10,7 @@
 #include "nxwcommn.h"
 #include "spawn.h"
 
-cSpawns*	Spawns;
+cSpawns* Spawns=NULL;
 
 
 cSpawnArea::cSpawnArea( AREA_ITER area )

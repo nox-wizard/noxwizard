@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "srvparms.h"
 #include "addmenu.h"
+#include "weight.h"
 
 
 //Luxor: for AMX skills implementation

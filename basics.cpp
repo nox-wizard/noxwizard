@@ -17,10 +17,23 @@
 \param sz the string
 \param base number's base
 */
-int str2num (char *sz, int base)
+int str2num( char* sz, int base )
 {
 	char *dummy;
 	return strtol(sz, &dummy, base );
+}
+
+/*!
+\brief Convert a wchar_t* into a number with the specified base
+\author Endymion
+\return int the number or 0 if no conversion possible
+\param sz the string
+\param base number's base
+*/
+int str2num( wchar_t* sz, int base )
+{
+	wchar_t *dummy;
+	return wcstol(sz, &dummy, base );
 }
 
 

@@ -12,6 +12,8 @@
 #include "sndpkg.h"
 #include "npcai.h"
 #include "nxw_utils.h"
+#include "weight.h"
+
 
 /*!
 \brief Snoop into container

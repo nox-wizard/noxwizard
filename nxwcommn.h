@@ -25,7 +25,6 @@
 #include "pointer.h"
 #include "console.h"
 #include "amx/amxscript.h"
-#include "worldmain.h"
 #include "srvparms.h" 
 
 #include "scp_parser.h"

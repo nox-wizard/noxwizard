@@ -34,22 +34,6 @@ static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 static char emptyString[1] = { '\0' };
 static wstring emptyUnicodeString;
 
-static bool  	getCharBoolProperty(P_CHAR pc, int property, int prop2);
-static int   	getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
-static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
-static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
-static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
-static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 );
-static int 	setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value );
-static LOGICAL 	setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value );
-static char	setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value );
-
-static bool  	getItemBoolProperty(P_ITEM pi, int property, int prop2);
-static int   	getItemIntProperty(P_ITEM pi, int property, int prop2);
-static short 	getItemShortProperty(P_ITEM pi, int property, int prop2);
-static char	getItemCharProperty(P_ITEM pi, int property, int prop2);
-static const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
-
 extern int g_nStringMode;
 
 VAR_TYPE getPropertyType(int property)
@@ -62,56 +46,796 @@ VAR_TYPE getPropertyType(int property)
 	return T_UNICODE;
 }
 
-/*!
- \author Sparhawk
- \brief Return calendar property
+#define CHECK(A,B) case A: return B;
+#define GETPWSTRING( P ) ( (P!=NULL)? *P : emptyUnicodeString )
 
- Parameters:
-  \li 1 never
-  \li 2 property
-  \li 3 optional month or weekday number
-  \li 4 string/array reference (output)
- Output:
-  value of numeric property or length of params[4]
- */
-NATIVE2(_getCalProperty)
+
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////   ITEM PROPERTY   ////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+NATIVE2(_getItemProperty)
 {
-	int tp = getPropertyType(params[2]);
+	P_ITEM pi = pointers::findItemBySerial(params[1]);
 
-	if (tp==T_INT) {
-		int *p = reinterpret_cast<int*>(getCalPropertyPtr(-1, params[1], params[2]));
-		cell i = *p;
-		return i;
+	if( ISVALIDPI( pi ) )
+	{
+		VAR_TYPE tp = getPropertyType(params[2]);
+
+		switch( tp ) {
+			case T_INT: {
+				int p = getItemIntProperty( pi, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_BOOL: {
+				bool p = getItemBoolProperty( pi, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_SHORT: {
+				short p = getItemShortProperty( pi, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_CHAR: {
+				char p = getItemCharProperty( pi, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_STRING: {
+
+			  	char str[100];
+	  			strcpy(str, getItemStrProperty( pi, params[2], params[3]));
+
+  				cell *cptr;
+  				amx_GetAddr(amx,params[4],&cptr);
+	  			amx_SetString(cptr,str, g_nStringMode);
+
+  				return strlen(str);
+
+			}
+			case T_UNICODE: {
+				wstring& w=getItemUniProperty( pi, params[2], params[3] );
+
+				cell *cptr;
+	  			amx_GetAddr(amx,params[4],&cptr);
+				amx_SetStringUnicode(cptr, w );
+
+				return w.length();
+			}
+		}
+
+  	}
+  	return INVALID;
+}
+
+NATIVE2(_setItemProperty)
+{
+	// params[1] = chr
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	P_ITEM pi = pointers::findItemBySerial(params[1]);
+	if (!ISVALIDPI( pi ) )
+		return 0;
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+		case T_INT: {
+			int p = params[4];
+			setItemIntProperty( pi, params[2], params[3], p );
+			return p;
+		}
+		case T_BOOL: {
+			bool p = params[4] ? true : false;
+			setItemBoolProperty( pi, params[2], params[3], p );
+			return p;
+		}
+		case T_SHORT: {
+			short p = static_cast<short>(params[4] & 0xFFFF);
+			setItemShortProperty( pi, params[2], params[3], p );
+			return p;
+		}
+		case T_CHAR: {
+			char p = static_cast<char>(params[4] & 0xFF);
+			setItemCharProperty( pi, params[2], params[3], p );
+			return p;
+		}
+		case T_STRING: {
+			//we're here so we should get a ConOut format string, params[4] is the str format
+
+			cell *cptr;
+			amx_GetAddr(amx,params[4],&cptr);
+
+			printstring(amx,cptr,params+5,(int)(params[0]/sizeof(cell))-1);
+			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+
+	
+			setItemStrProperty( pi, params[2], params[3], g_cAmxPrintBuffer );
+	
+			g_nAmxPrintPtr=0;
+			return 0;
+		}
+		case T_UNICODE: {
+			cell *cptr;
+			amx_GetAddr(amx,params[4],&cptr);
+
+			std::wstring buffer;
+			amx_GetStringUnicode( buffer, cptr );
+
+			setItemUniProperty( pi, params[2], params[3], buffer );
+	
+			g_nAmxPrintPtr=0;
+			return 0;
+		}
+		default:
+			return 0;
 	}
-	if (tp==T_BOOL) {
-		bool *p = reinterpret_cast<bool*>(getCalPropertyPtr(-1, params[1], params[2]));
-		cell i = *p;
-		return i;
+}
+
+static void	setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value ) 
+{
+	switch( property )
+	{
+		case INVALID:
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
 	}
-	if (tp==T_SHORT) {
-		short *p = reinterpret_cast<short*>(getCalPropertyPtr(-1, params[1], params[2]));
-		cell i = *p;
-		return i;
-	}
-	if (tp==T_CHAR) {
-		char *p = reinterpret_cast<char*>(getCalPropertyPtr(-1, params[1], params[2]));
-		cell i = *p;
-		return i;
-	}
-
-	//we're here so we should pass a string, params[4] is a str ptr
-
-	char str[100];
-	cell *cptr;
-	strcpy(str, reinterpret_cast<char*>(getCalPropertyPtr(params[1], params[2], params[3])));
-
-	amx_GetAddr(amx,params[4],&cptr);
-	amx_SetString(cptr,str, g_nStringMode);
-
-	return strlen(str);
 }
 
 
+
+
+static void setItemBoolProperty(P_ITEM pi, int property, int prop2, bool value )
+{
+	switch( property )
+	{
+		case NXW_IP_B_INCOGNITO :		   //dec value :  0;
+			pi->incognito = value;
+			break;
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+static void setItemIntProperty(P_ITEM pi, int property, int prop2, int value )
+{
+	switch( property )
+	{
+		case NXW_IP_I_ATT :					   //dec value :  200;
+			pi->att = value;
+			break;
+		case NXW_IP_I_CARVE :					   //dec value :  201;
+			pi->carve = value;
+			break;
+		case NXW_IP_I_CONTAINERSERIAL :				   //dec value :  202;
+			//pi->contserial = value;
+			pi->setContSerial(value, false, false);
+			break;
+		case NXW_IP_I_DECAYTIME :				   //dec value :  203;
+			pi->setDecayTime( (TIMERVAL) value );
+			break;
+		case NXW_IP_I_DEF :					   //dec value :  204;
+			pi->def = value;
+			break;
+		case NXW_IP_I_DEXBONUS :				   //dec value :  205;
+			pi->dx2 = value;
+			break;
+		case NXW_IP_I_DEXREQUIRED :				   //dec value :  206;
+			pi->dx = value;
+			break;
+		case NXW_IP_I_DISABLED :				   //dec value :  207;
+			pi->disabled = value;
+			break;
+		case NXW_IP_I_GATENUMBER :				   //dec value :  208;
+			pi->gatenumber = value;
+			break;
+		case NXW_IP_I_GATETIME :				   //dec value :  209;
+			pi->gatetime = value;
+			break;
+//		case NXW_IP_I_GLOW :					   //dec value :  210;
+//			pi->glow = value;
+//			break;
+		case NXW_IP_I_GOOD :					 	//dec value :  211;
+			pi->good = value;
+			break;
+		case NXW_IP_I_HIDAMAGE :				   //dec value :  212;
+			pi->hidamage = value;
+			break;
+		case NXW_IP_I_HP :					   //dec value :  213;
+			pi->hp = value;
+			break;
+		case NXW_IP_I_INTBONUS :				   //dec value :  214;
+			pi->in2 = value;
+			break;
+		case NXW_IP_I_INTREQUIRED :				   //dec value :  215;
+			pi->in = value;
+			break;
+		case NXW_IP_I_ITEMHAND :				   //dec value :  216;
+			pi->itmhand = value;
+			break;
+		case NXW_IP_I_LODAMAGE :				   //dec value :  217;
+			pi->lodamage = value;
+			break;
+		case NXW_IP_I_MADEWITH :				   //dec value :  218;
+			pi->madewith = value;
+			break;
+		case NXW_IP_I_MAXHP :					   //dec value :  219;
+			pi->maxhp = value;
+			break;
+		case NXW_IP_I_MOREPOSITION:				//dec value : 220;
+			switch(prop2) {
+				case NXW_CI2_X:
+					pi->morex = value;
+					break;
+				case NXW_CI2_Y:
+					pi->morey = value;
+					break;
+				default :
+					pi->morez = value;
+					break;
+			} break;
+		case NXW_IP_I_MULTISERIAL :				   //dec value :  221;
+			pi->setMultiSerial32Only(value);
+			break;
+		case NXW_IP_I_MURDERTIME :				   //dec value :  222;
+			pi->murdertime = value;
+			break;
+		case NXW_IP_I_OLDCONTAINERSERIAL :			   //dec value :  223;
+			pi->setContSerial(value, true, false);
+			break;
+		case NXW_IP_I_OLDPOSITION:								//dec value : 224;
+			switch(prop2) {
+				case NXW_CI2_X:
+					pi->setOldPosition("x", value);
+					break;
+				case NXW_CI2_Y:
+					pi->setOldPosition("y", value);
+					break;
+				default :
+					pi->setOldPosition("z", value);
+					break;
+			} break;
+		case NXW_IP_I_OWNERSERIAL :				   //dec value :  225;
+			pi->setOwnerSerial32Only(value);
+			break;
+		case NXW_IP_I_POISONED :				   //dec value :  226;
+			pi->poisoned = (PoisonType)value;
+			break;
+		case NXW_IP_I_POSITION:							//dec value : 227;
+			switch(prop2) {
+				case NXW_CI2_X:
+					pi->setPosition("x", value);
+					break;
+				case NXW_CI2_Y:
+					pi->setPosition("y", value);
+					break;
+				default :
+					pi->setPosition("z", value);
+					break;
+			} break;
+		case NXW_IP_I_RANK :					   //dec value :  228;
+			pi->rank = value;
+			break;
+		case NXW_IP_I_REQSKILL :				   //dec value :  229;
+			pi->wpsk = value;
+			break;
+		case NXW_IP_I_RESTOCK :					   //dec value :  230;
+			pi->restock = value;
+			break;
+		case NXW_IP_I_RNDVALUERATE :				   //dec value :  231;
+			pi->rndvaluerate = value;
+			break;
+		case NXW_IP_I_SECUREIT :				   //dec value :  232;
+			pi->secureIt = value;
+			break;
+		case NXW_IP_I_SERIAL :					   //dec value :  233;
+			pi->setSerial32(value);
+			break;
+		case NXW_IP_I_SMELT :					   //dec value :  234;
+			pi->smelt = value;
+			break;
+		case NXW_IP_I_SPAWNREGION :				   //dec value :  235;
+			pi->spawnregion = value;
+			break;
+		case NXW_IP_I_SPAWNSERIAL :				   //dec value :  236;
+			pi->spawnserial = value;
+			break;
+		case NXW_IP_I_SPEED :					   //dec value :  237;
+			pi->spd = value;
+			break;
+		case NXW_IP_I_STRBONUS :				   //dec value :  238;
+			pi->st2 = value;
+			break;
+		case NXW_IP_I_STRREQUIRED :				   //dec value :  239;
+			pi->st = value;
+			break;
+		case NXW_IP_I_TIME_UNUSED :				   //dec value :  240;
+			pi->time_unused = value;
+			break;
+		case NXW_IP_I_TIME_UNUSEDLAST :				   //dec value :  241;
+			pi->timeused_last = value;
+			break;
+		case NXW_IP_I_TRIGGER :					   //dec value :  242;
+			pi->trigger = value;
+			break;
+		case NXW_IP_I_TRIGGERUSES :				   //dec value :  243;
+			pi->tuses = value;
+			break;
+		case NXW_IP_I_TRIGTYPE :				   //dec value :  244;
+			pi->trigtype = value;
+			break;
+		case NXW_IP_I_TYPE :					   //dec value :  245;
+			pi->type = value;
+			break;
+		case NXW_IP_I_TYPE2 :					   //dec value :  246;
+			pi->type2 = value;
+			break;
+		case NXW_IP_I_VALUE :					   //dec value :  247;
+			pi->value = value;
+			break;
+		case NXW_IP_I_WEIGHT :					   //dec value :  248;
+			pi->weight = value;
+			break;
+		case NXW_IP_I_WIPE :					   //dec value :  249;
+			pi->wipe = value;
+			break;
+		case NXW_IP_I_AMXFLAGS : 				  //dec value :  250;
+			//
+			// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
+			//
+			//pi->amxflags[params[3]] = value;
+			if ( prop2 >= 0 && prop2 <= 15 )
+				amxVS.updateVariable( pi->getSerial32(), prop2, value );
+			break;
+		case NXW_IP_I_SCRIPTID :				//dec value 251;
+			pi->setScriptID( value );
+			break;
+		case NXW_IP_I_ANIMID :					//dec value 252;
+			pi->animSetId( value );
+			break;
+		case NXW_IP_I_RESISTS :					//dec value: 253;
+			pi->resists[prop2] = value;
+			break;
+		case NXW_IP_I_AUXDAMAGE :				//dec value: 254;
+			pi->auxdamage = value;
+			break;
+		case NXW_IP_I_AMMO :					//dec value: 255;
+			pi->ammo = value;
+			break;
+		case NXW_IP_I_AMMOFX :					//dec value: 256;
+			pi->ammoFx = value;
+			break;
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+static void setItemShortProperty(P_ITEM pi, int property, int prop2, short value )
+{
+	switch( property )
+	{
+		case NXW_IP_S_AMOUNT :			   //dec value :  400;
+			pi->amount = value;
+			break;
+		case NXW_IP_S_AMOUNT2 :			   //dec value :  401;
+			pi->amount2 = value;
+			break;
+		case NXW_IP_S_DIR :			   //dec value :  402;
+			pi->dir = value;
+			break;
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+static void	setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
+{
+	switch( property )
+	{
+		case NXW_IP_C_COLOR :					   		//dec value :  100;
+			if (prop2 > 1)
+				pi->color1 = value;
+			else
+				pi->color2 = value;
+			break;
+		case NXW_IP_C_DOORDIR :			   				//dec value :  103;
+			pi->doordir = value;
+			break;
+		case NXW_IP_C_DOOROPEN :		   				//dec value :  104;
+			pi->dooropen = value;
+			break;
+		case NXW_IP_C_DYE :		   					//dec value :  105;
+			pi->dye = value;
+			break;
+		case NXW_IP_C_FREE :							//dec value :  106;
+			break;
+//		case NXW_IP_C_GLOWFX : 							//dec value :  107;
+//			pi->glow_effect = value;
+//			break;
+//		case NXW_IP_C_GLOWOLDCOLOR :					   	//dec value :  108;
+//			if (prop2 > 1)
+//				pi->glow_c1 = value;
+//			else
+//				pi->glow_c2 = value;
+//			break;
+		case NXW_IP_C_ID :				   			//dec value :  109;
+			if (prop2 > 1)
+				pi->id1 = value;
+			else
+				pi->id2 = value;
+			break;
+		case NXW_IP_C_LAYER :		   					//dec value :  110;
+			pi->layer = value;
+			break;
+		case NXW_IP_C_MAGIC :		   					//dec value :  111;
+			pi->magic = value;
+			break;
+		case NXW_IP_C_OFFSPELL :		   				//dec value :  114;
+			pi->offspell = value;
+			break;
+		case NXW_IP_C_OLDLAYER :		   				//dec value :  115;
+			pi->oldlayer = value;
+			break;
+		case NXW_IP_C_PILEABLE :		   				//dec value :  117;
+			pi->pileable = value;
+			break;
+		case NXW_IP_C_PRIV :		   					//dec value :  118;
+			pi->priv = value;
+			break;
+		case NXW_IP_C_VISIBLE : 						//dec value :  120;
+			pi->visible = value;
+			break;
+		case NXW_IP_C_CONTAINERSERIAL2:
+			switch(prop2)
+			{
+				case 1: pi->setContSerialByte(1, value); break;
+				case 2: pi->setContSerialByte(2, value); break;
+				case 3: pi->setContSerialByte(3, value); break;
+				case 4: pi->setContSerialByte(4, value); break;
+			} 
+			break;
+		case NXW_IP_C_MORE:
+			switch(prop2) {
+				case 1:
+					pi->more1 = value;
+					break;
+				case 2:
+					pi->more2 = value;
+					break;
+				case 3:
+					pi->more3 = value;
+					break;
+				case 4:
+					pi->more4 = value;
+					break;
+			} 
+			break;
+		case NXW_IP_C_MOREB:
+			switch(prop2) {
+				case 1:
+					pi->moreb1 = value;
+					break;
+				case 2:
+					pi->moreb2 = value;
+					break;
+				case 3:
+					pi->moreb3 = value;
+					break;
+				case 4:
+					pi->moreb4 = value;
+					break;
+			} 
+			break;
+
+		case NXW_IP_C_OWNERSERIAL2:
+			switch(prop2) {
+				case 1:
+					pi->setOwnerSerialByte(1, value);
+					break;
+				case 2:
+					pi->setOwnerSerialByte(2, value);
+					break;
+				case 3:
+					pi->setOwnerSerialByte(3, value);
+					break;
+				case 4:
+					pi->setOwnerSerialByte(4, value);
+					break;
+			} 
+			break;
+		case NXW_IP_C_SERIAL2:
+			switch(prop2) {
+				case 1:
+					pi->setSerialByte(1, value);
+					break;
+				case 2:
+					pi->setSerialByte(2, value);
+					break;
+				case 3:
+					pi->setSerialByte(3, value);
+					break;
+				case 4:
+					pi->setSerialByte(4, value);
+					break;
+			} 
+			break;
+		case NXW_IP_C_DAMAGETYPE :						//dec value: 121;
+			pi->damagetype = static_cast<DamageType>(value);
+			break;
+		case NXW_IP_C_AUXDAMAGETYPE :						//dec value: 122;
+			pi->auxdamagetype = static_cast<DamageType>(value);
+			break;
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+static void	setItemStrProperty(P_ITEM pi, int property, int prop2, char* value )
+{
+	switch( property )
+	{
+		case NXW_IP_STR_CREATOR :				   //dec value :  450;
+			pi->creator = g_cAmxPrintBuffer;
+			break;
+		case NXW_IP_STR_DESCRIPTION :				   //dec value :  451;
+			//strcpy(pi->desc, g_cAmxPrintBuffer );
+			pi->vendorDescription = g_cAmxPrintBuffer;
+			break;
+		case NXW_IP_STR_DISABLEDMSG :				   //dec value :  452;
+			if( pi->disabledmsg==NULL )
+				pi->disabledmsg = new std::string( g_cAmxPrintBuffer );
+			else
+				(*pi->disabledmsg) = g_cAmxPrintBuffer;
+			break;
+		case NXW_IP_STR_MURDERER :				   //dec value :  453;
+			pi->murderer = string(g_cAmxPrintBuffer);
+			break;
+		case NXW_IP_STR_NAME :					   //dec value :  454;
+			pi->setCurrentName(g_cAmxPrintBuffer);
+			break;
+		case NXW_IP_STR_NAME2 :					   //dec value :  455;
+			pi->setSecondaryName(g_cAmxPrintBuffer);
+			break;
+		default :
+			ErrOut("itm_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+
+static wstring& getItemUniProperty( P_ITEM pi, int property, int prop2 )
+{
+	switch( property )
+	{
+		case INVALID:
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return emptyUnicodeString;
+	}
+}
+
+
+static bool getItemBoolProperty( P_ITEM pi, int property, int prop2)
+{
+	switch( property )
+	{
+		CHECK(NXW_IP_B_INCOGNITO, pi->incognito )   //dec value :  0;
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return false;
+	}
+}
+
+int getItemIntProperty( P_ITEM pi, int property, int prop2)
+{
+	switch( property )
+	{
+		CHECK(NXW_IP_I_ATT, pi->att )							//dec value :  200;
+		CHECK(NXW_IP_I_CARVE, pi->carve )						//dec value :  201;
+		CHECK(NXW_IP_I_CONTAINERSERIAL, pi->getContSerial() )	//dec value :  202;
+		CHECK(NXW_IP_I_DECAYTIME, pi->getDecayTime() )				//dec value :  203;
+		CHECK(NXW_IP_I_DEF, pi->def )							//dec value :  204;
+		CHECK(NXW_IP_I_DEXBONUS, pi->dx2 )						//dec value :  205;
+		CHECK(NXW_IP_I_DEXREQUIRED, pi->dx )					//dec value :  206;
+		CHECK(NXW_IP_I_DISABLED, pi->disabled )					//dec value :  207;
+		CHECK(NXW_IP_I_GATENUMBER, pi->gatenumber )				//dec value :  208;
+		CHECK(NXW_IP_I_GATETIME, pi->gatetime )					//dec value :  209;
+//		CHECK(NXW_IP_I_GLOW, pi->glow )							//dec value :  210;
+		CHECK(NXW_IP_I_GOOD, pi->good )							//dec value :  211;
+		CHECK(NXW_IP_I_HIDAMAGE, pi->hidamage )					//dec value :  212;
+		CHECK(NXW_IP_I_HP, pi->hp )								//dec value :  213;
+		CHECK(NXW_IP_I_INTBONUS, pi->in2 )						//dec value :  214;
+		CHECK(NXW_IP_I_INTREQUIRED, pi->in )					//dec value :  215;
+		CHECK(NXW_IP_I_ITEMHAND, pi->itmhand )					//dec value :  216;
+		CHECK(NXW_IP_I_LODAMAGE, pi->lodamage )					//dec value :  217;
+		CHECK(NXW_IP_I_MADEWITH, pi->madewith )					//dec value :  218;
+		CHECK(NXW_IP_I_MAXHP, pi->maxhp )						//dec value :  219;
+		case NXW_IP_I_MOREPOSITION:									//dec value :  220;
+			switch(prop2) {
+				case NXW_CI2_X: return pi->morex;
+				case NXW_CI2_Y: return pi->morey;
+				default :	return pi->morez;
+			}
+		CHECK(NXW_IP_I_MULTISERIAL, pi->getMultiSerial32() )	//dec value :  221;
+		CHECK(NXW_IP_I_MURDERTIME, pi->murdertime )				//dec value :  222;
+		CHECK(NXW_IP_I_OLDCONTAINERSERIAL, pi->getContSerial(true) )  //dec value :  223;
+		case NXW_IP_I_OLDPOSITION:																		//dec value :  224;
+			switch(prop2) {
+				case NXW_CI2_X: return pi->getOldPosition().x;
+				case NXW_CI2_Y: return pi->getOldPosition().y;
+				default :	return pi->getOldPosition().z;
+			}
+		CHECK(NXW_IP_I_OWNERSERIAL, pi->getOwnerSerial32() )				//dec value :  225;
+		CHECK(NXW_IP_I_POISONED, pi->poisoned )					//dec value :  226;
+		case NXW_IP_I_POSITION:													//dec value : 227;
+			switch(prop2) {
+				case NXW_CI2_X: return pi->getPosition().x;
+				case NXW_CI2_Y: return pi->getPosition().y;
+				default :	return pi->getPosition().z;
+			}
+		CHECK(NXW_IP_I_RANK, pi->rank )							//dec value :  228;
+		CHECK(NXW_IP_I_REQSKILL, pi->wpsk )						//dec value :  229;
+		CHECK(NXW_IP_I_RESTOCK, pi->restock )					//dec value :  230;
+		CHECK(NXW_IP_I_RNDVALUERATE, pi->rndvaluerate )			//dec value :  231;
+		CHECK(NXW_IP_I_SECUREIT, pi->secureIt )					//dec value :  232;
+		CHECK(NXW_IP_I_SERIAL, pi->getSerial32() )				//dec value :  233;
+		CHECK(NXW_IP_I_SMELT, pi->smelt )						//dec value :  234;
+		CHECK(NXW_IP_I_SPAWNREGION, pi->spawnregion )			//dec value :  235;
+		CHECK(NXW_IP_I_SPAWNSERIAL, pi->spawnserial )			//dec value :  236;
+		CHECK(NXW_IP_I_SPEED, pi->spd )							//dec value :  237;
+		CHECK(NXW_IP_I_STRBONUS, pi->st2 )						//dec value :  238;
+		CHECK(NXW_IP_I_STRREQUIRED, pi->st )					//dec value :  239;
+		CHECK(NXW_IP_I_TIME_UNUSED, pi->time_unused )			//dec value :  240;
+		CHECK(NXW_IP_I_TIME_UNUSEDLAST, pi->timeused_last )		//dec value :  241;
+		CHECK(NXW_IP_I_TRIGGER, pi->trigger )					//dec value :  242;
+		CHECK(NXW_IP_I_TRIGGERUSES, pi->tuses )					//dec value :  243;
+		CHECK(NXW_IP_I_TRIGTYPE, pi->trigtype )					//dec value :  244;
+		CHECK(NXW_IP_I_TYPE, pi->type )							//dec value :  245;
+		CHECK(NXW_IP_I_TYPE2, pi->type2 )						//dec value :  246;
+		CHECK(NXW_IP_I_VALUE, pi->value )						//dec value :  247;
+		CHECK(NXW_IP_I_WEIGHT, (int)pi->getWeight() )			//dec value :  248;
+		CHECK(NXW_IP_I_WIPE, pi->wipe )							//dec value :  249;
+		case NXW_IP_I_AMXFLAGS :	//dec value :  250;
+				//
+				// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
+				//
+				if ( prop2 >= 0 && prop2 <= 15 )
+				{
+					int value;
+					amxVS.selectVariable( pi->getSerial32(), prop2, value );
+					return value;
+				}
+				return 0;
+		CHECK(NXW_IP_I_SCRIPTID, (int)pi->getScriptID() )		//dec value :  251;
+		CHECK(NXW_IP_I_ANIMID, (int)pi->animid() )			//dec value :  252;
+		CHECK(NXW_IP_I_RESISTS, pi->resists[prop2])			//dec value :  253;
+		CHECK(NXW_IP_I_AUXDAMAGE, pi->auxdamage )			//dec value :  254;
+		CHECK(NXW_IP_I_AMMO, pi->ammo )					//dec value: 255;
+		CHECK(NXW_IP_I_AMMOFX, pi->ammoFx )				//dec value: 256;
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return INVALID;
+	}
+}
+
+static short getItemShortProperty( P_ITEM pi, int property, int prop2)
+{
+	switch( property )
+	{
+		CHECK(NXW_IP_S_AMOUNT, pi->amount )   //dec value :  400;
+		CHECK(NXW_IP_S_AMOUNT2, pi->amount2 )   //dec value :  401;
+		CHECK(NXW_IP_S_DIR, pi->dir )   //dec value :  402;
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return INVALID;
+	}
+}
+
+static char getItemCharProperty( P_ITEM pi, int property, int prop2)
+{
+	switch( property )
+	{
+		CHECK(NXW_IP_C_COLOR, (prop2>1) ? pi->color1 : pi->color2 )   		//dec value :  100;
+		CHECK(NXW_IP_C_CORPSE, pi->corpse )   		//dec value :  102;
+		CHECK(NXW_IP_C_DOORDIR, pi->doordir )   				//dec value :  103;
+		CHECK(NXW_IP_C_DOOROPEN, pi->dooropen )   				//dec value :  104;
+		CHECK(NXW_IP_C_DYE, pi->dye )   					//dec value :  105;
+		CHECK(NXW_IP_C_ID, (prop2>1) ? pi->id1 : pi->id2 )   			//dec value :  109;
+		CHECK(NXW_IP_C_LAYER, pi->layer )   					//dec value :  110;
+		CHECK(NXW_IP_C_MAGIC, pi->magic )   					//dec value :  111;
+		CHECK(NXW_IP_C_OFFSPELL, pi->offspell )   				//dec value :  114;
+		CHECK(NXW_IP_C_OLDLAYER, pi->oldlayer )   				//dec value :  115;
+		CHECK(NXW_IP_C_PILEABLE, pi->pileable )   				//dec value :  117;
+		CHECK(NXW_IP_C_PRIV, pi->priv )   					//dec value :  118;
+		CHECK(NXW_IP_C_VISIBLE, pi->visible )					//dec value :  120;
+		case NXW_IP_C_CONTAINERSERIAL2:
+			switch(prop2)
+			{
+				case 1: return pi->getContSerialByte(1);
+				case 2: return pi->getContSerialByte(2);
+				case 3: return pi->getContSerialByte(3);
+				case 4: return pi->getContSerialByte(4);
+			}
+		case NXW_IP_C_MORE:
+			switch(prop2) {
+				case 1: return pi->more1;
+				case 2: return pi->more2;
+				case 3: return pi->more3;
+				case 4: return pi->more4;
+			}
+		case NXW_IP_C_MOREB:
+			switch(prop2) {
+				case 1: return pi->moreb1;
+				case 2: return pi->moreb2;
+				case 3: return pi->moreb3;
+				case 4: return pi->moreb4;
+			}
+		case NXW_IP_C_OWNERSERIAL2:
+			switch(prop2) {
+				case 1: return pi->getOwnerSerial().ser1;
+				case 2: return pi->getOwnerSerial().ser2;
+				case 3: return pi->getOwnerSerial().ser3;
+				case 4: return pi->getOwnerSerial().ser4;
+			}
+		case NXW_IP_C_SERIAL2:
+			switch(prop2) {
+				case 1: return pi->getSerial().ser1;
+				case 2: return pi->getSerial().ser2;
+				case 3: return pi->getSerial().ser3;
+				case 4: return pi->getSerial().ser4;
+			}
+		CHECK(NXW_IP_C_DAMAGETYPE, pi->damagetype)				//dec value :  121;
+		CHECK(NXW_IP_C_AUXDAMAGETYPE, pi->auxdamagetype)			//dec value :  122;
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return '\0';
+	}
+}
+
+static const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
+{
+	switch( property )
+	{
+		CHECK(NXW_IP_STR_CREATOR, pi->creator.c_str() )   //dec value :  450;
+		CHECK(NXW_IP_STR_DESCRIPTION, pi->vendorDescription.c_str() )   //dec value :  451;
+		CHECK(NXW_IP_STR_DISABLEDMSG, (pi->disabledmsg!=NULL)? (char*)pi->disabledmsg->c_str() : "" )   //dec value :  452;
+		CHECK(NXW_IP_STR_MURDERER, pi->murderer.c_str() )   //dec value :  453;
+		CHECK(NXW_IP_STR_NAME, pi->getCurrentNameC() )   //dec value :  454;
+		CHECK(NXW_IP_STR_NAME2, pi->getSecondaryNameC() )   //dec value :  455;
+		default:
+			ErrOut("itm_getProperty called with invalid property %d!\n", property );
+			return const_cast<char*>(emptyString);
+	}
+}
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////// CHARACTER PROPERTY ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 NATIVE2(_getCharProperty)
 {
@@ -119,54 +843,48 @@ NATIVE2(_getCharProperty)
 
 	if ( ISVALIDPC( pc ) )
 	{
-		int tp = getPropertyType(params[2]);
-		if (tp==T_INT)
-		{
-			/*cell *cptr2;
-			amx_GetAddr(amx,params[4],&cptr2);
-			int prop3 = *cptr2;*/
-			int p = getCharIntProperty( pc, params[2], params[3], params[4]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_BOOL)
-		{
-			bool p = getCharBoolProperty( pc, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_SHORT)
-		{
-			short p = getCharShortProperty( pc, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_CHAR)
-		{
-			char p = getCharCharProperty( pc, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_STRING )
-		{
-		//we're here so we should pass a string, params[4] is a str ptr
-	  		char str[100];	
-  			cell *cptr;
-	  		strcpy(str, getCharStrProperty( pc, params[2], params[3]));
+		VAR_TYPE tp = getPropertyType( params[2] );
+		switch( tp ) {
+			case T_INT: {
+				int p = getCharIntProperty( pc, params[2], params[3], params[4]);
+				cell i = p;
+				return i;
+			}
+			case T_BOOL: {
+				bool p = getCharBoolProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_SHORT: {
+				short p = getCharShortProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_CHAR: {
+				char p = getCharCharProperty( pc, params[2], params[3]);
+				cell i = p;
+				return i;
+			}
+			case T_STRING: {
+				//we're here so we should pass a string, params[4] is a str ptr
+	  			char str[100];	
+	  			strcpy(str, getCharStrProperty( pc, params[2], params[3] ) );
 
-  			amx_GetAddr(amx,params[4],&cptr);
-	  		amx_SetString(cptr,str, g_nStringMode);
+	  			cell *cptr;
+  				amx_GetAddr(amx,params[4],&cptr);
+	  			amx_SetString(cptr,str, g_nStringMode);
 
-  			return strlen(str);
-		}
-		if (tp==T_UNICODE )
-		{
-			wstring* w=getCharUniProperty( pc, params[2], params[3] );
-			if( w==NULL ) w=&emptyUnicodeString;
-			cell *cptr;
-	  		amx_GetAddr(amx,params[4],&cptr);
-			amx_SetStringUnicode(cptr, w );
-			return w->length();
+  				return strlen(str);
+			}
+			case T_UNICODE: {
+				wstring& w=getCharUniProperty( pc, params[2], params[3] );
+
+				cell *cptr;
+	  			amx_GetAddr(amx,params[4],&cptr);
+				amx_SetStringUnicode(cptr, w );
+
+				return w.length();
+			}
 		}
 
   	}
@@ -182,131 +900,127 @@ NATIVE2(_setCharProperty)
 	// params[4] = value to set property to
 	// params[5] = another sub property
 
-	int tp = getPropertyType(params[2]);
-	cell *cptr;
 
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	if (!ISVALIDPC( pc ))
 		return INVALID;
 
+	cell *cptr;
 	amx_GetAddr(amx,params[4],&cptr);
 
-	if (tp==T_INT) {
-		int p = *cptr;
-		return setCharIntProperty( pc, params[2], params[3], params[5], p );
-	}
+	VAR_TYPE tp = getPropertyType(params[2]);
 
-	if (tp==T_BOOL)
-	{
-		LOGICAL p = *cptr ? true : false;
-		return setCharBoolProperty( pc, params[2], params[3], params[5], p );
-	}
+	switch( tp ) {
 
-	if (tp==T_SHORT) {
-		short p = static_cast<short>(*cptr & 0xFFFF);
-		switch( params[2] )
-		{
-			case  NXW_CP_S_BASESKILL :				  		//dec value: 400;
-				pc->baseskill[params[3]] = p;
-				break;
-			case NXW_CP_S_SKILL :				  			//dec value: 401;
-				pc->skill[params[3]] = p;
-				break;
-			case NXW_CP_S_GUILDTYPE :				  		//dec value: 402;
-				pc->SetGuildType( p );
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
+		case T_INT : {
+			int p = *cptr;
+			setCharIntProperty( pc, params[2], params[3], params[5], p );
+			return p;
 		}
-		return p;
+		case T_BOOL : {
+			bool p = *cptr ? true : false;
+			setCharBoolProperty( pc, params[2], params[3], params[5], p );
+			return p;
+		}
+		case T_SHORT : {
+			short p = static_cast<short>(*cptr & 0xFFFF);
+			setCharShortProperty( pc, params[2], params[3], params[5], p );
+			return p;
+		}
+		case T_CHAR : {
+			char p = static_cast<char>(*cptr & 0xFF);
+			setCharCharProperty( pc, params[2], params[3], params[5], p );
+			return p;
+		}
+		case T_STRING : {
+			//we're here so we should get a ConOut format string, params[4] is the str format
+
+			cell *cstr;
+			amx_GetAddr(amx,params[4],&cstr);
+			printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+			g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		
+			setCharStrProperty( pc, params[2], params[3], params[5], g_cAmxPrintBuffer );
+
+			g_nAmxPrintPtr=0;
+			return 0;
+		}
+		case T_UNICODE : {
+			cell *cstr;
+			amx_GetAddr(amx,params[4],&cstr);
+
+			std::wstring buffer;
+			amx_GetStringUnicode( buffer, cstr );
+
+			setCharUniProperty( pc, params[2], params[3], params[5], buffer );
+
+			g_nAmxPrintPtr=0;
+	  		return 0;
+
+		}
 	}
-
-	if (tp==T_CHAR) {
-		char p = static_cast<char>(*cptr & 0xFF);
-		return setCharCharProperty( pc, params[2], params[3], params[5], p );
-	}
-
-	if (tp==T_STRING) {
-		//we're here so we should get a ConOut format string, params[4] is the str format
-
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-		switch( params[2] )
-		{
-			case NXW_CP_STR_DISABLEDMSG :			  				//dec value: 450;
-				if( pc->disabledmsg==NULL )
-					pc->disabledmsg = new std::string( g_cAmxPrintBuffer );
-				else
-					(*pc->disabledmsg) = g_cAmxPrintBuffer;
-				break;
-			case NXW_CP_STR_GUILDTITLE :							//dec value: 451;
-				pc->GetGuildTitle();
-				break;
-			case NXW_CP_STR_LASTON :		  					//dec value: 452;
-				break;
-			case NXW_CP_STR_NAME :								//dec value: 453;
-				pc->setCurrentName( g_cAmxPrintBuffer );
-				break;
-			case NXW_CP_STR_ORGNAME :		  					//dec value: 454;
-				break;
-			case NXW_CP_STR_TITLE :			  					//dec value: 455;
-				pc->title = g_cAmxPrintBuffer;
-				break;
-			case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
-				pc->trigword = g_cAmxPrintBuffer;
-				break;
-			case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
-				strcpy( script1, g_cAmxPrintBuffer );
-				break;
-			case NXW_CP_STR_SPEECH :			 				//dec value: 458;
-				strcpy( script2, g_cAmxPrintBuffer );
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
-  		}
-	  	g_nAmxPrintPtr=0;
-		return 0;
-	}
-
-	if (tp==T_UNICODE) {
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-
-		switch( params[2] )
-		{
-			case NXW_CP_UNI_SPEECH_CURRENT :
-				{
-				wstring* wstr = new wstring();
-				pc->deleteSpeechCurrent();
-				pc->setSpeechCurrent( wstr );
-				amx_GetStringUnicode( pc->getSpeechCurrent(), cstr );
-				}
-				break;
-			case NXW_CP_UNI_PROFILE :
-				{
-				wstring* wstr = new wstring();
-				pc->setProfile( wstr );
-				amx_GetStringUnicode( pc->getProfile(), cstr );
-				}
-				break;
-			default :
-				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-				break;
-  		}
-
-		g_nAmxPrintPtr=0;
-	  	return 0;
-
-	}
-  	g_nAmxPrintPtr=0;
   	return 0;
 }
 
-static char setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value )
+static void setCharStrProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char* value )
+{
+	switch( property )
+	{
+		case NXW_CP_STR_DISABLEDMSG :			  				//dec value: 450;
+			if( pc->disabledmsg==NULL )
+				pc->disabledmsg = new std::string( value );
+			else
+				pc->disabledmsg->copy( value, strlen( value ) );
+			break;
+		case NXW_CP_STR_GUILDTITLE :							//dec value: 451;
+			pc->GetGuildTitle();
+			break;
+		case NXW_CP_STR_LASTON :		  					//dec value: 452;
+			break;
+		case NXW_CP_STR_NAME :								//dec value: 453;
+			pc->setCurrentName( value );
+			break;
+		case NXW_CP_STR_ORGNAME :		  					//dec value: 454;
+			break;
+		case NXW_CP_STR_TITLE :			  					//dec value: 455;
+			pc->title = value;
+			break;
+		case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
+			pc->trigword = value;
+			break;
+		case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
+			strcpy( script1, value );
+			break;
+		case NXW_CP_STR_SPEECH :			 				//dec value: 458;
+			strcpy( script2, value );
+			break;
+		default :
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+static void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, short value )
+{
+	switch( property )
+	{
+		case  NXW_CP_S_BASESKILL :				  		//dec value: 400;
+			pc->baseskill[subproperty] = value;
+			break;
+		case NXW_CP_S_SKILL :				  			//dec value: 401;
+			pc->skill[subproperty] = value;
+			break;
+		case NXW_CP_S_GUILDTYPE :				  		//dec value: 402;
+			pc->SetGuildType( value );
+			break;
+		default :
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
+			break;
+	}
+}
+
+
+static void setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value )
 {
 	switch( property )
 	{
@@ -438,10 +1152,9 @@ static char setCharCharProperty( P_CHAR pc, int property, int subproperty, int s
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
 	}
-	return value;
 }
 
-static LOGICAL setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value )
+static void setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, bool value )
 {
 	switch( property )
 	{
@@ -497,10 +1210,9 @@ static LOGICAL setCharBoolProperty( P_CHAR pc, int property, int subproperty, in
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
 	}
-	return value;
 }
 
-static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value )
+static void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value )
 {
 	switch( property )
 	{
@@ -557,13 +1269,18 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			{
 				case NXW_CP2_DEC :
 					pc->dx2 = value;
+					break;
 				case NXW_CP2_REAL :
 					pc->dx3 = value;
+					break;
 				case NXW_CP2_ACT :
 					pc->stm = value;
+					break;
 				case NXW_CP2_EFF:
 					pc->dx = value;
+					break;
 			}
+			pc->updateStats(2);
 			break;
 		case NXW_CP_I_DISABLED :		  			//dec value: 217;
 			pc->disabled = value;
@@ -585,6 +1302,7 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 					break;
 				case NXW_CP2_Z :
 					pc->foodloc.z = value;
+					break;
 			}
 			break;
 		case NXW_CP_I_FPOS1_NPCWANDER:					//dec value: 221;
@@ -676,6 +1394,7 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 					pc->in = value;
 					break;
 			}
+			pc->updateStats(1);
 			break;
 		case NXW_CP_I_KARMA : 				 			//dec value: 237;
 			pc->SetKarma( value );
@@ -783,11 +1502,15 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			{
 				case NXW_CP2_X :
 					pc->prevX = value;
+					break;
 				case NXW_CP2_Y :
 					pc->prevY = value;
+					break;
 				case NXW_CP2_Z :
 					pc->prevZ = value;
-			} break;
+					break;
+			} 
+			break;
 		case NXW_CP_I_PRIV3 :				  			//dec value: 265;
 			pc->priv3[subproperty] = value;
 			break;
@@ -886,7 +1609,9 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 					break;
 				case NXW_CP2_EFF :
 					pc->setStrength(value);
+					break;
 			}
+			pc->updateStats(0);
 			break;
 		case NXW_CP_I_SUMMONTIMER :				  		//dec value: 296;
 			pc->summontimer = value;
@@ -977,707 +1702,25 @@ static int setCharIntProperty( P_CHAR pc, int property, int subproperty, int sub
 			break;
 	}
 
+}
+
+static void	setCharUniProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, wstring& value )
+{
 	switch( property )
 	{
-		case NXW_CP_I_DEXTERITY:
-			pc->updateStats(2);
+		case NXW_CP_UNI_SPEECH_CURRENT : {
+			pc->deleteSpeechCurrent();
+			pc->setSpeechCurrent( new std::wstring( value ) );
 			break;
-		case NXW_CP_I_INTELLIGENCE:
-			pc->updateStats(1);
-			break;
-		case NXW_CP_I_STRENGHT:
-			pc->updateStats(0);
-			break;
-	}
-
-	return value;
-}
-
-NATIVE2(_getItemProperty)
-{
-	P_ITEM pi = pointers::findItemBySerial(params[1]);
-
-	if ( ISVALIDPI( pi ) )
-	{
-		int tp = getPropertyType(params[2]);
-
-		if (tp==T_INT)
-		{
-			int p = getItemIntProperty( pi, params[2], params[3]);
-			cell i = p;
-			return i;
 		}
-		if (tp==T_BOOL)
-		{
-			bool p = getItemBoolProperty( pi, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_SHORT)
-		{
-			short p = getItemShortProperty( pi, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-		if (tp==T_CHAR) {
-			char p = getItemCharProperty( pi, params[2], params[3]);
-			cell i = p;
-			return i;
-		}
-
-		//we're here so we should pass a string, params[4] is a str ptr
-
-	  	char str[100];
-  		cell *cptr;
-	  	strcpy(str, getItemStrProperty( pi, params[2], params[3]));
-
-  		amx_GetAddr(amx,params[4],&cptr);
-	  	amx_SetString(cptr,str, g_nStringMode);
-
-  		return strlen(str);
-  	}
-  	return INVALID;
-}
-
-NATIVE2(_setItemProperty)
-{
-	// params[1] = chr
-	// params[2] = property
-	// params[3] = subproperty
-	// params[4] = value to set property to
-
-	P_ITEM pi = pointers::findItemBySerial(params[1]);
-	if (!ISVALIDPI( pi ) )
-		return 0;
-
-	int tp = getPropertyType(params[2]);
-
-	cell *cptr;
-	amx_GetAddr(amx,params[4],&cptr);
-
-
-	if (tp==T_INT) {
-		int p = *cptr;
-
-		switch( params[2] )
-		{
-			case NXW_IP_I_ATT :					   //dec value :  200;
-				pi->att = p;
-				break;
-			case NXW_IP_I_CARVE :					   //dec value :  201;
-				pi->carve = p;
-				break;
-			case NXW_IP_I_CONTAINERSERIAL :				   //dec value :  202;
-				//pi->contserial = p;
-				pi->setContSerial(p, false, false);
-				break;
-			case NXW_IP_I_DECAYTIME :				   //dec value :  203;
-				pi->setDecayTime( (TIMERVAL) p );
-				break;
-			case NXW_IP_I_DEF :					   //dec value :  204;
-				pi->def = p;
-				break;
-			case NXW_IP_I_DEXBONUS :				   //dec value :  205;
-				pi->dx2 = p;
-				break;
-			case NXW_IP_I_DEXREQUIRED :				   //dec value :  206;
-				pi->dx = p;
-				break;
-			case NXW_IP_I_DISABLED :				   //dec value :  207;
-				pi->disabled = p;
-				break;
-			case NXW_IP_I_GATENUMBER :				   //dec value :  208;
-				pi->gatenumber = p;
-				break;
-			case NXW_IP_I_GATETIME :				   //dec value :  209;
-				pi->gatetime = p;
-				break;
-//			case NXW_IP_I_GLOW :					   //dec value :  210;
-//				pi->glow = p;
-//				break;
-			case NXW_IP_I_GOOD :					 	//dec value :  211;
-				pi->good = p;
-				break;
-			case NXW_IP_I_HIDAMAGE :				   //dec value :  212;
-				pi->hidamage = p;
-				break;
-			case NXW_IP_I_HP :					   //dec value :  213;
-				pi->hp = p;
-				break;
-			case NXW_IP_I_INTBONUS :				   //dec value :  214;
-				pi->in2 = p;
-				break;
-			case NXW_IP_I_INTREQUIRED :				   //dec value :  215;
-				pi->in = p;
-				break;
-			case NXW_IP_I_ITEMHAND :				   //dec value :  216;
-				pi->itmhand = p;
-				break;
-			case NXW_IP_I_LODAMAGE :				   //dec value :  217;
-				pi->lodamage = p;
-				break;
-			case NXW_IP_I_MADEWITH :				   //dec value :  218;
-				pi->madewith = p;
-				break;
-			case NXW_IP_I_MAXHP :					   //dec value :  219;
-				pi->maxhp = p;
-				break;
-			case NXW_IP_I_MOREPOSITION:				//dec value : 220;
-				switch(params[3]) {
-					case NXW_CI2_X:
-						pi->morex = p;
-						break;
-					case NXW_CI2_Y:
-						pi->morey = p;
-						break;
-					default :
-						pi->morez = p;
-						break;
-				} break;
-			case NXW_IP_I_MULTISERIAL :				   //dec value :  221;
-				pi->setMultiSerial32Only(p);
-				break;
-			case NXW_IP_I_MURDERTIME :				   //dec value :  222;
-				pi->murdertime = p;
-				break;
-			case NXW_IP_I_OLDCONTAINERSERIAL :			   //dec value :  223;
-				pi->setContSerial(p, true, false);
-				break;
-			case NXW_IP_I_OLDPOSITION:								//dec value : 224;
-				switch(params[3]) {
-					case NXW_CI2_X:
-						pi->setOldPosition("x", p);
-						break;
-					case NXW_CI2_Y:
-						pi->setOldPosition("y", p);
-						break;
-					default :
-						pi->setOldPosition("z", p);
-						break;
-				} break;
-			case NXW_IP_I_OWNERSERIAL :				   //dec value :  225;
-				pi->setOwnerSerial32Only(p);
-				break;
-			case NXW_IP_I_POISONED :				   //dec value :  226;
-				pi->poisoned = (PoisonType)p;
-				break;
-			case NXW_IP_I_POSITION:							//dec value : 227;
-				switch(params[3]) {
-					case NXW_CI2_X:
-						pi->setPosition("x", p);
-						break;
-					case NXW_CI2_Y:
-						pi->setPosition("y", p);
-						break;
-					default :
-						pi->setPosition("z", p);
-						break;
-				} break;
-			case NXW_IP_I_RANK :					   //dec value :  228;
-				pi->rank = p;
-				break;
-			case NXW_IP_I_REQSKILL :				   //dec value :  229;
-				pi->wpsk = p;
-				break;
-			case NXW_IP_I_RESTOCK :					   //dec value :  230;
-				pi->restock = p;
-				break;
-			case NXW_IP_I_RNDVALUERATE :				   //dec value :  231;
-				pi->rndvaluerate = p;
-				break;
-			case NXW_IP_I_SECUREIT :				   //dec value :  232;
-				pi->secureIt = p;
-				break;
-			case NXW_IP_I_SERIAL :					   //dec value :  233;
-				pi->setSerial32(p);
-				break;
-			case NXW_IP_I_SMELT :					   //dec value :  234;
-				pi->smelt = p;
-				break;
-			case NXW_IP_I_SPAWNREGION :				   //dec value :  235;
-				pi->spawnregion = p;
-				break;
-			case NXW_IP_I_SPAWNSERIAL :				   //dec value :  236;
-				pi->spawnserial = p;
-				break;
-			case NXW_IP_I_SPEED :					   //dec value :  237;
-				pi->spd = p;
-				break;
-			case NXW_IP_I_STRBONUS :				   //dec value :  238;
-				pi->st2 = p;
-				break;
-			case NXW_IP_I_STRREQUIRED :				   //dec value :  239;
-				pi->st = p;
-				break;
-			case NXW_IP_I_TIME_UNUSED :				   //dec value :  240;
-				pi->time_unused = p;
-				break;
-			case NXW_IP_I_TIME_UNUSEDLAST :				   //dec value :  241;
-				pi->timeused_last = p;
-				break;
-			case NXW_IP_I_TRIGGER :					   //dec value :  242;
-				pi->trigger = p;
-				break;
-			case NXW_IP_I_TRIGGERUSES :				   //dec value :  243;
-				pi->tuses = p;
-				break;
-			case NXW_IP_I_TRIGTYPE :				   //dec value :  244;
-				pi->trigtype = p;
-				break;
-			case NXW_IP_I_TYPE :					   //dec value :  245;
-				pi->type = p;
-				break;
-			case NXW_IP_I_TYPE2 :					   //dec value :  246;
-				pi->type2 = p;
-				break;
-			case NXW_IP_I_VALUE :					   //dec value :  247;
-				pi->value = p;
-				break;
-			case NXW_IP_I_WEIGHT :					   //dec value :  248;
-				pi->weight = p;
-				break;
-			case NXW_IP_I_WIPE :					   //dec value :  249;
-				pi->wipe = p;
-				break;
-			case NXW_IP_I_AMXFLAGS : 				  //dec value :  250;
-				//
-				// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
-				//
-				//pi->amxflags[params[3]] = p;
-				if ( params[3] >= 0 && params[3] <= 15 )
-					amxVS.updateVariable( pi->getSerial32(), params[3], p );
-				break;
-			case NXW_IP_I_SCRIPTID :				//dec value 251;
-				pi->setScriptID( p );
-				break;
-			case NXW_IP_I_ANIMID :					//dec value 252;
-				pi->animSetId( p );
-				break;
-			case NXW_IP_I_RESISTS :					//dec value: 253;
-				pi->resists[params[3]] = p;
-				break;
-			case NXW_IP_I_AUXDAMAGE :				//dec value: 254;
-				pi->auxdamage = p;
-				break;
-			case NXW_IP_I_AMMO :					//dec value: 255;
-				pi->ammo = p;
-				break;
-			case NXW_IP_I_AMMOFX :					//dec value: 256;
-				pi->ammoFx = p;
-				break;
-			default :
-				ErrOut("itm_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
-	}
-	if (tp==T_BOOL)
-	{
-		bool p = *cptr ? true : false;
-
-		switch( params[2] )
-		{
-			case NXW_IP_B_INCOGNITO :		   //dec value :  0;
-				pi->incognito = p;
-				break;
-			default :
-				ErrOut("itm_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
-	}
-	if (tp==T_SHORT) {
-		short p = static_cast<short>(*cptr & 0xFFFF);
-		switch( params[2] )
-		{
-			case NXW_IP_S_AMOUNT :			   //dec value :  400;
-				pi->amount = p;
-				break;
-			case NXW_IP_S_AMOUNT2 :			   //dec value :  401;
-				pi->amount2 = p;
-				break;
-			case NXW_IP_S_DIR :			   //dec value :  402;
-				pi->dir = p;
-				break;
-			default :
-				ErrOut("itm_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
-	}
-	if (tp==T_CHAR) {
-		char p = static_cast<char>(*cptr & 0xFF);
-
-		switch( params[2] )
-		{
-			case NXW_IP_C_COLOR :					   		//dec value :  100;
-				if (params[3] > 1)
-					pi->color1 = p;
-				else
-					pi->color2 = p;
-				break;
-			case NXW_IP_C_DOORDIR :			   				//dec value :  103;
-				pi->doordir = p;
-				break;
-			case NXW_IP_C_DOOROPEN :		   				//dec value :  104;
-				pi->dooropen = p;
-				break;
-			case NXW_IP_C_DYE :		   					//dec value :  105;
-				pi->dye = p;
-				break;
-			case NXW_IP_C_FREE :							//dec value :  106;
-				break;
-//			case NXW_IP_C_GLOWFX : 							//dec value :  107;
-//				pi->glow_effect = p;
-//				break;
-//			case NXW_IP_C_GLOWOLDCOLOR :					   	//dec value :  108;
-//				if (params[3] > 1)
-//					pi->glow_c1 = p;
-//				else
-//					pi->glow_c2 = p;
-//				break;
-			case NXW_IP_C_ID :				   			//dec value :  109;
-				if (params[3] > 1)
-					pi->id1 = p;
-				else
-					pi->id2 = p;
-				break;
-			case NXW_IP_C_LAYER :		   					//dec value :  110;
-				pi->layer = p;
-				break;
-			case NXW_IP_C_MAGIC :		   					//dec value :  111;
-				pi->magic = p;
-				break;
-			case NXW_IP_C_OFFSPELL :		   				//dec value :  114;
-				pi->offspell = p;
-				break;
-			case NXW_IP_C_OLDLAYER :		   				//dec value :  115;
-				pi->oldlayer = p;
-				break;
-			case NXW_IP_C_PILEABLE :		   				//dec value :  117;
-				pi->pileable = p;
-				break;
-			case NXW_IP_C_PRIV :		   					//dec value :  118;
-				pi->priv = p;
-				break;
-			case NXW_IP_C_VISIBLE : 						//dec value :  120;
-				pi->visible = p;
-				break;
-			case NXW_IP_C_CONTAINERSERIAL2:
-				switch(params[3])
-				{
-					case 1: pi->setContSerialByte(1, p); break;
-					case 2: pi->setContSerialByte(2, p); break;
-					case 3: pi->setContSerialByte(3, p); break;
-					case 4: pi->setContSerialByte(4, p); break;
-				} 
-				break;
-
-			case NXW_IP_C_MORE:
-				switch(params[3]) {
-					case 1:
-						pi->more1 = p;
-						break;
-					case 2:
-						pi->more2 = p;
-						break;
-					case 3:
-						pi->more3 = p;
-						break;
-					case 4:
-						pi->more4 = p;
-						break;
-				} break;
-
-			case NXW_IP_C_MOREB:
-				switch(params[3]) {
-					case 1:
-						pi->moreb1 = p;
-						break;
-					case 2:
-						pi->moreb2 = p;
-						break;
-					case 3:
-						pi->moreb3 = p;
-						break;
-					case 4:
-						pi->moreb4 = p;
-						break;
-				} break;
-
-			case NXW_IP_C_OWNERSERIAL2:
-				switch(params[3]) {
-					case 1:
-						pi->setOwnerSerialByte(1, p);
-						break;
-					case 2:
-						pi->setOwnerSerialByte(2, p);
-						break;
-					case 3:
-						pi->setOwnerSerialByte(3, p);
-						break;
-					case 4:
-						pi->setOwnerSerialByte(4, p);
-						break;
-				} break;
-			case NXW_IP_C_SERIAL2:
-				switch(params[3]) {
-					case 1:
-						pi->setSerialByte(1, p);
-						break;
-					case 2:
-						pi->setSerialByte(2, p);
-						break;
-					case 3:
-						pi->setSerialByte(3, p);
-						break;
-					case 4:
-						pi->setSerialByte(4, p);
-
-						break;
-				} break;
-			case NXW_IP_C_DAMAGETYPE :						//dec value: 121;
-				pi->damagetype = static_cast<DamageType>(p);
-				break;
-			case NXW_IP_C_AUXDAMAGETYPE :						//dec value: 122;
-				pi->auxdamagetype = static_cast<DamageType>(p);
-				break;
-			default :
-				ErrOut("itm_setProperty called with invalid property %d!\n", params[2] );
-				break;
-		}
-		return p;
-	}
-	//we're here so we should get a ConOut format string, params[4] is the str format
-
-	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-	switch( params[2] )
-	{
-		case NXW_IP_STR_CREATOR :				   //dec value :  450;
-			pi->creator = g_cAmxPrintBuffer;
+		case NXW_CP_UNI_PROFILE : {
+			pc->profile = value;
 			break;
-		case NXW_IP_STR_DESCRIPTION :				   //dec value :  451;
-			//strcpy(pi->desc, g_cAmxPrintBuffer );
-			pi->vendorDescription = g_cAmxPrintBuffer;
-			break;
-		case NXW_IP_STR_DISABLEDMSG :				   //dec value :  452;
-			if( pi->disabledmsg==NULL )
-				pi->disabledmsg = new std::string( g_cAmxPrintBuffer );
-			else
-				(*pi->disabledmsg) = g_cAmxPrintBuffer;
-			break;
-		case NXW_IP_STR_MURDERER :				   //dec value :  453;
-			pi->murderer = string(g_cAmxPrintBuffer);
-			break;
-		case NXW_IP_STR_NAME :					   //dec value :  454;
-			pi->setCurrentName(g_cAmxPrintBuffer);
-			break;
-		case NXW_IP_STR_NAME2 :					   //dec value :  455;
-			pi->setSecondaryName(g_cAmxPrintBuffer);
-			break;
+		}
 		default :
-			ErrOut("itm_setProperty called with invalid property %d!\n", params[2] );
+			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
 	}
-	g_nAmxPrintPtr=0;
-	return 0;
-}
-
-/*************************************************************************************
- HERE AFTER : PROPERTIES GETPTRS
- *************************************************************************************/
-#define CHECK(A,B) case A: return B;
-
-static bool getItemBoolProperty( P_ITEM pi, int property, int prop2)
-{
-	switch( property )
-	{
-		CHECK(NXW_IP_B_INCOGNITO, pi->incognito )   //dec value :  0;
-
-	}
-	ErrOut("itm_getProperty called with invalid property %d!\n", property );
-	return false;
-}
-
-static int getItemIntProperty( P_ITEM pi, int property, int prop2)
-{
-	switch( property )
-	{
-		CHECK(NXW_IP_I_ATT, pi->att )							//dec value :  200;
-		CHECK(NXW_IP_I_CARVE, pi->carve )						//dec value :  201;
-		CHECK(NXW_IP_I_CONTAINERSERIAL, pi->getContSerial() )	//dec value :  202;
-		CHECK(NXW_IP_I_DECAYTIME, pi->getDecayTime() )				//dec value :  203;
-		CHECK(NXW_IP_I_DEF, pi->def )							//dec value :  204;
-		CHECK(NXW_IP_I_DEXBONUS, pi->dx2 )						//dec value :  205;
-		CHECK(NXW_IP_I_DEXREQUIRED, pi->dx )					//dec value :  206;
-		CHECK(NXW_IP_I_DISABLED, pi->disabled )					//dec value :  207;
-		CHECK(NXW_IP_I_GATENUMBER, pi->gatenumber )				//dec value :  208;
-		CHECK(NXW_IP_I_GATETIME, pi->gatetime )					//dec value :  209;
-//		CHECK(NXW_IP_I_GLOW, pi->glow )							//dec value :  210;
-		CHECK(NXW_IP_I_GOOD, pi->good )							//dec value :  211;
-		CHECK(NXW_IP_I_HIDAMAGE, pi->hidamage )					//dec value :  212;
-		CHECK(NXW_IP_I_HP, pi->hp )								//dec value :  213;
-		CHECK(NXW_IP_I_INTBONUS, pi->in2 )						//dec value :  214;
-		CHECK(NXW_IP_I_INTREQUIRED, pi->in )					//dec value :  215;
-		CHECK(NXW_IP_I_ITEMHAND, pi->itmhand )					//dec value :  216;
-		CHECK(NXW_IP_I_LODAMAGE, pi->lodamage )					//dec value :  217;
-		CHECK(NXW_IP_I_MADEWITH, pi->madewith )					//dec value :  218;
-		CHECK(NXW_IP_I_MAXHP, pi->maxhp )						//dec value :  219;
-		case NXW_IP_I_MOREPOSITION:									//dec value :  220;
-			switch(prop2) {
-				case NXW_CI2_X: return pi->morex;
-				case NXW_CI2_Y: return pi->morey;
-				default :	return pi->morez;
-			}
-		CHECK(NXW_IP_I_MULTISERIAL, pi->getMultiSerial32() )	//dec value :  221;
-		CHECK(NXW_IP_I_MURDERTIME, pi->murdertime )				//dec value :  222;
-		CHECK(NXW_IP_I_OLDCONTAINERSERIAL, pi->getContSerial(true) )  //dec value :  223;
-		case NXW_IP_I_OLDPOSITION:																		//dec value :  224;
-			switch(prop2) {
-				case NXW_CI2_X: return pi->getOldPosition().x;
-				case NXW_CI2_Y: return pi->getOldPosition().y;
-				default :	return pi->getOldPosition().z;
-			}
-		CHECK(NXW_IP_I_OWNERSERIAL, pi->getOwnerSerial32() )				//dec value :  225;
-		CHECK(NXW_IP_I_POISONED, pi->poisoned )					//dec value :  226;
-		case NXW_IP_I_POSITION:													//dec value : 227;
-			switch(prop2) {
-				case NXW_CI2_X: return pi->getPosition().x;
-				case NXW_CI2_Y: return pi->getPosition().y;
-				default :	return pi->getPosition().z;
-			}
-		CHECK(NXW_IP_I_RANK, pi->rank )							//dec value :  228;
-		CHECK(NXW_IP_I_REQSKILL, pi->wpsk )						//dec value :  229;
-		CHECK(NXW_IP_I_RESTOCK, pi->restock )					//dec value :  230;
-		CHECK(NXW_IP_I_RNDVALUERATE, pi->rndvaluerate )			//dec value :  231;
-		CHECK(NXW_IP_I_SECUREIT, pi->secureIt )					//dec value :  232;
-		CHECK(NXW_IP_I_SERIAL, pi->getSerial32() )				//dec value :  233;
-		CHECK(NXW_IP_I_SMELT, pi->smelt )						//dec value :  234;
-		CHECK(NXW_IP_I_SPAWNREGION, pi->spawnregion )			//dec value :  235;
-		CHECK(NXW_IP_I_SPAWNSERIAL, pi->spawnserial )			//dec value :  236;
-		CHECK(NXW_IP_I_SPEED, pi->spd )							//dec value :  237;
-		CHECK(NXW_IP_I_STRBONUS, pi->st2 )						//dec value :  238;
-		CHECK(NXW_IP_I_STRREQUIRED, pi->st )					//dec value :  239;
-		CHECK(NXW_IP_I_TIME_UNUSED, pi->time_unused )			//dec value :  240;
-		CHECK(NXW_IP_I_TIME_UNUSEDLAST, pi->timeused_last )		//dec value :  241;
-		CHECK(NXW_IP_I_TRIGGER, pi->trigger )					//dec value :  242;
-		CHECK(NXW_IP_I_TRIGGERUSES, pi->tuses )					//dec value :  243;
-		CHECK(NXW_IP_I_TRIGTYPE, pi->trigtype )					//dec value :  244;
-		CHECK(NXW_IP_I_TYPE, pi->type )							//dec value :  245;
-		CHECK(NXW_IP_I_TYPE2, pi->type2 )						//dec value :  246;
-		CHECK(NXW_IP_I_VALUE, pi->value )						//dec value :  247;
-		CHECK(NXW_IP_I_WEIGHT, (int)pi->getWeight() )			//dec value :  248;
-		CHECK(NXW_IP_I_WIPE, pi->wipe )							//dec value :  249;
-		case NXW_IP_I_AMXFLAGS :	//dec value :  250;
-				//
-				// AMXFLAGS ARE NOW HANDLED AS NEW STYLE AMX VARS
-				//
-				if ( prop2 >= 0 && prop2 <= 15 )
-				{
-					int value;
-					amxVS.selectVariable( pi->getSerial32(), prop2, value );
-					return value;
-				}
-				return 0;
-		CHECK(NXW_IP_I_SCRIPTID, (int)pi->getScriptID() )		//dec value :  251;
-		CHECK(NXW_IP_I_ANIMID, (int)pi->animid() )			//dec value :  252;
-		CHECK(NXW_IP_I_RESISTS, pi->resists[prop2])			//dec value :  253;
-		CHECK(NXW_IP_I_AUXDAMAGE, pi->auxdamage )			//dec value :  254;
-		CHECK(NXW_IP_I_AMMO, pi->ammo )					//dec value: 255;
-		CHECK(NXW_IP_I_AMMOFX, pi->ammoFx )				//dec value: 256;
-	}
-	ErrOut("itm_getProperty called with invalid property %d!\n", property );
-	return INVALID;
-}
-
-static short getItemShortProperty( P_ITEM pi, int property, int prop2)
-{
-	switch( property )
-	{
-		CHECK(NXW_IP_S_AMOUNT, pi->amount )   //dec value :  400;
-		CHECK(NXW_IP_S_AMOUNT2, pi->amount2 )   //dec value :  401;
-		CHECK(NXW_IP_S_DIR, pi->dir )   //dec value :  402;
-	}
-	ErrOut("itm_getProperty called with invalid property %d!\n", property );
-	return INVALID;
-}
-
-static char getItemCharProperty( P_ITEM pi, int property, int prop2)
-{
-	switch( property )
-	{
-		CHECK(NXW_IP_C_COLOR, (prop2>1) ? pi->color1 : pi->color2 )   		//dec value :  100;
-		CHECK(NXW_IP_C_CORPSE, pi->corpse )   		//dec value :  102;
-		CHECK(NXW_IP_C_DOORDIR, pi->doordir )   				//dec value :  103;
-		CHECK(NXW_IP_C_DOOROPEN, pi->dooropen )   				//dec value :  104;
-		CHECK(NXW_IP_C_DYE, pi->dye )   					//dec value :  105;
-		CHECK(NXW_IP_C_ID, (prop2>1) ? pi->id1 : pi->id2 )   			//dec value :  109;
-		CHECK(NXW_IP_C_LAYER, pi->layer )   					//dec value :  110;
-		CHECK(NXW_IP_C_MAGIC, pi->magic )   					//dec value :  111;
-		CHECK(NXW_IP_C_OFFSPELL, pi->offspell )   				//dec value :  114;
-		CHECK(NXW_IP_C_OLDLAYER, pi->oldlayer )   				//dec value :  115;
-		CHECK(NXW_IP_C_PILEABLE, pi->pileable )   				//dec value :  117;
-		CHECK(NXW_IP_C_PRIV, pi->priv )   					//dec value :  118;
-		CHECK(NXW_IP_C_VISIBLE, pi->visible )					//dec value :  120;
-		case NXW_IP_C_CONTAINERSERIAL2:
-			switch(prop2)
-			{
-				case 1: return pi->getContSerialByte(1);
-				case 2: return pi->getContSerialByte(2);
-				case 3: return pi->getContSerialByte(3);
-				case 4: return pi->getContSerialByte(4);
-			}
-		case NXW_IP_C_MORE:
-			switch(prop2) {
-				case 1: return pi->more1;
-				case 2: return pi->more2;
-				case 3: return pi->more3;
-				case 4: return pi->more4;
-			}
-		case NXW_IP_C_MOREB:
-			switch(prop2) {
-				case 1: return pi->moreb1;
-				case 2: return pi->moreb2;
-				case 3: return pi->moreb3;
-				case 4: return pi->moreb4;
-			}
-		case NXW_IP_C_OWNERSERIAL2:
-			switch(prop2) {
-				case 1: return pi->getOwnerSerial().ser1;
-				case 2: return pi->getOwnerSerial().ser2;
-				case 3: return pi->getOwnerSerial().ser3;
-				case 4: return pi->getOwnerSerial().ser4;
-			}
-		case NXW_IP_C_SERIAL2:
-			switch(prop2) {
-				case 1: return pi->getSerial().ser1;
-				case 2: return pi->getSerial().ser2;
-				case 3: return pi->getSerial().ser3;
-				case 4: return pi->getSerial().ser4;
-			}
-		CHECK(NXW_IP_C_DAMAGETYPE, pi->damagetype)				//dec value :  121;
-		CHECK(NXW_IP_C_AUXDAMAGETYPE, pi->auxdamagetype)			//dec value :  122;
-	}
-	ErrOut("itm_getProperty called with invalid property %d!\n", property );
-	return '\0';
-}
-
-static const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
-{
-	switch( property )
-	{
-		CHECK(NXW_IP_STR_CREATOR, pi->creator.c_str() )   //dec value :  450;
-		CHECK(NXW_IP_STR_DESCRIPTION, pi->vendorDescription.c_str() )   //dec value :  451;
-		CHECK(NXW_IP_STR_DISABLEDMSG, (pi->disabledmsg!=NULL)? (char*)pi->disabledmsg->c_str() : "" )   //dec value :  452;
-		CHECK(NXW_IP_STR_MURDERER, pi->murderer.c_str() )   //dec value :  453;
-		CHECK(NXW_IP_STR_NAME, pi->getCurrentNameC() )   //dec value :  454;
-		CHECK(NXW_IP_STR_NAME2, pi->getSecondaryNameC() )   //dec value :  455;
-	}
-	ErrOut("itm_getProperty called with invalid property %d!\n", property );
-	return const_cast<char*>(emptyString);
 }
 
 static bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
@@ -1699,9 +1742,10 @@ static bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_GUILDTOGGLE , pc->HasGuildTitleToggle() )  	//dec value: 14;
 		CHECK(  NXW_CP_B_OVERWEIGHTED, pc->IsOverWeight() )     	//dec value: 15;
 		CHECK(  NXW_CP_B_MOUNTED, pc->mounted )     	//dec value: 15;
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return false;
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return false;
 }
 
 static int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
@@ -1905,10 +1949,10 @@ static int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_CY, pc->getPosition().y ) 			//dec value: 317
 		CHECK(  NXW_CP_I_CZ, pc->getPosition().z ) 			//dec value: 318
 		CHECK(  NXW_CP_I_LASTMOVETIME, pc->LastMoveTime)		//dec value: 319
-
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return INVALID;
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return -1;
 }
 
 
@@ -1919,9 +1963,10 @@ static short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_BASESKILL , pc->baseskill[prop2] )  		//dec value: 400;
 		CHECK(  NXW_CP_S_SKILL , pc->skill[prop2] )  			//dec value: 401;
 		CHECK(  NXW_CP_S_GUILDTYPE , pc->GetGuildType() )  		//dec value: 402;
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return INVALID;
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return -1;
 }
 
 static char getCharCharProperty( P_CHAR pc, int property, int prop2 )
@@ -1979,56 +2024,104 @@ static char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_C_TRAININGPLAYERIN , pc->getSkillTaught() )  	//dec value: 133;
 		CHECK(  NXW_CP_C_PRIV , pc->GetPriv() )  			//dec value: 134;
 		CHECK(  NXW_CP_C_DAMAGETYPE, pc->damagetype)			//dec value: 135;
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return '\0';
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return '\0';
 }
 
-static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
+static const char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{
-		CHECK(  NXW_CP_STR_DISABLEDMSG , (pc->disabledmsg!=NULL)? const_cast<char*>(pc->disabledmsg->c_str()) : const_cast<char*>(emptyString) )  		//dec value: 450;
+		CHECK(  NXW_CP_STR_DISABLEDMSG , (pc->disabledmsg!=NULL)? pc->disabledmsg->c_str() : emptyString )  		//dec value: 450;
 		CHECK(  NXW_CP_STR_GUILDTITLE , pc->GetGuildTitle() )  		//dec value: 451;
 		CHECK(  NXW_CP_STR_LASTON , "<obsolete>" )  			//dec value: 452;
-		CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
+		CHECK(  NXW_CP_STR_NAME, pc->getCurrentNameC() )  //dec value: 453;
 		CHECK(  NXW_CP_STR_ORGNAME , "<obsolete>" )  			//dec value: 454;
-		CHECK(  NXW_CP_STR_TITLE , const_cast<char *>(pc->title.c_str()) )  			//dec value: 455;
-		CHECK(  NXW_CP_STR_TRIGWORD , const_cast<char *>(pc->trigword.c_str()) )  			//dec value: 456;
+		CHECK(  NXW_CP_STR_TITLE , pc->title.c_str() )  			//dec value: 455;
+		CHECK(  NXW_CP_STR_TRIGWORD , pc->trigword.c_str() )  			//dec value: 456;
 		CHECK(	NXW_CP_STR_SPEECHWORD, script1 ) 			//dec value: 457;
 		CHECK(	NXW_CP_STR_SPEECH, script2 ) 				//dec value: 458;
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return emptyString;
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return const_cast<char*>(emptyString);
 }
 
-static wstring* getCharUniProperty( P_CHAR pc, int property, int prop2 )
+static wstring& getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{
-		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , pc->getSpeechCurrent() )
-		CHECK(  NXW_CP_UNI_PROFILE , pc->getProfile() )
+		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , GETPWSTRING( pc->getSpeechCurrent() ) )
+		CHECK(  NXW_CP_UNI_PROFILE, pc->profile )
+		default:
+			ErrOut("chr_getProperty called with invalid property %d!\n", property );
+			return emptyUnicodeString;
 	}
-	ErrOut("chr_getProperty called with invalid property %d!\n", property );
-	return NULL;
 }
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////// CALENDAR PROPERTY ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
-/*
- Function	:	_getCalPropertyPtr
- Purpose	:	return addres to calendar property value
- Inputparms	:	i		-	never used for compliance to _getXXXPropertyPtr parameter model
-			property
-			prop2		-	optional month or weekday number
- Outputparms:	none
- Returnvalue:	pointer to value of calendar property
- Creator	:	Sparhawk
- Datecreated:	2001-09-15
- Nxw version:	054b
- Version	:	1.0
- Dateupdated:	2001-09-15
- Notes	:
- History	:
+/*!
+\author Sparhawk
+\brief Return calendar property
+\param 1 never
+\param 2 property
+\param 3 option month or weekend number
+\param 4 string/array reference ( output )
+\return value of numeric property or length of params[4]
+*/
+NATIVE2(_getCalProperty)
+{
+	int tp = getPropertyType(params[2]);
+
+	if (tp==T_INT) {
+		int *p = reinterpret_cast<int*>(getCalPropertyPtr(INVALID, params[1], params[2]));
+		cell i = *p;
+		return i;
+	}
+	if (tp==T_BOOL) {
+		bool *p = reinterpret_cast<bool*>(getCalPropertyPtr(INVALID, params[1], params[2]));
+		cell i = *p;
+		return i;
+	}
+	if (tp==T_SHORT) {
+		short *p = reinterpret_cast<short*>(getCalPropertyPtr(INVALID, params[1], params[2]));
+		cell i = *p;
+		return i;
+	}
+	if (tp==T_CHAR) {
+		char *p = reinterpret_cast<char*>(getCalPropertyPtr(INVALID, params[1], params[2]));
+		cell i = *p;
+		return i;
+	}
+
+	//we're here so we should pass a string, params[4] is a str ptr
+
+	char str[100];
+	cell *cptr;
+	strcpy(str, reinterpret_cast<char*>(getCalPropertyPtr(params[1], params[2], params[3])));
+
+	amx_GetAddr(amx,params[4],&cptr);
+	amx_SetString(cptr,str, g_nStringMode);
+
+	return strlen(str);
+}
+
+/*!
+\brief Return addres to calendar property value
+\param 1 never used
+\param 2 property
+\param 3 prop2, optional month or weekday number
+\return pointer to value of calendar property
+\author	Sparhawk
 */
 static void *getCalPropertyPtr(int i, int property, int prop2)
 {
@@ -2076,6 +2169,14 @@ static void *getCalPropertyPtr(int i, int property, int prop2)
 	}
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+///////////////////////// CALENDAR PROPERTY ///////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 NATIVE2(_setGuildProperty)
 {
@@ -2203,7 +2304,7 @@ NATIVE2(_setGuildProperty)
 		cell *cstr;
 		amx_GetAddr(amx,params[4],&cstr);
 		wstring w;
-		amx_GetStringUnicode( &w, cstr );
+		amx_GetStringUnicode( w, cstr );
 
 		switch( params[2] )
 		{
@@ -2343,7 +2444,7 @@ NATIVE2(_getGuildProperty)
 		if( w==NULL ) w=&emptyUnicodeString;
 		cell *cptr;
 	  	amx_GetAddr(amx,params[4],&cptr);
-		amx_SetStringUnicode(cptr, w );
+		amx_SetStringUnicode(cptr, *w );
 		return w->length();
 		
 	}
@@ -2353,6 +2454,15 @@ NATIVE2(_getGuildProperty)
 		return INVALID;
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+//////////////////////////// MENU PROPERTY /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
 
 NATIVE2(_setMenuProperty)
 {
@@ -2491,7 +2601,7 @@ NATIVE2(_setMenuProperty)
 		cell *cstr;
 		amx_GetAddr(amx,params[4],&cstr);
 		wstring w;
-		amx_GetStringUnicode( &w, cstr );
+		amx_GetStringUnicode( w, cstr );
 
 		switch( params[2] )
 		{
@@ -2657,7 +2767,7 @@ NATIVE2(_getMenuProperty)
 		if( w==NULL ) w=&emptyUnicodeString;
 		cell *cptr;
 	  	amx_GetAddr(amx,params[4],&cptr);
-		amx_SetStringUnicode(cptr, w );
+		amx_SetStringUnicode(cptr, *w );
 		return w->length();
 		
 	}

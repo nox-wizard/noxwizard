@@ -7,6 +7,7 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
 #include "nxwcommn.h"
 
 server_st server_data;
@@ -135,7 +136,7 @@ short g_nMainTCPPort=2593; //default!
 timeval nettimeout;
 int now;
 
-FILE *infile, *scpfile, *lstfile, *wscfile;
+FILE *wscfile;
 
 unsigned int servcount;
 unsigned int startcount;
@@ -229,14 +230,8 @@ unsigned int hungerdamagetimer=0; // For hunger damage
 /*!
 \name Classes definitions
 */
-CWorldMain	*cwmWorldState;
 cRegion		*mapRegions;
-cBoat		*Boats;
 cGuilds		*Guilds;
-cFishing        *Fishing;
-cTargets	*Targ;
-cAccounts	*Accounts;
-cPartys		*Partys;
 //@}
 
 

@@ -22,6 +22,8 @@
 #include "tmpeff.h"
 #include "packets.h"
 #include "telport.h"
+#include "weight.h"
+
 
 
 /*!

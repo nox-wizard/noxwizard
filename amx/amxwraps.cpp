@@ -27,7 +27,7 @@
 #include "oldmenu.h"
 #include "itemid.h"
 #include "timers.h"
-
+#include "muls.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -5238,7 +5238,7 @@ NATIVE( _menu_addHtmlGump )
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
 	wstring s;
-	amx_GetStringUnicode( &s, cstr );
+	amx_GetStringUnicode( s, cstr );
 
 
 	menu->addHtmlGump( params[2], params[3], params[4], params[5], s, params[7], params[8] );
@@ -5268,7 +5268,7 @@ NATIVE( _menu_addInputField )
 	cell *cstr;
 	amx_GetAddr(amx,params[7],&cstr);
 	wstring s;
-	amx_GetStringUnicode( &s, cstr );
+	amx_GetStringUnicode( s, cstr );
 
 	menu->addInputField( params[2], params[3], params[4], params[5], params[6], s, params[8] );
 
@@ -5362,7 +5362,7 @@ NATIVE ( _menu_addText )
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
 	wstring s;
-	amx_GetStringUnicode( &s, cstr );
+	amx_GetStringUnicode( s, cstr );
 
 	menu->addText( params[2], params[3], s, params[5] );
 	return 1;
@@ -5432,7 +5432,7 @@ NATIVE( _menu_addXmfHtmlGump )
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
 	wstring s;
-	amx_GetStringUnicode( &s, cstr );
+	amx_GetStringUnicode( s, cstr );
 
 	menu->addXmfHtmlGump( params[2], params[3], params[4], params[5], s, params[6], params[7] );
 	return 1;

@@ -18,6 +18,8 @@
 #include "sndpkg.h"
 #include "debug.h"
 
+cFishing* Fishing=NULL;
+
 int SpawnFishingMonster(P_CHAR pc, char* cScript, char* cList, char* cNpcID)
 {
 	/*This function gets the random monster number from

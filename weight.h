@@ -28,4 +28,5 @@ namespace weights {
 	float	LockeddownWeight(P_ITEM pItem, int *total);
 }
 
+
 #endif

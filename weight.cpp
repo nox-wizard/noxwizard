@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
+#include "weight.h"
 
 /*!
 \brief Search player's paperdoll and then backpacks for items with weight then set the weight of the current player

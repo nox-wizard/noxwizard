@@ -110,4 +110,6 @@ namespace PartySystem
 
 	};
 
+extern cPartys* Partys;
+
 #endif //__PARTY_H__

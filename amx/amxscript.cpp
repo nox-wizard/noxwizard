@@ -90,18 +90,18 @@ int g_nMoment=0;
 
 
 
-int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source )
+int AMXAPI amx_SetStringUnicode( cell *dest, wstring& source )
 {
-	wstring::iterator iter( source->begin() ), end( source->end() );
+	wstring::iterator iter( source.begin() ), end( source.end() );
 
-	for( int i=0; iter!=end; iter++, ++i ) {
+	for( int i=0; iter!=end; ++iter, ++i ) {
 		dest[i]=(*iter);
 	}
     /* On Big Endian machines, the characters are well aligned in the
      * cells; on Little Endian machines, we must swap all cells.
     */
     if (!amx_getLittleEndian()) {
-		int len = source->size();
+		int len = source.size();
 		while (len>=0)
 			swapcell((ucell *)&dest[len--]);
     }
@@ -109,16 +109,16 @@ int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source )
 	return AMX_ERR_NONE;
 }
 
-int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source )
+int AMXAPI amx_GetStringUnicode( wstring& dest, cell* source )
 {
 
-	dest->erase();
+	dest.clear();
 	cell temp;
 	int i=0;
 	while( (temp=source[i++])!=0 ) {
 	    if (!amx_getLittleEndian()) 
 			swapcell( (ucell *)&temp );
-		(*dest)+=static_cast<wchar_t>(temp);
+		dest+=static_cast<wchar_t>(temp);
 	}
 
 	return AMX_ERR_NONE;

@@ -24,11 +24,14 @@
 #include "amx/amxvarserver.h"
 #include "layer.h"
 #include "jail.h"
+#include "accounts.h"
 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
+
+CWorldMain* cwmWorldState=NULL;
 
 
 CWorldMain::CWorldMain()
@@ -63,9 +66,9 @@ CWorldMain::~CWorldMain()
 \param name the variable name
 \return the unicode string
 */
-wstring* HexVector2UnicodeString( char* s )
+wstring HexVector2UnicodeString( char* s )
 {
-	wstring* w= new wstring();
+	std::wstring w;
 
 	int i=0;
 	char temp[6] = { '0','x', };
@@ -75,7 +78,7 @@ wstring* HexVector2UnicodeString( char* s )
 		char* dummy;
 		baffer = static_cast<wchar_t>( strtol( temp, &dummy, 0 ) );
 		if( baffer!=0 )
-			(*w) += baffer;
+			w += baffer;
 		i+=4;
 	} while ( baffer!=0 );
 	return w;
@@ -413,7 +416,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp( script1, "PC_FTARGSER" ) )   {pc->ftargserial=str2num(script2); }
 			else if (!strcmp( script1, "POSSESSEDSERIAL" ) )   {pc->possessedSerial=str2num(script2); }
 			else if (!(strcmp(script1, "PROFILE"))) {
-				pc->setProfile( HexVector2UnicodeString( script2 ) );
+				pc->profile = HexVector2UnicodeString( script2 );
 			}
 		break;
 
@@ -1681,8 +1684,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "MOVESPEED %f\n", pc->npcMoveSpeed );
 			if( pc->npc && pc->npcFollowSpeed != NPCFOLLOWSPEED )
 				fprintf(cWsc, "FOLLOWSPEED %f\n", pc->npcFollowSpeed );
-			if( pc->getProfile()!=dummy.getProfile() )
-				fprintWstring( cWsc, "PROFILE", pc->getProfile() );
+			if( pc->profile!=dummy.profile )
+				fprintWstring( cWsc, "PROFILE", pc->profile );
 			if( !pc->lootVector.empty() )
 			{
 				int last = pc->lootVector.size();

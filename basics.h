@@ -109,7 +109,7 @@ inline void hextostr(UI32 i, char *ourstring)
 #define BASE_HEX 16
 //@}
 
-// Xan : conversion from sz to numbers
+
 /*!
 \author Xanathar
 \brief Conversion from sz to numbers
@@ -117,7 +117,16 @@ inline void hextostr(UI32 i, char *ourstring)
 \param base base in which the number is (see Bases)
 \return the number represented by the string
 */
-int str2num (char *sz, int base = BASE_AUTO);
+int str2num(char* sz, int base = BASE_AUTO);
+
+/*!
+\brief Conversion from sz to numbers
+\author Endymion
+\param sz string that represent the number
+\param base base in which the number is (see Bases)
+\return the number represented by the string
+*/
+int str2num( wchar_t* sz, int base = BASE_AUTO);
 
 /*!
 \author Xanathar
@@ -148,6 +157,19 @@ inline int str2num ( std::string& s, int base = BASE_AUTO )
 {
 	return str2num( const_cast< char* >( s.c_str() ), base );
 }
+
+/*!
+\brief Wrapper to str2num function
+\author Endymion
+\param s wstring that represent the number
+\param base base in which the number is (see Bases)
+\return the number represented by the string
+*/
+inline int str2num ( std::wstring& s, int base = BASE_AUTO )
+{
+	return str2num( const_cast< wchar_t* >(s.c_str()), base );
+}
+
 
 /*!
 \author Sparhawk

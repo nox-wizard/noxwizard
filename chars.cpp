@@ -25,6 +25,7 @@
 #include "accounts.h"
 #include "jail.h"
 #include "nxw_utils.h"
+#include "weight.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -329,7 +330,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	lastRunning = 0; //Luxor
 	path = NULL; //Luxor
 
-	resetProfile();
 	staticProfile=NULL;
 
 	vendorItemsSell = NULL;
@@ -344,8 +344,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 */
 cChar::~cChar()
 {
-	if( profile!=NULL )
-		safedelete( profile );
 	if( staticProfile!=NULL )
 		safedelete( staticProfile );
 	if( speechCurrent!=NULL )
@@ -5039,23 +5037,7 @@ void cChar::doTarget()
 	}
 }
 
-wstring* cChar::getProfile()
-{
-	return this->profile;
-}
 
-void cChar::setProfile( wstring* profile )
-{
-	if( this->profile!=NULL )
-		safedelete(this->profile);
-	this->profile=profile;
-}
-
-void cChar::resetProfile()
-{
-	this->profile=NULL;
-}
-	
 /*
 \brief Return current speech
 \author Endymion

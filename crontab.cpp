@@ -52,6 +52,8 @@
 #include "amx/amxcback.h"
 #include "srvparms.h"
 #include "jail.h"
+#include "worldmain.h"
+
 
 
 //@{

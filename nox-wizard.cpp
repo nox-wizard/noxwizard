@@ -81,6 +81,7 @@
 #include "jail.h"
 #include "ai.h"
 #include "itemid.h"
+#include "worldmain.h"
 
 #ifdef _WINDOWS
 	#include "nxwgui.h"
@@ -981,7 +982,6 @@ void angelMode();
 	ConOut("[ OK ]\n");
 
 	openings = 0;
-	scpfilename[0] = 0;
 
 	StartClasses();
 

@@ -18,7 +18,6 @@
 
 #include "amx/amxvarserver.h"
 #include "regions.h"
-#include "accounts.h"
 
 // GOOD GLOBALZ (Those which are just fine)
 
@@ -41,17 +40,8 @@ extern int dummy__; //used for default parameters of type int& and int*
 extern repsys_st repsys;
 extern resource_st resource;
 
-extern class cBoat		*Boats;
-extern class CWorldMain		*cwmWorldState;
-extern class cAccounts		*Accounts;
 extern class cGuilds		*Guilds;
-extern class cFishing		*Fishing;
-extern class cTargets		*Targ;
-extern class cPartys		*Partys;
 extern struct teffect_st	*teffects;
-extern class cSpawns		*Spawns;
-extern class cAreas		*Areas;
-extern class cRestockMng	*Restocks;
 
 namespace Scripts {
 	extern class cScpScript* Advance;
@@ -349,7 +339,7 @@ extern timeval nettimeout;
 extern int now;
 
 
-extern FILE *infile, *scpfile, *lstfile, *wscfile;
+extern FILE *wscfile;
 extern unsigned int servcount;
 extern unsigned int startcount;
 

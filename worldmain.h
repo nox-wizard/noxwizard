@@ -53,9 +53,10 @@ public:
 	bool Saving();
 };
 
-void fprintWstring( FILE* f, char* name, wstring* c );
-wstring* HexVector2UnicodeString( char* s );
+void fprintWstring( FILE* f, char* name, wstring& c );
+wstring HexVector2UnicodeString( char* s );
 
+extern class CWorldMain* cwmWorldState;
 
 
 #endif // WORLDMAIN

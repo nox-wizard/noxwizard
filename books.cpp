@@ -11,6 +11,7 @@
 #include "books.h"
 #include "debug.h"
 #include "network.h"
+#include "worldmain.h"
 
 namespace Books
 {

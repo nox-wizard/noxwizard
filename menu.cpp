@@ -396,18 +396,18 @@ void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId,
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
 }
 
-void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue )
+void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue, UI32 subProperty2 )
 {
 	
 	VAR_TYPE t = getPropertyType( property );
 	if( t==T_BOOL ) 
 	{
-		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty ), 1 );
+		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), 1 );
 		checkboxSubProps.insert( make_pair( property, subProperty ) );
 	}
 	else
 	{
-		addInputField( x, y, width, height, property, getPropertyField( buffer[0], buffer[1], property, subProperty ), hue );
+		addInputField( x, y, width, height, property, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
 		textEditSubProps.insert( make_pair( property, subProperty ) );
 	}
 	
@@ -488,22 +488,211 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 }
 
 
-void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, bool data )
+bool cMenu::getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 )
 {
+	
+	switch( type ) {
+	
+		case PROP_CHARACTER: {
+			P_CHAR pc = pointers::findCharBySerial( obj );
+			VALIDATEPCR( pc, false );
+
+			return getCharBoolProperty( pc, prop, subProp );
+
+		}
+		case PROP_ITEM : {
+			P_ITEM pi = pointers::findItemBySerial( obj );
+			VALIDATEPIR( pi, false );
+
+			return getItemBoolProperty( pi, prop, subProp );
+
+		}
+		case PROP_CALENDAR:
+		case PROP_GUILD:
+		default:
+			return false;
+	}
+
 }
 
-bool cMenu::getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp )
+void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, bool data )
 {
-	return false;
+	switch( type ) {
+	
+		case PROP_CHARACTER: {
+			P_CHAR pc = pointers::findCharBySerial( obj );
+			VALIDATEPC(pc);
+			setCharBoolProperty( pc, prop, subProp, subProp2, data );
+			}
+			break;
+		case PROP_ITEM : {
+			P_ITEM pi = pointers::findItemBySerial( obj );
+			VALIDATEPI(pi);
+			setItemBoolProperty( pi, prop, subProp, data );
+			}
+			break;
+		case PROP_CALENDAR:
+		case PROP_GUILD:
+		default:
+			return;
+	}
+		
 }
 
-void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, std::wstring& data )
+void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2, std::wstring& data )
 {
+	VARTYPE t = getPropertyType( prop );
+	switch( type ) {
+	
+		case PROP_CHARACTER: {
+			P_CHAR pc = pointers::findCharBySerial( obj );
+			VALIDATEPC(pc);
+
+			switch( t ) {
+				case T_CHAR : {
+					char value = str2num( data );
+					setCharCharProperty( pc, prop, subProp, subProp2, value );
+					}
+					break;
+				case T_INT: {
+					int value = str2num( data );
+					setCharIntProperty( pc, prop, subProp, subProp2, value );
+					}
+					break;
+				case T_SHORT: {
+					short value = str2num( data );
+					setCharShortProperty( pc, prop, subProp, subProp2, value );
+					}
+					break;
+				case T_STRING: {
+					std::string value;
+					wstring2string( data, value );
+					setCharStrProperty( pc, prop, subProp, subProp2, const_cast<char*>(value.c_str()) );
+					}
+					break;
+				case T_UNICODE: {
+					setCharUniProperty( pc, prop, subProp, subProp2, data );
+					}
+					break;
+			}
+		}
+		case PROP_ITEM : {
+			P_ITEM pi = pointers::findItemBySerial( obj );
+			VALIDATEPI(pi);
+
+			switch( t ) {
+				case T_CHAR : {
+					char value = str2num( data );
+					setItemCharProperty( pi, prop, subProp, value );
+					}
+					break;
+				case T_INT: {
+					int value = str2num( data );
+					setItemCharProperty( pi, prop, subProp, value );
+					}
+					break;
+				case T_SHORT: {
+					short value = str2num( data );
+					setItemCharProperty( pi, prop, subProp, value );
+					}
+					break;
+				case T_STRING: {
+					std::string value;
+					wstring2string( data, value );
+					setItemStrProperty( pi, prop, subProp, const_cast<char*>(value.c_str()) );
+					}
+					break;
+				case T_UNICODE:
+					setItemUniProperty( pi, prop, subProp, data );
+					break;
+			}
+		}
+		case PROP_CALENDAR:
+		case PROP_GUILD:
+		default:
+			return;
+	}
+
+
 }
 
-std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp )
+std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, SERIAL subProp2 )
 {
-	return std::wstring( L"ciao" );
+	wchar_t data[TEMP_STR_SIZE];
+	
+	VARTYPE t = getPropertyType( prop );
+	switch( type ) {
+	
+		case PROP_CHARACTER: {
+			P_CHAR pc = pointers::findCharBySerial( obj );
+			VALIDATEPCR(pc, std::wstring());
+
+			switch( t ) {
+				case T_CHAR : {
+					char value = getCharCharProperty( pc, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_INT: {
+					int value = getCharIntProperty( pc, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_SHORT: {
+					short value = getCharShortProperty( pc, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_STRING: {
+					std::string value( getCharStrProperty( pc, prop, subProp ) );
+					std::wstring buffer;
+					string2wstring( value, buffer );
+					return data;
+					}
+					break;
+				case T_UNICODE: 
+					return getCharUniProperty( pc, prop, subProp );
+			}
+		}
+		case PROP_ITEM : {
+			P_ITEM pi = pointers::findItemBySerial( obj );
+			VALIDATEPIR(pi, std::wstring());
+
+			switch( t ) {
+				case T_CHAR : {
+					char value = getItemCharProperty( pi, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_INT: {
+					int value = getItemCharProperty( pi, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_SHORT: {
+					short value = getItemCharProperty( pi, prop, subProp );
+					swprintf( data, L"%i", value );
+					}
+					break;
+				case T_STRING: {
+					std::string value( getItemStrProperty( pi, prop, subProp ) );
+					std::wstring buf;
+					string2wstring( value, buf );
+					return buf;
+					}
+					break;
+				case T_UNICODE:
+					return getItemUniProperty( pi, prop, subProp );
+			}
+		}
+		case PROP_CALENDAR:
+		case PROP_GUILD:
+		default:
+			return std::wstring(L"Not implemented yet");
+	}
+
+	return std::wstring( data );
+
 }
 
 void cMenu::setMoveable( bool canMove )

@@ -205,4 +205,7 @@ class cPacketTargeting
 };
 
 
+extern cTargets* Targ;
+
+
 #endif	// _TARGETING_INCLUDED

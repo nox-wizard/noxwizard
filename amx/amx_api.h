@@ -90,8 +90,8 @@ extern void swap64(uint64_t *v);
 
 #include <vector>
 
-int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source );
-int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source );
+int AMXAPI amx_SetStringUnicode(cell *dest, wstring& source );
+int AMXAPI amx_GetStringUnicode( wstring& dest, cell* source );
 
 #if defined BIT16
   #define swapcell	swap16

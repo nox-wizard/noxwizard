@@ -13,6 +13,7 @@
 
 BOATS	s_boat;
 
+cBoat* Boats=NULL;
 
 #define X 0
 #define Y 1

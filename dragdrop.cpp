@@ -38,6 +38,8 @@
 #include "layer.h"
 #include "npcai.h"
 #include "nxw_utils.h"
+#include "weight.h"
+
 
 typedef struct _PKGx08
 {

@@ -44,15 +44,6 @@ enum { AMXERRNO_OK = 0, AMXERRNO_INVSOCKET, AMXERRNO_INVITEM, AMXERRNO_INVCHAR, 
     AMXERRNO_UNSUPPORTED, AMXERRNO_UNKNOWN, AMXERRNO_INVSET };
 
 
-#define PAR_SOCK(A) if ((params[A]<0)||(params[A]>=now)) { g_AmxErrNo = INVALID_SOCKET; return -1; }
-#define PAR_ITEM(A) if ((params[A]<0)||(params[A]>=now)) { g_AmxErrNo = INVALID_ITEM; return -1; }
-#define PAR_CHAR(A) if ((params[A]<0)||(params[A]>=now)) { g_AmxErrNo = INVALID_CHAR; return -1; }
-#define PAR_SOCKX(A) if ((params[A]<-1)||(params[A]>=now)) { g_AmxErrNo = INVALID_SOCKET; return -1; }
-#define PAR_ITEMX(A) if ((params[A]<-1)||(params[A]>=now)) { g_AmxErrNo = INVALID_ITEM; return -1; }
-#define PAR_CHARX(A) if ((params[A]<-1)||(params[A]>=now)) { g_AmxErrNo = INVALID_CHAR; return -1; }
-#define PAR_RGN(A)   if ((params[A]<0)||(params[A]>0xFF)) { g_AmxErrNo = INVALID_REGION; return -1; }
-
-
 typedef enum {
 	T_CHAR = 0,
 	T_STRING,
@@ -63,6 +54,13 @@ typedef enum {
 } VAR_TYPE;
 
 VAR_TYPE getPropertyType(int property);
+
+enum PROP_TYPE{
+	PROP_CHARACTER = 0,
+	PROP_ITEM, 
+	PROP_CALENDAR,
+	PROP_GUILD
+};
 
 
 //second cp/ci for positions
@@ -271,6 +269,21 @@ const int NXW_CP_UNI_SPEECH_CURRENT = 500;
 const int NXW_CP_UNI_PROFILE = 501;
 
 
+static bool  		getCharBoolProperty(P_CHAR pc, int property, int prop2);
+static int   		getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
+static short 		getCharShortProperty(P_CHAR pc, int property, int prop2);
+static char			getCharCharProperty(P_CHAR pc, int property, int prop2);
+static const char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
+static wstring&		getCharUniProperty( P_CHAR pc, int property, int prop2 );
+
+static void	setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value );
+static void	setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value );
+static void	setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, short value );
+static void	setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value );
+static void	setCharStrProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char* value );
+static void	setCharUniProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, wstring& value );
+
+
 ///// NOW ITEM PROPS :)
 const int NXW_IP_B_INCOGNITO = 0;
 const int NXW_IP_C_COLOR = 100;
@@ -364,6 +377,21 @@ const int NXW_IP_STR_DISABLEDMSG = 452;
 const int NXW_IP_STR_MURDERER = 453;
 const int NXW_IP_STR_NAME = 454;
 const int NXW_IP_STR_NAME2 = 455;
+
+
+static bool  		getItemBoolProperty(P_ITEM pi, int property, int prop2);
+static int   		getItemIntProperty(P_ITEM pi, int property, int prop2);
+static short 		getItemShortProperty(P_ITEM pi, int property, int prop2);
+static char			getItemCharProperty(P_ITEM pi, int property, int prop2);
+static const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
+static wstring&		getItemUniProperty( P_ITEM pi, int property, int prop2 );
+
+static void	setItemBoolProperty(P_ITEM pi, int property, int prop2, bool value );
+static void	setItemIntProperty(P_ITEM pi, int property, int prop2, int value );
+static void	setItemShortProperty(P_ITEM pi, int property, int prop2, short value );
+static void	setItemCharProperty(P_ITEM pi, int property, int prop2, char value );
+static void	setItemStrProperty(P_ITEM pi, int property, int prop2, char* value );
+static void	setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value );
 
 
 // calendar properties added by Sparhawk

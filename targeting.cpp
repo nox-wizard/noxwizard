@@ -28,7 +28,10 @@
 #include "commands.h"
 #include "tmpeff.h"
 #include "jail.h"
+#include "weight.h"
 
+
+cTargets* Targ=NULL;
 
 //extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 extern void targetParty(NXWSOCKET  s);

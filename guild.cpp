@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
+#include "worldmain.h"
 
 cGuildz Guildz;
 
@@ -91,9 +92,7 @@ cGuild::cGuild( SERIAL serial )
 			case 'C':
 			case 'c':
 				if (!strcmp(script1, "CHARTER")) {
-					wstring* w = HexVector2UnicodeString( script2 );
-					setCharter( *w );
-					delete w;
+					setCharter( HexVector2UnicodeString( script2 ) );
 				}
 				break;
 			case 'M':
@@ -599,7 +598,7 @@ void cGuildz::save( FILE *gWsc )
 		fprintf(gWsc, "{\n");
 		fprintf(gWsc, "NAME %s\n",		pGuild->getName().c_str());
 		fprintf(gWsc, "ABBR %s\n",		pGuild->getAbbreviation().c_str());
-		fprintWstring( gWsc, "CHARTER", &pGuild->getCharter() );
+		fprintWstring( gWsc, "CHARTER", pGuild->getCharter() );
 		fprintf(gWsc, "WEBPAGE %s\n",		pGuild->getWebPage().c_str());
 		fprintf(gWsc, "TYPE %i\n",		pGuild->getType());
 		fprintf(gWsc, "MASTER %i\n",		pGuild->getGuildMaster());

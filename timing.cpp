@@ -28,6 +28,7 @@
 #include "house.h"
 #include "jail.h"
 #include "timers.h"
+#include "accounts.h"
 
 extern bool g_bMustExecAICode;
 

@@ -21,6 +21,8 @@
 #include "speech.h"
 #include "packets.h"
 #include "layer.h"
+#include "weight.h"
+#include "accounts.h"
 
 void gmyell(char *txt)
 {

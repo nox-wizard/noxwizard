@@ -23,6 +23,7 @@
 #include "addmenu.h"
 #include "telport.h"
 #include "accounts.h"
+#include "worldmain.h"
 
 // Includes command definitions
 #include "commands/tweaking.h"

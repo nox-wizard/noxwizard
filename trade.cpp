@@ -17,6 +17,7 @@
 #include "layer.h"
 #include "trade.h"
 #include "commands.h"
+#include "weight.h"
 
 void buyaction(int s)
 {
