@@ -83,23 +83,26 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 */
 void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size )
 {
+	SI32 chSize = sizeof( UI16 );
 	wchar_t* w=(wchar_t*)( &buffer[s][from] );
 
 	c->erase();
 
-	int i=0;
+	SI32 i=0;
 	if( size==INVALID ) {//until termination
 		while ( w[i]!=0 ) {
+			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
 			(*c)+=ntohs( w[i] );
 		}
 	}
 	else { //until size
 		for( ; i<size; ++i ) {
+			//(chSize <= 2) ? (*c) += ntohs( w[i] ) : (*c) += ntohl( w[i] );
 			(*c)+=ntohs( w[i] );
 		}
 	}
 	if( size==INVALID )
-		from+=c->size()*2+2;
+		from+=c->size()*chSize+chSize;
 	else
 		from+=size;
 
