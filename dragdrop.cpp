@@ -256,7 +256,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					sendtradestatus( piz, container );
 				}
 			
-			/*
+			
 			//<Luxor>
 			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
 			{
@@ -278,8 +278,8 @@ void get_item( NXWCLIENT client ) // Client grabs an item
                 		}
 			}
 			//</Luxor>
-			*/
-
+			
+			/*
 			//<Luxor>
 			g_bByPass = false;
 			pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
@@ -298,6 +298,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				return;
 			}
 			//</Luxor>
+			*/
 
 			if ( container->corpse )
 			{
@@ -1182,19 +1183,18 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 	if (buffer[s][5]!=(unsigned char)'\xFF')
 	{
-		/*
-                //<Luxor>
-                if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) {
-	        	g_bByPass = false;
-        		pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
-		        if (g_bByPass) {
-                                pi->Refresh();
-                                return;
-                        }
-                }
-                //</Luxor>
-		*/
 
+        
+        if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) {
+	       	g_bByPass = false;
+        	pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
+			if (g_bByPass) {
+				pi->Refresh();
+				return;
+			}
+		}
+
+		/*
 		//<Luxor>
 		g_bByPass = false;
 		pi->runAmxEvent( EVENT_IDROPINLAND, pi->getSerial32(), pc->getSerial32() );
@@ -1202,7 +1202,8 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 			pi->Refresh();
 			return;
 		}
-                //</Luxor>
+        //</Luxor>
+		*/
 
 		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
@@ -1293,13 +1294,17 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 //		   abort=true;
 		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
 		}
-	/*
+	
 	if (pCont->amxevents[EVENT_IONPUTITEM]!=NULL) {
 		g_bByPass = false;
 		pCont->amxevents[EVENT_IONPUTITEM]->Call( pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
-		if (g_bByPass) abort=true;
+		if (g_bByPass) 
+		{
+			item_bounce6(ps,pItem);
+			return;
+		}
 	}
-	*/
+	/*
 	g_bByPass = false;
 	pCont->runAmxEvent( EVENT_IONPUTITEM, pCont->getSerial32(), pItem->getSerial32(), pc->getSerial32() );
 	if (g_bByPass) 
@@ -1307,6 +1312,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		item_bounce6(ps,pItem);
 		return;
 	}
+	*/
 
 	if (pCont->layer==0 && pCont->id() == 0x1E5E &&
 		pCont->getContSerial()==pc->getSerial32())

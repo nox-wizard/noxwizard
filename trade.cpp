@@ -548,17 +548,18 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 		P_ITEM pi = si.getItem();
 		if( ISVALIDPI(pi)) 
 		{
-			/*
+			
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
-			g_bByPass = false;
-			pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s1, s2);
-			if (g_bByPass==true) continue; //skip item, I hope
+				g_bByPass = false;
+				pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s1, s2);
+				if (g_bByPass==true) continue; //skip item, I hope
 			}
-			*/
+			/*
 			g_bByPass = false;
 			pi->runAmxEvent( EVENT_IONTRANSFER, pi->getSerial32(), s1, s2 );
 			if (g_bByPass==true)
 				continue; //skip item, I hope
+			*/
 			pi->setCont( bp2 );
 			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
 			sendbpitem(s2, pi);
@@ -574,17 +575,18 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 		P_ITEM pi = si.getItem();
 		if( ISVALIDPI(pi))
 		{
-			/*
+			
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
-        			g_bByPass = false;
-        			pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s2, s1);
-        			if (g_bByPass==true) continue; //skip item, I hope
+        		g_bByPass = false;
+        		pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s2, s1);
+        		if (g_bByPass==true) continue; //skip item, I hope
 			}
-			*/
+			/*
 			g_bByPass = false;
 			pi->runAmxEvent( EVENT_IONTRANSFER, pi->getSerial32(), s2, s1 );
 			if (g_bByPass==true)
 				continue; //skip item, I hope
+			*/
 
 			pi->setCont( bp1 );
 			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);

@@ -1643,13 +1643,27 @@ void npcattacktarget(P_CHAR pc, P_CHAR pc_target)
 		
 	if ( !pc->losFrom(pc_target) )
 		return;
-		
+
+	if( pc->amxevents[ EVENT_CHR_ONBEGINATTACK ]!=NULL ) {
+		pc->amxevents[ EVENT_CHR_ONBEGINATTACK ]->Call( pc->getSerial32(), pc_target->getSerial32() );
+		if (g_bByPass==true)
+			return;
+	}
+	/*	
 	pc->runAmxEvent( EVENT_CHR_ONBEGINATTACK, pc->getSerial32(), pc_target->getSerial32() );
 	if (g_bByPass==true)
 		return;
+	*/
+	if( pc->amxevents[ EVENT_CHR_ONBEGINDEFENSE ]!=NULL ) {
+		pc->amxevents[ EVENT_CHR_ONBEGINDEFENSE ]->Call( pc_target->getSerial32(), pc->getSerial32() );
+		if (g_bByPass==true)
+			return;
+	}
+	/*
 	pc->runAmxEvent( EVENT_CHR_ONBEGINDEFENSE, pc_target->getSerial32(), pc->getSerial32() );
 	if (g_bByPass==true)
 		return;
+	*/
 
 	pc->playMonsterSound(SND_STARTATTACK);
 	
@@ -2555,7 +2569,7 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 	if( (nChange==0) )
 		return;
 
-	/*
+	
 	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
@@ -2564,10 +2578,11 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 		pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call(pc->getSerial32(), n, REPUTATION_KARMA);
 		if (g_bByPass==true) return;
 	}
-	*/
+	/*
 	pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_KARMA);
 	if (g_bByPass==true)
 		return;
+	*/
 	if(nChange<=25)
 	{
 		if(nEffect)
@@ -2661,7 +2676,7 @@ void cChar::modifyFame( SI32 value )
 	if( nChange==0 )
 		return;
 
-	/*
+	
 	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
@@ -2670,10 +2685,11 @@ void cChar::modifyFame( SI32 value )
 		pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call(pc->getSerial32(), n, REPUTATION_FAME);
 		if (g_bByPass==true) return;
 	}
-	*/
+	/*
 	pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_FAME);
 	if (g_bByPass==true)
 		return;
+	*/
 	if(nChange<=25)
 	{
 		if(nEffect)

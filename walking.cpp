@@ -521,15 +521,16 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 				}
 				else
 				{
-					/*
+					
 					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
 					{
 						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
-						g_bByPass = false;
+						g_bByPass = false; //ndEndy ?? what is this?
 					}
-					*/
+					/*
 					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), calcSocketFromChar(DEREF_P_CHAR(pc)) );
 					g_bByPass = false;
+					*/
 				}
 				tile_st tile;
 				Map->SeekTile(pi->id(), &tile);
@@ -1557,7 +1558,7 @@ void npcMovement( P_CHAR pc_i )
 			case 6: // Sparhawk: script controlled movement
 				{
 					UI32 l = pc_i->dir;
-					/*
+					
 					if (pc_i->amxevents[EVENT_CHR_ONWALK])
 					{
 						g_bByPass = false;
@@ -1565,10 +1566,11 @@ void npcMovement( P_CHAR pc_i )
 						if (g_bByPass==true)
 							return;
 					}
-					*/
+					/*
 					pc_i->runAmxEvent( EVENT_CHR_ONWALK, pc_i->getSerial32(), pc_i->dir, pc_i->dir);
 					if (g_bByPass==true)
 						return;
+					*/
 					int k = pc_i->dir;
 					pc_i->dir = l;
 					l = pc_i->npcmovetime;
@@ -1689,7 +1691,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			}
 		}
 
-		/*
+		
 		if ( (!valid || !move) && pc_i->amxevents[EVENT_CHR_ONBLOCK] )
 		{
 			g_bByPass = false;
@@ -1697,13 +1699,14 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			if (g_bByPass==true)
 				return;
 		}
-		*/
+		/*
 		if ( (!valid || !move) && pc_i->getAmxEvent( EVENT_CHR_ONBLOCK ) )
 		{
 			pc_i->runAmxEvent( EVENT_CHR_ONBLOCK, pc_i->getSerial32(), newX, newY, charpos.z);
 			if (g_bByPass==true)
 				return;
 		}
+		*/
 	}
 	else	// Change direction
 	{

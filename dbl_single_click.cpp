@@ -101,18 +101,19 @@ void doubleclick(NXWCLIENT ps)
 	P_ITEM pi = pointers::findItemBySerial(serial);
 	VALIDATEPI(pi);
 
-	//if (pi->amxevents[EVENT_IONDBLCLICK]!=NULL)
-	//{
-	//	g_bByPass = false;
-	//	pi->amxevents[EVENT_IONDBLCLICK]->Call(pi->getSerial32(), s);
-	//	if (g_bByPass==true)
-	//		return;
-	//}
-
+	if (pi->amxevents[EVENT_IONDBLCLICK]!=NULL)
+	{
+		g_bByPass = false;
+		pi->amxevents[EVENT_IONDBLCLICK]->Call(pi->getSerial32(), s);
+		if (g_bByPass==true)
+			return;
+	}
+	/*
 	g_bByPass = false;
 	pi->runAmxEvent( EVENT_IONDBLCLICK, pi->getSerial32(), s );
 	if (g_bByPass==true)
 		return;
+	*/
 
 	if (!checkItemUsability(pc , pi, ITEM_USE_DBLCLICK)) 
 		return;

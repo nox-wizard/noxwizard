@@ -720,7 +720,7 @@ int response(NXWSOCKET  s)
 						if ( strstr( comm, search1 ) != NULL )
 						{
 							pc->guarded = false; // Sparhawk	How about when more than 1 pets is guarding me??
-							/*
+							
 							if (pc_map->amxevents[EVENT_CHR_ONTRANSFER])
 							{
 								g_bByPass = false;
@@ -728,10 +728,11 @@ int response(NXWSOCKET  s)
 								if (g_bByPass==true)
 									return 0;
 							}
-							*/
+							/*
 							pc_map->runAmxEvent( EVENT_CHR_ONTRANSFER, pc_map->getSerial32(), pc->getSerial32());
 							if (g_bByPass==true)
 								return 0;
+							*/
 							//pet transfer code here
 							addid1[s]=pc_map->getSerial().ser1;
 							addid2[s]=pc_map->getSerial().ser2;
@@ -1961,7 +1962,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		return;
 
 	//<Luxor>
-	/*
+	
 	if ( pc->amxevents[EVENT_CHR_ONSPEECH] ) {
 		g_bByPass = false;
 		pc->amxevents[EVENT_CHR_ONSPEECH]->Call( pc->getSerial32() );
@@ -1970,7 +1971,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		if( pc->dead )	// Killed as result of script action
 			return;
 	}
-	*/
+	/*
         if ( pc->getAmxEvent( EVENT_CHR_ONSPEECH ) != NULL ) {
                 strcpy( script2, speech.c_str() );
                 pc->runAmxEvent( EVENT_CHR_ONSPEECH, pc->getSerial32() );
@@ -1978,6 +1979,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
                 if( g_bByPass == true )
                         return;
         }
+	*/
 
 	//</Luxor>
 
@@ -2097,7 +2099,9 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 		pc->setSpeechCurrent( &speechUni );
 
-		a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
+		if( a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]!=NULL )
+			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
+		//a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
 
 		bool modifiedInEvent = false;
 		if( pc->getSpeechCurrent()==&speechUni ) { //so not was modified in event

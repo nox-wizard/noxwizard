@@ -2158,17 +2158,18 @@ NATIVE(_chr_getEventHandler)
 
 	char str[100];
 	cell *cptr;
-	/*
+	
 	if( pc->amxevents[params[2]] != NULL )
 		strcpy(str, pc->amxevents[params[2]]->getFuncName() );
 	else
 			str[0] = '\0';
-	*/
+	/*
 	AmxEvent* event = pc->getAmxEvent( params[2] );
 	if( event )
 		strcpy(str, event->getFuncName() );
 	else
 			str[0] = '\0';
+	*/
 	amx_GetAddr(amx,params[3],&cptr);
 	amx_SetString(cptr,str, g_nStringMode);
 	return strlen(str);
@@ -2194,9 +2195,9 @@ NATIVE(_chr_setEventHandler)
 	amx_GetAddr(amx,params[4],&cstr);
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	//pc->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
-	pc->delAmxEvent( params[2] );
-	pc->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] !=0 );
+	pc->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	//pc->delAmxEvent( params[2] );
+	//pc->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] !=0 );
 	g_nAmxPrintPtr=0;
 	return 0;
 }
@@ -2218,17 +2219,18 @@ NATIVE(_itm_getEventHandler)
 
 	char str[100];
 	cell *cptr;
-	/*
+	
 	if( pi->amxevents[params[2]] != NULL )
 		strcpy(str, pi->amxevents[params[2]]->getFuncName() );
 	else
 			str[0] = '\0';
-	*/
+	/*
 	AmxEvent* event = pi->getAmxEvent( params[2] );
 	if( event )
 		strcpy(str, event->getFuncName() );
 	else
 		str[0] = '\0';
+	*/
 	amx_GetAddr(amx,params[3],&cptr);
 	amx_SetString(cptr,str, g_nStringMode);
 	return strlen(str);
@@ -2254,9 +2256,9 @@ NATIVE(_itm_setEventHandler)
 	amx_GetAddr(amx,params[4],&cstr);
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	//pi->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
-	pi->delAmxEvent( params[2] );
-	pi->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] != 0 );
+	pi->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	//pi->delAmxEvent( params[2] );
+	//pi->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] != 0 );
 	g_nAmxPrintPtr=0;
 	return 0;
 }
@@ -2275,8 +2277,8 @@ NATIVE(_chr_delEventHandler)
 	//queues :)
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
-	//pc->amxevents[params[2]] = NULL;
-	pc->delAmxEvent( params[2] );
+	pc->amxevents[params[2]] = NULL;
+	//pc->delAmxEvent( params[2] );
 	return 0;
 }
 
@@ -2292,7 +2294,8 @@ NATIVE(_itm_delEventHandler)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR(pi, INVALID);
-	pi->delAmxEvent( params[2] );
+	pi->amxevents[ params[2] ]=NULL;
+	//pi->delAmxEvent( params[2] );
 	return 0;
 }
 

@@ -43,17 +43,18 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 		{
 			if ((cont->getContSerial()>1) && (cont->getContSerial() != snooper->getSerial32()) )
 			{
-				/*
+				
 				if ( owner->amxevents[EVENT_CHR_ONSNOOPED])
 				{
 					g_bByPass = false;
 					owner->amxevents[EVENT_CHR_ONSNOOPED]->Call( owner->getSerial32(), s);
 					if (g_bByPass==true) return;
 				}
-				*/
+				/*
 				owner->runAmxEvent( EVENT_CHR_ONSNOOPED, owner->getSerial32(), s);
 				if (g_bByPass==true)
 					return;
+				*/
 				snooper->objectdelay=SrvParms->snoopdelay * MY_CLOCKS_PER_SEC + uiCurrentTime;
 				if ( owner->IsGMorCounselor())
 				{
@@ -160,7 +161,7 @@ void Skills::StealingTarget(NXWCLIENT ps)
         		return;
 			}
 
-			/*
+			
 			if (pi->amxevents[EVENT_IONSTOLEN]!=NULL)
 			{
 				g_bByPass = false;
@@ -176,7 +177,7 @@ void Skills::StealingTarget(NXWCLIENT ps)
 				if (g_bByPass==true)
 					return;
 			}
-			*/
+			/*
 
 			pi->runAmxEvent( EVENT_IONSTOLEN, pi->getSerial32(), s, victim->getSerial32() );
 			if (g_bByPass==true)
@@ -185,6 +186,7 @@ void Skills::StealingTarget(NXWCLIENT ps)
 			victim->runAmxEvent( EVENT_CHR_ONSTOLEN, victim->getSerial32(), s );
 			if (g_bByPass==true)
 				return;
+			*/
 
 			P_ITEM pack= thief->getBackpack();
 			VALIDATEPI(pack);
@@ -379,7 +381,7 @@ void Skills::RandomSteal(NXWCLIENT ps)
 					thief->sysmsg(TRANSLATE("... and fail because it is too heavy."));
 				else
 				{
-					/*
+					
 					if (victim->amxevents[EVENT_CHR_ONSTOLEN])
 					{
 						g_bByPass = false;
@@ -387,10 +389,11 @@ void Skills::RandomSteal(NXWCLIENT ps)
 						if (g_bByPass==true)
 							return;
 					}
-					*/
+					/*
 					victim->runAmxEvent( EVENT_CHR_ONSTOLEN, victim->getSerial32(), s);
 					if (g_bByPass==true)
 						return;
+					*/
 					P_ITEM thiefpack = thief->getBackpack();
 					VALIDATEPI(thiefpack);
 					pi->setContSerial( thiefpack->getSerial32() );
@@ -474,7 +477,7 @@ void Skills::LockPick(NXWCLIENT ps)
 
 	AMXEXECSV(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
 
-	/*
+
 	if (chest->amxevents[EVENT_IONLOCKPICK]!=NULL)
 	{
 		g_bByPass = false;
@@ -482,11 +485,12 @@ void Skills::LockPick(NXWCLIENT ps)
 		if (g_bByPass==true)
 			return;
 	}
-	*/
-
+	
+	/*
 	chest->runAmxEvent( EVENT_IONLOCKPICK, chest->getSerial32(), s );
 	if (g_bByPass==true)
 		return;
+	*/
 
 	if( !item_inRange(pc,pick,1) )
 	{

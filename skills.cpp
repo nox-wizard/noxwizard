@@ -1252,12 +1252,13 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
     int atrophy_candidates[ALLSKILLS+1];
 
 
-    /*
+    
     if (pc->amxevents[EVENT_CHR_ONGETSKILLCAP])
         skillcap = pc->amxevents[EVENT_CHR_ONGETSKILLCAP]->Call(pc->getSerial32(),calcSocketFromChar(s));
-	*/
+	/*
 	if ( pc->getAmxEvent(EVENT_CHR_ONGETSKILLCAP) != NULL )
 		skillcap = pc->runAmxEvent( EVENT_CHR_ONGETSKILLCAP, pc->getSerial32(), pc->getSocket() );
+	*/
 
     lockstate=pc->lockSkill[sk];
     if (pc->IsGM()) lockstate=0;
@@ -1347,18 +1348,19 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
         retval=1;
     }
 
-    /*
-    if (pc->amxevents[EVENT_CHR_ONADVANCESKILL]) {
+    
+    if(pc->amxevents[EVENT_CHR_ONADVANCESKILL]!=NULL) {
         g_bByPass = false;
         retval = pc->amxevents[EVENT_CHR_ONADVANCESKILL]->Call(pc->getSerial32(), sk, skillused, retval);
         if (g_bByPass==true) return retval;
     }
-	*/
+	/*
 	if ( pc->getAmxEvent(EVENT_CHR_ONADVANCESKILL) != NULL ) {
 		retval = pc->runAmxEvent( EVENT_CHR_ONADVANCESKILL, pc->getSerial32(), sk, skillused, retval);
 		if (g_bByPass==true)
 			return retval;
 	}
+	*/
     if (retval)
     {
 		pc->baseskill[sk]++;
@@ -1481,14 +1483,14 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 		}
  //       *stat2 -= 1000;                     // then change it
 
- 	/*
-        if (pc->amxevents[EVENT_CHR_ONADVANCESTAT]) {
-            g_bByPass = false;
-            pc->amxevents[EVENT_CHR_ONADVANCESTAT]->Call(pc->getSerial32(), type, sk, tmp);
-            if (g_bByPass==true) return false;
-	    }
-	*/
-	pc->runAmxEvent( EVENT_CHR_ONADVANCESTAT, pc->getSerial32(), type, sk, tmp);
+ 	
+    if (pc->amxevents[EVENT_CHR_ONADVANCESTAT]) {
+        g_bByPass = false;
+        pc->amxevents[EVENT_CHR_ONADVANCESTAT]->Call(pc->getSerial32(), type, sk, tmp);
+        if (g_bByPass==true) return false;
+	}
+	
+	//pc->runAmxEvent( EVENT_CHR_ONADVANCESTAT, pc->getSerial32(), type, sk, tmp);
  	if (g_bByPass==true)
 		return false;
 
@@ -1519,12 +1521,13 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 			limit = 100;
 		}
 
+    if (pc->amxevents[EVENT_CHR_ONGETSTATCAP]!=NULL)
+       	limit = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), type, limit);
+	
 	/*
-	    if ((pc->amxevents[EVENT_CHR_ONGETSTATCAP]))
-        	limit = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), type, limit);
-	*/
 	if ( pc->getAmxEvent(EVENT_CHR_ONGETSTATCAP) != NULL )
 		limit = pc->runAmxEvent( EVENT_CHR_ONGETSTATCAP, pc->getSerial32(), type, limit);
+	*/
 
 		switch( stat )
 		{
@@ -1602,12 +1605,13 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 		statcap = Race::getRace( pc->race )->getStatCap();
 
 
-	/*
-	if (pc->amxevents[EVENT_CHR_ONGETSTATCAP])
+	
+	if (pc->amxevents[EVENT_CHR_ONGETSTATCAP]!=NULL)
 		statcap = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), STATCAP_CAP, statcap);
-	*/
+	/*
 	if ( pc->getAmxEvent(EVENT_CHR_ONGETSTATCAP) != NULL )
 		statcap = pc->runAmxEvent( EVENT_CHR_ONGETSTATCAP, pc->getSerial32(), STATCAP_CAP, statcap);
+	*/
 	// End: Determine statcap
 
     bool atCap = (pc->st3 + pc->dx3 + pc->in3) > statcap;

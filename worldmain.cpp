@@ -1688,8 +1688,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				if ( pc->resists[JJ] != dummy.resists[JJ] )
 					fprintf(cWsc, "RESISTS %d %d\n", JJ, pc->resists[JJ]);
 
-//#define SAVECHAREVENT(A,B) if ((pc->amxevents[B])&&(pc->amxevents[B]->shouldBeSaved())) fprintf(cWsc, "%s %s\n", A, pc->amxevents[B]->getFuncName());
-#define SAVECHAREVENT(A,B) { AmxEvent *event = pc->getAmxEvent( B ); if ( event ) if( event->shouldBeSaved() ) fprintf(cWsc, "%s %s\n", A, event->getFuncName() ); }
+#define SAVECHAREVENT(A,B) if ((pc->amxevents[B])&&(pc->amxevents[B]->shouldBeSaved())) fprintf(cWsc, "%s %s\n", A, pc->amxevents[B]->getFuncName());
+//#define SAVECHAREVENT(A,B) { AmxEvent *event = pc->getAmxEvent( B ); if ( event ) if( event->shouldBeSaved() ) fprintf(cWsc, "%s %s\n", A, event->getFuncName() ); }
 			SAVECHAREVENT("@ONADVANCESKILL", EVENT_CHR_ONADVANCESKILL);
 			SAVECHAREVENT("@ONADVANCESTAT", EVENT_CHR_ONADVANCESTAT);
 			SAVECHAREVENT("@ONBEGINATTACK", EVENT_CHR_ONBEGINATTACK);
@@ -1940,9 +1940,9 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 		if (!pi->vendorDescription.empty())
 			fprintf(iWsc, "DESC %s\n", pi->vendorDescription.c_str() );
-//#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
 
-#define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) fprintf(iWsc, "%s %s\n", A, event->getFuncName()); }
+#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
+//#define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) fprintf(iWsc, "%s %s\n", A, event->getFuncName()); }
 
 		SAVEITEMEVENT("@ONSTART", EVENT_IONSTART);
 		SAVEITEMEVENT("@ONCHECKCANUSE", EVENT_IONCHECKCANUSE);

@@ -176,16 +176,17 @@ void npcCastSpell(P_CHAR pc_att, P_CHAR pc_def)
 
 
 	if (spherespells[sphere][spell]==0) return;
-	/*
+	
 	if (pc_att->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		pc_att->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc_att->getSerial32(), spell, -1, sphere);
 		if (g_bByPass==true) return;
 	}
-	*/
+	/*
 	pc_att->runAmxEvent( EVENT_CHR_ONCASTSPELL, pc_att->getSerial32(), spell, -1, sphere );
 	if (g_bByPass==true)
 		return;
+	*/
 
 	pc_att->playAction(6);
 
@@ -298,8 +299,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 	pc->nextAiCheck = (UI32) ((R64)uiCurrentTime + (speed.npcaitime*MY_CLOCKS_PER_SEC));
 
-	AmxEvent* oncheckai = pc->getAmxEvent( EVENT_CHR_ONCHECKNPCAI );
-	if( oncheckai!=NULL ) {
+	if( pc->amxevents[ EVENT_CHR_ONCHECKNPCAI ]!=NULL ) {
 
 		NxwCharWrapper sc;
 		sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
@@ -307,7 +307,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		amxSet::copy( set, sc );
 			
 		g_bByPass = false;
-		oncheckai->Call( pc->getSerial32(), set, uiCurrentTime );
+		pc->amxevents[ EVENT_CHR_ONCHECKNPCAI ]->Call( pc->getSerial32(), set, uiCurrentTime );
 		
 		amxSet::deleteSet( set );
 

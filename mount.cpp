@@ -76,17 +76,19 @@ void cChar::mounthorse( P_CHAR mount )
 	if ( !char_inRange(this, mount, 2) && !IsGM())
 		return;
 
-	/*
+	
 	if( this->amxevents[EVENT_CHR_ONMOUNT])
 	{
 		g_bByPass=false;
 		this->amxevents[EVENT_CHR_ONMOUNT]->Call(this->getSerial32(),mount->getSerial32());
 		if(g_bByPass) return;
 	}
-	*/
+	/*
 	runAmxEvent( EVENT_CHR_ONMOUNT, getSerial32(), mount->getSerial32() );
 	if(g_bByPass) 
 		return;
+	*/
+
 	//Unavowed
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	if ( (mount->getOwnerSerial32() == getSerial32()) || IsGM())
@@ -260,17 +262,18 @@ int cChar::unmountHorse()
 	if(ps==NULL) 
 		return 1;
 
-	/*
+	
 	if(this->amxevents[EVENT_CHR_ONDISMOUNT]) // Unavowed
 	{
 		g_bByPass=false;
 		this->amxevents[EVENT_CHR_ONDISMOUNT]->Call(this->getSerial32(),INVALID);
 		if(g_bByPass) return 1;
 	}
-	*/
+	/*
 	runAmxEvent( EVENT_CHR_ONDISMOUNT, getSerial32() );
 	if(g_bByPass)
 		return 1;
+	*/
 
 	NxwItemWrapper si;
 	si.fillItemWeared( this, true, true, false );
