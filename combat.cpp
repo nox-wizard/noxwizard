@@ -91,7 +91,10 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	P_ITEM def_Weapon = pc_def->getWeapon();
 	(ISVALIDPI(def_Weapon)) ? def_fightskill = def_Weapon->getCombatSkill() : def_fightskill=WRESTLING;
-	int fs1, fs2, dex1, dex2;
+	int fs1, fs2, str1, str2, dex1, dex2;
+	str1 = getStrength();
+	str2 = pc_def->getStrength();
+	
 	(pc_def->dx < 100) ? dex2 = pc_def->dx : dex2 = 100;
 	(dx < 100) ? dex1 = dx : dex1 = 100;
 	(skill[fightskill] > 0) ? fs1 = skill[fightskill] : fs1 = 1;
@@ -217,7 +220,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 				wresmove = 0;
 				sysmsg( TRANSLATE("You cannot disarm a creature so skilled!") );
 			} else {
-				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(getStrength()/10.0 - pc_def->getStrength()/10.0) ) ) {
+				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(str1/10.0 - str2/10.0) ) ) {
 					P_ITEM dWeapon=pc_def->getWeapon();
 					if (dWeapon!=NULL) {
 						Location charpos = pc_def->getPosition();
@@ -236,7 +239,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 				wresmove = 0;
 				sysmsg( TRANSLATE("You cannot stun a creature so strong!") );
 			} else {
-				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(getStrength()/10.0 - pc_def->getStrength()/10.0) ) ) {
+				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(str1/10.0 - str2/10.0) ) ) {
 					wresmove = 0;
 					tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
 				}
