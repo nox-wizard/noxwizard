@@ -50,94 +50,94 @@ mapfile(0), sidxfile(0), statfile(0), verfile(0), tilefile(0), multifile(0), mid
 
 cMapStuff::~cMapStuff()
 {
-	if (versionCache) safedeletearray(versionCache);
-
-	if( mapfile )   safedelete(mapfile);
-	if( sidxfile )  safedelete(sidxfile);
-	if( statfile )  safedelete(statfile);
-	if( verfile )   safedelete(verfile);
-	if( tilefile )  safedelete(tilefile);
-	if( multifile ) safedelete(multifile);
-	if( midxfile )  safedelete(midxfile);
+	safedeletearray(versionCache);
+	safedelete(mapfile);
+	safedelete(sidxfile);
+	safedelete(statfile);
+	safedelete(verfile);
+	safedelete(tilefile);
+	safedelete(multifile);
+	safedelete(midxfile);
 }
 
 void cMapStuff::Load()
 {
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
+
+	keeprun = false;
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 	mapfile= new MULFile(mapname,"rb");
 	ConOut("	%s\n", mapname);
-	if (mapfile==0 || !mapfile->ready())
-    {
-		sprintf(temp,"ERROR: Map %s not found...\n",mapname);
-		LogError(temp);
-		keeprun=false;
-		return;
-    }
-	ConOut("	%s\n", sidxname);
-	sidxfile= new MULFile(sidxname,"rb");
-	if (sidxfile==0 || !sidxfile->ready())
-    {
-		sprintf(temp, "ERROR: Statics Index %s not found...\n",sidxname);
-		LogError(temp);
-		keeprun=false;
-		return;
-    }
-	ConOut("	%s\n", statname);
-	statfile= new MULFile(statname,"rb");
-	if (statfile==0 || !statfile->ready())
-    {
-		sprintf(temp, "ERROR: Statics File %s not found...\n",statname);
-		LogError(temp);
-		keeprun=false;
-		return;
-	}
-	ConOut("	%s\n", vername);
-	verfile= new MULFile(vername,"rb");
-	if (verfile==0 || !verfile->ready())
-    {
-		sprintf(temp,"ERROR: Version File %s not found...assuming empty file\n",vername);
-		LogWarning(temp);
-		safedelete(verfile);
-		verfile = 0;
-    }
-	ConOut("	%s\n", tilename);
-	tilefile= new MULFile(tilename,"rb");
-	if (tilefile==0 || !tilefile->ready())
-    {
-		sprintf(temp, "ERROR: Tiledata File %s not found...\n",tilename);
-		LogError(temp);
-		keeprun=false;
-		return;
-    }
-	ConOut("	%s\n", multiname);
-	multifile= new MULFile(multiname,"rb");
-	if (multifile==0 || !multifile->ready())
-    {
-		sprintf(temp,"ERROR: Multi data file %s not found...\n",multiname);
-		LogError(temp);
-		keeprun=false;
-		return;
-    }
-	ConOut("	%s\n", midxname);
-	midxfile=new MULFile(midxname,"rb");
-	if (midxfile==0 || !midxfile->ready())
-    {
-		sprintf(temp, "ERROR: Multi index file %s not found...\n",midxname);
-		LogError(temp);
-		keeprun=false;
-		return;
-    }
-	ConOut("Mul files successfully opened (but not yet loaded.)\n\n");
 
-	CacheVersion();
-	if( Cache )
-    {
-		if( Cache != 1 )
-			Cache = 1; // Make sure this is only 1 or 0
-		CacheTiles(); // has to be exactly here, or loadnewlorld cant access correct tiles ... LB
-		CacheStatics();
-    }
+	if (mapfile==0 || !mapfile->ready())
+	{
+		LogError("ERROR: Map %s not found...\n",mapname);
+	}
+	else
+	{
+		ConOut("	%s\n", sidxname);
+		sidxfile= new MULFile(sidxname,"rb");
+		if (sidxfile==0 || !sidxfile->ready())
+		{
+			LogError( "ERROR: Statics Index %s not found...\n", sidxname);
+		}
+		else
+		{
+			ConOut("	%s\n", statname);
+			statfile= new MULFile(statname,"rb");
+			if (statfile==0 || !statfile->ready())
+			{
+				LogError("ERROR: Statics File %s not found...\n",statname);
+			}
+			else
+			{
+				ConOut("	%s\n", vername);
+				verfile= new MULFile(vername,"rb");
+				if (verfile==0 || !verfile->ready())
+				{
+					LogWarning("ERROR: Version File %s not found...assuming empty file\n",vername);
+					safedelete(verfile);
+				}
+				ConOut("	%s\n", tilename);
+				tilefile= new MULFile(tilename,"rb");
+				if (tilefile==0 || !tilefile->ready())
+				{
+					LogError( "ERROR: Tiledata File %s not found...\n",tilename );
+				}
+				else
+				{
+					ConOut("	%s\n", multiname);
+					multifile= new MULFile(multiname,"rb");
+					if (multifile==0 || !multifile->ready())
+					{
+						LogError("ERROR: Multi data file %s not found...\n",multiname);
+					}
+					else
+					{
+						ConOut("	%s\n", midxname);
+						midxfile=new MULFile(midxname,"rb");
+						if (midxfile==0 || !midxfile->ready())
+						{
+							LogError("ERROR: Multi index file %s not found...\n",midxname);
+						}
+						else
+						{
+							ConOut("Mul files successfully opened (but not yet loaded.)\n\n");
+							CacheVersion();
+							if( Cache )
+							{
+								if( Cache != 1 )
+									Cache = 1; // Make sure this is only 1 or 0
+								CacheTiles(); // has to be exactly here, or loadnewlorld cant access correct tiles ... LB
+								CacheStatics();
+							}
+							keeprun = true;
+						}
+					}
+				}
+			}
+		}
+	}
 
 }
 
