@@ -26,9 +26,10 @@ namespace Calendar {
 #define MAXMONTHS 32
 #define MAXWEEKDAY 32
 
+time_t current_time = time(0);
+struct tm *local = localtime(&current_time);
 
-
-int g_nWeekday = 1, g_nDay = 1, g_nMonth = 1, g_nYear = 1, g_nHour = 0, g_nMinute = 0;
+int g_nWeekday = 1, g_nDay = 1, g_nMonth = 1, g_nYear = 1, g_nHour = local->tm_hour, g_nMinute = local->tm_min;
 int g_nMaxWeekday = 7, g_nMaxMonth = 12;
 int g_nCurDawnHour = 7, g_nCurDawnMin = 30, g_nCurSunsetHour = 19, g_nCurSunsetMin = 30;
 float g_fCurSnowMod = 1.0f, g_fCurRainMod = 1.0f, g_fCurDryMod = 1.0f;
