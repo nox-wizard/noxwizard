@@ -2732,7 +2732,7 @@ NATIVE (_send_boltfx)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    bolteffect(DEREF_P_CHAR(pc), true);
+    pc->boltFX(false);
 	return 0;
 }
 

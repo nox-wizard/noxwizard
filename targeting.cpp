@@ -955,7 +955,7 @@ void targets::GhostTarget(NXWSOCKET s)
         if(!pc->dead)
         {
 		pc->attackerserial=pc->getSerial32();
-		bolteffect(DEREF_P_CHAR(pc), true);
+		pc->boltFX(false);
 		pc->playSFX( 0x0029);
 		pc->Kill();
         }
@@ -972,10 +972,12 @@ public:
     {
         if (w_anim[0]==0 && w_anim[1]==0)
         {
-            bolteffect(inx, true);
             P_CHAR pc_inx=MAKE_CHAR_REF(inx);
-			if(ISVALIDPC(pc_inx))
-				pc_inx->playSFX( 0x0029);
+	    if(ISVALIDPC(pc_inx))
+	    {
+		pc_inx->playSFX( 0x0029);
+		pc_inx->boltFX(false);
+	    }
         }
         else
         {
