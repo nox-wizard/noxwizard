@@ -51,10 +51,10 @@ void loadcustomtitle() // for custom titles
 		iter->parseLine(script1, script2);
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if ( !strcmp((char*)script1, "TITLE") ) {
-				strcpy(title[titlecount].skill,(char*)script2);
+			if ( !strcmp(script1, "TITLE") ) {
+				strcpy(title[titlecount].skill,script2);
 				titlecount++;
-			} else if ( !strcmp((char*)script1, "SKIP") ) {
+			} else if ( !strcmp(script1, "SKIP") ) {
 				strcpy(title[titlecount].skill," ");
 				titlecount++;
 			}
@@ -76,8 +76,8 @@ void loadcustomtitle() // for custom titles
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if ( !strcmp((char*)script1, "NONE") ) ;
-			else strcpy(title[titlecount].prowess,(char*)script1);
+			if ( !strcmp(script1, "NONE") ) ;
+			else strcpy(title[titlecount].prowess,script1);
 			titlecount++;
 		}
 	}
@@ -98,7 +98,7 @@ void loadcustomtitle() // for custom titles
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if ( !strcmp((char*)script1, "NONE") ) ;
+			if ( !strcmp(script1, "NONE") ) ;
 			else strcpy(title[titlecount].fame, script1);
 
 			if (titlecount==23)
@@ -126,8 +126,8 @@ void loadcustomtitle() // for custom titles
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if ( !strcmp((char*)script1, "NONE") ) ;
-			else strcpy(title[titlecount].other,(char*)script1);
+			if ( !strcmp(script1, "NONE") ) ;
+			else strcpy(title[titlecount].other,script1);
 			titlecount++;
 		}
 	}
@@ -332,7 +332,7 @@ char *complete_title(P_CHAR pc) // generates the ENTIRE title plus criminal stuf
 	{//Player.
 		sprintf(tempstr, "%s%s", title3(pc), pc->getCurrentNameC());		//Repuation + Name
 		{//NoTownTitle
-			strcpy((char*)temp,tempstr);
+			strcpy(temp,tempstr);
 			if (strlen(pc->title)>0)
 			{//Titled & Skill
 				sprintf(tempstr, "%s %s, %s %s", temp, pc->title, title1(pc), title2(pc));

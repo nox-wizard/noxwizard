@@ -848,25 +848,25 @@ void command_post(NXWSOCKET  s)
 	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
 	if (err) return;
 
-	strcpy( (char*)s_szCmdTableTemp, "You are currently posting " );
+	strcpy( s_szCmdTableTemp, "You are currently posting " );
 
 	switch( pc_cs->postType )
 	{
 		case MsgBoards::LOCALPOST:
-			strcat( (char*)s_szCmdTableTemp, "a message to a single board [LOCAL]." );
+			strcat( s_szCmdTableTemp, "a message to a single board [LOCAL]." );
 			break;
 
 		case MsgBoards::REGIONALPOST:
-			strcat( (char*)s_szCmdTableTemp,"a message to all boards in this area [REGIONAL].");
+			strcat( s_szCmdTableTemp,"a message to all boards in this area [REGIONAL].");
 			break;
 
 		case MsgBoards::GLOBALPOST:
-			strcat( (char*)s_szCmdTableTemp,"a message to all boards in the world [GLOBAL]." );
+			strcat( s_szCmdTableTemp,"a message to all boards in the world [GLOBAL]." );
 			break;
 
 	}
 
-	sysmessage( s, (char*)s_szCmdTableTemp );
+	sysmessage( s, s_szCmdTableTemp );
 	return;
 }
 
@@ -961,8 +961,8 @@ void command_letusin(NXWSOCKET  s)
 	  }
   }
 
-  sprintf((char*)s_szCmdTableTemp,"command successfull, cleared %i poor souls",x);
-  sysmessage(s, (char*)s_szCmdTableTemp);
+  sprintf(s_szCmdTableTemp,"command successfull, cleared %i poor souls",x);
+  sysmessage(s, s_szCmdTableTemp);
 
 }
 
@@ -982,8 +982,8 @@ void command_showp(NXWSOCKET  s)
 
 	for (i=0;i<7;i++)
 	{
-		sprintf((char*)s_szCmdTableTemp,"priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
-		sysmessage(s,(char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp,"priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
+		sysmessage(s,s_szCmdTableTemp);
 	}
 }
 
@@ -1074,8 +1074,8 @@ void command_setpriv3(NXWSOCKET  s)
 					//
 					addx[s]= (int) cmd;
 					addy[s]=y;
-					sprintf((char*)s_szCmdTableTemp, "Select player to alter %s command access.", cmd->cmd_name);
-					target(s, 0, 1, 0, 225, (char*)s_szCmdTableTemp);
+					sprintf(s_szCmdTableTemp, "Select player to alter %s command access.", cmd->cmd_name);
+					target(s, 0, 1, 0, 225, s_szCmdTableTemp);
 				}
 			} else {
 				sysmessage(s, "2-Argument Usage: /SETPRIV3 +/- COMMAND");
@@ -1310,12 +1310,12 @@ void command_where(NXWSOCKET  s)
     if (err) return;
 
 	if (strlen(region[pcc_cs->region].name)>0)
-		sprintf((char*)s_szCmdTableTemp, "You are at: %s",region[pcc_cs->region].name);
-	else strcpy((char*)s_szCmdTableTemp,"You are at: unknown area");
-	sysmessage(s,(char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp, "You are at: %s",region[pcc_cs->region].name);
+	else strcpy(s_szCmdTableTemp,"You are at: unknown area");
+	sysmessage(s,s_szCmdTableTemp);
 
-	sprintf((char*)s_szCmdTableTemp, "%i %i (%i)", charpos.x, charpos.y, charpos.z);
-	sysmessage(s,(char*)s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "%i %i (%i)", charpos.x, charpos.y, charpos.z);
+	sysmessage(s,s_szCmdTableTemp);
 	return;
 }
 
@@ -1934,10 +1934,10 @@ void command_showtime(NXWSOCKET  s)
 			int minute = Calendar::g_nMinute;
 
 			if (ampm || (!ampm && hour==12))
-				sprintf((char*)s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":", minute, "PM");
+				sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":", minute, "PM");
 			else
-				sprintf((char*)s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":",minute, "AM");
-			sysmessage(s,(char*)s_szCmdTableTemp);
+				sprintf(s_szCmdTableTemp, "%s %2.2d %s %2.2d %s", "NoX-Wizard: Time: ", hour, ":",minute, "AM");
+			sysmessage(s,s_szCmdTableTemp);
 			return;
 
 }
@@ -2157,8 +2157,8 @@ void command_additem(NXWSOCKET  s)
 		{
 			addmitem[s] = strtonum(1);
 		}
-		sprintf((char*)s_szCmdTableTemp, "Select location for item. [Number: %i]", addmitem[s]);
-		target(s, 0, 1, 0, 26, (char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp, "Select location for item. [Number: %i]", addmitem[s]);
+		target(s, 0, 1, 0, 26, s_szCmdTableTemp);
 	}
 	return;
 }
@@ -2193,9 +2193,9 @@ void command_command(NXWSOCKET  s)
 				script1[0]=0;
 				script2[0]=0;
 				while(tbuffer[Commands::cmd_offset+8+i]!=' ' && tbuffer[Commands::cmd_offset+8+i]!=0 && (++loopexit < MAXLOOPS) ) i++;
-				strncpy((char*)script1,&tbuffer[Commands::cmd_offset+8],i);
+				strncpy(script1,&tbuffer[Commands::cmd_offset+8],i);
 				script1[i]=0;
-				if ((script1[0]!='}')&&(c!=0)) strcpy((char*)script2, &tbuffer[Commands::cmd_offset+8+i+1]);
+				if ((script1[0]!='}')&&(c!=0)) strcpy(script2, &tbuffer[Commands::cmd_offset+8+i+1]);
 				scriptcommand(s, script1, script2);
 			}
 			return;
@@ -2266,14 +2266,14 @@ void command_set(NXWSOCKET  s)
 		i=0;
 		script1[0]=0;
 		while (tbuffer[Commands::cmd_offset+4+i]!=' ' && tbuffer[Commands::cmd_offset+4+i]!=0 && (++loopexit < MAXLOOPS) ) i++;
-		strncpy((char*)script1,&tbuffer[Commands::cmd_offset+4],i);
+		strncpy(script1,&tbuffer[Commands::cmd_offset+4],i);
 		script1[i]=0;
-		strupr((char*)script1);
+		strupr(script1);
 		addx[s]=-1;
 
 		for (i=0;i<SKILLS;i++)
 		{
-			if (!(strcmp(skillname[i], (char*)script1))) { /*ConOut("%s\n",skillname[i]);*/
+			if (!(strcmp(skillname[i], script1))) { /*ConOut("%s\n",skillname[i]);*/
 				if (i == I_ACCOUNT) {
 					if (pc->account!=0) {
 						sysmessage(s, "Only Admin can do this!!!");
@@ -2552,8 +2552,8 @@ void command_regspawnmax(NXWSOCKET  s)
 	
 	if (tnum==2)
 	{
-		sprintf((char*)s_szCmdTableTemp,"MAX Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
-		LogMessage((char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp,"MAX Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
+		LogMessage(s_szCmdTableTemp);
 		Commands::RegSpawnMax(s, strtonum(1));
 		return;
 	}
@@ -2568,8 +2568,8 @@ void command_regspawn(NXWSOCKET  s)
 	
 	if (tnum==3)
 	{
-		sprintf((char*)s_szCmdTableTemp,"Specific Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
-		LogMessage((char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp,"Specific Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
+		LogMessage(s_szCmdTableTemp);
 		Commands::RegSpawnNum(s, strtonum(1), strtonum(2));
 		return;
 	}
@@ -2579,8 +2579,8 @@ void command_regedit(NXWSOCKET  s)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc );
-	sprintf((char*)s_szCmdTableTemp,"Region edit command called by %s.\n", pc->getCurrentNameC());
-	LogMessage((char*)s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp,"Region edit command called by %s.\n", pc->getCurrentNameC());
+	LogMessage(s_szCmdTableTemp);
 	newAmxEvent("gui_rgnList")->Call( pc->getSerial32(), 0 );
 }
 
@@ -2717,20 +2717,20 @@ void command_pdump(NXWSOCKET  s)
 {
 			sysmessage(s, "Performace Dump:");
 
-			sprintf((char*)s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
-			sysmessage(s,(char*) s_szCmdTableTemp);
+			sprintf(s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
+			sysmessage(s, s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
-			sysmessage(s, (char*)s_szCmdTableTemp);
+			sprintf(s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
+			sysmessage(s, s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
-			sysmessage(s, (char*)s_szCmdTableTemp);
+			sprintf(s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
+			sysmessage(s, s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
-			sysmessage(s, (char*)s_szCmdTableTemp);
+			sprintf(s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
+			sysmessage(s, s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
-			sysmessage(s, (char*)s_szCmdTableTemp);
+			sprintf(s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+			sysmessage(s, s_szCmdTableTemp);
 			return;
 }
 
@@ -3057,13 +3057,13 @@ void command_who(NXWSOCKET  s)
 			P_CHAR pc_i=ps_i->currChar();
 			if(ISVALIDPC(pc_i)) {
 				j++;
-				sprintf((char*)s_szCmdTableTemp, "%i) %s [%x]", (j-1), pc_i->getCurrentNameC(), pc_i->getSerial32());
-				sysmessage(s, (char*)s_szCmdTableTemp);
+				sprintf(s_szCmdTableTemp, "%i) %s [%x]", (j-1), pc_i->getCurrentNameC(), pc_i->getSerial32());
+				sysmessage(s, s_szCmdTableTemp);
 			}
 		}
 	}
-	sprintf((char*)s_szCmdTableTemp,"Total Users Online: %d\n", j);
-	sysmessage(s,(char*)s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp,"Total Users Online: %d\n", j);
+	sysmessage(s,s_szCmdTableTemp);
 	sysmessage(s,"End of userlist");
 }
 
@@ -3089,8 +3089,8 @@ void command_gms(NXWSOCKET  s)
 			}
 		}
 	}
-	sprintf((char*)s_szCmdTableTemp, "Total Staff Online: %d\n", j);
-	sysmessage(s, (char*)s_szCmdTableTemp);
+	sprintf(s_szCmdTableTemp, "Total Staff Online: %d\n", j);
+	sysmessage(s, s_szCmdTableTemp);
 	sysmessage(s,"End of stafflist");
 }
 
@@ -3260,14 +3260,14 @@ void command_jail(NXWSOCKET  s)
 	if (tnum == 2)
 	{
 		addmitem[s] = strtonum(1); // We temporary use addmitem for jail secs.
-		sprintf((char*)s_szCmdTableTemp, "Select Character to jail. [Jailtime: %i secs]", addmitem[s]);
-		target(s, 0, 1, 0, 126, (char*)s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp, "Select Character to jail. [Jailtime: %i secs]", addmitem[s]);
+		target(s, 0, 1, 0, 126, s_szCmdTableTemp);
 	}
 	else
 	{
 		addmitem[s] = DEFAULTJAILTIME;
 		strcpy(s_szCmdTableTemp, "Select Character to jail. [Jailtime: 1 day]");
-		target(s, 0, 1, 0, 126, (char*)s_szCmdTableTemp);
+		target(s, 0, 1, 0, 126, s_szCmdTableTemp);
 	}
 	return;
 }

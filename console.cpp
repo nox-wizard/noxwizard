@@ -44,10 +44,10 @@ void setWinTitle(char *str, ...)
 	#endif
 	#ifdef WIN32
     	#ifdef _WINDOWS
-    		SetWindowText(g_HWnd, (char*)temp);
+    		SetWindowText(g_HWnd, temp);
     	#endif
     	#ifdef _CONSOLE
-    		SetConsoleTitle((char*)temp);
+    		SetConsoleTitle(temp);
     	#endif
 	#endif
 }

@@ -767,9 +767,9 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 				goldsfx( s, own->questBountyReward );
 
 				// Now thank them for their hard work
-				sprintf((char*) temp, TRANSLATE("Excellent work! You have brought us the head of %s. Here is your reward of %d gold coins."),
+				sprintf( temp, TRANSLATE("Excellent work! You have brought us the head of %s. Here is your reward of %d gold coins."),
 					own->getCurrentNameC(), own->questBountyReward );
-				pc_t->talk( s, (char*)temp, 0);
+				pc_t->talk( s, temp, 0);
 
 				// Delete the Bounty from the bulletin board
 				BountyDelete(own );
@@ -806,8 +806,8 @@ static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 	if(pi->id()!=0x0EED)
 	{
-		sprintf((char*)temp,TRANSLATE("Sorry %s i can only use gold"), pc->getCurrentNameC());
-		pc_t->talk( s,(char*)temp,0);
+		sprintf(temp,TRANSLATE("Sorry %s i can only use gold"), pc->getCurrentNameC());
+		pc_t->talk( s,temp,0);
 		Sndbounce5(s);
 		if (ps->isDragging())
 		{
@@ -818,8 +818,8 @@ static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	}
 	else
 	{
-		sprintf((char*)temp,TRANSLATE("Thank you %s for the %i gold!"), pc->getCurrentNameC(), pi->amount);
-		pc_t->talk( s,(char*)temp,0);
+		sprintf(temp,TRANSLATE("Thank you %s for the %i gold!"), pc->getCurrentNameC(), pi->amount);
+		pc_t->talk( s,temp,0);
 		if(pi->amount<=100)
 		{
 			pc->IncreaseKarma(10);
@@ -1480,7 +1480,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 						else
 							strcpy(temp,pi_ci->getCurrentNameC());
 
-						if(!(strcmp((char*)temp,(char*)temp2)) || !(strcmp((char*)temp,"All-Spell Scroll")))
+						if(!(strcmp(temp,temp2)) || !(strcmp(temp,"All-Spell Scroll")))
 						{
 							sysmessage(s,TRANSLATE("You already have that spell!"));
 							item_bounce6(ps,pItem);

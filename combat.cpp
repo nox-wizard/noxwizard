@@ -516,8 +516,8 @@ void cChar::doCombat()
 		if (!npc && !pc_def->npc) {	//Player vs Player
 			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 ) {
 				 kills++;
-				 sprintf((char*)temp, TRANSLATE("You have killed %i innocent people."), kills);
-				 sysmsg((char*)temp);
+				 sprintf(temp, TRANSLATE("You have killed %i innocent people."), kills);
+				 sysmsg(temp);
 				 if (kills == repsys.maxkills+1)
 					sysmsg(TRANSLATE("You are now a murderer!"));
 			}
@@ -666,8 +666,8 @@ int cChar::combatHitMessage(SI32 damage)
 	}
 	P_CHAR pc_attacker = pointers::findCharBySerial(attackerserial);
 	if (ISVALIDPC(pc_attacker)) {
-		sprintf((char*)temp2,"%s %s",pc_attacker->getCurrentNameC(), temp);
-		this->sysmsg((char*)temp2);
+		sprintf(temp2,"%s %s",pc_attacker->getCurrentNameC(), temp);
+		this->sysmsg(temp2);
 	}
 	
 	return x;

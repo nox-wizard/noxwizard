@@ -2749,7 +2749,7 @@ void enlist(int s, int listnum) // listnum is stored in items morex
 			pj->Refresh();
 		}
 	}
-	while((strcmp((char*)script1,"}")) && (++loopexit < MAXLOOPS) );
+	while((strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
     safedelete(iter);
 }
 

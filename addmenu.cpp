@@ -122,7 +122,7 @@ MakeItem* getMakeItem(int n)
 
     do {
 		iter->parseLine(script1, script2);
-		if (!(strcmp((char*)script1,"DO"))) {
+		if (!(strcmp(script1,"DO"))) {
 		    if (strlen(script2) < 4) {
 		        WarnOut("Malformed DO command\n");
 		        return NULL;
@@ -136,28 +136,28 @@ MakeItem* getMakeItem(int n)
 		        mi->cmd1 = script2;
 		        mi->cmd2 = p+1;
 		    }
-		} else if (!(strcmp((char*)script1,"SKILL"))) {
+		} else if (!(strcmp(script1,"SKILL"))) {
 		    mi->skillToCheck = str2num(script2);
-		} else if (!(strcmp((char*)script1,"MINSKILL"))) {
+		} else if (!(strcmp(script1,"MINSKILL"))) {
 		    mi->minskill = str2num(script2);
-		} else if (!(strcmp((char*)script1,"MAXSKILL"))) {
+		} else if (!(strcmp(script1,"MAXSKILL"))) {
 		    mi->maxskill = str2num(script2);
-		} else if (!(strcmp((char*)script1,"MANA"))) {
+		} else if (!(strcmp(script1,"MANA"))) {
 		    mi->mana = str2num(script2);
-		} else if (!(strcmp((char*)script1,"STAM"))) {
+		} else if (!(strcmp(script1,"STAM"))) {
 		    mi->stam = str2num(script2);
-		} else if (!(strcmp((char*)script1,"REQSPELL"))) {
+		} else if (!(strcmp(script1,"REQSPELL"))) {
 		    mi->reqspell = str2num(script2);
-		} else if (!(strcmp((char*)script1,"HP"))) {
+		} else if (!(strcmp(script1,"HP"))) {
 		    mi->hit = str2num(script2);
-		}  else if (!(strcmp((char*)script1,"REQ"))) {
+		}  else if (!(strcmp(script1,"REQ"))) {
 			if (reqres <MakeItem::MAXREQITEM) {
     		    mi->reqitem[reqres++].parse(script2);
     		} else {
 				WarnOut("makeitem %d has more than %d required resources\n", n, MakeItem::MAXREQITEM);
     		}
 		}
-    } while  (strcmp((char*)script1,"}"));
+    } while  (strcmp(script1,"}"));
 
     mip = new MakeItemPtr(mi);
     g_mapMakeItems[n] = *mip;

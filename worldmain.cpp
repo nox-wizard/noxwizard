@@ -725,9 +725,9 @@ void loaditem()
 				pi->auxdamage = str2num(script2);
   			else if (!strcmp("AUXDAMAGETYPE", script1))  
 				pi->auxdamagetype = static_cast<DamageType>(str2num(script2));
-			else if (!strcmp("AMMO", (char*)script1))
+			else if (!strcmp("AMMO", script1))
 				pi->ammo = str2num(script2);
-			else if (!strcmp("AMMOFX", (char*)script1))
+			else if (!strcmp("AMMOFX", script1))
 				pi->ammoFx = str2num(script2);
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;

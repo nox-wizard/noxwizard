@@ -320,7 +320,7 @@ void cSpawns::loadFromScript()
 		Spawns->scripted.insert( make_pair( current, (*dummy) ) );
 
     }
-	while ( (strcmp("EOF", (char*)script1.c_str())) && (++loopexit < MAXLOOPS) );
+	while ( (strcmp("EOF", script1.c_str())) && (++loopexit < MAXLOOPS) );
 
 
     safedelete(iter);

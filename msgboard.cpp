@@ -558,7 +558,7 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 		// LOCAL post
 	case LOCALPOST:
 		// Get Message Board serial number from message buffer
-		sprintf( (char*)temp, "%02x%02x%02x%02x.bbi", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
+		sprintf( temp, "%02x%02x%02x%02x.bbi", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
 		break;
 
 		// REGIONAL post
@@ -568,19 +568,19 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 		{
 			P_CHAR pc_s=pointers::findCharBySerPtr(msg2Post +4);
 			if(ISVALIDPC(pc_s))
-				sprintf( (char*)temp, "region%d.bbi", pc_s->region );
+				sprintf( temp, "region%d.bbi", pc_s->region );
 		}
 		else
 		{
 			P_ITEM pi_s=pointers::findItemBySerPtr(msg2Post +4);
 			if(ISVALIDPI(pi_s))
-				sprintf( (char*)temp, "region%d.bbi", calcRegionFromXY( pi_s->getPosition() ) );
+				sprintf( temp, "region%d.bbi", calcRegionFromXY( pi_s->getPosition() ) );
 		}
 		break;
 
 		// GLOBAL POST
 	case GLOBALPOST:
-		strcpy( (char*)temp, "global.bbi" );
+		strcpy( temp, "global.bbi" );
 		break;
 
 		// Invalid post type
@@ -590,7 +590,7 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 	}
 
 	// Append file name to path
-	strcat( fileName, (char*)temp );
+	strcat( fileName, temp );
 
 	// Get the current maximum message s/n from the bbi file
 	pFile = fopen( fileName, "rb" );
@@ -915,7 +915,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		// LOCAL post
 	case LOCALPOST:
 		// Get Message Board serial number from message buffer
-		sprintf( (char*)temp, "%02x%02x%02x%02x.bbp", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
+		sprintf( temp, "%02x%02x%02x%02x.bbp", msg2Post[4], msg2Post[5], msg2Post[6], msg2Post[7]);
 		break;
 
 		// REGIONAL post
@@ -925,19 +925,19 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		{
 			P_CHAR pc_s=pointers::findCharBySerPtr(msg2Post +4);
 			if(ISVALIDPC(pc_s))
-				sprintf( (char*)temp, "region%d.bbp", pc_s->region );
+				sprintf( temp, "region%d.bbp", pc_s->region );
 		}
 		else
 		{
 			P_ITEM pi_s=pointers::findItemBySerPtr(msg2Post +4);
 			if(ISVALIDPI(pi_s))
-				sprintf( (char*)temp, "region%d.bbp", calcRegionFromXY( pi_s->getPosition() ) );
+				sprintf( temp, "region%d.bbp", calcRegionFromXY( pi_s->getPosition() ) );
 		}
 		break;
 
 		// GLOBAL POST
 	case GLOBALPOST:
-		strcpy( (char*)temp, "global.bbp" );
+		strcpy( temp, "global.bbp" );
 		break;
 
 		// Invalid post type
@@ -948,7 +948,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	}
 
 	// Append file name to end of path
-	strcat( fileName, (char*)temp );
+	strcat( fileName, temp );
 
 	// Open the file for appending
 	pFile=fopen( fileName, "ab+");
@@ -1190,8 +1190,8 @@ void MsgBoardOpenPost( int s )
 		msgBoardSerial = calcItemFromSer(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
 
 		P_ITEM p_msgboard=MAKE_ITEM_REF(msgBoardSerial);
-		sprintf( (char*)temp, "region%d.bbp", calcRegionFromXY( p_msgboard->getPosition() ) );
-		strcat( fileName,(char*) temp );
+		sprintf( temp, "region%d.bbp", calcRegionFromXY( p_msgboard->getPosition() ) );
+		strcat( fileName, temp );
 		file = fopen( fileName, "rb" );
 	}
 	// Is msgSN within the LOCAL post range
@@ -1200,8 +1200,8 @@ void MsgBoardOpenPost( int s )
 #ifdef DEBUG
 		sysmessage( s, "Opening LOCAL.bbp posting");
 #endif
-		sprintf( (char*)temp, "%02x%02x%02x%02x.bbp", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
-		strcat( fileName, (char*)temp );
+		sprintf( temp, "%02x%02x%02x%02x.bbp", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+		strcat( fileName, temp );
 		file = fopen( fileName, "rb" );
 	}
 	// This msgSN does not fall within a valid range
@@ -1412,21 +1412,21 @@ void MsgBoardRemovePost( int s )
 	case 0x01:
 		{
 			// GLOBAL post file
-			strcpy( (char*)temp, "global.bbi" );
+			strcpy( temp, "global.bbi" );
 			break;
 		}
 
 	case 0x02:
 		{
 			// REGIONAL post file
-			sprintf( (char*)temp, "region%d.bbi", calcRegionFromXY( p_msgboard->getPosition() ) );
+			sprintf( temp, "region%d.bbi", calcRegionFromXY( p_msgboard->getPosition() ) );
 			break;
 		}
 
 	default:
 		{
 			// LOCAL post file
-			sprintf((char*) temp, "%02x%02x%02x%02x.bbi", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+			sprintf( temp, "%02x%02x%02x%02x.bbi", buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
 			break;
 		}
 	}
@@ -1436,7 +1436,7 @@ void MsgBoardRemovePost( int s )
 		strcpy( fileName, SrvParms->msgboardpath );
 
 	// Create the full path to the file we need to open
-	strcat( fileName, (char*)temp );
+	strcat( fileName, temp );
 	file = fopen( fileName, "rb+" );
 
 	// If the file exists continue, othewise abort with an error
@@ -1537,14 +1537,14 @@ bool MsgBoardRemoveGlobalPostBySerial( int nPostSerial )
 	char fileName[256] = "";
 
 	// GLOBAL post file
-	strcpy( (char*)temp, "global.bbi" );
+	strcpy( temp, "global.bbi" );
 
 	// If a MSBBOARDPATH has been define in the SERVER.cfg file, then use it
 	if (SrvParms->msgboardpath)
 		strcpy( fileName, SrvParms->msgboardpath );
 
 	// Create the full path to the file we need to open
-	strcat( fileName, (char*)temp );
+	strcat( fileName, temp );
 	file = fopen( fileName, "rb+" );
 
 	// If the file exists continue, othewise abort with an error
@@ -1785,7 +1785,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 			do
 			{
 				iter->parseLine(script1, script2);
-				if ( !(strcmp("ESCORT", (char*)script1)) )
+				if ( !(strcmp("ESCORT", script1)) )
 				{
 					if ( listCount >= MAXENTRIES )
 					{
@@ -1815,7 +1815,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 			// Open the script again and find the section choosen by the randomizer
 			char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-			sprintf( (char*)temp, "SECTION ESCORT %i", sectionEntrys[entryToUse-1] );
+			sprintf( temp, "SECTION ESCORT %i", sectionEntrys[entryToUse-1] );
 			iter = Scripts::MsgBoard->getNewIterator(temp);
 
 			if (iter==NULL)
@@ -1838,7 +1838,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 			do
 			{
 				iter->parseLine(script1, script2);
-				if ( !(strcmp("BOUNTY", (char*)script1)) )
+				if ( !(strcmp("BOUNTY", script1)) )
 				{
 					if ( listCount >= MAXENTRIES )
 					{
@@ -1868,7 +1868,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 			// Open the script again and find the section choosen by the randomizer
  			char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-			sprintf( (char*)temp, "BOUNTY %i", sectionEntrys[entryToUse-1] );
+			sprintf( temp, "BOUNTY %i", sectionEntrys[entryToUse-1] );
 
 			safedelete(iter);
 			iter = Scripts::MsgBoard->getNewIterator(temp);
@@ -1940,9 +1940,9 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 	{
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());
 		// If we reached the ending curly brace, exit the loop
-		if ( !strcmp((char*)script1, "}") ) break;
+		if ( !strcmp(script1, "}") ) break;
 
-		flagPos = strchr( (char*)script1, '%' );
+		flagPos = strchr( script1, '%' );
 
 		// Loop until we don't find anymore replaceable parameters
 		loopexit2=0;
@@ -1965,7 +1965,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 				case 'n':
 					{
 						strcpy( flagPos, pc_s->getCurrentNameC() );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -1974,7 +1974,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 					{
 						Location charpos= pc_s->getPosition();
 						sprintf( flagPos, "%d, %d", charpos.x, charpos.y );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -1982,7 +1982,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 				case 't':
 					{
 						strcpy( flagPos, pc_s->title );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -1990,7 +1990,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 				case 'r':
 					{
 						strcpy( flagPos, region[pc_s->questDestRegion].name );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -1998,7 +1998,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 				case 'R':
 					{
 						strcpy( flagPos, region[pc_s->region].name );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -2011,7 +2011,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 
 						sprintf(szBounty,"%d",pc_s->questBountyReward) ;
 						strcpy( flagPos, szBounty );
-						strcat( (char*)temp, tempString );
+						strcat( temp, tempString );
 						break;
 					}
 
@@ -2027,7 +2027,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 		}
 		// Get the length of the line read into 'temp'
 		// after being modified with any extra info due to flags (plus one for the terminating NULL)
-		lineLength = ( strlen((char*)temp) + 1 );
+		lineLength = ( strlen(temp) + 1 );
 
 		msg2Post[offset] = lineLength;
 		offset++;
@@ -2165,8 +2165,8 @@ void MsgBoardQuestEscortArrive( P_CHAR pc, P_CHAR pc_k)
 	// If they have no money, well, oops!
 	if ( servicePay == 0 )
 	{
-		sprintf( (char*)temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Alas, I seem to be a little short on gold. I have nothing to pay you with."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
-		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), (char*)temp, 0 );
+		sprintf( temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Alas, I seem to be a little short on gold. I have nothing to pay you with."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
+		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp, 0 );
 	}
 	else // Otherwise pay the poor sod for his time
 	{
@@ -2174,13 +2174,13 @@ void MsgBoardQuestEscortArrive( P_CHAR pc, P_CHAR pc_k)
 		if ( servicePay < 75 ) servicePay += RandomNum(75, 100);
 		addgold( calcSocketFromChar(DEREF_P_CHAR(pc_k)), servicePay );
 		goldsfx( calcSocketFromChar(DEREF_P_CHAR(pc_k)), servicePay );
-		sprintf( (char*)temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Here is thy pay as promised."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
-		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), (char*)temp, 0 );
+		sprintf( temp, TRANSLATE("Thank you %s for thy service. We have made it safely to %s. Here is thy pay as promised."), pc_k->getCurrentNameC(), region[pc->questDestRegion].name );
+		pc->talk( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp, 0 );
 	}
 
 	// Inform the PC of what he has just been given as payment
-	sprintf( (char*)temp, TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title );
-	sysmessage( calcSocketFromChar(DEREF_P_CHAR(pc_k)), (char*)temp );
+	sprintf( temp, TRANSLATE("You have just received %d gold coins from %s %s"), servicePay, pc->getCurrentNameC(), pc->title );
+	sysmessage( calcSocketFromChar(DEREF_P_CHAR(pc_k)), temp );
 
 	// Take the NPC out of quest mode
 	pc->npcWander = 2;         // Wander freely
@@ -2252,7 +2252,7 @@ void MsgBoardQuestEscortRemovePost( int npcIndex )
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	// REGIONAL post file
-	sprintf( (char*)temp, "region%d.bbi", npc->questOrigRegion );
+	sprintf( temp, "region%d.bbi", npc->questOrigRegion );
 
 	// If a MSBBOARDPATH has been define in the SERVER.cfg file, then use it
 	if (SrvParms->msgboardpath)
@@ -2260,7 +2260,7 @@ void MsgBoardQuestEscortRemovePost( int npcIndex )
 
 	// Set fileName to REGIONAL.bbi
 	//sysmessage( s, "Opening REGIONAL.bbi messages");
-	strcat( fileName, (char*)temp );
+	strcat( fileName, temp );
 	file = fopen( fileName, "rb+" );
 
 	// If the file exists continue, othewise abort with an error

@@ -30,7 +30,7 @@ void location2xyz(int loc, int& x, int& y, int& z)
     char script2[1024];
 
 
-	sprintf((char*)temp, "SECTION LOCATION %i", loc);
+	sprintf(temp, "SECTION LOCATION %i", loc);
 	iter = Scripts::Location->getNewIterator(temp);
 
 	if ((iter!=NULL))
@@ -38,20 +38,20 @@ void location2xyz(int loc, int& x, int& y, int& z)
 		do
 		{
 			iter->parseLine(script1, script2);
-			if (!(strcmp((char*)script1,"X")))
+			if (!(strcmp(script1,"X")))
 			{
 				x=str2num(script2);
 			}
-			else if (!(strcmp((char*)script1,"Y")))
+			else if (!(strcmp(script1,"Y")))
 			{
 				y=str2num(script2);
 			}
-			else if (!(strcmp((char*)script1,"Z")))
+			else if (!(strcmp(script1,"Z")))
 			{
 				z=str2num(script2);
 			}
 		}
-		while ( (strcmp((char*)script1,"}")) && (++loopexit < MAXLOOPS) );
+		while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 	}
 	safedelete(iter);
 }
@@ -393,9 +393,9 @@ void endmessage(int x) // If shutdown is initialized
 		endtime=igetclock;
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	sprintf((char*)temp, "server going down in %i minutes.\n",
+	sprintf(temp, "server going down in %i minutes.\n",
 		((endtime-igetclock)/MY_CLOCKS_PER_SEC)/60);
-	sysbroadcast((char*)temp);
+	sysbroadcast(temp);
 	InfoOut(temp);
 }
 
@@ -554,7 +554,7 @@ void batchcheck(int s) // Do we have to run a batch file
     cScpIterator* iter = NULL;
 
 
-	sprintf((char*)temp, "SECTION BATCH %i", executebatch);
+	sprintf(temp, "SECTION BATCH %i", executebatch);
 
     iter = Scripts::Menus->getNewIterator(temp);
     if (iter==NULL) return;
@@ -788,19 +788,19 @@ void getSextantCoords(SI32 x, SI32 y, LOGICAL t2a, char *sextant)
    numtostr(abs(yH),yHs);
    numtostr(abs(yM),yMs);
 
-   strcpy((char*)sextant, xHs);
-   strcat((char*)sextant,"o ");
-   strcat((char*)sextant, xMs);
-   strcat((char*)sextant,"' ");
+   strcpy(sextant, xHs);
+   strcat(sextant,"o ");
+   strcat(sextant, xMs);
+   strcat(sextant,"' ");
 
-   if (xH>=0) strcat((char*)sextant,"E"); else strcat((char*)sextant,"W");
+   if (xH>=0) strcat(sextant,"E"); else strcat(sextant,"W");
 
-   strcat((char*)sextant, "  ");
-   strcat((char*)sextant, yHs);
-   strcat((char*)sextant,"o ");
-   strcat((char*)sextant, yMs);
-   strcat((char*)sextant,"' ");
-   if (yH>=0) strcat((char*)sextant,"S"); else strcat((char*)sextant,"N");
+   strcat(sextant, "  ");
+   strcat(sextant, yHs);
+   strcat(sextant,"o ");
+   strcat(sextant, yMs);
+   strcat(sextant,"' ");
+   if (yH>=0) strcat(sextant,"S"); else strcat(sextant,"N");
 }
 
 

@@ -107,23 +107,23 @@ void buyaction(int s)
 		{
 			if (pc->IsGM())
 			{
-				sprintf((char*)temp, TRANSLATE("Here you are, %s. Someone as special as thee will receive my wares for free of course."), pc->getCurrentNameC());
+				sprintf(temp, TRANSLATE("Here you are, %s. Someone as special as thee will receive my wares for free of course."), pc->getCurrentNameC());
 			}
 			else
 			{
 				if(useBank)
 				{
-					sprintf((char*)temp, TRANSLATE("Here you are, %s. %d gold coin%s will be deducted from your bank account.  I thank thee for thy business."),
+					sprintf(temp, TRANSLATE("Here you are, %s. %d gold coin%s will be deducted from your bank account.  I thank thee for thy business."),
 					pc->getCurrentNameC(), goldtotal, (goldtotal==1) ? "" : "s");
 				}
 			    else
 				{
-				    sprintf((char*)temp, TRANSLATE("Here you are, %s.  That will be %d gold coin%s.  I thank thee for thy business."),
+				    sprintf(temp, TRANSLATE("Here you are, %s.  That will be %d gold coin%s.  I thank thee for thy business."),
 					pc->getCurrentNameC(), goldtotal, (goldtotal==1) ? "" : "s");
 				}
 			    goldsfx(s, goldtotal);	// Dupois, SFX for gold movement. Added Oct 08, 1998
 			}
-			npc->talkAll((char*)temp,0);
+			npc->talkAll(temp,0);
 			npc->playAction(0x20);	// bow (Duke, 17/03/2001)
 
 			clear=1;

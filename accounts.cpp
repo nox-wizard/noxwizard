@@ -206,14 +206,14 @@ void cAccounts::LoadAccount( ACCOUNT acctnumb, FILE* F )
 	do
 	{
 		readSplitted(F, script1, script2);
-		if (!strcmp((char*)script1, "NAME"))		account.name =  script2;
-		else if (!strcmp((char*)script1, "PASS"))	account.pass = script2;
-		else if (!strcmp((char*)script1, "BAN"))	account.ban = true;
-		else if (!strcmp((char*)script1, "REMOTEADMIN")) account.ras = true;
-		else if (!strcmp((char*)script1, "LASTLOGIN")) account.lastlogin = atoi(script2);
-		else if (!strcmp((char*)script1, "LASTIP")) account.lastip.s_addr = inet_addr(script2);
+		if (!strcmp(script1, "NAME"))		account.name =  script2;
+		else if (!strcmp(script1, "PASS"))	account.pass = script2;
+		else if (!strcmp(script1, "BAN"))	account.ban = true;
+		else if (!strcmp(script1, "REMOTEADMIN")) account.ras = true;
+		else if (!strcmp(script1, "LASTLOGIN")) account.lastlogin = atoi(script2);
+		else if (!strcmp(script1, "LASTIP")) account.lastip.s_addr = inet_addr(script2);
 	}
-	while ( (!feof(F))&&(strcmp((char*)script1, "}")) && (strcmp((char*)script1, "EOF")) && (++loopexit < MAXLOOPS) );
+	while ( (!feof(F))&&(strcmp(script1, "}")) && (strcmp(script1, "EOF")) && (++loopexit < MAXLOOPS) );
 	#ifdef WIN32
 	if ((ServerScp::g_nDeamonMode==0)&&(ServerScp::g_nLoadDebugger==0)) {
 		if ((!bWarned) && (account.number==ADMIN_ACCOUNT) && (account.name=="admin") && (account.pass=="admin"))
@@ -268,9 +268,9 @@ void cAccounts::LoadAccounts( void )
 	{
 		readSplitted(F, script1, script2);
 		if (feof(F)) break;
-		if (!(strcmp((char*)script1, "SECTION")))
+		if (!(strcmp(script1, "SECTION")))
 		{
-			c = strlen((char*)script2);
+			c = strlen(script2);
 			for (b=0; b<9; b++) acc[b]=script2[b];
 			for (b=8; b<c; b++) accnumb[b-8]=script2[b];
 			accnumb[b-8]=0; acc[8]=0;

@@ -110,7 +110,7 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 	if (length == -1 || length>=17000000)//Too big...
 	{
 		sprintf(temp,"inmulti() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pi->getCurrentNameC() );
-		LogError( (char*)temp ); // changed by Magius(CHE) (1)
+		LogError( temp ); // changed by Magius(CHE) (1)
 		length = 0;
 	}
 
@@ -526,8 +526,8 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 
 		break;
 
-	default: { sprintf((char*)temp,"Turnboatstuff() more1 error! more1 = %c not found!\n",pi->more1);
-		       LogWarning((char*)temp);
+	default: { sprintf(temp,"Turnboatstuff() more1 error! more1 = %c not found!\n",pi->more1);
+		       LogWarning(temp);
 			 }
 	}
 
@@ -1117,7 +1117,7 @@ void cBoat::OpenPlank(P_ITEM pi)
 		case (unsigned char)0xD5: pi->id2=(unsigned char)0xB1; break;
 		case (unsigned char)0xD4: pi->id2=(unsigned char)0xB2; break;
 		case (unsigned char)0x89: pi->id2=(unsigned char)0x8A; break;
-		default: { sprintf((char*)temp,"WARNING: Invalid plank ID called! Plank %i '%s' [%x %x]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id1,pi->id2); LogWarning( temp ); break; }
+		default: { sprintf(temp,"WARNING: Invalid plank ID called! Plank %i '%s' [%x %x]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->id1,pi->id2); LogWarning( temp ); break; }
 	}
 }
 
@@ -1153,8 +1153,8 @@ P_ITEM cBoat::GetBoat(Location pos)
 			length=length/sizeof(st_multi);
 			if (length == -1 || length>=17000000)//Too big...
 			{
-				sprintf((char*)temp,"GetBoat() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
-				LogError( (char*)temp ); // changed by Magius(CHE) (1)
+				sprintf(temp,"GetBoat() - Bad length in multi file. Avoiding stall. (Item Name: %s)\n", pBoat->getCurrentNameC() );
+				LogError( temp ); // changed by Magius(CHE) (1)
 				length = 0;
 			}
 			for(i=0;i<length;i++)
@@ -1246,8 +1246,8 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		break;
 	default:
 		{
-		  sprintf((char*)temp,"warning: Boat direction error: %i int boat %i\n", pBoat->dir&0x0F, pBoat->getSerial32());
-		  LogWarning((char*)temp);
+		  sprintf(temp,"warning: Boat direction error: %i int boat %i\n", pBoat->dir&0x0F, pBoat->getSerial32());
+		  LogWarning(temp);
 		  break;
 		}
 	}

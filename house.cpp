@@ -92,57 +92,57 @@ void buildhouse(int s, int i)
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if (!(strcmp((char*)script1,"ID")))
+				if (!(strcmp(script1,"ID")))
 				{
 					tmp=hex2num(script2);
 					id1 = (unsigned char)(tmp>>8);
 					id2 = (unsigned char)(tmp%256);
 				}
-				else if (!(strcmp((char*)script1,"SPACEX")))
+				else if (!(strcmp(script1,"SPACEX")))
 				{
 					sx=str2num(script2)+1;
 				}
-				else if (!(strcmp((char*)script1,"SPACEY")))
+				else if (!(strcmp(script1,"SPACEY")))
 				{
 					sy=str2num(script2)+1;
 				}
-				else if (!(strcmp((char*)script1,"CHARX")))
+				else if (!(strcmp(script1,"CHARX")))
 				{
 					cx=str2num(script2);
 				}
-				else if (!(strcmp((char*)script1,"CHARY")))
+				else if (!(strcmp(script1,"CHARY")))
 				{
 					cy=str2num(script2);
 				}
-				else if (!(strcmp((char*)script1,"CHARZ")))
+				else if (!(strcmp(script1,"CHARZ")))
 				{
 					cz=str2num(script2);
 				}
-				else if( !(strcmp((char*)script1, "ITEMSDECAY" )))
+				else if( !(strcmp(script1, "ITEMSDECAY" )))
 				{
 					itemsdecay = str2num( script2 );
 				}
-				else if (!(strcmp((char*)script1,"HOUSE_ITEM")))
+				else if (!(strcmp(script1,"HOUSE_ITEM")))
 				{
 					hitem[icount]=str2num(script2);
 					icount++;
 				}
-				else if (!(strcmp((char*)script1, "HOUSE_DEED")))
+				else if (!(strcmp(script1, "HOUSE_DEED")))
 				{
 					hdeed=str2num(script2);
 				}
-				else if (!(strcmp((char*)script1, "BOAT"))) boat=1;//Boats
+				else if (!(strcmp(script1, "BOAT"))) boat=1;//Boats
 
-				else if (!(strcmp((char*)script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
-				else if (!(strcmp((char*)script1, "NOKEY"))) nokey=1;
-				else if (!(strcmp((char*)script1, "NAME")))
+				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
+				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
+				else if (!(strcmp(script1, "NAME")))
 				{
-					strcpy((char*)name,(char*)script2);
+					strcpy(name,script2);
 					othername=1;
 				}
 			}
 		}
-		while ( (strcmp((char*)script1,"}")) && (++loopexit < MAXLOOPS) );
+		while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 		safedelete(iter);
 
 		if (!id1)
@@ -241,20 +241,20 @@ void buildhouse(int s, int i)
 
 		//Boats ->
 		if(id2>=18)
-			sprintf((char*)temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
+			sprintf(temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
 		else
-			strcpy((char*)temp, "a mast");
+			strcpy(temp, "a mast");
 		if(norealmulti)
-			strcpy((char*)temp, name);
+			strcpy(temp, name);
 		//--^
 
 		if (othername)
-			strcpy((char*)temp,name);
+			strcpy(temp,name);
 
 		if ((id1==0xFF)&&(id2==0xFF))
 			return;
 
-		P_ITEM pHouse=item::SpawnItem(s,currchar[s], 1,(char*)temp,0,(id1<<8)+id2,0,0,0);
+		P_ITEM pHouse=item::SpawnItem(s,currchar[s], 1,temp,0,(id1<<8)+id2,0,0,0);
 		VALIDATEPI(pHouse);
 
 		pc->making=0;
@@ -298,20 +298,20 @@ void buildhouse(int s, int i)
 		//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
 		if (id2>=112&&id2<=115)
 		{
-			sprintf((char*)temp,"%s's tent key",pc->getCurrentNameC());
+			sprintf(temp,"%s's tent key",pc->getCurrentNameC());
 			pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);//iron key for tents
 			pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);
 		}
 		else
 			if(id2<=0x18)
 			{
-				sprintf((char*)temp,"%s's ship key",pc->getCurrentNameC());
+				sprintf(temp,"%s's ship key",pc->getCurrentNameC());
 				pKey=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);//Boats -Rusty Iron Key
 				pKey2=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);
 			}
 			else
 			{
-				sprintf((char*)temp,"%s's house key",pc->getCurrentNameC());
+				sprintf(temp,"%s's house key",pc->getCurrentNameC());
 				pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);//gold key for everything else;
 				pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);
 			}
@@ -372,7 +372,7 @@ void buildhouse(int s, int i)
 					iter->parseLine(script1, script2);
 					if (script1[0]!='}')
 					{
-						if (!(strcmp((char*)script1,"ITEM")))
+						if (!(strcmp(script1,"ITEM")))
 						{
 							pi_l=item::CreateScriptItem(s,str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.
 
@@ -398,26 +398,26 @@ void buildhouse(int s, int i)
 
 							}
 						}
-						if (!(strcmp((char*)script1,"DECAY")))
+						if (!(strcmp(script1,"DECAY")))
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setDecay();
 						}
-						if (!(strcmp((char*)script1,"NODECAY")))
+						if (!(strcmp(script1,"NODECAY")))
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setDecay( false );
 						}
-						if (!(strcmp((char*)script1,"PACK")))//put the item in the Builder's Backpack
+						if (!(strcmp(script1,"PACK")))//put the item in the Builder's Backpack
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setContSerial((pc->getBackpack())->getSerial32());
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", rand()%90+31);
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", rand()%90+31);
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", 9);
 						}
-						if (!(strcmp((char*)script1,"MOVEABLE")))
+						if (!(strcmp(script1,"MOVEABLE")))
 						{
 							if (ISVALIDPI(pi_l)) pi_l->magic=1;
 						}
-						if (!(strcmp((char*)script1,"LOCK")))//lock it with the house key
+						if (!(strcmp(script1,"LOCK")))//lock it with the house key
 						{
 							if (ISVALIDPI(pi_l)) {
 								pi_l->more1=pHouse->getSerial().ser1;
@@ -426,21 +426,21 @@ void buildhouse(int s, int i)
 								pi_l->more4=pHouse->getSerial().ser4;
 							}
 						}
-						if (!(strcmp((char*)script1,"X")))//offset + or - from the center of the house:
+						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
 						}
-						if (!(strcmp((char*)script1,"Y")))
+						if (!(strcmp(script1,"Y")))
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
 						}
-						if (!(strcmp((char*)script1,"Z")))
+						if (!(strcmp(script1,"Z")))
 						{
 							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
 						}
 					}
 				}
-				while ( (strcmp((char*)script1,"}")) && (++loopexit < MAXLOOPS) );
+				while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
@@ -516,16 +516,16 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 					{
 						char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-						sprintf( (char*)temp, TRANSLATE("A vendor deed for %s"), p_index->getCurrentNameC() );
-						P_ITEM pDeed = item::SpawnItem( s, 1, (char*)temp, 0, 0x14F0, 0, 1, 0 );
+						sprintf( temp, TRANSLATE("A vendor deed for %s"), p_index->getCurrentNameC() );
+						P_ITEM pDeed = item::SpawnItem( s, 1, temp, 0, 0x14F0, 0, 1, 0 );
 						VALIDATEPI(pDeed);
 
 						pDeed->type = ITYPE_PLAYER_VENDOR_DEED;
 						pDeed->value = 2000;
 						pDeed->Refresh();
-						sprintf((char*)temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
+						sprintf(temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
 						p_index->deleteChar();
-						sysmessage(s, (char*)temp);
+						sysmessage(s, temp);
 					}
 				}		
 			}

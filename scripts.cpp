@@ -66,7 +66,7 @@ void readFullLine ()
 	readwscline();
 	script1[0]=0;
 	while(g_strScriptTemp[i]!=0  && i<1024 ) i++;
-	strncpy((char*)script1,(char*) g_strScriptTemp, i);
+	strncpy(script1, g_strScriptTemp, i);
 	script1[i]=0;
 	return;
 
@@ -83,9 +83,9 @@ void readw2 ()
 	script2[0]=0;
 	script3[0]=0;
 	while(g_strScriptTemp[i]!=0 && g_strScriptTemp[i]!=' ' && g_strScriptTemp[i]!='=' && i<1024 ) i++;
-	strncpy((char*)script1,(char*) g_strScriptTemp, i);
+	strncpy(script1, g_strScriptTemp, i);
 	script1[i]=0;
-	if (script1[0]!='}' && g_strScriptTemp[i]!=0) strcpy((char*)script2, (char*)(g_strScriptTemp+i+1));
+	if (script1[0]!='}' && g_strScriptTemp[i]!=0) strcpy(script2, (g_strScriptTemp+i+1));
 	return;
 
 }
@@ -102,15 +102,15 @@ void readw3 ()
 	script2[0]=0;
 	script3[0]=0;
 	while(g_strScriptTemp[i]!=0 && g_strScriptTemp[i]!=' ' && g_strScriptTemp[i]!='=' && i<1024 ) i++;
-	strncpy((char*)script1, (char*)g_strScriptTemp, i);
+	strncpy(script1, g_strScriptTemp, i);
 	script1[i]=0;
 	if (script1[0]=='}' || g_strScriptTemp[i]==0) return;
 	i++;
 	j=i;
 	while(g_strScriptTemp[i]!=0 && g_strScriptTemp[i]!=' ' && g_strScriptTemp[i]!='=' && i <1024 ) i++;
-	strncpy((char*)script2, (char*)(g_strScriptTemp+j), i-j);
+	strncpy(script2, (g_strScriptTemp+j), i-j);
 	script2[i-j]=0;
-	strcpy((char*)script3, (char*)(g_strScriptTemp+i+1));
+	strcpy(script3, (g_strScriptTemp+i+1));
 
 
 }

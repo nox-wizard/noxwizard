@@ -616,7 +616,7 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
 
     gmindex=m;
     strcpy(script1, iter->getEntry()->getFullLine().c_str());
-    strcpy(gmtext[0],(char*)script1);
+    strcpy(gmtext[0],script1);
 
     iter->parseLine(script1, script2); //thiz one to discard the { !!! >:]
 
@@ -646,7 +646,7 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
             iter->parseLine(script1, script2);
             imk->minskill=str2num(script2);
             imk->maxskill=imk->minskill*SrvParms->skilllevel; // by Magius(CHE)
-            if (strcmp((char*)script1,"SKILL"))
+            if (strcmp(script1,"SKILL"))
             {
                 sprintf(tmp,"create.scp, MAKEMENU %i: Expected 'SKILL <num>' after 'RESOURCE %i'!", m,imk->needs);
                 LogWarning(tmp);
@@ -667,7 +667,7 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
             imk->number=str2num(script2);
             if (minres>imk->needs || !minres) minres=imk->needs;
             if (minskl>imk->minskill || !minskl) minskl=imk->minskill;
-            if (strcmp((char*)script1,"ADDITEM") && strcmp((char*)script1,"MAKEMENU"))
+            if (strcmp(script1,"ADDITEM") && strcmp(script1,"MAKEMENU"))
             {
                 sprintf(tmp,"create.scp, MAKEMENU %i: Expected 'ADDITEM/MAKEMENU <num>' after 'SKILL %i'!", m,imk->minskill);
                 LogWarning(tmp);
@@ -676,11 +676,11 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
             }
 
             iter->parseLine(script1, script2);
-            if (!strcmp((char*)script1,"RANK")) // Item Rank System - by Magius(CHE)
+            if (!strcmp(script1,"RANK")) // Item Rank System - by Magius(CHE)
             {
-                gettokennum((char*)script2, 0);
+                gettokennum(script2, 0);
                 imk->minrank=str2num(gettokenstr);
-                gettokennum((char*)script2, 1);
+                gettokennum(script2, 1);
                 imk->maxrank=str2num(gettokenstr);
                 iter->parseLine(script1, script2);
             } else
@@ -704,7 +704,7 @@ void Skills::MakeMenu(NXWSOCKET s, int m, int skill)
         sysmessage(s,TRANSLATE("You aren't skilled enough to make anything with what you have."));
         return;
     }
-    sprintf((char*)temp, "%i: %s", m, gmtext[0]);
+    sprintf(temp, "%i: %s", m, gmtext[0]);
     lentext=sprintf(gmtext[0], "%s", temp);
     total=9+1+lentext+1;
     for (i=1;i<=gmnumber;i++)
@@ -983,8 +983,8 @@ static bool DoOnePotion(NXWSOCKET s, UI16 regid, UI32 regamount, char* regname)
     if (pc->getAmount(regid) >= regamount)
     {
         success=true;
-        sprintf((char*)temp, TRANSLATE("*%s starts grinding some %s in the mortar.*"), pc->getCurrentNameC(), regname);
-        pc->emoteall( (char*)temp,1); // LB, the 1 stops stupid alchemy spam
+        sprintf(temp, TRANSLATE("*%s starts grinding some %s in the mortar.*"), pc->getCurrentNameC(), regname);
+        pc->emoteall( temp,1); // LB, the 1 stops stupid alchemy spam
         delequan(DEREF_P_CHAR(pc),regid,regamount);
     }
     else
@@ -1293,8 +1293,8 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 
         if (ges>skillcap && c==0) // skill capped and no skill is marked as fall down.
         {
-            sprintf((char*)temp,TRANSLATE("You have reached the skill-cap of %i and no skill can fall!"), skillcap);
-            sysmessage(calcSocketFromChar(s),(char*)temp);
+            sprintf(temp,TRANSLATE("You have reached the skill-cap of %i and no skill can fall!"), skillcap);
+            sysmessage(calcSocketFromChar(s),temp);
             return 0;
         }
 
@@ -1895,9 +1895,9 @@ void Skills::Tracking(NXWSOCKET s,int selection)
 	SetTimerSec(&pc->trackingtimer,(((tracking_data.basetimer*pc->skill[TRACKING])/1000)+1)); // tracking time in seconds ... gm tracker -> basetimer+1 seconds, 0 tracking -> 1 sec, new calc by LB
 	SetTimerSec(&pc->trackingdisplaytimer,tracking_data.redisplaytime);
 
-	sprintf((char*)temp,TRANSLATE("You are now tracking %s."), pc_targ->getCurrentNameC());
+	sprintf(temp,TRANSLATE("You are now tracking %s."), pc_targ->getCurrentNameC());
 
-	sysmessage(s,(char*)temp);
+	sysmessage(s,temp);
 	Skills::Track(DEREF_P_CHAR(pc));
 }
 
@@ -1973,31 +1973,31 @@ void Skills::CreateTrackingMenu(NXWSOCKET s,int m)
 			switch(Skills::TrackingDirection(s,DEREF_P_CHAR(pcm)))
 			{
 				case NORTH:
-                    strcpy((char*)temp,TRANSLATE("to the North"));
+                    strcpy(temp,TRANSLATE("to the North"));
                     break;
 				case NORTHWEST:
-                    strcpy((char*)temp,TRANSLATE("to the Northwest"));
+                    strcpy(temp,TRANSLATE("to the Northwest"));
                     break;
 				case NORTHEAST:
-                    strcpy((char*)temp,TRANSLATE("to the Northeast"));
+                    strcpy(temp,TRANSLATE("to the Northeast"));
                     break;
 				case SOUTH:
-                    strcpy((char*)temp,TRANSLATE("to the South"));
+                    strcpy(temp,TRANSLATE("to the South"));
                     break;
 				case SOUTHWEST:
-                    strcpy((char*)temp,TRANSLATE("to the Southwest"));
+                    strcpy(temp,TRANSLATE("to the Southwest"));
                     break;
 				case SOUTHEAST:
-                    strcpy((char*)temp,TRANSLATE("to the Southeast"));
+                    strcpy(temp,TRANSLATE("to the Southeast"));
                     break;
 				case WEST:
-                    strcpy((char*)temp,TRANSLATE("to the West"));
+                    strcpy(temp,TRANSLATE("to the West"));
                     break;
 				case EAST:
-                    strcpy((char*)temp,TRANSLATE("to the East"));
+                    strcpy(temp,TRANSLATE("to the East"));
                     break;
 				default:
-                    strcpy((char*)temp,TRANSLATE("right next to you"));
+                    strcpy(temp,TRANSLATE("right next to you"));
                     break;
 			}//switch
             
@@ -2636,22 +2636,22 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
         switch(i)
         {
         case 0:
-            sprintf((char*)temp,TRANSLATE("This target is empty"));
+            sprintf(temp,TRANSLATE("This target is empty"));
             break;
         case 1:
-            sprintf((char*)temp,TRANSLATE("You pull %d arrows from the target"),pButte->more1/2);
+            sprintf(temp,TRANSLATE("You pull %d arrows from the target"),pButte->more1/2);
             break;
         case 2:
-            sprintf((char*)temp,TRANSLATE("You pull %d bolts from the target"),pButte->more2/2);
+            sprintf(temp,TRANSLATE("You pull %d bolts from the target"),pButte->more2/2);
             break;
         case 3:
-            sprintf((char*)temp,TRANSLATE("You pull %d arrows and %d bolts from the target"),pButte->more1,pButte->more2/2);
+            sprintf(temp,TRANSLATE("You pull %d arrows and %d bolts from the target"),pButte->more1,pButte->more2/2);
             break;
         default:
             LogError("switch reached default");
             return;
         }
-        pc->sysmsg((char*)temp);
+        pc->sysmsg(temp);
         pButte->more1=0;
         pButte->more2=0;
     }
@@ -2836,11 +2836,11 @@ void Skills::Persecute (NXWSOCKET  s)
             sysmessage(calcSocketFromChar(DEREF_P_CHAR(pc_targ)),TRANSLATE("A damned soul is disturbing your mind!"));
             SetSkillDelay(DEREF_P_CHAR(pc));
 
-            sprintf((char*)temp, TRANSLATE("%s is persecuted by a ghost!!"), pc_targ->getCurrentNameC());
+            sprintf(temp, TRANSLATE("%s is persecuted by a ghost!!"), pc_targ->getCurrentNameC());
 
             // Dupois pointed out the for loop was changing i which would drive stuff nuts later
 
-			pc_targ->emoteall( (char*)temp, 1);
+			pc_targ->emoteall( temp, 1);
             
         } else
         {
@@ -2882,37 +2882,37 @@ void loadskills()
             iter->parseLine(script1, script2);
             if ((script1[0]!='}')&&(script1[0]!='{'))
             {
-                if (!(strcmp("STR", (char*)script1)))
+                if (!(strcmp("STR", script1)))
                 {
                     skillinfo[i].st=str2num(script2);
                 }
-                else if (!(strcmp("DEX", (char*)script1)))
+                else if (!(strcmp("DEX", script1)))
                 {
                     skillinfo[i].dx=str2num(script2);
                 }
-                else if (!(strcmp("INT", (char*)script1)))
+                else if (!(strcmp("INT", script1)))
                 {
                     skillinfo[i].in=str2num(script2);
                 }
-                else if (!(strcmp("SKILLPOINT", (char*)script1)))
+                else if (!(strcmp("SKILLPOINT", script1)))
                 {
                     wpadvance[l].skill=i;
-                    gettokennum((char*)script2, 0);
+                    gettokennum(script2, 0);
                     wpadvance[l].base=str2num(gettokenstr);
-                    gettokennum((char*)script2, 1);
+                    gettokennum(script2, 1);
                     wpadvance[l].success=str2num(gettokenstr);
-                    gettokennum((char*)script2, 2);
+                    gettokennum(script2, 2);
                     wpadvance[l].failure=str2num(gettokenstr);
                     l++;
                 }
-                else if (!(strcmp("UNHIDEONUSE", (char*)script1)))  //Luxor 7 dec 2001
+                else if (!(strcmp("UNHIDEONUSE", script1)))  //Luxor 7 dec 2001
                 {
                     if (str2num(script2) == 0)
                         skillinfo[i].unhide_onuse = 0;
                     else
                         skillinfo[i].unhide_onuse = 1;
                 }
-                else if (!(strcmp("UNHIDEONFAIL", (char*)script1))) //Luxor 7 dec 2001
+                else if (!(strcmp("UNHIDEONFAIL", script1))) //Luxor 7 dec 2001
                 {
                     if (str2num(script2) > 0)
                         skillinfo[i].unhide_onfail = 1;

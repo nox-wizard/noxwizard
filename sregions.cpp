@@ -73,7 +73,7 @@ void loadregions()//New -- Zippy spawn regions
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if (!(strcmp("GUARDNUM",(char*)script1)))
+				if (!(strcmp("GUARDNUM",script1)))
 				{
 					if (a<10)
 					{
@@ -85,14 +85,14 @@ void loadregions()//New -- Zippy spawn regions
 						WarnOut("region %i has more than 10 'GUARDNUM', The ones after 10 will not be used\n",i);
 					}
 				}
-				if (!(strcmp("NAME",(char*)script1)))
+				if (!(strcmp("NAME",script1)))
 				{
-					strcpy(regionRef.name,(char*)script2);
+					strcpy(regionRef.name,script2);
 					actgood=INVALID; // Magius(CHE)
 				}
 				// Dupois - Added April 5, 1999
 				// To identify whether this region is escortable or not.
-				else if (!(strcmp("ESCORTS",(char*)script1)))
+				else if (!(strcmp("ESCORTS",script1)))
 				{
 					// Load the region number in the global array of valid escortable regions
 					if ( str2num(script2) == 1 )
@@ -103,81 +103,81 @@ void loadregions()//New -- Zippy spawn regions
 						//ConOut( "NoX-Wizard: loadregions() %i regions loaded so far\n", escortRegions );
 					}
 				} // End - Dupois
-				if (!(strcmp("GUARDOWNER",(char*)script1)))	strcpy(regionRef.guardowner,(char*)script2);
-				if (!(strcmp("MIDILIST",(char*)script1)))		regionRef.midilist=str2num(script2);
-				if (!(strcmp("GUARDED",(char*)script1)))
+				if (!(strcmp("GUARDOWNER",script1)))	strcpy(regionRef.guardowner,script2);
+				if (!(strcmp("MIDILIST",script1)))		regionRef.midilist=str2num(script2);
+				if (!(strcmp("GUARDED",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x01;
 				}
-				if (!(strcmp("MAGICDAMAGE",(char*)script1)))
+				if (!(strcmp("MAGICDAMAGE",script1)))
 				{
 					if ((str2num(script2))) regionRef.priv|=0x40; // bugfix LB 12-march-
 					// changes from 0=magicdamge,1=no magic damage
 					// to			1=			 0=
 				}
-				if (!(strcmp("NOMAGIC",(char*)script1)))
+				if (!(strcmp("NOMAGIC",script1)))
 				{
 					if ((str2num(script2))) regionRef.priv|=0x80;
 				}
-				if (!(strcmp("MARK",(char*)script1)))
+				if (!(strcmp("MARK",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x02;
 				}
-				if (!(strcmp("GATE",(char*)script1)))
+				if (!(strcmp("GATE",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x04;
 				}
-				if (!(strcmp("RECALL",(char*)script1)))
+				if (!(strcmp("RECALL",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x08;
 				}
-				if (!(strcmp("SNOWCHANCE", (char*)script1)))
+				if (!(strcmp("SNOWCHANCE", script1)))
 				{
 					regionRef.snowchance=str2num(script2);
 				}
-				if (!(strcmp("RAINCHANCE", (char*)script1)))
+				if (!(strcmp("RAINCHANCE", script1)))
 				{
 					regionRef.rainchance=str2num(script2);
 				}
 				//xan : quick&dirty weather system :)
-				if (!(strcmp("DRYCHANCE", (char*)script1)))
+				if (!(strcmp("DRYCHANCE", script1)))
 				{
 					regionRef.drychance=str2num(script2);
 				}
-				if (!(strcmp("KEEPCHANCE", (char*)script1)))
+				if (!(strcmp("KEEPCHANCE", script1)))
 				{
 					regionRef.keepchance=str2num(script2);
 				}
-				if (!(strcmp("FORCESEASON", (char*)script1)))
+				if (!(strcmp("FORCESEASON", script1)))
 				{
 					regionRef.forcedseason =str2num(script2);
 				}
 
-				if (!(strcmp("IGNOREMONTHMULTIPLIERS", (char*)script1)))
+				if (!(strcmp("IGNOREMONTHMULTIPLIERS", script1)))
 				{
 					regionRef.ignoreseason =true;
 				}
 
-				if (!(strcmp("GOOD", (char*)script1))) // Magius(CHE)
+				if (!(strcmp("GOOD", script1))) // Magius(CHE)
 				{
 					actgood=str2num(script2);
 				}
-				if (!(strcmp("BUYABLE", (char*)script1))) // Magius(CHE)
+				if (!(strcmp("BUYABLE", script1))) // Magius(CHE)
 				{
 					if (actgood>INVALID) regionRef.goodbuy[actgood]=str2num(script2);
 					else ErrOut("error in regions.xss. You must write BUYABLE after GOOD <num>!\n");
 				}
-				if (!(strcmp("SELLABLE", (char*)script1))) // Magius(CHE)
+				if (!(strcmp("SELLABLE", script1))) // Magius(CHE)
 				{
 					if (actgood>INVALID) regionRef.goodsell[actgood]=str2num(script2);
 					else ErrOut("error in regions.xss. You must write SELLABLE after GOOD <num>!\n");
 				}
-				if (!(strcmp("RANDOMVALUE", (char*)script1))) // Magius(CHE) (2)
+				if (!(strcmp("RANDOMVALUE", script1))) // Magius(CHE) (2)
 				{
 					if (actgood>INVALID) {
-						gettokennum((char*)script2, 0);
+						gettokennum(script2, 0);
 						regionRef.goodrnd1[actgood]=str2num(gettokenstr);
-						gettokennum((char*)script2, 1);
+						gettokennum(script2, 1);
 						regionRef.goodrnd2[actgood]=str2num(gettokenstr);
 						if (regionRef.goodrnd2[actgood]<regionRef.goodrnd1[actgood])
 						{
@@ -187,19 +187,19 @@ void loadregions()//New -- Zippy spawn regions
 					}
 					else ErrOut("error in regions.xss. You must write RANDOMVALUE after GOOD <num>!\n");
 				}
-				if (!(strcmp("X1", (char*)script1)))
+				if (!(strcmp("X1", script1)))
 				{
 					location[l].x1=str2num(script2);
 				}
-				if (!(strcmp("X2", (char*)script1)))
+				if (!(strcmp("X2", script1)))
 				{
 					location[l].x2=str2num(script2);
 				}
-				if (!(strcmp("Y1", (char*)script1)))
+				if (!(strcmp("Y1", script1)))
 				{
 					location[l].y1=str2num(script2);
 				}
-				if (!(strcmp("Y2", (char*)script1)))
+				if (!(strcmp("Y2", script1)))
 				{
 					location[l].y2=str2num(script2);
 					location[l].region=i;
@@ -226,10 +226,10 @@ void loadregions()//New -- Zippy spawn regions
 	do
 	{
 		iter->parseLine(script1, script2);
-		if(!(strcmp((char*)script1,"X1"))) logout[logoutcount].x1=str2num(script2);
-		if(!(strcmp((char*)script1,"Y1"))) logout[logoutcount].y1=str2num(script2);
-		if(!(strcmp((char*)script1,"X2"))) logout[logoutcount].x2=str2num(script2);
-		if(!(strcmp((char*)script1,"Y2")))
+		if(!(strcmp(script1,"X1"))) logout[logoutcount].x1=str2num(script2);
+		if(!(strcmp(script1,"Y1"))) logout[logoutcount].y1=str2num(script2);
+		if(!(strcmp(script1,"X2"))) logout[logoutcount].x2=str2num(script2);
+		if(!(strcmp(script1,"Y2")))
 		{
 			logout[logoutcount].y2=str2num(script2);
 			logoutcount++;

@@ -47,9 +47,9 @@ void offlinehtml()//HTML
 
 	do {
 		iter->parseLine(script1, script2);
-		if(!(strcmp((char*)script1,"LINE"))) fprintf(html,"%s\n",script2);
-		else if(!(strcmp((char*)script1,"TIME"))) fprintf(html,RealTime(time_str));
-		else if(!(strcmp((char*)script1,"UPTIME"))) fprintf(html,"%i:%i:%i",hr,min,sec);
+		if(!(strcmp(script1,"LINE"))) fprintf(html,"%s\n",script2);
+		else if(!(strcmp(script1,"TIME"))) fprintf(html,RealTime(time_str));
+		else if(!(strcmp(script1,"UPTIME"))) fprintf(html,"%i:%i:%i",hr,min,sec);
 	} while( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 	fclose(html);
@@ -96,15 +96,15 @@ void updatehtml()//HTML
 
 	do {
 		iter->parseLine(script1, script2);
-		if(!(strcmp((char*)script1,"LINE"))) 
+		if(!(strcmp(script1,"LINE"))) 
 		{
 			fprintf(html,"%s\n",script2);
 		}
-		else if(!(strcmp((char*)script1,"TIME"))) 
+		else if(!(strcmp(script1,"TIME"))) 
 		{
 			fprintf(html,"%s <BR>",RealTime(time_str));
 		}
-		else if(!(strcmp((char*)script1,"NOW")))
+		else if(!(strcmp(script1,"NOW")))
 		{
 			P_CHAR pc= MAKE_CHAR_REF(currchar[n]);
 			//if(online(currchar[n])) //bugfix LB
@@ -114,7 +114,7 @@ void updatehtml()//HTML
 				n++;
 			}
 		}
-		else if(!(strcmp((char*)script1,"WHOLIST")))
+		else if(!(strcmp(script1,"WHOLIST")))
 		{
 			a=0;
 			for (n=0;n<now;n++)
@@ -129,9 +129,9 @@ void updatehtml()//HTML
 				}
 			}
 		}
-		else if(!(strcmp((char*)script1,"NOWNUM"))) fprintf(html,"%i",now);
-		else if(!(strcmp((char*)script1,"ACCOUNTNUM"))) fprintf(html,"%i",Accounts->Count());
-		else if(!(strcmp((char*)script1,"CHARCOUNT")))
+		else if(!(strcmp(script1,"NOWNUM"))) fprintf(html,"%i",now);
+		else if(!(strcmp(script1,"ACCOUNTNUM"))) fprintf(html,"%i",Accounts->Count());
+		else if(!(strcmp(script1,"CHARCOUNT")))
 		{
 			if(ccount==0)
 			{
@@ -147,7 +147,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",ccount);
 		}
-		else if(!(strcmp((char*)script1,"NPCS")))
+		else if(!(strcmp(script1,"NPCS")))
 		{
 			if(npccount==0)
 			{
@@ -163,11 +163,11 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",npccount);
 		}
-		else if(!(strcmp((char*)script1,"ITEMCOUNT")))
+		else if(!(strcmp(script1,"ITEMCOUNT")))
 		{
 			//fprintf(html,"%i",itemcount);
 		}
-		else if(!(strcmp((char*)script1,"UPTIME")))
+		else if(!(strcmp(script1,"UPTIME")))
 		{
 			total=(uiCurrentTime-starttime)/MY_CLOCKS_PER_SEC;
 			hr=total/3600;
@@ -184,12 +184,12 @@ void updatehtml()//HTML
 //			fprintf(html,"%s:%s:%s",sh,sm,ss);
 			fprintf(html,"%02d:%02d:%02d",hr,min,sec);
 		}
-		else if(!(strcmp((char*)script1,"IP")))
+		else if(!(strcmp(script1,"IP")))
 		{
 			//ip=inet_addr(serv[str2num(script2)-1][1]);
 			fprintf(html,serv[str2num(script2)-1][1]);
 		}
-		else if(!(strcmp((char*)script1,"GMNUM")))
+		else if(!(strcmp(script1,"GMNUM")))
 		{
 			if(gm==0)
 			{
@@ -204,7 +204,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",gm);
 		}
-		else if(!(strcmp((char*)script1,"CNSNUM")))
+		else if(!(strcmp(script1,"CNSNUM")))
 		{
 			if(cns==0)
 			{
@@ -219,7 +219,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",cns);
 		}
-		else if(!(strcmp((char*)script1,"PDUMP")))
+		else if(!(strcmp(script1,"PDUMP")))
 		{
 			fprintf(html,"Network code: %fmsec [%i samples] <BR>",(float)((float)networkTime/(float)networkTimeCount),  networkTimeCount);
 			fprintf(html,"Timer code: %fmsec [%i samples] <BR>" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
@@ -231,15 +231,15 @@ void updatehtml()//HTML
 			else fprintf(html,"Simulation Cylces: too fast to be measured <BR>");
 
 		}
-		else if(!(strcmp((char*)script1,"SIMCYC"))) // bugfix LB
+		else if(!(strcmp(script1,"SIMCYC"))) // bugfix LB
 		{
 			if (!(loopTime <eps ||  loopTimeCount<eps))
 				fprintf(html,"%f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 			else fprintf(html,"too fast to be measured");
 		}
-		else if(!(strcmp((char*)script1,"UDTIME")))	fprintf(html,"%f",(float)(SrvParms->html/60));
+		else if(!(strcmp(script1,"UDTIME")))	fprintf(html,"%f",(float)(SrvParms->html/60));
 
-			if(!(strcmp((char*)script1,"VER"))) fprintf(html,"%s %s [%s]",VER, VERNUMB, OS);
+			if(!(strcmp(script1,"VER"))) fprintf(html,"%s %s [%s]",VER, VERNUMB, OS);
 	} while( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 	fclose(html);

@@ -1641,8 +1641,8 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
     }
     if(pc_currchar->IsGM())
     {
-        sprintf((char*)temp, TRANSLATE("Attack [%i] Defense [%i] Lodamage [%i] Hidamage [%i]"), pi->att, pi->def, pi->lodamage, pi->hidamage);
-        sysmessage(s, (char*)temp);
+        sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Lodamage [%i] Hidamage [%i]"), pi->att, pi->def, pi->lodamage, pi->hidamage);
+        sysmessage(s, temp);
         return;
     }
 
@@ -1655,59 +1655,59 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
         else
         {
             totalhp= (float) pi->hp/pi->maxhp;
-            strcpy((char*)temp,TRANSLATE("This item "));
-            if  (totalhp>0.9) strcpy((char*)p2, TRANSLATE("is brand new."));
-            else if (totalhp>0.8) strcpy((char*)p2, TRANSLATE("is almost new."));
-            else if (totalhp>0.7) strcpy((char*)p2, TRANSLATE("is barely used, with a few nicks and scrapes."));
-            else if (totalhp>0.6) strcpy((char*)p2, TRANSLATE("is in fairly good condition."));
-            else if (totalhp>0.5) strcpy((char*)p2, TRANSLATE("suffered some wear and tear."));
-            else if (totalhp>0.4) strcpy((char*)p2, TRANSLATE("is well used."));
-            else if (totalhp>0.3) strcpy((char*)p2, TRANSLATE("is rather battered."));
-            else if (totalhp>0.2) strcpy((char*)p2, TRANSLATE("is somewhat badly damaged."));
-            else if (totalhp>0.1) strcpy((char*)p2, TRANSLATE("is flimsy and not trustworthy."));
-            else              strcpy((char*)p2, TRANSLATE("is falling apart."));
-            strcat((char*)temp,p2);
+            strcpy(temp,TRANSLATE("This item "));
+            if  (totalhp>0.9) strcpy(p2, TRANSLATE("is brand new."));
+            else if (totalhp>0.8) strcpy(p2, TRANSLATE("is almost new."));
+            else if (totalhp>0.7) strcpy(p2, TRANSLATE("is barely used, with a few nicks and scrapes."));
+            else if (totalhp>0.6) strcpy(p2, TRANSLATE("is in fairly good condition."));
+            else if (totalhp>0.5) strcpy(p2, TRANSLATE("suffered some wear and tear."));
+            else if (totalhp>0.4) strcpy(p2, TRANSLATE("is well used."));
+            else if (totalhp>0.3) strcpy(p2, TRANSLATE("is rather battered."));
+            else if (totalhp>0.2) strcpy(p2, TRANSLATE("is somewhat badly damaged."));
+            else if (totalhp>0.1) strcpy(p2, TRANSLATE("is flimsy and not trustworthy."));
+            else              strcpy(p2, TRANSLATE("is falling apart."));
+            strcat(temp,p2);
             char temp2[33];
             sprintf(temp2," [%.1f %%]",totalhp*100);
-            strcat((char*)temp,temp2);  // Magius(CHE) §
+            strcat(temp,temp2);  // Magius(CHE) §
         }
         if (pc_currchar->checkSkill(ARMSLORE, 250, 510))
         {
             if (pi->hidamage)
             {
                 total = (pi->hidamage + pi->lodamage)/2;
-                if  ( total > 26) strcpy((char*)p2, TRANSLATE(" Would be extraordinarily deadly."));
-                else if ( total > 21) strcpy((char*)p2, TRANSLATE(" Would be a superior weapon."));
-                else if ( total > 16) strcpy((char*)p2, TRANSLATE(" Would inflict quite a lot of damage and pain."));
-                else if ( total > 11) strcpy((char*)p2, TRANSLATE(" Would probably hurt your opponent a fair amount."));
-                else if ( total > 6)  strcpy((char*)p2, TRANSLATE(" Would do some damage."));
-                else if ( total > 3)  strcpy((char*)p2, TRANSLATE(" Would do minimal damage."));
-                else              strcpy((char*)p2, TRANSLATE(" Might scratch your opponent slightly."));
-                strcat((char*)temp,p2);
+                if  ( total > 26) strcpy(p2, TRANSLATE(" Would be extraordinarily deadly."));
+                else if ( total > 21) strcpy(p2, TRANSLATE(" Would be a superior weapon."));
+                else if ( total > 16) strcpy(p2, TRANSLATE(" Would inflict quite a lot of damage and pain."));
+                else if ( total > 11) strcpy(p2, TRANSLATE(" Would probably hurt your opponent a fair amount."));
+                else if ( total > 6)  strcpy(p2, TRANSLATE(" Would do some damage."));
+                else if ( total > 3)  strcpy(p2, TRANSLATE(" Would do minimal damage."));
+                else              strcpy(p2, TRANSLATE(" Might scratch your opponent slightly."));
+                strcat(temp,p2);
 
                 if (pc_currchar->checkSkill( ARMSLORE, 500, 1000))
                 {
-                    if  (pi->spd > 35) strcpy((char*)p2, TRANSLATE(" And is very fast."));
-                    else if (pi->spd > 25) strcpy((char*)p2, TRANSLATE(" And is fast."));
-                    else if (pi->spd > 15) strcpy((char*)p2, TRANSLATE(" And is slow."));
-                    else               strcpy((char*)p2, TRANSLATE(" And is very slow."));
-                    strcat((char*)temp,p2);
+                    if  (pi->spd > 35) strcpy(p2, TRANSLATE(" And is very fast."));
+                    else if (pi->spd > 25) strcpy(p2, TRANSLATE(" And is fast."));
+                    else if (pi->spd > 15) strcpy(p2, TRANSLATE(" And is slow."));
+                    else               strcpy(p2, TRANSLATE(" And is very slow."));
+                    strcat(temp,p2);
                 }
             }
             else
             {
-                if  (pi->def> 12) strcpy((char*)p2, TRANSLATE(" Is superbly crafted to provide maximum protection."));
-                else if (pi->def> 10) strcpy((char*)p2, TRANSLATE(" Offers excellent protection."));
-                else if (pi->def> 8 ) strcpy((char*)p2, TRANSLATE(" Is a superior defense against attack."));
-                else if (pi->def> 6 ) strcpy((char*)p2, TRANSLATE(" Serves as a sturdy protection."));
-                else if (pi->def> 4 ) strcpy((char*)p2, TRANSLATE(" Offers some protection against blows."));
-                else if (pi->def> 2 ) strcpy((char*)p2, TRANSLATE(" Provides very little protection."));
-                else if (pi->def> 0 ) strcpy((char*)p2, TRANSLATE(" Provides almost no protection."));
-                else              strcpy((char*)p2, TRANSLATE(" Offers no defense against attackers."));
-                strcat((char*)temp,p2);
+                if  (pi->def> 12) strcpy(p2, TRANSLATE(" Is superbly crafted to provide maximum protection."));
+                else if (pi->def> 10) strcpy(p2, TRANSLATE(" Offers excellent protection."));
+                else if (pi->def> 8 ) strcpy(p2, TRANSLATE(" Is a superior defense against attack."));
+                else if (pi->def> 6 ) strcpy(p2, TRANSLATE(" Serves as a sturdy protection."));
+                else if (pi->def> 4 ) strcpy(p2, TRANSLATE(" Offers some protection against blows."));
+                else if (pi->def> 2 ) strcpy(p2, TRANSLATE(" Provides very little protection."));
+                else if (pi->def> 0 ) strcpy(p2, TRANSLATE(" Provides almost no protection."));
+                else              strcpy(p2, TRANSLATE(" Offers no defense against attackers."));
+                strcat(temp,p2);
             }
         }
-        sysmessage(s, (char*)temp);
+        sysmessage(s, temp);
 
         if (!(pi->rank<1 || pi->rank>10 || SrvParms->rank_system==0))
         {
@@ -1715,16 +1715,16 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
             {
                 switch(pi->rank)
                 {
-                    case 1: strcpy((char*)p2, TRANSLATE("It seems an item with no quality!"));             break;
-                    case 2: strcpy((char*)p2, TRANSLATE("It seems an item very below standard quality!"));     break;
-                    case 3: strcpy((char*)p2, TRANSLATE("It seems an item below standard quality!"));      break;
-                    case 4: strcpy((char*)p2, TRANSLATE("It seems a weak quality item!"));                     break;
-                    case 5: strcpy((char*)p2, TRANSLATE("It seems a standard quality item!"));             break;
-                    case 6: strcpy((char*)p2, TRANSLATE("It seems a nice quality item!"));                     break;
-                    case 7: strcpy((char*)p2, TRANSLATE("It seems a good quality item!"));                     break;
-                    case 8: strcpy((char*)p2, TRANSLATE("It seems a great quality item!"));                break;
-                    case 9: strcpy((char*)p2, TRANSLATE("It seems a beautiful quality item!"));            break;
-                    case 10:strcpy((char*)p2, TRANSLATE("It seems a perfect quality item!"));              break;
+                    case 1: strcpy(p2, TRANSLATE("It seems an item with no quality!"));             break;
+                    case 2: strcpy(p2, TRANSLATE("It seems an item very below standard quality!"));     break;
+                    case 3: strcpy(p2, TRANSLATE("It seems an item below standard quality!"));      break;
+                    case 4: strcpy(p2, TRANSLATE("It seems a weak quality item!"));                     break;
+                    case 5: strcpy(p2, TRANSLATE("It seems a standard quality item!"));             break;
+                    case 6: strcpy(p2, TRANSLATE("It seems a nice quality item!"));                     break;
+                    case 7: strcpy(p2, TRANSLATE("It seems a good quality item!"));                     break;
+                    case 8: strcpy(p2, TRANSLATE("It seems a great quality item!"));                break;
+                    case 9: strcpy(p2, TRANSLATE("It seems a beautiful quality item!"));            break;
+                    case 10:strcpy(p2, TRANSLATE("It seems a perfect quality item!"));              break;
                 }
                 sysmessage(s,p2);
             }
@@ -1778,12 +1778,12 @@ void Skills::ItemIdTarget(NXWSOCKET s)
             {
                 if (strlen(pi->creator)>0)
                 {
-                    if (pi->madewith>0) sprintf((char*)temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                    else if (pi->madewith<0) sprintf((char*)temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                    else sprintf((char*)temp2, TRANSLATE("It is made by %s"),pi->creator); // Magius(CHE)
-                } else strcpy((char*)temp2, TRANSLATE("You don't know its creator!"));
-            } else strcpy((char*)temp2, TRANSLATE("You can't know its creator!"));
-            sysmessage(s, (char*)temp2);
+                    if (pi->madewith>0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator); // Magius(CHE)
+                    else if (pi->madewith<0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator); // Magius(CHE)
+                    else sprintf(temp2, TRANSLATE("It is made by %s"),pi->creator); // Magius(CHE)
+                } else strcpy(temp2, TRANSLATE("You don't know its creator!"));
+            } else strcpy(temp2, TRANSLATE("You can't know its creator!"));
+            sysmessage(s, temp2);
             // End Show creator
 
             if (!pc->checkSkill( ITEMID, 250, 500))
@@ -1806,13 +1806,13 @@ void Skills::ItemIdTarget(NXWSOCKET s)
                     {
                         if (!pc->checkSkill( ITEMID, 750, 1100))
                         {
-                            sprintf((char*)temp, TRANSLATE("It is enchanted with the spell %s, but you cannot determine how many charges remain."),spellname[(8*(pi->morex-1))+pi->morey-1]);
-                            sysmessage(s,(char*)temp);
+                            sprintf(temp, TRANSLATE("It is enchanted with the spell %s, but you cannot determine how many charges remain."),spellname[(8*(pi->morex-1))+pi->morey-1]);
+                            sysmessage(s,temp);
                         }
                         else
                         {
-                            sprintf((char*)temp, TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."),spellname[(8*(pi->morex-1))+pi->morey-1],pi->morez);
-                            sysmessage(s,(char*)temp);
+                            sprintf(temp, TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."),spellname[(8*(pi->morex-1))+pi->morey-1],pi->morez);
+                            sysmessage(s,temp);
                         }
                     }
                 }
@@ -1863,7 +1863,7 @@ void Skills::Evaluate_int_Target(NXWSOCKET  s)
         sysmessage(s,TRANSLATE("That does not appear to be a living being."));
     else
     {
-        strcpy((char*)temp,TRANSLATE("That person looks "));
+        strcpy(temp,TRANSLATE("That person looks "));
         if      (pc->in <= 10)  strcat(temp,TRANSLATE("slightly less intelligent than a rock."));
         else if (pc->in <= 20)  strcat(temp, TRANSLATE("fairly stupid."));
         else if (pc->in <= 30)  strcat(temp, TRANSLATE("not the brightest."));
@@ -1874,7 +1874,7 @@ void Skills::Evaluate_int_Target(NXWSOCKET  s)
         else if (pc->in <= 80)  strcat(temp, TRANSLATE("like a formidable intellect, well beyond the ordinary."));
         else if (pc->in <= 90)  strcat(temp, TRANSLATE("like a definite genius."));
         else if (pc->in > 90)   strcat(temp, TRANSLATE("superhumanly intelligent in a manner you cannot comprehend."));
-        sysmessage(s, (char*)temp);
+        sysmessage(s, temp);
     }
 
     AMXEXECSV(s,AMXT_SKITARGS,EVALUATINGINTEL,AMX_AFTER);
@@ -1944,8 +1944,8 @@ void Skills::AnatomyTarget(NXWSOCKET s)
         else if (pc->getStrength() <= 90)  ps2=TRANSLATE("like one of the fastest people you have ever seen");
         else if (pc->getStrength() > 90)   ps2=TRANSLATE("superhumanly agile");
         else ps2 = TRANSLATE("of unknown dexterity"); //just for warns
-        sprintf((char*)temp,TRANSLATE("That person looks %s and %s."), ps1, ps2);
-        sysmessage(s, (char*)temp);
+        sprintf(temp,TRANSLATE("That person looks %s and %s."), ps1, ps2);
+        sysmessage(s, temp);
     }
 
     AMXEXECSV(s,AMXT_SKITARGS,ANATOMY, AMX_AFTER);
@@ -1999,8 +1999,8 @@ void Skills::TameTarget(NXWSOCKET s)
 			{
 				case 0: pc_currchar->talkAll( TRANSLATE("I've always wanted a pet like you."),0); break;
 				case 1: pc_currchar->talkAll( TRANSLATE("Will you be my friend?"),0); break;
-				case 2: sprintf((char*)temp, TRANSLATE("Here %s."),pc->getCurrentNameC()); pc_currchar->talkAll( (char*)temp,0); break;
-				case 3: sprintf((char*)temp, TRANSLATE("Good %s."),pc->getCurrentNameC()); pc_currchar->talkAll( (char*)temp,0); break;
+				case 2: sprintf(temp, TRANSLATE("Here %s."),pc->getCurrentNameC()); pc_currchar->talkAll( temp,0); break;
+				case 3: sprintf(temp, TRANSLATE("Good %s."),pc->getCurrentNameC()); pc_currchar->talkAll( temp,0); break;
 				default:
 					LogError("switch reached default");
 			}
@@ -2183,11 +2183,11 @@ void Skills::AnimalLoreTarget(NXWSOCKET s)
             if (pc->tamed==true)
 			{
 				P_CHAR pc_owner = MAKE_CHARREF_LR(calcCharFromSer(pc->getOwnerSerial32()));
-				sprintf((char*)temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: [%s]"), pc->att, pc->def, pc->taming/10, pc->hp,pc_owner->getCurrentNameC() );
+				sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: [%s]"), pc->att, pc->def, pc->taming/10, pc->hp,pc_owner->getCurrentNameC() );
 			}
 			else 
-				sprintf((char*)temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: himself"), pc->att, pc->def, pc->taming/10, pc->hp);
-            pc->emote(s,(char*)temp,1);
+				sprintf(temp, TRANSLATE("Attack [%i] Defense [%i] Taming [%i] Hit Points [%i] Is Loyal to: himself"), pc->att, pc->def, pc->taming/10, pc->hp);
+            pc->emote(s,temp,1);
         }
         else
         {
@@ -2221,9 +2221,9 @@ void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
     		{
 			char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)<=60) strcpy((char*)temp2,TRANSLATE("few"));
-			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>60) strcpy((char*)temp2,TRANSLATE("many"));
-			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy((char*)temp2,TRANSLATE("many many"));
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)<=60) strcpy(temp2,TRANSLATE("few"));
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>60) strcpy(temp2,TRANSLATE("many"));
+			if(((curtim-pi->murdertime)/MY_CLOCKS_PER_SEC)>180) strcpy(temp2,TRANSLATE("many many"));
 
 			pc->sysmsg(TRANSLATE("The %s is %s seconds old."), pi->getCurrentNameC(), temp2);
 			

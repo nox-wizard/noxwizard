@@ -90,23 +90,23 @@ void newbieitems(P_CHAR pc)
 
 			if (script1[0] != '}')
 			{
-				if (!(strcmp("PACKITEM", (char*)script1)))
+				if (!(strcmp("PACKITEM", script1)))
 				{
 					storeval = str2num(script2);
 					P_ITEM pi_n = item::SpawnItemBackpack2(s, storeval, 0); // Tauriel 11-24-98
 					if (ISVALIDPI(pi_n))
 						pi_n->priv |= 0x02; // Mark as a newbie item
-					strcpy((char*)script1, "DUMMY");
+					strcpy(script1, "DUMMY");
 				}
-				else if (!strcmp("BANKITEM", (char*)script1))
+				else if (!strcmp("BANKITEM", script1))
 				{
 					storeval = str2num(script2);
 					P_ITEM pi = item::SpawnItemBank(DEREF_P_CHAR(pc), storeval); // Tauriel 11-24-98
 					if (ISVALIDPI(pi))
 						pi->priv |= 0x02; // Mark as a newbie item
-					strcpy((char*)script1, "DUMMY");
+					strcpy(script1, "DUMMY");
 				}
-				else if (!strcmp("EQUIPITEM", (char*)script1))
+				else if (!strcmp("EQUIPITEM", script1))
 				{
 					storeval = str2num(script2);
 					P_ITEM pi = item::CreateFromScript(s, storeval);
@@ -115,7 +115,7 @@ void newbieitems(P_CHAR pc)
 						pi->priv |= 0x02; // Mark as a newbie item
 						pi->setCont(pc);
 					}
-					strcpy((char*)script1, "DUMMY");
+					strcpy(script1, "DUMMY");
 				}
 			}
 		}

@@ -315,7 +315,7 @@ void dosocketmidi(NXWSOCKET s)
 		iter->parseLine(script1, script2);
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if (!(strcmp("MIDI",(char*)script1)))
+			if (!(strcmp("MIDI",script1)))
 			{
 				midiarray[i]=str2num(script2);
 				i++;

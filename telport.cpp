@@ -165,75 +165,75 @@ void advancementobjects(CHARACTER s, int x, int allways)
 				iter->parseLine(script1, script2);
 				if ((script1[0]!='}')&&(script1[0]!='{'))
 				{
-					if ((!(strcmp("STR",(char*)script1)))||(!(strcmp("STRENGTH",(char*)script1))))
+					if ((!(strcmp("STR",script1)))||(!(strcmp("STRENGTH",script1))))
 					{
-						pc->setStrength( getRangedValue((char*)script2) );
+						pc->setStrength( getRangedValue(script2) );
 						pc->st2 = pc->getStrength();
 					}
-					if ((!(strcmp("DEX",(char*)script1)))||(!(strcmp("DEXTERITY",(char*)script1))))
+					if ((!(strcmp("DEX",script1)))||(!(strcmp("DEXTERITY",script1))))
 					{
-						pc->dx= getRangedValue((char*)script2);
+						pc->dx= getRangedValue(script2);
 						pc->dx2 = pc->dx;
 					}
-					if ((!(strcmp("INT",(char*)script1)))||(!(strcmp("INTELLIGENCE",(char*)script1))))
+					if ((!(strcmp("INT",script1)))||(!(strcmp("INTELLIGENCE",script1))))
 					{
-						pc->in= getRangedValue((char*)script2);
+						pc->in= getRangedValue(script2);
 						pc->in2 = pc->in;
 					}
 					if (script1[0]=='@') pc->loadEventFromScript(script1, script2);
-					if ((!(strcmp("ALCHEMY",(char*)script1)))||(!(strcmp("SKILL0",(char*)script1)))) pc->baseskill[ALCHEMY] = getRangedValue((char*)script2);
-					if ((!(strcmp("ANATOMY",(char*)script1)))||(!(strcmp("SKILL1",(char*)script1)))) pc->baseskill[ANATOMY] = getRangedValue((char*)script2);
-					if ((!(strcmp("ANIMALLORE",(char*)script1)))||(!(strcmp("SKILL2",(char*)script1)))) pc->baseskill[ANIMALLORE] = getRangedValue((char*)script2);
-					if ((!(strcmp("ITEMID",(char*)script1)))||(!(strcmp("SKILL3",(char*)script1)))) pc->baseskill[ITEMID] = getRangedValue((char*)script2);
-					if ((!(strcmp("ARMSLORE",(char*)script1)))||(!(strcmp("SKILL4",(char*)script1)))) pc->baseskill[ARMSLORE] = getRangedValue((char*)script2);
-					if ((!(strcmp("PARRYING",(char*)script1)))||(!(strcmp("SKILL5",(char*)script1)))) pc->baseskill[PARRYING] = getRangedValue((char*)script2);
-					if ((!(strcmp("BEGGING",(char*)script1)))||(!(strcmp("SKILL6",(char*)script1)))) pc->baseskill[BEGGING] = getRangedValue((char*)script2);
-					if ((!(strcmp("BLACKSMITHING",(char*)script1)))||(!(strcmp("SKILL7",(char*)script1)))) pc->baseskill[BLACKSMITHING] = getRangedValue((char*)script2);
-					if ((!(strcmp("BOWCRAFT",(char*)script1)))||(!(strcmp("SKILL8",(char*)script1)))) pc->baseskill[BOWCRAFT] = getRangedValue((char*)script2);
-					if ((!(strcmp("PEACEMAKING",(char*)script1)))||(!(strcmp("SKILL9",(char*)script1)))) pc->baseskill[PEACEMAKING] = getRangedValue((char*)script2);
-					if ((!(strcmp("CAMPING",(char*)script1)))||(!(strcmp("SKILL10",(char*)script1)))) pc->baseskill[CAMPING] = getRangedValue((char*)script2);
-					if ((!(strcmp("CARPENTRY",(char*)script1)))||(!(strcmp("SKILL11",(char*)script1)))) pc->baseskill[CARPENTRY] = getRangedValue((char*)script2);
-					if ((!(strcmp("CARTOGRAPHY",(char*)script1)))||(!(strcmp("SKILL12",(char*)script1)))) pc->baseskill[CARTOGRAPHY] = getRangedValue((char*)script2);
-					if ((!(strcmp("COOKING",(char*)script1)))||(!(strcmp("SKILL13",(char*)script1)))) pc->baseskill[COOKING] = getRangedValue((char*)script2);
-					if ((!(strcmp("DETECTINGHIDDEN",(char*)script1)))||(!(strcmp("SKILL14",(char*)script1)))) pc->baseskill[DETECTINGHIDDEN] = getRangedValue((char*)script2);
-					if ((!(strcmp("ENTICEMENT",(char*)script1)))||(!(strcmp("SKILL15",(char*)script1)))) pc->baseskill[ENTICEMENT] = getRangedValue((char*)script2);
-					if ((!(strcmp("EVALUATINGINTEL",(char*)script1)))||(!(strcmp("SKILL16",(char*)script1)))) pc->baseskill[EVALUATINGINTEL] = getRangedValue((char*)script2);
-					if ((!(strcmp("HEALING",(char*)script1)))||(!(strcmp("SKILL17",(char*)script1)))) pc->baseskill[HEALING] = getRangedValue((char*)script2);
-					if ((!(strcmp("FISHING",(char*)script1)))||(!(strcmp("SKILL18",(char*)script1)))) pc->baseskill[FISHING] = getRangedValue((char*)script2);
-					if ((!(strcmp("FORENSICS",(char*)script1)))||(!(strcmp("SKILL19",(char*)script1)))) pc->baseskill[FORENSICS] = getRangedValue((char*)script2);
-					if ((!(strcmp("HERDING",(char*)script1)))||(!(strcmp("SKILL20",(char*)script1)))) pc->baseskill[HERDING] = getRangedValue((char*)script2);
-					if ((!(strcmp("HIDING",(char*)script1)))||(!(strcmp("SKILL21",(char*)script1)))) pc->baseskill[HIDING] = getRangedValue((char*)script2);
-					if ((!(strcmp("PROVOCATION",(char*)script1)))||(!(strcmp("SKILL22",(char*)script1)))) pc->baseskill[PROVOCATION] = getRangedValue((char*)script2);
-					if ((!(strcmp("INSCRIPTION",(char*)script1)))||(!(strcmp("SKILL23",(char*)script1)))) pc->baseskill[INSCRIPTION] = getRangedValue((char*)script2);
-					if ((!(strcmp("LOCKPICKING",(char*)script1)))||(!(strcmp("SKILL24",(char*)script1)))) pc->baseskill[LOCKPICKING] = getRangedValue((char*)script2);
-					if ((!(strcmp("MAGERY",(char*)script1)))||(!(strcmp("SKILL25",(char*)script1)))) pc->baseskill[MAGERY] = getRangedValue((char*)script2);
-					if ((!(strcmp("MAGICRESISTANCE",(char*)script1)))||(!(strcmp("RESIST",(char*)script1)))||(!(strcmp("SKILL26",(char*)script1)))) pc->baseskill[MAGICRESISTANCE] = getRangedValue((char*)script2);
-					if ((!(strcmp("TACTICS",(char*)script1)))||(!(strcmp("SKILL27",(char*)script1)))) pc->baseskill[TACTICS] = getRangedValue((char*)script2);
-					if ((!(strcmp("SNOOPING",(char*)script1)))||(!(strcmp("SKILL28",(char*)script1)))) pc->baseskill[SNOOPING] = getRangedValue((char*)script2);
-					if ((!(strcmp("MUSICIANSHIP",(char*)script1)))||(!(strcmp("SKILL29",(char*)script1)))) pc->baseskill[MUSICIANSHIP] = getRangedValue((char*)script2);
-					if ((!(strcmp("POISONING",(char*)script1)))||(!(strcmp("SKILL30",(char*)script1)))) pc->baseskill[POISONING] = getRangedValue((char*)script2);
-					if ((!(strcmp("ARCHERY",(char*)script1)))||(!(strcmp("SKILL31",(char*)script1)))) pc->baseskill[ARCHERY] = getRangedValue((char*)script2);
-					if ((!(strcmp("SPIRITSPEAK",(char*)script1)))||(!(strcmp("SKILL32",(char*)script1)))) pc->baseskill[SPIRITSPEAK] = getRangedValue((char*)script2);
-					if ((!(strcmp("STEALING",(char*)script1)))||(!(strcmp("SKILL33",(char*)script1)))) pc->baseskill[STEALING] = getRangedValue((char*)script2);
-					if ((!(strcmp("TAILORING",(char*)script1)))||(!(strcmp("SKILL34",(char*)script1)))) pc->baseskill[TAILORING] = getRangedValue((char*)script2);
-					if ((!(strcmp("TAMING",(char*)script1)))||(!(strcmp("SKILL35",(char*)script1)))) pc->baseskill[TAMING] = getRangedValue((char*)script2);
-					if ((!(strcmp("TASTEID",(char*)script1)))||(!(strcmp("SKILL36",(char*)script1)))) pc->baseskill[TASTEID] = getRangedValue((char*)script2);
-					if ((!(strcmp("TINKERING",(char*)script1)))||(!(strcmp("SKILL37",(char*)script1)))) pc->baseskill[TINKERING] = getRangedValue((char*)script2);
-					if ((!(strcmp("TRACKING",(char*)script1)))||(!(strcmp("SKILL38",(char*)script1)))) pc->baseskill[TRACKING] = getRangedValue((char*)script2);
-					if ((!(strcmp("VETERINARY",(char*)script1)))||(!(strcmp("SKILL39",(char*)script1)))) pc->baseskill[VETERINARY] = getRangedValue((char*)script2);
-					if ((!(strcmp("SWORDSMANSHIP",(char*)script1)))||(!(strcmp("SKILL40",(char*)script1)))) pc->baseskill[SWORDSMANSHIP] = getRangedValue((char*)script2);
-					if ((!(strcmp("MACEFIGHTING",(char*)script1)))||(!(strcmp("SKILL41",(char*)script1))))pc->baseskill[MACEFIGHTING] = getRangedValue((char*)script2);
-					if ((!(strcmp("FENCING",(char*)script1)))||(!(strcmp("SKILL42",(char*)script1)))) pc->baseskill[FENCING] = getRangedValue((char*)script2);
-					if ((!(strcmp("WRESTLING",(char*)script1)))||(!(strcmp("SKILL43",(char*)script1)))) pc->baseskill[WRESTLING] = getRangedValue((char*)script2);
-					if ((!(strcmp("LUMBERJACKING",(char*)script1)))||(!(strcmp("SKILL44",(char*)script1)))) pc->baseskill[LUMBERJACKING] = getRangedValue((char*)script2);
-					if ((!(strcmp("MINING",(char*)script1)))||(!(strcmp("SKILL45",(char*)script1)))) pc->baseskill[MINING] = getRangedValue((char*)script2);
+					if ((!(strcmp("ALCHEMY",script1)))||(!(strcmp("SKILL0",script1)))) pc->baseskill[ALCHEMY] = getRangedValue(script2);
+					if ((!(strcmp("ANATOMY",script1)))||(!(strcmp("SKILL1",script1)))) pc->baseskill[ANATOMY] = getRangedValue(script2);
+					if ((!(strcmp("ANIMALLORE",script1)))||(!(strcmp("SKILL2",script1)))) pc->baseskill[ANIMALLORE] = getRangedValue(script2);
+					if ((!(strcmp("ITEMID",script1)))||(!(strcmp("SKILL3",script1)))) pc->baseskill[ITEMID] = getRangedValue(script2);
+					if ((!(strcmp("ARMSLORE",script1)))||(!(strcmp("SKILL4",script1)))) pc->baseskill[ARMSLORE] = getRangedValue(script2);
+					if ((!(strcmp("PARRYING",script1)))||(!(strcmp("SKILL5",script1)))) pc->baseskill[PARRYING] = getRangedValue(script2);
+					if ((!(strcmp("BEGGING",script1)))||(!(strcmp("SKILL6",script1)))) pc->baseskill[BEGGING] = getRangedValue(script2);
+					if ((!(strcmp("BLACKSMITHING",script1)))||(!(strcmp("SKILL7",script1)))) pc->baseskill[BLACKSMITHING] = getRangedValue(script2);
+					if ((!(strcmp("BOWCRAFT",script1)))||(!(strcmp("SKILL8",script1)))) pc->baseskill[BOWCRAFT] = getRangedValue(script2);
+					if ((!(strcmp("PEACEMAKING",script1)))||(!(strcmp("SKILL9",script1)))) pc->baseskill[PEACEMAKING] = getRangedValue(script2);
+					if ((!(strcmp("CAMPING",script1)))||(!(strcmp("SKILL10",script1)))) pc->baseskill[CAMPING] = getRangedValue(script2);
+					if ((!(strcmp("CARPENTRY",script1)))||(!(strcmp("SKILL11",script1)))) pc->baseskill[CARPENTRY] = getRangedValue(script2);
+					if ((!(strcmp("CARTOGRAPHY",script1)))||(!(strcmp("SKILL12",script1)))) pc->baseskill[CARTOGRAPHY] = getRangedValue(script2);
+					if ((!(strcmp("COOKING",script1)))||(!(strcmp("SKILL13",script1)))) pc->baseskill[COOKING] = getRangedValue(script2);
+					if ((!(strcmp("DETECTINGHIDDEN",script1)))||(!(strcmp("SKILL14",script1)))) pc->baseskill[DETECTINGHIDDEN] = getRangedValue(script2);
+					if ((!(strcmp("ENTICEMENT",script1)))||(!(strcmp("SKILL15",script1)))) pc->baseskill[ENTICEMENT] = getRangedValue(script2);
+					if ((!(strcmp("EVALUATINGINTEL",script1)))||(!(strcmp("SKILL16",script1)))) pc->baseskill[EVALUATINGINTEL] = getRangedValue(script2);
+					if ((!(strcmp("HEALING",script1)))||(!(strcmp("SKILL17",script1)))) pc->baseskill[HEALING] = getRangedValue(script2);
+					if ((!(strcmp("FISHING",script1)))||(!(strcmp("SKILL18",script1)))) pc->baseskill[FISHING] = getRangedValue(script2);
+					if ((!(strcmp("FORENSICS",script1)))||(!(strcmp("SKILL19",script1)))) pc->baseskill[FORENSICS] = getRangedValue(script2);
+					if ((!(strcmp("HERDING",script1)))||(!(strcmp("SKILL20",script1)))) pc->baseskill[HERDING] = getRangedValue(script2);
+					if ((!(strcmp("HIDING",script1)))||(!(strcmp("SKILL21",script1)))) pc->baseskill[HIDING] = getRangedValue(script2);
+					if ((!(strcmp("PROVOCATION",script1)))||(!(strcmp("SKILL22",script1)))) pc->baseskill[PROVOCATION] = getRangedValue(script2);
+					if ((!(strcmp("INSCRIPTION",script1)))||(!(strcmp("SKILL23",script1)))) pc->baseskill[INSCRIPTION] = getRangedValue(script2);
+					if ((!(strcmp("LOCKPICKING",script1)))||(!(strcmp("SKILL24",script1)))) pc->baseskill[LOCKPICKING] = getRangedValue(script2);
+					if ((!(strcmp("MAGERY",script1)))||(!(strcmp("SKILL25",script1)))) pc->baseskill[MAGERY] = getRangedValue(script2);
+					if ((!(strcmp("MAGICRESISTANCE",script1)))||(!(strcmp("RESIST",script1)))||(!(strcmp("SKILL26",script1)))) pc->baseskill[MAGICRESISTANCE] = getRangedValue(script2);
+					if ((!(strcmp("TACTICS",script1)))||(!(strcmp("SKILL27",script1)))) pc->baseskill[TACTICS] = getRangedValue(script2);
+					if ((!(strcmp("SNOOPING",script1)))||(!(strcmp("SKILL28",script1)))) pc->baseskill[SNOOPING] = getRangedValue(script2);
+					if ((!(strcmp("MUSICIANSHIP",script1)))||(!(strcmp("SKILL29",script1)))) pc->baseskill[MUSICIANSHIP] = getRangedValue(script2);
+					if ((!(strcmp("POISONING",script1)))||(!(strcmp("SKILL30",script1)))) pc->baseskill[POISONING] = getRangedValue(script2);
+					if ((!(strcmp("ARCHERY",script1)))||(!(strcmp("SKILL31",script1)))) pc->baseskill[ARCHERY] = getRangedValue(script2);
+					if ((!(strcmp("SPIRITSPEAK",script1)))||(!(strcmp("SKILL32",script1)))) pc->baseskill[SPIRITSPEAK] = getRangedValue(script2);
+					if ((!(strcmp("STEALING",script1)))||(!(strcmp("SKILL33",script1)))) pc->baseskill[STEALING] = getRangedValue(script2);
+					if ((!(strcmp("TAILORING",script1)))||(!(strcmp("SKILL34",script1)))) pc->baseskill[TAILORING] = getRangedValue(script2);
+					if ((!(strcmp("TAMING",script1)))||(!(strcmp("SKILL35",script1)))) pc->baseskill[TAMING] = getRangedValue(script2);
+					if ((!(strcmp("TASTEID",script1)))||(!(strcmp("SKILL36",script1)))) pc->baseskill[TASTEID] = getRangedValue(script2);
+					if ((!(strcmp("TINKERING",script1)))||(!(strcmp("SKILL37",script1)))) pc->baseskill[TINKERING] = getRangedValue(script2);
+					if ((!(strcmp("TRACKING",script1)))||(!(strcmp("SKILL38",script1)))) pc->baseskill[TRACKING] = getRangedValue(script2);
+					if ((!(strcmp("VETERINARY",script1)))||(!(strcmp("SKILL39",script1)))) pc->baseskill[VETERINARY] = getRangedValue(script2);
+					if ((!(strcmp("SWORDSMANSHIP",script1)))||(!(strcmp("SKILL40",script1)))) pc->baseskill[SWORDSMANSHIP] = getRangedValue(script2);
+					if ((!(strcmp("MACEFIGHTING",script1)))||(!(strcmp("SKILL41",script1))))pc->baseskill[MACEFIGHTING] = getRangedValue(script2);
+					if ((!(strcmp("FENCING",script1)))||(!(strcmp("SKILL42",script1)))) pc->baseskill[FENCING] = getRangedValue(script2);
+					if ((!(strcmp("WRESTLING",script1)))||(!(strcmp("SKILL43",script1)))) pc->baseskill[WRESTLING] = getRangedValue(script2);
+					if ((!(strcmp("LUMBERJACKING",script1)))||(!(strcmp("SKILL44",script1)))) pc->baseskill[LUMBERJACKING] = getRangedValue(script2);
+					if ((!(strcmp("MINING",script1)))||(!(strcmp("SKILL45",script1)))) pc->baseskill[MINING] = getRangedValue(script2);
 
 					// lb, new skills
-					if ((!(strcmp("MEDITATION",(char*)script1)))||(!(strcmp("SKILL46",(char*)script1)))) pc->baseskill[MEDITATION] = getRangedValue((char*)script2);
-					if ((!(strcmp("STEALTH",(char*)script1)))||(!(strcmp("SKILL47",(char*)script1)))) pc->baseskill[STEALTH] = getRangedValue((char*)script2);
-					if ((!(strcmp("REMOVETRAPS",(char*)script1)))||(!(strcmp("SKILL48",(char*)script1)))) pc->baseskill[REMOVETRAPS] = getRangedValue((char*)script2);
+					if ((!(strcmp("MEDITATION",script1)))||(!(strcmp("SKILL46",script1)))) pc->baseskill[MEDITATION] = getRangedValue(script2);
+					if ((!(strcmp("STEALTH",script1)))||(!(strcmp("SKILL47",script1)))) pc->baseskill[STEALTH] = getRangedValue(script2);
+					if ((!(strcmp("REMOVETRAPS",script1)))||(!(strcmp("SKILL48",script1)))) pc->baseskill[REMOVETRAPS] = getRangedValue(script2);
 
-					if ((!(strcmp("DYEHAIR",(char*)script1))))
+					if ((!(strcmp("DYEHAIR",script1))))
 					{
 						int serial;
 						UI32 ci;
@@ -259,7 +259,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						}
 					}
 
-					if ((!(strcmp("DYEBEARD",(char*)script1))))
+					if ((!(strcmp("DYEBEARD",script1))))
 					{
 						int serial;
 						UI32 ci;
@@ -287,7 +287,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						}
 					}
 
-					if (!(strcmp("KILLHAIR",(char*)script1)))
+					if (!(strcmp("KILLHAIR",script1)))
 					{
 						int serial;
 						UI32 ci;
@@ -305,7 +305,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						}
 					}
 
-					if (!(strcmp("KILLBEARD",(char*)script1)))
+					if (!(strcmp("KILLBEARD",script1)))
 					{
 						int serial;
 						UI32 ci;
@@ -323,7 +323,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						}
 					}
 
-					if (!(strcmp("KILLPACK",(char*)script1)))
+					if (!(strcmp("KILLPACK",script1)))
 					{
 						int serial;
 						UI32 ci;
@@ -340,7 +340,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 								}
 						}
 					}
-					if (!(strcmp("ITEM",(char*)script1)))
+					if (!(strcmp("ITEM",script1)))
 					{
 						x=str2num(script2);
 						P_ITEM pi= item::CreateScriptItem(INVALID, x, 0);
@@ -365,7 +365,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						}
 					}
 
-					if (!(strcmp((char*)script1,"SKIN")))
+					if (!(strcmp(script1,"SKIN")))
 					{
 						i=hex2num(script2);
 						pc->skin1=i>>8;
@@ -375,7 +375,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						pc->teleport();
 					}
 
-					if (!(strcmp("POLY",(char*)script1)))
+					if (!(strcmp("POLY",script1)))
 					{
 						x=hex2num(script2);
 						pc->id1=x>>8;
@@ -385,7 +385,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						pc->teleport();
 					}
 
-					if (!(strcmp("ADVOBJ",(char*)script1)))
+					if (!(strcmp("ADVOBJ",script1)))
 					{
 						x=str2num(script2);
 						pc->advobj=x;

@@ -780,8 +780,8 @@ void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
                 else
                     strcpy(temp2, pi->getCurrentNameC());
 
-                sprintf((char*)temp, TRANSLATE("You found that this item appears to be called: %s"), temp2);
-                sysmessage(s, (char*) temp);
+                sprintf(temp, TRANSLATE("You found that this item appears to be called: %s"), temp2);
+                sysmessage(s,  temp);
             }
         }
         if (pi->type != 15)
@@ -792,14 +792,14 @@ void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
             }
             else
             {
-                sprintf((char*)temp, TRANSLATE("It is enchanted with item identification, and has %d charges remaining."), pi->morex);
-                sysmessage(s, (char*)temp);
+                sprintf(temp, TRANSLATE("It is enchanted with item identification, and has %d charges remaining."), pi->morex);
+                sysmessage(s, temp);
             }
         }
         else
         {
-            sprintf((char*)temp, TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."), spellname[(8*(pi->morex - 1)) + pi->morey - 1], pi->morez);
-            sysmessage(s, (char*)temp);
+            sprintf(temp, TRANSLATE("It is enchanted with the spell %s, and has %d charges remaining."), spellname[(8*(pi->morex - 1)) + pi->morey - 1], pi->morez);
+            sysmessage(s, temp);
         }
     }
 }
@@ -915,7 +915,7 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
 //	if (strncmp(pc->name, "GM", 2))
 	if (strncmp(pc->getCurrentNameC(), "GM", 2))
     {
-        sprintf((char*)temp, "GM %s", pc->getCurrentNameC());
+        sprintf(temp, "GM %s", pc->getCurrentNameC());
 		pc->setCurrentName(temp);
         //strcpy(pc->name,(char*)temp);
 		//pc->setCurrentName( "GM " + pc->getCurrentName() );
@@ -951,7 +951,7 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
     pc->gmrestrict = 0;
     if (strncmp(pc->getCurrentNameC(), "Counselor", 9))
     {
-        sprintf((char*)temp, "Counselor %s", pc->getCurrentNameC());
+        sprintf(temp, "Counselor %s", pc->getCurrentNameC());
 		pc->setCurrentName(temp);
 //		strcpy(pc->name,(char*)temp);
 //		pc->setCurrentName( "Counselor " + pc->getCurrentName() );
@@ -1751,7 +1751,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		setCrimGrey(pc, ServerScp::g_nChopWillCriminal);//Blue and not attacker and not guild
 		//create the Head
 		sprintf(temp,"the head of %s",pi3->getSecondaryNameC());
-		P_ITEM pi=item::SpawnItem(s,1,(char*)temp,0,0x1DA0,0,0,0);
+		P_ITEM pi=item::SpawnItem(s,1,temp,0,0x1DA0,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1763,8 +1763,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Body
-		sprintf((char*)temp,"the heart of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1CED,0,0,0);
+		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1CED,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1774,8 +1774,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Heart
-		sprintf((char*)temp,"the body of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1DAD,0,0,0);
+		sprintf(temp,"the body of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1DAD,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1785,8 +1785,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Left Arm
-		sprintf((char*)temp,"the left arm of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1DA1,0,0,0);
+		sprintf(temp,"the left arm of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1DA1,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1796,8 +1796,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Right Arm
-		sprintf((char*)temp,"the right arm of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1DA2,0,0,0);
+		sprintf(temp,"the right arm of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1DA2,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1807,8 +1807,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Left Leg
-		sprintf((char*)temp,"the left leg of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1DA3,0,0,0);
+		sprintf(temp,"the left leg of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1DA3,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1818,8 +1818,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->Refresh();
 
 		//create the Rigth Leg
-		sprintf((char*)temp,"the right leg of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,(char*)temp,0,0x1DA4,0,0,0);
+		sprintf(temp,"the right leg of %s",pi3->getSecondaryNameC());
+		pi=item::SpawnItem(s,1,temp,0,0x1DA4,0,0,0);
 		VALIDATEPI(pi);
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
@@ -1847,7 +1847,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		iter->parseLine(script1, script2);
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
-			if (!(strcmp("ADDITEM",(char*)script1)))
+			if (!(strcmp("ADDITEM",script1)))
 			{
 			storeval=str2num(script2);
 			P_ITEM pi=item::CreateScriptItem(s,storeval,0);
@@ -2991,7 +2991,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 
 	sysmessage(s, "You have transferred your house to %s.", pc->getCurrentNameC());
 	char temp[520];
-	sprintf((char*)temp, "%s has transferred a house to %s.", curr->getCurrentNameC(), pc->getCurrentNameC());
+	sprintf(temp, "%s has transferred a house to %s.", curr->getCurrentNameC(), pc->getCurrentNameC());
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -2999,7 +2999,7 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 	{
 		NXWSOCKET k=sw.getSocket();
 		if(k!=INVALID)
-			sysmessage(k, (char*)temp);
+			sysmessage(k, temp);
 	}
 }
 
@@ -3103,7 +3103,7 @@ void cTargets::HouseUnlistTarget(NXWSOCKET s) // crackerjack 8/12/99 - remove so
         int r=del_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi));
         if(r>0)
         {
-            sysmessage(s,(char*) TRANSLATE("%s has been removed from the house registry."), pc->getCurrentNameC());
+            sysmessage(s, TRANSLATE("%s has been removed from the house registry."), pc->getCurrentNameC());
         }
         else
             sysmessage(s, TRANSLATE("That player is not on the house registry."));
@@ -3486,8 +3486,8 @@ void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
             strcpy(&skill_info[strlen(skill_info)], " ");
 
         numtostr(ges,sk);
-        sprintf((char*)temp,"sum: %s",sk);
-        strcpy(&skill_info[strlen(skill_info)],(char*)temp);
+        sprintf(temp,"sum: %s",sk);
+        strcpy(&skill_info[strlen(skill_info)],temp);
 
         for (a=0;a<ALLSKILLS;a++)
         {
@@ -3499,8 +3499,8 @@ void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
                 if (z==2 || z==3) j=pc->skill[a]/10; else j=pc->baseskill[a]/10;    // get skill value
                 numtostr(j,sk);     // skill-value string in sk
                 ges+=j;
-                sprintf((char*)temp, "%s %s", skillname[a],sk);
-                strcpy(&skill_info[strlen(skill_info)],(char*)temp);
+                sprintf(temp, "%s %s", skillname[a],sk);
+                strcpy(&skill_info[strlen(skill_info)],temp);
 
                 b=strlen(skillname[a])+strlen(sk)+1; // it doesnt like \n's, so insert spaces till end of line
                 if (b>23) b=23;
@@ -3509,8 +3509,8 @@ void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
             }
         }
         numtostr(ges,sk);
-        sprintf((char*)temp,"sum: %s  ",sk);
-        strcpy(&skill_info[strlen(skill_info)],(char*)temp);
+        sprintf(temp,"sum: %s  ",sk);
+        strcpy(&skill_info[strlen(skill_info)],temp);
 
         SndUpdscroll(s, strlen(skill_info), skill_info);
     }

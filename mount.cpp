@@ -40,9 +40,9 @@ void loadmounts()
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if (!strcmp("ANIM", (char*)script1))		  
+				if (!strcmp("ANIM", script1))		  
 					anim = str2num(script2);
-				if (!strcmp("ID", (char*)script1))		  
+				if (!strcmp("ID", script1))		  
 					id = str2num(script2);
 			}
 
@@ -53,7 +53,7 @@ void loadmounts()
 			mountinfo[anim]=id;
     
 	}
-	while ( (strcmp("EOF", (char*)script1)) && (++loopexit < MAXLOOPS) );
+	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
 
     safedelete(iter);
 
@@ -103,11 +103,11 @@ void cChar::mounthorse( P_CHAR mount )
 			return;
 		}
 
-		strcpy((char*)temp, mount->getCurrentNameC());
+		strcpy(temp, mount->getCurrentNameC());
 		this->onhorse = true;
 		//int c = item::SpawnItem(ps->toInt(), 1, (char*)temp, 0, 0x09, 0x15, mount->skin1, mount->skin2, 0, 0);
 		//const P_ITEM pi = MAKE_ITEMREF_LR(c); // on error return
-		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, (char*)temp, 0, 0x0915, DBYTE2WORD( mount->skin1, mount->skin2), 0 );
+		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, temp, 0, 0x0915, DBYTE2WORD( mount->skin1, mount->skin2), 0 );
 		VALIDATEPI(pi);
 
 		pi->setId( iter->second );

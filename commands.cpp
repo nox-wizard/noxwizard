@@ -41,7 +41,7 @@ namespace Commands
 		strcpy((char*)tbuffer, (char*)nonuni);
 
 		strupr((char*)nonuni);
-		cline = (char*) &nonuni[0];
+		cline = (char*)&nonuni[0];
 		splitline();
 
 		if (tnum<1)	return;
@@ -300,18 +300,18 @@ namespace Commands
 				Location dest= pj->getPosition();
 
 		sysmessage(s,"");
-		sprintf((char*)temp,"Transporting to next call: %s", gmpages[i].name);
-		sysmessage(s,(char*)temp);
-		sprintf((char*)temp,"Problem: %s.", gmpages[i].reason);
-		sysmessage(s,(char*)temp);
+		sprintf(temp,"Transporting to next call: %s", gmpages[i].name);
+		sysmessage(s,temp);
+		sprintf(temp,"Problem: %s.", gmpages[i].reason);
+		sysmessage(s,temp);
 				/*
 		sprintf((char*)temp,"Serial number %x %x %x %x", gmpages[i].ser1,
 								gmpages[i].ser2, gmpages[i].ser3, gmpages[i].ser4);
 				*/
 				sprintf(temp, "Serial number: %x", gmpages[i].serial.serial32);
-		sysmessage(s,(char*)temp);
-		sprintf((char*)temp,"Paged at %s.", gmpages[i].timeofcall);
-		sysmessage(s,(char*)temp);
+		sysmessage(s,temp);
+		sprintf(temp,"Paged at %s.", gmpages[i].timeofcall);
+		sysmessage(s,temp);
 		gmpages[i].handled=1;
 		pc_currchar->MoveTo( dest );
 		pc_currchar->callnum=i;
@@ -338,18 +338,18 @@ namespace Commands
 				Location dest= pj->getPosition();
 
 		sysmessage(s,"");
-		sprintf((char*)temp,"Transporting to next call: %s", counspages[i].name);
-		sysmessage(s,(char*)temp);
-		sprintf((char*)temp,"Problem: %s.", counspages[i].reason);
-		sysmessage(s,(char*)temp);
+		sprintf(temp,"Transporting to next call: %s", counspages[i].name);
+		sysmessage(s,temp);
+		sprintf(temp,"Problem: %s.", counspages[i].reason);
+		sysmessage(s,temp);
 				/*
 		sprintf((char*)temp,"Serial number %x %x %x %x", counspages[i].ser1,
 								counspages[i].ser2, counspages[i].ser3, counspages[i].ser4);
 				*/
 				sprintf(temp, "Serial number %x", counspages[i].serial.serial32);
-		sysmessage(s,(char*)temp);
-		sprintf((char*)temp,"Paged at %s.", counspages[i].timeofcall);
-		sysmessage(s,(char*)temp);
+		sysmessage(s,temp);
+		sprintf(temp,"Paged at %s.", counspages[i].timeofcall);
+		sysmessage(s,temp);
 		gmpages[i].handled=1;
 		pc_currchar->MoveTo( dest );
 		pc_currchar->callnum=i;
@@ -523,7 +523,7 @@ namespace Commands
 				time_t current_time = time(0);
 				struct tm *local = localtime(&current_time);
 				sprintf(counspages[i].timeofcall, "%02d:%02d:%02d", local->tm_hour, local->tm_min, local->tm_sec);
-				sprintf((char*)temp,"%s [%d][%d][%d][%d] called at %s, %s",counspages[i].name,a1,a2,a3,a4,counspages[i].timeofcall,counspages[i].reason);
+				sprintf(temp,"%s [%d][%d][%d][%d] called at %s, %s",counspages[i].name,a1,a2,a3,a4,counspages[i].timeofcall,counspages[i].reason);
 				pc_currchar->playercallnum=i;
 				pc_currchar->pagegm=2;
 				x2++;
@@ -540,7 +540,7 @@ namespace Commands
 			if(reason == "OTHER")
 			{
 				pc_currchar->pagegm=0;
-				sprintf((char*)temp, "Counselor Page from %s [%x %x %x %x]: %s",
+				sprintf(temp, "Counselor Page from %s [%x %x %x %x]: %s",
 				pc_currchar->getCurrentNameC(), a1, a2, a3, a4, reason.c_str());
 				bool found=false;
 
@@ -555,7 +555,7 @@ namespace Commands
 					if ( ISVALIDPC(pj) && pj->IsCounselor() )
 					{
 						found=true;
-						ps_i->sysmsg( (char*)temp);
+						ps_i->sysmsg( temp);
 					}
 
 				}
@@ -602,7 +602,7 @@ namespace Commands
 				time_t current_time = time(0);
 				struct tm *local = localtime(&current_time);
 				sprintf(gmpages[i].timeofcall, "%02d:%02d:%02d", local->tm_hour, local->tm_min, local->tm_sec);
-				sprintf((char*)temp,"%s [%d][%d][%d][%d] called at %s, %s",gmpages[i].name,a1,a2,a3,a4,gmpages[i].timeofcall,gmpages[i].reason);
+				sprintf(temp,"%s [%d][%d][%d][%d] called at %s, %s",gmpages[i].name,a1,a2,a3,a4,gmpages[i].timeofcall,gmpages[i].reason);
 				pc_currchar->playercallnum=i;
 				pc_currchar->pagegm=1;
 				x2++;
@@ -619,7 +619,7 @@ namespace Commands
 			if(reason == "OTHER")
 			{
 				pc_currchar->pagegm=0;
-				sprintf((char*)temp, "Page from %s [%x %x %x %x]: %s",
+				sprintf(temp, "Page from %s [%x %x %x %x]: %s",
 				pc_currchar->getCurrentNameC(), a1, a2, a3, a4, reason.c_str());
 				bool found=false;
 
@@ -634,7 +634,7 @@ namespace Commands
 					if ( ISVALIDPC(pc_i) && pc_i->IsGM() )
 					{
 						found=true;
-						pc_i->sysmsg( (char*)temp);
+						pc_i->sysmsg( temp);
 					}
 				}
 				if (found)
@@ -979,24 +979,24 @@ namespace Commands
 					if(x==0)
 					{
 						sysmessage(s,"");
-						sprintf((char*)temp,"Next unhandled page from %s", gmpages[i].name);
-						sysmessage(s,(char*)temp);
-						sprintf((char*)temp,"Problem: %s.", gmpages[i].reason);
-						sysmessage(s,(char*)temp);
+						sprintf(temp,"Next unhandled page from %s", gmpages[i].name);
+						sysmessage(s,temp);
+						sprintf(temp,"Problem: %s.", gmpages[i].reason);
+						sysmessage(s,temp);
 						//sprintf((char*)temp,"Serial number %x %x %x %x", gmpages[i].ser1, gmpages[i].ser2, gmpages[i].ser3, gmpages[i].ser4);
 						sprintf(temp, "Serial number %x", gmpages[i].serial.serial32);
-						sysmessage(s,(char*)temp);
-						sprintf((char*)temp,"Paged at %s.", gmpages[i].timeofcall);
-						sysmessage(s,(char*)temp);
+						sysmessage(s,temp);
+						sprintf(temp,"Paged at %s.", gmpages[i].timeofcall);
+						sysmessage(s,temp);
 					}
 					x++;
 				}
 			}
 			if (x>0)
 			{
-				sprintf((char*)temp,"Total pages in queue: %i",x);
+				sprintf(temp,"Total pages in queue: %i",x);
 				sysmessage(s,"");
-				sysmessage(s,(char*)temp);
+				sysmessage(s,temp);
 			}
 			else sysmessage(s,"The GM queue is currently empty");
 		} //end of first if
@@ -1009,24 +1009,24 @@ namespace Commands
 					if(x==0)
 					{
 						sysmessage(s,"");
-						sprintf((char*)temp,"Next unhandled page from %s", counspages[i].name);
-						sysmessage(s,(char*)temp);
-						sprintf((char*)temp,"Problem: %s.", counspages[i].reason);
-						sysmessage(s,(char*)temp);
+						sprintf(temp,"Next unhandled page from %s", counspages[i].name);
+						sysmessage(s,temp);
+						sprintf(temp,"Problem: %s.", counspages[i].reason);
+						sysmessage(s,temp);
 						//sprintf((char*)temp,"Serial number %x %x %x %x", counspages[i].ser1, counspages[i].ser2, counspages[i].ser3, counspages[i].ser4);
 						sprintf(temp, "Serial number %x", counspages[i].serial.serial32);
-						sysmessage(s,(char*)temp);
-						sprintf((char*)temp,"Paged at %s.", counspages[i].timeofcall);
-						sysmessage(s,(char*)temp);
+						sysmessage(s,temp);
+						sprintf(temp,"Paged at %s.", counspages[i].timeofcall);
+						sysmessage(s,temp);
 					}
 					x++;
 				}
 			}
 			if (x>0)
 			{
-				sprintf((char*)temp,"Total pages in queue: %i",x);
+				sprintf(temp,"Total pages in queue: %i",x);
 				sysmessage(s,"");
-				sysmessage(s,(char*)temp);
+				sysmessage(s,temp);
 			}
 			else sysmessage(s,"The Counselor queue is currently empty");
 		}

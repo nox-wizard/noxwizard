@@ -1201,7 +1201,7 @@ void cGuilds::ChangeName(int s, char *text)
 	char txt[200];
 
 	for (guild=1;guild<MAXGUILDS;guild++)
-		if (!(strcmp((char*)text,guilds[guild].name)))
+		if (!(strcmp(text,guilds[guild].name)))
 		{
 			exists = true;
 			break;
@@ -1211,7 +1211,7 @@ void cGuilds::ChangeName(int s, char *text)
 	{
 		char tmp[200];
 
-		strcpy(guilds[guildnumber].name, (char*)text);
+		strcpy(guilds[guildnumber].name, text);
 		sprintf(tmp,TRANSLATE("Guildstone for %s"),guilds[guildnumber].name);
 		pStone->setCurrentName(tmp);
 		sprintf(txt,TRANSLATE("Your guild got renamed to %s"),guilds[guildnumber].name);
@@ -1238,7 +1238,7 @@ void cGuilds::ChangeAbbreviation(int s, char *text)
 	char txt[200];
 
 	for ( guild = 1; guild < MAXGUILDS; guild++ )
-		if (!(strcmp((char*)text,guilds[guild].abbreviation))) 
+		if (!(strcmp(text,guilds[guild].abbreviation))) 
 		{
 			exists = true;
 			break;
@@ -1246,7 +1246,7 @@ void cGuilds::ChangeAbbreviation(int s, char *text)
 
 	if (!exists)
 	{
-		strcpy(guilds[guildnumber].abbreviation,(char*)text);
+		strcpy(guilds[guildnumber].abbreviation,text);
 		sprintf(txt,TRANSLATE("Your guild has now the abbreviation: %s"),guilds[guildnumber].abbreviation);
 		Guilds->Broadcast(guildnumber,txt);
 	}
@@ -1670,7 +1670,7 @@ void cGuilds::Read(int guildnumber)
 		else if (!strcmp(script1, "WAR")) { if (war<MAXGUILDWARS) { guild->war[war]=str2num(script2);war++;} }
 		guilds[guildnumber].free=0;
 	}
-	while ( (strcmp((char*)script1,"}")) && (++loopexit < MAXLOOPS) );
+	while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 }
 
 // TESTED: OKAY
@@ -1812,8 +1812,8 @@ void cGuilds::CheckConsistancy(void )
 				if (i==-1)
 				{
 					ok=0;
-					sprintf((char*)temp,"guild: %s ereased because guildstone vanished",guilds[guildnumber].name);
-					LogWarning((char*)temp);
+					sprintf(temp,"guild: %s ereased because guildstone vanished",guilds[guildnumber].name);
+					LogWarning(temp);
 					Guilds->EraseGuild(guildnumber);
 				}
 			}

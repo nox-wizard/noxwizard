@@ -43,7 +43,7 @@ void loadweaponsinfo()
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if (!strcmp("ID", (char*)script1)) {		  
+				if (!strcmp("ID", script1)) {		  
 					id = str2num(script2);
 					weaponinfo[id]=static_cast<WEAPONTYPE>(type);
 				}
@@ -54,7 +54,7 @@ void loadweaponsinfo()
 
 		type++;
     }
-	while ( (strcmp("EOF", (char*)script1)) && (++loopexit < MAXLOOPS) );
+	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
 
     safedelete(iter);
 

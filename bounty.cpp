@@ -114,11 +114,11 @@ bool BountyCreate( P_CHAR pc, int nRewardAmount )
   }
 
   // Failed to post bounty
-  sprintf((char*)temp, "BountyCreate():  FAILED to place a bounty of %i on %s (PostSerial=%x)\n",
+  sprintf(temp, "BountyCreate():  FAILED to place a bounty of %i on %s (PostSerial=%x)\n",
           nRewardAmount,
           pc->getCurrentNameC(),
           nPostSerial );
-  LogWarning((char*)temp);
+  LogWarning(temp);
 
   // Post must have failed
   return false;
