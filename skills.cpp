@@ -735,11 +735,10 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 \author Duke
 \date 21/03/2000
 \brief Little helper function for cSkills::AdvanceStats()
-
 finds the appropriate line for the used skill in advance table
 and uses the value of that skill (!) to increase the stat
 and cuts it down to 100 if necessary
-
+Straylight: changed algorithm to use strength, dex and int sections from skills.xss
 \param sk skill identifier
 \param stat stat identifier
 \param pc pointer to character to advance the stats to
@@ -751,27 +750,36 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 		return 0;
 
 	int loopexit=0, limit=1000;
+	int j=0;
 	*update = false;
-	SI32 tmp=0;
+	SI32 tmp;
 
-	int stat2update1=-1, stat2update2;
+	int stat2update1, stat2update2;
 	int stat2update;
-
+	int stat_id;
 	switch( stat )
 	{
-		case 'S': tmp= pc->st3;	break;
-		case 'D': tmp= pc->dx3;	break;
-		case 'I': tmp= pc->in3;	break;
+		case 'S':
+			tmp= pc->st3;
+			stat_id = xss::getIntFromDefine("$stat_strength");
+			break;
+		case 'D':
+			tmp= pc->dx3;
+			stat_id = xss::getIntFromDefine("$stat_dexterity");
+			break;
+		case 'I':
+			tmp= pc->in3;
+			stat_id = xss::getIntFromDefine("$stat_intelligence");
+			break;
 	}
-
 	if( Race::isRaceSystemActive() )
 		stat2update1 = Race::getRace( (UI32) pc->getRace() )->getSkillAdvanceSuccess( sk, tmp*10 );
+	j=skillinfo[stat_id].advance_index;
+	while ((wpadvance[j].skill==stat_id) &&     // if NEXT line is for same skill and is not higher than our stat then proceed to it !
+     		(wpadvance[j].base<=tmp) && (++loopexit < MAXLOOPS) )
+  	      	j++;
 
-	while ((wpadvance[i+1].skill==sk) &&     // if NEXT line is for same skill and is not higher than our stat then proceed to it !
-     		(wpadvance[i+1].base<=(tmp*10)) && (++loopexit < MAXLOOPS) )
-  	      	i++;
-
-	stat2update2 = wpadvance[i].success;         // gather small increases
+	stat2update2 = wpadvance[j].success;         // gather small increases
 
 	//SDbgOut("AdvanceOneStat() skill %d base %d succes %d %d\n", sk, (*stat)*10, stat2update1, stat2update2);
 
@@ -780,77 +788,43 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 	else
 		stat2update = stat2update2;
 
-	switch( stat )
-	{
-		case 'S':	pc->st2+= stat2update;
-					tmp= pc->st2;
-					break;
-
-		case 'D':	pc->dx2+= stat2update;
-					tmp= pc->dx2;
-					break;
-
-		case 'I':	pc->in2+= stat2update;
-					tmp= pc->in2;
-					break;
-	}
-
-	if ( tmp >= 1000)           // until they reach 1000
-	{
-		switch( stat )
-		{
-			case 'S':	pc->st2-= 1000;	if (pc->st2 < 0) pc->st2 = 0; tmp= pc->st3; break;
-			case 'D':	pc->dx2-= 1000; if (pc->dx2 < 0) pc->dx2 = 0; tmp= pc->dx3; break;
-			case 'I':	pc->in2-= 1000;	if (pc->in2 < 0) pc->in2 = 0; tmp= pc->in3; break;
-		}
- //       *stat2 -= 1000;                     // then change it
-
- 	
     if (pc->amxevents[EVENT_CHR_ONADVANCESTAT]) {
-        g_bByPass = false;
+	    g_bByPass = false;
         pc->amxevents[EVENT_CHR_ONADVANCESTAT]->Call(pc->getSerial32(), type, sk, tmp);
         if (g_bByPass==true) return false;
 	}
-	
-	//pc->runAmxEvent( EVENT_CHR_ONADVANCESTAT, pc->getSerial32(), type, sk, tmp);
- 	if (g_bByPass==true)
-		return false;
 
-		if( Race::isRaceSystemActive() )
+	if( Race::isRaceSystemActive() )
+	{
+		switch( type )
 		{
-			switch( type )
-			{
-				case STATCAP_CAP:
-					limit = Race::getRace( (UI32) pc->getRace() )->getStatCap();
-					SDbgOut("AdvanceOneStat() race %d %s statcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
-					break;
-				case STATCAP_STR:
-					limit = Race::getRace( (UI32) pc->getRace() )->getStrCap();
-					SDbgOut("AdvanceOneStat() race %d %s strcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
-					break;
-				case STATCAP_DEX:
-					limit = Race::getRace( (UI32) pc->getRace() )->getDexCap();
-					SDbgOut("AdvanceOneStat() race %d %s dexcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
-					break;
-				case STATCAP_INT:
-					limit = Race::getRace( (UI32) pc->getRace() )->getIntCap();
-					SDbgOut("AdvanceOneStat() race %d %s intcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
-					break;
-			}
+			case STATCAP_CAP:
+				limit = Race::getRace( (UI32) pc->getRace() )->getStatCap();
+				SDbgOut("AdvanceOneStat() race %d %s statcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
+				break;
+			case STATCAP_STR:
+				limit = Race::getRace( (UI32) pc->getRace() )->getStrCap();
+				SDbgOut("AdvanceOneStat() race %d %s strcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
+				break;
+			case STATCAP_DEX:
+				limit = Race::getRace( (UI32) pc->getRace() )->getDexCap();
+				SDbgOut("AdvanceOneStat() race %d %s dexcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
+				break;
+			case STATCAP_INT:
+				limit = Race::getRace( (UI32) pc->getRace() )->getIntCap();
+				SDbgOut("AdvanceOneStat() race %d %s intcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
+				break;
 		}
-		else
-		{
-			limit = 100;
-		}
+	}
+	else
+	{
+		limit = 100;
+	}
 
-    if (pc->amxevents[EVENT_CHR_ONGETSTATCAP]!=NULL)
-       	limit = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), type, limit);
-	
-	/*
-	if ( pc->getAmxEvent(EVENT_CHR_ONGETSTATCAP) != NULL )
-		limit = pc->runAmxEvent( EVENT_CHR_ONGETSTATCAP, pc->getSerial32(), type, limit);
-	*/
-
+	if ( stat2update > rand() % SrvParms->statsadvancemodifier )
+	{
+		if (pc->amxevents[EVENT_CHR_ONGETSTATCAP]!=NULL)
+       		limit = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), type, limit);
 		switch( stat )
 		{
 			case 'S':	pc->modifyStrength(1);
@@ -858,42 +832,42 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 						break;
 
 			case 'D':	pc->dx++;
-						pc->dx3++;						
+						pc->dx3++;
 						break;
 
 			case 'I':	pc->in++;
 						pc->in3++;
 						break;
 		}
-       	*update=true;
-    }
-
-	if( !pc->IsGM() )
-	{
-		switch( stat )
+		*update=true;
+		if( !pc->IsGM() )
 		{
-		case 'S':	if(pc->st3 > limit)	{
-						pc->st3=limit;
-						pc->setStrength(limit);
-					}
-					break;
+			switch( stat )
+			{
+			case 'S':	if(pc->st3 > limit)	{
+							pc->st3=limit;
+							pc->setStrength(limit);
+						}
+						break;
 
-		case 'D':	if(pc->dx3 > limit) {
-						pc->dx3=limit;
-						pc->dx= limit;
-					}
-					break;
+			case 'D':	if(pc->dx3 > limit) {
+							pc->dx3=limit;
+							pc->dx= limit;
+						}
+						break;
 
-		case 'I':	if(pc->in3 > limit) {
-						pc->in3=limit;
-						pc->in= limit;
-					}
-					break;
+			case 'I':	if(pc->in3 > limit) {
+							pc->in3=limit;
+							pc->in= limit;
+						}
+						break;
+			}
+			*update= true;
 		}
-		*update= true;
 	}
 	return *update;
 }
+
 
 /*!
 \author Duke
@@ -926,7 +900,7 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 		statcap = Race::getRace( pc->getRace() )->getStatCap();
 
 
-	
+
 	if (pc->amxevents[EVENT_CHR_ONGETSTATCAP]!=NULL)
 		statcap = pc->amxevents[EVENT_CHR_ONGETSTATCAP]->Call(pc->getSerial32(), STATCAP_CAP, statcap);
 	/*
@@ -944,10 +918,9 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 
 	if ( pc->statGainedToday <= ServerScp::g_nStatDailyLimit )
 	{
-		bool strCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st ) > (UI32)(rand() % mod);
-    	bool dexCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx ) > (UI32)(rand() % mod);
-    	bool intCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceIntelligence( sk ) : skillinfo[sk].in ) > (UI32)(rand() % mod);
-
+		bool strCheck=( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st > pc->getStrength());
+    	bool dexCheck=( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx > pc->dx);
+    	bool intCheck=( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceIntelligence( sk ) : skillinfo[sk].in > pc->in);
        	if ( strCheck )
        		if ( AdvanceOneStat( sk, i, 'S', &update, STATCAP_STR, pc ) && atCap && !pc->IsGM() )
 			{
@@ -988,27 +961,28 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 			}
 
 
-    	
+
 		if ( update )
 		{
-  			
+
 			NXWSOCKET socket = pc->getSocket();
 
 			++pc->statGainedToday;
-  
+
 			if ( socket != INVALID )
 				statwindow( pc, pc);              // update client's status window
 
-        	
+
 			for ( i = 0;  i < ALLSKILLS; i++ )
 				updateSkillLevel(pc,i );     // update client's skill window
 
 			if ( atCap && !pc->IsGM() )
 				pc->sysmsg(TRANSLATE("You have reached the stat-cap of %i!") ,statcap );
-	        
+
 		}
 	}
 }
+
 
 /*!
 \brief Spirit speack time on a base of 30 seconds + skill[SPIRITSPEAK]/50 + INT

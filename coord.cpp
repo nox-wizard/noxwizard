@@ -757,7 +757,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				si.clear();
 				si.fillItemsAtXY(this->x, this->y);
 				P_ITEM pi_m = si.getItem();
-				while( ( pi_m == multis[multiIndex++] ) )
+				while( ( multiIndex < multis.size() && pi_m == multis[multiIndex++] ) )
 				{
 					multiVector multiVec;
 					data::seekMulti( pi_m->getId() - 0x4000, multiVec );
