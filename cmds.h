@@ -71,12 +71,13 @@ private:
 
 public:
 
-	cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param );
+	cCallCommand(std::string all_params);
 	~cCallCommand();
 	std::string all_params;
 	cCallCommand* findCallCommand(SERIAL cmd);
+	SERIAL addCallCommand(cCallCommand* called_command);	
 	void delCommand(SERIAL cmd);
-	std::vector< string >* single_param;
+	//std::vector< string >* single_param;
 
 };
  

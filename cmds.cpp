@@ -13,7 +13,9 @@
 //Work in progress...
 
 
-
+//#include "amxscript.h"
+//#include "amxwraps.h"
+//#include "amxcback.h"
 #include "nxwcommn.h"
 #include "network.h"
 #include "cmds.h"
@@ -75,11 +77,12 @@ SI08 cCommand::getCommandLevel(P_COMMAND cmd) {
 
 SERIAL cCallCommand::current_serial = 0;
 
-cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<string>* param ){
 
-	cmd_serial=++current_serial;
+
+cCallCommand::cCallCommand(std::string params){
+
 	all_params=params;
-	single_param=param;
+//	single_param=param;
 }
 
 
@@ -150,7 +153,17 @@ cCallCommand* cCallCommand::findCallCommand(SERIAL cmd){
 	else
 		return NULL;					//command doesnt exist
 }
-	
+
+
+
+
+SERIAL cCallCommand::addCallCommand(cCallCommand* called){
+
+	callcommand_map[++current_serial]=called;
+	return current_serial;
+
+}
+
 
 
 void cCallCommand::delCommand(SERIAL cmd){
@@ -208,8 +221,6 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		
 		NXWCLIENT client= getClientFromSocket(s);
 
-		
-
 		if(p_cmd==NULL) {
 			return;
 		}
@@ -223,11 +234,21 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 		}
 
 		
-		//Here there must be the call to small function specified in cCommand.cmd_callback.
-		//callcommands->remCallCommand(*serial*);		
+		cCallCommand* called= new cCallCommand(speech);
+
+
+		SERIAL cmd_serial=called->addCallCommand(called);
+
+		
+		// Frodo:
+		// NOW CALL AMX FUNCTION specified in cCommand.cmd_callback giving pc_currchar and 
+		// cmd_serial
+		
+		
+		
+		//Let's delete the temp object		
 			  
-			
-			  //To be finished...
+		called->delCommand(cmd_serial);
 		
 
 	}
@@ -246,11 +267,10 @@ for use it in small scripting.
 
 
 
-/*
 
-
-static CP_PARAM=0;
-static CP_ALLPARAMS=1;
+const int CP_PARAM=0;
+const int CP_ALLPARAMS=1;
+const int CP_N_PARAMS=2;
 
 
 //Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
@@ -258,29 +278,36 @@ static CP_ALLPARAMS=1;
 	
 	// params[1] = cCallCommand Serial
 	// params[2] = property
-	// params[3] = 1st param given
-	// params[4] = 2nd param given
-	// params[5] = 3rd param given
-	// params[6] = 4th param given
+	// params[3] = number of the param 
 
 
 
-NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
+NATIVE2(_getCmdProperty) {		
+
+//	cCallCommand*
 
 	if (cCallCommand->findCallCommand(param[1])==NULL)
 		return NULL;
 	  
 		
-	if ( !params[2] )
+/*	if ( !params[2] )
 	{
-		switch( params[3] ) {
+		switch( params[2] ) {
 			
 			case CP_PARAM: {
 				}
 			case CP_ALLPARAMS: {
 				}
+			case CP_N_PARAMS: {
+				}
 		}
 
-  	}
-  	return INVALID;
-*/
+*/ 	//}
+  	
+	ErrOut("itm_getProperty called without a valid property !\n");
+	return '\0';
+	
+}
+
+	
+
