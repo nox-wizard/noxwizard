@@ -5521,7 +5521,7 @@ NATIVE( _target_do )
 		return false;
 
 	P_TARGET targ = clientInfo[ps->toInt()]->getTarget();
-	if( ( targ!=NULL ) && ( targ->serial=params[1] ) ) {
+	if( ( targ!=NULL ) && ( targ->serial==params[1] ) ) {
 		targ->send( ps );
 		return true;
 	}
