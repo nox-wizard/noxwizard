@@ -83,7 +83,9 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	(ISVALIDPI(pWeapon)) ? fightskill = pWeapon->getCombatSkill() : fightskill=WRESTLING;
 	dist = distFrom(pc_def);
+
 	if((dist > 1 && fightskill != ARCHERY) || !los) return;
+	
 	if(pc_def->npc && pc_def->IsInvul()) return;
 
 	P_ITEM def_Weapon = pc_def->getWeapon();
@@ -93,7 +95,20 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	(dx < 100) ? dex1 = dx : dex1 = 100;
 	(skill[fightskill] > 0) ? fs1 = skill[fightskill] : fs1 = 1;
 	(pc_def->skill[def_fightskill] > 0) ? fs2 = pc_def->skill[def_fightskill] : fs2 = 1;
-	int chanceToHit = int(((fs1+500.0) / ((fs2+500.0)*2.0))*100.0 - dex2/4.0 + dex1/4.0 + float(RandomNum(0,5)));
+
+        //
+        // Luxor: we must calculate the chance depending on which combat situation we are.
+        //
+        SI32 chanceToHit = 0;
+        if ( fightskill != ARCHERY && def_fightskill != ARCHERY ) { //Melee VS Melee
+		chanceToHit = int( ( (fs1+500.0) / ((fs2+500.0)*2.0) )*100.0 - dex2/7.0 + dex1/7.0 );
+	} else if ( fightskill == ARCHERY && def_fightskill == ARCHERY ) { //Ranged VS Ranged
+		chanceToHit = int( (fs1/10.0) - dex2/2.0 + dex1/5.0 );
+	} else if ( fightskill == ARCHERY && def_fightskill != ARCHERY ) { //Ranged VS Melee
+		chanceToHit = int( ((fs1+500.0) / ((fs2+300.0)*2.0)) *100.0 - dex2/6.0 + dex1/5.0 );
+	} else if ( fightskill != ARCHERY && def_fightskill == ARCHERY ) { //Melee VS Ranged
+		chanceToHit = int( ((fs1+500.0) / (fs2*2.0)) *100.0 - dex2/7.0 + dex1/7.0 );
+	}
 
 	if (npc || pc_def->npc) { //PvM and MvM
 		chanceToHit += 20; //20% bonus
@@ -118,6 +133,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if (g_bByPass==true) 
 			return;
 		if (!npc) {
+			
 			( chance(30) ) ? doMissedSoundEffect() : pc_def->doCombatSoundEffect(def_fightskill, def_Weapon);
 		}
 		if (fightskill == ARCHERY) {
