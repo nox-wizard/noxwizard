@@ -42,7 +42,7 @@
 #include "utils.h"
 #include "jail.h"
 #include "party.h"
-#include "gmpages.h"
+// #include "gmpages.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -5813,7 +5813,7 @@ NATIVE ( _addGmPage )
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
-	P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
+	// P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
 	//pages->addPage(page);
 	return NULL;
 }
