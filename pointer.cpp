@@ -15,7 +15,7 @@
 /*!
 \brief Sets an item into the array, reallocating space if needed
 \note can be used to set other pointer arrays too
-\param str pointer
+\param ptr pointer
 \param item item number
 */
 void setptr(lookuptr_st *ptr, int item) //set item in pointer array
@@ -1037,7 +1037,7 @@ namespace pointers {
 	\param id the id which we're searching for
 	\param color the color which we're searching for
 	\param bAddAmounts if true we want to add the amount of the items to the return value
-	\param recurseSubPack if true we search also in subpack
+	\param recurseSubpack if true we search also in subpack
 	*/
 	UI32 containerCountItems(SERIAL serial, short id, short color, LOGICAL bAddAmounts, LOGICAL recurseSubpack)
 	{

@@ -216,7 +216,7 @@ bool NxwWrapper::isEmpty()
 /*!
 \brief Move to next
 \author Endymion
-\return none
+\return the object itself (standard)
 */
 NxwWrapper& NxwWrapper::operator++(int)
 {
@@ -227,7 +227,6 @@ NxwWrapper& NxwWrapper::operator++(int)
 /*!
 \brief Clear all list
 \author Endymion
-\return void
 */
 void NxwWrapper::clear()
 {
@@ -248,7 +247,6 @@ UI32 NxwWrapper::size()
 /*!
 \brief Move to next value
 \author Endymion
-\return void
 */
 void NxwWrapper::next()
 {
@@ -258,7 +256,6 @@ void NxwWrapper::next()
 /*!
 \brief Reset internal counter
 \author Endymion
-\return void
 */
 void NxwWrapper::rewind()
 {
@@ -284,7 +281,7 @@ SERIAL NxwWrapper::get()
 /*!
 \brief Return a copy of the queue
 \author Sparhawk
-\return queue
+\param from the origin of the queue
 */
 void NxwWrapper::copyQ( const NxwWrapper& from )
 {
@@ -294,7 +291,6 @@ void NxwWrapper::copyQ( const NxwWrapper& from )
 /*!
 \brief Insert a new value
 \author Endymion
-\return void
 \param s the value
 */
 void NxwWrapper::insert( SERIAL s )
@@ -328,7 +324,6 @@ SERIAL NxwSerialWrapper::getSerial()
 /*!
 \bref Insert a new serial
 \author Endymion
-\return void
 \param s the serial
 */
 void NxwSerialWrapper::insertSerial( SERIAL s )
@@ -340,7 +335,6 @@ void NxwSerialWrapper::insertSerial( SERIAL s )
 /*!
 \bref Insert a new serial
 \author Endymion
-\return void
 \param obj the object
 */
 void NxwSerialWrapper::insertSerial( cObject* obj )
@@ -353,7 +347,6 @@ void NxwSerialWrapper::insertSerial( cObject* obj )
 /*!
 \bref Fills with serial in a container
 \author Endymion
-\return void
 \param serial the serial
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
@@ -384,7 +377,6 @@ void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, bool bIncludeSubCon
 /*!
 \bref Fills with serial in a container
 \author Endymion
-\return void
 \param obj the object
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
@@ -414,7 +406,7 @@ NxwCharWrapper::~NxwCharWrapper() { };
 /*!
 \brief Get the current char and after move to next
 \author Endymion
-\return the current char
+\return ptr to the current char
 */
 P_CHAR NxwCharWrapper::getChar()
 {
@@ -424,7 +416,6 @@ P_CHAR NxwCharWrapper::getChar()
 /*!
 \brief Insert a new char
 \author Endymion
-\return void
 \param pc the char
 */
 void NxwCharWrapper::insertChar( P_CHAR pc )
@@ -433,13 +424,11 @@ void NxwCharWrapper::insertChar( P_CHAR pc )
 	insertSerial( pc->getSerial32() );
 };
 
-
 /*!
 \brief Fills a set with a list of npcs owned by a char
 \author Endymion
-\return void
 \param pc the char
-\param bool bIncludeStabled if true stabled pets should be included
+\param bIncludeStabled if true stabled pets should be included
 \param bOnlyFollowing if true only following pets should be included
 \warning this function ADD new char to current list
 */
@@ -469,7 +458,6 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 /*!
 \brief Fills a set with a list of char near x, y
 \author Endymion
-\return void
 \param x the x location
 \param y the y location
 \param nDistance the distance requested
@@ -516,7 +504,6 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 /*!
 \brief Fills a set with a list of char near location
 \author Endymion
-\return void
 \param location the location
 \param nDistance the distance requested
 \param bExcludeOfflinePlayers if true exclude offline players from search
@@ -530,14 +517,12 @@ void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool b
 /*!
 \brief Fills a set with a list of char in same party of given char
 \author Endymion
-\return void
 \param pc the player
 \param nDistance the distance requested
 \param bExcludeThis if true exclude this
 \param nDistance maximum distance from the player
 \warning this function ADD new char to current list
 \note offline player are not added
-\note Akron - changed nDistance to UI32, doxygen documented it
 */
 void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeThis )
 {
@@ -556,9 +541,6 @@ void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeTh
 		}
 	}	
 }
-
-
-
 
 /*!
 \brief Constructor
@@ -588,7 +570,6 @@ P_ITEM NxwItemWrapper::getItem()
 /*!
 \brief Insert a new item
 \author Endymion
-\return void
 \param pi the item
 */
 void NxwItemWrapper::insertItem( P_ITEM pi )
@@ -600,7 +581,6 @@ void NxwItemWrapper::insertItem( P_ITEM pi )
 /*!
 \bref Fills with item in a container
 \author Endymion
-\return void
 \param pi the container
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
@@ -615,7 +595,6 @@ void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, bool bIncludeSubContained,
 /*!
 \brief Fills with a list of item at given location
 \author Endymion
-\return void
 \param x the x location
 \param y the y location
 \param type if not INVALID only add item with this type
@@ -648,7 +627,6 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, UI32 type, SI32 id )
 /*!
 \brief Fills with a list of item at given location
 \author Endymion
-\return void
 \param location the location
 \param type if not INVALID only add item with this type
 \param id if not INVALID only add item with this id
@@ -662,7 +640,6 @@ void NxwItemWrapper::fillItemsAtXY( Location location, UI32 type, SI32 id )
 /*!
 \brief Fills with a list of item near given location
 \author Endymion
-\return void
 \param x the x location
 \param y the y location
 \param nDistance only add item in distance range
@@ -706,7 +683,6 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 /*!
 \brief Fills with a list of item near given location
 \author Endymion
-\return void
 \param location the location
 \param nDistance only add item in distance range
 \param bExcludeNotMovableItems if true exluce not movable items
@@ -720,7 +696,6 @@ void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, bool b
 /*!
 \brief Fills a set with a list of item weared by given char
 \author Endymion
-\return void
 \param pc the char
 \param bExcludeIllegalLayer if true layer like backpack, trade are excluded
 \param bIncludeLikeHair if true add also hair, beard ecc
@@ -757,9 +732,6 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 	}
 
 }
-
-
-
 
 /*!
 \brief Constructor
@@ -798,7 +770,6 @@ NXWCLIENT NxwSocketWrapper::getClient()
 /*!
 \brief Insert a new socket
 \author Endymion
-\return void
 \param s the socket
 */
 void NxwSocketWrapper::insertSocket( NXWSOCKET s )
@@ -810,7 +781,6 @@ void NxwSocketWrapper::insertSocket( NXWSOCKET s )
 /*!
 \brief Insert a new client
 \author Endymion
-\return void
 \param ps the client
 */
 void NxwSocketWrapper::insertClient( NXWCLIENT ps )
@@ -823,7 +793,6 @@ void NxwSocketWrapper::insertClient( NXWCLIENT ps )
 /*!
 \brief Fills with a list of socket
 \author Endymion, rewritten by Luxor
-\return void
 \param onlyNearThis if true only socket near given char are added
 \param bExcludeThis if true given char is not added to list
 \param nDistance maximum distance from the character
@@ -852,7 +821,6 @@ void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 
 /*!
 \brief Fills with a list of socket
 \author Endymion, rewritten by Luxor
-\return void
 \param location only socket near given location are added
 \warning this function ADD new char to current list
 */
@@ -875,7 +843,6 @@ void NxwSocketWrapper::fillOnline( Location location, int nDistance )
 /*!
 \brief Fills with a list of socket
 \author Endymion
-\return void
 \param onlyNearThis only socket near given item are added
 \warning this function ADD new char to current list
 */
@@ -900,7 +867,6 @@ void NxwSocketWrapper::fillOnline( P_ITEM onlyNearThis, int nDistance )
 /*!
 \brief Fills with a list of socket
 \author Endymion, rewritten by Luxor
-\return void
 \warning this function ADD new char to current list
 */
 void NxwSocketWrapper::fillOnline(  )

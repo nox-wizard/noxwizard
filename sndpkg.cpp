@@ -170,13 +170,9 @@ void itemsfx(NXWSOCKET  s, short item)
 
 /*!
 \brief Plays background sounds of the game
-\author LB Duke
-\date 10/08/1999 improved/completed/rewritten by LB
-	  19/11/2000 added griditerator (Duke)
-\return <ret_val>
-\param <param1> <descr>
-       <param2> <descr>
-\since <ver>
+\author LB & Duke
+\param s the character index
+\todo convert to P_CHAR or add to cChar class
 */
 void bgsound(CHARACTER s)
 {

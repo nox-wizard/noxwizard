@@ -274,7 +274,7 @@ void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, char id1, cha
 \author Xanathar
 \param number the number, -1 for envoke and statics
 \param s the socket
-\param the item, if not static
+\param itm pointer the item, if not static
 \param trigtype the trigger type
 */
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigtype)

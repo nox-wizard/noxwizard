@@ -196,6 +196,7 @@ enum {	ITEM_TYPE_CHOICES = 6,
 	FLOORS_FLAT_ROOFING = 16,	//!< So can't tele onto slanted roofs, basically
 	LAVA_WATER = 32			//!< Don't know what all to use this for yet
 };
+//@}
 
 //@{
 	/*!

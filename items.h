@@ -179,6 +179,7 @@ public:
 	SI08		magic;		//!< 0=Default as stored in client, 1=Always movable, 2=Never movable, 3=Owner movable.
 	SI08		visible;	//!< 0=Normally Visible, 1=Owner & GM Visible, 2=GM Visible
 	SI16		dir;
+//@}
 
 //@{
 /*!

@@ -620,7 +620,7 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 /*!
 \brief Pile two items
 */
-LOGICAL cItem::PileItem(cItem* pItem)
+LOGICAL cItem::PileItem(P_ITEM pItem)
 {
 	if (!(pileable && pItem->pileable &&
 		getSerial32()!=pItem->getSerial32() &&

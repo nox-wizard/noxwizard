@@ -509,8 +509,6 @@ cScpScript::cScpScript(char *szFileName)
 	}
 }
 
-
-
 ///////////////////////////////////////////////////////////////////
 // Function name	 : cScpScript::load
 // Description		 : Loads a section from a file (eventually recursing)
@@ -565,7 +563,6 @@ void cScpScript::load(char *szFileName)
 	fclose(file);
 }
 
-
 ///////////////////////////////////////////////////////////////////
 // Function name	 : cScpScript::~cScpScript
 // Description		 : -- as default --
@@ -577,8 +574,6 @@ cScpScript::~cScpScript()
 	m_mapSections.erase(m_mapSections.begin(), m_mapSections.end() );
 	m_mapSections.clear();
 }
-
-
 
 ///////////////////////////////////////////////////////////////////
 // Function name	 : cScpScript::getSection
@@ -612,33 +607,29 @@ cScpSection* cScpScript::getSection(char* szIdentifier)
 	return getSection(str);
 }
 
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::getSectionInStr
-// Description		 : returns the ptr to a cScpSection object containing given search id
-// Return type		 : cScpSection*
-// Author			 : Xanathar
-// Argument 		 : char* szIdentifier -> the section id to be searched
-// Changes			 : none yet
+/*!
+\author Xanathar
+\brief Returns the ptr to a cScpSection object containing given search id
+\param szIdentifier the section id to be searched
+\return the pointer to the object or NULL if not found
+*/
 cScpSection* cScpScript::getSectionInStr(char* szIdentifier)
 {
-	std::map<std::string, class cScpSection>::iterator iter( m_mapSections.begin() ), end( m_mapSections.end() );
+	std::map<std::string, class cScpSection>::iterator iter;
 
-	for (; iter!=end; ++iter) {
+	for (iter = m_mapSections.begin(); iter!=m_mapSections.end(); ++iter) {
 		if (strstr(iter->first.c_str(), szIdentifier)) return &iter->second;
 	}
 
 	return NULL;
 }
 
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : cScpScript::getNewIterator
-// Description		 : gets a new iterator object for a section identifier
-// Return type		 : cScpIterator*
-// Author			 : Xanathar
-// Argument 		 : std::string& strIdentifier -> the section identifier
-// Changes			 : none yet
+/*!
+\author Xanathar
+\brief Gets a new iterator object for a section identifier
+\param strIdentifier the section identifier
+\return the iterator
+*/
 cScpIterator* cScpScript::getNewIterator(std::string& strIdentifier)
 {
 	cScpSection* section = getSection(strIdentifier);
@@ -646,13 +637,12 @@ cScpIterator* cScpScript::getNewIterator(std::string& strIdentifier)
 	return new cScpIterator(section);
 }
 
-
 /*!
 \brief gets a new iterator object for a section identifier
 \author Xanathar
 \since 0.82a
-\param szIdentifier the section identifier
-\return cScpIterator*
+\param format the format string to create the section identifier
+\return the iterator
 \remarks \remark rewritten by Anthalir
 */
 cScpIterator* cScpScript::getNewIterator(char *format, ...)

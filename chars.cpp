@@ -1900,7 +1900,6 @@ void cChar::toggleCombat()
 	walking2(this);
 }
 
-
 /*!
 \author Luxor
 \brief returns char's combat skill
@@ -1963,7 +1962,7 @@ LOGICAL cChar::losFrom(P_CHAR pc)
 \brief plays a sound effect on a char
 \param sound as default
 */
-void cChar::playSFX(short sound)
+void cChar::playSFX(SI16 sound)
 {
 
 	Location charpos= getPosition();
@@ -1988,7 +1987,7 @@ void cChar::playSFX(short sound)
 /*!
 \author Akron (port)
 \brief Plays a monster sound effect
-\param sndfx sound effect
+\param sfx sound effect
 \note ported from sndpkg.cpp, i'm not the original author - Akron
 */
 void cChar::playMonsterSound(MonsterSound sfx)

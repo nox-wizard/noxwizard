@@ -1939,9 +1939,8 @@ void CWorldMain::SaveItem( P_ITEM pi )
 \brief Save prison
 \author Endymion
 \return void
-\param gWsc the file where save
 */
-void CWorldMain::savePrison(  )
+void CWorldMain::savePrison()
 {
 	fprintf(jWsc, "// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
 	fprintf(jWsc, "// || NoX-Wizard jail save (nxwjail.wsc)                                  ||\n");
