@@ -20,8 +20,13 @@ cUnicodeString::cUnicodeString( std::string& s )
 	this->copy(s);
 }
 
+/*
+\brief
+\param c is an array ( Big Endian Format ) double null terminated
+*/
 cUnicodeString::cUnicodeString( char* c )
 {
+	/*this->s.clear();
 	addTerminator();
 	wchar_t t=0; 
 	int i=0;
@@ -35,8 +40,20 @@ cUnicodeString::cUnicodeString( char* c )
 			append( t );
 		}
 		++i;
-	} while( !( (i%2) && t==0 ) );	
+	} while( !( (i%2) && t==0 ) );	*/
 
+	this->s.clear();
+	int wasZero=0;
+	int i=0;
+	do
+	{
+		this->s.push_back( c[i] );
+		if( c[i]==0 )
+			++wasZero;
+		else 
+			wasZero=0;
+		++i;
+	} while( wasZero!=2 );
 }
 
 cUnicodeString::~cUnicodeString() { }

@@ -56,25 +56,25 @@ CWorldMain::~CWorldMain()
 /*
 \brief read from a file an unicode string
 \author Endymion
-\note intput is like 00AE001232120000, hex 
+\note intput is like 00AE001232120000, hex ( Big Endian Format )
 \param f the file
 \param name the variable name
-\param c the string
+\return the unicode string
 */
-void HexVector2UnicodeString( cUnicodeString* c, char* s )
+cUnicodeString* HexVector2UnicodeString( char* s )
 {
 	
 	int i=0;
 	int size= strlen( s );
-	char temp[6] = { '0','x', };
+	char temp[4] = { '0','x', };
+	char buffer[TEMP_STR_SIZE];
 	while( i<size ) {
-		memcpy( &temp[2], &s[i], 4 );
+		memcpy( &temp[2], &s[i], 2 );
 		char* dummy; 
-		wchar_t v= (wchar_t)strtol( temp, &dummy, 0 );
-		if( v==0 ) return; // terminator added yet
-		(*c)+=v;
-		i+=4;
+		buffer[i /2]= strtol( temp, &dummy, 0 );
+		i+=2;
 	}
+	return new cUnicodeString( &buffer[0] );
 }
 
 void CWorldMain::loadChar() // Load a character from WSC
@@ -412,9 +412,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp( script1, "PC_FTARGSER" ) )   {pc->ftargserial=str2num(script2); }
 			else if (!strcmp( script1, "POSSESSEDSERIAL" ) )   {pc->possessedSerial=str2num(script2); }
 			else if (!(strcmp(script1, "PROFILE"))) {
-				if( pc->getProfile()==NULL )
-					pc->setProfile( new cUnicodeString() );
-				HexVector2UnicodeString( pc->getProfile(), script2 );
+				pc->setProfile( HexVector2UnicodeString( script2 ) );
 			}
 		break;
 
@@ -1312,7 +1310,10 @@ void fprintVector( FILE* f, char* name, std::vector<UI08>* c )
 	fprintf( f, "%s ", name );
 	std::vector<UI08>::iterator iter( c->begin() ), end( c->end() );
 	for( ; iter!=end; iter++ ) {
-		fprintf( f, "%x", (*iter) );
+		if( (*iter)!=0 )
+			fprintf( f, "%x", (*iter) );
+		else
+			fprintf( f, "00" );
 	}
 	fprintf( f, "\n" );
 }
