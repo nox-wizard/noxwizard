@@ -255,7 +255,8 @@ void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
 
 	if ( !newMulti->nokey)
 		cMulti::makeKeys(newMulti, pc);
-	cHouses::makeHouseItems(multinumber, pc, pMulti);
+	cHouses::makeHouseItems(multinumber, pc, pMulti, newMulti->nokey);
+	pMulti->Delete();
 		
     NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -411,28 +412,31 @@ void cHouse::transfer(SERIAL newOwner)
 	this->friends.clear();
 	this->coowners.clear();
 	this->banned.clear();
-	cHouses::killkeys(getSerial());
-	P_ITEM pKey=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
-	VALIDATEPI(pKey);
-	pKey->setCurrentName( "a house key" );
-	if(pc->getClient()!=NULL)
+	if (nokey)
 	{
-		pKey->setCont( pc->getBackpack() );
+		cHouses::killkeys(getSerial());
+		P_ITEM pKey=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
+		VALIDATEPI(pKey);
+		pKey->setCurrentName( "a house key" );
+		if(pc->getClient()!=NULL)
+		{
+			pKey->setCont( pc->getBackpack() );
+		}
+		else
+		{
+			pKey->MoveTo( pc->getPosition() );
+		}
+		pKey->Refresh();
+		pKey->more1= (unsigned char)((getSerial()>>24)&0xFF);
+		pKey->more2= (unsigned char)((getSerial()>>16)&0xFF);
+		pKey->more3= (unsigned char)((getSerial()>>8)&0xFF);
+		pKey->more4= (unsigned char)((getSerial())&0xFF);
+		pKey->moreb1=(signed char)((getKeycode()>>24)&0xFF);
+		pKey->moreb2=(signed char)((getKeycode()>>16)&0xFF);
+		pKey->moreb3=(signed char)((getKeycode()>>8)&0xFF);
+		pKey->moreb4=(signed char)((getKeycode())&0xFF);
+		pKey->type=7;
 	}
-	else
-	{
-		pKey->MoveTo( pc->getPosition() );
-	}
-	pKey->Refresh();
-	pKey->more1= (unsigned char)((getSerial()>>24)&0xFF);
-	pKey->more2= (unsigned char)((getSerial()>>16)&0xFF);
-	pKey->more3= (unsigned char)((getSerial()>>8)&0xFF);
-	pKey->more4= (unsigned char)((getSerial())&0xFF);
-	pKey->moreb1=(signed char)((getKeycode()>>24)&0xFF);
-	pKey->moreb2=(signed char)((getKeycode()>>16)&0xFF);
-	pKey->moreb3=(signed char)((getKeycode()>>8)&0xFF);
-	pKey->moreb4=(signed char)((getKeycode())&0xFF);
-	pKey->type=7;
 
 	sysmessage(oldOwner->getSocket(), TRANSLATE("You have transferred your house to %s."), pc->getCurrentNameC());
 }
@@ -688,8 +692,9 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	pc->fx1=-1; //reset fx1 so it does not interfere
 	// bugfix LB ... was too early reseted
 
-	cMulti::makeKeys(pHouse, pc);
-	cHouses::makeHouseItems(housenumber, pc, iHouse);
+	if ( !pHouse->noKey())
+		cMulti::makeKeys(pHouse, pc);
+	cHouses::makeHouseItems(housenumber, pc, iHouse, pHouse->noKey());
 		
     NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -2022,7 +2027,7 @@ void cHouses::addHouse(P_HOUSE newHouse )
 }
 
 
-void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
+void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi, LOGICAL key)
 {
 	char sect[512];                         //file reading
 
@@ -2100,16 +2105,18 @@ void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
 					{
 						if (ISVALIDPI(pi_l)) pi_l->magic=1;
 					}
-					if (!(strcmp(script1,"LOCK")))//lock it with the house key
+					if (!key)//ignore lock if house is a nokey-house/stair/treasure etc. that has no key
 					{
-						if (ISVALIDPI(pi_l)) {
-							pi_l->more1=multi->getSerial().ser1;
-							pi_l->more2=multi->getSerial().ser2;
-							pi_l->more3=multi->getSerial().ser3;
-							pi_l->more4=multi->getSerial().ser4;
+						if (!(strcmp(script1,"LOCK")))//lock it with the house key
+						{
+							if (ISVALIDPI(pi_l)) {
+								pi_l->more1=multi->getSerial().ser1;
+								pi_l->more2=multi->getSerial().ser2;
+								pi_l->more3=multi->getSerial().ser3;
+								pi_l->more4=multi->getSerial().ser4;
+							}
 						}
 					}
-
 					if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 					{
 						if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));

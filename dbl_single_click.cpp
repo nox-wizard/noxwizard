@@ -695,7 +695,7 @@ void doubleclick(NXWCLIENT ps)
 			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{
-			P_CHAR vendor = npcs::AddNPCxyz(-1, 2117, charpos.x, charpos.y, (SI08)charpos.z);
+			P_CHAR vendor = npcs::AddNPCxyz(-1, xss::getIntFromDefine("$npc_player_vendor_template"), charpos.x, charpos.y, (SI08)charpos.z);
 			if ( !ISVALIDPC(vendor) )
 			{
 				WarnOut("npc-script couldnt find vendor !\n");

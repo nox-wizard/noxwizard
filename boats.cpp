@@ -1706,7 +1706,7 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	// bugfix LB ... was too early reseted
 
 	cMulti::makeKeys(pShip, pc);
-	cHouses::makeHouseItems(shipnumber, pc, iShip);
+	cHouses::makeHouseItems(shipnumber, pc, iShip, false);
 	cBoat::makeBoatItems(iShip);	
 	pShip->setTiller(pointers::findItemBySerial(calcserial(iShip->moreb1, iShip->moreb2,iShip->moreb3, iShip->moreb4)));
 	pShip->setLeftPlank(pointers::findItemBySerial(iShip->morex));

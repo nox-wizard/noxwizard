@@ -75,6 +75,7 @@ public:
 	unsigned int getMaxSecuredItems();
 	void setMaxSecuredItems(unsigned int amount);
 	SI32 getCurrentZPosition(P_CHAR pc);
+	LOGICAL noKey() { return nokey;}
 };
 
 extern std::map< SERIAL, P_HOUSE > houses;
@@ -160,7 +161,7 @@ public:
 	static void cHouses::addHouseItem(int housenumber, int itemnumber);
 	static UI32VECTOR  getHouseItems(int housenumber);
 	static void cHouses::addHouse(P_HOUSE newHouse );
-	static void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi);
+	static void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi, LOGICAL key);
 	static std::map< SERIAL, P_HOUSE > cHouses::findOwnedHouses(SERIAL owner);
 	static void cHouses::archive();
 
