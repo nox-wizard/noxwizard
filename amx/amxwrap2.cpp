@@ -535,6 +535,7 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 				case 4:
 					pi->more4 = value;
 					break;
+
 			}
 			break;
 		case NXW_IP_C_MOREB:
@@ -750,6 +751,7 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 2: return pi->more2;
 				case 3: return pi->more3;
 				case 4: return pi->more4;
+				default: return ((pi->more1&0xFF) << 24) + ((pi->more2&0xFF) << 16) + ((pi->more3&0xFF) << 8) + (pi->more4&0xFF);
 			}
 		case NXW_IP_C_MOREB:
 			switch(prop2) {
@@ -757,6 +759,7 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 2: return pi->moreb2;
 				case 3: return pi->moreb3;
 				case 4: return pi->moreb4;
+				default: return ((pi->moreb1&0xFF) << 24) + ((pi->moreb2&0xFF) << 16) + ((pi->moreb3&0xFF) << 8) + (pi->moreb4&0xFF);
 			}
 		CHECK(NXW_IP_C_DAMAGETYPE, (char) pi->damagetype)				//dec value :  121;
 		CHECK(NXW_IP_C_AUXDAMAGETYPE, (char) pi->auxdamagetype)			//dec value :  122;

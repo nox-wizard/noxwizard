@@ -3083,7 +3083,62 @@ NATIVE( _set_addGuilds )
 	return 0;
 }
 
+/*
+\brief Add to given set all house co owners
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\return 0
+*/
+NATIVE( _set_addHouseCoowners )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addHouseCoowners( params[1], params[2] );
+	return 0;
+}
 
+/*
+\brief Add to given set all house friends
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\return 0
+*/
+NATIVE( _set_addHouseFriends )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addHouseFriends( params[1], params[2] );
+	return 0;
+}
+
+/*
+\brief Add to given set all house bans
+\author Wintermute
+\since 0.82
+\param 1 the set
+\param 2 the house
+\return 0
+*/
+NATIVE( _set_addHouseBans )
+{
+	if ( params[2] == INVALID )
+	{
+		LogError("Illegal house serial used" );
+		return 1;
+	}
+	amxSet::addHouseBans( params[1], params[2] );
+	return 0;
+}
 
 /*!
 \brief Add to given set all race
@@ -7315,7 +7370,11 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addGuilds", _set_addGuilds },
  { "set_addAllRaces", _set_addAllRaces },
  { "set_getRaceStuff", _set_getRaceStuff },
-// calendar properties - [Sparhawk] 2001-09-15
+ // House sets
+ { "set_getCoOwners", _set_addHouseCoowners },
+ { "set_getFriends", _set_addHouseFriends },
+ { "set_getBanned", _set_addHouseBans },
+ // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
  { "map_canMoveHere", _map_canMoveHere },

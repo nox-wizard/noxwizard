@@ -84,7 +84,9 @@ public:
 	void fillNpcsNear( P_ITEM pi, int nDistance = VISRANGE );
 	void fillGuildMembers( SERIAL guild );
 	void fillGuildRecruits( SERIAL guild );
-
+	void fillCoOwners ( SERIAL house );
+	void fillFriends ( SERIAL house );
+	void fillBanned ( SERIAL house );
 };
 
 class NxwItemWrapper : public NxwSerialWrapper {
@@ -164,6 +166,10 @@ namespace amxSet {
 	void addGuildMembers( SERIAL iSet, SERIAL guild );
 	void addGuildRecruits( SERIAL iSet, SERIAL guild );
 	void addGuilds( SERIAL iSet, SERIAL guild , int options = INVALID);
+	void addHouseCoowners( SERIAL iSet, SERIAL house );
+	void addHouseFriends( SERIAL iSet, SERIAL house  );
+	void addHouseBans( SERIAL iSet, SERIAL house  );
+
 
 }
 

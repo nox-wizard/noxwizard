@@ -97,12 +97,16 @@ public:
 	void addFriend(P_CHAR newfriend);
 	void removeFriend(P_CHAR newfriend);
 	bool isFriend(P_CHAR pc);
+	std::vector<SERIAL> getHouseFriendsList();
 	void addCoOwner(P_CHAR newCoOwner);
 	void removeCoOwner(P_CHAR newCoOwner);
 	bool isCoOwner(P_CHAR pc);
+	std::vector<SERIAL> getHouseCoOwnerList();
 	void addBan(P_CHAR newBanned);
 	void removeBan(P_CHAR newBanned);
 	bool isBanned(P_CHAR pc);
+	std::vector<SERIAL> getHouseBannedList();
+
 	SI32 getCurrentZPosition(P_CHAR pc);
 	void createHouse(UI32 houseNumber);
 	void transfer(SERIAL newOwner);

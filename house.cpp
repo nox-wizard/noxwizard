@@ -1098,6 +1098,12 @@ std::vector<SERIAL>::iterator cHouse::getHouseFriends()
 }
 
 
+std::vector<SERIAL> cHouse::getHouseFriendsList()
+{
+	return this->friends;
+}
+
+
 /*!
 \brief Checks if somebody is on the friends list
 \param pc the char to be tested
@@ -1130,6 +1136,11 @@ void cHouse::removeCoOwner(P_CHAR newCoOwner)
 std::vector<SERIAL>::iterator cHouse::getHouseCoOwners()
 {
 	return this->coowners.begin();
+}
+
+std::vector<SERIAL> cHouse::getHouseCoOwnerList()
+{
+	return this->coowners;
 }
 
 /*!
@@ -1181,6 +1192,12 @@ bool cHouse::isBanned(P_CHAR pc)
 	return false;
 
 }
+
+std::vector<SERIAL> cHouse::getHouseBannedList()
+{
+	return this->banned;
+}
+
 
 bool cHouse::isPublicHouse()
 {

@@ -15,6 +15,7 @@
 #include "items.h"
 #include "range.h"
 #include "network.h"
+#include "house.h"
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   Purpose : define standard container for a set of objects which responds to common
@@ -329,6 +330,38 @@ void addGuilds( SERIAL iSet, SERIAL guild , int options )
 	}
 }
 
+void addHouseCoowners( SERIAL iSet, SERIAL house )
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillCoOwners( house );
+		sc->rewind();
+	}
+}
+
+void addHouseFriends( SERIAL iSet, SERIAL house  )
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillFriends( house );
+		sc->rewind();
+	}
+}
+
+void addHouseBans( SERIAL iSet, SERIAL house  )
+{
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter != g_oSet.end() )
+	{
+		NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+		sc->fillBanned( house );
+		sc->rewind();
+	}
+}
 
 } //namespace
 
@@ -852,6 +885,60 @@ void NxwCharWrapper::fillGuildRecruits( SERIAL guild )
 		std::map< SERIAL, P_GUILD_RECRUIT >::iterator iter( pGuild->recruits.begin() ), end( pGuild->recruits.end() );
 		for( ; iter!=end; iter++ ) {
 			insertSerial( iter->first );
+		}
+	}
+}
+
+/*!
+\brief Fills a set with a list of house coowners
+\author Wintermute
+\param house the house
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillCoOwners( SERIAL house )
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		std::vector<SERIAL>::iterator iter=pHouse->getHouseCoOwnerList().begin();
+		for( ; iter!=pHouse->getHouseCoOwnerList().end(); iter++ ) {
+			insertSerial( *iter );
+		}
+	}
+}
+
+/*!
+\brief Fills a set with a list of house coowners
+\author Wintermute
+\param house the house
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillFriends( SERIAL house )
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		std::vector<SERIAL>::iterator iter=pHouse->getHouseFriendsList().begin();
+		for( ; iter!=pHouse->getHouseFriendsList().end(); iter++ ) {
+			insertSerial( *iter );
+		}
+	}
+}
+
+/*!
+\brief Fills a set with a list of house coowners
+\author Wintermute
+\param house the house
+\warning this function ADD new char to current list
+*/
+void NxwCharWrapper::fillBanned( SERIAL house )
+{
+	P_HOUSE pHouse = cHouses::findHouse(house);
+	if( pHouse != NULL )
+	{
+		std::vector<SERIAL>::iterator iter=pHouse->getHouseBannedList().begin();
+		for( ; iter!=pHouse->getHouseBannedList().end(); iter++ ) {
+			insertSerial( *iter );
 		}
 	}
 }
