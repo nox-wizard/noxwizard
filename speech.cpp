@@ -559,11 +559,12 @@ int response(NXWSOCKET  s)
 							//
 							// Select target to follow
 							//
-							addid1[s] = pc_map->getSerial().ser1;
-							addid2[s] = pc_map->getSerial().ser2;
-							addid3[s] = pc_map->getSerial().ser3;
-							addid4[s] = pc_map->getSerial().ser4;
-							target( s, 0, 1, 0, 117, TRANSLATE("Click on the target to follow.") );
+
+							P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+							targ->buffer[0]=pc_map->getSerial32();
+							targ->code_callback=target_follow;
+							targ->send( getClientFromSocket(s) );
+							sysmessage( s, TRANSLATE("Click on the target to follow.") );
 							return 1;
 						}
 					}
@@ -589,7 +590,10 @@ int response(NXWSOCKET  s)
 						return 1;
 					}
 					pc->guarded = false;
-					target(s, 0, 1, 0, 193, TRANSLATE("Select the target to attack."));
+					P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+					targ->code_callback=target_allAttack;
+					targ->send( getClientFromSocket( s ) );
+					sysmessage( s, TRANSLATE("Select the target to attack."));
 					return 1;
 				}
 				//
@@ -612,12 +616,13 @@ int response(NXWSOCKET  s)
 							}
 							if (pc_map->npcaitype== NPCAI_PLAYERVENDOR )
 								return 0; //ripper
-							addid1[s] =pc_map->getSerial().ser1;
-							addid2[s] =pc_map->getSerial().ser2;
-							addid3[s] =pc_map->getSerial().ser3;
-							addid4[s] =pc_map->getSerial().ser4;
+
+							P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+							targ->code_callback=target_playerVendorBuy;
+							targ->buffer[0] = pc_map->getSerial32();
+							targ->send( getClientFromSocket(s) );
 							//pet kill code here
-							target( s, 0, 1, 0, 118, TRANSLATE("Select the target to attack.") );
+							sysmessage( s, TRANSLATE("Select the target to attack.") );
 							return 1;
 						}
 					}
@@ -636,12 +641,11 @@ int response(NXWSOCKET  s)
 						if ( requestPetname )
 						{
 							pc->guarded = false;
-							addid1[s]=pc_map->getSerial().ser1;
-							addid2[s]=pc_map->getSerial().ser2;
-							addid3[s]=pc_map->getSerial().ser3;
-							addid4[s]=pc_map->getSerial().ser4;
-							//pet fetch code here
-							target(s, 0, 1, 0, 124, TRANSLATE("Click on the object to fetch."));
+							P_TARGET targ = clientInfo[s]->newTarget( new cObjectTarget() );
+							targ->code_callback=target_fetch;
+							targ->buffer[0]=pc_map->getSerial32();
+							targ->send( getClientFromSocket(s) );							
+							sysmessage( s, TRANSLATE("Click on the object to fetch."));
 							return 1;
 						}
 					}
@@ -680,12 +684,16 @@ int response(NXWSOCKET  s)
 						bool requestPetname = ( strstr( comm, search1) != NULL);
 						if (requestPetname)
 						{
-							addx[s] = pc_map->getSerial32();	// the pet's serial
-							addy[s] = 0;
+							P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+							targ->code_callback=target_guard;
+							targ->buffer[0] = pc_map->getSerial32();	// the pet's serial
+							targ->buffer[1] = 0;
 							if ( requestGuardMe )
-								addy[s]=1;	// indicates we already know whom to guard (for future use)
+								targ->buffer[1]=1;	// indicates we already know whom to guard (for future use)
 										// for now they still must click on themselves (Duke)
-							target(s, 0, 1, 0, 120, TRANSLATE("Click on the char to guard."));
+							targ->send( getClientFromSocket( s ) );
+							sysmessage( s, TRANSLATE("Click on the char to guard.") );
+
 							return 1;
 						}
 					}
@@ -742,11 +750,11 @@ int response(NXWSOCKET  s)
 								return 0;
 							*/
 							//pet transfer code here
-							addid1[s]=pc_map->getSerial().ser1;
-							addid2[s]=pc_map->getSerial().ser2;
-							addid3[s]=pc_map->getSerial().ser3;
-							addid4[s]=pc_map->getSerial().ser4;
-							target(s, 0, 1, 0, 119, TRANSLATE("Select character to transfer your pet to."));
+							P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+							targ->code_callback=target_transfer;
+							targ->buffer[0]=pc_map->getSerial32();
+							targ->send( getClientFromSocket(s) );
+							sysmessage( s, TRANSLATE("Select character to transfer your pet to."));
 							return 1;
 						}
 					}
@@ -975,9 +983,11 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 			{
 				if(pc_vendor->npcaitype==NPCAI_PLAYERVENDOR)
 				{
-					addx[s]=DEREF_P_CHAR(pc_vendor);
 					pc_vendor->talk(s,TRANSLATE("What would you like to buy?"),0);
-					target(s,0,1,0,224," ");
+					P_TARGET targ = clientInfo[s]->newTarget( new cItemTarget() );
+					targ->code_callback=target_playerVendorBuy;
+					targ->buffer[0]=pc_vendor->getSerial32();
+					targ->send( getClientFromSocket(s) );
 					return; // lb bugfix
 				}
 				else if(Targ->BuyShop(s, DEREF_P_CHAR(pc_vendor)))
@@ -1038,9 +1048,11 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 				{
 					if(pc->npcaitype==NPCAI_PLAYERVENDOR)
 					{
-						addx[s]=DEREF_P_CHAR(pc);
 						pc->talk(s,TRANSLATE("What would you like to buy?"),0);
-						target(s,0,1,0,224," ");
+						P_TARGET targ= clientInfo[s]->newTarget( new cItemTarget() );
+						targ->code_callback = target_playerVendorBuy;
+						targ->buffer[0]=pc->getSerial32();
+						targ->send( getClientFromSocket(s) );
 						return;
 					}
 					else
@@ -1883,43 +1895,17 @@ static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCh
 	}
 	if( pc_vendor->npcaitype == NPCAI_PLAYERVENDOR )
 	{
-		addx[ socket ] = DEREF_P_CHAR( pc_vendor ) ;
 		pc_vendor->talk( socket, TRANSLATE("What would you like to buy?"), 0 );
-		target( socket, 0, 1, 0, 224, " " );
+		P_TARGET targ = clientInfo[socket]->newTarget( new cItemTarget() );
+		targ->buffer[0]= pc_vendor->getSerial32();
+		targ->send( getClientFromSocket( socket ) );
 		success = true;
 	}
 	else
 		if( Targ->BuyShop( socket, DEREF_P_CHAR( pc_vendor ) ) )
 			success = true;
 	return success;
-	/*
 
-// Player said vendor BUY or vendor sell
-		// In that case we alerady have the vendor-number from hte calling function
-		// and dont need to search again
-		strcpy(search1, "VENDOR");
-		strcpy(search2, "SHOPKEEPER");
-		strcpy(search4, " BUY");
-		response1=(strstr(comm, search1));
-		response2=(strstr(comm, search2));
-		response4=(strstr(comm, search4));
-
-		if (response4)//AntiChrist
-		{
-			if (response2 || response1)
-			{
-				if(chars[vendor].npcaitype==NPCAI_PLAYERVENDOR)
-				{
-					addx[s]=vendor;
-					chars[vendor].talk(s,TRANSLATE("What would you like to buy?"),0);
-					target(s,0,1,0,224," ");
-					return; // lb bugfix
-				}
-				else if(Targ->BuyShop(s, vendor))
-					return; // lb bugfix
-			}
-		}
-	*/
 }
 
 }// namespace Speech
