@@ -13,6 +13,7 @@
 #include "nxwcommn.h"
 #include "oldmenu.h"
 
+
 namespace PartySystem
 {
 

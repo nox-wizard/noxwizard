@@ -33,7 +33,6 @@
 #endif
 #endif
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -940,9 +939,15 @@ AmxFunction::AmxFunction( char* funName )
 	funcName.copy( funName, strlen(funName) );
 }
 
-AmxFunction::AmxFunction( int fn )
+AmxFunction::AmxFunction( FUNCIDX fn )
 {
 	function = fn;
+}
+
+AmxFunction::AmxFunction( class AmxFunction& af )
+{
+	function = af.function;
+	funcName = af.funcName;
 }
 
 /*
@@ -954,6 +959,18 @@ char* AmxFunction::getFuncName()
 {
     return ( function != INVALID ) ? (char*)funcName.c_str() : (char*)InvalidFunction.c_str();
 }
+
+FUNCIDX AmxFunction::getFuncIdx()
+{
+	return function;
+}
+
+void AmxFunction::copy( class AmxFunction& af )
+{
+	this->funcName=af.funcName;
+	this->function=af.function;
+}
+
 
 /*
 \brief Call the function with no params

@@ -19,6 +19,7 @@
 #include "srvparms.h"
 #include "addmenu.h"
 
+
 //Luxor: for AMX skills implementation
 #undef AMXINGOTMAKEMENU
 #define AMXINGOTMAKEMENU "__nxw_ingot_mm"

@@ -15,6 +15,7 @@
  
  \date 12-09-2002 Luxor: changed to work with serials instead of old indexes
  */
+
 #include "nxwcommn.h"
 #include "basics.h"
 #include "cmdtable.h"
@@ -26,15 +27,7 @@
 #include "amxcback.h"
 #include "version.h"
 #include "calendar.h"
-
-typedef enum {
-	T_CHAR = 0,
-	T_STRING,
-	T_INT,
-	T_BOOL,
-	T_SHORT,
-	T_UNICODE,
-} VAR_TYPE;
+#include "menu.h"
 
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
@@ -59,7 +52,7 @@ static const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
 
 extern int g_nStringMode;
 
-static VAR_TYPE getPropertyType(int property)
+VAR_TYPE getPropertyType(int property)
 {
 	if (property < 100) return T_BOOL;
 	if (property < 200) return T_CHAR;
@@ -2344,6 +2337,320 @@ NATIVE2(_getGuildProperty)
 				break;
 			default :
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+NATIVE2(_setMenuProperty)
+{
+	// params[1] = menu
+	// params[2] = property
+	// params[3] = subproperty
+	// params[4] = value to set property to
+
+	cMenu* menu = (cMenu*)Menus.getMenu( params[1] );
+	if( !ISVALIDPM( menu ) )
+	{
+		LogError( "menu_setProperty called with invalid guild %d", params[1] );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	cell* cptr;
+	amx_GetAddr(amx,params[4],&cptr);
+
+
+	switch( tp ) {
+	
+	case T_INT: {
+		int p = *cptr;
+
+		switch( params[2] )
+		{
+			case NXW_MP_I_X :
+				menu->x = p;
+				break;
+
+			case NXW_MP_I_Y :
+				menu->y = p;
+				break;
+
+			case NXW_MP_I_ID :
+				menu->id = static_cast<MENU_TYPE>(p);
+				break;
+
+			case NXW_MP_I_BUFFER:
+				if( ISVALIDMENUBUFFER( params[3] ) )
+					menu->buffer[ params[3] ]=p;				
+
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+
+		return p;
+	}
+	break;
+
+	case T_BOOL: {
+
+		bool p = *cptr ? true : false;
+
+		switch( params[2] )
+		{
+			case NXW_MP_B_CLOSEABLE :
+				menu->setCloseable( p );
+				break;
+
+			case NXW_MP_B_MOVEABLE :
+				menu->setMoveable( p );
+				break;
+
+			case NXW_MP_B_DISPOSEABLE :
+				menu->setDisposeable( p );
+				break;
+
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p = static_cast<short>(*cptr & 0xFFFF);
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p = static_cast<char>(*cptr & 0xFF);
+
+		switch( params[2] )
+		{
+			case INVALID:
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		return p;
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should get a ConOut format string, params[4] is the str format
+
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case NXW_MP_STR_CALLBACK :
+				menu->setCallBack( std::string( g_cAmxPrintBuffer ) );
+				break;
+			case NXW_MP_STR_BUFFER :
+				if( ISVALIDMENUBUFFER( params[3] ) )
+					menu->buffer_str[ params[3] ] = new std::string( g_cAmxPrintBuffer );
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+		}
+		g_nAmxPrintPtr=0;
+		return 0;
+	}
+	break;
+
+	case T_UNICODE: {
+
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		wstring w;
+		amx_GetStringUnicode( &w, cstr );
+
+		switch( params[2] )
+		{
+			case INVALID :
+			default :
+				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
+	}
+	break;
+
+	default: 
+		return INVALID;
+	}
+}
+
+
+
+NATIVE2(_getMenuProperty)
+{
+
+	cMenu* menu = (cMenu*)Menus.getMenu( params[1] );
+	if( !ISVALIDPM( menu ) )
+	{
+		LogError( "menu_getProperty called with invalid menu %d", params[1] );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[2]) {
+			case NXW_MP_I_X:
+				p = menu->x;
+				break;
+			case NXW_MP_I_Y:
+				p = menu->y;
+				break;
+			case NXW_MP_I_ID:
+				p = menu->id;
+				break;
+			case NXW_MP_I_BUFFER:
+				if( ISVALIDMENUBUFFER( params[3] ) )
+					p=menu->buffer[ params[3] ];					
+				else
+					p=INVALID;
+				break;
+			default:
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p;
+		switch(params[2]) {
+
+			case NXW_MP_B_CLOSEABLE:
+				p = menu->getCloseable();
+			break;
+
+			case NXW_MP_B_MOVEABLE:
+				p = menu->getMoveable();
+			break;
+
+			case NXW_MP_B_DISPOSEABLE:
+				p = menu->getDisposeable();
+			break;
+
+			case NXW_MP_B_RADIO:
+				p = menu->getRadio( params[3] );
+			break;
+
+			case NXW_MP_B_CHECK:
+				p = menu->getCheckBox( params[3] );
+			break;
+
+			default:
+				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case NXW_MP_I_BUFFER:
+				if( !ISVALIDMENUBUFFER( params[3] ) )
+					return INVALID;
+				else
+					if( menu->buffer_str[ params[3] ]!=NULL )
+						strcpy( str, menu->buffer_str[ params[3] ]->c_str() );
+					else
+						return INVALID;
+				break;
+			default:
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case NXW_MP_UNI_TEXT :		
+				w = menu->getText( params[3] );
+				break;
+			default :
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
 				break;
   		}
 

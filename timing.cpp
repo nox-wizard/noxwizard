@@ -13,6 +13,7 @@
 \author Duke
 \note not necessarily ALL those functions
 */
+
 #include "nxwcommn.h"
 #include "basics.h"
 #include "sregions.h"

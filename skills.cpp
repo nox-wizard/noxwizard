@@ -19,6 +19,7 @@
 #include "tmpeff.h"
 #include "addmenu.h"
 
+
 //<Luxor>: for skills implementation by small
 /*
 #undef AMXTASTEID

@@ -16,6 +16,7 @@
 #include "menu.h"
 #include "oldmenu.h"
 
+
 namespace PartySystem {
 
 	int g_nPartyShareKarma = 1;

@@ -17,6 +17,7 @@
 #define __TYPEDEFS_H__
 #include <set>
 
+
 typedef double				R64;	//< 64 bits floating point
 typedef float				R32;	//< 32 bits floating point
 

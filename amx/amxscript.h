@@ -28,6 +28,7 @@
  *//*! \file amxscript.h
 	\brief Definition of methods Amx for Script
  */
+
 #ifndef __AMXSCRIPT_H__
 #define __AMXSCRIPT_H__
 //#include "amx_vm.h"
@@ -77,15 +78,19 @@ public:
 	
 private:
 	std::string funcName; //!< function name
-	int function; //function index
+	FUNCIDX function; //function index
 
 public:
 
+	AmxFunction( class AmxFunction& af );
 	AmxFunction( char* funName );
-	AmxFunction( int funIdx ); //ndEndy how i can obtain func name from idx?
+	AmxFunction( FUNCIDX funIdx ); //ndEndy how i can obtain func name from idx?
 
 
 	char* getFuncName();
+	FUNCIDX getFuncIdx();
+
+	void copy( class AmxFunction& af );
 
 	cell Call( );
 	cell Call( int param );

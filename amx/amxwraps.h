@@ -29,6 +29,7 @@
 	\brief header
  */
 
+
 #ifndef __AMXWRAPS_H__
 #define __AMXWRAPS_H__
 
@@ -52,6 +53,16 @@ enum { AMXERRNO_OK = 0, AMXERRNO_INVSOCKET, AMXERRNO_INVITEM, AMXERRNO_INVCHAR, 
 #define PAR_RGN(A)   if ((params[A]<0)||(params[A]>0xFF)) { g_AmxErrNo = INVALID_REGION; return -1; }
 
 
+typedef enum {
+	T_CHAR = 0,
+	T_STRING,
+	T_INT,
+	T_BOOL,
+	T_SHORT,
+	T_UNICODE,
+} VAR_TYPE;
+
+VAR_TYPE getPropertyType(int property);
 
 
 //second cp/ci for positions
@@ -398,6 +409,21 @@ const int NXW_GP_STR_WEBPAGE = 451;
 const int NXW_GP_STR_ABBREVIATION = 452;
 //const int NXW_GP_UNI = 500;
 const int NXW_GP_UNI_CHARTER = 500;
+
+
+
+const int NXW_MP_B_CLOSEABLE = 0;
+const int NXW_MP_B_MOVEABLE = 1;
+const int NXW_MP_B_DISPOSEABLE = 2;
+const int NXW_MP_B_RADIO = 3;
+const int NXW_MP_B_CHECK = 4;
+const int NXW_MP_I_X = 200;
+const int NXW_MP_I_Y = 201;
+const int NXW_MP_I_ID = 202;
+const int NXW_MP_I_BUFFER = 203;
+const int NXW_MP_STR_CALLBACK = 450;
+const int NXW_MP_STR_BUFFER = 451;
+const int NXW_MP_UNI_TEXT = 500;
 
 
 #endif //__AMXWRAPS_H__

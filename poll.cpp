@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "poll.h"
 
+
 cPoll::cPoll()
 {
 }

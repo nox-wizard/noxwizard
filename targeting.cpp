@@ -29,6 +29,7 @@
 #include "tmpeff.h"
 #include "jail.h"
 
+
 //extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 extern void targetParty(NXWSOCKET  s);
 

@@ -23,6 +23,7 @@
 #include "packets.h"
 #include "telport.h"
 
+
 /*!
 \brief Calculates the adjacent direction (counterclockwise)
 \author Duke

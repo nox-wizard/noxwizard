@@ -25,10 +25,10 @@
 #include "../cmdtable.h"
 #include "tweaking.h"
 
+
 // Register tweaking commands
 void cTweaking::init(cCommandTable* commands) {
     commands->addGmCommand(new cCommand("INCZ", 5, 14, cCommand::buildSteps(&INCZ_SelectTarget, &INCZ_Apply), true));
-    commands->addGmCommand(new cCommand("TWEAK", 3, 15, cCommand::buildSteps(&TWEAK_SelectTarget, &TWEAK_Apply), true));
     commands->addGmCommand(new cCommand("RENAME", 1, 8, cCommand::buildSteps(&RENAME_SelectTarget, &RENAME_Apply), true));
     commands->addGmCommand(new cCommand("RENAME2", 5, 5, cCommand::buildSteps(&RENAME2_SelectTarget, &RENAME2_Apply), true));
     commands->addGmCommand(new cCommand("TITLE", 1, 9, cCommand::buildSteps(&TITLE_SelectTarget, &TITLE_Apply), true));

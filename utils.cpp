@@ -12,7 +12,6 @@
 \brief some utils functions
 */
 
-
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "addmenu.h"

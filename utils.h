@@ -16,7 +16,6 @@
 #define __UTILS_H__
 
 
-
 class cScriptCommand {
 
 	public:

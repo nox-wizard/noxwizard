@@ -23,8 +23,11 @@
 #include "set.h"
 #include "amxvarserver.h"
 #include "amxfile.h"
-#include "nxwGump.h"
 #include "menu.h"
+#include "oldmenu.h"
+#include "itemid.h"
+#include "timers.h"
+
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -38,7 +41,6 @@
 #pragma warning(disable: 4244) //Disable "possible loss of data" warning
 #pragma warning(disable: 4100) //Disable "possible loss of data" warning
 #endif
-#include "collector.h"
 
 //property system lies in amxwrap2.cpp
 /* Sparhawk 2001-09-15 added access to calendar properties */
@@ -49,6 +51,8 @@ NATIVE2(_setItemProperty);
 NATIVE2(_getCalProperty);
 NATIVE2(_setGuildProperty);
 NATIVE2(_getGuildProperty);
+NATIVE2(_setMenuProperty);
+NATIVE2(_getMenuProperty);
 
 int g_nCurrentSocket;
 int g_nTriggeredItem;
@@ -210,380 +214,219 @@ NATIVE(_getTarget)
 \param 2: interval
 */
 NATIVE(addTimer)
-{ return addTimer(params[1],params[2],params[3],params[4]); }
+{ 
+	return addTimer(params[1],params[2],params[3],params[4]); 
+}
 
-/*
-\brief prepares a socket for a menu, initializing it and destroying any previous menu
-\author Xanathar
+
+
+/*!
+\brief Prepares a socket for a menu, initializing it and destroying any previous menu
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 1: number of pages
-\param 1: number of item for page
+\param 1 socket
+\param 2 number of pages
+\param 3 number of item for page
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_Prepare)
+NATIVE(_mnu_Prepare)
 {
 	if ( params[1] < 0 )
 		return INVALID;
 
 	NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
 	P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
-	if (pc->customMenu != NULL)
-		safedelete(pc->customMenu);
-	pc->customMenu = new cAmxMenu();
-	pc->customMenu->setParameters(params[3],params[2]);
+
+	if(pc->custmenu!=INVALID)
+		Menus.removeMenu( pc->custmenu, pc );
+
+	P_OLDMENU menu = (P_OLDMENU)Menus.insertMenu( new cOldMenu() );
+	pc->custmenu = menu->serial;
+	menu->setParameters( params[3], params[2] );
 	return 0;
 }
 
-/*
-\brief set menu style and eventually the color
-\author Xanathar
+/*!
+\brief Set menu style and eventually the color
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 2: style
-\param 3: color ( default 0 )
+\param 1 socket
+\param 2 style
+\param 3 color ( default 0 )
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_SetStyle)
+NATIVE(_mnu_SetStyle)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
     P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
-	pc->customMenu->setStyle(params[2], params[3]);
+
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->style = params[2];
+	menu->color = params[3];
+
 	return 0;
 }
 
-/*
-\brief set the menu title
-\author Xanathar
+/*!
+\brief Set the menu title
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 2: title
+\param 1 socket
+\param 2 title
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_SetTitle)
+NATIVE(_mnu_SetTitle)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
     P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
+
 	cell *cstr;
 	amx_GetAddr(amx,params[2],&cstr);
 	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	pc->customMenu->setTitle(g_cAmxPrintBuffer);
+	
+	std::wstring t;
+	string2wstring( std::string( g_cAmxPrintBuffer ), t );
+	
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->title = t;
 	g_nAmxPrintPtr=0;
+
 	return 0;
 }
 
-/*
-\brief set the menu color
-\author Xanathar
+/*!
+\brief Set the menu color
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 2: color
+\param 1 socket
+\param 2 color
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_SetColor)
+NATIVE(_mnu_SetColor)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
 	P_CHAR pc = s->currChar();
-	pc->customMenu->setColor(params[2]);
+	VALIDATEPCR( pc, INVALID );
+
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->color = params[2];
 	return 0;
 }
 
-/*
-\brief adds an item at a given position of a correctly inizialized menu
-\author Xanathar
+/*!
+\brief Adds an item at a given position of a correctly inizialized menu
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 2: page number
-\param 3: index number
-\param 4: text
+\param 1 socket
+\param 2 page number
+\param 3 index number
+\param 4 text
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_AddItem)
+NATIVE(_mnu_AddItem)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
     P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
+
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	pc->customMenu->addMenuItem(params[2],params[3],g_cAmxPrintBuffer);
+
+	std::wstring t;
+	string2wstring( std::string( g_cAmxPrintBuffer ), t );
+	
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->addMenuItem( params[2], params[3], t );
 	g_nAmxPrintPtr=0;
 	return 0;
 }
 
-NATIVE(_gump_show)
-{
-//	Gumps->Menu(s, params[1],-1);
-	return 0;
-}
-
-/*
-\brief pop up the menu window
-\author Xanathar
+/*!
+\brief Show up the menu window
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
+\param 1 socket
 \return 0 if success, INVALID if error ( es socket invalid )
 */
-NATIVE(_menu_Show)
+NATIVE(_mnu_Show)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
     P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
-	pc->customMenu->buildMenu();
-	pc->customMenu->showMenu( params[1] );
+
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->show( pc );
 	return 0;
 }
 
 /*
-\brief set the callback for this menu events
-\author Xanathar
+\brief Set the callback for this menu events
+\author Xanathar, update Endymion
 \since 0.20
-\param 1: socket
-\param 1: callback
+\param 1 socket
+\param 2 callback
 \return 0 if success, INVALID if error ( es socket invalid )
 \note callback can be obtained by call to funcidx
 */
-NATIVE(_menu_SetCallback)
+NATIVE(_mnu_SetCallback)
 {
 	if ( params[1] < 0 )
 		return INVALID;
+
     NXWCLIENT s = getClientFromSocket(params[1]);
+	if( s==NULL )
+		return INVALID;
+
     P_CHAR pc = s->currChar();
 	VALIDATEPCR( pc, INVALID );
-	pc->customMenu->setCallback(params[2]);
-	return 0;
-}
 
-//
-// GUMP API -- still highly experimental
-//
-
-NATIVE ( _gui_create )
-{
-	return ( nxwGump::createGump( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false), params[7] ) ? 1 : 0);
-}
-
-NATIVE ( _gui_delete )
-{
-	return nxwGump::deleteGump( params[1] );
-}
-
-NATIVE ( _gui_show )
-{
-	P_CHAR pc = pointers::findCharBySerial( params[2] ); //Luxor bug fix
-	VALIDATEPCR( pc, 0 );
-	return ( nxwGump::showGump( params[1], pc ) ? 1 : 0 );
-}
-
-/*
-\author Luxor
-\brief Set the callback function of a gump
-*/
-NATIVE ( _gui_setCallback )
-{
-	nxwGump *gump;
-	gump = nxwGump::selectGump( params[1] );
-        if ( gump == NULL )
-		return 0;
-	
-	cell *cstr;
-	amx_GetAddr( amx, params[2], &cstr );
-	printstring( amx, cstr, params+3, (int)(params[0]/sizeof(cell))-1 );
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-
-	string sCallback( g_cAmxPrintBuffer );
-	gump->setCallBack( sCallback );
-
-	g_nAmxPrintPtr = 0;
-	return 1;
-}
-
-NATIVE ( _gui_addButton )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-			thisGump->addButton( params[2], params[3], params[4], params[5], params[6] );
-			return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addGump )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-			thisGump->addGump( params[2], params[3], params[4], params[5] );
-			return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addPage )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addPage( params[2] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE (  _gui_addResizeGump )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addPageButton )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addPageButton( params[2], params[3], params[4], params[5], params[6] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addRadioButton )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addRadioButton( params[2], params[3], params[4], params[5], params[6], params[7] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addText )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-		g_nAmxPrintPtr=0;
-		thisGump->addText( params[2], params[3], g_cAmxPrintBuffer, params[5] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addCroppedText )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		cell *cstr;
-		amx_GetAddr(amx,params[6],&cstr);
-		printstring(amx,cstr,params+7,(int)(params[0]/sizeof(cell))-1);
-		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-		g_nAmxPrintPtr=0;
-		thisGump->addCroppedText( params[2], params[3], params[4], params[5], g_cAmxPrintBuffer, params[7] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addTilePic )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addTilePic( params[2], params[3], params[4], params[5] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addTiledGump )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		thisGump->addTiledGump( params[2], params[3], params[4], params[5], params[6], params[7] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addHtmlGump )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		cell *cstr;
-		amx_GetAddr(amx,params[6],&cstr);
-		printstring(amx,cstr,params+7,(int)(params[0]/sizeof(cell))-1);
-		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-		g_nAmxPrintPtr=0;
-		thisGump->addHtmlGump( params[2], params[3], params[4], params[5], g_cAmxPrintBuffer, params[7], params[8] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_addInputField )
-{
-	nxwGump* thisGump = nxwGump::selectGump( params[1] );
-	if ( thisGump != 0 )
-	{
-		cell *cstr;
-		amx_GetAddr(amx,params[7],&cstr);
-		printstring(amx,cstr,params+8,(int)(params[0]/sizeof(cell))-1);
-		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-		g_nAmxPrintPtr=0;
-		thisGump->addInputField( params[2], params[3], params[4], params[5], params[6], g_cAmxPrintBuffer, params[8] );
-		return 1;
-	}
-	return 0;
-}
-
-NATIVE ( _gui_getInputField )
-{
-	std::string value;
-	if( nxwGump::selectResponse( params[1], value ) )
-	{
-	  char str[100];
-  	cell *cptr;
-	  strcpy(str, value.c_str() );
-  	amx_GetAddr(amx,params[2],&cptr);
-	  amx_SetString(cptr,str, g_nStringMode);
-		return 1;
-	}
+	P_OLDMENU menu = (P_OLDMENU)Menus.getMenu( pc->custmenu );
+	menu->setCallBack( params[2] );
 	return 0;
 }
 
 
-//
-//
-//
+
+
 
 /*
 \brief get the item that invoked the trigger
@@ -4619,12 +4462,13 @@ NATIVE(_map_getTileName)
 {
     if (params[1] < 0 || params[2] < 0) return INVALID;
     
-	staticVector s;
-	data::collectStatics( params[1], params[2], s );
-    for( UI32 i = 0; i < s.size(); i++ ) {
+	NxwMulWrapperStatics sm( params[1], params[2] );
+    for( sm.rewind(); !sm.end(); sm++ ) {
 
+		statics_st s = sm.get();
+		
 		tile_st tile;
-        if( data::seekTile( s[i].id, tile ) ) {
+        if( data::seekTile( s.id, tile ) ) {
 
 			char str[100];
   			cell *cptr;
@@ -4653,13 +4497,14 @@ NATIVE(_map_isUnderStatic)
 { 
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 
-	staticVector s;
-	data::collectStatics( params[1], params[2], s );
-    for( UI32 i = 0; i < s.size(); i++ ) {
+	NxwMulWrapperStatics sm( params[1], params[2] );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+
+		statics_st s = sm.get();
 
 		tile_st tile;
-		if( data::seekTile( s[i].id, tile ) )
-			if( ( tile.height + s[i].z ) >params[3] ) // a roof  must be higher than player's z !
+		if( data::seekTile( s.id, tile ) ) 
+			if( ( tile.height + s.z ) >params[3] ) // a roof  must be higher than player's z !
 				return true;
 	}
 	return false;
@@ -4678,11 +4523,12 @@ NATIVE(_map_getTileID)
 {
 	if (params[1] < 0 || params[2] < 0) return INVALID;
 	
-	staticVector s;
-	data::collectStatics( params[1], params[2], s );
-    for( UI32 i = 0; i < s.size(); i++ ) {
-		if( s[i].z == params[3])
-			return s[i].id;
+	NxwMulWrapperStatics sm( params[1], params[2] );
+	for( sm.rewind(); !sm.end(); sm++ ) {
+
+		statics_st s = sm.get();
+		if( s.z == params[3])
+			return s.id;
 	}
 	return INVALID;
 }
@@ -5160,29 +5006,32 @@ NATIVE( _chr_unStable )
 // New Menu API -- still highly experimental
 //
 
-/*
+/*!
 \brief Create a new menu
 \author Endymion
 \since 0.82
-\param 1 the menu id
-\param 2 x
-\param 3 y
-\param 2 is moveable
-\param 2 is closeable
-\param 3 is disposeable
+\param 1 x
+\param 2 y
+\param 3 is moveable
+\param 4 is closeable
+\param 5 is disposeable
+\param 6 function callback
 \return the menu serial
-\todo Fix it!!! - Akron
 */
 NATIVE ( _menu_create )
 {
-	// TODO fix it!
-	  return 0;
-	// TODO fix it!
+	P_MENU menu = Menus.insertMenu( new cMenu( MENUTYPE_CUSTOM, params[1], params[2], (params[3]?true:false), (params[4]?true:false), (params[5]?true:false) ) );
+	VALIDATEPMR( menu, INVALID );
 
-//	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0;
+	cell *cstr;
+	amx_GetAddr(amx, params[6], &cstr);
+	amx_GetString(g_cAmxPrintBuffer, cstr);
+	menu->setCallBack( std::string( g_cAmxPrintBuffer ) );
+	g_nAmxPrintPtr=0;
+	return menu->serial;
 }
 
-/*
+/*!
 \brief Delete a menu
 \author Endymion
 \since 0.82
@@ -5191,10 +5040,10 @@ NATIVE ( _menu_create )
 */
 NATIVE ( _menu_delete )
 {
-	return ( menus.deleteMenu( params[1] ) )? 1 : 0;
+	return ( Menus.removeMenu( params[1] )==INVALID )? 1 : 0;
 }
 
-/*
+/*!
 \brief Delete a menu
 \author Endymion
 \since 0.82
@@ -5204,59 +5053,282 @@ NATIVE ( _menu_delete )
 */
 NATIVE ( _menu_show )
 {
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL ) {
-		P_CHAR pc = pointers::findCharBySerial( params[2] );
-		VALIDATEPCR( pc, 0 );
-		return ( menus.showMenu( params[1], pc ) ? 1 : 0 );
-	}
-	return 0;
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, 0 );
+
+	P_MENU menu = Menus.getMenu( params[1] );
+	VALIDATEPMR( menu, 0 );
+
+	menu->show( pc );
+	return 1;
 }
 
-/*
+/*!
+\brief Clear a menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\return true if is show or false if error
+*/
+NATIVE ( _menu_clear )
+{
+
+	cMenu* menu = (cMenu*)Menus.getMenu( params[1] );
+	VALIDATEPMR( menu, 0 );
+
+	menu->clear();
+	return 1;
+}
+
+/*!
+\brief Add background at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 the gump
+\param 3 the width
+\param 4 the height
+\return false if error, true else
+*/
+NATIVE( _menu_addBackground ) 
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addBackground( params[2], params[3], params[4] );
+
+	return 1;
+}
+
+/*!
 \brief Add a new button at given menu
 \author Endymion
 \since 0.82
 \param 1 the menu serial
 \param 2 x
 \param 3 y
-\param 4 up
-\param 5 down
+\param 4 button up gump
+\param 5 button down gump
 \param 6 return code
-\param 7 page ( default 1 )
 \return false if error, true else
 */
 NATIVE ( _menu_addButton )
 {
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL )
-	{
-			((cMenu*)menu)->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
-			return 1;
-	}
-	return 0;
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+	
+	menu->addButton( params[2], params[3], params[4], params[5], params[6] );
+
+	return 1;
 }
 
-/*
+/*!
 \brief Add a new button at given menu
 \author Endymion
 \since 0.82
 \param 1 the menu serial
-\param 2 page number
+\param 2 x
+\param 3 y
+\param 4 button up gump
+\param 5 button down gump
+\param 6 function callback
 \return false if error, true else
 */
-NATIVE ( _menu_addPage )
+NATIVE ( _menu_addButtonFn )
 {
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL )
-	{
-		((cMenu*)menu)->addPage( params[2] );
-		return 1;
-	}
-	return 0;
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+	
+	cell *cstr;
+	amx_GetAddr(amx, params[6], &cstr);
+	amx_GetString(g_cAmxPrintBuffer, cstr);
+	FUNCIDX fn = AmxFunction::g_prgOverride->getFnOrdinal( g_cAmxPrintBuffer );
+	
+	menu->addButtonFn( params[2], params[3], params[4], params[5], fn );
+	g_nAmxPrintPtr=0;
+
+	return 1;
 }
 
-/*
+
+/*!
+\brief Add a new checkbox at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 off gump
+\param 5 on gump
+\param 6 checked
+\param 7 result
+\return false if error, true else
+*/
+NATIVE( _menu_addCheckbox )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addCheckbox( params[2], params[3], params[4], params[5], params[6], params[7] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new ?? at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\return false if error, true else
+*/
+NATIVE( _menu_addCheckTrans )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addCheckertrans( params[2], params[3], params[4], params[5] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new gump at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 gump
+\param 5 color
+\return false if error, true else
+*/
+NATIVE( _menu_addGump )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addGump( params[2], params[3], params[4], params[5] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new html gump at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 html
+\param 7 Has back ??
+\param 8 can scroll
+\return false if error, true else
+*/
+NATIVE( _menu_addHtmlGump )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[4],&cstr);
+	wstring s;
+	amx_GetStringUnicode( &s, cstr );
+
+
+	menu->addHtmlGump( params[2], params[3], params[4], params[5], s, params[7], params[8] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new input field at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 text id
+\param 7 initial value
+\param 8 color
+\return false if error, true else
+*/
+NATIVE( _menu_addInputField )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[7],&cstr);
+	wstring s;
+	amx_GetStringUnicode( &s, cstr );
+
+	menu->addInputField( params[2], params[3], params[4], params[5], params[6], s, params[8] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new property field at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 property
+\param 7 sub property
+\param 8 initial value
+\param 9 color
+\return false if error, true else
+*/
+NATIVE( _menu_addPropertyField )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[8],&cstr);
+	wstring s;
+	amx_GetStringUnicode( &s, cstr );
+
+	menu->addPropertyField( params[2], params[3], params[4], params[5], params[6], params[7], s, params[9] );
+
+	return 1;
+}
+
+/*!
+\brief Add a new radio button at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 off gump
+\param 5 on gump
+\param 6 checked
+\param 7 result
+\return false if error, true else
+*/
+NATIVE( _menu_addRadioButton )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addRadioButton( params[2], params[3], params[4], params[5], params[6], params[7] );
+
+	return 1;
+}
+
+/*!
 \brief Add a resized gump at given menu
 \author Endymion
 \since 0.82
@@ -5270,39 +5342,14 @@ NATIVE ( _menu_addPage )
 */
 NATIVE (  _menu_addResizeGump )
 {
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL )
-	{
-		((cMenu*)menu)->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
-		return 1;
-	}
-	return 0;
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
+	return 1;
 }
 
-/*
-\brief Add a page button at given menu
-\author Endymion
-\since 0.82
-\param 1 the menu serial
-\param 2 x
-\param 3 y
-\param 4 up gump
-\param 5 down gump
-\param 6 page
-\return false if error, true else
-*/
-NATIVE ( _menu_addPageButton )
-{
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL )
-	{
-		((cMenu*)menu)->addPageButton( params[2], params[3], params[4], params[5], params[6] );
-		return 1;
-	}
-	return 0;
-}
-
-/*
+/*!
 \brief Add text at given menu
 \author Endymion
 \since 0.82
@@ -5315,19 +5362,126 @@ NATIVE ( _menu_addPageButton )
 */
 NATIVE ( _menu_addText )
 {
-	P_MENU menu = menus.selectMenu( params[1] );
-	if ( menu != NULL )
-	{
-		cell *cstr;
-		amx_GetAddr(amx,params[4],&cstr);
-		wstring s;
-		amx_GetStringUnicode( &s, cstr );
-		((cMenu*)menu)->addText( params[2], params[3], s, params[5] );
-		return 1;
-	}
-	return 0;
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[4],&cstr);
+	wstring s;
+	amx_GetStringUnicode( &s, cstr );
+
+	menu->addText( params[2], params[3], s, params[5] );
+	return 1;
 }
 
+/*!
+\brief Add a new tile picture at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 tile
+\param 5 color
+\return false if error, true else
+*/
+NATIVE( _menu_addTilePic )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addTilePic( params[2], params[3], params[4], params[5] );
+	return 1;
+}
+
+/*!
+\brief Add a new tiled gump at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 gump
+\param 7 color
+\return false if error, true else
+*/
+NATIVE( _menu_addTiledGump )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addTiledGump( params[2], params[3], params[4], params[5], params[6], params[7] );
+	return 1;
+}
+
+/*!
+\brief Add a new ?? at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 width
+\param 5 height
+\param 6 clilocid
+\param 7 Has back ??
+\param 8 can scroll
+\return false if error, true else
+*/
+NATIVE( _menu_addXmfHtmlGump )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	cell *cstr;
+	amx_GetAddr(amx,params[4],&cstr);
+	wstring s;
+	amx_GetStringUnicode( &s, cstr );
+
+	menu->addXmfHtmlGump( params[2], params[3], params[4], params[5], s, params[6], params[7] );
+	return 1;
+}
+
+/*!
+\brief Add a new page at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 the page
+\return false if error, true else
+*/
+NATIVE( _menu_addPage )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addPage( params[2] );
+	return 1;
+}
+
+/*!
+\brief Add a new page button at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 up
+\param 5 down
+\param 6 page to go
+\return false if error, true else
+*/
+NATIVE( _menu_addPageButton )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addPageButton( params[2], params[3], params[4], params[5], params[6] );
+	return 1;
+}
+ 
 /*!
 \file
 
@@ -5339,6 +5493,7 @@ xxxx is :
 <ul>
 	<li>	chr - for charachter related functions
 	<li>	itm - for item related functions
+	<li>	menu - for menu acces ( 0.82 )
 	<li>	mnu - for menu access (0.20s)
 	<li>	magic - for magic access (0.50s)
 	<li>	send - for packet send functions (0.50s)
@@ -5583,26 +5738,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 // New local property interface
 //
  { "var_get", _var_get },
-//
-// Gui functions
-//
- { "gui_create", _gui_create },
- { "gui_delete", _gui_delete },
- { "gui_show", _gui_show },
- { "gui_setCallback", _gui_setCallback },
- { "gui_addButton", _gui_addButton },
- { "gui_addGump", _gui_addGump },
- { "gui_addPage", _gui_addPage },
- { "gui_addResizeGump", _gui_addResizeGump },
- { "gui_addPageButton", _gui_addPageButton },
- { "gui_addRadioButton", _gui_addRadioButton },
- { "gui_addText", _gui_addText },
- { "gui_addCroppedText", _gui_addCroppedText },
- { "gui_addTilePic", _gui_addTilePic },
- { "gui_addTiledGump", _gui_addTiledGump },
- { "gui_addHtmlGump", _gui_addHtmlGump },
- { "gui_addInputField", _gui_addInputField },
- { "gui_getInputField", _gui_getInputField },
+
 // Magic functions :
  { "magic_castField", _magic_castFieldSpell },
  { "magic_chkSpellbook", _magic_checkSpellbook },
@@ -5638,23 +5774,39 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "tempfx_delete", _tempfx_delete },
  { "tempfx_isActive", _tempfx_isActive },
 // Old Menu functions :
- { "mnu_prepare", _menu_Prepare },
- { "mnu_setStyle", _menu_SetStyle },
- { "mnu_setTitle", _menu_SetTitle },
- { "mnu_setColor", _menu_SetColor },
- { "mnu_addItem", _menu_AddItem },
- { "mnu_show", _menu_Show },
- { "mnu_setCallback", _menu_SetCallback },
+ { "mnu_prepare", _mnu_Prepare },
+ { "mnu_setStyle", _mnu_SetStyle },
+ { "mnu_setTitle", _mnu_SetTitle },
+ { "mnu_setColor", _mnu_SetColor },
+ { "mnu_addItem", _mnu_AddItem },
+ { "mnu_show", _mnu_Show },
+ { "mnu_setCallback", _mnu_SetCallback },
 // New Menu functions :
 
  { "menu_create", _menu_create },
  { "menu_delete", _menu_delete },
  { "menu_show", _menu_show },
+ { "menu_clear", _menu_clear },
+ { "menu_getProperty", _getMenuProperty },
+ { "menu_setProperty", _setMenuProperty },
+ { "menu_addBackground", _menu_addBackground },
  { "menu_addButton", _menu_addButton },
- { "menu_addPage", _menu_addPage },
+ { "menu_addButtonFn", _menu_addButtonFn },
+ { "menu_addCheckbox", _menu_addCheckbox },
+ { "menu_addCheckTrans", _menu_addCheckTrans },
+ { "menu_addCroppedText", _menu_addCheckTrans },
+ { "menu_addGump", _menu_addGump },
+ { "menu_addHtmlGump", _menu_addHtmlGump },
+ { "menu_addInputField", _menu_addInputField },
+ { "menu_addPropertyField", _menu_addPropertyField },
+ { "menu_addRadioButton", _menu_addRadioButton },
  { "menu_addResizeGump", _menu_addResizeGump },
- { "menu_addPageButton", _menu_addPageButton },
  { "menu_addText", _menu_addText },
+ { "menu_addTilePic", _menu_addTilePic },
+ { "menu_addTiledGump", _menu_addTiledGump },
+ { "menu_addXmfHtmlGump", _menu_addXmfHtmlGump },
+ { "menu_addPage", _menu_addPage },
+ { "menu_addPageButton", _menu_addPageButton },
 
 // Region functions :
  { "rgn_setWeather", _rgn_setWeather },
