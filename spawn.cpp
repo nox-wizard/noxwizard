@@ -13,18 +13,13 @@
 cSpawns*	Spawns;
 
 
-cSpawnArea::cSpawnArea( AREA_ITER area )
+cSpawnArea::cSpawnArea( areas::AREA_ITER area )
 {
-	this->nextspawn=uiCurrentTime;
-	this->where=area;
-	this->current=0;
-	this->items_spawned.clear();
-	this->npcs_spawned.clear();
-}
-
-cSpawnArea::~cSpawnArea()
-{
-
+	nextspawn=uiCurrentTime;
+	where=area;
+	current=0;
+	items_spawned.clear();
+	npcs_spawned.clear();
 }
 
 bool cSpawnArea::findValidLocation( Location& location )
@@ -45,19 +40,12 @@ bool cSpawnArea::findValidLocation( Location& location )
 
 bool cSpawnArea::needSpawn()
 {
-	return ( TIMEOUT( this->nextspawn ) ); // && ( this->current < this->ma
+	return ( TIMEOUT( nextspawn ) ); // && ( current < ma
 }
-
-
-
 
 cSpawnScripted::cSpawnScripted( SERIAL serial )
 {
-	this->serial=serial;
-}
-
-cSpawnScripted::~cSpawnScripted()
-{
+	serial=serial;
 }
 
 void cSpawnScripted::safeCreate( P_CHAR npc, cSpawnArea& single  )
@@ -74,7 +62,7 @@ void cSpawnScripted::safeCreate( P_CHAR npc, cSpawnArea& single  )
 		npc->fz1 = INVALID;
 		single.current++;
 		single.nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
-		npc->spawnregion=this->serial;
+		npc->spawnregion=serial;
 		single.npcs_spawned.insert( npc->getSerial32() );
 		npc->MoveTo( location );
 		npc->teleport();
@@ -94,7 +82,7 @@ void cSpawnScripted::safeCreate( P_ITEM pi, cSpawnArea& single  )
 		pi->MoveTo(location);
 		single.current++;
 		single.nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
-		pi->spawnregion=this->serial;
+		pi->spawnregion=serial;
 		single.items_spawned.insert( pi->getSerial32() );
 		pi->MoveTo( location );
 		pi->Refresh();
@@ -174,10 +162,10 @@ void cSpawnScripted::doSpawn( )
 	if( max==0 )
 		return;
 
-	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	SPAWNAREA_VECTOR::iterator iter( singles.begin() ), end( singles.end() );
 	for( ; iter!=end; iter++ ) {
 		if( (*iter).needSpawn() )
-			this->doSpawn( *iter );
+			doSpawn( *iter );
 	}
 
 }
@@ -188,18 +176,18 @@ void cSpawnScripted::doSpawnAll()
 	if( max==0 )
 		return;
 
-	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	SPAWNAREA_VECTOR::iterator iter( singles.begin() ), end( singles.end() );
 	for( ; iter!=end; iter++ ) {
 		int loopexit=0;
 		while( ( (*iter).current < max ) && ( ++loopexit<MAXLOOPS ) )
-			this->doSpawn( *iter );
+			doSpawn( *iter );
 	}
 
 }
 
 void cSpawnScripted::removeObject( P_ITEM pi )
 {
-	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	SPAWNAREA_VECTOR::iterator iter( singles.begin() ), end( singles.end() );
 	for( ; iter!=end; iter++ ) {
 		SERIAL_SET::iterator itm( (*iter).items_spawned.find( pi->getSerial32() ) );
 		if( itm!=(*iter).items_spawned.end() ) {
@@ -213,7 +201,7 @@ void cSpawnScripted::removeObject( P_ITEM pi )
 
 void cSpawnScripted::removeObject( P_CHAR pc )
 {
-	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	SPAWNAREA_VECTOR::iterator iter( singles.begin() ), end( singles.end() );
 	for( ; iter!=end; iter++ ) {
 		SERIAL_SET::iterator npc( (*iter).npcs_spawned.find( pc->getSerial32() ) );
 		if( npc!=(*iter).npcs_spawned.end() ) {
@@ -227,13 +215,7 @@ void cSpawnScripted::removeObject( P_CHAR pc )
 
 cSpawns::cSpawns()
 {
-	this->dinamic.clear();
-	this->scripted.clear();
-	this->check=uiCurrentTime;
-}
-
-cSpawns::~cSpawns()
-{
+	check=uiCurrentTime;
 }
 
 void cSpawns::loadFromScript()
@@ -253,7 +235,7 @@ void cSpawns::loadFromScript()
 		iter = Scripts::Spawn->getNewIterator("SECTION REGIONSPAWN %i", idxspawn++);
 		if( iter==NULL ) continue;
 
-		Area area;
+		areas::Area area;
 		UI16 check=0;
 
 		cSpawnScripted* dummy=new cSpawnScripted(current);
@@ -288,8 +270,8 @@ void cSpawns::loadFromScript()
 				else if("MAXTIME"==script1) 
 					dummy->maxtime=str2num(script2);
 				else if("AREA"==script1) {
-					AREA_ITER newarea = Areas->allareas.find( str2num(script2) );
-					if( newarea!=Areas->allareas.end() )
+					areas::AREA_ITER newarea = areas::allareas.find( str2num(script2) );
+					if( newarea!=areas::allareas.end() )
 						dummy->singles.push_back( cSpawnArea( newarea ) );
 					else 
 						ConOut("[ERROR] on parse of spawn.xss, can't add a new area\n" );
@@ -301,10 +283,10 @@ void cSpawns::loadFromScript()
         while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 		if( check==0xFFFF ) { //use old method x1, x2 so need to add a new region
-			SERIAL insarea = Areas->insert( area );
+			SERIAL insarea = areas::insert( area );
 			if( insarea!=INVALID ) {
-				AREA_ITER newarea = Areas->allareas.find( insarea );
-				if( newarea!=Areas->allareas.end() )
+				areas::AREA_ITER newarea = areas::allareas.find( insarea );
+				if( newarea!=areas::allareas.end() )
 					dummy->singles.push_back( cSpawnArea( newarea ) );
 				else 
 					ConOut("[ERROR] on parse of spawn.xss, can't add a new area\n" );
@@ -333,7 +315,7 @@ void cSpawns::loadFromScript()
 */
 void cSpawns::clearDynamic()
 {
-	this->dinamic.clear();
+	dynamic.clear();
 }
 
 /*!
@@ -353,18 +335,18 @@ void cSpawns::loadFromItem( P_ITEM pi )
 	//
 	// Insert the spawner in the map.
 	//
-	Spawns->dinamic.insert( make_pair( pi->getSerial32(), cSpawnDinamic(pi) ) );
+	Spawns->dynamic.insert( make_pair( pi->getSerial32(), cSpawnDynamic(pi) ) );
 }
 
 void cSpawns::doSpawn()
 {
-	SPAWN_SCRIPTED_DB::iterator iter_scr( this->scripted.begin() );
-	for( ; iter_scr!=this->scripted.end(); iter_scr++ ) {
+	SPAWN_SCRIPTED_DB::iterator iter_scr( scripted.begin() );
+	for( ; iter_scr!=scripted.end(); iter_scr++ ) {
 		iter_scr->second.doSpawn();
 	}
 
-	SPAWN_DINAMIC_DB::iterator iter_din( this->dinamic.begin() );
-	for( ; iter_din!=this->dinamic.end(); iter_din++ ) {
+	SPAWN_DYNAMIC_DB::iterator iter_din( dynamic.begin() );
+	for( ; iter_din!=dynamic.end(); iter_din++ ) {
 		if( iter_din->second.needSpawn() )
 			iter_din->second.doSpawn();
 	}
@@ -377,13 +359,13 @@ void cSpawns::doSpawn()
 
 void cSpawns::doSpawnAll()
 {
-	SPAWN_SCRIPTED_DB::iterator iter( this->scripted.begin() ), end( this->scripted.end() );
+	SPAWN_SCRIPTED_DB::iterator iter( scripted.begin() ), end( scripted.end() );
 	for( ; iter!=end; iter++ ) {
 		iter->second.doSpawnAll();
 	}
 
-	SPAWN_DINAMIC_DB::iterator iter_din( this->dinamic.begin() );
-	for( ; iter_din!=this->dinamic.end(); iter_din++ ) {
+	SPAWN_DYNAMIC_DB::iterator iter_din( dynamic.begin() );
+	for( ; iter_din!=dynamic.end(); iter_din++ ) {
 		iter_din->second.doSpawn();
 	}
 
@@ -395,8 +377,8 @@ void cSpawns::doSpawnAll()
 
 void cSpawns::doSpawnAll( SERIAL spawn )
 {
-	SPAWN_SCRIPTED_DB::iterator iter( this->scripted.find( spawn) );
-	if( iter!= this->scripted.end() )
+	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
+	if( iter!= scripted.end() )
 		iter->second.doSpawnAll();
 
 }
@@ -404,29 +386,29 @@ void cSpawns::doSpawnAll( SERIAL spawn )
 
 void cSpawns::removeObject( SERIAL spawn, P_ITEM pi )
 {
-	SPAWN_SCRIPTED_DB::iterator iter( this->scripted.find( spawn) );
-	if( iter!= this->scripted.end() )
+	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
+	if( iter!= scripted.end() )
 		iter->second.removeObject( pi );
 }
 
 void cSpawns::removeObject( SERIAL spawn, P_CHAR pc )
 {
-	SPAWN_SCRIPTED_DB::iterator iter( this->scripted.find( spawn) );
-	if( iter!= this->scripted.end() )
+	SPAWN_SCRIPTED_DB::iterator iter( scripted.find( spawn) );
+	if( iter!= scripted.end() )
 		iter->second.removeObject( pc );
 }
 
-void cSpawns::removeSpawnDinamic( P_ITEM pi )
+void cSpawns::removeSpawnDynamic( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	SPAWN_DINAMIC_DB::iterator iter( this->dinamic.find( pi->getSerial32() ) );
-	if( iter!=this->dinamic.end() ) {
-		this->dinamic.erase( iter );
+	SPAWN_DYNAMIC_DB::iterator iter( dynamic.find( pi->getSerial32() ) );
+	if( iter!=dynamic.end() ) {
+		dynamic.erase( iter );
 	}
 	else {
 		if( pi->spawnserial!=INVALID ) {
-			iter= this->dinamic.find( pi->spawnserial );
-			if( iter!=this->dinamic.end() ) {
+			iter= dynamic.find( pi->spawnserial );
+			if( iter!=dynamic.end() ) {
 				iter->second.remove( pi->getSerial32() );
 			}
 		}
@@ -434,38 +416,33 @@ void cSpawns::removeSpawnDinamic( P_ITEM pi )
 
 }
 
-void cSpawns::removeSpawnDinamic( P_CHAR pc )
+void cSpawns::removeSpawnDynamic( P_CHAR pc )
 {
 	VALIDATEPC(pc);
 	if( pc->spawnserial!=INVALID ) {
-		SPAWN_DINAMIC_DB::iterator iter= this->dinamic.find( pc->spawnserial );
-		if( iter!=this->dinamic.end() ) {
+		SPAWN_DYNAMIC_DB::iterator iter= dynamic.find( pc->spawnserial );
+		if( iter!=dynamic.end() ) {
 			iter->second.remove( pc->getSerial32() );
 		}
 	}
 
 }
 
-cSpawnDinamic::cSpawnDinamic( P_ITEM pi )
+cSpawnDynamic::cSpawnDynamic( P_ITEM pi )
 {
-	this->item=pi->getSerial32();
-	this->item_spawned.clear();
-	this->npc_spawned.clear();
-	this->current=0;
-	this->nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
+	item=pi->getSerial32();
+	item_spawned.clear();
+	npc_spawned.clear();
+	current=0;
+	nextspawn=uiCurrentTime+ (60*RandomNum( pi->morey, pi->morez)*MY_CLOCKS_PER_SEC);
 }
 
-cSpawnDinamic::~cSpawnDinamic()
+void cSpawnDynamic::doSpawn()
 {
-
-}
-
-void cSpawnDinamic::doSpawn()
-{
-	P_ITEM spawn=pointers::findItemBySerial( this->item );
+	P_ITEM spawn=pointers::findItemBySerial( item );
 	VALIDATEPI(spawn);
 
-	if( this->current>=spawn->amount )
+	if( current>=spawn->amount )
 		return;
 	if( !spawn->isInWorld() )
 		return; //npc spawned in container? ahhah i have a gremlin in backpack :P
@@ -474,45 +451,45 @@ void cSpawnDinamic::doSpawn()
 		
 		P_ITEM pi=item::CreateFromScript( spawn->morex );
 		if( ISVALIDPI( pi ) ) {
-			this->current++;
-			this->item_spawned.insert( pi->getSerial32() );
-			pi->spawnserial=this->item;
+			current++;
+			item_spawned.insert( pi->getSerial32() );
+			pi->spawnserial=item;
 			pi->MoveTo( spawn->getPosition() );
 			pi->Refresh();
 		}
 
-		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
+		nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
 	else if( spawn->type == ITYPE_NPC_SPAWNER ) {
 		P_CHAR npc=npcs::addNpc( spawn->morex, spawn->getPosition().x, spawn->getPosition().y, spawn->getPosition().z );
 		if(ISVALIDPC( npc )) {
-			this->current++;
-			this->npc_spawned.insert( npc->getSerial32() );
-			npc->spawnserial=this->item;
+			current++;
+			npc_spawned.insert( npc->getSerial32() );
+			npc->spawnserial=item;
 			npc->MoveTo( spawn->getPosition() );
 			npc->teleport();
 		}
 
-		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
+		nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
 
 }
 
-void cSpawnDinamic::remove( SERIAL serial )
+void cSpawnDynamic::remove( SERIAL serial )
 {
 	
 	if( isCharSerial( serial ) ) {
-		SERIAL_SET::iterator iter( this->npc_spawned.find( serial ) );
-		if( iter!=this->npc_spawned.end() ) {
-			this->npc_spawned.erase( iter );
+		SERIAL_SET::iterator iter( npc_spawned.find( serial ) );
+		if( iter!=npc_spawned.end() ) {
+			npc_spawned.erase( iter );
 			if( current>0 )
 				current--;
 		}
 	}
 	else {
-		SERIAL_SET::iterator iter( this->item_spawned.find( serial ) );
-		if( iter!=this->item_spawned.end() ) {
-			this->item_spawned.erase( iter );
+		SERIAL_SET::iterator iter( item_spawned.find( serial ) );
+		if( iter!=item_spawned.end() ) {
+			item_spawned.erase( iter );
 			if( current>0 )
 				current--;
 		}
@@ -521,7 +498,7 @@ void cSpawnDinamic::remove( SERIAL serial )
 		
 }
 
-bool cSpawnDinamic::needSpawn()
+bool cSpawnDynamic::needSpawn()
 {
-	return ( TIMEOUT( this->nextspawn ) );//&& ( this->current<this->max
+	return ( TIMEOUT( nextspawn ) );//&& ( current<max
 }

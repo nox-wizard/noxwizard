@@ -97,7 +97,7 @@ void deleteItem( P_ITEM pi )
 
 	if( pi->isSpawner() || pi->spawnserial!=INVALID )
 	{
-		Spawns->removeSpawnDinamic( pi );
+		Spawns->removeSpawnDynamic( pi );
 	}
 
 	NxwSocketWrapper sw;
@@ -159,7 +159,7 @@ namespace character
 			Spawns->removeObject( pc->spawnregion, pc );
 
 		if( pc->spawnserial!=INVALID )
-			Spawns->removeSpawnDinamic( pc );
+			Spawns->removeSpawnDynamic( pc );
 
 		pointers::delChar(pc);	//Luxor
 

@@ -19,15 +19,14 @@ public:
 
 public:
 
-	cSpawnArea( AREA_ITER area );
-	~cSpawnArea();
+	cSpawnArea( areas::AREA_ITER area );
 
 	UI32 current; //!< currente number of spawned
 	TIMERVAL nextspawn; //!< next spawn
 
 	SERIAL_SET items_spawned;
 	SERIAL_SET npcs_spawned;
-	AREA_ITER where;
+	areas::AREA_ITER where;
 
 	bool needSpawn();
 
@@ -47,7 +46,6 @@ private:
 public:
 
 	cSpawnScripted( SERIAL serial );
-	~cSpawnScripted();
 
 	SERIAL serial; //!< region serial
 
@@ -71,11 +69,10 @@ public:
 
 };
 
-class cSpawnDinamic {
+class cSpawnDynamic {
 public:
 
-	cSpawnDinamic( P_ITEM pi );
-	~cSpawnDinamic();
+	cSpawnDynamic( P_ITEM pi );
 
 	SERIAL item; //!< the spawner
 	SERIAL_SET item_spawned; //!< spawned items
@@ -90,17 +87,16 @@ public:
 };
 
 typedef std::map< SERIAL, cSpawnScripted > SPAWN_SCRIPTED_DB;
-typedef std::map< SERIAL, cSpawnDinamic  > SPAWN_DINAMIC_DB;
+typedef std::map< SERIAL, cSpawnDynamic  > SPAWN_DYNAMIC_DB;
 
 class cSpawns {
 private:
 
 	SPAWN_SCRIPTED_DB scripted; //!< list of scripted spawn
-	SPAWN_DINAMIC_DB dinamic; //!< list of dinamic spawn
+	SPAWN_DYNAMIC_DB dynamic; //!< list of dynamic spawn
 
 public:
 	cSpawns();
-	~cSpawns();
 
 	TIMERVAL check; //!< check respawn
 
@@ -115,8 +111,8 @@ public:
 
 	void removeObject( SERIAL spawn, P_ITEM pi );
 	void removeObject( SERIAL spawn, P_CHAR pc );
-	void removeSpawnDinamic( P_ITEM pi );
-	void removeSpawnDinamic( P_CHAR pc );
+	void removeSpawnDynamic( P_ITEM pi );
+	void removeSpawnDynamic( P_CHAR pc );
 
 };
 
