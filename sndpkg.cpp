@@ -372,14 +372,13 @@ void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound)
 //old one below!
 void weather(NXWSOCKET  s, unsigned char bolt)
 {
-	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
+	UI08 type = 0xFF, num = 0x40, temperature = 0x20;
 
-	if (wtype==0) packet[2] = 0x00;
-	if (wtype==1) packet[1] = 0x00;
-	if (wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
+	if (wtype==0) num = 0x00;
+	if (wtype==1) type = 0x00;
+	if (wtype==2) { type = 0x02; temperature = 0xEC; }
 
-	Xsend(s, packet, 4);
-//AoS/	Network->FlushBuffer(s);
+	SendSetWeather(s, type, num, temperature);
 }
 
 void pweather(NXWSOCKET  s)
@@ -387,14 +386,13 @@ void pweather(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
+	UI08 type = 0xFF, num = 0x40, temperature = 0x20;
 
-	if (region[pc->region].wtype==0) packet[2] = 0x00;
-	if (region[pc->region].wtype==1) packet[1] = 0x00;
-	if (region[pc->region].wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
+	if (region[pc->region].wtype==0) num = 0x00;
+	if (region[pc->region].wtype==1) type = 0x00;
+	if (region[pc->region].wtype==2) { type = 0x02; temperature = 0xEC; }
 
-	Xsend(s, packet, 4);
-//AoS/	Network->FlushBuffer(s);
+	SendSetWeather(s, type, num, temperature);
 }
 
 void sysbroadcast(char *txt, ...) // System broadcast in bold text
@@ -1913,6 +1911,18 @@ void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn,
 	ShortToCharPtr(pos.y, sfx +8);			//       Y
 	ShortToCharPtr(Z , sfx +10);			//       Z
 	Xsend(s, sfx, 12);
+//AoS/	Network->FlushBuffer(s);
+}
+
+void SendSetWeather(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature)
+{
+	UI08 packet[4] = { 0x65, 0x00, };
+
+	packet[1] = type;
+	packet[2] = num;
+	packet[3] = temperature;
+
+	Xsend(s, packet, 4);
 //AoS/	Network->FlushBuffer(s);
 }
 

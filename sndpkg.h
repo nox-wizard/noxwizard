@@ -103,6 +103,7 @@ void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color);
 void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false); 
 void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn, Location pos, bool useDispZ = false);
+void SendSetWeather(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature);
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send
 void sendshopinfo(int s, int c, P_ITEM pi);

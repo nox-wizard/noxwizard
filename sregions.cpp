@@ -354,9 +354,8 @@ void check_region_weatherchange ()
 
 	//here : we should commit weather changes to players
 	wtype=0;
-	UI08 packet[4] = { 0x65, 0xFF, 0x00, 0x20 };
 
-	for (i=0;i<now;i++) if (perm[i]) Xsend(i, packet, 4);
+	for (i=0;i<now;i++) if (perm[i]) SendSetWeather(i, 0xFF, 0x00, 0x20);
 
 	for (i=0;i<now;i++) if (perm[i]) pweather(i);
 
