@@ -1632,6 +1632,27 @@ NATIVE(_itm_createFromScript)
 }
 
 /*!
+\brief create a new item from the script
+\author Luxor
+\since 0.82
+*/
+NATIVE(_itm_createByDef)
+{
+        P_ITEM pi = NULL;
+	cell *cstr;
+	amx_GetAddr( amx, params[1], &cstr );
+	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+
+	pi = item::CreateFromScript( g_cAmxPrintBuffer );
+	g_nAmxPrintPtr = 0;
+	if ( ISVALIDPI( pi ) )
+		return pi->getSerial32();
+
+	return INVALID;
+}
+
+/*!
 \brief get the backpack of given character
 \author Xanathar
 \since 0.50
@@ -3607,58 +3628,6 @@ NATIVE( _chr_setCreationDay )
 }
 
 
-/*!
-\brief spawns an item
-\author Luxor
-\since 0.7
-\param  1: socket
-\param  2: character
-\param  3: amount
-\param  4: name of the item
-\param  5: stackable
-\param  6: cItemId1
-\param  7: cItemId2
-\param  8: cColorId1
-\param  9: cColorId2
-\param 10: pack
-\param 11: send
-\return item
-*/
-NATIVE(_itm_spawnItem)
-{
-    P_CHAR pc = pointers::findCharBySerial(params[2]);
-    VALIDATEPCR(pc, INVALID);
-
-    int nPackSerial = INVALID;
-    P_ITEM pi = pointers::findItemBySerial(params[10]);
-    if (ISVALIDPI(pi)) nPackSerial = pi->getSerial32();
-
-    cell *cstr;
-	int p[15];
-	for (int i=0; i<=11; i++) p[i] = params[i];
-	amx_GetAddr(amx,params[4],&cstr);
-	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	g_nAmxPrintPtr=0;
-	P_ITEM pi_s = item::SpawnItem(p[1],DEREF_P_CHAR(pc),p[3],g_cAmxPrintBuffer,p[5],(p[6]<<8)+p[7], (p[8]<<8)+p[9],nPackSerial,p[11]);
-	VALIDATEPIR(pi_s,INVALID);
-	return pi_s->getSerial32();
-}
-
-
-NATIVE(_itm_spawnNecroItem)
-{/*
-    int nPackSerial = INVALID;
-    P_ITEM pi = pointers::findItemBySerial(params[2]);
-    if (ISVALIDPI(pi)) nPackSerial = pi->getSerial32();
-	cell *cstr;
-	amx_GetAddr(amx,params[3],&cstr);
-	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	g_nAmxPrintPtr=0;
-	return Necro::SpawnRandomItem(params[1],nPackSerial,"ITEMLIST",g_cAmxPrintBuffer);*/
-	return INVALID;
-}
 
 /*!
 \brief Morph a character
@@ -5506,6 +5475,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_setOwnSerOnly", _isetOwnSerialOnly },
  { "itm_setSerial", _isetSerial },
  { "itm_create", _itm_createFromScript },
+ { "itm_createByDef", _itm_createByDef },
  { "itm_spawnBank", _itm_spawnBank },
  { "itm_checkDecay", _itm_checkDecay },
  { "itm_remove", _itm_remove },
@@ -5514,8 +5484,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_setEventHandler", _itm_setEventHandler  },
  { "itm_delEventHandler", _itm_delEventHandler  },
  { "itm_sound", _itm_sound },
- { "itm_spawnItem", _itm_spawnItem},
- { "itm_spawnNecroItem", _itm_spawnNecroItem},
  { "itm_refresh", _itm_refresh},
  { "itm_speech", _itm_speech},
  { "itm_equip", _ItemEquip},
