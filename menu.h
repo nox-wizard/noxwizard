@@ -41,7 +41,7 @@ class cMenu
 
 	private:
 		std::vector< std::string >	commands; //!< all commands
-		std::vector< std::wstring >	texts; //!< all strings
+		std::vector< ustring >	texts; //!< all strings
 		UI08	options; //!< menu options
 		UI32	gumpId; //!< gump id
 		UI32	serial; //!< serial
@@ -50,7 +50,7 @@ class cMenu
 		class AmxEvent	*callback; //!< amx callback
 
 	private:
-		UI32 addString( wstring& s );
+		UI32 addString( ustring& s );
 
 	public:
 				
@@ -66,19 +66,19 @@ class cMenu
 		void 	addButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 returnCode );
 		void 	addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result );
 		void 	addCheckertrans( UI32 x, UI32 y, UI32 width, UI32 height );
-		void	addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& text, UI32 hue );
+		void	addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, ustring& text, UI32 hue );
 		void 	addGroup( UI32 group = 0 );
 		void	addGump( UI32 x, UI32 y, UI32 gump, UI32 hue );
-		void	addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& html, UI32 hasBack, UI32 canScroll );
-		void 	addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue = 0 );
+		void	addHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, ustring& html, UI32 hasBack, UI32 canScroll );
+		void 	addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, ustring& data, UI32 hue = 0 );
 		void 	addPage( UI32 page = 0 );
 		void 	addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page );
 		void 	addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result  );
 		void 	addResizeGump( UI32 x, UI32 y, UI32 gumpId, UI32 width, UI32 height );
-		void 	addText( UI32 x, UI32 y, wstring& data, UI32 hue = 0 );
+		void 	addText( UI32 x, UI32 y, ustring& data, UI32 hue = 0 );
 		void 	addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
 		void	addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI32 hue );
-		void 	addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring& clilocid, UI32 hasBack , UI32 canScroll );
+		void 	addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, ustring& clilocid, UI32 hasBack , UI32 canScroll );
 		void 	handleButton( const NXWSOCKET socket, const UI32 button );
 		void	setCallBack( const std::string& arg );
 
