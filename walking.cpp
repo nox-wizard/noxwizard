@@ -483,6 +483,13 @@ void walking(P_CHAR pc, int dir, int sequence)
 		if( !WalkHandleBlocking(pc,sequence,dir, oldx, oldy) )
 			return;
 
+	if ( pc->amxevents[EVENT_CHR_ONWALK] ) {
+		g_bByPass = false;
+		pc->amxevents[EVENT_CHR_ONWALK]->Call( pc->getSerial32(), dir, sequence );
+		if ( g_bByPass==true )
+			return;
+	}
+
 	WalkingHandleHiding(pc,dir);
 
 	if (s!=INVALID)
