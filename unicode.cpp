@@ -10,78 +10,88 @@
 #include "nxwcommn.h"
 #include "unicode.h"
 
+/*!
+\brief Constructor
+\author Endymion
+*/
 cUnicodeString::cUnicodeString()
 {
 	addTerminator();
 }
 
+/*!
+\brief Constructor
+\author Endymion
+\param s the string to copy
+*/
 cUnicodeString::cUnicodeString( std::string& s )
 {
 	this->copy(s);
 }
 
 /*
-\brief
+\brief Constructor
+\author Endymion
 \param c is an array ( Big Endian Format ) double null terminated
+\param size if INVALID copy until 00 termination else until size
 */
-cUnicodeString::cUnicodeString( char* c )
+cUnicodeString::cUnicodeString( char* c, int size )
 {
-	/*this->s.clear();
-	addTerminator();
-	wchar_t t=0; 
-	int i=0;
-	do
-	{
-		if( i%2==0 ) {
-			t=c[i];
-		}
-		else {
-			t+=c[i]<<8;
-			append( t );
-		}
-		++i;
-	} while( !( (i%2) && t==0 ) );	*/
-
-	this->s.clear();
-	int wasZero=0;
-	int i=0;
-	do
-	{
-		this->s.push_back( c[i] );
-		if( c[i]==0 )
-			++wasZero;
-		else 
-			wasZero=0;
-		++i;
-	} while( wasZero!=2 );
+	this->copy( c, size );
 }
 
+/*
+\brief Destructor
+\author Endymion
+*/
 cUnicodeString::~cUnicodeString() { }
 
+/*
+\brief Get the string size ( in byte )
+\author Endymion
+\return string size
+*/
 UI32 cUnicodeString::size()
 {
-	return (s.size()-2)/2;
+	return s.size();
 }
 
+/*
+\brief add 00 termination
+\author Endymion
+*/
 void cUnicodeString::addTerminator()
 {
 	s.push_back(0); // 0 0 termination
-	before_term=s.begin();
 	s.push_back(0);
 }
 
 
+/*
+\brief Get the string size length, number of character
+\author Endymion
+\return string length
+*/
 UI32 cUnicodeString::length()
 {
-	return size();
+	return (s.size()-2)/2;
 }
 
+/*
+\brief Clear string
+\author Endymion
+*/
 void cUnicodeString::clear()
 {
 	s.clear();
 	addTerminator();
 }
 
+/*
+\brief Copy from another string
+\author Endymion
+\param s the string
+*/
 void cUnicodeString::copy( std::string& s )
 {
 	this->s.clear();
@@ -93,14 +103,53 @@ void cUnicodeString::copy( std::string& s )
 	addTerminator();
 }
 
+/*
+\brief Copy from another unicode string
+\author Endymion
+\param c is an array ( Big Endian Format ) double null terminated
+\param size if INVALID copy until 00 termination else until size
+*/
+void cUnicodeString::copy( char* c, int size )
+{
+	this->s.clear();
+	if( size==INVALID ) {//until termination
+		int wasZero=0;
+		int i=0;
+		do
+		{
+			this->s.push_back( c[i] );
+			if( c[i]==0 )
+				++wasZero;
+			else 
+				wasZero=0;
+			++i;
+		} while( wasZero!=2 );
+	}
+	else { //until size
+		for( int i=0; i<size; ++i ) {
+			this->s.push_back( c[i] );
+		}
+		addTerminator();
+	}
+
+}
+
+/*
+\brief Append an uncode character
+\author Endymion
+\param c the character
+*/
 cUnicodeString& cUnicodeString::operator+=( wchar_t c )
 {
 	append( c );
 	return (*this);
 }
 
+/*
+\brief Append an uncode character
+\author Endymion
+\param c the character
+*/
 void cUnicodeString::append( wchar_t c )
 {
-	this->s.insert( before_term, c >> 8   );
-	this->s.insert( before_term, c & 0xFF );
 }

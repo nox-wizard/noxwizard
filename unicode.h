@@ -20,7 +20,6 @@ typedef UI16 PACK_NEEDED UNI_TEXT;
 */
 class cUnicodeString {
 public:
-	std::vector<UI08>::iterator before_term;
 	std::vector<UI08> s;
 
 	void addTerminator();
@@ -28,13 +27,14 @@ public:
 public:
 	cUnicodeString();
 	cUnicodeString( std::string& s );
-	cUnicodeString( char* c );
-	virtual ~cUnicodeString();
+	cUnicodeString( char* c, int size=INVALID );
+	~cUnicodeString();
 
 	UI32 size();
 	UI32 length();
 
 	void copy( std::string& s );
+	void copy( char* c, int size=INVALID );
 	void append( wchar_t c );
 	cUnicodeString& operator+=( wchar_t c );
 
