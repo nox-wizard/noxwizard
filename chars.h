@@ -293,6 +293,8 @@ class cChar : public cObject
 		inline const LOGICAL	hasReflection() const
 		{ return priv2 & flagPriv2Reflection; }
 
+		inline const LOGICAL	canViewHouseIcon() const 
+		{ return priv2 & flagPriv2ViewHouseIcon; }
 		inline void setAllMove(LOGICAL set = true)
 		{ setPriv2(flagPriv2AllMove, set); }
 
@@ -368,6 +370,7 @@ class cChar : public cObject
 		inline const LOGICAL	InGuardedArea() const
 		{ return ::region[region].priv & RGNPRIV_GUARDED; }
 
+
 		LOGICAL const		CanDoGestures() const;
 
 		void 			SetMurderer();
@@ -380,6 +383,13 @@ class cChar : public cObject
 		//! Makes a character temporary grey
 		void 			SetGrey()
 		{ if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0, 0x7FFF); }
+
+		inline			void setTelekinesisFlag(LOGICAL state)
+		{ nxwflags[0] |= flagSpellTelekinesys*state; }
+
+		inline			void setGreyFlag(LOGICAL state)
+		{ nxwflags[0] |= flagGrey*state; }
+
 
 		void 			unHide();
 
@@ -397,7 +407,7 @@ class cChar : public cObject
 
 		inline void		SetFame(SI32 newfame)
 		{ fame=newfame; }
-
+		
 		void			IncreaseKarma(SI32 value, P_CHAR pKilled = 0 );
 		void			modifyFame( SI32 value );
 //@}
