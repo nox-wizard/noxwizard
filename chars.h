@@ -252,6 +252,12 @@ class cChar : public cObject
 	public:
 		const LOGICAL		IsTrueGM() const;
 
+		inline const UI08		getPrivLevel() const
+		{ return privLevel; }
+
+		inline void setPrivLevel ( UI08 pLevel ) 
+		{ privLevel = pLevel; }
+
 		inline const LOGICAL	IsGM() const
 		{ return ( privLevel > PRIVLEVEL_GM ); }
 

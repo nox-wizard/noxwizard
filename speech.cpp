@@ -1327,6 +1327,11 @@ static LOGICAL resignFromGuild( P_CHAR pc, NXWSOCKET socket, string &resign )
 	if (!resign.compare("I RESIGN FROM MY GUILD"))
 	{
 		Guilds->Resign( pc, socket );
+		pc->ResetGuildTitleToggle();		// Toggle for Guildtitle								(DasRaetsel)
+		pc->SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
+		pc->SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
+		pc->SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
+
 		success = true; // just to make sure this speech is not processed further
 	}
 	return success;

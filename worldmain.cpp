@@ -11,7 +11,7 @@
 \file
 \brief Implementation of the CWorldMain class
 */
-#include <fstream.h>
+#include <fstream>
 
 #include "nxwcommn.h"
 #include "worldmain.h"
@@ -320,6 +320,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 					hasInvalidAccount = true;
 				else
 					Accounts->AddCharToAccount( str2num(script2), pc );
+				if ( script2 == 0 )
+					pc->setPrivLevel(PRIVLEVEL_ADMIN);
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
 				pc->SetPriv2(str2num(script2));
@@ -354,7 +356,14 @@ void CWorldMain::loadChar() // Load a character from WSC
 			}
 			else if (!strcmp(script1, "CARVE"))			{ pc->carve=str2num(script2); }
 			else if (!strcmp(script1, "CANTRAIN"))		{ pc->cantrain = true; }
-			else if (!strcmp(script1, "COMMANDLEVEL"))  { pc->commandLevel = str2num(script2);}
+			else if (!strcmp(script1, "COMMANDLEVEL"))  
+			{ 
+				pc->commandLevel = str2num(script2);
+				if ( pc->commandLevel == 1 )
+					pc->setPrivLevel(PRIVLEVEL_CNS);
+				else if ( pc->commandLevel == 2 )
+					pc->setPrivLevel(PRIVLEVEL_GM);
+			}
 		break;
 
 		case 'D':
@@ -517,6 +526,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'P':
 		case 'p':
 			if (!strcmp(script1, "PRIV"))				{ pc->SetPriv(str2num(script2));}
+			else if (!strcmp(script1, "PRIVLEVEL"))				{ pc->setPrivLevel(str2num(script2));}
 			else if (!strcmp(script1, "POISON"))			{ pc->poison=str2num(script2);}
 			else if (!strcmp(script1, "POISONED"))		{ pc->poisoned=(PoisonType)str2num(script2);}
 
@@ -2332,6 +2342,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 #endif
 			if(pc->account!=dummy.account)
 				fprintf(cWsc, "ACCOUNT %i\n", pc->account);
+			if(pc->getPrivLevel()!=dummy.getPrivLevel())
+				fprintf(cWsc, "PRIVLEVEL %i\n", pc->getPrivLevel());
 /*			if (pc->laston)
 				fprintf(cWsc, "LASTON %s\n", pc->laston);
 */			if (pc->GetCreationDay()!=dummy.GetCreationDay())
@@ -2689,6 +2701,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			//
 			amxVS.saveVariable( pc->getSerial32(), cWsc );
 
+			if(pc->getPrivLevel()!=dummy.getPrivLevel())
+				fprintf(cWsc, "PRIVLEVEL %i\n", pc->getPrivLevel());
 			if ( !(pc->npc || pc->IsGMorCounselor()) )
 			{
 
