@@ -78,7 +78,6 @@ SOURCES =	\
 		nxw_utils.cpp \
 		object.cpp \
 		oldmenu.cpp \
-		organisation.cpp \
 		packets.cpp \
 		particles.cpp \
 		party.cpp \
@@ -177,7 +176,6 @@ HEADERS =	\
 		nxwgui.h \
 		nxw_utils.h \
 		object.h \
-		organisation.h \
 		osdefs.h \
 		packets.h \
 		party.h \
