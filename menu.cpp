@@ -629,7 +629,12 @@ template< typename T >
 std::wstring toWstr( T num )
 {
 	wchar_t buffer[TEMP_STR_SIZE];
-	swprintf( buffer, TEMP_STR_SIZE, L"%i", (const wchar_t*)(&num) );
+#ifdef WIN32
+	swprintf( buffer, L"%i", num );
+#else
+	swprintf( buffer, TEMP_STR_SIZE, L"%i", num );
+#endif
+
 	return std::wstring( buffer );
 }
 

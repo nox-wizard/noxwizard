@@ -17,6 +17,7 @@
 #include "data.h"
 #include "globals.h"
 #include "inlines.h"
+#include "nxw_utils.h"
 
 LOGICAL statics_cache = false;
 LOGICAL map_cache = false;
