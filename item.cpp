@@ -480,6 +480,8 @@ namespace item
 		amxVS.setUserMode();
 		pi->useAnimId=(pi->animid()!=0);
 
+		pi->itemSoundEffect=-1;
+
 		tile_st tile;
 		data::seekTile(pi->getId(), tile);
 

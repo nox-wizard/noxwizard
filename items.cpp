@@ -137,8 +137,9 @@ cItem& cItem::operator=(cItem& b)
         timeused_last = b.timeused_last;
         animid1 = b.animid1;
         animid2 = b.animid2;
-	ammo = b.ammo;
-	ammoFx = b.ammoFx;
+		ammo = b.ammo;
+		ammoFx = b.ammoFx;
+		this->itemSoundEffect = b.itemSoundEffect;
 
         UI32 i;
         for ( i = 0; i < MAX_RESISTANCE_INDEX; i++ )
@@ -394,6 +395,8 @@ LOGICAL cItem::doDecay()
 			if ( getMultiSerial32() == INVALID )
 			{
 				P_HOUSE house=cHouses::findHouse(getPosition());
+				if ( house == NULL )
+					return false;
 				P_ITEM pi_multi = pointers::findItemBySerial (house->getSerial());
 				if ( ISVALIDPI(pi_multi) )
 				{
