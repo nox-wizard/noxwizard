@@ -1244,9 +1244,9 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 		//
 		case BODY_MALE		:
 		case BODY_FEMALE	:
-		case 0x03db		:
 		case BODY_DEADMALE	:
 		case BODY_DEADFEMALE	:
+		case BODY_GMSTAFF	:
 			if (target->npc && target->npcaitype==NPCAI_PLAYERVENDOR)//PlayerVendors
 			{
 				target->talk(s,TRANSLATE("Take a look at my goods."),0);

@@ -871,9 +871,9 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
  
     pc->unmountHorse();    //AntiChrist bugfix
     pc->gmrestrict = 0;
-    pc->SetBodyType(0x03DB);
+    pc->SetBodyType(BODY_GMSTAFF);
+    pc->SetOldBodyType(BODY_GMSTAFF);
     pc->setSkinColor(0x8021);
-    pc->SetOldBodyType(0x03DB);
     pc->setOldSkinColor(0x8021);
     pc->SetPriv(0xF7);
     pc->priv2 = (unsigned char) (0xD9);
@@ -930,9 +930,9 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
     if (SrvParms->gm_log)
 		WriteGMLog(curr, "%s as made %s a Counselor.\n", curr->getCurrentNameC(), pc->getCurrentNameC());
 
-    pc->SetBodyType(0x03DB);
+    pc->SetBodyType(BODY_GMSTAFF);
+    pc->SetOldBodyType(BODY_GMSTAFF);
     pc->setSkinColor(0x8003);
-    pc->SetOldBodyType(0x03DB);
     pc->setOldSkinColor(0x8002);
     pc->SetPriv(0xB6);
     pc->SetPriv2(0x8D);

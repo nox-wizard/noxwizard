@@ -93,7 +93,7 @@ void itemeffectUO3D(P_ITEM pi, ParticleFx *sta);
 
 void dolight(int s, char level);
 void updateskill(int s, int skillnum);
-void deathaction(int s, int x);
+void deathaction(P_CHAR player_id, P_ITEM corpse_id);
 	//!< Character does a certain action
 void deathmenu(int s);
 	//!< Character sees death menu

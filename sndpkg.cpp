@@ -922,7 +922,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 		if (pi->visible==3)
 		{
-			if ((pc->GetBodyType() == 0x03DB) || !pc->IsGM())
+			if ((pc->GetBodyType() == BODY_GMSTAFF) || !pc->IsGM())
 				itmput[18]|=0x80;
 		}
 
