@@ -134,7 +134,6 @@ private:
 	UI16 oldhairstyle;
 	UI16 oldhaircolor;
 public:
-	cCharSaver();
 	inline void setStrength(SI32 newStr)
 	{	strength = newStr; };
 	const inline SI32 getStrength()
