@@ -64,8 +64,20 @@ LOGICAL cMenu::showGump( UI32 gump, P_CHAR pc )
 	return false;	
 }
 
-LOGICAL cMenu::handleGump( const P_CHAR pc, const UI08 *data )
+LOGICAL cMenu::handleGump( NXWCLIENT ps )
 {
+
+	if( ps==NULL )
+		return false;
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPCR( pc, false );
+
+	cPacketMenuSelection p;
+	p.receive( ps );
+
+	newAmxEvent("gui_handleResponse")->Call( p.id.get(), p.gump.get(), p.buttonId.get(), pc->getSerial32() );
+	return true;
 /*	if( data[0] == 0xB1 )
 	{
 		char		text[256];
@@ -114,11 +126,10 @@ LOGICAL cMenu::handleGump( const P_CHAR pc, const UI08 *data )
 			++fieldOffset;
 			--fieldCount;
 		}
-		newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
-		return true;
+	newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
+	return true;
 	}
 	else*/
-		return false;
 }
 
 LOGICAL cMenu::selectResponse( UI32 fieldId, std::string &value )

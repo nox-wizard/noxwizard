@@ -462,3 +462,30 @@ SEND( Menu ) {
 
 }
 
+CREATE( MenuSelection, PKG_MENU_SELECTION, 0x13 )
+RECEIVE( MenuSelection ) {
+	if( ps == NULL ) return; 
+	NXWSOCKET s=ps->toInt();
+	
+	int offset=1;
+	
+	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
+	
+	int si = switchcount.get();
+	while( si-- ) {
+		eSERIAL sw;
+		getFromSocket( s, (char*)&sw, sizeof(sw), offset );
+		switchs.push_back( sw.get() );
+	}
+
+	getFromSocket( s, (char*)&textcount, sizeof(textcount), offset );
+
+	int ti=textcount.get();
+	while( ti-- ) {
+		text_entry_st te;
+		getFromSocket( s, (char*)&te, sizeof(te.id)+sizeof(te.textlength), offset );
+		getUnicodeStringFromSocket( s, &te.text, offset, te.textlength.get() );
+
+		text_entries.push_back( te );
+	}
+}
