@@ -143,6 +143,23 @@ class cChar : public cObject
 \name nxwflags_chars
 \brief Flags used for the char
 */
+#if _MSC_VER == 1200 
+		enum {
+			flagGrey		= 0x01,
+			flagPermaGrey		= 0x02,
+			flagResistFire	= 0x04,
+			flagResistParalisys	= 0x08,
+			flagResistPoison	= 0x10,
+			flagWaterWalk		= 0x20,
+			flagSpellTelekinesys	= 0x40,
+			flagSpellProtection	= 0x80
+		};
+		enum {
+			flagKarmaMurderer	= 0x01,
+			flagKarmaCriminal	= 0x02,
+			flagKarmaInnocent	= 0x04
+		};
+#else 
 		static const UI08 flagGrey		= 0x01; //!< Char is grey
 		static const UI08 flagPermaGrey		= 0x02; //!< Char is permanent grey
 		static const UI08 flagResistFire	= 0x04; //!< Char resists to fire (unused)
@@ -155,6 +172,7 @@ class cChar : public cObject
 		static const UI08 flagKarmaInnocent	= 0x04; //!< Char is innocent
 		static const UI08 flagKarmaMurderer	= 0x01; //!< Char is murderer
 		static const UI08 flagKarmaCriminal	= 0x02; //!< Char is criminal
+#endif
 //@}
 		char			nxwflags[4]; // for special nxw features
 
@@ -170,6 +188,29 @@ class cChar : public cObject
 \brief Priv variables used by priv and priv2
 */
 
+		// Due to a bug in VC6 you cannot declare static const initializers 
+#if _MSC_VER == 1200 
+	enum {
+		flagPrivGM = 0x01,
+		flagPrivBroadcast	= 0x02,
+		flagPrivInvulnerable	= 0x04,
+		flagPrivCanViewSerials= 0x08,
+		flagPrivNoSkillTitle	= 0x10,
+		flagPrivPageAble	= 0x20,
+		flagPrivCanSnoopAll	= 0x40,
+		flagPrivCounselor	= 0x80
+	}; 
+	enum {
+		flagPriv2AllMove	= 0x01,
+		flagPriv2Frozen	= 0x02,
+		flagPriv2ViewHouseIcon= 0x04,
+		flagPriv2PermaHidden	= 0x08,
+		flagPriv2NoUseMana	= 0x10,
+		flagPriv2Dispellable	= 0x20,
+		flagPriv2Reflection	= 0x40,
+		flagPriv2NoUseReagents= 0x80
+	}; 
+#else 
 		static const UI08 flagPrivGM		= 0x01; //!< Char is GM
 		static const UI08 flagPrivBroadcast	= 0x02; //!< Char can broadcast
 		static const UI08 flagPrivInvulnerable	= 0x04; //!< Char is invulnerable
@@ -187,6 +228,7 @@ class cChar : public cObject
 		static const UI08 flagPriv2Dispellable	= 0x20;
 		static const UI08 flagPriv2Reflection	= 0x40;
 		static const UI08 flagPriv2NoUseReagents= 0x80;
+#endif // _MSC_VER == 1200
 //@}
 
 //@{
