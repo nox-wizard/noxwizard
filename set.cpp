@@ -626,6 +626,8 @@ void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers,
 					continue;
 				if ( bOnlyPlayer && pc->npc )
 					continue;
+				if ( pc->mounted )
+					continue;
 				insertSerial( pc->getSerial32() );
 			}
 		}
