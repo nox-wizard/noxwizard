@@ -1467,8 +1467,7 @@ NATIVE(_imoveto)
 \since 0.10
 \param 1: container
 \param 2: item
-\return true or false ( false also if not valid item )
-\bug return INVALID insted of false
+\return INVALID if error or not piled, or piled Into item
 */
 NATIVE(_pileitem)
 {

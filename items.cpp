@@ -630,15 +630,17 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 
 /*!
 \brief Pile two items
+\author
+\return serial of piled item or INVALID if cannot pile it
 */
-LOGICAL cItem::PileItem(P_ITEM pItem)
+SERIAL cItem::PileItem(P_ITEM pItem)
 {
 	if (!(pileable && pItem->pileable &&
 		getSerial32()!=pItem->getSerial32() &&
 		id()==pItem->id() &&
 		color()==pItem->color() &&
 		poisoned==pItem->poisoned ))
-		return false;	//cannot stack.
+		return INVALID;	//cannot stack.
 
 	if (amount+pItem->amount>65535)
 	{
@@ -654,14 +656,14 @@ LOGICAL cItem::PileItem(P_ITEM pItem)
 		pItem->deleteItem();
 	}
 	Refresh();
-	return true;
+	return getSerial32();
 
 }
 
 /*!
 \brief try to find an item in the container to stack with
 */
-LOGICAL cItem::ContainerPileItem( P_ITEM pItem)
+SERIAL cItem::ContainerPileItem( P_ITEM pItem)
 {
 	VALIDATEPIR(pItem, false );
 	NxwItemWrapper si;
@@ -669,10 +671,12 @@ LOGICAL cItem::ContainerPileItem( P_ITEM pItem)
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
-		if( ISVALIDPI(pi) && pi->PileItem(pItem))
-			return true;
+		if( ISVALIDPI(pi) ) {
+			SERIAL piledInto = pi->PileItem(pItem);
+			if( piledInto!=INVALID )
+				return piledInto;
 	}
-	return false;
+	return INVALID;
 
 }
 

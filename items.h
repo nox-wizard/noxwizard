@@ -201,7 +201,7 @@ public:
 	LOGICAL		isSecureContainer(); //Endymion
 	//SI16		GetContGumpType();
 	void		SetRandPosInCont(P_ITEM pCont);
-	LOGICAL		ContainerPileItem(P_ITEM pItem);	// try to find an item in the container to stack with
+	SERIAL		ContainerPileItem(P_ITEM pItem);	// try to find an item in the container to stack with
 	SI32		secureIt; // secured chests
 	LOGICAL		AddItem(P_ITEM pItem, short xx=-1, short yy=-1);	// Add Item to container
 	SI32		DeleteAmountByID(int amount, unsigned int scriptID);
@@ -428,7 +428,7 @@ public:
 	void		setDispellable( const LOGICAL on = true );
 
 	LOGICAL		pileable; // Can item be piled
-	LOGICAL		PileItem(P_ITEM pItem);
+	SERIAL		PileItem(P_ITEM pItem);
 
 	P_ITEM		getOutMostCont( short rec=50 );
 	P_CHAR		getPackOwner();
