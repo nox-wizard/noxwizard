@@ -208,7 +208,16 @@ class cChar : public cObject
 		flagPriv2NoUseMana	= 0x10,
 		flagPriv2Dispellable	= 0x20,
 		flagPriv2Reflection	= 0x40,
-		flagPriv2NoUseReagents= 0x80
+		flagPriv2NoUseReagents= 0x80,
+		flagPriv2Polymorphed = 0x100,
+		flagPriv2Poisoned = 0x200,
+		flagPriv2Mounted = 0x400,
+		flagPriv2Ridden = 0x800,
+		flagPriv2Incognito = 0x1000,
+		flagPriv2Dead = 0x2000,
+		flagPriv2canTrain = 0x4000,
+		flagPriv2shopkeeper = 0x8000
+
 	}; 
 #else 
 		static const UI08 flagPrivGM		= 0x01; //!< Char is GM
@@ -228,6 +237,14 @@ class cChar : public cObject
 		static const UI08 flagPriv2Dispellable	= 0x20;
 		static const UI08 flagPriv2Reflection	= 0x40;
 		static const UI08 flagPriv2NoUseReagents= 0x80;
+		static const UI08 flagPriv2Polymorphed = 0x100;
+		static const UI08 flagPriv2Poisoned = 0x200;
+		static const UI08 flagPriv2Mounted = 0x400;
+		static const UI08 flagPriv2Ridden = 0x800;
+		static const UI08 flagPriv2Incognito = 0x1000;
+		static const UI08 flagPriv2Dead = 0x2000;
+		static const UI08 flagPriv2canTrain = 0x4000;
+		static const UI08 flagPriv2shopkeeper = 0x8000;
 #endif // _MSC_VER == 1200
 //@}
 
@@ -820,7 +837,7 @@ public:
 		{ return hirefee; }
 		inline void setHireFee(SI32 newfee)
 		{ hirefee=newfee; }
-		inline boolean isHirable()
+		inline bool isHirable()
 		{ return hirefee < 0 ? false : true; }
 
 		//! Return current speech

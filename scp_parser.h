@@ -16,7 +16,7 @@
 
 #include "nxwcommn.h"
 
-bool evaluateOneDefine (char *szLine, boolean check=true);
+bool evaluateOneDefine (char *szLine, bool check=true);
 
 class cScpIterator
 {
@@ -96,7 +96,7 @@ public:
 
 
 namespace xss {
-	int getIntFromDefine (char *, boolean check=true);
+	int getIntFromDefine (char *, bool check=true);
 	char* evalDefines (char *szLine);
 }
 

@@ -115,7 +115,7 @@ static void parseDefineCommand(char *line)
 \param szLine the line with *MUST* have some spare bytes at its end
 \todo fix the MUST, maybe?
 */
-bool evaluateOneDefine (char *szLine, boolean check)
+bool evaluateOneDefine (char *szLine, bool check)
 {
 	char szSymbol[MAXSYMBOLLENGHT];
 	char szBuffer[MAXLINELENGHT];
@@ -176,7 +176,7 @@ bool evaluateOneDefine (char *szLine, boolean check)
 \param szLine the line with *MUST* have some free bytes at its end
 \todo fix the MUST, maybe?
 */
-static char* evaluateAllDefines (char *szLine, boolean check=true)
+static char* evaluateAllDefines (char *szLine, bool check=true)
 {
 //	//this is an XSS builder metacommand, internal use
 //	if ((szLine[0]=='/')&&(szLine[1]=='/')&&(szLine[2]=='$')&&(szLine[3]=='$')) return szLine;
@@ -199,7 +199,7 @@ namespace xss {
 \param szLine the line with *MUST* have some free bytes at its end
 \todo fix the MUST, maybe?
 */
-int getIntFromDefine (char *szLine, boolean check)
+int getIntFromDefine (char *szLine, bool check)
 {
 	char buffer[2000];
 	strncpy(buffer, szLine, 1990);
