@@ -567,41 +567,55 @@ void cSpawnDinamic::doSpawn()
 	if( spawn->type == ITYPE_ITEM_SPAWNER ) {
 		if ( spawn->morex == 0 )
 			return;
-		P_ITEM pi=item::CreateFromScript( spawn->morex );
-		if( ISVALIDPI( pi ) ) {
-			this->current++;
-			spawn->amount2=(unsigned short)this->current;
-			this->items_spawned.insert( pi->getSerial32() );
-			pi->setSpawnSerial(this->item);
-			pi->MoveTo( spawn->getPosition() );
-			pi->Refresh();
-			#ifdef SPAR_I_LOCATION_MAP
-					pointers::addToLocationMap(pi);
-			#else
-					mapRegions->add(pi);
-			#endif
+		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
+		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
+		UI16 maxSpawn=RandomNum(min,max);
+		if ( spawn->amount - this->current - maxSpawn < 0 )
+			maxSpawn=spawn->amount - this->current;
+		for ( int i = 0; i < maxSpawn;++i)
+		{
+			P_ITEM pi=item::CreateFromScript( spawn->morex );
+			if( ISVALIDPI( pi ) ) {
+				this->current++;
+				spawn->amount2=(unsigned short)this->current;
+				this->items_spawned.insert( pi->getSerial32() );
+				pi->setSpawnSerial(this->item);
+				pi->MoveTo( spawn->getPosition() );
+				pi->Refresh();
+				#ifdef SPAR_I_LOCATION_MAP
+						pointers::addToLocationMap(pi);
+				#else
+						mapRegions->add(pi);
+				#endif
+			}
 		}
-
 		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
 	else if( spawn->type == ITYPE_NPC_SPAWNER ) {
 		if ( spawn->morex == 0 )
 			return;
-		P_CHAR npc=npcs::addNpc( spawn->morex, spawn->getPosition().x, spawn->getPosition().y, spawn->getPosition().z );
-		if(ISVALIDPC( npc )) {
-			this->current++;
-			spawn->amount2=(unsigned short)this->current;
-			this->npcs_spawned.insert( npc->getSerial32() );
-			npc->spawnserial=this->item;
-			npc->MoveTo( spawn->getPosition() );
-			npc->teleport();
-			#ifdef SPAR_I_LOCATION_MAP
-					pointers::addToLocationMap(npc);
-			#else
-					mapRegions->add(npc);
-			#endif
+		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
+		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
+		UI16 maxSpawn=RandomNum(min,max);
+		if ( spawn->amount - this->current - maxSpawn < 0 )
+			maxSpawn=spawn->amount - this->current;
+		for ( int i = 0; i < maxSpawn;++i)
+		{
+			P_CHAR npc=npcs::addNpc( spawn->morex, spawn->getPosition().x, spawn->getPosition().y, spawn->getPosition().z );
+			if(ISVALIDPC( npc )) {
+				this->current++;
+				spawn->amount2=(unsigned short)this->current;
+				this->npcs_spawned.insert( npc->getSerial32() );
+				npc->spawnserial=this->item;
+				npc->MoveTo( spawn->getPosition() );
+				npc->teleport();
+				#ifdef SPAR_I_LOCATION_MAP
+						pointers::addToLocationMap(npc);
+				#else
+						mapRegions->add(npc);
+				#endif
+			}
 		}
-
 		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
 
