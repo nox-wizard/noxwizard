@@ -167,9 +167,17 @@ cChar::cChar( SERIAL ser ) : cObject()
 	targserial=INVALID; // Current combat target
 	timeout=0; // Combat timeout (For hitting)
 	timeout2=0;
-	regen=0;
-	regen2=0;
-	regen3=0;//Regeneration times for mana, stamin, and str
+	
+	setRegenRate( STAT_HP, SrvParms->hitpointrate, VAR_REAL );
+	setRegenRate( STAT_HP, SrvParms->hitpointrate, VAR_EFF );
+	updateRegenTimer( STAT_HP );
+	setRegenRate( STAT_STAMINA, SrvParms->staminarate, VAR_REAL );
+	setRegenRate( STAT_STAMINA, SrvParms->staminarate, VAR_EFF );
+	updateRegenTimer( STAT_STAMINA );
+	setRegenRate( STAT_MANA, SrvParms->manarate, VAR_REAL );
+	setRegenRate( STAT_MANA, SrvParms->manarate, VAR_EFF );
+	updateRegenTimer( STAT_MANA );
+	
 	runeserial=INVALID; // Used for naming runes
 	attackerserial=INVALID; // Character who attacked this character
 	npcmovetime=uiCurrentTime; // Next time npc will walk
@@ -4052,29 +4060,27 @@ void cChar::generic_heartbeat()
 	}
 
 	//HP REGEN
-	if (regen <= uiCurrentTime ) {
+	if( this->regenTimerOk( STAT_HP ) ) {
 		if (hp < getStrength() && (hunger > 3 || SrvParms->hungerrate == 0)) {
 			hp++;
 			update[ 0 ] = true;
 		}
 
-		unsigned int interval = SrvParms->hitpointrate*MY_CLOCKS_PER_SEC;
-		regen = uiCurrentTime + interval;
+		this->updateRegenTimer( STAT_HP );
 	}
 
 	//STAMINA REGEN
-	if (regen2 <= uiCurrentTime ) {
+	if( this->regenTimerOk( STAT_STAMINA )) {
 		if (stm < dx) {
 			stm++;
 			update[ 2 ] = true;
 		}
 
-		unsigned int interval = SrvParms->staminarate*MY_CLOCKS_PER_SEC;
-		regen2 = uiCurrentTime + interval;
+		this->updateRegenTimer( STAT_STAMINA );
 	}
 
 	//MANA REGEN
-	if (regen3 <= uiCurrentTime )
+	if( this->regenTimerOk( STAT_MANA ) )
 	{
 		if (mn < in)
 		{
@@ -4088,22 +4094,22 @@ void cChar::generic_heartbeat()
 			med = 0;
 		}
 
-		unsigned int interval = SrvParms->manarate*MY_CLOCKS_PER_SEC;
+		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );;
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
-			{
-				regen3 = uiCurrentTime + UI32(interval-(skill[MEDITATION]*4.5)) + calcDef(0)*100;
-			}
+				manarate += calcDef(0) -((skill[MEDITATION]/100)*4.5);
 			else
-			{
-				regen3 = uiCurrentTime + interval+ calcDef(0)*200;
-			}
+				manarate += calcDef(0)*2;
 		}
 		else
 		{
-			(med) ? regen3 = uiCurrentTime + UI32(interval-(skill[MEDITATION]*4.5)) : regen3 = uiCurrentTime + interval;
+			if(med)
+				manarate -= ((skill[MEDITATION]/100)*4.5); 
 		}
+		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
+		this->updateRegenTimer( STAT_MANA );
+
 	}
 	if ( hp <= 0 )
 		Kill();
@@ -4761,16 +4767,30 @@ void cChar::deleteSpeechCurrent()
 		delete speechCurrent;
 }
 
-void cChar::setRegenRate( StatType stat, UI32 rate )
+void cChar::setRegenRate( StatType stat, UI32 rate, VarType type )
 {
 	if( stat>=ALL_STATS ) return;
-	regens[stat].rate=rate;
+	switch( type ) {
+		case VAR_EFF:
+			regens[stat].rate_eff=rate; break;
+		case VAR_REAL:
+			regens[stat].rate_real=rate; break;
+		default:
+			break; //error here?
+	}
 }
 
-UI32 cChar::getRegenRate( StatType stat )
+UI32 cChar::getRegenRate( StatType stat, VarType type )
 {
 	if( stat>=ALL_STATS ) return 0;
-	return regens[stat].rate;
+	switch( type ) {
+		case VAR_EFF:
+			return regens[stat].rate_eff;
+		case VAR_REAL:
+			return regens[stat].rate_real;
+		default:
+			return 0; //error here?
+	}
 }
 
 bool cChar::regenTimerOk( StatType stat )
@@ -4782,6 +4802,6 @@ bool cChar::regenTimerOk( StatType stat )
 void cChar::updateRegenTimer( StatType stat )
 {
 	if( stat>=ALL_STATS ) return;
-	regens[stat].timer= uiCurrentTime+ regens[stat].rate*MY_CLOCKS_PER_SEC;
+	regens[stat].timer= uiCurrentTime+ regens[stat].rate_eff*MY_CLOCKS_PER_SEC;
 }
 

@@ -587,8 +587,8 @@ class cChar : public cObject
 private:
 	regen_st 	regens[ALL_STATS]; //!< stats regen info
 public:
-	void setRegenRate( StatType stat, UI32 rate );
-	UI32 getRegenRate( StatType stat );
+	void setRegenRate( StatType stat, UI32 rate, VarType type );
+	UI32 getRegenRate( StatType stat, VarType type );
 	bool regenTimerOk( StatType stat );
 	void updateRegenTimer( StatType stat );
 //@}
