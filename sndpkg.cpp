@@ -24,27 +24,20 @@
 void gmyell(char *txt)
 //Modified by N6 to use UNICODE packets
 {
-	unsigned char talk2[19];
+	UI08 talk2[18]={ 0xAE, 0x00, };
 	char unicodetext[512];
 	int ucl = ( strlen ( txt ) * 2 ) + 2 ;
 
 	int tl = ucl + 48 ;
 	char2wchar(txt);
 	memcpy(unicodetext, Unicode::temp, ucl);
-	talk2[0] = (char)0xAE;
-	talk2[1] = tl >> 8;
-	talk2[2] = tl&0xFF;
-	talk2[3] = 1;
-	talk2[4] = 1;
-	talk2[5] = 1;
-	talk2[6] = 1;
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9] = 1;
-	talk2[10]= 0x00;
-	talk2[11]= 0x40;
-	talk2[12]= 0;
-	talk2[13]= 3;
+
+	ShortToCharPtr(tl, talk2 +1);
+	LongToCharPtr(0x01010101, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 1;				// Type
+	ShortToCharPtr(0x0040, talk2 +10);	// Color
+	ShortToCharPtr(0x0003, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];
@@ -58,11 +51,13 @@ void gmyell(char *txt)
 		NXWCLIENT ps_i=sw.getClient();
 		if(ps_i==NULL) continue;
 		P_CHAR pc=ps_i->currChar();
+		NXWSOCKET s = ps_i->toInt();
 		if( ISVALIDPC(pc) && pc->IsGM())
 		{
-			Xsend(ps_i->toInt(), talk2, 18);
-			Xsend(ps_i->toInt(), const_cast<char*>("[WebAdmin - GM Only]"), 30);
-			Xsend(ps_i->toInt(), unicodetext, ucl);
+			Xsend(s, talk2, 18);
+			Xsend(s, const_cast<char*>("[WebAdmin - GM Only]"), 30);
+			Xsend(s, unicodetext, ucl);
+//AoS/			Network->FlushBuffer(s);
 		}
 	}
 
@@ -74,45 +69,55 @@ void gmyell(char *txt)
 //26/10/99//new packet
 void SndAttackOK(NXWSOCKET  s, int serial)
 {
-	UI08 attackok[5] = { 0xAA, 0x00, 0x00, 0x00, 0x00 };
-	LongToCharPtr(serial,attackok+1);
+	UI08 attackok[5]={ 0xAA, 0x00, };
+	LongToCharPtr(serial, attackok +1);
 	Xsend(s, attackok, 5);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void SndDyevat(NXWSOCKET  s, int serial, short id)
 {
-	unsigned char dyevat[10]="\x95\x40\x01\x02\x03\x00\x00\x0F\xAB";
-	LongToCharPtr(serial,(dyevat+1));
-	ShortToCharPtr(id,dyevat+7);
+	UI08 dyevat[9] ={ 0x95, 0x00, };
+	LongToCharPtr(serial, dyevat +1);
+	ShortToCharPtr(0x0000, dyevat +5);	// ignored on send ....
+	ShortToCharPtr(id, dyevat +7);		// def. on send 0x0FAB		
 	Xsend(s, dyevat, 9);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt)
 {
-	unsigned char updscroll[11]="\xA6\x01\x02\x02\x00\x00\x00\x00\x01\x02";
-	ShortToCharPtr(txtlen+10,updscroll+1);
-	updscroll[3]=2;
-	ShortToCharPtr(txtlen,updscroll+8);
+	UI08 updscroll[10]={ 0xA6, };
+
+	ShortToCharPtr(txtlen+10, updscroll +1);
+	updscroll[3]=2;				// type: 0x00 tips window, 0x01 ignored, 0x02 updates
+	LongToCharPtr(0 , updscroll +4);	// Tip numb.
+	ShortToCharPtr(txtlen, updscroll +8);
 	Xsend(s, updscroll, 10);
 	Xsend(s, txt, txtlen);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
-void SndRemoveitem(int serial)
+void SndRemoveitem(SERIAL serial)
 {
-	UI08 removeitem[5] = { 0x1D, 0x00, 0x00, 0x00, 0x00 };
-	LongToCharPtr(serial,removeitem+1);
+	UI08 removeitem[5] = { 0x1D, 0x00, };
+	LongToCharPtr(serial, removeitem +1);
 	NxwSocketWrapper sw;
 	sw.fillOnline();
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
+	{
 		Xsend(sw.getSocket(), removeitem, 5);
+//AoS/		Network->FlushBuffer(sw.getSocket());
+	}
 }
 
-void SndShopgumpopen(NXWSOCKET  s, int serial)
+void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It is used 1 time, perhaps replace it with the scriptable vers. :/
 {
-	unsigned char shopgumpopen[8]="\x24\x00\x00\x00\x01\x00\x30";
-	LongToCharPtr(serial,shopgumpopen+1);
+	UI08 shopgumpopen[7]={ 0x24, 0x00, };
+	LongToCharPtr(serial, shopgumpopen +1);		// ItemID
+	ShortToCharPtr(0x0030, shopgumpopen +5);	// GumpID
 	Xsend(s, shopgumpopen, 7);
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -211,8 +216,8 @@ void bgsound(CHARACTER s)
 		P_CHAR pc_inr=inrange[sound];
 		VALIDATEPC(pc_inr);
 
-		xx=DBYTE2WORD(pc_inr->id1,pc_inr->id2);
-		if (xx>INVALID && xx<2048)
+		xx = pc_inr->GetBodyType();
+		if ((xx > INVALID) && (xx < 0x0800))
 		{
 			basesound=creatures[xx].basesound;
 			sf=creatures[xx].soundflag;
@@ -265,18 +270,22 @@ void bgsound(CHARACTER s)
 		case 5: basesound=246;break; // mystic
 		case 6: basesound=253;break; // mystic II
 		}
-		unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
+
+
 		if (basesound !=0)
 		{
 			Location charpos= pc_curr->getPosition();
 
-			sfx[2] = (unsigned char) (basesound >> 8);
-			sfx[3] = (unsigned char) (basesound % 256);
-			sfx[6] = (unsigned char) (charpos.x >> 8);
-			sfx[7] = (unsigned char) (charpos.x % 256);
-			sfx[8] = (unsigned char) (charpos.y >> 8);
-			sfx[9] = (unsigned char) (charpos.y % 256);
-			Xsend(calcSocketFromChar(DEREF_P_CHAR(pc_curr)), sfx, 12); //bugfix LB
+			UI08 sfx[12]={ 0x54, 0x00, };
+
+			sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
+			ShortToCharPtr(basesound, sfx +2);		// Sound model
+			ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+			ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
+			ShortToCharPtr(charpos.y, sfx +8);		//       Y
+			ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
+			Xsend(pc_curr->getSocket(), sfx, 12);
+//AoS/			Network->FlushBuffer(pc_curr->getSocket());
 		}
 	}
 }
@@ -335,19 +344,20 @@ void dosocketmidi(NXWSOCKET s)
 
 void soundeffect(NXWSOCKET s, unsigned char a, unsigned char b) // Play sound effect for player
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
 	Location charpos= pc->getPosition();
-	unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
+	UI16 sound = (a<<8)|(b%256);
 
-	sfx[2]= a;
-	sfx[3]= b;
-	sfx[6]= charpos.x >> 8;
-	sfx[7]= charpos.x % 256;
-	sfx[8]= charpos.y >> 8;
-	sfx[9]= charpos.y % 256;
+	UI08 sfx[12]={ 0x54, 0x00, };
+
+	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
+	ShortToCharPtr(sound, sfx +2);			// Sound model
+	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+	ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
+	ShortToCharPtr(charpos.y, sfx +8);		//       Y
+	ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -357,38 +367,48 @@ void soundeffect(NXWSOCKET s, unsigned char a, unsigned char b) // Play sound ef
 		if(ps_i==NULL) continue;
 		P_CHAR pc_i=ps_i->currChar();
 		if( ISVALIDPC(pc_i) )
+		{
 			Xsend(ps_i->toInt(), sfx, 12);
+//AoS/			Network->FlushBuffer(ps_i->toInt());
+		}
 	}
 }
 
 void soundeffect5(NXWSOCKET  s, unsigned char a, unsigned char b)
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
 	Location charpos= pc->getPosition();
-	unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
+	UI16 sound = (a<<8)|(b%256);
 
-	sfx[2]= a;
-	sfx[3]= b;
-	sfx[6]= charpos.x >> 8;
-	sfx[7]= charpos.x % 256;
-	sfx[8]= charpos.y >> 8;
-	sfx[9]= charpos.y % 256;
+	UI08 sfx[12]={ 0x54, 0x00, };
+
+	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
+	ShortToCharPtr(sound, sfx +2);			// Sound model
+	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+	ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
+	ShortToCharPtr(charpos.y, sfx +8);		//       Y
+	ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
 	Xsend(s, sfx, 12);
+//AoS/	Network->FlushBuffer(s);
 }
 
 
-void soundeffect3(P_ITEM pi, short sound)
+void soundeffect3(P_ITEM pi, UI16 sound)
 {
 	VALIDATEPI(pi);
 	
-	unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
+	Location pos = pi->getPosition();
 
-	ShortToCharPtr(sound,sfx+2);
-	ShortToCharPtr(pi->getPosition("x"), sfx+6);
-	ShortToCharPtr(pi->getPosition("y"), sfx+8);
+	UI08 sfx[12]={ 0x54, 0x00, };
+
+	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
+	ShortToCharPtr(sound, sfx +2);			// Sound model
+	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+	ShortToCharPtr(pos.x, sfx +6);			// POS:  X
+	ShortToCharPtr(pos.y, sfx +8);			//       Y
+	ShortToCharPtr(0 /*pos.z*/, sfx +10);		//       Z
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pi );
@@ -398,36 +418,46 @@ void soundeffect3(P_ITEM pi, short sound)
 		if(ps_i==NULL) continue;
 		P_CHAR pc_j=ps_i->currChar();
 		if( ISVALIDPC(pc_j))
+		{
 			Xsend(ps_i->toInt(), sfx, 12);
+//AoS/			Network->FlushBuffer(ps_i->toInt());
+		}
 	}
 }
 
 void soundeffect4(int p, NXWSOCKET  s, unsigned char a, unsigned char b)
 {
-	const PC_ITEM pi=MAKE_ITEMREF_LR(p);	// on error return
+	P_ITEM pi=MAKE_ITEMREF_LR(p);
 	VALIDATEPI(pi);
 
-	unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
-	sfx[2]= a;
-	sfx[3]= b;
-	sfx[6]= pi->getPosition("x") >> 8;
-	sfx[7]= pi->getPosition("x") % 256;
-	sfx[8]= pi->getPosition("y") >> 8;
-	sfx[9]= pi->getPosition("y") % 256;
+	UI16 sound = (a<<8)|(b%256);
+	Location pos = pi->getPosition();
+
+	UI08 sfx[12]={ 0x54, 0x00, };
+
+	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
+	ShortToCharPtr(sound, sfx +2);			// Sound model
+	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+	ShortToCharPtr(pos.x, sfx +6);			// POS:  X
+	ShortToCharPtr(pos.y, sfx +8);			//       Y
+	ShortToCharPtr(0 /*pos.z*/, sfx +10);		//       Z
+
 	Xsend(s, sfx, 12);
+//AoS/	Network->FlushBuffer(s);
 }
 
 //xan : fast weather function.. maybe we should find a more complete system like the
 //old one below!
 void weather(NXWSOCKET  s, unsigned char bolt)
 {
-	unsigned char packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
+	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
 
 	if (wtype==0) packet[2] = 0x00;
 	if (wtype==1) packet[1] = 0x00;
 	if (wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
 
 	Xsend(s, packet, 4);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void pweather(NXWSOCKET  s)
@@ -435,20 +465,19 @@ void pweather(NXWSOCKET  s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	unsigned char packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
+	UI08 packet[4] = { 0x65, 0xFF, 0x40, 0x20 };
 
 	if (region[pc->region].wtype==0) packet[2] = 0x00;
 	if (region[pc->region].wtype==1) packet[1] = 0x00;
 	if (region[pc->region].wtype==2) { packet[1] = 0x02; packet[3] = 0xEC; }
 
 	Xsend(s, packet, 4);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void sysbroadcast(char *txt, ...) // System broadcast in bold text
 //Modified by N6 to use UNICODE packets
 {
-
-	unsigned char talk2[19];
 	char unicodetext[512];
 
 	va_list argptr;
@@ -463,19 +492,13 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = 0xAE;
+	UI08 talk2[18]={ 0xAE, 0x00, };
 	ShortToCharPtr(tl, talk2+1);
-	talk2[3] = 1;
-	talk2[4] = 1;
-	talk2[5] = 1;
-	talk2[6] = 1;
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9] = 6;
-	talk2[10]=0x08;	//Color1  - Previous default was 0x0040
-	talk2[11]=0x4d;  //Color2
-	talk2[12]=0;
-	talk2[13]=0;
+	LongToCharPtr(0x01010101, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 6;				// Type
+	ShortToCharPtr(0x084D, talk2 +10);	// Color.  0x0040
+	ShortToCharPtr(0x0000, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];
@@ -494,6 +517,7 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 			Xsend(sock, talk2, 18);
 			Xsend(sock, sysname, 30);
 			Xsend(sock, unicodetext, ucl);
+//AoS/			Network->FlushBuffer(sock);
 		}
 	}
 
@@ -506,7 +530,6 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	if(s < 0) 
 		return;
 
-	unsigned char talk2[19];
 	char unicodetext[512];
 
 	va_list argptr;
@@ -521,20 +544,14 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = 0xAE;
-	ShortToCharPtr(tl, talk2+1);
-	talk2[3] = 1;
-	talk2[4] = 1;
-	talk2[5] = 1;
-	talk2[6] = 1;
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9] = 6;
+	UI08 talk2[18]={ 0xAE, 0x00, };
 
-	talk2[10]=0x03;	//Color1  - Previous default was 0x0040 - 0x03E9
-	talk2[11]=0x87; //Color2
-	talk2[12]=0;
-	talk2[13]=3;
+	ShortToCharPtr(tl, talk2 +1);
+	LongToCharPtr(0x01010101, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 6;				// Type
+	ShortToCharPtr(0x0387, talk2 +10);	// Color - Previous default was 0x0040 - 0x03E9
+	ShortToCharPtr(0x0003, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];
@@ -544,7 +561,7 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	Xsend(s, talk2, 18);
 	Xsend(s, sysname, 30);
 	Xsend(s, unicodetext, ucl);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -554,7 +571,6 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	if( s < 0)
 		return;
 
-	unsigned char talk2[19];
 	char unicodetext[512];
 
 	va_list argptr;
@@ -569,46 +585,38 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	UI08 *tptr = talk2;
-	*tptr++ = (char)0xAE;
-	*tptr++ = tl >> 8;
-	*tptr++ = tl&0xFF;
-	*tptr++ = 1;
-	*tptr++ = 1;
-	*tptr++ = 1;
-	*tptr++ = 1;
-	*tptr++ = 1;
-	*tptr++ = 1;
-	*tptr++ = 0;
-	*tptr++ = color>>8;
-	*tptr++ = color%256;
-	*tptr++ =0;
-	*tptr++ =3;
-	*tptr++ = server_data.Unicodelanguage[0];
-	*tptr++ = server_data.Unicodelanguage[1];
-	*tptr++ = server_data.Unicodelanguage[2];
-	*tptr++ = 0;
+	UI08 talk2[18]={ 0xAE, 0x00, };
+
+	ShortToCharPtr(tl, talk2 +1);
+	LongToCharPtr(0x01010101, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 0;				// Type
+	ShortToCharPtr(color, talk2 +10);	// Color
+	ShortToCharPtr(0x0003, talk2 +12);	// Font type
+	talk2[14] = server_data.Unicodelanguage[0];
+	talk2[15] = server_data.Unicodelanguage[1];
+	talk2[16] = server_data.Unicodelanguage[2];
+	talk2[17] = 0;
 
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	Xsend(s, talk2, 18);
 	Xsend(s, sysname, 30);
 	Xsend(s, unicodetext, ucl);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 {// The message when an item is clicked (new interface, Duke)
 //Modified by N6 to use UNICODE packets
-	unsigned char talk2[19];
 	char unicodetext[512];
 	int ucl = ( strlen ( txt ) * 2 ) + 2 ;
 
 	P_ITEM pi=pointers::findItemBySerial(serial);
 	VALIDATEPI(pi);
 
-	if ((pi->type == 1 && color == 0x0000)||
-		(pi->type == 9 && color == 0x0000)||
+	if ((pi->type == ITYPE_CONTAINER && color == 0x0000)||
+		(pi->type == ITYPE_SPELLBOOK && color == 0x0000)||
 		(pi->id()==0x1BF2 && color == 0x0000))
 		color = 0x03B2;
 
@@ -616,17 +624,16 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 	char2wchar(txt);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	talk2[0] = (char)0xAE;
-	ShortToCharPtr(tl, talk2+1);
-	LongToCharPtr(serial,talk2+3);
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9]=6; // Mode: "You see"
-	//ShortToCharPtr(color,talk+10);
-	talk2[10]=0x04; // UOLBR patch to prevent client crash by Juliunus
-	talk2[11]=0x81;
-	talk2[12]=0;
-	talk2[13]=3;
+	color = 0x0481; // UOLBR patch to prevent client crash by Juliunus
+
+	UI08 talk2[18]={ 0xAE, 0x00, };
+
+	ShortToCharPtr(tl, talk2 +1);
+	LongToCharPtr(serial, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 6;				// Type "You see" ...
+	ShortToCharPtr(color, talk2 +10);	// Color
+	ShortToCharPtr(0x0003, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];
@@ -638,29 +645,31 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 	Xsend(s, talk2, 18);
 	Xsend(s, sysname, 30);
 	Xsend(s, unicodetext, ucl);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 void wearIt(const NXWSOCKET  s, const P_ITEM pi)
 {
 	VALIDATEPI(pi);
 	
-	unsigned char wearitem[16]="\x2E\x40\x0A\x00\x01\x00\x00\x00\x01\x00\x05\xA8\x90\x00\x00";
-	LongToCharPtr(pi->getSerial32(), wearitem+1);
-	ShortToCharPtr(pi->animid(),wearitem+5); // elcabesa animation
-	wearitem[8]=pi->layer;
+	UI08 wearitem[15]={ 0x2E, 0x00, };
+
+	LongToCharPtr(pi->getSerial32(), wearitem +1);
+	ShortToCharPtr(pi->animid(),wearitem +5); // elcabesa animation
+	wearitem[7]= 0x00;
+	wearitem[8]= pi->layer;
 	LongToCharPtr(pi->getContSerial(),wearitem+9);
-	wearitem[13]=pi->color1;
-	wearitem[14]=pi->color2;
+	ShortToCharPtr(pi->color(), wearitem +13);
 	Xsend(s, wearitem, 15);
+//AoS/	Network->FlushBuffer(s);
 }
 
-void backpack2(NXWSOCKET s, SERIAL serial) //int a1, int a2, int a3, int a4) // Send corpse stuff
+void backpack2(NXWSOCKET s, SERIAL serial) // Send corpse stuff
 {
 	int count=0, count2;
-	unsigned char bpopen2[6]="\x3C\x00\x05\x00\x00";
-	unsigned char display1[8]="\x89\x00\x0D\x40\x01\x02\x03";
-	unsigned char display2[6]="\x01\x40\x01\x02\x03";
+	UI08 display1[7]={ 0x89, 0x00, };
+	UI08 display2[5]={ 0x00, };
+	UI08 bpopen2[5]={ 0x3C, 0x00, };
 
 	P_ITEM cont=pointers::findItemBySerial( serial );
 
@@ -689,15 +698,16 @@ void backpack2(NXWSOCKET s, SERIAL serial) //int a1, int a2, int a3, int a4) // 
 			Xsend(s, display2, 5);
 		}
 	}
-	char nul = 0;
+	UI08 nul = 0;
 	Xsend(s, &nul, 1);	// Terminate with a 0
+//AoS/	Network->FlushBuffer(s);
 
 	ShortToCharPtr(count, bpopen2+3);
 	count2=(count*19)+5;
 	ShortToCharPtr(count2, bpopen2+1);
 	Xsend(s, bpopen2, 5);
 
-	unsigned char bpitem[20]="\x40\x0D\x98\xF7\x0F\x4F\x00\x00\x09\x00\x30\x00\x52\x40\x0B\x00\x1A\x00\x00";
+	UI08 bpitem[20]={ 0x00, };
 
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
@@ -705,19 +715,18 @@ void backpack2(NXWSOCKET s, SERIAL serial) //int a1, int a2, int a3, int a4) // 
 		if( ISVALIDPI(pi) && (pi->layer!=0) )
 		{
 			LongToCharPtr(pi->getSerial32(), bpitem);
-			ShortToCharPtr(pi->animid(),bpitem+4);
-			ShortToCharPtr(pi->amount,bpitem+7);
-			ShortToCharPtr(pi->getPosition().x, bpitem+9);
-			ShortToCharPtr(pi->getPosition().y, bpitem+11);
-			LongToCharPtr(serial, bpitem+13);
-			bpitem[17]=pi->color1;
-			bpitem[18]=pi->color2;
-			//bpitem[19]=pi->decaytime=0;// reseting the decaytimer in the backpack	//moroallan
-			bpitem[19]= 0;
+			ShortToCharPtr(pi->animid(), bpitem +4);
+			bpitem[6]=0x00;
+			ShortToCharPtr(pi->amount, bpitem +7);
+			ShortToCharPtr(pi->getPosition().x, bpitem +9);
+			ShortToCharPtr(pi->getPosition().y, bpitem +11);
+			LongToCharPtr(serial, bpitem +13);
+			ShortToCharPtr(pi->color(), bpitem +17);
 			Xsend(s, bpitem, 19);
 		}
 	}
 
+//AoS/	Network->FlushBuffer(s);
 }
 
 void sendbpitem(NXWSOCKET s, P_ITEM pi)
@@ -725,8 +734,10 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	unsigned char display3[2]="\x25";
-	unsigned char bpitem[20]="\x40\x0D\x98\xF7\x0F\x4F\x00\x00\x09\x00\x30\x00\x52\x40\x0B\x00\x1A\x00\x00";
+	Location pi_pos = pi->getPosition();
+
+	unsigned char display3[1]={ 0x25 };
+	unsigned char bpitem[20]={ 0x00, };
 
 	LongToCharPtr(pi->getSerial32(), bpitem);
 	//AntiChrist - world light sources stuff
@@ -736,62 +747,57 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	//invisible light source!
 	if(pc->IsGM() && pi->id()==0x1647)
 	{///let's show the lightsource like a candle
-		bpitem[4]=0x0A;
-		bpitem[5]=0x0F;
+		ShortToCharPtr(0x0A0F, bpitem +4);
 	} else
 	{//else like a normal item
-		ShortToCharPtr(pi->animid(),bpitem+4);
+		ShortToCharPtr(pi->animid(), bpitem +4);
 	}
-	ShortToCharPtr(pi->amount,bpitem+7);
-	ShortToCharPtr(pi->getPosition().x, bpitem+9);
-	ShortToCharPtr(pi->getPosition().y, bpitem+11);
-	LongToCharPtr(pi->getContSerial(),bpitem+13);
+	bpitem[6]=0x00;
+	ShortToCharPtr(pi->amount, bpitem +7);
+	ShortToCharPtr(pi_pos.x, bpitem +9);
+	ShortToCharPtr(pi_pos.y, bpitem +11);
+	LongToCharPtr(pi->getContSerial(), bpitem +13);
 	if(pc->IsGM() && pi->id()==0x1647)
 	{///let's show the lightsource like a blue item
-		bpitem[17]=0;
-		bpitem[18]=0xC6;
+		ShortToCharPtr(0x00C6, bpitem +17);
 	}
 	else
 	{//else like a normal item
-		bpitem[17]=pi->color1;
-		bpitem[18]=pi->color2;
+		ShortToCharPtr(pi->color(), bpitem +17);
 	}
-	//bpitem[19]=pi->decaytime=0; // HoneyJar, array range is 0-19 ! //reseting the decaytimer in the backpack
-	bpitem[19] = 0; // HoneyJar, array range is 0-19 ! //reseting the decaytimer in the backpack
 
 	// we need to find the topmost container that the item is in
 	// be it a character or another container.
-
 
 	if( pc->distFrom(pi)<=VISRANGE )
 	{
 		Xsend(s, display3, 1);
 		Xsend(s, bpitem, 19);
 	}
+//AoS/	Network->FlushBuffer(s);
+
 	weights::NewCalc(pc);	// Ison 2-20-99
 }
 
 void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop)
 {//AntiChrist
 
+	UI16 eff = (eff1<<8)|(eff2%256);
+	UI08 effect[28]={ 0x70, 0x00, };
 
-	unsigned char effect[28];
-	for (int i=0;i<28;i++)
-	{
-		effect[i]=0;
-	}
-	effect[0]=0x70; // Effect message
-	effect[1]=0x02; // Stay at x, y, z effect
-	//[2] to [9] are	not applicable here.
-	effect[10]=eff1;// Object id of the effect
-	effect[11]=eff2;
-	ShortToCharPtr(x, effect+12);
-	ShortToCharPtr(y, effect+14);
+	effect[1]=0x02; 			// Direction type: 0x02 - Stay at x, y, z effect
+	LongToCharPtr(0, effect +2);		//[2] to [9] are not applicable here. (CharID)
+	LongToCharPtr(0, effect +6);		//[2] to [9] are not applicable here. (TargetID)
+	ShortToCharPtr(eff, effect +10);	// Object id of the effect
+	ShortToCharPtr(x, effect +12);
+	ShortToCharPtr(y, effect +14);
 	effect[16]=z;
-	//[17] to [21] are not applicable here.
+	ShortToCharPtr(0, effect +17);		//[17] to [21] are not applicable here. (Target X)
+	ShortToCharPtr(0, effect +19);		//[17] to [21] are not applicable here. (Target Y)
+	effect[21]=0;				//[17] to [21] are not applicable here. (Target Z)
 	effect[22]=speed;
-	effect[23]=loop; // 0 is really long.	1 is the shortest.
-	//[24] to [25] are not applicable here.
+	effect[23]=loop; 			// 0 is really long.	1 is the shortest.
+	ShortToCharPtr(0, effect +24);		//[24] to [25] are not applicable here.
 	effect[26]=1; // LB possible client crashfix
 	effect[27]=0;
 
@@ -807,6 +813,7 @@ void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop
 		if( sock!=INVALID )
 		{
 			Xsend(sock, effect, 28);
+//AoS/			Network->FlushBuffer(sock);
 		}
 	}
 
@@ -820,7 +827,8 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 	VALIDATEPC(pc);
 
 	bool pack;
-	unsigned char itmput[21]="\x1A\x00\x13\x40\x01\x02\x03\x20\x42\x00\x32\x06\x06\x06\x4A\x0A\x00\x00\x00";
+	UI16 len;
+	UI08 itmput[20]={ 0x1A, 0x00, };
 
 	if ( pi->visible>=1 && !(pc->IsGM()) )
 	return;
@@ -841,7 +849,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		}
 		if (pack)
 		{
-			if (pi->id1<0x40) // LB client crashfix, dont show multis in BP
+			if (pi->id()<0x4000) 			// LB client crashfix, dont show multis in BP
 								// we should better move it out of pack, but thats
 								// only a first bannaid
 			{
@@ -853,7 +861,9 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 	else
 	if(item_inVisRange(pc,pi) )
 	{
-		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput+3);
+		Location pos = pi->getPosition(); 
+
+		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput +3);
 
 		//if player is a gm, this item
 		//is shown like a candle (so that he can move it),
@@ -861,26 +871,23 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		//invisible light source!
 		if(pc->IsGM() && pi->id()==0x1647)
 		{///let's show the lightsource like a candle
-			itmput[7]=0x0A;
-			itmput[8]=0x0F;
+			ShortToCharPtr(0x0A0F, itmput +7);
 		} else
 		{//else like a normal item
-			ShortToCharPtr(pi->animid(),itmput+7); // elcabesa animation tryyy
+			ShortToCharPtr(pi->animid(), itmput +7); // elcabesa animation tryyy
 		}
 
-		ShortToCharPtr(pi->amount, itmput+9);
-		ShortToCharPtr(pi->getPosition().x, itmput+11);
-		ShortToCharPtr(pi->getPosition().y+0xC000, itmput+13);
-		itmput[15]= pi->getPosition("z");
+		ShortToCharPtr(pi->amount, itmput +9);
+		ShortToCharPtr(pos.x, itmput +11);
+		ShortToCharPtr(pos.y +0xC000, itmput +13);
+		itmput[15]= pos.z;
 
 		if(pc->IsGM() && pi->id()==0x1647)
 		{///let's show the lightsource like a blue item
-			itmput[16]=0;
-			itmput[17]=0xC6;
+			ShortToCharPtr(0x00C6, itmput +16);
 		} else
 		{
-			itmput[16]=pi->color1;
-			itmput[17]=pi->color2;
+			ShortToCharPtr(pi->color(), itmput +16);
 		}
 
 		itmput[18]=0;
@@ -906,36 +913,34 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 		if (pi->magic==1)
 			itmput[18]|=0x20;
-		if (pc->priv2&1)
+		if (pc->priv2 & CHRPRIV2_ALLMOVE)
 			itmput[18]|=0x20;
 		if ((pi->magic==3 || pi->magic==4) && pc->getSerial32()==pi->getOwnerSerial32())
 			itmput[18]|=0x20;
 
-		if (pc->priv2&4)
+		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
 		{
 			if (pi->id()>=0x4000 && pi->id()<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
 			{
-				itmput[7]=0x14;
-				itmput[8]=0xF0;
+				ShortToCharPtr(0x14F0, itmput +7);
 			}
 		}
 
-		int dir=0;
+		len = 19;
 		if (pi->dir)
 		{
-			dir=1;
 			itmput[19]=itmput[18];
 			itmput[18]=itmput[17];
 			itmput[17]=itmput[16];
 			itmput[16]=itmput[15];
 			itmput[15]=static_cast<unsigned char>(pi->dir);
-			itmput[2]=0x14;
 			itmput[11]|=0x80;
+			len = 20;
 		}
 
-		itmput[2]=0x13+dir;
-
-		Xsend(s, itmput, 19+dir);
+		ShortToCharPtr(len, itmput +2);
+		Xsend(s, itmput, len);
+//AoS/		Network->FlushBuffer(s);
 		//pc->sysmsg( "sent item %s %i", pi->getCurrentNameC(), pi->magic );
 
 		if (pi->IsCorpse())
@@ -950,28 +955,29 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 // used for LSd potions now, LB 5'th nov 1999
 void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, signed char z)
 {
-
 	const P_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	
-	unsigned char itmput[20]="\x1A\x00\x13\x40\x01\x02\x03\x20\x42\x00\x32\x06\x06\x06\x4A\x0A\x00\x00\x00";
+	UI16 color = (color1<<8)|(color2%256);
+	UI16 len;
+	UI08 itmput[20]={ 0x1A, 0x00, };
 
 	if ( pi->visible>=1 && !(pc->IsGM()) ) return; // workaround for missing gm-check client side for visibity since client 1.26.2
 	// for lsd we dont need extra work for type 1 as in send_item
 
 	if (pi->isInWorld())
 	{
-		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput+3);
-		ShortToCharPtr(pi->id(),itmput+7);
-		ShortToCharPtr(pi->amount, itmput+9);
-		ShortToCharPtr(pi->getPosition().x, itmput+11);
-		ShortToCharPtr(pi->getPosition().y, itmput+13 + 0xC000);
+		Location pos = pi->getPosition(); 
+
+		LongToCharPtr(pi->getSerial32() + 0x80000000, itmput +3);
+		ShortToCharPtr(pi->id(), itmput +7);
+		ShortToCharPtr(pi->amount, itmput +9);
+		ShortToCharPtr(pos.x, itmput +11);
+		ShortToCharPtr(pos.y +0xC000, itmput +13);
 		itmput[15]=z;
-		itmput[16]=color1;
-		itmput[17]=color2;
+		ShortToCharPtr(color, itmput +16);
 		itmput[18]=0;
 
 		if (pi->visible==1)
@@ -988,23 +994,27 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 		if (pi->visible==3)
 		{
-			if ((pc->id1==0x03 && pc->id2==0xDB) || !pc->IsGM())
+			if ((pc->GetBodyType() == 0x03DB) || !pc->IsGM())
 				itmput[18]|=0x80;
 		}
 
-		if (pi->magic==1) itmput[18]+=0x20;
+		if (pi->magic==1) itmput[18]|=0x20;
 
-		if (pc->priv2&1) itmput[18]+=0x20;
+		if (pc->priv2 & CHRPRIV2_ALLMOVE) itmput[18]|=0x20;
+
 		if ((pi->magic==3 || pi->magic==4) && pc->getSerial32()==pi->getOwnerSerial32())
-			itmput[18]+=0x20;
-		if (pc->priv2&4)
+			itmput[18]|=0x20;
+
+		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
 		{
 			if (pi->id()>=0x4000 && pi->id()<=0x40FF)
 			{
-				itmput[7]=0x14;
-				itmput[8]=0xF0;
+				ShortToCharPtr(0x14F0, itmput +7);
 			}
 		}
+
+		len = 19;
+
 		if (pi->dir)
 		{
 			itmput[19]=itmput[18];
@@ -1012,22 +1022,19 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 			itmput[17]=itmput[16];
 			itmput[16]=itmput[15];
 			itmput[15]=static_cast<unsigned char>(pi->dir);
-			itmput[2]=0x14;
 			itmput[11]|=0x80;
-			Xsend(s, itmput, 20);
-		} else
-		{
-			itmput[2]=0x13;
-			Xsend(s, itmput, 19);
+			len = 20;
 		}
+
+		ShortToCharPtr(len, itmput +2);
+		Xsend(s, itmput, len);
+//AoS/		Network->FlushBuffer(s);
 
 		if (pi->IsCorpse() )
 		{
 			backpack2(s, pi->getSerial32());
 		}
 	}
-
-
 }
 
 void chardel (NXWSOCKET  s) // Deletion of character
@@ -1044,9 +1051,9 @@ void chardel (NXWSOCKET  s) // Deletion of character
  */
 
 	int i;
-	unsigned char delete_error_msg[2] = {0x85, 0x05};
-	unsigned char delete_resend_char_1[6]={0x86, 0x01, 0x30, 0x00}; // 1 + 2 + 1 + 5*60 = 304 = 0x0130
-	unsigned char delete_resend_char_2[61];
+	UI08 delete_error_msg[2] = {0x85, 0x05};
+	UI08 delete_resend_char_1[6]={0x86, 0x01, 0x30, 0x00}; // 1 + 2 + 1 + 5*60 = 304 = 0x0130
+	UI08 delete_resend_char_2[61];
 
 	P_CHAR TrashMeUp = NULL;
 	NxwCharWrapper sc;
@@ -1070,6 +1077,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 		if(!TrashMeUp) {
 			delete_error_msg[1] = 0x01;
 			Xsend(s, delete_error_msg, 2);
+//AoS/			Network->FlushBuffer(s);
 			return;
 		}
 
@@ -1079,12 +1087,14 @@ void chardel (NXWSOCKET  s) // Deletion of character
 			   (getclockday() < TrashMeUp->GetCreationDay() + 7) ) {
 				delete_error_msg[1] = 0x03;
 				Xsend(s, delete_error_msg, 2);
+//AoS/				Network->FlushBuffer(s);
 				return;
 			}
 
 			if(TrashMeUp->IsOnline()) {
 				delete_error_msg[1] = 0x02;
 				Xsend(s, delete_error_msg, 2);
+//AoS/				Network->FlushBuffer(s);
 				return;
 			}
 			
@@ -1112,38 +1122,33 @@ void chardel (NXWSOCKET  s) // Deletion of character
 			for (;i<5;i++) {
 				Xsend(s, delete_resend_char_2, 60);
 			}
+//AoS/			Network->FlushBuffer(s);
 
 			return; // All done ;]
 		}
 	} 
 // Any possible error ....
 	Xsend(s, delete_error_msg, 2);
+//AoS/	Network->FlushBuffer(s);
 }
 
 // Send targetting cursor to client
 void sendTargetCursor(NXWSOCKET s, int a1, int a2, int a3, int a4) {
-	unsigned char tarcrs[20]="\x6C\x01\x40\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 tarcrs[19]={ 0x6C, 0x00, };
+	SERIAL a = calcserial(a1, a2, a3, a4);
 
 	targetok[s]=1;
-	tarcrs[2]=a1;
-	tarcrs[3]=a2;
-	tarcrs[4]=a3;
-	*(int*)&tarcrs[5]=a4;
+	
+	tarcrs[1]=0x01;		// Target type: 0 - Select Object, 1 - Select X Y Z
+	LongToCharPtr(a, tarcrs +2);
 	Xsend(s, tarcrs, 19);
+//AoS/	Network->FlushBuffer(s);
 }
 
-void target(NXWSOCKET  s, int a1, int a2, int a3, int a4, char *txt) // Send targetting cursor to client
+void target(NXWSOCKET  s, int a1, int a2, int a3, int a4, char *txt) // Send targetting cursor to client (wrapper to above funct() )
 {
-	unsigned char tarcrs[20]="\x6C\x01\x40\x01\x02\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-	targetok[s]=1;
-	tarcrs[2]=a1;
-	tarcrs[3]=a2;
-	tarcrs[4]=a3;
-	*(int*)&tarcrs[5]=a4;
 	sysmessage(s, txt);
-	Xsend(s, tarcrs, 19);
-
+	sendTargetCursor(s, a1, a2, a3, a4);
 }
 
 void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.2b by LB
@@ -1152,22 +1157,25 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 	P_CHAR pc= MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	unsigned char skillstart[5]="\x3A\x01\x5d\x00"; // hack for that 3 new skills+1.26.2 client, LB 4'th dec 1999
-	unsigned char skillmid[8] = "\x00\x00\x00\x00\x00\x00\x00"; // changed for 1.26.2 clients [size 7 insted of 4]
-	unsigned char skillend[3]="\x00\x00";
+	UI08 skillstart[4]={ 0x3A, 0x00, };
+	UI08 skillmid[7]={ 0x00, };
+	UI08 skillend[2]={ 0x00, };
+	UI16 len;
 	char x;
 
-
+	len = 0x015D;					// Hardcoded -_-;  // hack for that 3 new skills+1.26.2 client, LB 4'th dec 1999
+	ShortToCharPtr(len, skillstart +1);
+	skillstart[3] = 0x00;				// Type: 
+							// 0x00 = full list, 0xFF = single skill update,
+							// 0x02 = full list with skillcap, 0xDF = single skill update with cap
 
 	Xsend(s, skillstart, 4);
 	for (int i=0;i<TRUESKILLS;i++)
 	{
 		Skills::updateSkillLevel(pc,i);
-		skillmid[1]=i+1;
-		skillmid[2]=pc->skill[i]>>8;
-		skillmid[3]=pc->skill[i]%256;
-		skillmid[4]=pc->baseskill[i]>>8;
-		skillmid[5]=pc->baseskill[i]%256;
+		ShortToCharPtr(i+1, skillmid +0);
+		ShortToCharPtr(pc->skill[i], skillmid +2);
+		ShortToCharPtr(pc->baseskill[i], skillmid +4);
 
 		x=pc->lockSkill[i];
 		if (x!=0 && x!=1 && x!=2) x=0;
@@ -1175,7 +1183,7 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 		Xsend(s, skillmid, 7);
 	}
 	Xsend(s, skillend, 2);
-
+//AoS/	Network->FlushBuffer(s);
 }
 
 /*!
@@ -1188,33 +1196,30 @@ void cChar::updateStats(SI32 stat)
 	checkSafeStats();
 
 	int a = 0, b = 0;
-	char updater[10]="\xA1\x01\x02\x03\x04\x01\x03\x01\x02";
+
+	UI08 updater[9]={ 0xA1, 0x00, };
 
 	switch (stat)
 	{
 	case 0:
-		a=this->getStrength();
-		b=this->hp;
+		a=getStrength();
+		b=hp;
 		break;
 	case 1:
-		a=this->in;
-		b=this->mn;
+		a=in;
+		b=mn;
 		break;
 	case 2:
-		a=this->dx;
-		b=this->stm;
+		a=dx;
+		b=stm;
 		break;
 	}
 
 	updater[0]=0xA1+stat;
-	updater[1]=this->getSerial().ser1;
-	updater[2]=this->getSerial().ser2;
-	updater[3]=this->getSerial().ser3;
-	updater[4]=this->getSerial().ser4;
-	updater[5]=a>>8;
-	updater[6]=a%256;
-	updater[7]=b>>8;
-	updater[8]=b%256;
+	LongToCharPtr(getSerial32(), updater +1);
+	ShortToCharPtr(a, updater +5);
+	ShortToCharPtr(b, updater +7);
+
 	if (stat == 0)  //Send to all, only if it's Health change
 	{
 		NxwSocketWrapper sw;
@@ -1223,14 +1228,19 @@ void cChar::updateStats(SI32 stat)
 		{
 			NXWSOCKET i=sw.getSocket();
 			if( i!=INVALID )
+			{
 				Xsend(i, updater, 9);
+//AoS/				Network->FlushBuffer(i);
+			}
 		}
 	} else {
-		int s = calcSocketFromChar(DEREF_P_CHAR(this));
+		NXWSOCKET s = getSocket();
 		if (s != INVALID)
+		{
 			Xsend(s, updater, 9);
+//AoS/			Network->FlushBuffer(s);
+		}
 	}
-
 }
 
 void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
@@ -1239,39 +1249,35 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 	VALIDATEPC(pc);
 	VALIDATEPC(pc_to);
 
-	int x;
-	TEXT statstring[67]="\x11\x00\x42\x00\x05\xA8\x90XYZ\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x00\x34\xFF\x01\x00\x00\x5F\x00\x60\x00\x61\x00\x62\x00\x63\x00\x64\x00\x65\x00\x00\x75\x30\x01\x2C\x00\x00";
+	UI32 x;
+	UI16 len;
+	UI08 statstring[66]={ 0x11, 0x00, };
 	bool ghost;
 
 
-	if ((pc->id1==0x01 && pc->id2==0x92) || (pc->id1==0x01 && pc->id2==0x93)) ghost = true; else ghost = false;
+	if ((pc->GetBodyType() == BODY_DEADMALE) || (pc->GetBodyType() == BODY_DEADFEMALE)) ghost = true; else ghost = false;
 
-	statstring[3]=pc->getSerial().ser1;
-	statstring[4]=pc->getSerial().ser2;
-	statstring[5]=pc->getSerial().ser3;
-	statstring[6]=pc->getSerial().ser4;
-	strncpy(&statstring[7], pc->getCurrentNameC(), 30); // can not be more than 30 at least no without changing packet lenght
+	LongToCharPtr(pc->getSerial32(), statstring +3);
+	strncpy((char *)&statstring[7], pc->getCurrentNameC(), 30); // can not be more than 30 at least no without changing packet lenght
 
 	if (!ghost)
 	{
-		statstring[37]=pc->hp>>8;
-		statstring[38]=pc->hp%256;
+		ShortToCharPtr(pc->hp, statstring +37);
 	}
 	else
 	{
-		statstring[37] = statstring[38] = 0;
+		ShortToCharPtr(0, statstring +37);
 	}
 	//Changed, so ghosts can see their maximum hit points.
-	statstring[39]=pc->getStrength()>>8;
-	statstring[40]=pc->getStrength()%256;
+	ShortToCharPtr(pc->getStrength(), statstring +39);
 
-	if (((pc_to->IsGM())||(pc->getOwnerSerial32()==pc_to->getSerial32()))&&(pc_to!=pc))
+	if ((pc_to->IsGM() || (pc->getOwnerSerial32()==pc_to->getSerial32())) && (pc_to!=pc))
 	{
-		statstring[41]='\xFF';
+		statstring[41]=0xFF;
 	}
 	else if ((pc_to->getSerial32()==pc->getOwnerSerial32())&&(pc_to!=pc)) //Morrolan - from Banter
 	{
-		statstring[41]='\xFF';
+		statstring[41]=0xFF;
 	}
 	else
 	{
@@ -1283,54 +1289,44 @@ void statwindow(P_CHAR pc_to, P_CHAR pc) // Opens the status window
 	// packet #42 has some problems, dont try to be smart and replace the workaround by
 	// if (ghost) statstring[42]=0; else statstring[42]=1, LB
 
-	if ((pc->id1==0x01)&&(pc->id2==0x91)) statstring[43]=1;
-	else if ((pc->id1==0x01) && (pc->id2==0x93)) statstring[43]=1;
+	if (pc->GetBodyType() == BODY_FEMALE) statstring[43]=1;
+	else if (pc->GetBodyType() == BODY_DEADFEMALE) statstring[43]=1;
 	else statstring[43]=0; // LB, prevents very female looking male players ... :-)
 
 	//Changed so ghosts can see their str, dex and int, their char haven't lost those attributes.
-	statstring[44]=pc->getStrength()>>8;
-	statstring[45]=pc->getStrength()%256;
-	statstring[46]=pc->dx>>8;
-	statstring[47]=pc->dx%256;
-	statstring[48]=pc->in>>8; // Real INT
-	statstring[49]=pc->in%256;
+	ShortToCharPtr(pc->getStrength(), statstring +44);
+	ShortToCharPtr(pc->dx, statstring +46);
+	ShortToCharPtr(pc->in, statstring +48); // Real INT
 
 	if (!ghost)
 	{
-		statstring[50]=pc->stm>>8;
-		statstring[51]=pc->stm%256;
-		statstring[54]=pc->mn>>8;
-		statstring[55]=pc->mn%256;
+		ShortToCharPtr(pc->stm, statstring +50);
+		ShortToCharPtr(pc->mn, statstring +54);
 	}
 	else
-	{
-		// Sets to 0 stamina and mana
-		for (int a = 50; a <= 57; a++)
-			statstring[a] = 0;
+	{ // ghosts will see their mana as 0/x, ie 0/100
+		ShortToCharPtr(0, statstring +50);
+		ShortToCharPtr(0, statstring +54);
 	}
-	// ghosts will see their mana as 0/x, ie 0/100
 	// This will show red bars when status are displayed as percentages (little status window)
-	statstring[52]=pc->dx>>8; // MaxStamina
-	statstring[53]=pc->dx%256;
-	statstring[56]=pc->in>>8; // MaxMana
-	statstring[57]=pc->in%256;
-
+	ShortToCharPtr(pc->dx, statstring +52); // MaxStamina
+	ShortToCharPtr(pc->in, statstring +56); // MaxMana
 
 	x = pc->CountGold();
-	statstring[58]=x>>24;
-	statstring[59]=x>>16;
-	statstring[60]=x>>8;
-	statstring[61]=x%256;
+	LongToCharPtr(x, statstring +58);
 
 	x = pc->calcDef(0);
-	statstring[62]=x>>8; // AC
-	statstring[63]=x%256;
+	ShortToCharPtr(x, statstring +62); // AC
+
 	x = (int)(pc->weight);
-	statstring[64]=x>>8;
-	statstring[65]=x%256;
-	Xsend(calcSocketFromChar(DEREF_P_CHAR(pc_to)), statstring, 66);
+	ShortToCharPtr(x, statstring +64);
 
+	len = 0x0042;
+	ShortToCharPtr(len, statstring +1);
 
+	NXWSOCKET s = pc_to->getSocket();
+	Xsend(s, statstring, len);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void updates(NXWSOCKET  s) // Update Window
@@ -1359,27 +1355,27 @@ void updates(NXWSOCKET  s) // Update Window
 	y+=10;
 	iter->rewind();
 	strcpy(script1, iter->getEntry()->getFullLine().c_str());
-	unsigned char updscroll[11]="\xA6\x01\x02\x02\x00\x00\x00\x00\x01\x02";
-	updscroll[1]=y>>8;
-	updscroll[2]=y%256;
-	updscroll[3]=2;
-	updscroll[8]=(y-10)>>8;
-	updscroll[9]=(y-10)%256;
-	Xsend(s, updscroll, 10);
+
+	UI08 updscroll[10]={ 0xA6, 0x00, };
+	ShortToCharPtr(y, updscroll +1); 		// len of pkt.
+	updscroll[3]=2; 				// MOTD ? Type: 0x00 tips, 0x02 updates 
+	LongToCharPtr(0, updscroll +4);			// tip num. 
+	ShortToCharPtr(y-10, updscroll +8);		// len of only mess.
+	Xsend(s, updscroll, 10); 		// Send 1st part (header)
+
 	for (j=0;j<x;j++)
 	{
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());
 		sprintf(temp, "%s ", script1);
-		Xsend(s, temp, strlen(temp));
+		Xsend(s, temp, strlen(temp)); 	// Send the rest
 	}
 	safedelete(iter);
 
+//AoS/	Network->FlushBuffer(s);
 }
 
 void tips(int s, int i) // Tip of the day window
 {
-
-
 	int x, y, j;
 	char temp[512];
     cScpIterator* iter = NULL;
@@ -1426,28 +1422,28 @@ void tips(int s, int i) // Tip of the day window
 	y+=10;
 	iter->rewind();
 	strcpy(script1, iter->getEntry()->getFullLine().c_str());//discards the {
-	unsigned char updscroll[11]="\xA6\x01\x02\x02\x00\x00\x00\x00\x01\x02";
-	updscroll[1]=y>>8;
-	updscroll[2]=y%256;
-	updscroll[3]=0;
-	updscroll[7]=i;
-	updscroll[8]=(y-10)>>8;
-	updscroll[9]=(y-10)%256;
-	Xsend(s, updscroll, 10);
+
+	UI08 updscroll[10]={ 0xA6, 0x00, };
+	ShortToCharPtr(y, updscroll +1); 		// len of pkt.
+	updscroll[3]=0; 				// Type: 0x00 tips, 0x02 updates 
+	LongToCharPtr(i, updscroll +4);			// tip num. 
+	ShortToCharPtr(y-10, updscroll +8);		// len of only mess.
+	Xsend(s, updscroll, 10); 		// Send 1st part (header)
+
 	for (j=0;j<x;j++)
 	{
 		strcpy(script1, iter->getEntry()->getFullLine().c_str());//discards the {
 		sprintf(temp, "%s ", script1);
-		Xsend(s, temp, strlen(temp));
+		Xsend(s, temp, strlen(temp)); // Send the rest
 	}
 	safedelete(iter);
 
+//AoS/	Network->FlushBuffer(s);
 }
 
 
-void deny(NXWSOCKET  k,P_CHAR pc, int sequence)
+void deny(NXWSOCKET  s, P_CHAR pc, int sequence)
 {
-
 	cPacketWalkReject walkdeny;
 	walkdeny.sequence= sequence;
 	walkdeny.x= pc->getPosition().x;
@@ -1455,8 +1451,7 @@ void deny(NXWSOCKET  k,P_CHAR pc, int sequence)
 	walkdeny.direction=pc->dir;
 	walkdeny.z= pc->getPosition().dispz;
 	walkdeny.send( pc->getClient() );
-	walksequence[k]=INVALID;
-
+	walksequence[s]=INVALID;
 }
 
 void weblaunch(int s, const char *txt) // Direct client to a web page

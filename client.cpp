@@ -23,7 +23,7 @@ cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 
 void cNxwClientObj::sysmsg(short color, char* txt, ...)
 {
-	UI08 talk2[19]={ 0xAE, 0x00, };
+	UI08 talk2[18]={ 0xAE, 0x00, };
 	char unicodetext[512];
 
 	va_list argptr;
@@ -38,17 +38,11 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	ShortToCharPtr(tl, talk2 +1);
-	talk2[3] = 1;
-	talk2[4] = 1;
-	talk2[5] = 1;
-	talk2[6] = 1;
-	talk2[7] = 1;
-	talk2[8] = 1;
-	talk2[9] =  0;
-
-	ShortToCharPtr(color, talk2 +10);
-	talk2[12]=0;
-	talk2[13]=3;
+	LongToCharPtr(0x01010101, talk2 +3); 	// ID
+	ShortToCharPtr(0x0101, talk2 +7);	// Model
+	talk2[9] = 0;				// Type
+	ShortToCharPtr(0x0040, talk2 +10);	// Color
+	ShortToCharPtr(0x0003, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];

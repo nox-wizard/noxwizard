@@ -31,7 +31,7 @@ void SndShopgumpopen(NXWSOCKET  s, int serial);
 
 void soundeffect(int s, unsigned char a, unsigned char b);
 	//!< Play sound effect for player
-void soundeffect3(P_ITEM pi, short sound);
+void soundeffect3(P_ITEM pi, UI16 sound);
 void soundeffect4(int p, NXWSOCKET  s, unsigned char a, unsigned char b);
 void soundeffect5(NXWSOCKET  s, unsigned char a, unsigned char b);
 void sysbroadcast(char *txt, ...);
