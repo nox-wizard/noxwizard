@@ -16,6 +16,7 @@ class cSpawnArea {
 
 public:
 	bool findValidLocation( Location& location );
+	bool disabled;
 
 public:
 

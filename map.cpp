@@ -303,9 +303,9 @@ SI08 getHeight( Location pos )
 {
 	SI08 max_z = illegal_z;
 
-	max_z = max( dynamicElevation( pos ), max_z );
-	max_z = max( staticTop( pos ), max_z );
-	max_z = max( mapElevation( pos.x, pos.y ), max_z );
+	max_z = qmax( dynamicElevation( pos ), max_z );
+	max_z = qmax( staticTop( pos ), max_z );
+	max_z = qmax( mapElevation( pos.x, pos.y ), max_z );
 
 	return max_z;
 }

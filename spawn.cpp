@@ -15,6 +15,7 @@ cSpawns*	Spawns;
 
 cSpawnArea::cSpawnArea( AREA_ITER area )
 {
+	disabled = false;
 	this->nextspawn=uiCurrentTime;
 	this->where=area;
 	this->current=0;
@@ -106,7 +107,9 @@ void cSpawnScripted::safeCreate( P_ITEM pi, cSpawnArea& single  )
 }
 
 void cSpawnScripted::doSpawn( cSpawnArea& c ) {
-		
+
+	if ( c.disabled )
+		return;
 	if( c.current >= max ) 
 		return;
 
@@ -164,6 +167,7 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 		}
 	}
 
+	c.disabled = true;
 	WarnOut("Scripted spawn %i [%s] couldn't find anything to spawn, check scripts.\n",serial, name.c_str());
 
 }
