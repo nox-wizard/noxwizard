@@ -74,7 +74,7 @@
 #include "titles.h"
 #include "utils.h"
 #include "walking.h"
-#include "los.h"
+#include "map.h"
 #include "addmenu.h"
 #include "rcvpkg.h"
 #include "network.h"

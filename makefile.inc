@@ -67,8 +67,8 @@ SOURCES =	\
 		item_array.cpp \
 		jail.cpp \
 		logsystem.cpp \
-		los.cpp \
 		magic.cpp \
+		map.cpp \
 		mapstuff.cpp \
 		menu.cpp \
 		mount.cpp \
@@ -180,7 +180,7 @@ HEADERS =	\
 		item_array.h \
 		jail.h \
 		logsystem.h \
-		los.h \
+		map.h \
 		menu.h \
 		mount.h \
 		msgboard.h \

@@ -9,7 +9,7 @@
 
 #ifndef __AI_H__
 #define __AI_H__
-    
+
 /*!
 \file
 \author Luxor
@@ -28,14 +28,6 @@
 #define STRAIGHT_COST 10
 #define OBLIQUE_COST 14
 
-/*!
-\author Luxor
-\brief Check flags for isWalkable function
-*/
-enum {
-	WALKFLAG_NONE = 0x0, WALKFLAG_MAP = 0x1, WALKFLAG_STATIC = 0x2, WALKFLAG_DYNAMIC = 0x4, WALKFLAG_CHARS = 0x8, WALKFLAG_ALL = 0xF
-};
-
 
 /*!
 \author Luxor
@@ -48,8 +40,6 @@ struct path_node {
 
 typedef slist<path_node*> NODE_LIST;
 typedef slist<Location> LOCATION_LIST;
-
-SI08 isWalkable( Location pos, UI08 flags = WALKFLAG_ALL );
 
 /*!
 \brief Class implementation of a pathfinding algorithm similar to an A* one
@@ -77,29 +67,5 @@ private:
 
 //@}
 
-//@{
-/*!
-\author Luxor
-\name Line of sight implementation
-*/
 
-class cRect {
-public:
-	cRect( Location A, Location B );
-	Location getPosAtX( UI32 x );
-	Location getPosAtY( UI32 y );
-	SI08 calcZAtXY( UI32 x, UI32 y );
-private:
-	Location m_posA;
-	SI32 m_xDist;
-	SI32 m_yDist;
-};
-
-namespace los {
-
-LOGICAL lineOfSight( Location pos1, Location pos2 );
-
-}
-
-//@}
 #endif //__AI_H__
