@@ -355,6 +355,7 @@ void loadserverdefaults()
 	server_data.commandPrefix = '\''; //Ripper
 
 	server_data.CheckBank = 2000; // Ripper..2000 default
+	server_data.defaultSelledItem = 30;
 
 	server_data.housedecay_secs=604800*2; // LB, one week //xan, 2 weeks default
 
@@ -499,6 +500,9 @@ static int loadvendor(char *script1, char *script2) // by Magius(CHE)
 		}
 		else if(!(strcmp( script1,"CHECKBANK"))) {
             server_data.CheckBank=str2num(script2);
+		}
+		else if(!(strcmp( script1,"SELLFORITEM"))) {
+            server_data.defaultSelledItem=str2num(script2);
 		}
 		else return -1;
 		return 0;
@@ -1418,6 +1422,8 @@ void saveserverscript()
 	fprintf(file, "// x=minimum item price required to let the player pay for\n");
 	fprintf(file, "// an item with gold from his bankbox \n");
 	fprintf(file, "CHECKBANK %i\n",server_data.CheckBank); // Ripper
+	fprintf(file, "// Default number of item selled by vendor for every item \n");
+	fprintf(file, "SELLFORITEM %i\n",server_data.defaultSelledItem);
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION PARTYSYSTEM\n");

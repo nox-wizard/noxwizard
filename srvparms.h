@@ -146,6 +146,7 @@ struct server_st
  char Unicodelanguage[4];//UNICODE font name for multiple language support -  N6
  
  int CheckBank; // Vendors check bank for gold- Ripper
+ UI32 defaultSelledItem; //!< default number of item who a vendor can sell fot every item
 
  int cutscrollreq;//AntiChrist - cut skill requirements for scrolls
 
