@@ -127,7 +127,7 @@ cCommandMap::cCommandMap() {
  
 		fgets (str , 80 , pFile);
 
-		if ( str[1]==EOF ) break;
+		//TODO  prevent crash caused by final \n
 		
 		if ( (str[0]=='/') || (str[0]=='\n') ) continue;    //Ignore comments and blank lines
       
