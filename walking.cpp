@@ -1425,7 +1425,6 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
-		UI16 di = item_dist(pc, pi);
 		if(!ISVALIDPI(pi))
 			continue;
 			if( pi->id()>=0x407C && pi->id()<=0x407E )
@@ -1438,9 +1437,9 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 				}
 
 			}
-			else if ( (di <= VISRANGE) && pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
+			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
 				senditem( ps->toInt(), pi );
-			else if ( di > VISRANGE )
+			else
 				pc->seeForLastTime(P_OBJECT(pi));
 	}
 	return true;
@@ -1470,7 +1469,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 		}
 		if ( pc->seeForFirstTime( pc_curr ) ) {
 			if ( cli != NULL )
-				impowncreate( cli->toInt(), pc_curr, 1);
+				SendDrawObjectPkt( cli->toInt(), pc_curr, 1);
 		}
 
 		ps = pc_curr->getClient();
@@ -1485,7 +1484,7 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 
 		// It's seen for the first time, send a draw packet
 		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) {
-			impowncreate( ps->toInt(), pc, 1 );
+			SendDrawObjectPkt( ps->toInt(), pc, 1 );
 			continue;
 		}
 
