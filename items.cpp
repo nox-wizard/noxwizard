@@ -886,7 +886,7 @@ cItem::cItem( SERIAL ser )
 	hidamage=0; //Maximum damage weapon inflicts
 	smelt=0; // for smelting items
 	secureIt=0; // secured chests
-	wpsk=0; //The skill needed to use the item
+	wpsk=0; //The skill needed to use the item -> Seems not to work for the moment, useless
 	hp=0; //Number of hit points an item has.
 	maxhp=0; // Max number of hit points an item can have.
 	st=0; // The strength needed to equip the item

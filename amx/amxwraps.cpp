@@ -42,6 +42,7 @@
 #include "utils.h"
 #include "jail.h"
 #include "party.h"
+#include "gmpages.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -5796,6 +5797,63 @@ NATIVE( _party_broadcast )
 }
 
 
+//
+// Gm paging system
+//
+
+/*!
+\brief Register a Gm page sent from a player.
+\author Frodo and stonedz
+\since 0.82
+\param 1 character
+\param 2 reason of the page
+\return NULL if the player already sent more than 3 pages
+*/
+NATIVE ( _addGmPage )
+{
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
+	P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
+	//pages->addPage(page);
+	return NULL;
+}
+
+/*!
+\brief Return a set with all paging characters,every character appears only once in the set, even if he did multiple pages.
+\author Frodo and stonedz
+\return NULL if no pages are present at the moment
+*/
+NATIVE ( _getGmPageList )
+{
+	return NULL;
+}
+
+/*!
+\brief Fills param 3 and param 4 with the reason and the time of the page done by the param 1 player.
+\author Frodo and stonedz
+\since 0.82
+\param 1 character
+\param 2 page number (range 1-3)
+\param 3 string to be filled with the reason of selected page
+\param 4 string to be filled with the time the selected page was sent
+\return NULL if no page corresponds to the given one 
+*/
+NATIVE ( _chr_getGmPage )
+{
+	return NULL;
+}
+
+/*!
+\brief Deletes the given page from the map.
+\author Frodo and stonedz
+\param 1 character
+\param 2 page number (range 1-3)
+\return NULL if no page corresponds to the given one
+*/
+NATIVE ( _chr_solveGmPage )
+{
+	return NULL;
+}
 
 /*!
 \file
@@ -6204,6 +6262,11 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "party_getProperty",	_party_getProperty },
  { "party_setProperty",	_party_setProperty },
  { "party_broadcast",	_party_broadcast },
+// gm paging system
+ { "addGmPage", _addGmPage },
+ { "getGmPageList", _getGmPageList },
+ { "chr_getGmPage", _chr_getGmPage },
+ { "chr_solveGmPage",  _chr_solveGmPage },
 // Terminator :
  { NULL, NULL }
 };

@@ -280,7 +280,7 @@ public:
 	SI32		auxdamage;	//!< Additional damage :]
 	SI32		lodamage;	//!< Minimum Damage weapon inflicts
 	SI32		hidamage;	//!< Maximum damage weapon inflicts
-	SI32		wpsk;		//!< The skill needed to use the item
+	SI32		wpsk;		//!< The skill needed to use the item -> Seems not to work for the moment, usless
 	SI32		spd;		//!< The speed of the weapon
 	SI32		itmhand;	//!< ITEMHAND system - AntiChrist
 	SI32		resists[MAX_RESISTANCE_INDEX];	//!< for resists system
