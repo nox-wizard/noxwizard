@@ -4853,6 +4853,7 @@ cUnicodeString* cChar::getSpeechCurrent()
 
 void cChar::setSpeechCurrent( cUnicodeString* speech )
 {
+	deleteSpeechCurrent();
 	this->speechCurrent=speech;
 }
 
@@ -4864,7 +4865,7 @@ void cChar::resetSpeechCurrent()
 void cChar::deleteSpeechCurrent()
 {
 	if( speechCurrent!=NULL )
-		delete speechCurrent;
+		safedelete(speechCurrent);
 }
 
 void cChar::setRegenRate( StatType stat, UI32 rate, VarType type )

@@ -2111,10 +2111,10 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	}
 
 
-	delete speechUni;
+	safedelete(speechUni);
 	pc->resetSpeechCurrent();
 	if( speechGhostUni!=NULL )
-		delete speechGhostUni;
+		safedelete(speechGhostUni);
 
 	if ( buffer[socket][3] == 0 || buffer[socket][3] == 2) //speech type
 	{
