@@ -24,7 +24,7 @@ OBJFILES = nox-wizard.obj worldmain.obj addmenu.obj amx\amxcback.obj \
     encryption.obj fishing.obj amx\float.obj gamedate.obj globals.obj guild.obj \
     guildstones.obj gumps.obj house.obj html.obj item_array.obj itemid.obj \
     items.obj jail.obj logsystem.obj magic.obj map.obj data.obj \
-    mapstuff.obj mount.obj msgboard.obj network.obj \
+    mount.obj msgboard.obj network.obj \
     newbie.obj npcai.obj npcs.obj ntservice.obj nxw_utils.obj nxwgui.obj \
     nxwGump.obj nxwString.obj nxwStringList.obj object.obj packets.obj \
     particles.obj party.obj pointer.obj poll.obj race.obj raceability.obj \
