@@ -623,8 +623,31 @@ namespace Commands
 		VALIDATEPC(Me);
 
 		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
-		if(ISVALIDPI(pi))
+		if( ISVALIDPI(pi) )
 		{
+			
+			if( !Me->IsGMorCounselor() ) {
+
+				if( !pi->dye ) 
+					return;
+
+				P_ITEM outmost = pi->getOutMostCont();
+				SERIAL cont = outmost->getContSerial();
+				if( isCharSerial( cont ) ) {
+					if( cont!=Me->getSerial32() )
+						return;
+				}
+				else if( isItemSerial( cont ) ) {
+					P_ITEM backpack = Me->getBackpack();
+					if( ISVALIDPI( backpack ) && ( cont!=backpack->getSerial32() ) )
+						return;
+				}
+				else { //on ground
+					if( pi->magic==4 )
+						return;
+				}
+			}
+
 			color = ShortFromCharPtr(buffer[s] +7);
 
 
@@ -654,11 +677,10 @@ namespace Commands
 		}
 
 		P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +1);
-		if(ISVALIDPC(pc))
+		if( ISVALIDPC(pc) && Me->IsGMorCounselor() )
 		{
 			color = ShortFromCharPtr(buffer[s] +7);
 
-			if( !Me->IsGM() ) return; // Only gms dye characters
 
 			body = pc->GetBodyType();
 
