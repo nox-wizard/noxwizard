@@ -37,7 +37,7 @@ OBJFILES = nox-wizard.obj worldmain.obj addmenu.obj amx\amxcback.obj \
     weight.obj accounts.obj commands\tweaking.obj commands\privlevels.obj \
     commands\addremove.obj amxcore.obj amx_comp.obj amx_dbg.obj amxcons.obj \
     amx.obj extractionskills.obj archive.obj item.obj abstraction\endian.obj \
-    oldmenu.obj menu.obj
+    oldmenu.obj menu.obj organisation.obj
 RESFILES = xwgui.res
 MAINSOURCE = noxwizard.bpf
 RESDEPEN = $(RESFILES)
