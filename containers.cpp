@@ -239,7 +239,8 @@ SI16 cItem::getContGump()
 void cItem::putInto( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	pi->AddItem( this );
+//	pi->AddItem( this );  // Are you sure !?
+	AddItem(pi);
 }
 
 
