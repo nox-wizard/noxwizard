@@ -93,12 +93,14 @@ namespace pointers {
 	void showCharLocationMap();
 	void addCharToLocationMap( const P_CHAR who );
 	void delCharFromLocationMap( const P_CHAR who );
-	pCharVector* getCharsNearLocation( cObject* pObject, SI32 range, UI32 flags = 0 );
-	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags = 0, SERIAL self = INVALID );
+	pCharVector* getCharsNearLocation( cObject* pObject, UI32 range, UI32 flags = 0 );
+	pCharVector* getCharsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags = 0, SERIAL self = INVALID );
+
+	void showItemLocationMap();
 	void addItemToLocationMap( const P_ITEM what );
 	void delItemFromLocationMap( const P_ITEM what );
-	pItemVector* getItemsNearLocation( cObject* pObject, SI32 range, UI32 flags = 0 );
-	pItemVector* getItemsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags = 0, SERIAL self = INVALID );
+	pItemVector* getItemsNearLocation( cObject* pObject, UI32 range, UI32 flags = 0 );
+	pItemVector* getItemsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags = 0, SERIAL self = INVALID );
 #endif
 }
 

@@ -292,23 +292,17 @@ namespace pointers {
 	std::map<SERIAL, vector <P_ITEM> > pMultiItemMap;
 
 #ifdef SPAR_NEW_WR_SYSTEM
+	//
+	// Still one flaw to fix.
+	// When position of object is changed (e.g. through small) deleting objects will not work because
+	// they will not be found in the map
+	//
+	// Solution:
+	//	1.	Add coded xy coordinate to cObject and always use that one
+	//	2.	if object not found, walk through the map until it is found then delete it
+	//
 	typedef std::multimap< UI32, P_CHAR >	PCHARLOCATIONMAP;
 	typedef PCHARLOCATIONMAP::iterator	PCHARLOCATIONMAPIT;
-
-	PCHARLOCATIONMAP	pCharLocationMap;
-
-	static UI32 location2key( const Location& l );
-	static UI32 location2key( const UI32 x, const UI32 y );
-
-	static UI32 location2key( const Location& l )
-	{
-		return location2key( l.x, l.y );
-	}
-
-	static UI32 location2key( const UI32 x, const UI32 y )
-	{
-		return (x << 16) + y;
-	}
 
 	struct XY
 	{
@@ -316,25 +310,57 @@ namespace pointers {
 		UI32	y;
 	};
 
-	static XY upperLeft	;
-	static XY lowerRight	;
+	static XY 		upperLeft	;
+	static XY 		lowerRight	;
+	PCHARLOCATIONMAP	pCharLocationMap;
+
+	static UI32 locationTokey( const Location& l );
+	static UI32 locationToKey( const UI32 x, const UI32 y );
+	static void calculateBoundary( const UI32 x, const UI32 y, const UI32 range );
+
+	static UI32 locationToKey( const Location& l )
+	{
+		return locationToKey( l.x, l.y );
+	}
+
+	static UI32 locationToKey( const UI32 x, const UI32 y )
+	{
+		return (x << 16) + y;
+	}
+
+	static void calculateBoundary( const UI32 x, const UI32 y, const UI32 range )
+	{
+		if( x <= range )
+			upperLeft.x = 1;
+		else
+			upperLeft.x = x - range;
+
+		if( x + range > 6144 )
+			lowerRight.x = 6144;
+		else
+			lowerRight.x = x + range;
+
+		if( y <= range )
+			upperLeft.y = 1;
+		else
+			upperLeft.y = y - range;
+
+		if( y + range > 4096 )
+			lowerRight.y = 4096;
+		else
+			lowerRight.y = y + range;
+	}
 
 	void addCharToLocationMap( const P_CHAR who )
 	{
-		VALIDATEPC(who);
-		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
+		pCharLocationMap.insert( pair< UI32, P_CHAR >( locationToKey( who->getPosition() ), who ) );
 		//ConOut("addCharToWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
-		pCharLocationMap.insert( pair< UI32, P_CHAR >( key, who ) );
 	}
 
 	void delCharFromLocationMap( const P_CHAR who )
 	{
-		VALIDATEPC(who);
-		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
-
 		//ConOut("delCharFromWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
-
-		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( key );
+		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( locationToKey( who->getPosition() ) );
 
 		for( ; it.first != it.second; ++it.first )
 			if( it.first->second->getSerial32() == who->getSerial32() )
@@ -405,39 +431,21 @@ namespace pointers {
 		return pvCharsInRange;
 	}
 
-	pCharVector* getCharsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, SERIAL serial )
+	pCharVector* getCharsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags, SERIAL serial )
 	{
 		pCharVector* pvCharsInRange = 0;
 
-		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
+		if( x > 0 && x < 6145 && y > 0 && y < 4097 )
 		{
 			pvCharsInRange = new pCharVector();
 
-			if( x - range < 1 )
-				upperLeft.x = 1;
-			else
-				upperLeft.x = x - range;
-
-			if( x + range > 6144 )
-				lowerRight.x = 6144;
-			else
-				lowerRight.x = x + range;
-
-			if( y - range < 1 )
-				upperLeft.y = 1;
-			else
-				upperLeft.y = y - range;
-
-			if( y + range > 4096 )
-				lowerRight.y = 4096;
-			else
-				lowerRight.y = y + range;
+			calculateBoundary( x, y, range );
 
 			//ConOut( "getCharFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
 			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 
-			PCHARLOCATIONMAPIT it(  pCharLocationMap.lower_bound( ( upperLeft.x << 16 ) + upperLeft.y ) ),
-					   end( pCharLocationMap.upper_bound( ( lowerRight.x << 16 ) + lowerRight.y ));
+			PCHARLOCATIONMAPIT it(  pCharLocationMap.lower_bound( locationToKey( upperLeft.x,  upperLeft.y ) ) ),
+					   end( pCharLocationMap.upper_bound( locationToKey( lowerRight.x, lowerRight.y) ) );
 
 			LOGICAL select = false;
 
@@ -488,18 +496,14 @@ namespace pointers {
 
 	void addItemToLocationMap( const P_ITEM what )
 	{
-		VALIDATEPI(what);
-		UI32 key  = (what->getPosition().x << 16) +  what->getPosition().y;
 		//ConOut("addItemToWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
-		pItemLocationMap.insert( pair< UI32, P_ITEM >( key, what ) );
+		pItemLocationMap.insert( pair< UI32, P_ITEM >( locationToKey( what->getPosition() ), what ) );
 	}
 
 	void delItemFromLocationMap( const P_ITEM what )
 	{
-		VALIDATEPI(what);
-		UI32 key  = (what->getPosition().x << 16) +  what->getPosition().y;
 		//ConOut("delItemFromWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
-		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( key );
+		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( locationToKey( what->getPosition() ) );
 
 		for( ; it.first != it.second; ++it.first )
 			if( it.first->second->getSerial32() == what->getSerial32() )
@@ -514,7 +518,7 @@ namespace pointers {
 	}
 
 
-	pItemVector* getItemsNearLocation( cObject* pObject, SI32 range, UI32 flags )
+	pItemVector* getItemsNearLocation( cObject* pObject, UI32 range, UI32 flags )
 	{
 		pItemVector* 	pvItemsInRange	= 0;
 		LOGICAL		validCall	= false;
@@ -540,39 +544,21 @@ namespace pointers {
 		return pvItemsInRange;
 	}
 
-	pItemVector* getItemsNearLocation( SI32 x, SI32 y, SI32 range, UI32 flags, SERIAL serial )
+	pItemVector* getItemsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags, SERIAL serial )
 	{
 		pItemVector* pvItemsInRange;
 
-		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
+		if( x > 0 && x < 6145 && y > 0 && y < 4097 )
 		{
 			pvItemsInRange = new pItemVector();
 
-			if( x - range < 1 )
-				upperLeft.x = 1;
-			else
-				upperLeft.x = x - range;
-
-			if( x + range > 6144 )
-				lowerRight.x = 6144;
-			else
-				lowerRight.x = x + range;
-
-			if( y - range < 1 )
-				upperLeft.y = 1;
-			else
-				upperLeft.y = y - range;
-
-			if( y + range > 4096 )
-				lowerRight.y = 4096;
-			else
-				lowerRight.y = y + range;
+			calculateBoundary( x, y, range );
 
 			//ConOut( "getItemFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
 			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 
-			PITEMLOCATIONMAPIT it(  pItemLocationMap.lower_bound( ( upperLeft.x << 16 ) + upperLeft.y ) ),
-					   end( pItemLocationMap.upper_bound( ( lowerRight.x << 16 ) + lowerRight.y ));
+			PITEMLOCATIONMAPIT it(  pItemLocationMap.lower_bound( locationToKey( upperLeft.x,  upperLeft.y ) ) ),
+					   end( pItemLocationMap.upper_bound( locationToKey( lowerRight.x, lowerRight.y) ));
 
 			LOGICAL select = false;
 
@@ -600,6 +586,39 @@ namespace pointers {
 			}
 		}
 		return pvItemsInRange;
+	}
+
+	void showItemLocationMap()
+	{
+		PITEMLOCATIONMAPIT it( pItemLocationMap.begin() ), end( pItemLocationMap.end() );
+
+		ConOut( "--------------------------------\n" );
+		ConOut( "|      ITEM LOCATION MAP       |\n" );
+		ConOut( "--------------------------------\n" );
+		ConOut( "|   Key   | X  | Y  |  SERIAL  |\n" );
+		ConOut( "--------------------------------\n" );
+
+		UI32 	invalidCount	=  0;
+		SI32 	x	  	=  0;
+		SI32 	y		=  0;
+		SERIAL	serial		= INVALID;
+		for( ; it != end; ++it )
+		{
+			x = it->first >> 16;
+			y = it->first & 0x0000FFFF;
+			if( ISVALIDPI( it->second ) )
+				serial = it->second->getSerial32();
+			else
+			{
+				++invalidCount;
+				serial = INVALID;
+			}
+			ConOut( "|%10i|%4i|%4i|%10i|\n", it->first, x, y, serial );
+		}
+		ConOut( "--------------------------------\n" );
+		ConOut( "| entries in map : %10i  |\n", pItemLocationMap.size());
+		ConOut( "| invalid entries: %10i  |\n", invalidCount );
+		ConOut( "--------------------------------\n" );
 	}
 #endif
 	/*!
