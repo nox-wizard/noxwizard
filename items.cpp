@@ -433,14 +433,15 @@ void cItem::explode(NXWSOCKET  s)
 	if(!isInWorld())
 		return;
 
+	this->type=0; //needed for recursive explosion
+
 	//Luxor - recursive explosions!! :DD
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( getPosition(), 5, true );
     for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM p_nearbie=si.getItem();
 		if(ISVALIDPI(p_nearbie) && p_nearbie->type == ITYPE_POTION && p_nearbie->morey == 3) { //It's an explosion potion!
-    		if(rand()%2==1)
-				p_nearbie->explode(s);
+			p_nearbie->explode(s);
     	}
     }
 	//End Luxor recursive explosions
@@ -469,7 +470,6 @@ void cItem::explode(NXWSOCKET  s)
 		P_CHAR pc=sc.getChar();
 		if( ISVALIDPC(pc) ) {
 			pc->damage( dmg+(2-pc->distFrom(this)), DAMAGE_FIRE );
-			pc->sysmsg( "damage %i", dmg );
 		}
 	}
 
