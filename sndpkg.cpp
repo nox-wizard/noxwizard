@@ -98,16 +98,6 @@ void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt)
 //AoS/	Network->FlushBuffer(s);
 }
 
-void SndRemoveitem(SERIAL serial)
-{
-	NxwSocketWrapper sw;
-	sw.fillOnline();
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		SendDeleteObjectPkt(sw.getSocket(), serial);
-	}
-}
-
 void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It is used 1 time, perhaps replace it with the scriptable vers. :/
 {
 	UI08 shopgumpopen[7]={ 0x24, 0x00, };

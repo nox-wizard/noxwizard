@@ -18,14 +18,6 @@ termios termstate ;
 #endif
 unsigned int uiCurrentTime;
 
-UI32 VersionRecordSize = 20L;
-UI32 MultiRecordSize = 12L;
-UI32 LandRecordSize = 26L;
-UI32 TileRecordSize = 37L;
-UI32 MapRecordSize = 3L;
-UI32 MultiIndexRecordSize = 12L;
-UI32 StaticRecordSize = 7L;
-//  Should characters have expiration before delete
 
 unsigned short int doorbase[DOORTYPES]={
 0x0675, 0x0685, 0x0695, 0x06A5, 0x06B5, 0x06C5, 0x06D5, 0x06E5, 0x0839, 0x084C,
@@ -142,8 +134,6 @@ FILE *wscfile;
 unsigned int servcount;
 unsigned int startcount;
 
-unsigned char xcounter;
-unsigned char ycounter;
 int secure; // Secure mode
 
 
@@ -274,7 +264,6 @@ unsigned char clientDimension[MAXCLIENT];
 ///////////////////////////////////////////
 
  skill_st skillinfo[SKILLS+1];
- unitile_st xyblock[XYMAX];
  gmpage_st gmpages[MAXPAGES];
  gmpage_st counspages[MAXPAGES];
  std::multimap <int, tele_locations_st> tele_locations; //!< can't use a map here, so using a multimap with x as the key :(
@@ -323,21 +312,12 @@ char skilltitle[50];
 char prowesstitle[50];
 char *completetitle;
 char gettokenstr[256];
-char goldamountstr[10];
-char defaultpriv1str[2];
-char defaultpriv2str[2];
 
 namespace Unicode {
 char temp[TEMP_STR_SIZE];
 char temp2[TEMP_STR_SIZE];
 }
-//char temp3[TEMP_STR_SIZE];
-//char temp4[TEMP_STR_SIZE];
 
-char mapname[512], sidxname[512], statname[512], vername[512], tilename[512], multiname[512], midxname[512];
-char saveintervalstr[4];
-char hname[40];
-char scpfilename[32];//AntiChrist
 
 int dummy__; //!< dont touch ! nomen est omen !
 

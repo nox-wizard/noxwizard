@@ -17,6 +17,7 @@
 #define AFX_SNDPKG_H__D538CC68_E5B0_480A_9752_F00069A33137__INCLUDED_
 
 #include "particles.h"
+#include "typedefs.h"
 
 
 #if _MSC_VER >= 1000
@@ -26,7 +27,7 @@
 void SndAttackOK(NXWSOCKET  s, int serial);
 void SndDyevat(NXWSOCKET  s, int serial, short id);
 void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt);
-void SndRemoveitem(int serial);
+
 void SndShopgumpopen(NXWSOCKET  s, int serial);
 
 void soundeffect(NXWSOCKET s, UI16 sound);

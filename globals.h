@@ -49,12 +49,6 @@ extern struct teffect_st	*teffects;
 extern std::vector<std::string> clientsAllowed;
 extern class cRegion *mapRegions; //setup map regions Tauriel
 
-// - the below structure is for looking up items based on serial #
-// - item's serial, owner's serial, char's serial, and container's serial
-//extern lookuptr_st ownsp[HASHMAX]; //spawnsp[HASHMAX];
-//extern lookuptr_st cownsp[HASHMAX]; //cspawnsp[HASHMAX];
-//extern lookuptr_st imultisp[HASHMAX], cmultisp[HASHMAX]; /*glowsp[HASHMAX], stablesp[HASHMAX];*/
-
 extern  std::multimap <int, tele_locations_st> tele_locations; // can't use a map here :(
 // Profiling
 extern int networkTime;
@@ -71,14 +65,6 @@ extern begging_st begging_data;
 extern fishing_st fishing_data;
 extern spiritspeak_st spiritspeak_data;
 extern speed_st speed;//Lag Fix -- Zippy
-
-extern UI32 VersionRecordSize;
-extern UI32 MultiRecordSize;
-extern UI32 LandRecordSize;
-extern UI32 TileRecordSize;
-extern UI32 MapRecordSize;
-extern UI32 MultiIndexRecordSize;
-extern UI32 StaticRecordSize;
 
 
 extern char n_scripts[NUM_SCRIPTS][512] ; // array of script filenames
@@ -144,7 +130,6 @@ extern char xoutbuffer[MAXBUFFER*5];
 
 
 
-extern unitile_st xyblock[XYMAX];
 extern gmpage_st gmpages[MAXPAGES];
 extern gmpage_st counspages[MAXPAGES];
 extern skill_st skillinfo[SKILLS+1];
@@ -190,9 +175,6 @@ extern char skilltitle[50];
 extern char prowesstitle[50];
 extern char *completetitle;
 extern char gettokenstr[256];
-extern char goldamountstr[10];
-extern char defaultpriv1str[2];
-extern char defaultpriv2str[2];
 
 #define TEMP_STR_SIZE 1024
 
@@ -201,13 +183,7 @@ extern char temp[TEMP_STR_SIZE];
 extern char temp2[TEMP_STR_SIZE];
 }
 
-extern char temp3[1024];
-extern char temp4[1024];
 
-extern char mapname[512], sidxname[512], statname[512], vername[512], tilename[512], multiname[512], midxname[512];
-extern char saveintervalstr[4];
-extern char hname[40];
-extern char scpfilename[32];//AntiChrist
 
 
 ////////////////////////////////
@@ -282,8 +258,6 @@ extern unsigned int startcount;
 
 
 
-extern unsigned char xcounter;
-extern unsigned char ycounter;        //x&y counter used for placing deleted items and chars
 extern int secure; // Secure mode
 
 extern unsigned char season;

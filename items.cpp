@@ -627,7 +627,13 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 {
 	
 	VALIDATEPIR(pItem,false);
-	SndRemoveitem( pItem->getSerial32() );
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pItem );
+	for( sw.rewind(); !sw.isEmpty(); sw++ )
+		SendDeleteObjectPkt(sw.getSocket(), pItem->getSerial32() );
+
+
 	if (xx!=-1)	// use the given position
 	{
 		pItem->setContSerial( getSerial32() );
@@ -1265,26 +1271,6 @@ SI16 cContainerItem::getGumpType()
 	default: 
 		return -1;
 	}
-}
-
-LOGICAL cContainerItem::addItem(P_ITEM pItem, SI16 x/*= -1*/, SI16 y/*= -1*/)
-{
-	pItem->setContSerial( getSerial32() );
-	if( (x!=-1) && (y!=-1) )	// use the given position
-	{
-		pItem->setPosition(x, y, 9);
-	}
-	else		// no pos given
-	{
-		if( !pileItem(pItem) )
-			setRandPos(pItem);
-	}
-
-	ItemList.push_back( pItem->getSerial32() );
-	SndRemoveitem( pItem->getSerial32() );
-	pItem->Refresh();
-	return true;
-
 }
 
 LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the container to stack with

@@ -2443,8 +2443,6 @@ void SetGlobalVars()
 	donpcupdate=0;
 	wtype=0;
 
-	xcounter=0;
-	ycounter=0;
 	executebatch=0;
 	g_nShowLayers=false;
 	ConOut(" [ OK ]\n");

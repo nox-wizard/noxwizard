@@ -344,8 +344,15 @@ void sellaction(NXWSOCKET s)
 			else
 			{
 				if(ISVALIDPI(npb)) {
+					NxwSocketWrapper sw;
+					sw.fillOnline( pSell );
+
+					for( sw.rewind(); !sw.isEmpty(); sw++ )
+					{
+						SendDeleteObjectPkt( sw.getSocket(), pSell->getSerial32() );
+					}
+
 					pSell->setContSerial( npb->getSerial32() );
-					SndRemoveitem( pSell->getSerial32() );
 					if (pSell->amount!=amt)
 						Commands::DupeItem(s, DEREF_P_ITEM(pSell), pSell->amount-amt);
 				}

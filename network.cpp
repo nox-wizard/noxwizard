@@ -2042,10 +2042,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				// even on re-logins
 				case PACKET_CLIENT_VERSION: 	// client version control system (LB)
 
-					char temp3[TEMP_STR_SIZE];
-					strcpy((char*)temp3,(char*) &buffer[s][3]); // copy client version data
-					if ( strlen (temp3) > 10) clientDimension[s] = 3; else clientDimension[s] = 2;
-					sysmessage(s,TRANSLATE("You are using a %iD client, version %s"), clientDimension[s], temp3);
+					char clientNumber[TEMP_STR_SIZE];
+					strcpy((char*)clientNumber,(char*) &buffer[s][3]); // copy client version data
+					if ( strlen (clientNumber) > 10) clientDimension[s] = 3; else clientDimension[s] = 2;
+					sysmessage(s,TRANSLATE("You are using a %iD client, version %s"), clientDimension[s], clientNumber);
 
 					viter = find(clientsAllowed.begin(), clientsAllowed.end(), "ALL");
 					if ( viter != clientsAllowed.end() ) break; // ALL mode found/activated -> quit
@@ -2053,7 +2053,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					viter = find(clientsAllowed.begin(), clientsAllowed.end(), "SERVER_DEFAULT");
 					if ( viter != clientsAllowed.end() )  // server_default mode ?
 					{
-						if ( strcmp( temp3, SUPPORTED_CLIENT) ) // check if client version matches
+						if ( strcmp( clientNumber, SUPPORTED_CLIENT) ) // check if client version matches
 						{
 							Disconnect(s);
 							break;
@@ -2062,7 +2062,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					}
 					else
 					{
-				   		cpps.assign(temp3);
+				   		cpps.assign(clientNumber);
 				   		viter = find(clientsAllowed.begin(), clientsAllowed.end(), cpps);
 				   		if (viter != clientsAllowed.end() ) break; else
 						{

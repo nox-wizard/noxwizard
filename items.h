@@ -448,7 +448,6 @@ private:
 
 public:
 						cContainerItem(LOGICAL ser= true);
-	LOGICAL				addItem(P_ITEM pItem, SI16 x= -1, SI16 y= -1);
 	UI32				removeItems(UI32 scriptID, UI32 amount/*= 1*/);
 	void				dropItem(P_ITEM pi);
 	UI32				countItems(UI32 scriptID, LOGICAL bAddAmounts= false);

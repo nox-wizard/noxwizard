@@ -646,12 +646,16 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			}
 		}
 
+		NxwSocketWrapper sws;
+		sws.fillOnline( pi );
+		for( sws.rewind(); !sws.isEmpty(); sws++ )
+			SendDeleteObjectPkt( sws.getSocket(), pi->getSerial32() );
+
 		pi->layer=buffer[s][5];
 		pi->setContSerial(LongFromCharPtr(buffer[s] +6));
 
 		if (g_nShowLayers) InfoOut("Item equipped on layer %i.\n",pi->layer);
 
-		SndRemoveitem( pi->getSerial32() );
 		wearIt(s,pi);
 
 		NxwSocketWrapper sw;
@@ -1014,20 +1018,17 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 			else
 			{
                                 //<Luxor>: secure trade
-                                P_ITEM tradeCont = tradestart(pc_currchar, pTC);
-                                if (ISVALIDPI(tradeCont)) {
-                                        pi->setCont(tradeCont);
-                                        pi->setPosition(30, 30, 9);
-                                        SndRemoveitem(pi->getSerial32());
-                                        pi->Refresh();
-                                } else {
-                                        Sndbounce5(s);
-                                        if (ps->isDragging()) {
-                        			ps->resetDragging();
-                        			UpdateStatusWindow(s,pi);
-                	        	}
-                                }
-                                //</Luxor>
+                 P_ITEM tradeCont = tradestart(pc_currchar, pTC);
+                 if (ISVALIDPI(tradeCont)) {
+                    tradeCont->AddItem( pi, 30, 30 );
+                 } else {
+                    Sndbounce5(s);
+                    if (ps->isDragging()) {
+                 		ps->resetDragging();
+                 		UpdateStatusWindow(s,pi);
+                   	}
+                 }
+                 //</Luxor>
 		        }
 	        }
 	}
@@ -1145,6 +1146,12 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 		}
         //</Luxor>
 		*/
+		NxwSocketWrapper sw;
+		sw.fillOnline( pi );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			SendDeleteObjectPkt( sw.getSocket(), pi->getSerial32() );
+		}
 
 		pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc);
 		pi->setContSerial(-1);
@@ -1156,12 +1163,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 			pi->SetMultiSerial(p_boat->getSerial32());
 		}
 
-//		if (pi->glow)
-//		{
-//			pc->removeHalo(pi);
-//			pc->glowHalo(pi);
-//		}
-		SndRemoveitem( pi->getSerial32() );
+
 		pi->Refresh();
 	}
 	else
@@ -1250,14 +1252,6 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	Location charpos= pc->getPosition();
 
 	P_ITEM pack;
-
-//	serial=pp->Tserial;
-//	if(serial==-1) abort=true;
-//	serhash=serial%HASHMAX;
-
-//	serial=pp->Iserial;
-//	if(serial==-1) abort=true;
-//	serhash=serial%HASHMAX;
 
 	P_ITEM pCont = pointers::findItemBySerial(pp->Tserial);
 	VALIDATEPI(pCont);
@@ -1505,19 +1499,18 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			}
 			else
 			{
-				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
 				{
-#ifdef SPAR_I_LOCATION_MAP
-					pointers::delFromLocationMap(pItem);
-#else
+					NxwSocketWrapper sw;
+					sw.fillOnline( pItem->getPosition() );
+					for( sw.rewind(); !sw.isEmpty(); sw++ )
+						SendDeleteObjectPkt(sw.getSocket(), pItem->getSerial32() );
 					mapRegions->remove(pItem);
-#endif
 				}
-
+				
+				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				pItem->setContSerial( pCont->getContSerial() );
 
-				SndRemoveitem( pItem->getSerial32() );
 				pItem->Refresh();
 			}
 
