@@ -239,11 +239,7 @@ SI16 cItem::getContGump()
 void cItem::putInto( P_ITEM pi )
 {
 	VALIDATEPI(pi);
-	if( this->ContainerPileItem(pi)==INVALID ) { // try to pile
-		pi->setCont(this);
-		pi->SetRandPosInCont(this);
-		pi->Refresh();
-	}
+	pi->AddItem( this );
 }
 
 
