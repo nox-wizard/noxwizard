@@ -110,11 +110,11 @@ class cNetwork
 		void pSplit(char *pass0);
 		void sockInit();
 		void ActivateFeatures(NXWSOCKET s);
-#ifdef ENCRYPTION
+// #ifdef ENCRYPTION
 		unsigned char calculateLoginKey(unsigned char loginKey [4], unsigned char packetId );
 		ClientCrypt * clientCrypter[MAXCLIENT+1]; //! save crypter per client socket
 		unsigned char clientSeed[MAXCLIENT+1][4]; 
-#endif
+// #endif
 };
 
 extern class cNetwork	*Network;

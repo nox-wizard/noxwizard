@@ -1314,7 +1314,7 @@ public:
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
 	*/
-#ifdef ENCRYPTION
+// #ifdef ENCRYPTION
 //@{
 /*!
 \name crypt
@@ -1331,7 +1331,7 @@ public:
 		ClientCrypt * crypter;
 
 //@}
-#endif
+// #endif
 } PACK_NEEDED;
 
 
