@@ -952,55 +952,82 @@ void cTempfx::executeExpireCode()
 */
 void cTempfx::activate()
 {
-	P_CHAR src = pointers::findCharBySerial(m_nSrc);
-	P_CHAR dest = pointers::findCharBySerial(m_nDest);
-
-	if ( !ISVALIDPC(dest) ) return;
+	cObject *src, *dest;
+	if ( isCharSerial(m_nSrc))
+	{
+		P_CHAR pc_src = pointers::findCharBySerial(m_nSrc);
+		src=pc_src;
+	}
+	else
+	{
+		P_ITEM pi_src = pointers::findItemBySerial(m_nSrc);
+		src=pi_src;
+	}
+	if ( isCharSerial(m_nDest))
+	{
+		P_CHAR pc_dest = pointers::findCharBySerial(m_nDest);
+		dest=pc_dest;
+	}
+	else
+	{
+		P_ITEM pc_dest = pointers::findItemBySerial(m_nDest);
+		dest=pc_dest;
+	}
 
 	switch(m_nNum)
 	{
 		case SPELL_PARALYZE:
-			dest->freeze();
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->freeze();
 			break;
 
 		case SPELL_LIGHT:
-			dest->fixedlight = worldbrightlevel;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->fixedlight = worldbrightlevel;
 			break;
 
 		case SPELL_CLUMSY:
-			dest->dx -= m_nMore1;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->dx -= m_nMore1;
 			break;
 
 		case SPELL_FEEBLEMIND:
-			dest->in -= m_nMore1;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->in -= m_nMore1;
 			break;
 
 		case SPELL_WEAKEN:
-			dest->modifyStrength(-m_nMore1);
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->modifyStrength(-m_nMore1);
 			break;
 
 		case SPELL_AGILITY:
-			dest->dx += m_nMore1;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->dx += m_nMore1;
 			break;
 
 		case SPELL_STRENGHT:
-			dest->modifyStrength(m_nMore1);
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->modifyStrength(m_nMore1);
 			break;
 
 		case SPELL_CUNNING:
-			dest->in += m_nMore1;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->in += m_nMore1;
 			break;
 
 		case SPELL_BLESS:
-			dest->modifyStrength(m_nMore1);
-			dest->dx += m_nMore2;
-			dest->in += m_nMore3;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->modifyStrength(m_nMore1);
+			((P_CHAR)dest)->dx += m_nMore2;
+			((P_CHAR)dest)->in += m_nMore3;
 			break;
 
 		case SPELL_CURSE:
-			dest->modifyStrength(-m_nMore1);
-			dest->dx -= m_nMore2;
-			dest->in -= m_nMore3;
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->modifyStrength(-m_nMore1);
+			((P_CHAR)dest)->dx -= m_nMore2;
+			((P_CHAR)dest)->in -= m_nMore3;
 			break;
 
 		case SPELL_INVISIBILITY:
@@ -1011,15 +1038,18 @@ void cTempfx::activate()
 			break;
 
 		case GREY:
-			dest->setGreyFlag(false);
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->setGreyFlag(false);
 			break;
 
 		case CRIMINAL:
-			dest->SetCriminal();
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->SetCriminal();
 			break;
 
 		case SPELL_TELEKINESYS:
-			dest->setTelekinesisFlag(false);
+			if ( !ISVALIDPC(dest) ) return;
+			((P_CHAR)dest)->setTelekinesisFlag(false);
 			break;
 
 		default:
@@ -1034,57 +1064,73 @@ void cTempfx::activate()
 */
 void cTempfx::deactivate()
 {
-	P_CHAR src = pointers::findCharBySerial(m_nSrc);
-	P_CHAR dest = pointers::findCharBySerial(m_nDest);
-
-	if ( !ISVALIDPC(dest) )
-		return;
+	cObject *src, *dest;
+	if ( isCharSerial(m_nSrc))
+	{
+		P_CHAR pc_src = pointers::findCharBySerial(m_nSrc);
+		src=pc_src;
+	}
+	else
+	{
+		P_ITEM pi_src = pointers::findItemBySerial(m_nSrc);
+		src=pi_src;
+	}
+	if ( isCharSerial(m_nDest))
+	{
+		P_CHAR pc_dest = pointers::findCharBySerial(m_nDest);
+		dest=pc_dest;
+	}
+	else
+	{
+		P_ITEM pc_dest = pointers::findItemBySerial(m_nDest);
+		dest=pc_dest;
+	}
 
 	switch(m_nNum)
 	{
 		case SPELL_PARALYZE:
-			if (dest->isFrozen())
-				dest->unfreeze( true );
+			if (((P_CHAR)dest)->isFrozen())
+				((P_CHAR)dest)->unfreeze( true );
 			break;
 
 		case SPELL_LIGHT:
-			dest->fixedlight = 0xFF;
+			((P_CHAR)dest)->fixedlight = 0xFF;
 			break;
 
 		case SPELL_CLUMSY:
-			dest->dx += m_nMore1;
+			((P_CHAR)dest)->dx += m_nMore1;
 			break;
 
 		case SPELL_FEEBLEMIND:
-			dest->in += m_nMore1;
+			((P_CHAR)dest)->in += m_nMore1;
 			break;
 
 		case SPELL_WEAKEN:
-			dest->modifyStrength(m_nMore1);
+			((P_CHAR)dest)->modifyStrength(m_nMore1);
 			break;
 
 		case SPELL_AGILITY:
-			dest->dx -= m_nMore1;
+			((P_CHAR)dest)->dx -= m_nMore1;
 			break;
 
 		case SPELL_STRENGHT:
-			dest->modifyStrength(-m_nMore1);
+			((P_CHAR)dest)->modifyStrength(-m_nMore1);
 			break;
 
 		case SPELL_CUNNING:
-			dest->in -= m_nMore1;
+			((P_CHAR)dest)->in -= m_nMore1;
 			break;
 
 		case SPELL_BLESS:
-			dest->modifyStrength(-m_nMore1);
-			dest->dx -= m_nMore2;
-			dest->in -= m_nMore3;
+			((P_CHAR)dest)->modifyStrength(-m_nMore1);
+			((P_CHAR)dest)->dx -= m_nMore2;
+			((P_CHAR)dest)->in -= m_nMore3;
 			break;
 
 		case SPELL_CURSE:
-			dest->modifyStrength(m_nMore1);
-			dest->dx += m_nMore2;
-			dest->in += m_nMore3;
+			((P_CHAR)dest)->modifyStrength(m_nMore1);
+			((P_CHAR)dest)->dx += m_nMore2;
+			((P_CHAR)dest)->in += m_nMore3;
 			break;
 
 		case SPELL_INVISIBILITY:
@@ -1095,14 +1141,14 @@ void cTempfx::deactivate()
 			break;
 
 		case GREY:
-			dest->setGreyFlag(false);
+			((P_CHAR)dest)->setGreyFlag(false);
 			break;
 
 		case CRIMINAL:
-			dest->SetInnocent();
+			((P_CHAR)dest)->SetInnocent();
 			break;
 		case SPELL_TELEKINESYS:
-			dest->setTelekinesisFlag(false);
+			((P_CHAR)dest)->setTelekinesisFlag(false);
 			break;
 
 		default:
