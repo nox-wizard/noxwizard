@@ -1836,11 +1836,13 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_STATUS_REQUEST:
-					if (buffer[s][5]==4)
-						statwindow(pc_currchar, pointers::findCharBySerPtr(buffer[s] +6));
-
-					if (buffer[s][5]==5) 
-						skillwindow(s);
+                                        if ( pc_currchar != NULL ) {
+						if (buffer[s][5]==4)
+							statwindow(pc_currchar, pointers::findCharBySerPtr(buffer[s] +6));
+							
+						if (buffer[s][5]==5) 
+							skillwindow(s);
+					}	
 					break;
 
 				case PACKET_RENAMECHARACTER: ///Lag Fix -- Zippy //Bug Fix -- Zippy
@@ -1908,11 +1910,13 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_SET_SKILL_LOCKS:
+					
 								// client 1.26.2b+ skill managment packet
 								// -> 0,1,2,3 -> ignore them
 								// -> 4 = skill number
 								// -> 5 = 0 raising (up), 1 falling=candidate for atrophy, 2 = locked
-					pc_currchar->lockSkill[buffer[s][4]]=buffer[s][5]; // save skill managment changes
+                                        if ( ISVALIDPC( pc_currchar ) )
+						pc_currchar->lockSkill[buffer[s][4]]=buffer[s][5]; // save skill managment changes
 					break;
 
 				case PACKET_REQUEST_TIP:
@@ -2075,10 +2079,12 @@ void cNetwork::GetMsg(int s) // Receive message from client
 							break;
 
 						case 9:	//Luxor: Wrestling Disarm Macro support
-							pc_currchar->setWresMove(WRESDISARM);
+                                                        if ( ISVALIDPC( pc_currchar ) )
+                                                        	pc_currchar->setWresMove(WRESDISARM);
 							break;
 						case 10: //Luxor: Wrestling Stun punch Macro support
-							pc_currchar->setWresMove(WRESSTUNPUNCH);
+                                                        if ( ISVALIDPC( pc_currchar ) )
+								pc_currchar->setWresMove(WRESSTUNPUNCH);
 							break;
 
 						case 11: // client language, might be used for server localisation
@@ -2095,7 +2101,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						case 12: break; // close gumps, client message
 
 				   		case 14: // UO:3D menus
-							pc_currchar->playAction(buffer[s][8]);
+                                                        if ( ISVALIDPC( pc_currchar ) )
+								pc_currchar->playAction(buffer[s][8]);
 					  		break;
 
 						case 15: break; // unknown, sent once on login
