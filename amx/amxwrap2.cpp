@@ -1545,6 +1545,13 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 					break;
 				case NXW_CP2_ACT :
 					pc->hp = value;
+					if ( value <= 0 )
+					{
+						pc->Kill();
+						if ( pc->npc)
+							pc->Delete();
+					}				
+						
 					break;
 				case NXW_CP2_EFF :
 					pc->setStrength(value);
