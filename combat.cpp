@@ -184,7 +184,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 
 		if (wresmove == WRESSTUNPUNCH) {
-			if (checkSkill(WRESTLING, 800, 1200, 1)) {
+			if ( ( !pc_def->onhorse ) && checkSkill(WRESTLING, 800, 1200, 1)) {
 				wresmove = 0;
 				tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
 			}
