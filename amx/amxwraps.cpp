@@ -5678,7 +5678,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_calcDef", _chr_calcDef },
  { "chr_fish", _chr_fish },
  { "chr_isOnline", _chr_isOnline },
- { "chr_isFrozen", _chr_isFrozen },
  { "chr_doCombatAction", _chr_doCombatAction },
  { "chr_stable", _chr_stable },
  { "chr_unStable", _chr_unStable },

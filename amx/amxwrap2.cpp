@@ -441,6 +441,12 @@ void setItemShortProperty(P_ITEM pi, int property, int prop2, short value )
 		case NXW_IP_S_DIR :			   //dec value :  402;
 			pi->dir = value;
 			break;
+		case NXW_IP_S_COLOR :
+			pi->setColor( value );
+			break;
+		case NXW_IP_S_ID :
+			pi->setId( value );
+			break;
 		default :
 			ErrOut("itm_setProperty called with invalid property %d!\n", property );
 			break;
@@ -451,12 +457,6 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 {
 	switch( property )
 	{
-		case NXW_IP_C_COLOR :					   		//dec value :  100;
-			if (prop2 > 1)
-				pi->color1 = value;
-			else
-				pi->color2 = value;
-			break;
 		case NXW_IP_C_DOORDIR :			   				//dec value :  103;
 			pi->doordir = value;
 			break;
@@ -477,12 +477,6 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 //			else
 //				pi->glow_c2 = value;
 //			break;
-		case NXW_IP_C_ID :				   			//dec value :  109;
-			if (prop2 > 1)
-				pi->id1 = value;
-			else
-				pi->id2 = value;
-			break;
 		case NXW_IP_C_LAYER :		   					//dec value :  110;
 			pi->layer = value;
 			break;
@@ -503,15 +497,6 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 			break;
 		case NXW_IP_C_VISIBLE : 						//dec value :  120;
 			pi->visible = value;
-			break;
-		case NXW_IP_C_CONTAINERSERIAL2:
-			switch(prop2)
-			{
-				case 1: pi->setContSerialByte(1, value); break;
-				case 2: pi->setContSerialByte(2, value); break;
-				case 3: pi->setContSerialByte(3, value); break;
-				case 4: pi->setContSerialByte(4, value); break;
-			} 
 			break;
 		case NXW_IP_C_MORE:
 			switch(prop2) {
@@ -546,38 +531,6 @@ void setItemCharProperty(P_ITEM pi, int property, int prop2, char value )
 			} 
 			break;
 
-		case NXW_IP_C_OWNERSERIAL2:
-			switch(prop2) {
-				case 1:
-					pi->setOwnerSerialByte(1, value);
-					break;
-				case 2:
-					pi->setOwnerSerialByte(2, value);
-					break;
-				case 3:
-					pi->setOwnerSerialByte(3, value);
-					break;
-				case 4:
-					pi->setOwnerSerialByte(4, value);
-					break;
-			} 
-			break;
-		case NXW_IP_C_SERIAL2:
-			switch(prop2) {
-				case 1:
-					pi->setSerialByte(1, value);
-					break;
-				case 2:
-					pi->setSerialByte(2, value);
-					break;
-				case 3:
-					pi->setSerialByte(3, value);
-					break;
-				case 4:
-					pi->setSerialByte(4, value);
-					break;
-			} 
-			break;
 		case NXW_IP_C_DAMAGETYPE :						//dec value: 121;
 			pi->damagetype = static_cast<DamageType>(value);
 			break;
@@ -745,6 +698,8 @@ short getItemShortProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_S_AMOUNT, pi->amount )   //dec value :  400;
 		CHECK(NXW_IP_S_AMOUNT2, pi->amount2 )   //dec value :  401;
 		CHECK(NXW_IP_S_DIR, pi->dir )   //dec value :  402;
+		CHECK(NXW_IP_S_COLOR, pi->color() )
+		CHECK(NXW_IP_S_ID, pi->id() )
 		default:
 			ErrOut("itm_getProperty called with invalid property %d!\n", property );
 			return INVALID;
@@ -755,12 +710,10 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 {
 	switch( property )
 	{
-		CHECK(NXW_IP_C_COLOR, (prop2>1) ? pi->color1 : pi->color2 )   		//dec value :  100;
 		CHECK(NXW_IP_C_CORPSE, pi->corpse )   		//dec value :  102;
 		CHECK(NXW_IP_C_DOORDIR, pi->doordir )   				//dec value :  103;
 		CHECK(NXW_IP_C_DOOROPEN, pi->dooropen )   				//dec value :  104;
 		CHECK(NXW_IP_C_DYE, pi->dye )   					//dec value :  105;
-		CHECK(NXW_IP_C_ID, (prop2>1) ? pi->id1 : pi->id2 )   			//dec value :  109;
 		CHECK(NXW_IP_C_LAYER, pi->layer )   					//dec value :  110;
 		CHECK(NXW_IP_C_MAGIC, pi->magic )   					//dec value :  111;
 		CHECK(NXW_IP_C_OFFSPELL, pi->offspell )   				//dec value :  114;
@@ -768,14 +721,6 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_C_PILEABLE, pi->pileable )   				//dec value :  117;
 		CHECK(NXW_IP_C_PRIV, pi->priv )   					//dec value :  118;
 		CHECK(NXW_IP_C_VISIBLE, pi->visible )					//dec value :  120;
-		case NXW_IP_C_CONTAINERSERIAL2:
-			switch(prop2)
-			{
-				case 1: return pi->getContSerialByte(1);
-				case 2: return pi->getContSerialByte(2);
-				case 3: return pi->getContSerialByte(3);
-				case 4: return pi->getContSerialByte(4);
-			}
 		case NXW_IP_C_MORE:
 			switch(prop2) {
 				case 1: return pi->more1;
@@ -789,20 +734,6 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 2: return pi->moreb2;
 				case 3: return pi->moreb3;
 				case 4: return pi->moreb4;
-			}
-		case NXW_IP_C_OWNERSERIAL2:
-			switch(prop2) {
-				case 1: return pi->getOwnerSerial().ser1;
-				case 2: return pi->getOwnerSerial().ser2;
-				case 3: return pi->getOwnerSerial().ser3;
-				case 4: return pi->getOwnerSerial().ser4;
-			}
-		case NXW_IP_C_SERIAL2:
-			switch(prop2) {
-				case 1: return pi->getSerial().ser1;
-				case 2: return pi->getSerial().ser2;
-				case 3: return pi->getSerial().ser3;
-				case 4: return pi->getSerial().ser4;
 			}
 		CHECK(NXW_IP_C_DAMAGETYPE, pi->damagetype)				//dec value :  121;
 		CHECK(NXW_IP_C_AUXDAMAGETYPE, pi->auxdamagetype)			//dec value :  122;
@@ -1012,6 +943,18 @@ void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubp
 		case NXW_CP_S_GUILDTYPE :				  		//dec value: 402;
 			pc->SetGuildType( value );
 			break;
+		case NXW_CP_S_ID :
+			pc->SetBodyType( value );
+			break;
+		case NXW_CP_S_SKIN :
+			pc->setSkinColor( value );
+			break;
+		case NXW_CP_S_XID :
+			pc->SetOldBodyType( value );
+			break;
+		case NXW_CP_S_XSKIN :
+			pc->setOldSkinColor( value );
+			break;
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
@@ -1050,21 +993,8 @@ void setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_C_HIDDEN :				  			//dec value: 110;
 			pc->hidden = value;
 			break;
-		case NXW_CP_C_ID :							//dec value: 111;
-			{
-			UI16 id = pc->GetBodyType();
-			if ( subproperty > 1 )
-				pc->SetBodyType((id & 0x00FF) | ( value << 8));
-			else
-				pc->SetBodyType((id & 0xFF00) | ( value %256));
-			}
-			break;
 		case NXW_CP_C_LOCKSKILL : 						//dec value: 112;
 			pc->lockSkill[subproperty] = value;
-			break;
-		case NXW_CP_C_MULTISERIAL2 :						//dec value: 113;
-			if ( subproperty >=1 && subproperty <= 4 )
-				pc->setMultiSerialByte( static_cast<UI32>(subproperty), value );
 			break;
 		case NXW_CP_C_NPC :							//dec value: 114;
 			pc->npc = value;
@@ -1078,11 +1008,6 @@ void setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_C_OLDNPCWANDER : 			  			//dec value: 117;
 			pc->oldnpcWander = value;
 			break;
-		//case NXW_CP_C_ORGSKIN : (prop2>1) ? &chars[i].orgskin1 : &chars[i].orgskin2 )  //dec value: 118;
-		case NXW_CP_C_OWNSERIAL2 :						//dec value: 119;
-			if ( subproperty >=1 && subproperty <= 4 )
-				pc->setOwnerSerialByte( static_cast<UI32>(subproperty), value );
-			break;
 		case NXW_CP_C_PRIV2 :				  			//dec value: 121;
 			pc->SetPriv2(value);
 			break;
@@ -1092,45 +1017,14 @@ void setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 		case NXW_CP_C_REGION : 				  			//dec value: 123;
 			pc->region = value;							//candidate for removal
 			break;
-		case NXW_CP_C_SERIAL2 :
-			if ( subproperty >=1 && subproperty <= 4 )
-				pc->setSerialByte( static_cast<UI32>(subproperty), value );
-			break;
 		case NXW_CP_C_SHOP :				 			//dec value: 125; Sparhawk: DEPRECIATED, use case NXW_CP_B_SHOPKEEPER : pc->shopkeeper )
 			pc->shopkeeper = value;
-			break;
-		case NXW_CP_C_SKIN : 							//dec value: 126;
-			{
-			UI16 color = pc->getSkinColor();
-			if ( subproperty > 1 )
-				pc->setSkinColor((color & 0x00FF) | (value << 8));
-			else
-				pc->setSkinColor((color & 0xFF00) | (value %256));
-			}
 			break;
 		case NXW_CP_C_SPEECH : 				  			//dec value: 127;
 			pc->speech = value;
 			break;
 		case NXW_CP_C_WAR :			  				//dec value: 128;
 			pc->war = value;
-			break;
-		case NXW_CP_C_XID :							//dec value: 129;
-			{
-			UI16 oldbody = pc->GetOldBodyType();
-			if ( subproperty > 1 )
-				pc->SetOldBodyType((oldbody & 0x00FF) | ( value << 8));
-			else
-				pc->SetOldBodyType((oldbody & 0xFF00) | ( value %256));
-			}
-			break;
-		case NXW_CP_C_XSKIN : 							//dec value: 130;
-			{
-			UI16 oldcolor = pc->getOldSkinColor();
-			if ( subproperty > 1 )
-				pc->setOldSkinColor((oldcolor & 0x00FF) | (value << 8));
-			else
-				pc->setOldSkinColor((oldcolor & 0xFF00) | (value %256));
-			}
 			break;
 		case NXW_CP_C_NXWFLAGS :						//dec value: 131;
 			pc->nxwflags[subproperty] = value;
@@ -1970,6 +1864,10 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_S_BASESKILL , pc->baseskill[prop2] )  		//dec value: 400;
 		CHECK(  NXW_CP_S_SKILL , pc->skill[prop2] )  			//dec value: 401;
 		CHECK(  NXW_CP_S_GUILDTYPE , pc->GetGuildType() )  		//dec value: 402;
+		CHECK(  NXW_CP_S_ID, pc->GetBodyType() )
+		CHECK(  NXW_CP_S_SKIN, pc->getSkinColor() )
+		CHECK(  NXW_CP_S_XID, pc->GetOldBodyType() )
+		CHECK(  NXW_CP_S_XSKIN, pc->getOldSkinColor() )
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return INVALID;
@@ -1989,43 +1887,17 @@ char getCharCharProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_C_FLY_STEPS , pc->fly_steps )  			//dec value: 108;
 		CHECK(  NXW_CP_C_GMRESTRICT , pc->gmrestrict )  		//dec value: 109;
 		CHECK(  NXW_CP_C_HIDDEN , pc->hidden )  			//dec value: 110;
-		CHECK(  NXW_CP_C_ID , (prop2>1) ? (pc->GetBodyType()>>8) : (pc->GetBodyType()%256) )  		//dec value: 111;
 		CHECK(  NXW_CP_C_LOCKSKILL , pc->lockSkill[prop2] )  		//dec value: 112;
-		case NXW_CP_C_MULTISERIAL2 :					//dec value: 113;
-			switch(prop2) {
-				case 1:		return pc->getMultiSerial().ser1;
-				case 2:		return pc->getMultiSerial().ser2;
-				case 3:		return pc->getMultiSerial().ser3;
-				default :	return pc->getMultiSerial().ser4;
-			}
 		CHECK(  NXW_CP_C_NPC , pc->npc )  				//dec value: 114;
 		CHECK(  NXW_CP_C_NPCTYPE , pc->npc_type )  			//dec value: 115;
 		CHECK(  NXW_CP_C_NPCWANDER , pc->npcWander )  			//dec value: 116;
 		CHECK(  NXW_CP_C_OLDNPCWANDER , pc->oldnpcWander )  		//dec value: 117;
-		//CHECK(  NXW_CP_C_ORGSKIN , (prop2>1) ? &chars[i].orgskin1 : &chars[i].orgskin2 )  //dec value: 118;
-		case NXW_CP_C_OWNSERIAL2 :					//dec value: 119;
-			switch(prop2) {
-				case 1: 	return pc->getOwnerSerial().ser1;
-				case 2: 	return pc->getOwnerSerial().ser2;
-				case 3: 	return pc->getOwnerSerial().ser3;
-				default : 	return pc->getOwnerSerial().ser4;
-			}
 		CHECK(  NXW_CP_C_PRIV2 , pc->GetPriv2() )  			//dec value: 121;
 		CHECK(  NXW_CP_C_REACTIVEARMORED , pc->ra )  			//dec value: 122;
 		CHECK(  NXW_CP_C_REGION , pc->region )  			//dec value: 123;
-		case NXW_CP_C_SERIAL2 :
-			switch(prop2) {
-				case 1:		return pc->getSerial().ser1;
-				case 2:		return pc->getSerial().ser2;
-				case 3:		return pc->getSerial().ser3;
-				default :	return pc->getSerial().ser4;
-			}
 		CHECK(  NXW_CP_C_SHOP , pc->shopkeeper )  			//dec value: 125; Sparhawk: DEPRECIATED, use CHECK(  NXW_CP_B_SHOPKEEPER , pc->shopkeeper )
-		CHECK(  NXW_CP_C_SKIN , (prop2>1) ? (pc->getSkinColor()>>8) : (pc->getSkinColor()%256) )  	//dec value: 126;
 		CHECK(  NXW_CP_C_SPEECH , pc->speech )  			//dec value: 127;
 		CHECK(  NXW_CP_C_WAR , pc->war )  				//dec value: 128;
-		CHECK(  NXW_CP_C_XID , (prop2>1) ? (pc->GetOldBodyType()>>8) : (pc->GetOldBodyType()%256) )  	//dec value: 129;
-		CHECK(  NXW_CP_C_XSKIN , (prop2>1) ? (pc->getOldSkinColor()>>8) : (pc->getOldSkinColor()%256) )  //dec value: 130;
 		CHECK(  NXW_CP_C_NXWFLAGS, pc->nxwflags[prop2])			//dec value: 131;
 		CHECK(  NXW_CP_I_RESISTS, pc->resists[prop2])			//dec value: 132;
 		CHECK(  NXW_CP_C_TRAININGPLAYERIN , pc->getSkillTaught() )  	//dec value: 133;
