@@ -130,8 +130,8 @@ warnings/errors/issues.
 
 
 #ifdef  _MSC_VER
+	#pragma pack(pop)
 	#ifndef STLPORT
-		#pragma pack(pop)
 		#pragma warning(disable: 4103)
 		#pragma warning(disable: 4786)
 		#define vsnprintf _vsnprintf
