@@ -2305,7 +2305,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 			 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
 			 {
 				//TODO!!!! fix it!
-				bolteffectUO3D(player);
+				bolteffectUO3D(DEREF_P_CHAR(this));
 				unsigned char particleSystem[49];
 				Xsend(j, particleSystem, 49);
 //AoS/				Network->FlushBuffer(j);
@@ -2665,8 +2665,6 @@ void cChar::possess(P_CHAR pc)
 
 	UI08 usTemp;
 	SI08 sTemp;
-	SI32 iTemp;
-	UI08 i;
 
 	//PRIV
 	usTemp = GetPriv();
@@ -3414,7 +3412,7 @@ void cChar::SetMurderer()
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 
-	flag=CHRFLAG_MURDERER;
+	flag=flagKarmaMurderer;
 }
 
 void cChar::SetInnocent()
@@ -3423,7 +3421,7 @@ void cChar::SetInnocent()
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
-	flag=CHRFLAG_INNOCENT;
+	flag=flagKarmaInnocent;
 }
 
 void cChar::SetCriminal()
@@ -3432,7 +3430,7 @@ void cChar::SetCriminal()
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
-	flag=CHRFLAG_CRIMINAL;
+	flag=flagKarmaCriminal;
 }
 
 void cChar::doSingleClickOnCharacter( SERIAL serial )
