@@ -1377,7 +1377,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	}
 
 	data::seekTile(pItem->getId(), tile);
-	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&!pc->canAllMove) ||
+	if (( ( (pItem->magic==2) || ( (tile.weight==255) && (pItem->magic != 1 ) ) ) && !pc->canAllMove()) ||
 				( (pItem->magic==3|| pItem->magic==4) && !(pItem->getOwnerSerial32()==pc->getSerial32())))
 	{
 		Sndbounce5(s);
