@@ -71,6 +71,7 @@ static bool Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 
 #define CASE(FUNC) else if( ( pi->FUNC() ) )
 #define CASEOR(A, B) else if( (pi->A())||(pi->B()) )
+static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack );
 /*!
 \brief Double click
 \author Ripper, rewrite by Endymion
@@ -335,10 +336,9 @@ void doubleclick(NXWCLIENT ps)
 	}
 	// end trigger stuff
 	// BEGIN Check items by type
-	
+
 	int los = 0;
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp2 var
+
 
 	BYTE map1[20] = "\x90\x40\x01\x02\x03\x13\x9D\x00\x00\x00\x00\x13\xFF\x0F\xFF\x01\x90\x01\x90";
 	BYTE map2[12] = "\x56\x40\x01\x02\x03\x05\x00\x00\x00\x00\x00";
@@ -519,7 +519,7 @@ void doubleclick(NXWCLIENT ps)
 			{
 				pc->sysmsg(TRANSLATE("The food was poisoned!"));
 				pc->applyPoison(PoisonType(pi->poisoned));
-				
+
 			}
 
 			pi->ReduceAmount(1);
@@ -624,7 +624,7 @@ void doubleclick(NXWCLIENT ps)
 			}	
 			pi->ReduceAmount(1);
 			pc->sysmsg( TRANSLATE("Gulp !"));
-			return; 
+			return;
 	case ITYPE_GUILDSTONE:
 			if ( pi->id() == 0x14F0  ||  pi->id() == 0x1869 )	// Check for Deed/Teleporter + Guild Type
 			{
@@ -674,6 +674,7 @@ void doubleclick(NXWCLIENT ps)
 			vendor->tamed = false;
 			pi->deleteItem();
 			vendor->teleport();
+			char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 			sprintf( temp, TRANSLATE("Hello sir! My name is %s and i will be working for you."), vendor->getCurrentNameC());
 			vendor->talk(s, temp, 0);
 
@@ -760,8 +761,13 @@ void doubleclick(NXWCLIENT ps)
 		return;
 	}
 
-	P_ITEM itm=NULL;
 	///BEGIN IDENTIFICATION BY ID ( RAW MODE, DEPRECATED )
+	doubleclick_itemid( s, pc, pi, pack );
+
+}
+
+static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
+{
 	switch (pi->id())
 	{
 		case 0x0FA9:// dye
@@ -936,7 +942,7 @@ void doubleclick(NXWCLIENT ps)
 					if (pi->isInWorld())
 						pFire->MoveTo( pi->getPosition() );
 					else
-						pFire->MoveTo( charpos );
+						pFire->MoveTo( pc->getPosition() );
 					pFire->setDecayTime();
 					pFire->Refresh();// AntiChrist
 					pi->ReduceAmount(1);
@@ -1037,8 +1043,11 @@ void doubleclick(NXWCLIENT ps)
 			return;
 		case 0x1057:
 		case 0x1058: // sextants
-			getSextantCoords(charpos.x, charpos.y, (charpos.x >= 5121), temp2);
-			pc->sysmsg(TRANSLATE("You are at: %s"), temp2);
+			{
+				char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp2 var
+				getSextantCoords( pc->getPosition().x, pc->getPosition().y, (pc->getPosition().x >= 5121), temp);
+				pc->sysmsg(TRANSLATE("You are at: %s"), temp);
+			}
 			return;
 		case 0x0E27:
 		case 0x0EFF:   // Hair Dye
@@ -1077,15 +1086,17 @@ void doubleclick(NXWCLIENT ps)
 		case 0x0C52:
 		case 0x0C53:
 		case 0x0C54: // cotton plants
-			if (!pc->isMounting())
-				pc->playAction(0x0D);
-			else
-				pc->playAction(0x1D);
-			pc->playSFX(0x013E);
-			itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
-			if (ISVALIDPI(itm)) {
-				itm->setCont(pc->getBackpack());	//Luxor
-				pc->sysmsg(TRANSLATE("You reach down and pick some cotton."));
+			{
+				if (!pc->isMounting())
+					pc->playAction(0x0D);
+				else
+					pc->playAction(0x1D);
+				pc->playSFX(0x013E);
+				P_ITEM itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
+				if (ISVALIDPI(itm)) {
+					itm->setCont(pc->getBackpack());	//Luxor
+					pc->sysmsg(TRANSLATE("You reach down and pick some cotton."));
+				}
 			}
 			return; // cotton
 		case 0x105B:
@@ -1165,6 +1176,7 @@ void doubleclick(NXWCLIENT ps)
 
 	pc->sysmsg( TRANSLATE("You can't think of a way to use that item."));
 }
+
 /*!
 \brief Single click
 \author Ripper
