@@ -343,7 +343,7 @@ void cFishing::Fish(CHARACTER i)
 			//{
 				//Luxor: fishes should be read from items.xss
 				//pFish=item::SpawnItem(i,1,"#",1,0x0900+idnum,(c1<<8)+c2,0);
-			P_ITEM fish = item::CreateFromScript(-1, 8108);
+			P_ITEM fish = item::CreateFromScript( "$item_fish" );
 			VALIDATEPI(fish);
 		
 			fish->setColor(color);

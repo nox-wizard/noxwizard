@@ -108,12 +108,12 @@ void newbieitems(P_CHAR pc)
 				}
 				else if (!strcmp("EQUIPITEM", script1))
 				{
-					storeval = str2num(script2);
-					P_ITEM pi = item::CreateFromScript(s, storeval);
+					P_ITEM pi = item::CreateFromScript( script2 );
 					if (ISVALIDPI(pi))
 					{
 						pi->priv |= 0x02; // Mark as a newbie item
 						pi->setCont(pc);
+						storeval = pi->getScriptID();
 					}
 					strcpy(script1, "DUMMY");
 				}

@@ -673,7 +673,7 @@ P_ITEM PlaceGuildStoneDeed( P_CHAR pChar, P_ITEM pDeed )
 		return 0;
 	}
 
-	P_ITEM pStone = item::CreateFromScript( s, pDeed->morex );
+	P_ITEM pStone = item::CreateFromScript( pDeed->morex );
 	if (!ISVALIDPI(pStone))
 	{
 		pChar->sysmsg(TRANSLATE("Cannot create guildstone"));
