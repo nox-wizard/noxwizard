@@ -293,7 +293,7 @@ cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigt
 	}
 	if ((trigtype==TRIGMODE_ENVOKED)||(trigtype==TRIGMODE_STATIC)) {
 		P_ITEM pi = pointers::findItemBySerial(m_pcCurrChar->envokeitem);
-		if (ISVALIDPI(pi)) {
+		if ( pi ) {
 			m_piEnvoked = pi;
 		} else  { //panic
 			m_pcCurrChar->sysmsg(TRANSLATE("That didn't seem to work."));
