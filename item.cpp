@@ -47,7 +47,7 @@ namespace item
 	/*!
 	\author Anthalir
 	*/
-	P_ITEM CreateFromScript(NXWSOCKET so, char *itemname)
+	P_ITEM CreateFromScript(NXWSOCKET so, char *itemname, cObject* cont)
 	{
 		int scid= xss::getIntFromDefine(itemname);
 		if( scid==0 )
@@ -55,7 +55,7 @@ namespace item
 			LogError("item '%s' is not defined in scripts", itemname);
 			return NULL;
 		}
-		return item::CreateFromScript(so, scid);
+		return item::CreateFromScript(so, scid, cont);
 	}
 
 	/*!
