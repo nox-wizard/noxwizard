@@ -289,7 +289,7 @@ cGuildMember::cGuildMember( SERIAL serial )
 {
 	toggle = GUILD_TOGGLE_ALL;
 	title = "Novice";
-	rank=NULL;
+	rank=0;
 	this->serial = serial;
 }
 
@@ -303,25 +303,24 @@ cGuildMember::~cGuildMember()
 void cGuildMember::load( cStringFile& file )
 {
 	do {
-
 		std::string l, r;
 
 		file.read( l, r );
-		if( l.size==0 )
+		if( l.size()==0 )
 			continue;
 
 		if( l[0]=='{' )
 			continue;
 		if( l[0]=='}' )
 			return;
-		
+
 		if( l=="TITLE" )
 			title=r;
 		else if( l=="TOGGLE" )
 			toggle=static_cast<GUILD_TITLE_TOGGLE>( str2num(r) );
 		else if( l=="RANK" )
 			rank=str2num(r);	
-		
+
 	}
 	while( true );
 }
@@ -357,7 +356,7 @@ void cGuildRecruit::load( cStringFile& file )
 		std::string l, r;
 		file.read( l, r );
 
-		if( l.size==0 )
+		if( l.size()==0 )
 			continue;
 
 		if( l[0]=='{' )
