@@ -374,9 +374,9 @@ CREATE( CharProfile, PKG_CHAR_PROFILE, 0x07 )
 SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	if( profile==NULL ) profile=&emptyUnicodeString;
-	this->size=this->headerSize +(title->size()+1) + profile->size() + staticProfile->size();
+	this->size=this->headerSize +(title.size()+1) + profile->size() + staticProfile->size();
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
-	Xsend( ps->toInt(), this->title->c_str(), title->size()+1 );
+	Xsend( ps->toInt(), this->title.c_str(), title.size()+1 );
 	Xsend( ps->toInt(), this->staticProfile->s.begin(), this->staticProfile->s.end() );
 	Xsend( ps->toInt(), this->profile->s.begin(), this->profile->s.end() );
 }

@@ -257,4 +257,33 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 
 }
 
+void profileStuff( NXWCLIENT ps, cPacketCharProfileReq& p )
+{
+	
+	if( ps==NULL ) return;
+	P_CHAR pc= ps->currChar();
+	VALIDATEPC( pc );
+	
+	P_CHAR who=pointers::findCharBySerial( p.chr.get() );
+	VALIDATEPC( who );
+
+	if( p.update ) { //update profile
+		if( ( who->getSerial32()!=pc->getSerial32() ) && !pc->IsGMorCounselor() ) 
+			return; //lamer fix
+		if( who->getProfile()==NULL ) 
+			who->setProfile( new cUnicodeString( p.profile ) );
+		else 
+			who->getProfile()->copy( &p.profile );
+	}
+	else { //only send
+		cPacketCharProfile resp;
+		resp.chr=p.chr;
+		resp.title+= who->getCurrentName();
+		resp.staticProfile = who->staticProfile;
+		resp.profile = who->getProfile();
+		resp.send( ps );
+
+	}
+					
+}
 

@@ -1715,7 +1715,7 @@ private:
 public:
 	eSERIAL chr;	//!< character
 
-	std::string* title;	//!< title
+	std::string title;	//!< title
 
 	cUnicodeString* staticProfile;	//!< static profile, cant be edited 
 	cUnicodeString* profile;	//!< profile, can be edited

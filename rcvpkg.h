@@ -15,7 +15,10 @@
 #ifndef __RCVPKG_H
 #define __RCVPKG_H
 
+#include "packets.h"
+
 void RcvAttack(NXWCLIENT ps);
 void AttackStuff (NXWSOCKET  s, P_CHAR victim);
+void profileStuff( NXWCLIENT ps, cPacketCharProfileReq& p );
 
 #endif
