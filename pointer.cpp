@@ -549,8 +549,8 @@ namespace pointers {
 			if( isCharSerial( objs.getSerial() ) ) {
 				pc=(P_CHAR)objs.getObject();
 				{
-					if( pc->stablemaster_serial != INVALID ) {
-						pStableMap[pc->stablemaster_serial].push_back(pc);
+					if( pc->isStabled() ) {
+						pStableMap[pc->getStablemaster()].push_back(pc);
 					}
 					if( pc->mounted )
 						pMounted[pc->getOwnerSerial32()]=pc;
@@ -617,7 +617,7 @@ namespace pointers {
 	void addToStableMap(P_CHAR pet)
 	{
 		VALIDATEPC(pet);
-		SERIAL stablemaster=pet->stablemaster_serial;
+		SERIAL stablemaster=pet->getStablemaster();
 		if( stablemaster !=INVALID ) {
 
 			delFromStableMap( pet );
@@ -632,7 +632,7 @@ namespace pointers {
 	void delFromStableMap(P_CHAR pet)
 	{
 		VALIDATEPC(pet);
-		SERIAL stablemaster=pet->stablemaster_serial;
+		SERIAL stablemaster=pet->getStablemaster();
 		if( stablemaster != INVALID ) {
 
 			std::map<SERIAL, vector <P_CHAR> >::iterator vect( pStableMap.find( stablemaster ) );
