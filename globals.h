@@ -184,7 +184,7 @@ extern int g_nCurrentSocket;
 
 
 // Global Variables
-extern unsigned int uiCurrentTime;
+extern unsigned long uiCurrentTime;
 extern unsigned int polyduration;
 
 

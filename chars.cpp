@@ -4485,13 +4485,11 @@ void cChar::pc_heartbeat()
 	{
 		doCombat();
 		// if char is in combat don't idle him out
-		clientidletime=SrvParms->inactivitytimeout*MY_CLOCKS_PER_SEC+uiCurrentTime;
 	}
 	else //if( TIMEOUT( timeout ) )
 	{
 		combatHit( pointers::findCharBySerial( swingtargserial ) );
 		// if char is in combat don't idle him out
-		clientidletime=SrvParms->inactivitytimeout*MY_CLOCKS_PER_SEC+uiCurrentTime;
 	}
 
 

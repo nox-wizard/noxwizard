@@ -16,7 +16,7 @@ server_st server_data;
 #if defined(__unix__)
 termios termstate ;
 #endif
-unsigned int uiCurrentTime;
+unsigned long uiCurrentTime;
 
 
 unsigned short int doorbase[DOORTYPES]={

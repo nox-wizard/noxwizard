@@ -467,6 +467,7 @@ void cChar::doCombat()
 	}
 
 	dist = distFrom(pc_def);
+	clientidletime=SrvParms->inactivitytimeout*MY_CLOCKS_PER_SEC+uiCurrentTime;
 
 	if ( amxevents[EVENT_CHR_ONDOCOMBAT] ) {
 		g_bByPass = false;
