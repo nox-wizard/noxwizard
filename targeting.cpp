@@ -818,17 +818,15 @@ static void CstatsTarget(NXWCLIENT client, P_CHAR pc_stats )
 static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
 {
 
+#pragma message( "MoveBelongingsToBp is written stupid and for what?" )
     P_ITEM pPack= pc->getBackpack();
     if (!pPack)
     {
-        P_ITEM pPack=item::SpawnItem(calcSocketFromChar(DEREF_P_CHAR(pc_2)),DEREF_P_CHAR(pc_2),1,"#",0,0x0E75,0,0,0);
+        P_ITEM pPack=item::CreateFromScript( "$item_backpack" );
         VALIDATEPI(pPack);
 		pc->packitemserial=pPack->getSerial32();
         //setserial(DEREF_P_ITEM(pPack),DEREF_P_CHAR(pc_2),4);
 		pPack->setContSerial(pc_2->getSerial32());
-        pPack->layer=0x15;
-        pPack->type=1;
-        pPack->dye=1;
     }
 
     NxwItemWrapper si;
@@ -1658,38 +1656,48 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	pi1->setDecayTime();
 	pi1->Refresh();
 
-	if (feat)
+	if(feat>0)
 	{
-		P_ITEM pi=item::SpawnItem(s,feat,"feather",1,0x1BD1,0,1,1);
+		P_ITEM pi=item::CreateFromScript( "$item_feathers", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setAmount( feat );
+		pi->Refresh();
 		sysmessage(s,TRANSLATE("You pluck the bird and get some feathers."));
 	}
-	if (ribs)
+	if(ribs>0)
 	{
-		P_ITEM pi=item::SpawnItem(s,ribs,"raw rib",1,0x09F1,0,1,1);
+		P_ITEM pi=item::CreateFromScript( "$item_cuts_of_raw_ribs", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setAmount( ribs );
+		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You carve away some meat."));
 	}
 
-	if (hides)
+	if(hides>0)
 	{
-		P_ITEM pi=item::SpawnItem(s,hides,"hide",1,0x1078,0,1,1);
+		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setAmount( hides );
+		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get the hides."));
 	}
-	if (fur)
-	{   // animals with fur now yield hides (OSI). Duke, 7/17/00
-		P_ITEM pi=item::SpawnItem(s,fur,"hide",1,0x1078,0,1,1);
+	if(fur>0)
+	{
+		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setAmount( fur );
+		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get the hides."));
 	}
-	if (wool)
+	if(wool>0)
 	{
-		P_ITEM pi=item::SpawnItem(s,wool,"unspun wool",1,0x0DF8,0,1);
+		P_ITEM pi=item::CreateFromScript( "$item_piles_of_wool", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setAmount( wool );
+		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get some unspun wool."));
 	}
-	if (bird)
+	if(bird>0)
 	{
 		P_ITEM pi=item::SpawnItem(s,bird,"raw bird",1,0x09B9,0,1,1);
 		VALIDATEPI(pi);
@@ -1738,6 +1746,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pc->IncreaseKarma(+ServerScp::g_nChopKarmaLoss);
 		pc->sysmsg(TRANSLATE("You lost some fame and karma!"));
 		setCrimGrey(pc, ServerScp::g_nChopWillCriminal);//Blue and not attacker and not guild
+
 		//create the Head
 		sprintf(temp,"the head of %s",pi3->getSecondaryNameC());
 		P_ITEM pi=item::SpawnItem(s,1,temp,0,0x1DA0,0,0,0);
@@ -1751,10 +1760,12 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->setSameOwnerAs(pi3);
 		pi->Refresh();
 
-		//create the Body
+		//create the Heart
 		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1CED,0,0,0);
+		pi=item::CreateFromScript( "$item_a_heart" );
 		VALIDATEPI(pi);
+		sprintf(temp,"the heart of %s",pi3->getSecondaryNameC());
+		pi->setCurrentName( temp );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1762,7 +1773,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		pi->setSameOwnerAs(pi3);  // see above
 		pi->Refresh();
 
-		//create the Heart
+		//create the Body
 		sprintf(temp,"the body of %s",pi3->getSecondaryNameC());
 		pi=item::SpawnItem(s,1,temp,0,0x1DAD,0,0,0);
 		VALIDATEPI(pi);
@@ -2058,7 +2069,7 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 		pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
 		pc->playSFX(0x013E);
 
-		const P_ITEM pi=item::SpawnItem(s,1,"#",1,0x0DE1,0,0,0); //Kindling
+		const P_ITEM pi=item::CreateFromScript( "$item_kindling" );
 		VALIDATEPI(pi);
 
 		pi->setPosition( pcpos );
@@ -2933,19 +2944,18 @@ void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change hou
 	NXWCLIENT osc=pc->getClient();
 	NXWSOCKET os= (osc!=NULL)? osc->toInt() : INVALID;
 
-	P_ITEM pi3=NULL;
+	P_ITEM pi3=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
+	VALIDATEPI(pi3);
+	pi3->setCurrentName( "a house key" );
 	if(os!=INVALID)
 	{
-		pi3=item::SpawnItem(os, DEREF_P_CHAR(pc), 1, "a house key", 0, 0x100F, 0,1,1);//gold key for everything else
-		VALIDATEPI(pi3);
+		pi3->setCont( pc->getBackpack() );
 	}
 	else
 	{
-		pi3=item::SpawnItem(DEREF_P_CHAR(pc), 1, "a house key", 0, 0x100F,0,0);//gold key for everything else
-		VALIDATEPI(pi3);
 		pi3->MoveTo( pc->getPosition() );
-		pi3->Refresh();
 	}
+	pi3->Refresh();
 	pi3->more1= pHouse->getSerial().ser1;
 	pi3->more2= pHouse->getSerial().ser2;
 	pi3->more3= pHouse->getSerial().ser3;
