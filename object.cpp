@@ -839,21 +839,21 @@ void cObject::tempfxOff()
 
 /*!
 \author Luxor
+\todo by endy, move temfx from vector to list
 */
 void cObject::checkTempfx()
 {
 	if ( !hasTempfx() )
 		return;
 
-	TempfxVector::iterator it( tempfx->begin() );
-        for ( ; it != tempfx->end(); it++ ) {
-                SI08 result = (*it).checkForExpire();
-                if ( result == 1 ) { // Tempfx has been executed
-			tempfx->erase( it );
-			it--;
-		} else if ( result == INVALID ) { // Tempfx has deleted the object!! Avoid Crash!
-			return;
-		}
+	for ( int i=0; i< tempfx->size(); i++ ) {
+		SI08 result = (*tempfx)[i].checkForExpire();
+		if ( result == 1 ) { // Tempfx has been executed
+			tempfx->erase( &(*tempfx)[i] );
+			i--;
+		} 
+		else if ( result == INVALID ) // Tempfx has deleted the object!! Avoid Crash!
+			return; //ndEndy not need delete this?
 	}
 }
 
