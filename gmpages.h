@@ -54,7 +54,7 @@ class cGmpagesMap{
 
 private:
 
-    static std::map< SERIAL, P_GMPAGE > gmpages_map; // all pages
+    static std::map< SERIAL, P_GMPAGE > gmpages_map; // SERIAL of the player. Contains all pages.
 
 public:
 	

@@ -105,7 +105,7 @@ P_GMPAGE cGmpagesMap::addPage(P_GMPAGE page){
 					return page;
 				}
 
-			else return NULL; //no pages can be added, first a gm should solve one.
+			else return NULL; //no page can be added, first a gm should solve one.
 			
 		}
 
@@ -202,6 +202,6 @@ void cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages index
 }
 
 
-   cGmpagesMap* pages = new cGmpagesMap(); //creation of the map
+   cGmpagesMap* pages = new cGmpagesMap(); // Creates the page map. 
 
 

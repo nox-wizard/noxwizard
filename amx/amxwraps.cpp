@@ -42,7 +42,7 @@
 #include "utils.h"
 #include "jail.h"
 #include "party.h"
-// #include "gmpages.h"
+#include "gmpages.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -5807,15 +5807,21 @@ NATIVE( _party_broadcast )
 \since 0.82
 \param 1 character
 \param 2 reason of the page
-\return NULL if the player already sent more than 3 pages
+\return false if the player already sent more than 3 pages
 */
 NATIVE ( _addGmPage )
-{
+{	
+	
+	extern cGmpagesMap* pages;
+	
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
-	// P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
-	//pages->addPage(page);
-	return NULL;
+    
+	P_GMPAGE page = new cGmpage(pc->getSerial32(), (char *)params[2]);
+	if (pages->addPage(page) == NULL )
+		return false;
+	return true;
+
 }
 
 /*!
@@ -5825,6 +5831,7 @@ NATIVE ( _addGmPage )
 */
 NATIVE ( _getGmPageList )
 {
+	//to be implemented
 	return NULL;
 }
 
@@ -5840,6 +5847,7 @@ NATIVE ( _getGmPageList )
 */
 NATIVE ( _chr_getGmPage )
 {
+	//to be implemented
 	return NULL;
 }
 
@@ -5852,7 +5860,15 @@ NATIVE ( _chr_getGmPage )
 */
 NATIVE ( _chr_solveGmPage )
 {
-	return NULL;
+	extern cGmpagesMap* pages;
+	
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
+	
+	if (pages->deletePage(pc->getSerial32(), (UI08) params[2] ) == false)
+		return NULL;
+	
+	return true;
 }
 
 /*!
