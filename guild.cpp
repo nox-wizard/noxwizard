@@ -55,11 +55,11 @@ void cGuild::safeoldsave()
 */
 cGuild::cGuild( P_ITEM pGuildStone, P_CHAR pChar )
 {
-	serial	= ((pGuildStone) ? pGuildStone->getSerial32() : INVALID );
-	name	= "unnamed guild";
-	abbreviation = "";
-	charter		= DEFAULTCHARTER;
-	type		= 0;
+	serial	= pGuildStone->getSerial32();
+	name = "unnamed guild";
+	abbreviation = "UNK";
+	charter = DEFAULTCHARTER;
+	type = GUILD_NORMAL;
 	webpage		= DEFAULTWEBPAGE;
 	if( pChar )
 	{
@@ -70,24 +70,6 @@ cGuild::cGuild( P_ITEM pGuildStone, P_CHAR pChar )
 		else
 			members[pChar->getSerial32()].setTitle("Guildmaster");
 	}
-}
-
-/*!
-\brief Copy constructor of cGuild
-*/
-cGuild::cGuild( const cGuild &copy )
-{
-	serial		= copy.serial;
-	name		= copy.name;
-	abbreviation	= copy.abbreviation;
-	charter		= copy.charter;
-	type		= copy.type;
-	webpage		= copy.webpage;
-	guildmaster	= copy.guildmaster;
-	members		= copy.members;
-	recruits	= copy.recruits;
-	war		= copy.war;
-	allied		= copy.allied;
 }
 
 /*!
@@ -143,7 +125,7 @@ cGuild::cGuild( SERIAL serial )
 							if( !strcmp( script1, "TITLE" ) )
 								members[ memberSerial ].setTitle( script2 );
 							else if( !strcmp( script1, "TOGGLE" ) )
-								members[ memberSerial ].setToggle( str2num( script2 ) );
+								members[ memberSerial ].setToggle( static_cast<GUILD_TITLE_TOGGLE>(str2num( script2 )) );
 						}
 						while( strcmp( script1, "}" ) );
 						pChar->setGuild( serial );
@@ -169,10 +151,11 @@ cGuild::cGuild( SERIAL serial )
 				if( !strcmp( script1, "RECRUIT" ) )
 				{
 					SERIAL recruitSerial = str2num( script2 );
-					recruits.push_back( str2num( script2 ) );
 					P_CHAR pChar = pointers::findCharBySerial( recruitSerial );
-					if( ISVALIDPC( pChar ) )
+					if( ISVALIDPC( pChar ) ) 
 					{
+						cGuildRecruit* recruit = new cGuildRecruit();
+
 						//
 						// Process recruit properties
 						//
@@ -184,13 +167,13 @@ cGuild::cGuild( SERIAL serial )
 							//
 						}
 						while( strcmp( script1, "}" ) );
+
+						recruits.insert( make_pair( recruitSerial, *recruit ) );
+
 					}
-					else
+					else // Skip recruit properties
 					{
-						//
-						// Skip recruit properties
-						//
-						do
+						do 
 						{
 							readw2();
 						}
@@ -202,7 +185,7 @@ cGuild::cGuild( SERIAL serial )
 			case 'T':
 			case 't':
 				if (!strcmp(script1, "TYPE"))
-					setType(str2num(script2));
+					setType( static_cast<GUILD_TYPE>(str2num(script2)));
 				break;
 			case 'W':
 			case 'w':
@@ -247,7 +230,7 @@ SERIAL cGuild::getSerial()
 */
 void cGuild::setName( const std::string &newName )
 {
-	this->name = newName.substr( 0, MAX_NAME_LENGTH );
+	name = newName.substr( 0, MAX_NAME_LENGTH );
 }
 
 /*!
@@ -257,7 +240,7 @@ void cGuild::setName( const std::string &newName )
 */
 std::string cGuild::getName()
 {
-	return this->name;
+	return name;
 }
 
 /*!
@@ -267,7 +250,7 @@ std::string cGuild::getName()
 */
 void cGuild::setAbbreviation( const std::string &newAbbr )
 {
-	this->abbreviation = newAbbr.substr( 0, MAX_ABBR_LENGTH );
+	abbreviation = newAbbr.substr( 0, MAX_ABBR_LENGTH );
 }
 
 /*!
@@ -277,7 +260,7 @@ void cGuild::setAbbreviation( const std::string &newAbbr )
 */
 std::string cGuild::getAbbreviation()
 {
-	return this->abbreviation;
+	return abbreviation;
 }
 
 /*!
@@ -287,7 +270,7 @@ std::string cGuild::getAbbreviation()
 */
 void cGuild::setCharter( const std::string &newCharter )
 {
-	this->charter = newCharter;
+	charter = newCharter;
 }
 
 /*!
@@ -297,7 +280,7 @@ void cGuild::setCharter( const std::string &newCharter )
 */
 std::string cGuild::getCharter()
 {
-	return this->charter;
+	return charter;
 }
 
 /*!
@@ -306,19 +289,9 @@ std::string cGuild::getCharter()
 \param newType the new guild type
 \return success
 */
-LOGICAL cGuild::setType( UI08 newType )
+void cGuild::setType( GUILD_TYPE newType )
 {
-	LOGICAL success = false;
-
-	if( newType > 2 )
-		this->type = 0;
-	else
-	{
-		this->type = newType;
-		success = true;
-	}
-	
-	return success;
+	type = newType;
 }
 
 /*!
@@ -326,9 +299,9 @@ LOGICAL cGuild::setType( UI08 newType )
 \author Endymion
 \return the guild type
 */
-UI08 cGuild::getType()
+GUILD_TYPE cGuild::getType()
 {
-	return this->type;
+	return type;
 }
 
 /*!
@@ -338,7 +311,7 @@ UI08 cGuild::getType()
 */
 void cGuild::setWebPage( const std::string &newWebPage )
 {
-	this->webpage = newWebPage;
+	webpage = newWebPage;
 }
 
 /*!
@@ -348,7 +321,7 @@ void cGuild::setWebPage( const std::string &newWebPage )
 */
 std::string cGuild::getWebPage()
 {
-	return this->webpage;
+	return webpage;
 }
 
 /*!
@@ -368,57 +341,25 @@ LOGICAL cGuild::isMember( P_CHAR pChar )
 /*!
 \brief Add a new guild member
 \author Endymion
-\return true/false
 \param pc the player
 */
-LOGICAL cGuild::addMember( P_CHAR pc )
+void cGuild::addMember( P_CHAR pc )
 {
-	VALIDATEPCR(pc, false);
-	LOGICAL success = false;
-	if( !pc->npc )
-	{
-		if( members.find( pc->getSerial32() ) == members.end() )
-		{
-			if( !pc->isGuilded() )
-			{
-				pc->setGuild( this->serial );
-				members[pc->getSerial32()].setTitle("Novice");
-				success = true;
-			}
-			else
-				LogError( "Rejected pc %d as member for guild %d. Pc is still a member of another guild", pc->getSerial32(), serial );
-		}
-		else
-			LogError( "Rejected pc %d as member for guild %d. Pc is allready a member of this guild", pc->getSerial32(), serial );
-	}
-	else
-		LogError("Rejected npc %d as member for guild %d. Feature not implemented", pc->getSerial32(), serial );
-	return success;
+
+	pc->setGuild( serial );
+	members.insert( make_pair( pc->getSerial32(), cGuildMember() ) );
+
 }
 
 /*!
 \brief Remove a guild member
 \author Endymion
 \param pc the player
-\note if are guildmaster can't be removed.. before change guildmaster :D
 */
-LOGICAL cGuild::resignMember( P_CHAR pc )
+void cGuild::resignMember( P_CHAR pc )
 {
-	LOGICAL success = false;
-
-	if( ISVALIDPC( pc ) )
-	{
-		if( pc->getGuild() == this->serial )
-		{
-			if( this->getGuildMaster()!=pc->getSerial32() )
-			{
-				pc->setGuild( INVALID );
-				members.erase(pc->getSerial32());
-				success = true;
-			}
-		}
-	}
-	return success;
+	pc->setGuild( INVALID );
+	members.erase( pc->getSerial32() );
 }
 
 
@@ -448,31 +389,11 @@ SERIAL cGuild::getGuildMaster()
 /*!
 \brief Add a new recruit
 \author Endymion
-\return true if pc accepted as recruit, false if not
 */
-LOGICAL cGuild::addNewRecruit( P_CHAR pc )
+void cGuild::addNewRecruit( P_CHAR recruit, P_CHAR recruiter )
 {
-	if( !pc->isGuilded() )
-	{
-		//
-		// Sparhawk: Let's make sure the pc is not allready a recruit
-		//
-		std::vector<SERIAL>::iterator iter( this->recruits.begin() ), end( this->recruits.end() );
-		while ( iter != end )
-		{
-			if( *iter == pc->getSerial32() )
-			{
-				ConOut("addNewRecruit: %s is allready a recruit\n", pc->getCurrentNameC());
-				return false;
-			}
-			else
-				++iter;
-		}
-		this->recruits.push_back( pc->getSerial32() );
-		return true;
-	}
-	ConOut("addNewRecuit: %s allready member of guild\n", pc->getCurrentNameC());
-	return false;
+	refuseRecruit( recruit );
+	recruits.insert( make_pair( recruit->getSerial32(), cGuildRecruit( recruit, recruiter ) ) );
 }
 
 /*!
@@ -480,17 +401,12 @@ LOGICAL cGuild::addNewRecruit( P_CHAR pc )
 \author Endymion
 \return pc the player
 */
-LOGICAL cGuild::refuseRecruit( P_CHAR pc )
+void cGuild::refuseRecruit( P_CHAR pc )
 {
-	std::vector<SERIAL>::iterator iter( this->recruits.begin() ), end( this->recruits.end() );
-	while ( iter != end ) {
-		if( *iter == pc->getSerial32() ) {
-			this->recruits.erase( iter );
-			return true;
-		}
-		++iter;
+	GUILDRECRUITMAP::iterator iter( recruits.find( pc->getSerial32() ) ), end( recruits.end() );
+	if( iter != end ) {
+		recruits.erase( iter );
 	}
-	return false;
 }
 
 /*!
@@ -500,8 +416,8 @@ LOGICAL cGuild::refuseRecruit( P_CHAR pc )
 */
 void cGuild::declareWar( SERIAL guild )
 {
-	if( !this->isInWar( guild ) )	{
-		this->war.push_back( guild );		
+	if( !isInWar( guild ) )	{
+		war.push_back( guild );		
 	}
 }
 
@@ -512,14 +428,7 @@ void cGuild::declareWar( SERIAL guild )
 */
 bool cGuild::isInWar( SERIAL guild )
 {
-	std::vector<SERIAL>::iterator iter( this->war.begin() ), end( this->war.end() );
-	while ( iter!= end ) {
-		if( *iter == guild ) {
-			return true;
-		}
-		++iter;
-	}
-	return false;
+	return ( find( war.begin(), war.end(), guild )!= war.end() );
 }
 
 /*!
@@ -529,13 +438,9 @@ bool cGuild::isInWar( SERIAL guild )
 */
 void cGuild::declarePeace( SERIAL guild )
 {
-	std::vector<SERIAL>::iterator iter( this->war.begin() ), end( this->war.end() );
-	while ( iter!= end ) {
-		if( *iter == guild ) {
-			this->war.erase( iter );
-			return;
-		}
-	}
+	std::vector<SERIAL>::iterator iter( find( war.begin(), war.end(), guild ) );
+	if( iter != war.end() )
+		war.erase( iter );
 }
 
 /*!
@@ -545,8 +450,8 @@ void cGuild::declarePeace( SERIAL guild )
 */
 void cGuild::declareAllied( SERIAL guild )
 {
-	if(!this->isAllied( guild ) )  {
-		this->allied.push_back( guild );
+	if(!isAllied( guild ) )  {
+		allied.push_back( guild );
 	}
 }
 
@@ -557,13 +462,7 @@ void cGuild::declareAllied( SERIAL guild )
 */
 bool cGuild::isAllied( SERIAL guild )
 {
-	std::vector<SERIAL>::iterator iter( this->allied.begin() ), end( this->allied.end() );
-	while ( iter!= end ) {
-		if( *iter == guild ) {
-			return true;
-		}
-	}
-	return false;
+	return ( find( allied.begin(), allied.end(), guild ) != allied.end() );
 }
 
 /*!
@@ -573,13 +472,9 @@ bool cGuild::isAllied( SERIAL guild )
 */
 void cGuild::declareNeutral( SERIAL guild )
 {
-	std::vector<SERIAL>::iterator iter( this->allied.begin() ), end( this->allied.end() );
-	while ( iter!= end ) {
-		if( *iter == guild ) {
-			this->allied.erase( iter );
-			return;
-		}
-	}
+	std::vector<SERIAL>::iterator iter( find( allied.begin(), allied.end(), guild ) );
+	if( iter != allied.end() )
+		war.erase( iter );
 }
 
 
@@ -594,16 +489,16 @@ void cGuild::declareNeutral( SERIAL guild )
 /*!
 \brief Contructor of cGuilded
 */
-cGuilded::cGuilded()
+cGuildMember::cGuildMember()
 {
-	setToggle( 0 );
-	setTitle("");
+	setToggle( GUILD_TOGGLE_ALL );
+	setTitle( "Novice" );
 }
 
 /*!
 \brief Destructor of cGuild
 */
-cGuilded::~cGuilded()
+cGuildMember::~cGuildMember()
 {
 }
 
@@ -613,9 +508,9 @@ cGuilded::~cGuilded()
 \param newTitle the new guilded title
 \todo define title length and code the check.
 */
-void cGuilded::setTitle( const std::string &newTitle )
+void cGuildMember::setTitle( const std::string &newTitle )
 {
-	this->title=newTitle;
+	title=newTitle;
 }
 
 /*!
@@ -623,9 +518,9 @@ void cGuilded::setTitle( const std::string &newTitle )
 \author Endymion
 \return the guilded title
 */
-std::string cGuilded::getTitle()
+std::string cGuildMember::getTitle()
 {
-	return this->title;
+	return title;
 }
 
 /*!
@@ -633,12 +528,9 @@ std::string cGuilded::getTitle()
 \author Endymion
 \param newToggle the new show title mode
 */
-void cGuilded::setToggle( UI08 newToggle )
+void cGuildMember::setToggle( GUILD_TITLE_TOGGLE newToggle )
 {
-	if( newToggle > 2 )
-		this->toggle = 0;
-	else
-		this->toggle = newToggle;
+	toggle = newToggle;
 }
 
 /*!
@@ -646,316 +538,19 @@ void cGuilded::setToggle( UI08 newToggle )
 \author Endymion
 \return the guilded title show mode
 */
-UI08 cGuilded::getToggle()
+GUILD_TITLE_TOGGLE cGuildMember::getToggle()
 {
-	return this->toggle;
+	return toggle;
 }
 
-
-
-//////////////////////////////////////////////
-///////////////GUILDSTONE STUFF///////////////
-//////////////////////////////////////////////
-
-P_ITEM PlaceGuildStoneDeed( P_CHAR pChar, P_ITEM pDeed )
-{
-	VALIDATEPCR(pChar, 0 );
-	VALIDATEPIR(pDeed, 0 );
-	NXWCLIENT ps = pChar->getClient();
-	if( !ps )
-		return 0;
-	NXWSOCKET s = ps->toInt();
-
-	if (pChar->isGuilded())
-	{
-		pChar->sysmsg(TRANSLATE("Resign from your guild before creating a new guild"));
-		pChar->objectdelay=0;
-		return 0;
-	}
-
-	P_ITEM pStone = item::CreateFromScript( pDeed->morex );
-	if (!ISVALIDPI(pStone))
-	{
-		pChar->sysmsg(TRANSLATE("Cannot create guildstone"));
-		pChar->objectdelay=0;
-		return 0;
-	}
-
-	SERIAL serial = pStone->getSerial32();
-
-	if( Guildz.find( serial ) )
-	{
-		pChar->sysmsg(TRANSLATE("Error: guild already exists"));
-		LogError("Duplicate guild serial %d in guild creation by player [%d] %s\n", serial, pChar->getSerial32(), pChar->getCurrentNameC());
-		return 0;
-	}
-
-	cGuild guild( pStone, pChar );
-	if( Guildz.insert( guild ) )
-	{
-		pStone->setPosition( pChar->getPosition() );
-		pStone->priv  = 0;
-		pStone->magic = 3;
-		pStone->Refresh();
-		pDeed->ReduceAmount(1);
-		return pStone;
-	}
-	else
-	{
-		pStone->ReduceAmount(1);
-		return 0;
-	}
-}
 
 
 cGuildz::cGuildz()
 {
-	setIndex( 0 );
 }
 
 cGuildz::~cGuildz()
 {
-}
-
-UI32 cGuildz::getError()
-{
-	return (UI32) error;
-}
-
-LOGICAL cGuildz::insert( cGuild &guild )
-{
-	SERIAL		key	= guild.getSerial();
-	std::string	name( guild.getName() );
-
-	if( !find( key ) )
-	{
-		if( !find( name ) )
-		{
-			guilds[ key ] = guild;
-			guildNames[ name ] = key;
-			error = GUILD_ERROR_NO_ERROR;
-		}
-		else
-			error = GUILD_ERROR_DUPLICATE_NAME;
-	}
-	else
-		error = GUILD_ERROR_DUPLICATE_SERIAL;
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-LOGICAL cGuildz::erase( SERIAL guild )
-{
-	if( find( guild ) )
-	{
-		guildNames.erase( fetch()->getName() );
-		guilds.erase( guild );
-		error = GUILD_ERROR_NO_ERROR;
-	}
-	else
-		error = GUILD_ERROR_INVALID_SERIAL;
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-LOGICAL cGuildz::erase( cGuild &guild )
-{
-	return erase( guild.getSerial() );
-}
-
-LOGICAL cGuildz::erase( cGuild *guild )
-{
-	return erase( guild->getSerial() );
-}
-
-LOGICAL cGuildz::update( cGuild &guild )
-{
-	SERIAL		key	= guild.getSerial();
-	std::string	name( guild.getName() );
-
-	if( find( key ) )
-	{
-		if( name != fetch()->getName() )
-		{
-			//
-			// The Guild name has changed
-			//
-			if( !find( name ) )
-			{
-				//
-				// The Guild name is unique
-				//
-				setIndex( 0 );
-				//
-				// Remove index entry for the old name
-				//
-				guildNames.erase( fetch()->getName() );
-				//
-				// Add index entry for the new name
-				//
-				guildNames[ name ] = key;
-				error = GUILD_ERROR_NO_ERROR;
-			}
-			else
-				//
-				// New guild name allready in use
-				//
-				error = GUILD_ERROR_DUPLICATE_NAME;
-		}
-		else
-			error = GUILD_ERROR_NO_ERROR;
-	}
-	else
-		error = GUILD_ERROR_INVALID_SERIAL;
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-LOGICAL cGuildz::update( cGuild *guild )
-{
-	return update( *guild );
-}
-
-LOGICAL cGuildz::find( SERIAL guild )
-{
-	setIndex( GUILD_INDEX_SERIAL );
-	guildsIterator = guilds.find( guild );
-	if( guildsIterator != guilds.end() )
-		error = GUILD_ERROR_NO_ERROR;
-	else
-		error = GUILD_ERROR_SERIAL_NOT_FOUND;
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-LOGICAL cGuildz::find( std::string &name )
-{
-	setIndex( GUILD_INDEX_NAME );
-	guildNamesIterator = guildNames.find( name );
-
-	if( guildNamesIterator != guildNames.end() )
-		error = GUILD_ERROR_NO_ERROR;
-	else
-		error = GUILD_ERROR_NAME_NOT_FOUND;
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-UI32 cGuildz::getIndex()
-{
-	error = GUILD_ERROR_NO_ERROR;
-	return (UI32) currentIndex;
-}
-
-LOGICAL cGuildz::setIndex( UI32 index )
-{
-	switch( index )
-	{
-		case GUILD_INDEX_SERIAL :
-		case GUILD_INDEX_NAME	:
-			currentIndex = (eGuildzIndex) index;
-			error = GUILD_ERROR_NO_ERROR;
-			break;
-		default			:
-			error = GUILD_ERROR_INVALID_INDEX;
-	}
-
-	return ( error == GUILD_ERROR_NO_ERROR );
-}
-
-void cGuildz::first()
-{
-	error = GUILD_ERROR_NO_ERROR;
-
-	switch( currentIndex )
-	{
-		case GUILD_INDEX_SERIAL :
-			if( ( guildsIterator = guilds.begin() ) == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-		case GUILD_INDEX_NAME :
-			if( ( guildNamesIterator = guildNames.begin() ) == guildNames.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-	}
-}
-
-void cGuildz::last()
-{
-	error = GUILD_ERROR_NO_ERROR;
-
-	switch( currentIndex )
-	{
-		case GUILD_INDEX_SERIAL :
-			guildsIterator = guilds.end();
-			previous();
-			if( guildsIterator == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-		case GUILD_INDEX_NAME :
-			guildNamesIterator = guildNames.end();
-			previous();
-			if( guildNamesIterator == guildNames.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-	}
-}
-
-void cGuildz::next()
-{
-	error = GUILD_ERROR_NO_ERROR;
-
-	switch( currentIndex )
-	{
-		case GUILD_INDEX_SERIAL :
-			if( ++guildsIterator == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-		case GUILD_INDEX_NAME :
-			if( ++guildsIterator == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-	}
-}
-
-void cGuildz::previous()
-{
-	error = GUILD_ERROR_NO_ERROR;
-
-	switch( currentIndex )
-	{
-		case GUILD_INDEX_SERIAL :
-			if( ++guildsIterator == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-		case GUILD_INDEX_NAME :
-			if( ++guildsIterator == guilds.end() )
-				error = GUILD_ERROR_END_OF_SET;
-			break;
-	}
-}
-
-cGuild* cGuildz::fetch()
-{
-	cGuild* guild = 0;
-	error = GUILD_ERROR_NO_ERROR;
-
-	switch( currentIndex )
-	{
-		case GUILD_INDEX_SERIAL :
-			if( guildsIterator != guilds.end() )
-				guild = new cGuild( guildsIterator->second );
-			else
-				error = GUILD_ERROR_NO_DATA;
-			break;
-		case GUILD_INDEX_NAME :
-			if( guildNamesIterator != guildNames.end() )
-				guild = new cGuild( guilds[ guildNamesIterator->second ] );
-			else
-				error = GUILD_ERROR_NO_DATA;
-			break;
-	}
-	return guild;
 }
 
 void cGuildz::archive()
@@ -993,13 +588,13 @@ void cGuildz::safeoldsave()
 
 void cGuildz::save( FILE *gWsc )
 {
-	GUILDMEMBERMAPITER	mIter, mEnd;
-	SERIALVECTORITER	rIter, rEnd;
 
-	Guildz.first();
-	cGuild *pGuild;
-	while( (pGuild = Guildz.fetch()) != 0 )
+	GUILDMAP::iterator iter( guilds.begin() ), end( guilds.end() );
+	for( ; iter!=end; iter++ )
 	{
+
+		P_GUILD pGuild = (P_GUILD)&iter->second;
+
 		fprintf(gWsc, "SECTION GUILD %i\n", 	pGuild->getSerial() );
 		fprintf(gWsc, "{\n");
 		fprintf(gWsc, "NAME %s\n",		pGuild->getName().c_str());
@@ -1009,22 +604,21 @@ void cGuildz::save( FILE *gWsc )
 		fprintf(gWsc, "TYPE %i\n",		pGuild->getType());
 		fprintf(gWsc, "MASTER %i\n",		pGuild->getGuildMaster());
 
-		mIter = pGuild->members.begin();
-		mEnd  = pGuild->members.end();
-		while( mIter != mEnd )
+		GUILDMEMBERMAP::iterator mIter( pGuild->members.begin() ), mEnd( pGuild->members.end() );
+		for( ; mIter!=mEnd; mIter++ )
 		{
-			fprintf(gWsc, "MEMBER %d\n",	mIter->first );
+			fprintf(gWsc, "MEMBER %d\n", mIter->first );
 			fprintf(gWsc, "{\n");
 			fprintf(gWsc, "TITLE %s\n",	mIter->second.getTitle().c_str() );
-			fprintf(gWsc, "TOGGLE %d\n",	mIter->second.getToggle() );
+			fprintf(gWsc, "TOGGLE %d\n", mIter->second.getToggle() );
 			fprintf(gWsc, "}\n");
 			++mIter;
 		}
-		rIter = pGuild->recruits.begin();
-		rEnd  = pGuild->recruits.end();
-		while( rIter != rEnd )
+		
+		GUILDRECRUITMAP::iterator rIter( pGuild->recruits.begin() ), rEnd( pGuild->recruits.end() );
+		for( ; rIter!=rEnd; rIter++ )
 		{
-			fprintf(gWsc, "RECRUIT %d\n", *rIter );
+			fprintf(gWsc, "RECRUIT %d\n", rIter->first );
 			fprintf(gWsc, "{\n" );
 			fprintf(gWsc, "DATERECRUITED\n" );
 			fprintf(gWsc, "RECRUITER %d\n",	pGuild->getGuildMaster() );
@@ -1032,7 +626,6 @@ void cGuildz::save( FILE *gWsc )
 			++rIter;
 		}
 		fprintf(gWsc, "}\n\n");
-		Guildz.next();
 	}
 }
 
@@ -1055,9 +648,8 @@ void cGuildz::load()
 			{
 				if (!(strcmp(script2, "GUILD")))
 				{
-					guild = new cGuild( (SERIAL) str2num( script3 ) );
-					if( guild )
-						insert( *guild );
+					SERIAL sGuild = str2num( script3 );
+					guilds.insert( make_pair( sGuild, cGuild( sGuild ) ) );
 				}
 			}
 		}	while (strcmp(script1,"EOF") && !feof(wscfile) );
@@ -1066,54 +658,20 @@ void cGuildz::load()
 	}
 }
 
-LOGICAL	cGuildz::isGuildMember( SERIAL charSerial )
-{
-	LOGICAL success = false;
+P_GUILD cGuildz::addGuild( P_ITEM stone, P_CHAR master ) {
+	
+	P_GUILD guild = new cGuild( stone, master );
+	guilds.insert( make_pair( stone->getSerial32(), *guild ) );
+	return guild;
 
-	miGuild iter( guilds.begin() ), end( guilds.end() );
-
-	while( iter != end && !success )
-	{
-		if( iter->second.members.find( charSerial ) != iter->second.members.end() )
-			success = true;
-		++iter;
-	}
-	return success;
-}
-
-LOGICAL	cGuildz::isGuildMember( P_CHAR pChar )
-{
-	if( ISVALIDPC( pChar ) )
-	{
-		return isGuildMember( static_cast<SERIAL>( pChar->getSerial32() ) );
-	}
-	return false;
-}
-
-LOGICAL	cGuildz::isGuildMember( P_CHAR pChar, SERIAL guildSerial )
-{
-	if( ISVALIDPC( pChar ) )
-	{
-		return isGuildMember( pChar->getSerial32(), guildSerial );
-	}
-	return false;
-}
-
-LOGICAL	cGuildz::isGuildMember( SERIAL charSerial, SERIAL guildSerial )
-{
-	if( guilds.find( guildSerial ) != guilds.end() )
-		if( guilds[guildSerial].members.find( charSerial ) != guilds[guildSerial].members.end() )
-			return true;
-	return false;
 }
 
 
-cGuildRecruit::cGuildRecruit( const P_CHAR pChar )
+
+cGuildRecruit::cGuildRecruit( P_CHAR recruit, P_CHAR recruiter )
 {
-	if( ISVALIDPC( pChar ) )
-		serial = pChar->getSerial32();
-	else
-		serial = INVALID;
+	setSerial( recruit->getSerial32() );
+	setRecruiter( recruiter );
 }
 
 cGuildRecruit::~cGuildRecruit()
@@ -1142,41 +700,7 @@ void cGuildRecruit::setRecruiter( const SERIAL serial )
 
 void cGuildRecruit::setRecruiter( const P_CHAR pChar )
 {
-	if( ISVALIDPC( pChar ) )
-		setRecruiter( pChar->getSerial32() );
-	else
-		setRecruiter( INVALID );
+	setRecruiter( pChar->getSerial32() );
 }
 
-//
-// cGuildMember implementation
-//
-//	Class properties and methods
-//
-UI32 cGuildMember::membershipMaximum = 1;
-UI32 cGuildMember::getMembershipMaximum()
-{
-	return membershipMaximum;
-}
-
-void cGuildMember::setMembershipMaximum( UI32 maximum )
-{
-	membershipMaximum = maximum;
-}
-
-LOGICAL cGuildMember::multiMembershipAllowed()
-{
-	return ( membershipMaximum > 1 );
-}
-
-//
-//	Object methods
-//
-cGuildMember::cGuildMember()
-{
-}
-
-cGuildMember::~cGuildMember()
-{
-}
 
