@@ -412,7 +412,8 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -446,7 +447,8 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, 0x0387 /* Color - Previous default was 0x0040 - 0x03E9*/, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -472,7 +474,8 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -500,7 +503,8 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 	color = 0x0481; // UOLBR patch to prevent client crash by Juliunus
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	SendUnicodeSpeechMessagePkt(s, serial, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 
@@ -2251,7 +2255,8 @@ void tellmessage(int i, int s, char *txt)
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl);
 	SendUnicodeSpeechMessagePkt(i, 0x01010101, 0x0101, 0, 0x0035, 0x0003, lang, sysname, unicodetext,  ucl); //So Person who said it can see too
@@ -2521,7 +2526,8 @@ void sysmessageflat(NXWSOCKET  s, short color, const char *txt)
 	memcpy(unicodetext, Unicode::temp, ucl);
 
 	UI32 lang = calcserial(server_data.Unicodelanguage[0], server_data.Unicodelanguage[1], server_data.Unicodelanguage[2], 0);
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
 	SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 6, color, 0x0003, lang, sysname, unicodetext,  ucl);
 

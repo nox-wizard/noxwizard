@@ -49,8 +49,10 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	talk2[16] = server_data.Unicodelanguage[2];
 	talk2[17] = 0;
 
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
+
 	send(talk2, 18);
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
 //AoS/	Network->FlushBuffer(m_sck);
@@ -90,8 +92,10 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	talk2[16] = server_data.Unicodelanguage[2];
 	talk2[17] = 0;
 
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
+
 	send(talk2, 18);
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	send(sysname, 30);
 	send(unicodetext, ucl);
 //AoS/	Network->FlushBuffer(m_sck);
