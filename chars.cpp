@@ -1302,13 +1302,14 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att);
 		if (g_bByPass==true) return;
 	}
-	unfreeze();
 
 	if (amount <= 0) return;
 	// typeofdamage is ignored till now
     if (typeofdamage!=DAMAGE_PURE) {
     	amount -= SI32((amount/100.0)*float(calcResist(typeofdamage)));
     }
+	if (amount <= 0) return;
+	unfreeze();
 
 	switch (stattobedamaged)
 	{
