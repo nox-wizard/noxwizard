@@ -225,43 +225,6 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		/////////////////////
 		if( SrvParms->housedecay_secs != UINVALID )
 			check_house_decay();
-
-		//
-		//	Sparhawk:	let's switch to a seperate timer in the future
-		//
-		////////////////////
-		// check stabling
-		///////////////////
-
-		//UI32 diff;
-		//Luxor: new cAllObjects system... really slow, must change this.
-/*		cAllObjectsIter objs;
-		P_CHAR pc;
-		for( objs.rewind(); !objs.IsEmpty(); objs++ )
-		{*/
-		/*for (UI32 k=0; k<charcount; ++k)
-		{*/
-		/*	if ( !isCharSerial(objs.getSerial()) ) continue;
-			
-			pc = (P_CHAR)(objs.getObject());
-			if(!ISVALIDPC(pc))
-				continue;
-
-			if (pc->npc_type==1)
-			{
-				SI32 ii = 0;
-				P_CHAR pj = NULL;
-				while ( ((pj=StableSearch(pc->getSerial32(),&ii)) != NULL) )
-				{
-					if ( ISVALIDPC(pj))
-					{
-						diff = (getclock() - pj->timeused_last) / MY_CLOCKS_PER_SEC;
-						pj->time_unused	+= diff;
-					}
-				}
-			}
-		}*/
-
 		housedecaytimer = uiCurrentTime+MY_CLOCKS_PER_SEC*60*60; // check only each hour
 	}
 	//
@@ -287,13 +250,13 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
         if( TIMEOUT( checktempfx ) )
 		tempfx::checktempeffects();
-	
+
 	//
 	// Characters & items
 	//
 	NxwSocketWrapper sw;
 	sw.fillOnline();
-	
+
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
 		NXWCLIENT ps = sw.getClient();
@@ -312,21 +275,28 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		if( TIMEOUT( checknpcs ) || TIMEOUT( checktamednpcs ) || TIMEOUT( checknpcfollow ) )
 		{
 #ifdef SPAR_NEW_WR_SYSTEM
-			nearbyChars	= pointers::getCharFromWorldMap( pc->getPosition().x, pc->getPosition().y, 2*VISRANGE );
-			nearbyCharsIt	= nearbyChars.begin();
-			nearbyCharsEnd	= nearbyChars.end();
-			for( ; nearbyCharsIt != nearbyCharsEnd; ++nearbyCharsIt )
+			pointers::pCharVector *pcv = pointers::getCharsNearLocation( pc, VISRANGE, pointers::NPC );
+			pointers::pCharVectorIt it( pcv->begin() ), end( pcv->end() );
+			P_CHAR npc = 0;
+			while( it != end )
 			{
-				P_CHAR npc = (*nearbyCharsIt);
+				npc = (*it);
+				if( npc->lastNpcCheck != uiCurrentTime &&
+				    (TIMEOUT( checknpcs ) ||
+				    (TIMEOUT( checktamednpcs ) && npc->tamed) ||
+				    (TIMEOUT( checknpcfollow ) && npc->npcWander == 1 ) ) )
+				{
+					npc->heartbeat();
+					npc->lastNpcCheck = uiCurrentTime;
+				}
+				++it;
+			}
 #else
 			NxwCharWrapper sc;
-			//sc.fillCharsNearXYZ( pc->getPosition(), 2*VISRANGE, true, false );
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
-			for( sc.rewind(); !sc.isEmpty(); sc++ ) 
+			for( sc.rewind(); !sc.isEmpty(); sc++ )
 			{
 				P_CHAR npc=sc.getChar();
-#endif
-
 
 				if(!ISVALIDPC(npc) || !npc->npc )
 					continue;
@@ -336,42 +306,21 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				    (TIMEOUT( checktamednpcs ) && npc->tamed) ||
 				    (TIMEOUT( checknpcfollow ) && npc->npcWander == 1 ) ) )
 				{
-					//npc->nearbyChars = &nearbyChars;
-					//npc->nearbyItems = &nearbyItems;
-#ifdef SPAR_NEW_WR_SYSTEM
-                                        npcNearbyChars = pointers::getCharFromWorldMap( npc->getPosition().x, npc->getPosition().y, 2*VISRANGE );
-                                        npcNearbyItems = pointers::getItemFromWorldMap( npc->getPosition().x, npc->getPosition().y, 2*VISRANGE );
-                                        npc->nearbyChars = &npcNearbyChars;
-                                        npc->nearbyItems = &npcNearbyItems;
-#endif
 					npc->heartbeat();
 					npc->lastNpcCheck = uiCurrentTime;
 				}
-#ifdef SPAR_NEW_WR_SYSTEM
-				npc->nearbyChars = 0;
-				npc->nearbyItems = 0;
-#endif
 			}
+#endif
 		}
 
 		if( TIMEOUT( checkitemstime ) )
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			nearbyItems = pointers::getItemFromWorldMap( pc->getPosition().x, pc->getPosition().y, 2*VISRANGE );
-			pc->nearbyItems = &nearbyItems;
-			nearbyItemsIt	= nearbyItems.begin();
-			nearbyItemsEnd	= nearbyItems.end();
-
-			for( ; nearbyItemsIt != nearbyItemsEnd; ++nearbyItemsIt )
-			{
-				P_ITEM pi = (*nearbyItemsIt);
-#else
 			NxwItemWrapper si;
 			si.fillItemsNearXYZ( pc->getPosition(), 2*VISRANGE, false );
-			for( si.rewind(); !si.isEmpty(); si++ ) 
+			for( si.rewind(); !si.isEmpty(); si++ )
 			{
 				P_ITEM pi=si.getItem();
-#endif
+
 				if( !ISVALIDPI( pi ) )
 					continue;
 
@@ -386,7 +335,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 							//	pi->deleteItem(); // bugfix for items disappearing
 							//pi->deleteItem();
 						break;
-					case  61    :       
+					case  61    :
 					case  62	:
 					case  63	:
 					case  64	:
@@ -418,15 +367,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				}
 			}
 		}
-#ifdef SPAR_NEW_WR_SYSTEM
-		pc->nearbyChars = 0;
-		pc->nearbyItems = 0;
-		nearbyChars.clear();
-		nearbyItems.clear();
-#endif
-
 	}//for i<now
-	
+
 
 	if( TIMEOUT( checkitemstime ) )
 		checkitemstime = (TIMERVAL)((R64) uiCurrentTime+(speed.itemtime*MY_CLOCKS_PER_SEC));
