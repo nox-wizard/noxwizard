@@ -1242,8 +1242,10 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 				setSkillDelay = false;
 				break;
 		}
-        //<Luxor>: Complete skills handling by AMX
-		AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMX_SKILLS_MAIN), s, x);
+        //<Luxor>: Complete skills handling by AMX  -  Mod. by Frodo
+		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC( pc_currchar );
+		AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMX_SKILLS_MAIN), pc_currchar->getSerial32(), x);
         //</Luxor>
 	}
 	
