@@ -3359,7 +3359,7 @@ void cChar::Kill()
 
 	}
 
-        if ( !npc )
+	if ( !npc )
 		teleport( TELEFLAG_SENDWORNITEMS );
 
 	//<Luxor>

@@ -1090,6 +1090,15 @@ void setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubpr
 				pc->resetCanTrain();
 			break;
 		case NXW_CP_B_DEAD :							//dec value: 1;
+			if ( value && !pc->dead)
+			{
+				pc->Kill();
+			}
+			else if ( pc->dead && ! value )
+			{
+				pc->resurrect();
+			}
+
 			break;
 		case NXW_CP_B_FREE :							//dec value: 2;
 			break;

@@ -3249,6 +3249,26 @@ NATIVE(_chr_resurrect)
 		return INVALID;
 }
 
+/*
+\brief Kills a character
+\author Wintermute
+\param 1: the character
+\return 0 il resurrect else INVALID
+*/
+NATIVE(_chr_kill)
+{
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc,INVALID);
+	if (!pc->dead && pc->IsOnline() ) 
+	{
+		pc->attackerserial=INVALID;
+		pc->Kill();
+		return 0;
+	}
+	else
+		return INVALID;
+}
+
 
 /*
 \brief generic npctalk/npcemote handler
@@ -7303,6 +7323,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_skillMakeMenu", _chr_skillMakeMenu },
  { "chr_possess", _chr_possess },
  { "chr_equip", _chr_equip},
+ { "chr_kill", _chr_kill},
 //
 // Local property functions
 //
