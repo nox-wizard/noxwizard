@@ -45,11 +45,12 @@ public:
 	UI32 style; //!< style
 	UI32 color; //!< color
 	UI32 width; //!< width
+	UI32 rowForPage; //!< row for page
 
 	cOldMenu();
 	~cOldMenu();
 
-	void setParameters( int numPerPage, int numpages );
+	void setParameters( int rowForPage, int pageCount );
 	virtual void addMenuItem( int page, int idx, std::wstring desc );
 
 	virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );

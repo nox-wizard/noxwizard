@@ -72,13 +72,9 @@ void cAddMenu::loadFromScript( P_CHAR pc )
 	if (entry->getFullLine().c_str()[0]=='{') entry = iter->getEntry();
 
 	if (!bIcons) {
-		if (nOpt<=10) 
-			oldmenu->setParameters(nOpt, 1);
-		else 
-			oldmenu->setParameters(10,(nOpt/10)+1);
+		oldmenu->setParameters(11,(nOpt/10)+1);
 		oldmenu->style = MENUTYPE_STONE;
 	} else {
-		oldmenu->setParameters(nOpt, 1);
 		oldmenu->style = MENUTYPE_ICONLIST;
 	}
 

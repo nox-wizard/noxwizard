@@ -55,6 +55,7 @@ cOldMenu::cOldMenu() : cBasicMenu( MENUTYPE_TRASPARENCY )
 	title.clear();
 	allPages.clear();
 	type=NULL;
+	setParameters( 10, 1 );
 }
 
 /*
@@ -76,8 +77,9 @@ cOldMenu::~cOldMenu()
 \attention is useless now
 \since 0.82
 */
-void cOldMenu::setParameters( int numPerPage, int numpages )
+void cOldMenu::setParameters( int rowForPage, int pageCount )
 {
+	this->rowForPage = rowForPage;
 }
 
 /*!
@@ -257,7 +259,7 @@ void cOldMenu::buildClassic()
 
 		for( int b=1; iter!=end; ++iter, ++b )
 		{
-			if( b==10 ) {
+			if( b==rowForPage ) {
 				position = 80;
 				b=1;
 
