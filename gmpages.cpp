@@ -36,6 +36,19 @@ cGmpage::cGmpage(SERIAL serialg, std::string reasong) {
 }
 
 
+std::string cGmpage::getReason(){
+
+	return reason;
+}
+
+std::string cGmpage::getTime(){
+
+	return timeofcall;
+
+}
+
+
+
 UI08 cGmpage::getPageNumber (){
 	
 	return page_number;

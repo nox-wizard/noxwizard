@@ -37,6 +37,9 @@ private:
 public:
 
 	cGmpage(SERIAL serialg, std::string reasong);
+	
+	std::string getReason();
+	std::string getTime();
 	UI08 getPageNumber ();
 	P_GMPAGE getNextPage ();
 	P_GMPAGE getPrevPage ();
