@@ -3906,7 +3906,7 @@ NATIVE(_weblaunch)
 \brief System Broadcast
 \author Luxor
 \since 0.82
-\param 1: text
+\param 1 text
 \return 0
 */
 NATIVE(_sysbroadcast)
@@ -3919,6 +3919,24 @@ NATIVE(_sysbroadcast)
 	g_nAmxPrintPtr=0;
 	return 0;
 }
+
+/*
+\brief Get number of define
+\author Endymion
+\since 0.82
+\param 1 define
+\return the define number
+*/
+NATIVE(_getIntFromDefine) {
+	cell *cstr;
+	amx_GetAddr(amx,params[1],&cstr);
+	printstring(amx,cstr,params+2,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	int def = xss::getIntFromDefine( g_cAmxPrintBuffer );
+	g_nAmxPrintPtr=0;
+	return def;
+}
+
 
 /*
 \brief Poisons an character
@@ -5334,6 +5352,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "cfgServerOption", _cfgServerOption },
  { "weblaunch", _weblaunch },
  { "broadcast", _sysbroadcast },
+ { "getIntFromDefine", _getIntFromDefine },
 // Direct-access functions :
  { "direct_target", _nativeTarget },
  { "direct_castSpell", _direct_castSpell },
