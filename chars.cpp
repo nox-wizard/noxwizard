@@ -3136,13 +3136,12 @@ void cChar::setNpcMoveTime()
 */
 void cChar::checkEquipement()
 {
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	P_ITEM pi;
-	P_CHAR pc= this;
-	if (pc->npc) return;
 
-	Location charpos= pc->getPosition();
+	if (npc) return;
+
+	Location charpos = getPosition();
 
 	NxwItemWrapper si;
 	si.fillItemWeared( this, true, true, false );
@@ -3151,29 +3150,28 @@ void cChar::checkEquipement()
 		pi=si.getItem();
 		if(!ISVALIDPI(pi))
 			continue;
-		if (((pi->st > pc->getStrength())||!checkItemUsability(pc, pi, ITEM_USE_CHECKEQUIP)) && !pi->isNewbie() )//if strength required > character's strength, and the item is not newbie
+		if (((pi->st > getStrength()) || !checkItemUsability(this, pi, ITEM_USE_CHECKEQUIP)) && !pi->isNewbie())//if strength required > character's strength, and the item is not newbie
 		{
 			if( strncmp(pi->getCurrentNameC(), "#", 1) )
 				pi->getName(temp2);
 			else
 				strcpy(temp2,pi->getCurrentNameC());
 
-			sprintf(temp, TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
-			if((pi->st>pc->getStrength())) sysmsg(temp);
-			itemsfx(calcSocketFromChar(DEREF_P_CHAR(this)), pi->id());
+			if( pi->st > getStrength()) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
+			itemsfx(getSocket(), pi->id());
 
 			//Subtract stats bonus and poison
-			pc->modifyStrength(-pi->st2,false);
-			pc->dx-=pi->dx2;
-			pc->in-=pi->in2;
-			if(pc->poison && pi->poisoned) pc->poison-=pi->poisoned;
-			if(pc->poison<0)pc->poison=0;
+			modifyStrength(-pi->st2,false);
+			dx-=pi->dx2;
+			in-=pi->in2;
+			if(poison && pi->poisoned) poison-=pi->poisoned;
+			if(poison<0) poison=0;
 
 			pi->setContSerial(-1);
 			pi->MoveTo(charpos.x, charpos.y, charpos.z);
 
 			NxwSocketWrapper sw;
-			sw.fillOnline( pc, false );
+			sw.fillOnline( this, false );
 
 			for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 				NXWCLIENT ps=sw.getClient();
@@ -3198,8 +3196,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 {
 	
 	tile_st item;
-	NXWSOCKET s= calcSocketFromChar(DEREF_P_CHAR(this));
-
+	NXWSOCKET s = getSocket();
 
 	g_bByPass= false;
 
@@ -3621,7 +3618,7 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 						strcpy( temp2, pi->vendorDescription.c_str() );
 	
 					sprintf( temp, TRANSLATE("%s at %igp"), temp2, pi->value );
-					itemmessage(calcSocketFromChar( DEREF_P_CHAR(this) ), temp, serial);
+					itemmessage(getSocket(), temp, serial);
 					return;
 				}
 			}
@@ -3674,9 +3671,9 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 	if (pi->magic == 4 && pi->type != ITYPE_DOOR && pi->type != ITYPE_GUMPMENU)
 	{
 		if (pi->secureIt !=1)
-			itemmessage(calcSocketFromChar( DEREF_P_CHAR(this) ), TRANSLATE("[locked down]"), serial, 0x0481);
+			itemmessage(getSocket(), TRANSLATE("[locked down]"), serial, 0x0481);
 		if (pi->secureIt == 1 && pi->magic == 4)
-			itemmessage(calcSocketFromChar( DEREF_P_CHAR(this) ), TRANSLATE("[locked down & secure]"), serial, 0x0481);
+			itemmessage(getSocket(), TRANSLATE("[locked down & secure]"), serial, 0x0481);
 	}
 
 	itemmessage(getSocket(), temp, serial);
@@ -3773,6 +3770,7 @@ void cChar::doGmEffect()
 
 void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 {
+	VALIDATEPC(showToWho);
 	NXWSOCKET socket = showToWho->getSocket();
 	if (socket < 0 || socket > now) return;
 
@@ -4054,14 +4052,13 @@ SERIAL cChar::getGuild()
 /*!
 \brief open a bankbox
 \author Endymion
-\param cc the character to open the bank of
+\param pc the character to open the bank of
 \note Added to cChar by Akron (todo from endymion)
 */
-void cChar::openBankBox(CHARACTER cc)
+void cChar::openBankBox(P_CHAR pc)
 {
-	P_CHAR pc = MAKE_CHAR_REF(cc);
 	VALIDATEPC(pc);
-	if ( !(getSerial32() == pc->getSerial32() || IsGMorCounselor() ) )
+	if ((getSerial32() != pc->getSerial32()) && !IsGMorCounselor())
 		return;
 
 	P_ITEM bank = pc->GetBankBox(BANK_GOLD);
@@ -4072,8 +4069,7 @@ void cChar::openBankBox(CHARACTER cc)
 /*!
 \brief region specific bankbox
 \author Endymion
-\param s socket of who see
-\param i character owner of bank
+\param pc character owner of bank
 
 If activated, you can only put golds into normal banks
 and there are special banks (for now we still use normal bankers,
@@ -4085,21 +4081,15 @@ All this for increasing pk-work and commerce! :)
 (and surely the Mercenary work, so now have to pay strong
 warriors to escort u during your travels!)
 */
-void openspecialbank(NXWSOCKET s, SI32 i)
+void cChar::openSpecialBank(P_CHAR pc)
 {
-
-	P_CHAR whosee = MAKE_CHAR_REF( currchar[s] );
-	VALIDATEPC( whosee );
-	P_CHAR pc = MAKE_CHAR_REF( i );
 	VALIDATEPC( pc );
-	if( !(whosee->getSerial32()==pc->getSerial32() || whosee->IsGMorCounselor()))
-		return; //only itself and gm can see the backpack of the player
+	if((getSerial32()!=pc->getSerial32()) && !IsGMorCounselor())
+		return;
 
 	P_ITEM bank = pc->GetBankBox(BANK_ITEM);
-
-	wearIt(s,bank);
-
-	whosee->showContainer(bank);
+	wearIt(getSocket(), bank);
+	showContainer(bank);
 }
 
 
@@ -4749,15 +4739,13 @@ void cChar::do_lsd()
 {
 	if (rand()%15==0)
 	{
-		NXWSOCKET socket = calcSocketFromChar( DEREF_P_CHAR(this) );
+		NXWSOCKET socket = getSocket();
 
 		int c1 = 0,c2 = 0,ctr = 0,xx,yy,icnt=0;
-		signed char zz;
-
-//		int loopexit=0; // unused variable
-//		P_ITEM pi=NULL; // unused variable
+		SI08 zz;
 
 		Location charpos = getPosition();
+
 		NxwItemWrapper si;
 		si.fillItemsNearXYZ( charpos, VISRANGE, false );
 		for( si.rewind(); !si.isEmpty(); si++ ) {

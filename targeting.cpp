@@ -2173,22 +2173,22 @@ void cTargets::NpcAITarget(NXWSOCKET s)
 
 void cTargets::xBankTarget(NXWSOCKET s)
 {
-	SERIAL serial=LongFromCharPtr(buffer[s]+7);
-	int i=calcCharFromSer(serial);
-	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
+	VALIDATEPC(pc);
+	VALIDATEPC(pc2);
 
-	if (i!=-1)
-		pc->openBankBox( i );
+	pc->openBankBox(pc2);
 }
 
-void cTargets::xSpecialBankTarget(NXWSOCKET s)//AntiChrist
+void cTargets::xSpecialBankTarget(NXWSOCKET s)
 {
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-    if (i!=-1)
-    {
-        openspecialbank(s, i);
-    }
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
+	VALIDATEPC(pc);
+	VALIDATEPC(pc2);
+
+        pc->openSpecialBank(pc2);
 }
 
 void cTargets::SellStuffTarget(NXWSOCKET s)

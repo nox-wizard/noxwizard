@@ -69,11 +69,11 @@ void loadmounts()
 void cChar::mounthorse( P_CHAR mount ) 
 {
 
-	NXWCLIENT ps = this->getClient();
+	NXWCLIENT ps = getClient();
 	if( ps==NULL ) return;
 	VALIDATEPC( mount );
 	
-	if ( !char_inRange(this, mount, 2) && !this->IsGM())
+	if ( !char_inRange(this, mount, 2) && !IsGM())
 		return;
 
 	/*
@@ -89,25 +89,25 @@ void cChar::mounthorse( P_CHAR mount )
 		return;
 	//Unavowed
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	if ( (mount->getOwnerSerial32() == this->getSerial32()) || this->IsGM())
+	if ( (mount->getOwnerSerial32() == getSerial32()) || IsGM())
 	{
-		if ( this->onhorse)
+		if (onhorse)
 		{
-			this->sysmsg( TRANSLATE("You are already on a mount."));
+			sysmsg( TRANSLATE("You are already on a mount."));
 			return;
 		}
 		
 		std::map<SI32,SI32>::iterator iter = mountinfo.find(mount->GetBodyType());
 		if( iter==mountinfo.end() ) { //not mountable creature
-			this->sysmsg( "This is not a mountable creature" );
+			sysmsg( "This is not a mountable creature" );
 			return;
 		}
 
 		strcpy(temp, mount->getCurrentNameC());
-		this->onhorse = true;
+		onhorse = true;
 		//int c = item::SpawnItem(ps->toInt(), 1, (char*)temp, 0, 0x09, 0x15, mount->skin1, mount->skin2, 0, 0);
 		//const P_ITEM pi = MAKE_ITEMREF_LR(c); // on error return
-		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, temp, 0, 0x0915, DBYTE2WORD( mount->skin1, mount->skin2), 0 );
+		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, temp, 0, 0x0915, mount->getSkinColor(), 0 );
 		VALIDATEPI(pi);
 
 		pi->setId( iter->second );
@@ -191,8 +191,7 @@ void cChar::mounthorse( P_CHAR mount )
 		***/
 
 		
-		//setserial(DEREF_P_ITEM(pi), DEREF_P_CHAR(this), 4);
-		pi->setContSerial(this->getSerial32());
+		pi->setContSerial(getSerial32());
 		pi->layer = 0x19;
 
 		// v-- is not cheched for decay, so useless
@@ -213,9 +212,9 @@ void cChar::mounthorse( P_CHAR mount )
 		}
 
 		// if this is a gm lets tame the animal in the process
-		if ( this->IsGM())
+		if (IsGM())
 		{
-  			mount->setOwnerSerial32( this->getSerial32() );
+  			mount->setOwnerSerial32( getSerial32() );
 			mount->tamed = true;
 			mount->npcaitype = NPCAI_GOOD;
 		}
@@ -223,16 +222,13 @@ void cChar::mounthorse( P_CHAR mount )
 
 		mount->mounted=true;
 		mapRegions->remove( mount );
-		pointers::pMounted.insert( make_pair( this->getSerial32(), mount ) );
+		pointers::pMounted.insert( make_pair( getSerial32(), mount ) );
 
 		sw.clear();
 		sw.fillOnline( this, false );
 
-		unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-		removeitem[1]= mount->getSerial().ser1;
-		removeitem[2]= mount->getSerial().ser2;
-		removeitem[3]= mount->getSerial().ser3;
-		removeitem[4]= mount->getSerial().ser4;
+		UI08 removeitem[5] = {0x1D, 0x00, };
+		LongToCharPtr(mount->getSerial32(), removeitem +1);
 
 		for( sw.rewind(); !sw.isEmpty(); sw++ )		
 		{
@@ -241,7 +237,7 @@ void cChar::mounthorse( P_CHAR mount )
 				Xsend(si, removeitem, 5);
 		}
 
-		this->sysmsg( "Now you are riding %s", mount->getCurrentNameC() );
+		sysmsg( "Now you are riding %s", mount->getCurrentNameC());
 
 		mount->war = 0;
 		mount->attackerserial=INVALID;
@@ -253,7 +249,7 @@ void cChar::mounthorse( P_CHAR mount )
 
 	}
 	else
-		this->sysmsg(TRANSLATE("You dont own that creature."));
+		sysmsg(TRANSLATE("You dont own that creature."));
 
 }
 
@@ -264,7 +260,7 @@ void cChar::mounthorse( P_CHAR mount )
 */
 int cChar::unmountHorse()
 {
-	NXWCLIENT ps= this->getClient();
+	NXWCLIENT ps = getClient();
 	if(ps==NULL) 
 		return 1;
 
@@ -288,10 +284,10 @@ int cChar::unmountHorse()
 		if( ISVALIDPI(pi) && pi->layer == LAYER_MOUNT)
 		{
 
-			this->onhorse = false;
+			onhorse = false;
 
 
-			std::map< SERIAL, P_CHAR >::iterator iter( pointers::pMounted.find( this->getSerial32() ) );
+			std::map< SERIAL, P_CHAR >::iterator iter( pointers::pMounted.find( getSerial32() ) );
 
 			if( ( iter!=pointers::pMounted.end() ) ) {
 
@@ -306,17 +302,17 @@ int cChar::unmountHorse()
 				
 					p_pet->mounted=false;
 
-					p_pet->MoveTo(this->getPosition() );
+					p_pet->MoveTo( getPosition() );
 					p_pet->teleport();
 
 					pi->deleteItem();
-					this->teleport();
+					teleport();
 					return 0;
 				}
 			}
 
 			pi->deleteItem();
-			this->teleport();
+			teleport();
 			InfoOut("Horse not found");
 			return 1;
 
@@ -352,7 +348,7 @@ SERIAL cChar::getHorse()
 */
 bool cChar::isMounting( )
 {
-	return this->onhorse;
+	return onhorse;
 }
 
 /*!
@@ -364,7 +360,7 @@ bool cChar::isMounting( )
 bool cChar::isMounting( P_CHAR horse )
 {
 	VALIDATEPCR( horse, false );
-	return horse->getSerial32()==this->getHorse();
+	return horse->getSerial32()==getHorse();
 }
 
 /*!
@@ -374,6 +370,6 @@ bool cChar::isMounting( P_CHAR horse )
 */
 void cChar::setOnHorse()
 {
-	this->onhorse=true;
+	onhorse=true;
 }
 

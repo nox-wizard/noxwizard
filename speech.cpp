@@ -189,7 +189,7 @@ int response(NXWSOCKET  s)
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ )
 	{
-		P_CHAR pc_map = sc.getChar();;
+		P_CHAR pc_map = sc.getChar();
 		if(ISVALIDPC(pc_map)) {
 		
 			//
@@ -402,7 +402,7 @@ int response(NXWSOCKET  s)
 				{
 					if ( pc_map->npcaitype == NPCAI_BANKER )
 					{
-						pc->openBankBox(DEREF_P_CHAR(pc));
+						pc->openBankBox(pc);
 						return 1;
 					}
 					else
@@ -434,7 +434,7 @@ int response(NXWSOCKET  s)
 				{
 					if ( pc_map->npcaitype == NPCAI_BANKER )
 					{
-						openspecialbank(s, DEREF_P_CHAR(pc));
+						pc->openSpecialBank(pc);
 						return 1;
 					}
 					else

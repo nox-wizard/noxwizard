@@ -863,7 +863,8 @@ public:
 		UI32  			CountGold();
 		P_ITEM 			GetItemOnLayer(UI08 layer);
 		P_ITEM 			GetBankBox( short type = BANK_GOLD);
-		void			openBankBox( CHARACTER cc );
+		void			openBankBox( P_CHAR pc );
+		void 			openSpecialBank( P_CHAR pc );
 		SI32  			countBankGold();
 	//	void 			addHalo(P_ITEM pi);
 	//	void 			removeHalo(P_ITEM pi);
@@ -986,6 +987,5 @@ public:
 
 } PACK_NEEDED;
 
-void openspecialbank(NXWSOCKET s, int i);
 
 #endif

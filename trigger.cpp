@@ -812,9 +812,11 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (!strcmp("bank", par)) {
 						P_CHAR pc_curr=MAKE_CHAR_REF(currchar[m_socket]);
 						VALIDATEPC(pc_curr);
-						pc_curr->openBankBox(currchar[m_socket]);
+						pc_curr->openBankBox(pc_curr);
 				} else if (!strcmp("ware", par)) {
-					openspecialbank(m_socket, currchar[m_socket]);// AntiChrist
+						P_CHAR pc_curr=MAKE_CHAR_REF(currchar[m_socket]);
+						VALIDATEPC(pc_curr);
+						pc_curr->openSpecialBank(pc_curr);
 				} else if (!strcmp("balance", par)) {
 					static char tmp[500];
 					sprintf(tmp, TRANSLATE("You have %i gp in your bank account!"), m_pcCurrChar->countBankGold());
