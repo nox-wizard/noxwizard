@@ -7059,13 +7059,13 @@ NATIVE ( _world_save )
 \brief
 \author stonedz
 \since 0.82
-\fn set_msgboard_posttype
+\fn chr_setPostType
 \param 1 character
 \param 2 Post type (0=local post, 1=regional post, 2= global post)
 \return true if the operation succedes, false elsewhere
 */
 
-NATIVE ( _chr_setPostType)
+NATIVE ( _chr_setPostType )
 {
 	
 	if (ISVALIDPC( pointers::findCharBySerial(params[1])))
@@ -7077,6 +7077,24 @@ NATIVE ( _chr_setPostType)
 	
 }
 
+
+/*!
+\brief
+\author stonedz
+\since 0.82
+\fn 
+\param 1 light level: 0=brightest, 15=darkest, -1=enable day/night cycles.
+\return true if the operation succedes, false elsewhere
+*/
+NATIVE ( _setLightLevel )
+{
+
+	worldfixedlevel=strtonum(params[1]);
+	if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
+	else setabovelight(worldcurlevel);
+	return true;	
+
+}
 
 /*!
 \file
@@ -7532,6 +7550,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 // misc APIs need to be renamed
  { "world_save", _world_save },
  { "chr_setPostTypee", _chr_setPostType },
+ { "setLightLevel", _setLightLevel },
 
 
 // Terminator :
