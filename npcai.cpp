@@ -703,6 +703,24 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			}
 		} 
 		break;
+		case NPCAI_SMALL:
+		{
+			if( pc->npcai_func==NULL ) {
+				pc->npc_type = NPCAI_GOOD;
+				return;
+			}
+
+			NxwCharWrapper sc;
+			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
+			SERIAL set = amxSet::create();
+			amxSet::copy( set, sc );
+
+			pc->npcai_func->Call( pc->getSerial32(), uiCurrentTime, set );
+			
+			amxSet::deleteSet( set );
+
+		}
+		break;
 		default:
 			WarnOut("cCharStuff::CheckAI-> Error npc %i (%x %x %x %x) has invalid AI type %i\n",DEREF_P_CHAR(pc),pc->getSerial().ser1,pc->getSerial().ser2,pc->getSerial().ser3,pc->getSerial().ser4,pc->npcaitype); //Morrolan
 			return;
