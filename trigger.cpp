@@ -113,7 +113,7 @@ void cTriggerContext::parseIAddCommand(char* par)
 
 	UI32 itmNumber = array[0];
 	UI32 InBackpack = array[1];
-	UI32 itmamount = (array[2]<=0)? 1 : array[2];
+	UI32 itmamount = (array[2]<=0)? INVALID : array[2];
     
 	NXWSOCKET  ts = m_socket;
 	Location charpos= m_pcCurrChar->getPosition();
@@ -162,7 +162,7 @@ void cTriggerContext::parseIAddCommand(char* par)
 	P_ITEM pi = NULL;
 	if (!InBackpack) 
 	{
-		pi=item::CreateFromScript( itmNumber );
+		pi=item::CreateFromScript( itmNumber, NULL, itmamount );
 		if( ISVALIDPI(pi) ) {
 			pi->MoveTo(triggerx, triggery, triggerz);
 			pi->Refresh();
@@ -170,14 +170,11 @@ void cTriggerContext::parseIAddCommand(char* par)
 	} 
 	else 
 	{
-		pi = item::SpawnItemBackpack2(ts, itmNumber , 0);
+		pi = item::CreateFromScript( itmNumber, m_pcCurrChar->getBackpack(), itmamount );
 	}
 
     // Added colormem token here! by Magius(CHE) §
     if( ISVALIDPI(pi) ) {
-		if( itmamount>1 ) {
-			pi->IncreaseAmount( itmamount -1 );
-		}
 		if( m_nColor1!=0xFF ) {
 			pi->setColor( (m_nColor1<<8)|(m_nColor2%256) );
 			pi->Refresh();

@@ -502,7 +502,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 	{
 		Map->MultiArea(pi, &x1,&y1,&x2,&y2);
 
-		P_ITEM pi_ii=item::SpawnItemBackpack2(s, pi->morex, 0);        // need to make before delete
+		P_ITEM pi_ii=item::CreateFromScript( pi->morex, pc->getBackpack() ); // need to make before delete
 		VALIDATEPI(pi_ii);
 
 		sysmessage( s, TRANSLATE("Demolishing House %s"), pi->getCurrentNameC());

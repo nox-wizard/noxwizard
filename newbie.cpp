@@ -94,11 +94,10 @@ void newbieitems(P_CHAR pc)
 				{
 					std::string itemnum, amount;
 					splitLine( script2, itemnum, amount );
-					P_ITEM pi_n = item::SpawnItemBackpack2(s, str2num( itemnum ), 0); // Tauriel 11-24-98
+					int amt = ( amount != "" )? str2num( amount ) : INVALID; //ndEndy defined amount
+					P_ITEM pi_n = item::CreateFromScript( str2num( itemnum ), pc->getBackpack(), amt );
 					if (ISVALIDPI(pi_n)) {
 						pi_n->priv |= 0x02; // Mark as a newbie item
-						if( amount != "" ) //ndEndy defined amount
-							pi_n->amount=str2num( amount );
 					}
 					strcpy(script1, "DUMMY");
 				}
@@ -135,9 +134,7 @@ void newbieitems(P_CHAR pc)
 	// Give the character some gold
 	if ( goldamount > 0 )
 	{
-		P_ITEM pi = item::SpawnItemBackpack2(s, 2000, 0);	// gold coin
-		if(ISVALIDPI(pi))
-			pi->setAmount(goldamount);
+		P_ITEM pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
 	}
 
 

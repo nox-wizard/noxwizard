@@ -3098,7 +3098,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
         if (pc->checkSkill( CARTOGRAPHY, tmap->morey * 10, 1000)) // Is the char skilled enaugh to decipher the map
         {
             // Stores the new map
-            P_ITEM nmap=item::SpawnItemBackpack2(s, 70025, 0);
+            P_ITEM nmap=item::CreateFromScript( 70025, pc->getBackpack() );
             if (!ISVALIDPI(nmap))
             {
                 LogWarning("bad script item # 70025(Item Not found).");
