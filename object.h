@@ -31,8 +31,7 @@ Location Loc(SI32 x, SI32 y, signed char z, signed char dispz=0);
 
 typedef map< UI32, AmxEvent* > AmxEventMap;
 
-#include <slist>
-typedef std::slist< tempfx::cTempfx > TempfxVector;
+typedef slist< tempfx::cTempfx > TempfxVector;
 
 //! == operator redefinition for Location
 int operator ==(Location a, Location b);

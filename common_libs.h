@@ -77,6 +77,18 @@ warnings/errors/issues.
 #include <cmath>
 #include <string>
 #include <vector>
+
+#ifdef __GNUC__
+	#if (__GNUC__ == 2)
+		#include <slist.h>
+	#else
+		#include <ext/slist>
+		using __gnu_cxx::slist;
+	#endif
+#else
+	#include <slist>
+#endif
+
 #include <map>
 #include <iterator>
 #include <algorithm>
