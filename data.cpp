@@ -18,6 +18,9 @@
 LOGICAL statics_cache = false;
 LOGICAL map_cache = false;
 
+UI16 map_width = 768;
+UI16 map_height = 512;
+
 namespace data {
 
 
