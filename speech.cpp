@@ -273,12 +273,10 @@ int response(NXWSOCKET  s)
 					int pvDeed;
 					// lets make the deed and place in your pack and delete vendor.
 					strcpy( temp, "Employment deed" );
-					P_ITEM pDeed = item::SpawnItem( INVALID, s, 1, temp, 0, 0x14F0, 0, 1, 0 );
+					P_ITEM pDeed = item::CreateFromScript( "$item_employment_deed", pc->getBackpack() );
 					VALIDATEPIR(pDeed, true);
 					pvDeed= DEREF_P_ITEM(pDeed);
 
-					pDeed->type = 217;
-					pDeed->value = 2000;
 					pDeed->Refresh();
 					sprintf(temp, TRANSLATE("Packed up vendor %s."), pc_map->getCurrentNameC());
 					pc_map->playMonsterSound(SND_DIE);
