@@ -124,12 +124,10 @@ cCommandMap::cCommandMap() {
       
     while( !feof(pFile) ){  
       
- 
+		str[0]='\0';
 		fgets (str , 80 , pFile);
 
-		//TODO  prevent crash caused by final \n
-		
-		if ( (str[0]=='/') || (str[0]=='\n') ) continue;    //Ignore comments and blank lines
+		if ( (str[0]=='/') || (str[0]=='\n') || str[0]=='\r' || str[0]=='\0') continue;    //Ignore comments and blank lines
       
 		if (str[strlen(str)-2]=='\r')
 			
