@@ -7144,6 +7144,62 @@ NATIVE ( _setLightLevel )
 
 }
 
+
+/*!
+\brief
+\author Frodo
+\since 0.82
+\param 1 character
+\param 2 string to fill with the speech
+\param 3 1 if you want to exclude an eventual initial 'command
+\return true if the operation succedes, false elsewhere
+*/
+
+NATIVE ( _chr_getSpeech )
+{
+    
+	char str[256];
+
+	cell *cptr;
+	
+	char* sp;
+	char* pch;
+
+	int n;
+
+	if (params[1] < 0) return false;
+
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	
+	VALIDATEPCR(pc, INVALID);
+
+	sp = pc->getCommandSpeech();
+	
+	if(strlen(sp)>=256) return false;
+
+	pch=sp;
+	
+	if(params[3]==1){
+
+			if(sp[0]=='\''){
+
+			pch = strtok (sp," ");
+			n=strlen(pch);
+			pch = &sp[n+1];
+		}
+	}
+	
+	
+	strcpy(str, pch);
+
+    amx_GetAddr(amx,params[2],&cptr);
+
+	amx_SetString(cptr,str, g_nStringMode);
+	
+	return true;
+}
+
+	
 /*!
 \file
 
@@ -7603,6 +7659,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_setPostTypee", _chr_setPostType },
  { "setLightLevel", _setLightLevel },
 
+// speech APIs
+ { "chr_getSpeech", _chr_getSpeech },
 
 // Terminator :
  { NULL, NULL }
