@@ -223,6 +223,11 @@ void cSpawnScripted::doSpawn(SPAWNFLAG_ENUM spawnWhat, UI32 amount )
 	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
 	for( ; iter!=end; iter++ ) 
 	{
+		if( (*iter).current >= max ) 
+		{
+			(*iter).nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
+			continue;
+		}
 		if( (*iter).needSpawn() )
 		{
 			cSpawnArea c = *iter;
@@ -348,6 +353,7 @@ void cSpawnScripted::removeObject( P_CHAR pc )
 
 void cSpawnScripted::addSpawned(P_OBJECT obj)
 {
+	LOGICAL found=false;
 	if( isItemSerial( obj->getSerial32() ) ) 
 	{
 		// Search the area that contains the position
@@ -362,8 +368,17 @@ void cSpawnScripted::addSpawned(P_OBJECT obj)
 				if (( areaPos.y1 <= objPos.y ) && ( areaPos.y2 > objPos.y ) )
 				{
 					(*iter).items_spawned.insert( obj->getSerial32() );
+					(*iter).current++;
+					found=true;
 					break;
 				}
+		}
+		if ( ! found )
+		{
+	// add them to first entry
+			iter=this->singles.begin();
+			(*iter).items_spawned.insert( obj->getSerial32() );
+			(*iter).current++;
 		}
 	}
 	else if( isCharSerial( obj->getSerial32() ) ) 
@@ -379,10 +394,20 @@ void cSpawnScripted::addSpawned(P_OBJECT obj)
 				if (( areaPos.y1 <= objPos.y ) && ( areaPos.y2 > objPos.y ) )
 				{
 					(*iter).npcs_spawned.insert( obj->getSerial32() );
+					(*iter).current++;
+					found=true;
 					break;
 				}
 		}
+		if ( ! found )
+		{
+	// add them to first entry
+			iter=this->singles.begin();
+			(*iter).npcs_spawned.insert( obj->getSerial32() );
+			(*iter).current++;
+		}
 	}
+
 }
 
 
