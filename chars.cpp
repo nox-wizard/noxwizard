@@ -125,9 +125,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 
 	party=INVALID;
-	partyCanLoot=false;
-	requestedParty=INVALID;
-	reqPartySerial=INVALID;
 
 	setId( BODY_MALE );
 	race=INVALID;

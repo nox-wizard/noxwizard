@@ -449,9 +449,6 @@ class cChar : public cObject
 */
 	public:
 		SI32			party;
-		SI32			requestedParty;
-		SI32			reqPartySerial;
-		LOGICAL			partyCanLoot;
 //@}
 
 //@{

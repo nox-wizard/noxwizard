@@ -50,6 +50,7 @@
 #include "inlines.h"
 #include "skills.h"
 #include "nox-wizard.h"
+#include "party.h"
 
 
 
@@ -319,15 +320,20 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				if ( container->getOwnerSerial32() != pc_currchar->getSerial32())
 				{ //Looter :P
 
-					//-- begin -- xan party system looting :)
 					pc_currchar->unHide();
-					P_CHAR p_chr = pointers::findCharBySerial( container->getOwnerSerial32() ) ;
 					bool bCanLoot = false;
-					if ( ISVALIDPC( p_chr ) )
-						if ( p_chr->party == pc_currchar->party )
-							bCanLoot = p_chr->partyCanLoot;
-					//-- end -- xan party system looting :)
-					if ( !bCanLoot && container->more2 == 1 )
+					if( pc_currchar->party!=INVALID ) {
+						P_CHAR dead = pointers::findCharBySerial( container->getOwnerSerial32() ) ;
+						if( ISVALIDPC( dead ) && dead->party==pc_currchar->party ) {
+							P_PARTY party = Partys.getParty( pc_currchar->party );
+							if( party!=NULL ) {
+								P_PARTY_MEMBER member = party->getMember( pc_currchar->getSerial32() );
+								if( member!=NULL )
+									bCanLoot = member->canLoot;
+							}
+						}
+					}
+					if ( !bCanLoot && container->more2==1 )
 					{
 						pc_currchar->IncreaseKarma(-5);
 						setCrimGrey(pc_currchar, ServerScp::g_nLootingWillCriminal);
