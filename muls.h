@@ -65,14 +65,52 @@ public:
 	cMULFile( std::string idx, std::string data, bool cache  );
 	~cMULFile();
 
-	virtual bool isReady() { return idx->file.is_open() && data->file.is_open(); }
-	virtual bool getData( UI32 i, std::vector< T >* data );
+
+	bool isReady() { return idx->file.is_open() && data->file.is_open(); }
 	std::string getPath() { return idx->path; }
+	bool getData( UI32 id, std::vector< T >* data )	{
+
+		//ndEndy need because can be into verdata
+		std::map< UI32, std::vector<T> >::iterator iter( cache.find( id ) );
+		if( iter!=cache.end() ) {
+			data=&iter->second;
+			return false;
+		}
+
+		if( (id==INVALID) || ( isCached ) || ( id*sizeof(TINDEX) >= idx->file.width() ) ) {
+			data=NULL;
+			return false;
+		}
+
+		TINDEX index;
+		idx->file.seekg( id*sizeof(TINDEX) );
+		idx->file.read( (char*)&index, sizeof(TINDEX) );
+		if( index.start==INVALID || index.size==INVALID ) {
+			data=NULL;
+			return false;
+		}
+
+		if( ( index.size % sizeof(T) ) != 0  ) {
+			ErrOut( "data corrupted ( index=%i ) in %s ", id, idx->path.c_str() );
+			data=NULL;
+			return false;
+		}
+
+		data = new std::vector<T>;
+		this->data->file.seekg( index.start );
+		T buffer;
+		for( int s=0; s< (index.size % sizeof(T)); ++s ) {
+			this->data->file.read( (char*)&buffer, sizeof(T));
+			data->push_back( buffer );
+		}
+
+		return true;
+	}
 
 };
 
 
-template <typename T> class NxwMulWrapper {
+template <class T> class NxwMulWrapper {
 
 private:
 	std::vector< T >* data; 
@@ -84,14 +122,15 @@ private:
 public:
 
 	NxwMulWrapper( cMULFile<T>* mul, UI32 id );
-	~NxwMulWrapper();
+	~NxwMulWrapper()	{	if( needFree )	delete data;	}
 
-	void rewind();
-	UI32 size();
-	bool end();
-	bool isEmpty();
-	NxwMulWrapper<T>& operator++(int);
-	T get();
+	void rewind()	{ 	needFree = mul->getData( idx, data );	}
+	UI32 size()	{	return (data!=NULL)? data->size() : 0;	}
+	bool end() { 	return (data==NULL) || (current==data->end()); }
+	bool isEmpty()	{	return size()<=0;	}
+	NxwMulWrapper<T>& operator++(int)	{	current++;	return (*this);	}
+	T get()	{	return *current;	}
+
 
 };
 
@@ -442,14 +481,14 @@ LOGICAL seekTile( UI16 id, tile_st& tile );
 
 
 
-class NxwMulWrapperStatics : public NxwMulWrapper<struct statics_st> {
+class NxwMulWrapperStatics : public NxwMulWrapper<statics_st> {
 public:
-	NxwMulWrapperStatics( UI32 x, UI32 y ) : NxwMulWrapper<struct statics_st>( data::statics, data::statics->idFromXY(x,y) ) { };
+	NxwMulWrapperStatics( UI32 x, UI32 y );
 };
 
-class NxwMulWrapperMulti : public NxwMulWrapper< struct multi_st> {
+class NxwMulWrapperMulti : public NxwMulWrapper<multi_st> {
 public:
-	NxwMulWrapperMulti( UI32 id ) : NxwMulWrapper<struct multi_st>( data::multi, id ) { };
+	NxwMulWrapperMulti( UI32 id );
 
 };
 

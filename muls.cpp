@@ -17,7 +17,7 @@ std::string statics_idx_path;
 std::string statics_path;
 bool statics_cache = false;
 
-std::string map_map;
+std::string map_path;
 UI16 map_width;
 UI16 map_height;
 
@@ -33,7 +33,7 @@ bool multi_cache = false;
 namespace data {
 
 cTiledata* tiledata=NULL;
-cMap* mappa=NULL;
+cMap* maps=NULL;
 cStatics* statics=NULL;
 cVerdata* verdata=NULL;
 cMulti* multi=NULL;
@@ -95,7 +95,7 @@ cMULFile<T>::~cMULFile() {
 \param id the id
 \param data the data
 \return true if need delete of vector
-*/
+*//*
 template <typename T>
 bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 	
@@ -135,7 +135,7 @@ bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 
 	return true;
 
-}
+}*/
 
 /*!
 \brief Cache data
@@ -176,6 +176,12 @@ void cMULFile<T>::loadCache() {
 
 }
 
+
+
+
+
+
+
 /*!
 \brief Constructor
 \author Endymion
@@ -194,71 +200,78 @@ NxwMulWrapper<T>::NxwMulWrapper( cMULFile<T>* mul, UI32 i ) {
 /*
 \brief Destructor
 \author Endymion
-*/
-template <typename T>
+*//*
+template <class T>
 NxwMulWrapper<T>::~NxwMulWrapper() {
 	if( needFree )
 		delete data;
-}
+}*/
 
 /*
 \brief Rewind the set
 \author Endymion
-*/
+*//*
 template <typename T>
 void NxwMulWrapper<T>::rewind() {
 	needFree = mul->getData( i, data );
-}
+}*/
 
 /*
 \brief Get the size
 \author Endymion
 \return the size
-*/
+*//*
 template <typename T>
 UI32 NxwMulWrapper<T>::size() {
 	return (data!=NULL)? data->size() : 0;
-}
+}*/
 
 /*
 \brief Check if set is at end
 \author Endymion
 */
-template <typename T>
+/*template< typename T > 
 bool NxwMulWrapper<T>::end() {
 	return (data==NULL) || (current==data->end());
-}
+}*/
 
 /*
 \brief Check if set is empty
 \author Endymion
-*/
+*//*
 template <typename T>
 bool NxwMulWrapper<T>::isEmpty() {
 	return size()<=0;
-}
+}*/
 
 /*
 \brief Advance set
 \author Endymion
-*/
+*//*
 template <typename T>
 NxwMulWrapper<T>& NxwMulWrapper<T>::operator++(int) {
 	current++;
-}
+}*/
 
 /*
 \brief Get the value
 \author Endymion
-*/
+*//*
 template <typename T>
 T NxwMulWrapper<T>::get() {
 	return *current;
-}
+}*/
 
 
 
 
+NxwMulWrapperStatics::NxwMulWrapperStatics( UI32 x, UI32 y ) : NxwMulWrapper<statics_st>( data::statics, data::statics->idFromXY(x,y) ) {
+
+};
+
+NxwMulWrapperMulti::NxwMulWrapperMulti( UI32 id ) : NxwMulWrapper<multi_st>( data::multi, id ) {
+
+};
 
 
 
