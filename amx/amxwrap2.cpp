@@ -1413,7 +1413,7 @@ NATIVE2(_setItemProperty)
 			strcpy(pi->disabledmsg, g_cAmxPrintBuffer);
 			break;
 		case NXW_IP_STR_MURDERER :				   //dec value :  453;
-			strcpy(pi->murderer, g_cAmxPrintBuffer);
+			pi->murderer = string(g_cAmxPrintBuffer);
 			break;
 		case NXW_IP_STR_NAME :					   //dec value :  454;
 			pi->setCurrentName(g_cAmxPrintBuffer);
@@ -1614,7 +1614,7 @@ static const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_STR_CREATOR, pi->creator )   //dec value :  450;
 		CHECK(NXW_IP_STR_DESCRIPTION, pi->desc )   //dec value :  451;
 		CHECK(NXW_IP_STR_DISABLEDMSG, pi->disabledmsg )   //dec value :  452;
-		CHECK(NXW_IP_STR_MURDERER, pi->murderer )   //dec value :  453;
+		CHECK(NXW_IP_STR_MURDERER, pi->murderer.c_str() )   //dec value :  453;
 		CHECK(NXW_IP_STR_NAME, pi->getCurrentNameC() )   //dec value :  454;
 		CHECK(NXW_IP_STR_NAME2, pi->getSecondaryNameC() )   //dec value :  455;
 	}
