@@ -303,7 +303,7 @@ void doubleclick(NXWCLIENT ps)
 			else
 			{
 				if ( !pi->disabledmsg.empty() )
-					pc->sysmsg( const_cast<TEXT*>(pi->disabledmsg.c_str())); // Added by Magius(CHE) §
+					pc->sysmsg("%s", pi->disabledmsg.c_str());
 				else
 					pc->sysmsg(TRANSLATE("That doesnt seem to work right now."));
 				return;
