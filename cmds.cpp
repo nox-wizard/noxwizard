@@ -111,26 +111,34 @@ void cCommand::call(P_CHAR curr_char){
 
 cCommandMap::cCommandMap() { 
  
-   char str [150]; 
-   std::string var1, var3;
-   SI08 var2; 
+	FILE * pFile;
+	char str [150]; 
+	std::string var1, var3;
+	SI08 var2; 
       
-   ifstream in; 
+   //ifstream in; 
       
- 
-   in.open("small-scripts/commands.txt"); 
-      
-    while(!in.eof()){  
-      
-     in >> str ; 
+   pFile = fopen ("small-scripts/commands.txt" , "r");
 
-//	 if ( str[0]=='/' || str[0]=='\n' ) continue;
+   if (pFile == NULL) return;
+ 
       
-		var1=strtok(str,","); 
+    while( !feof(pFile) ){  
+      
+     //in >> str ; 
+     fgets (str , 80 , pFile);
+
+	 if ( (str[0]=='/') || (str[0]=='\n') ) continue;
+      
+	if (str[strlen(str)-1]=='\n')
+			str[strlen(str)-1]='\0';	
+	 
+	 
+	 var1=strtok(str,","); 
 		strupr(var1); 
 		var2=atoi(strtok(0,","));      
 		var3=strtok(0,","); 
-      
+		
 		addGmCommand(var1,var2,var3); 
      } 
 
