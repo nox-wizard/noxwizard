@@ -129,6 +129,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	requestedParty=INVALID;
 	reqPartySerial=INVALID;
 
+	setId( BODY_MALE );
 	race=INVALID;
 	custmenu=INVALID;
 	unicode = false; // This is set to 1 if the player uses unicode speech, 0 if not
