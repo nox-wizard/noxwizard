@@ -254,7 +254,9 @@ const int NXW_CP_STR_TITLE = 455;
 const int NXW_CP_STR_TRIGWORD = 456;
 const int NXW_CP_STR_SPEECHWORD = 457;
 const int NXW_CP_STR_SPEECH = 458;
-const int NXW_CP_STR_SPEECH_CURRENT = 459;
+
+const int NXW_CP_UNI_SPEECH_CURRENT = 500;
+const int NXW_CP_UNI_PROFILE = 501;
 
 
 ///// NOW ITEM PROPS :)
