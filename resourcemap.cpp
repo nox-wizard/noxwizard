@@ -165,7 +165,7 @@ UI32 cResourceMap::addMap(cResourceMap *newMap)
 			delete newMap;
 			return iter->first;
 		}
-		if ( map->getFile() == newMap->getFile() )
+		if ( (map->getFile() == newMap->getFile()) && (map->getFile() != "" ))
 		{
 			delete newMap;
 			return iter->first;
