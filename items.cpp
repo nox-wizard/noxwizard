@@ -993,39 +993,10 @@ LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 	CASEITEMEVENT("@ONLOCKPICK", EVENT_IONLOCKPICK)
 	CASEITEMEVENT("@ONWALKOVER", EVENT_IONWALKOVER)
 	CASEITEMEVENT("@ONPUTITEM", EVENT_IONPUTITEM)
-    CASEITEMEVENT("@ONTAKEFROMCONTAINER", EVENT_ITAKEFROMCONTAINER)
+	CASEITEMEVENT("@ONTAKEFROMCONTAINER", EVENT_ITAKEFROMCONTAINER)
 	else if (!(strcmp("@ONCREATION",script1))) newAmxEvent(script2)->Call(pi->getSerial32(),-1);
 	else return false;
 	return true;
-	/*
-	if	(!strcmp("@ONDAMAGE",		script1))	pi->setAmxEvent( EVENT_IONDAMAGE, script2 );
-	else if (!strcmp("@ONEQUIP",		script1))	pi->setAmxEvent( EVENT_IONEQUIP, script2 );
-	else if (!strcmp("@ONUNEQUIP",		script1))	pi->setAmxEvent( EVENT_IONUNEQUIP, script2 );
-	else if (!strcmp("@ONCLICK",		script1))	pi->setAmxEvent( EVENT_IONCLICK, script2 );
-	else if (!strcmp("@ONDBLCLICK",		script1))	pi->setAmxEvent( EVENT_IONDBLCLICK, script2 );
-	else if (!strcmp("@ONCHECKCANUSE",	script1))	pi->setAmxEvent( EVENT_IONCHECKCANUSE, script2 );
-	else if (!strcmp("@ONPUTINBACKPACK",	script1))	pi->setAmxEvent( EVENT_IPUTINBACKPACK, script2 );
-	else if (!strcmp("@ONDROPINLAND",	script1))	pi->setAmxEvent( EVENT_IDROPINLAND, script2 );
-	else if (!strcmp("@ONTRANSFER",		script1))	pi->setAmxEvent( EVENT_IONTRANSFER, script2 );
-	else if (!strcmp("@ONSTOLEN",		script1))	pi->setAmxEvent( EVENT_IONSTOLEN, script2 );
-	else if (!strcmp("@ONPOISONED",		script1))	pi->setAmxEvent( EVENT_IONPOISONED, script2 );
-	else if (!strcmp("@ONDECAY",		script1))	pi->setAmxEvent( EVENT_IONDECAY, script2 );
-	else if (!strcmp("@ONREMOVETRAP",	script1))	pi->setAmxEvent( EVENT_IONREMOVETRAP, script2 );
-	else if (!strcmp("@ONLOCKPICK",		script1))	pi->setAmxEvent( EVENT_IONLOCKPICK, script2 );
-	else if (!strcmp("@ONWALKOVER",		script1))	pi->setAmxEvent( EVENT_IONWALKOVER, script2 );
-	else if (!strcmp("@ONPUTITEM",		script1))	pi->setAmxEvent( EVENT_IONPUTITEM, script2 );
-        else if (!strcmp("@ONTAKEFROMCONTAINER",script1))	pi->setAmxEvent( EVENT_ITAKEFROMCONTAINER, script2 );
-	else if (!strcmp("@ONCREATION",		script1))	newAmxEvent( script2 )->Call( pi->getSerial32(), INVALID );
-	else if (!strcmp("@ONSTART",script1))
-	{
-								AmxEvent* event = pi->setAmxEvent( EVENT_IONSTART, script2 );
-								if( event != 0 )
-									event->Call(pi->getSerial32(), INVALID );
-	}
-	else
-		return false;
-
-	return true;*/
 }
 
 /*!
@@ -1411,10 +1382,7 @@ UI32 cContainerItem::removeItems(UI32 scriptID, UI32 amount/*= 1*/)
 	{
 		P_ITEM pi= pointers::findItemBySerial(*it);
 		VALIDATEPIR(pi, 0);
-/*
-		if (pi->type == ITYPE_CONTAINER)
-			rest= pi->DeleteAmountByID(amount, scriptID);
-*/
+
 		if( pi->getScriptID()==scriptID )
 			rest= pi->ReduceAmount(rest);
 
