@@ -101,13 +101,13 @@ void cResourceMap::load()
 
 		_findclose( hFile );
 	}
-#else if __unix__
+#elseif __unix__
 		DIR *dirp;
 	struct dirent *entry;
 
-	if(dirp = opendir(SrvParms->savePath))
+	if(dirp = opendir(SrvParms->savePath.c_str()))
 	{
-		while( (entry = readdir(dirp) )
+		while( entry = readdir(dirp) )
 		{
 			currentFile=SrvParms->savePath;
 			currentFile+=entry->d_name;
