@@ -117,10 +117,12 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	if (chanceToHit < 5) chanceToHit = 5;
 	else if (chanceToHit > 95) chanceToHit = 95;
-	hit = chance(chanceToHit);
+	hit = chance( chanceToHit );
 
 	checkSkillSparrCheck(fightskill, 0, 1000, pc_def);
 	swingtargserial = INVALID;
+	if ( running )
+		hit = false;
 
 	if (!hit) {
 		
@@ -135,7 +137,12 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 			return;
 		*/
 		if (!npc) {
-			( chance(30) || def_fightskill == ARCHERY ) ? doMissedSoundEffect() : pc_def->doCombatSoundEffect(def_fightskill, def_Weapon);
+			if ( chance(30) || def_fightskill == ARCHERY )
+				doMissedSoundEffect();
+			else {
+				pc_def->doCombatSoundEffect( def_fightskill, def_Weapon );
+				pc_def->emoteall( "Parries the attack", 1 );
+			}
 		}
 		if (fightskill == ARCHERY) {
 			if (chance(33)) {
@@ -178,7 +185,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		return;
 	*/
 	if (ISVALIDPI(pWeapon)) {
-		if (chance(25) && pWeapon->type != ITYPE_SPELLBOOK) {
+		if (chance(5) && pWeapon->type != ITYPE_SPELLBOOK) {
 			pWeapon->hp--;
 			if(pWeapon->hp <= 0) {
 				sysmsg(TRANSLATE("Your weapon has been destroyed"));
@@ -205,24 +212,34 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		basedamage = UI32( (skill[WRESTLING]/100.0)/2 + RandomNum(1,2) );
 
 		//Luxor (6 dec 2001): Wrestling Disarm & Stun punch
-		if (wresmove == WRESDISARM)	{
-			if (checkSkill(WRESTLING, 800, 1200, 1)) {
-				P_ITEM dWeapon=pc_def->getWeapon();
-				if (dWeapon!=NULL) {
-					Location charpos= pc_def->getPosition();
-
-					wresmove = 0;
-					dWeapon->setContSerial(-1);
-					dWeapon->MoveTo(charpos.x, charpos.y, charpos.z);
-					dWeapon->Refresh();
+		if ( wresmove == WRESDISARM ) {
+			if ( pc_def->getStrength() >= 150 || pc_def->dx >= 150 ) {
+				wresmove = 0;
+				sysmsg( TRANSLATE("You cannot disarm a creature so skilled!") );
+			} else {
+				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(getStrength()/10.0 - pc_def->getStrength()/10.0) ) ) {
+					P_ITEM dWeapon=pc_def->getWeapon();
+					if (dWeapon!=NULL) {
+						Location charpos = pc_def->getPosition();
+						
+						wresmove = 0;
+						dWeapon->setContSerial( INVALID );
+						dWeapon->MoveTo( charpos );
+						dWeapon->Refresh();
+					}
 				}
 			}
 		}
 
-		if (wresmove == WRESSTUNPUNCH) {
-			if ( checkSkill(WRESTLING, 800, 1200, 1)) {
+		if ( wresmove == WRESSTUNPUNCH ) {
+			if ( pc_def->getStrength() >= 150 ) {
 				wresmove = 0;
-				tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
+				sysmsg( TRANSLATE("You cannot stun a creature so strong!") );
+			} else {
+				if ( chance( chanceToHit + int(skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0) + int(getStrength()/10.0 - pc_def->getStrength()/10.0) ) ) {
+					wresmove = 0;
+					tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
+				}
 			}
 		}
 		//Luxor <End>
@@ -230,23 +247,23 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	pc_def->checkSkill(TACTICS, 0, 1000, 1);
 
 
-	damage = basedamage + (int)(basedamage/100.0 * ((skill[TACTICS])/16.0));	//Bonus damage for tactics
-	damage += (int)(damage/100.0 * getStrength()/5.0);	//Bonus damage for strenght
+	damage = basedamage + (int)(basedamage/100.0 * ((skill[TACTICS])/16.0)); //Bonus damage for tactics
+	damage += (int)(damage/100.0 * getStrength()/5.0); //Bonus damage for strenght
 	if (checkSkillSparrCheck(ANATOMY, 0, 1000, pc_def)) { //Bonus damage for anatomy
-		if (skill[ANATOMY] < 1000) {
-			damage += (int)(damage/100.0 * skill[ANATOMY]/50.0);
+		if ( skill[ANATOMY] < 1000 ) {
+			damage += (int)( damage/100.0 * skill[ANATOMY]/50.0 );
 		} else { //GM anatomist
-			damage += (int)(damage/100.0 * 30.0);
+			damage += (int)( damage/100.0 * 30.0 );
 		}
 	}
 
 	P_ITEM pShield=pc_def->getShield();
 	if(ISVALIDPI(pShield)) {
-		if (chance(pc_def->skill[PARRYING]/20)) {// chance to block with shield
+		if ( chance(pc_def->skill[PARRYING]/20) ) { // chance to block with shield
 			pc_def->checkSkill(PARRYING, 0, 1000);
-			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2;// damage absorbed by shield
-			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def;// damage absorbed by shield
-			if (chance(25)) pShield->hp--;
+			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2; // damage absorbed by shield
+			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def; // damage absorbed by shield
+			if (chance(5)) pShield->hp--;
 			if (pShield->hp<=0) {
 				pc_def->sysmsg(TRANSLATE("Your shield has been destroyed"));
 				pShield->deleteItem();
@@ -258,7 +275,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	x = pc_def->combatHitMessage(damage);
 	def = pc_def->calcDef(x);
 	if (!pc_def->npc)
-		damage -= RandomNum(def, def*2); //PC armor system
+		damage -= RandomNum(def, def*3); //PC armor system
 	else
 		damage -= RandomNum(def/2, def); //NPC armor system
 	if (damage<0) damage=0;
@@ -285,7 +302,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	}
 	*/
 
-	//when hitten and damage >1, defender fails if casting a spell!
+	//when hit and damage >1, defender fails if casting a spell!
 	if (damage > 1 && !pc_def->npc) {
 		int sd = 0;
 		if (pc_def->getClient() != NULL) sd = pc_def->getClient()->toInt();
@@ -298,7 +315,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 	}
 
-	if(damage>0) {
+	if( damage > 0 ) {
 		//Evaluate damage type
 		if (fightskill == WRESTLING) dmgtype = DAMAGE_BLUDGEON;
 		if (npc) {
@@ -720,9 +737,8 @@ int cChar::calcDef(SI32 x)
 		if (pi->layer > LAYER_1HANDWEAPON && pi->layer < LAYER_MOUNT) {
 			if (pi->def>0)
 			{
-				//int hpPerc = int(float(pi->hp)/float(pi->maxhp)*100.0);
-				//armordef = int(pi->def/100.0*hpPerc);
-				armordef = pi->def;
+				int hpPerc = int(float(pi->hp)/float(pi->maxhp)*100.0);
+				armordef = qmax( 1, int(pi->def/50.0*hpPerc) );
 
 				switch (pi->layer)
 				{
@@ -814,7 +830,7 @@ int cChar::calcDef(SI32 x)
 		//Dont damage wears beard hair and backpack
 		if(pj->layer!=0x0B && pj->layer!=0x10 && pj->layer!=0x15 && pj->layer!=0x4 && pj->layer!=0x5 && pj->layer!=0x6
 			&& pj->layer!=0xC && pj->layer!=0x11 && pj->layer!=0x14 && pj->layer!=0x16) {
-			if(chance(25))
+			if(chance(5))
 				pj->hp--; //Take off a hit point
 			if(pj->hp<=0) {
 				if ( strncmp(pj->getCurrentNameC(), "#", 1) ) {
