@@ -588,9 +588,6 @@ NATIVE2(_setCharProperty)
 			case NXW_CP_I_SQUELCHED :			  			//dec value: 292;
 				pc->squelched = p;
 				break;
-			case NXW_CP_I_STABLEMASTER_SERIAL :					  //dec value: 293;
-				pc->stablemaster_serial = p;
-				break;
 			case NXW_CP_I_STEALTH :				  			//dec value: 294;
 				pc->stealth = p;
 				break;
@@ -1831,7 +1828,7 @@ static int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_SPLIT , pc->split )  				//dec value: 290;
 		CHECK(  NXW_CP_I_SPLITCHNC , pc->splitchnc )  			//dec value: 291;
 		CHECK(  NXW_CP_I_SQUELCHED , pc->squelched )  			//dec value: 292;
-		CHECK(  NXW_CP_I_STABLEMASTER_SERIAL , pc->stablemaster_serial )  //dec value: 293;
+		CHECK(  NXW_CP_I_STABLEMASTER_SERIAL , pc->getStablemaster() )  //dec value: 293;
 		CHECK(  NXW_CP_I_STEALTH , pc->stealth )  			//dec value: 294;
 		case NXW_CP_I_STRENGHT:						//dec value: 295;
 			switch(prop2) {
