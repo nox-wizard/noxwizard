@@ -20,6 +20,25 @@ cUnicodeString::cUnicodeString( std::string& s )
 	this->copy(s);
 }
 
+cUnicodeString::cUnicodeString( char* c )
+{
+	addTerminator();
+	wchar_t t=0; 
+	int i=0;
+	do
+	{
+		if( i%2==0 ) {
+			t=c[i]<<8;
+		}
+		else {
+			t+=c[i];
+			this->operator +=( c[i] );
+		}
+		++i;
+	} while( !( (i%2) && t==0 ) );	
+
+}
+
 cUnicodeString::~cUnicodeString() { }
 
 UI32 cUnicodeString::size()

@@ -26,6 +26,7 @@ public:
 public:
 	cUnicodeString();
 	cUnicodeString( std::string& s );
+	cUnicodeString( char* c );
 	virtual ~cUnicodeString();
 
 	UI32 size();
