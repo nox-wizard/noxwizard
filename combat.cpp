@@ -58,7 +58,8 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		swingtargserial = INVALID;
 		return;
 	}
-	
+	if ( swingtargserial == INVALID )
+		return;
 	if ( amxevents[EVENT_CHR_ONCOMBATHIT] ) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONCOMBATHIT]->Call( getSerial32(), pc_def->getSerial32() );
@@ -284,8 +285,8 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	P_ITEM pShield=pc_def->getShield();
 	if(ISVALIDPI(pShield)) {
+		pc_def->checkSkill(PARRYING, 0, 1000);
 		if ( chance(pc_def->skill[PARRYING]/20) ) { // chance to block with shield
-			pc_def->checkSkill(PARRYING, 0, 1000);
 			//pc_def->emoteall( "*Parries the attack*", 1 );
 			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2; // damage absorbed by shield
 			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def; // damage absorbed by shield
@@ -327,7 +328,12 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 	}
 	*/
-
+	if ( pc_def->getSerial32() < 0 )
+	{
+		WarnOut("Defender char object illegal");
+		pc_def->Delete();
+		return;
+	}
 	//when hit and damage >1, defender fails if casting a spell!
 	if (damage > 1 && !pc_def->npc) {
 		int sd = 0;
@@ -635,7 +641,10 @@ void cChar::doCombat()
 
 	if (pc_def->hp < 1)
 	{
-		pc_def->Kill();
+		if (npc)
+		{
+			toggleCombat();
+		}
 		if (!npc && !pc_def->npc)
 		{	//Player vs Player
 			if(pc_def->IsInnocent() && Guilds->Compare(this,pc_def) == 0 )
@@ -651,10 +660,7 @@ void cChar::doCombat()
 				pvplog.Write("%s was killed by %s!\n", pc_def->getCurrentNameC(), getCurrentNameC());
 			}
 		}
-		if (npc)
-		{
-			toggleCombat();
-		}
+		pc_def->Kill();
 	}
 }
 
