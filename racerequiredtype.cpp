@@ -23,7 +23,7 @@ string RequiredType::requiredTypeNames[3] = { "OPTIONAL", "PROHIBITED", "MANDATO
 // History		:
 RequiredType::RequiredType( void )
 {
-	this->value = RT_OPTIONAL;
+	value = RT_OPTIONAL;
 }
 
 RequiredType& RequiredType::operator=( const char* newRequiredType )
@@ -31,13 +31,13 @@ RequiredType& RequiredType::operator=( const char* newRequiredType )
 	string		str = newRequiredType;
 	RequiredType	rt;
 	rt = str;
-	this->value = rt.value;
+	value = rt.value;
 	return *this;
 }
 
 RequiredType& RequiredType::operator=( const REQUIREDTYPE newRequiredType )
 {
-	this->value = newRequiredType;
+	value = newRequiredType;
 	return *this;
 }
 
@@ -45,12 +45,12 @@ RequiredType& RequiredType::operator=( const string& newRequiredType )
 {
 	int		index;
 
-	this->value = RT_OPTIONAL;
+	value = RT_OPTIONAL;
 
 	for( index = RT_FIRST; index < RT_LAST; index++ )
 		if ( requiredTypeNames[index] == newRequiredType )
 		{
-			this->value = static_cast< REQUIREDTYPE >(index);
+			value = static_cast< REQUIREDTYPE >(index);
 			break;
 		}
 
@@ -60,52 +60,53 @@ RequiredType& RequiredType::operator=( const string& newRequiredType )
 RequiredType& RequiredType::operator=( const int newRequiredType )
 {
 	if ( newRequiredType >= int( RT_FIRST ) && newRequiredType <= int( RT_LAST ) )
-		this->value = static_cast< REQUIREDTYPE >( newRequiredType );
+		value = static_cast< REQUIREDTYPE >( newRequiredType );
 	else
-		this->value = RT_OPTIONAL;
+		value = RT_OPTIONAL;
 	return *this;
 }
 
 bool RequiredType::operator==( RequiredType a )
 {
-	return ( a.value == this->value );
+	return ( a.value == value );
 }
 
 
 bool RequiredType::operator==( REQUIREDTYPE a )
 {
-	return ( a == this->value ) ;
+	return ( a == value ) ;
 }
 
 bool RequiredType::operator==( int a )
 {
-	return ( a == int( this->value ) );
+	return ( a == int( value ) );
 }
 
 bool RequiredType::operator==( char* a )
 {
-	return ( strcmp( requiredTypeNames[ this->value ].c_str(), a ) == 0 );
+	return ( strcmp( requiredTypeNames[ value ].c_str(), a ) == 0 );
 }
 
 RequiredType::operator int() const
 {
-	return this->value;
+	return value;
 }
 
-/*
+#if 0
 RequiredType::operator REQUIREDTYPE() const
 {
-	return this->value;
+	return value;
 }
-*/
+#endif
 
 RequiredType::operator char*() const
 {
-	return const_cast< char * >( requiredTypeNames[ this->value ].c_str() ) ;
+	return const_cast< char * >( requiredTypeNames[ value ].c_str() ) ;
 }
 
 
 RequiredType::operator string*() const
 {
-	return &requiredTypeNames[ this->value ] ;
+	return &requiredTypeNames[ value ] ;
 }
+

@@ -25,7 +25,6 @@ class cJailed
 {
 public:
 	cJailed();
-	~cJailed();
 	
 	SERIAL	serial;		//!< serial of char jailed
 	Location oldpos;	//!< old position

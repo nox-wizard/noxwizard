@@ -17,18 +17,9 @@ SERIAL cAllObjects::current_char_serial=0;
 
 cAllObjects objects; //All objects
 
-cAllObjects::cAllObjects()
-{
-
-}
-
-cAllObjects::~cAllObjects()
-{
-}
-
 void cAllObjects::clear()
 {
-	OBJECT_MAP::iterator iter( this->all.begin() );
+	OBJECT_MAP::iterator iter( all.begin() );
 	for( ; iter!=all.end(); iter++ ) {
 		if( iter->second!=NULL )
 			safedelete(iter->second);
@@ -38,7 +29,7 @@ void cAllObjects::clear()
 P_OBJECT cAllObjects::findObject(SERIAL nSerial)
 {
 	if (nSerial < 0) return NULL;
-    OBJECT_MAP::iterator iter( this->all.find(nSerial) );
+    OBJECT_MAP::iterator iter( all.find(nSerial) );
     if (iter == all.end())
 		return NULL;
 
@@ -59,24 +50,24 @@ void cAllObjects::eraseObject( P_OBJECT obj )
 
 SERIAL cAllObjects::getNextCharSerial()
 {
-	return ++this->current_char_serial;
+	return ++current_char_serial;
 }
 
 SERIAL cAllObjects::getNextItemSerial()
 {
-	return ++this->current_item_serial;
+	return ++current_item_serial;
 }
 
 void cAllObjects::updateCharSerial( SERIAL ser )
 {
-	if( ser > this->current_char_serial )
-		this->current_char_serial=ser;
+	if( ser > current_char_serial )
+		current_char_serial=ser;
 }
 
 void cAllObjects::updateItemSerial( SERIAL ser )
 {
-	if( ser > this->current_item_serial )
-		this->current_item_serial=ser;
+	if( ser > current_item_serial )
+		current_item_serial=ser;
 }
 
 
@@ -199,25 +190,12 @@ void DeleteChar( SERIAL k )
 
 }
 
-
-
-
-
-cAllObjectsIter::cAllObjectsIter(  )
-{
-}
-
-cAllObjectsIter::~cAllObjectsIter()
-{
-}
-
-
 void cAllObjectsIter::rewind()
 {
-	this->curr=objects.all.begin();
-	this->next=this->curr;
-	if ( this->next != objects.all.end() )
-		this->next++;
+	curr=objects.all.begin();
+	next=curr;
+	if ( next != objects.all.end() )
+		next++;
 }
 
 bool cAllObjectsIter::IsEmpty()
@@ -238,8 +216,8 @@ SERIAL cAllObjectsIter::getSerial()
 
 cAllObjectsIter& cAllObjectsIter::operator++(int)
 {
-	this->curr=this->next;
-	this->next++;
+	curr=next;
+	next++;
 	return (*this);
 }
 

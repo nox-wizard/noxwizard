@@ -302,13 +302,13 @@ cChar::cChar( SERIAL ser ) : cObject()
 	morphed=0;
 	resetLockSkills();
 
-	this->beardserial=INVALID;
-	this->oldbeardcolor=0;
-	this->oldbeardstyle=0;
+	beardserial=INVALID;
+	oldbeardcolor=0;
+	oldbeardstyle=0;
 	
-	this->hairserial=INVALID;
-	this->oldhaircolor=0;
-	this->oldhairstyle=0;
+	hairserial=INVALID;
+	oldhaircolor=0;
+	oldhairstyle=0;
 
 	possessorSerial = INVALID; //Luxor
 	possessedSerial = INVALID; //Luxor
@@ -832,7 +832,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 				if( banktype == BANK_GOLD && pi->morey == MOREY_GOLDONLYBANK )
 					return pi;
 				else // ware ( for item )
-					if ( banktype == BANK_ITEM && pi->morez == this->region )
+					if ( banktype == BANK_ITEM && pi->morez == region )
 						return pi; //correct region
 			}
 		}
@@ -859,7 +859,7 @@ P_ITEM cChar::GetBankBox( short banktype )
 	if(SrvParms->usespecialbank) {
 		if(banktype == BANK_ITEM) {
 			pi->morey = 0;
-			pi->morez = this->region;
+			pi->morez = region;
 		} else {
 			pi->morey = MOREY_GOLDONLYBANK;
 			pi->morez = 0; // All Region
@@ -4122,27 +4122,27 @@ void cChar::generic_heartbeat()
 	}
 
 	//HP REGEN
-	if( this->regenTimerOk( STAT_HP ) ) {
+	if( regenTimerOk( STAT_HP ) ) {
 		if (hp < getStrength() && (hunger > 3 || SrvParms->hungerrate == 0)) {
 			hp++;
 			update[ 0 ] = true;
 		}
 
-		this->updateRegenTimer( STAT_HP );
+		updateRegenTimer( STAT_HP );
 	}
 
 	//STAMINA REGEN
-	if( this->regenTimerOk( STAT_STAMINA )) {
+	if( regenTimerOk( STAT_STAMINA )) {
 		if (stm < dx) {
 			stm++;
 			update[ 2 ] = true;
 		}
 
-		this->updateRegenTimer( STAT_STAMINA );
+		updateRegenTimer( STAT_STAMINA );
 	}
 
 	//MANA REGEN
-	if( this->regenTimerOk( STAT_MANA ) )
+	if( regenTimerOk( STAT_MANA ) )
 	{
 		if (mn < in)
 		{
@@ -4156,7 +4156,7 @@ void cChar::generic_heartbeat()
 			med = 0;
 		}
 
-		UI32 manarate = this->getRegenRate( STAT_MANA, VAR_REAL );
+		UI32 manarate = getRegenRate( STAT_MANA, VAR_REAL );
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
@@ -4170,8 +4170,8 @@ void cChar::generic_heartbeat()
 				manarate -= UI32( skill[MEDITATION]/222.2 );
 		}
                 manarate = qmax( 1, manarate );
-		this->setRegenRate( STAT_MANA, manarate, VAR_EFF );
-		this->updateRegenTimer( STAT_MANA );
+		setRegenRate( STAT_MANA, manarate, VAR_EFF );
+		updateRegenTimer( STAT_MANA );
 
 	}
 	if ( hp <= 0 )
@@ -4784,7 +4784,7 @@ void cChar::do_lsd()
 
 bool cChar::isTargeting()
 {
-	return (this->current_target!=NULL);
+	return (current_target!=NULL);
 }
 
 void cChar::setTarget( P_TARGET newtarget )
@@ -4804,19 +4804,19 @@ void cChar::doTarget()
 
 wstring* cChar::getProfile()
 {
-	return this->profile;
+	return profile;
 }
 
-void cChar::setProfile( wstring* profile )
+void cChar::setProfile( wstring* newProfile )
 {
-	if( this->profile!=NULL )
-		safedelete(this->profile);
-	this->profile=profile;
+	if( profile!=NULL )
+		safedelete(profile);
+	profile=newProfile;
 }
 
 void cChar::resetProfile()
 {
-	this->profile=NULL;
+	profile=NULL;
 }
 	
 /*
@@ -4826,7 +4826,7 @@ void cChar::resetProfile()
 */
 wstring* cChar::getSpeechCurrent()
 {
-	return this->speechCurrent;
+	return speechCurrent;
 }
 
 /*
@@ -4837,7 +4837,7 @@ wstring* cChar::getSpeechCurrent()
 */
 void cChar::setSpeechCurrent( wstring* speech )
 {
-	this->speechCurrent=speech;
+	speechCurrent=speech;
 }
 
 /*
@@ -4925,8 +4925,8 @@ bool cChar::isStabled()
 void cChar::stable( P_CHAR stablemaster )
 {
 	VALIDATEPC(stablemaster);
-	if( !this->npc ) return;
-	this->stablemaster_serial=stablemaster->getSerial32();
+	if( !npc ) return;
+	stablemaster_serial=stablemaster->getSerial32();
 	pointers::addToStableMap( this );
 }
 
@@ -4938,7 +4938,7 @@ void cChar::unStable()
 {
 	if( !isStabled() ) return;
 	pointers::delFromStableMap( this );
-	this->stablemaster_serial=INVALID;
+	stablemaster_serial=INVALID;
 }
 
 /*

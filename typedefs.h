@@ -104,7 +104,7 @@ template < class T >
 class cPoint{
 public:
 
-	cPoint( T a=0, T b=0 ) { this->a=a; this->b=b; }; 
+	cPoint( T na=0, T nb=0 ) { a=na; b=nb; }; 
 
 	T a;
 	T b;

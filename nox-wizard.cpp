@@ -1800,7 +1800,7 @@ void addgold(int s, int totgold)
 
 	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
 	VALIDATEPC( pc );
-	P_ITEM pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), totgold );
+	item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), totgold );
 }
 
 void usepotion(P_CHAR pc, P_ITEM pi)

@@ -98,10 +98,11 @@ void loadcontainers()
 
 SI16 cItem::getContGump()
 {
-/*	switch(this->id1)
+#if 0
+	switch(id1)
 	{
 		case 0x0E:
-			switch (this->id2)
+			switch (id2)
 			{
 				case 0x75:			// Backpack
 				case 0x79: return 0x3C;	// Box/Pouch
@@ -145,7 +146,7 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x09:
-			switch (this->id2)
+			switch (id2)
 			{
 				case 0x90: return 0x41; // Round Basket
 						break;
@@ -168,11 +169,11 @@ SI16 cItem::getContGump()
 			break;
 
 		case 0x20:
-			if (this->id2=='\x06') return 0x09; // Coffin
+			if (id2=='\x06') return 0x09; // Coffin
 			break;
 
 		case 0x0A:
-			switch (this->id2)
+			switch (id2)
 			{
 				case 0x97:		// Bookcase
 				case 0x98:		// Bookcase
@@ -207,7 +208,7 @@ SI16 cItem::getContGump()
 				case 0x44:		// Dresser
 				case 0x35: return 0x51; // Dresser
 						break;
-				case 0xb2: if (this->morex==1) return 0x4a;
+				case 0xb2: if (morex==1) return 0x4a;
 						break;
 			}
 			break;
@@ -222,8 +223,8 @@ SI16 cItem::getContGump()
 
 	}
 	return 0x47;
-*/
-	CONTINFOMAP::iterator iter( contInfo.find( this->id() ) );
+#endif
+	CONTINFOMAP::iterator iter( contInfo.find( id() ) );
 	if( iter==contInfo.end() || iter->second==contInfoGump.end() )
 		return 0x47;
 	else 

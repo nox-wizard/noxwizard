@@ -258,19 +258,10 @@ void cPartyMenu::buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed )
 
 };
 
-
-
-
 cParty::cParty( SERIAL ser )
 {
-	this->members.clear();
-	this->serial=ser;
+	serial=ser;
 }
-
-
-cParty::~cParty() { }
-
-
 
 bool cParty::isMember( P_CHAR pc )
 {
@@ -302,8 +293,8 @@ bool cParty::addMember( P_CHAR pc )
 	if( pc->party!=INVALID )
 		return false;
 
-	this->members.push_back( pc->getSerial32() );
-	pc->party=this->serial;
+	members.push_back( pc->getSerial32() );
+	pc->party=serial;
 	sendPartyListAll();
 	return true;
 }
@@ -316,9 +307,9 @@ void cParty::removeMember( P_CHAR pc )
 
 	MEMBER_LIST::iterator iter( find( members.begin( ), members.end(), pc->getSerial32() ) );
 	if( iter!=members.end() ) {
-		this->members.erase( iter );
+		members.erase( iter );
 		pc->party=INVALID;
-		this->sendEmptyList( pc->getClient() );
+		sendEmptyList( pc->getClient() );
 		sendPartyListAll();
 	}
 
@@ -332,7 +323,7 @@ void cParty::kickMember( P_CHAR pc )
 	MEMBER_LIST::iterator iter( find( members.begin( ), members.end(), pc->getSerial32() ) );
 	if( iter!=members.end() ) {
 		pc->sysmsg(TRANSLATE("You've been kicked from the party"));
-		this->removeMember( pc );
+		removeMember( pc );
 	}
 
 }
@@ -377,7 +368,7 @@ void cParty::sendPartyList( NXWCLIENT ps )
 	if( ps==NULL )
 		return;
 
-	UI32 num=this->members.size();
+	UI32 num=members.size();
 	if( num == 0 )
 		return;
 
@@ -425,7 +416,7 @@ void cParty::sendPartyListAll()
 
 P_CHAR cParty::getLeader()
 {
-	if( this->members.size() >0 )
+	if( members.size() >0 )
 		return pointers::findCharBySerial(members[0]);
 	else
 		return NULL;
@@ -451,7 +442,7 @@ void cParty::eraseAllMembers()
 			pc->party=INVALID;
 			pc->reqPartySerial=INVALID;
 			pc->requestedParty=INVALID;
-			this->sendEmptyList( pc->getClient() );
+			sendEmptyList( pc->getClient() );
 		}
 	}
 
@@ -468,17 +459,13 @@ UI32 cParty::membersNumber()
 
 
 cPartys::cPartys() {
-	this->partylist.clear();
-	this->nextparty=0;
-}
-
-cPartys::~cPartys() {
+	nextparty=0;
 }
 
 SERIAL cPartys::newParty()
 {
-	SERIAL newp= this->nextparty;
-	this->partylist.insert( make_pair( newp, cParty(newp) ) );
+	SERIAL newp= nextparty;
+	partylist.insert( make_pair( newp, cParty(newp) ) );
 	nextparty++;
 	return newp;
 }
@@ -487,7 +474,7 @@ SERIAL cPartys::newParty()
 bool cPartys::addMember( SERIAL party, P_CHAR pc )
 {
 	VALIDATEPCR(pc,false);
-	PARTY_LIST::iterator iter( this->partylist.find( party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( party ) ), end( partylist.end() );
 	if( iter!=end )
 		return iter->second.addMember( pc );
 	else
@@ -498,17 +485,17 @@ bool cPartys::addMember( SERIAL party, P_CHAR pc )
 void cPartys::removeMember( P_CHAR pc )
 {
 	VALIDATEPC(pc);
-	PARTY_LIST::iterator iter( this->partylist.find( pc->party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( pc->party ) ), end( partylist.end() );
 	if( iter!=end ) {
 		if( iter->second.isLeader( pc ) ) { //disband party
 			iter->second.eraseAllMembers();
-			this->partylist.erase( iter );
+			partylist.erase( iter );
 		}
 		else {
 			iter->second.removeMember( pc );
 			if( iter->second.membersNumber() ==1 ) {
 				iter->second.eraseAllMembers();
-				this->partylist.erase( iter );
+				partylist.erase( iter );
 			}	
 		}
 	}
@@ -517,7 +504,7 @@ void cPartys::removeMember( P_CHAR pc )
 void cPartys::kickMember( P_CHAR pc )
 {
 	VALIDATEPC(pc);
-	PARTY_LIST::iterator iter( this->partylist.find( pc->party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( pc->party ) ), end( partylist.end() );
 	if( iter!=end ) {
 		if( iter->second.isLeader( pc ) ) { //disband party
 			iter->second.talkToOthers( "The Glorious Adventures relinquish their Swords, longing for the quiet fireside's home." );
@@ -536,7 +523,7 @@ void cPartys::kickMember( P_CHAR pc )
 bool cPartys::isMember( SERIAL party, P_CHAR pc )
 {
 	VALIDATEPCR(pc,false);
-	PARTY_LIST::iterator iter( this->partylist.find( party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( party ) ), end( partylist.end() );
 	if( iter!=end )
 		return iter->second.isMember( pc );
 	else
@@ -546,7 +533,7 @@ bool cPartys::isMember( SERIAL party, P_CHAR pc )
 bool cPartys::isLeader( SERIAL party, P_CHAR pc )
 {
 	VALIDATEPCR(pc,false);
-	PARTY_LIST::iterator iter( this->partylist.find( party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( party ) ), end( partylist.end() );
 	if( iter!=end )
 		return iter->second.isLeader( pc );
 	else
@@ -555,7 +542,7 @@ bool cPartys::isLeader( SERIAL party, P_CHAR pc )
 
 P_CHAR cPartys::getLeader( SERIAL party )
 {
-	PARTY_LIST::iterator iter( this->partylist.find( party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( party ) ), end( partylist.end() );
 	if( iter!=end )
 		return iter->second.getLeader( );
 	else
@@ -565,7 +552,7 @@ P_CHAR cPartys::getLeader( SERIAL party )
 void cPartys::talkToOthers( P_CHAR pc, std::string s )
 {
 	VALIDATEPC(pc);
-	PARTY_LIST::iterator iter( this->partylist.find( pc->party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( pc->party ) ), end( partylist.end() );
 	if( iter!=end )
 		iter->second.talkToOthers( s );
 }
@@ -573,7 +560,7 @@ void cPartys::talkToOthers( P_CHAR pc, std::string s )
 UI32 cPartys::membersNumber( P_CHAR pc )
 {
 	VALIDATEPCR(pc, 0);
-	PARTY_LIST::iterator iter( this->partylist.find( pc->party ) ), end( this->partylist.end() );
+	PARTY_LIST::iterator iter( partylist.find( pc->party ) ), end( partylist.end() );
 	if( iter!=end )
 		return iter->second.membersNumber();
 	else

@@ -35,17 +35,17 @@ void cResources::setDimArea( UI32 areawidth, UI32 areaheight )
 
 UI64 cResources::getBlocks( Location location  )
 {
-	return (UI64)( (UI64)(location.x / this->area_width) <<32 ) + ( location.y / this->area_height );
+	return (UI64)( (UI64)(location.x / area_width) <<32 ) + ( location.y / area_height );
 }
 
 
 P_RESOURCE cResources::getResource( Location location )
 {
 
-	UI64 p = this->getBlocks( location );
+	UI64 p = getBlocks( location );
 	
-	RESOURCE_MAP::iterator iter( this->resources.find( p ) );
-	if( iter==this->resources.end() )
+	RESOURCE_MAP::iterator iter( resources.find( p ) );
+	if( iter==resources.end() )
 		return NULL;
 	else 
 		return &(iter->second); 
@@ -53,10 +53,10 @@ P_RESOURCE cResources::getResource( Location location )
 
 P_RESOURCE cResources::createBlock( Location location )
 {
-	UI64 p = this->getBlocks( location );
+	UI64 p = getBlocks( location );
 	
-	this->resources.insert( make_pair( p, cResource( ) ) );
-	RESOURCE_MAP::iterator iter( this->resources.find( p ) );
+	resources.insert( make_pair( p, cResource( ) ) );
+	RESOURCE_MAP::iterator iter( resources.find( p ) );
 	return &iter->second;
 }
 
@@ -66,9 +66,9 @@ void cResources::checkResource( Location location, P_RESOURCE& res )
 	if( res==NULL )
 		return;
 
-	if( this->checkRes( res ) ) { //delete
+	if( checkRes( res ) ) { //delete
 		res=NULL;
-		this->deleteBlock( location );
+		deleteBlock( location );
 	}
 
 }
@@ -76,7 +76,7 @@ void cResources::checkResource( Location location, P_RESOURCE& res )
 void cResources::decreaseResource( Location location, P_RESOURCE res )
 {
 	if( res == NULL ) { //create it!
-		res = this->createBlock( location );
+		res = createBlock( location );
 	}
 	res->consumed++;
 }
@@ -84,7 +84,7 @@ void cResources::decreaseResource( Location location, P_RESOURCE res )
 
 bool cResources::thereAreSomething( P_RESOURCE res )
 {
-	return ( res==NULL ) || ( res->consumed<=this->n );
+	return ( res==NULL ) || ( res->consumed<=n );
 }
 
 
@@ -116,11 +116,11 @@ void cResources::checkAll()
 
 	if(TIMEOUT( timer ) ) {
 
-		RESOURCE_MAP::iterator next( this->resources.begin() );
+		RESOURCE_MAP::iterator next( resources.begin() );
 		for( ; next!=resources.end(); ) {
 			RESOURCE_MAP::iterator iter( next ); next++;
-			if( this->checkRes( &iter->second ) ) {
-				this->resources.erase( iter );
+			if( checkRes( &iter->second ) ) {
+				resources.erase( iter );
 			}
 		}
 		timer=uiCurrentTime+2*60*MY_CLOCKS_PER_SEC;
@@ -129,22 +129,12 @@ void cResources::checkAll()
 
 void cResources::deleteBlock( Location location ) 
 {
-	UI64 p = this->getBlocks( location );
+	UI64 p = getBlocks( location );
 	
-	RESOURCE_MAP::iterator iter( this->resources.find( p ) );
-	if( iter!=this->resources.end() )
-		this->resources.erase( iter );
+	RESOURCE_MAP::iterator iter( resources.find( p ) );
+	if( iter!=resources.end() )
+		resources.erase( iter );
 }
-
-
-
-
-
-
-
-
-
-
 
 static LOGICAL canMine( P_CHAR pc, P_ITEM weapon )
 {

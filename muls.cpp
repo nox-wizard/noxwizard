@@ -22,11 +22,11 @@ std::string path; //!< path
 \param cache true cache the tiledata
 \param verdata if valid pointer are added verdata infos to tiledata
 */
-cTiledata::cTiledata( const char* path, bool cache, class cVerdata* verdata )
+cTiledata::cTiledata( const char* newPath, bool cache, class cVerdata* verdata )
 {
-	this->path=path;
-	file.open(this->path.c_str(),ios::in|ios::binary);
-	this->isCached=false;
+	path=newPath;
+	file.open(path.c_str(),ios::in|ios::binary);
+	isCached=false;
 	if( cache )
 		loadForCaching();
 	addVerdata();
@@ -153,7 +153,7 @@ void cTiledata::addVerdata() {
 
 	LANDINFOMAP::iterator land( verdata::verdata->landsCached.begin() ), landend( verdata::verdata->landsCached.end() );
 	for( ; land!=landend; land++ ) {
-		this->landsCached[land->first]=land->second;
+		landsCached[land->first]=land->second;
 	}
 	verdata::verdata->landsCached.clear(); //why cache it two times?
 
@@ -185,13 +185,13 @@ cMap* mappa=NULL;
 \param height the height of the map
 \param cache if true are cached
 */
-cMap::cMap( const char* path, UI16 width, UI16 height, bool cache )
+cMap::cMap( const char* newPath, UI16 newWidth, UI16 newHeight, bool newCache )
 {
-	this->width=width;
-	this->height=height;
-	this->path=path;
-	file.open(this->path.c_str(),ios::in|ios::binary);
-	this->isCached=false;
+	width=newWidth;
+	height=newHeight;
+	path=newPath;
+	file.open(path.c_str(),ios::in|ios::binary);
+	isCached=false;
 }
 
 /*!
@@ -226,10 +226,10 @@ bool cMap::getMap( UI16 x, UI16 y, TCELLA& cella )
 	if( !isReady() )
 		return false;
 
-	if( x>=this->width || y>=this->height )
+	if( x>=width || y>=height )
 		return false;
 
-	file.seekg( x*this->height +y );
+	file.seekg( x*height +y );
 	file.read( (char*)&cella, sizeof(TCELLA) );
 	return true;
 }
@@ -250,11 +250,11 @@ cVerdata* verdata=NULL;
 \param path the path of tiledata.mul
 \param cache true cache the tiledata
 */
-cVerdata::cVerdata( const char* path, bool cache )
+cVerdata::cVerdata( const char* newPath, bool cache )
 {
-	this->path=path;
-	file.open(this->path.c_str(),ios::in|ios::binary);
-	this->isCached=false;
+	path=newPath;
+	file.open(path.c_str(),ios::in|ios::binary);
+	isCached=false;
 	if( cache )
 		loadForCaching();
 }
@@ -362,21 +362,21 @@ cStatics* statics=NULL;
 /*!
 \brief Constructor
 \author Endymion
-\param pathidx the path of statXidx.mul
-\param pathdata the path of staticsX.mul
-\param width the width of the map
-\param height the height of the map
+\param newPathidx the path of statXidx.mul
+\param newPathdata the path of staticsX.mul
+\param newWidth the width of the map
+\param newHeight the height of the map
 \param cache if true are cached
 */
-cStatics::cStatics( const char* pathidx, const char* pathdata, UI16 width, UI16 height, bool cache )
+cStatics::cStatics( const char* newPathidx, const char* newPathdata, UI16 newWidth, UI16 newHeight, bool cache )
 {
-	this->width=width;
-	this->height=height;
-	this->pathidx=pathidx;
-	idx.open(this->pathidx.c_str(),ios::in|ios::binary);
-	this->pathdata=pathdata;
-	data.open(this->pathdata.c_str(),ios::in|ios::binary);
-	this->isCached=false;
+	width=newWidth;
+	height=newHeight;
+	pathidx=newPathidx;
+	idx.open(pathidx.c_str(),ios::in|ios::binary);
+	pathdata=pathdata;
+	data.open(pathdata.c_str(),ios::in|ios::binary);
+	isCached=false;
 	if( cache )
 		loadForCaching();
 }
@@ -423,11 +423,11 @@ void cStatics::loadForCaching() {
 				}
 				else {
 					data.seekg( index.start );
-					this->staticsCached[x*this->height+y].clear();
+					staticsCached[x*height+y].clear();
 					for( UI32 s=0; s< (index.size % sizeof(TSTATICS)); s++ ) {
 						
 						data.read( (char*)&buffer, sizeof(TSTATICS));
-						this->staticsCached[x*this->height+y].push_back( buffer );
+						staticsCached[x*height+y].push_back( buffer );
 						
 					}
 				}				
@@ -450,7 +450,7 @@ void cStatics::loadForCaching() {
 bool cStatics::getStatics( UI16 x, UI16 y, STATICSVET& stats )
 { 
 	stats.clear();
-	if( this->isCached ) { 
+	if( isCached ) { 
 		STATICSMAP::iterator iter( staticsCached.find(x*height+y) );
 		if( iter!=staticsCached.end() ) {
 			stats = iter->second;
@@ -504,18 +504,18 @@ cMulti* multi=NULL;
 /*!
 \brief Constructor
 \author Endymion
-\param pathidx the path of multi.idx
-\param pathdata the path of multi.mul
+\param newPathidx the path of multi.idx
+\param newPathdata the path of multi.mul
 \param cache if true are cached
 \param verdata if valip pointer add verdata multi
 */
-cMulti::cMulti( const char* pathidx, const char* pathdata, bool cache, class cVerdata* verdata )
+cMulti::cMulti( const char* newPathidx, const char* newPathdata, bool cache, class cVerdata* verdata )
 {
-	this->pathidx=pathidx;
-	idx.open(this->pathidx.c_str(),ios::in|ios::binary);
-	this->pathdata=pathdata;
-	data.open(this->pathdata.c_str(),ios::in|ios::binary);
-	this->isCached=false;
+	pathidx=newPathidx;
+	idx.open(pathidx.c_str(),ios::in|ios::binary);
+	pathdata=pathdata;
+	data.open(pathdata.c_str(),ios::in|ios::binary);
+	isCached=false;
 	if( cache )
 		loadForCaching();
 	if( verdata!=NULL )
@@ -563,12 +563,11 @@ void cMulti::loadForCaching() {
 			}
 			else {
 				data.seekg( index.start );
-				this->multisCached[id].clear();
+				multisCached[id].clear();
 				for( UI32 s=0; s< (index.size % sizeof(TMULTI)); s++ ) {
 				
 					data.read( (char*)&buffer, sizeof(TMULTI));
-					this->multisCached[id].push_back( buffer );
-					
+					multisCached[id].push_back( buffer );
 				}
 			}				
 		}

@@ -247,24 +247,18 @@ void cMenu::setY( const UI32 arg )
 	y = arg;
 }
 
-void cMenu::setOptions( const UI08 options )
+void cMenu::setOptions( const UI08 newOptions )
 {
-	this->options=options;
+	options = newOptions;
 }
 
-void cMenu::setOptions( const UI08 options, const bool value )
+void cMenu::setOptions( const UI08 newOptions, const bool value )
 {
 	if( value )
-		this->options|=options;
+		options|=newOptions;
 	else 
-		this->options&=~options;
+		options&=~newOptions;
 }
-
-
-
-
-
-
 
 void cMenu::addCommand( const std::string& command )
 {

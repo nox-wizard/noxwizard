@@ -208,17 +208,17 @@ cGuild::~cGuild()
 
 void cGuild::create( SERIAL newSerial )
 {
-	this->serial=newSerial;
+	serial=newSerial;
 }
 
 void cGuild::setSerial( SERIAL newSerial )
 {
-	this->serial=newSerial;
+	serial=newSerial;
 }
 
 SERIAL cGuild::getSerial()
 {
-	return this->serial;
+	return serial;
 }
 
 #define MAX_NAME_LENGTH 41
@@ -696,9 +696,9 @@ SERIAL cGuildRecruit::getSerial()
 	return serial;
 }
 
-void cGuildRecruit::setSerial( const SERIAL serial )
+void cGuildRecruit::setSerial( const SERIAL newSerial )
 {
-	this->serial = serial;
+	serial = newSerial;
 }
 
 SERIAL cGuildRecruit::getRecuiter()

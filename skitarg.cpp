@@ -2356,9 +2356,9 @@ protected:
     short minskill;
     short id2;
 public:
-    cTinkerCombine(short badsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
+    cTinkerCombine(short newBadsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
     {
-        this->badsnd=badsnd;
+        badsnd=newBadsnd;
         failtext=failmsg;
         itembits=0;
         minskill=100;

@@ -73,10 +73,10 @@ void cChar::mounthorse( P_CHAR mount )
 		return;
 
 	
-	if( this->amxevents[EVENT_CHR_ONMOUNT])
+	if( amxevents[EVENT_CHR_ONMOUNT] )
 	{
 		g_bByPass=false;
-		this->amxevents[EVENT_CHR_ONMOUNT]->Call(this->getSerial32(),mount->getSerial32());
+		amxevents[EVENT_CHR_ONMOUNT]->Call(getSerial32(),mount->getSerial32());
 		if(g_bByPass) return;
 	}
 	/*
@@ -259,10 +259,10 @@ int cChar::unmountHorse()
 		return 1;
 
 	
-	if(this->amxevents[EVENT_CHR_ONDISMOUNT]) // Unavowed
+	if(amxevents[EVENT_CHR_ONDISMOUNT]) // Unavowed
 	{
 		g_bByPass=false;
-		this->amxevents[EVENT_CHR_ONDISMOUNT]->Call(this->getSerial32(),INVALID);
+		amxevents[EVENT_CHR_ONDISMOUNT]->Call(getSerial32(),INVALID);
 		if(g_bByPass) return 1;
 	}
 	/*
@@ -324,7 +324,7 @@ int cChar::unmountHorse()
 */
 SERIAL cChar::getHorse()
 {
-	std::map<SERIAL, P_CHAR >::iterator iter( pointers::pMounted.find( this->getSerial32() ) );
+	std::map<SERIAL, P_CHAR >::iterator iter( pointers::pMounted.find( getSerial32() ) );
 	if( iter!=pointers::pMounted.end() ) {
 		if( !ISVALIDPC( iter->second ) ) { //remove it
 			pointers::pMounted.erase( iter );

@@ -66,7 +66,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	if( dead )	// Killed as result of script action
 		return;
 	bool hit, los;
-	int dist, basedamage, damage, def, x;
+	int dist, basedamage, Damage, def, x;
 	Skill fightskill, def_fightskill;
 	DamageType dmgtype;
 
@@ -251,13 +251,13 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	pc_def->checkSkill(TACTICS, 0, 1000, 1);
 
 
-	damage = basedamage + (int)(basedamage/100.0 * ((skill[TACTICS])/16.0)); //Bonus damage for tactics
-	damage += (int)(damage/100.0 * getStrength()/5.0); //Bonus damage for strenght
+	Damage = basedamage + (int)(basedamage/100.0 * ((skill[TACTICS])/16.0)); //Bonus damage for tactics
+	Damage += (int)(Damage/100.0 * getStrength()/5.0); //Bonus damage for strenght
 	if (checkSkillSparrCheck(ANATOMY, 0, 1000, pc_def)) { //Bonus damage for anatomy
 		if ( skill[ANATOMY] < 1000 ) {
-			damage += (int)( damage/100.0 * skill[ANATOMY]/50.0 );
+			Damage += (int)( Damage/100.0 * skill[ANATOMY]/50.0 );
 		} else { //GM anatomist
-			damage += (int)( damage/100.0 * 30.0 );
+			Damage += (int)( Damage/100.0 * 30.0 );
 		}
 	}
 
@@ -266,8 +266,8 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if ( chance(pc_def->skill[PARRYING]/20) ) { // chance to block with shield
 			pc_def->checkSkill(PARRYING, 0, 1000);
 			//pc_def->emoteall( "*Parries the attack*", 1 );
-			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2; // damage absorbed by shield
-			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def; // damage absorbed by shield
+			if (pShield->def!=0 && fightskill!=ARCHERY) Damage -= pShield->def/2; // damage absorbed by shield
+			if (pShield->def!=0 && fightskill==ARCHERY) Damage -= pShield->def; // damage absorbed by shield
 			if (chance(5)) pShield->hp--;
 			if (pShield->hp<=0) {
 				pc_def->sysmsg(TRANSLATE("Your shield has been destroyed"));
@@ -277,41 +277,41 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	}
 
 	//Luxor: Armor absorption system
-	x = pc_def->combatHitMessage(damage);
+	x = pc_def->combatHitMessage(Damage);
 	def = pc_def->calcDef(x);
 	if (!pc_def->npc)
-		damage -= RandomNum(def, UI32(def*2.5)); //PC armor system
+		Damage -= RandomNum(def, UI32(def*2.5)); //PC armor system
 	else
-		damage -= RandomNum(def/2, def); //NPC armor system
-	if (damage<0) damage=0;
+		Damage -= RandomNum(def/2, def); //NPC armor system
+	if (Damage<0) Damage=0;
 	//End armor absorption system
 
-	if (!pc_def->npc) damage = (int)(damage / float(SrvParms->npcdamage));
-	if (damage<0) damage=0;
+	if (!pc_def->npc) Damage = (int)(Damage / float(SrvParms->npcdamage));
+	if (Damage<0) Damage=0;
 
-	if (damage>0 && ISVALIDPI(pWeapon) ) {
+	if (Damage>0 && ISVALIDPI(pWeapon) ) {
 		if ((pWeapon->amxevents[EVENT_IONDAMAGE]!=NULL)) {
 			g_bByPass = false;
-			damage = pWeapon->amxevents[EVENT_IONDAMAGE]->Call(pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32());
+			Damage = pWeapon->amxevents[EVENT_IONDAMAGE]->Call(pWeapon->getSerial32(), pc_def->getSerial32(), Damage, getSerial32());
 			if (g_bByPass==true) return;
 		}
 	}
 	/*
-	if (damage>0 && ISVALIDPI( pWeapon ) )
+	if (Damage>0 && ISVALIDPI( pWeapon ) )
 	{
 		if ( pWeapon->getAmxEvent(EVENT_IONDAMAGE) != NULL ) {
-			damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32() );
+			Damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), Damage, getSerial32() );
 			if (g_bByPass==true)
 				return;
 		}
 	}
 	*/
 
-	//when hit and damage >1, defender fails if casting a spell!
-	if (damage > 1 && !pc_def->npc) {
+	//when hit and Damage >1, defender fails if casting a spell!
+	if (Damage > 1 && !pc_def->npc) {
 		int sd = 0;
 		if (pc_def->getClient() != NULL) sd = pc_def->getClient()->toInt();
-		if (pc_def->casting && checkForCastingLoss(pc_def, damage)) {
+		if (pc_def->casting && checkForCastingLoss(pc_def, Damage)) {
 			//currentSpellType[sd]=0;
 			pc_def->spell = magic::SPELL_INVALID;
 			pc_def->casting = 0;
@@ -320,30 +320,30 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 	}
 
-	if( damage > 0 ) {
+	if( Damage > 0 ) {
 		//Evaluate damage type
 		if (fightskill == WRESTLING) dmgtype = DAMAGE_BLUDGEON;
 		if (npc) {
 			dmgtype = damagetype;
-			damage = int(damage / 3.5);
+			Damage = int(Damage / 3.5);
 		}
 		(ISVALIDPI(pWeapon)) ? dmgtype = pWeapon->damagetype : dmgtype = DAMAGE_PURE;
 
 		if (pc_def->ra) {	 // Reactive Armor
 			//80% to defender, 10-20% to attacker
-			this->damage(int((damage/10.0) + (damage/100.0)*float(RandomNum(1,10))));
+			damage(int((Damage/10.0) + (Damage/100.0)*float(RandomNum(1,10))));
             		if ((ISVALIDPI(pWeapon))&&(pWeapon->auxdamage)) {
                 		pc_def->damage(pWeapon->auxdamage, pWeapon->auxdamagetype);
             		}
-			pc_def->damage(int(damage - (damage/100.0)*20.0), dmgtype);
+			pc_def->damage(int(Damage - (Damage/100.0)*20.0), dmgtype);
 			pc_def->staticFX(0x374A, 0, 15);
 		} else {
-			pc_def->damage(damage, dmgtype);
+			pc_def->damage(Damage, dmgtype);
 		        if ((ISVALIDPI(pWeapon))&&(pWeapon->auxdamage)) {
 	                	pc_def->damage(pWeapon->auxdamage, pWeapon->auxdamagetype);
             		}
 		}
-	}	//End -> if (damage > 0)
+	}	//End -> if (Damage > 0)
 	if (!npc)
 		doCombatSoundEffect(fightskill, pWeapon);
 

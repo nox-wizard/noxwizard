@@ -335,7 +335,7 @@ void addGuilds( SERIAL iSet, SERIAL guild, GUILD_POLITICAL options )
 \brief Constructor
 */
 NxwWrapper::NxwWrapper() { 
-	this->rewind();
+	rewind();
 };
 
 /*!
@@ -352,7 +352,7 @@ NxwWrapper::~NxwWrapper() {
 */
 bool NxwWrapper::isEmpty()
 {
-	return ( ( this->vect.size()==0 ) || ( current==vect.end() ) );	
+	return ( ( vect.size()==0 ) || ( current==vect.end() ) );	
 };
 
 /*!
@@ -373,7 +373,7 @@ NxwWrapper& NxwWrapper::operator++(int)
 void NxwWrapper::clear()
 {
 	vect.clear();
-	this->rewind();
+	rewind();
 }
 
 /*!
@@ -482,7 +482,7 @@ void NxwSerialWrapper::insertSerial( SERIAL s )
 void NxwSerialWrapper::insertSerial( cObject* obj )
 {
 	if( (obj!=NULL) )
-		this->insertSerial( obj->getSerial32() );
+		insertSerial( obj->getSerial32() );
 };
 
 
@@ -631,7 +631,7 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 							if (iDist <= nDistance)
 								if ( ( !bOnlyPlayer && pc->npc ) ||
 									( !bExcludeOfflinePlayers || pc->IsOnline() ) )
-									this->insertSerial(pc->getSerial32());
+									insertSerial(pc->getSerial32());
 						}
 					}
 				}
@@ -687,7 +687,7 @@ void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 						if(  !pc->isStabled() && !pc->mounted ) {
 							int iDist=(int)dist(x,y,0,pc->getPosition().x,pc->getPosition().y,0);
 							if (iDist <= nDistance)
-								this->insertSerial(pc->getSerial32());
+								insertSerial(pc->getSerial32());
 						}
 					}
 				}
@@ -754,7 +754,7 @@ void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeTh
 		if( ISVALIDPC(pj) && pc->party==pj->party ) {
 			if( pc->distFrom( pj ) <= nDistance ) {
 				if( !bExcludeThis || ( pc->getSerial32()!=pj->getSerial32() ) )
-					this->insert( pj->getSerial32() );
+					insert( pj->getSerial32() );
 			}
 		}
 	}	
@@ -983,7 +983,7 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 		if( Race::isRaceSystemActive() )
 			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->race, pi_j->layer ) ) ) 
 				continue;
-		this->insertSerial( pi_j->getSerial32() );
+		insertSerial( pi_j->getSerial32() );
 	}
 
 }

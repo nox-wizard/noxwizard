@@ -17,7 +17,7 @@
 #include "speech.h"
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
-	this->m_sck=s;
+	m_sck=s;
 	currentCommand= NULL;
 }
 
@@ -165,7 +165,7 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
     if (pi==NULL) // item number send by client?
         pi=pointers::findItemBySerPtr(getRcvBuffer()+1);
 
-    P_CHAR pc_currchar = this->currChar();
+    P_CHAR pc_currchar = currChar();
 
 	P_ITEM p_back=pc_currchar->getBackpack();
 
@@ -207,7 +207,7 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
         ((ISVALIDPI(p_back)) && (pi->getContSerial()!=p_back->getSerial32()) &&    // not in primary pack
                 !pc_currchar->IsWearing(pi)))       // not equipped
     {
-        this->sysmsg(TRANSLATE("In order to open spellbook, it must be equipped in your hand or in the first layer of your backpack."));
+        sysmsg(TRANSLATE("In order to open spellbook, it must be equipped in your hand or in the first layer of your backpack."));
         return;
     }
 

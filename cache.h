@@ -43,6 +43,7 @@ class MULFile
   void seek(long, int);
   inline int eof() { return (feof(theFile)); };
   SI08 wpgetch();
+  UI08 wpgetchu();
   void refill();
   char *gets(char *, int);
   int puts(char *);
