@@ -118,22 +118,23 @@ else
 
 
 cCommandMap* commands = new cCommandMap();
+cCallCommandMap* callcommands = new cCallCommandMap()
 
 
 
 //Implementation of cCallCommandMap Class
 
-P_COMMAND cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8) {
+void cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8) {
 
 	P_CALLCOMMAND cllcmd= new cCallCommand(std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8);
     
-	if (callCommand_map[1]=NULL)
+	if (callCommand_map[1]==NULL)
 		CmdNextSerial=0;
 
 	cmdserial=++CmdNextSerial;	
 	
 	callCommand_map[cmdserial]= cllcmd;
- 	return cllcmd;
+ 	
 }
 
 
