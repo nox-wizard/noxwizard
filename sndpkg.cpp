@@ -2372,10 +2372,8 @@ void playmidi(int s, char num1, char num2)
 //AoS/	Network->FlushBuffer(s);
 }
 
-void sendtradestatus(int cont1, int cont2)
+void sendtradestatus(P_ITEM c1, P_ITEM c2)
 {
-	P_ITEM c1=MAKE_ITEM_REF(cont1);
-	P_ITEM c2=MAKE_ITEM_REF(cont2);
 	VALIDATEPI(c1);
 	VALIDATEPI(c2);
 
@@ -2396,9 +2394,9 @@ void sendtradestatus(int cont1, int cont2)
 
 }
 
-void endtrade(int b1, int b2, int b3, int b4)
+void endtrade(SERIAL serial)
 {
-	P_ITEM c1=pointers::findItemBySerial(calcserial(b1, b2, b3, b4));
+	P_ITEM c1=pointers::findItemBySerial(serial);
 	VALIDATEPI(c1);
 	P_ITEM c2=pointers::findItemBySerial(calcserial(c1->moreb1, c1->moreb2, c1->moreb3, c1->moreb4));
 	VALIDATEPI(c2);

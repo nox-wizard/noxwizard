@@ -499,16 +499,16 @@ void trademsg(int s)
 		if (cont2)
 		{
 			cont1->morez=buffer[s][11];
-			sendtradestatus(DEREF_P_ITEM(cont1), DEREF_P_ITEM(cont2));
+			sendtradestatus(cont1, cont2);
 			if (cont1->morez && cont2->morez)
 			{
 				dotrade(cont1, cont2);
-				endtrade(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+				endtrade( LongFromCharPtr(buffer[s] +4) );
 			}
 		}
 		break;
 	case 1://Cancel trade. Send each person cancel messages, move items.
-		endtrade(buffer[s][4], buffer[s][5], buffer[s][6], buffer[s][7]);
+		endtrade( LongFromCharPtr(buffer[s] +4) );
 		break;
 	default:
 		ErrOut("Switch fallout. trade.cpp, trademsg()\n"); //Morrolan

@@ -107,8 +107,8 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 void sendshopinfo(int s, int c, P_ITEM pi);
 int sellstuff(int s, int i);
 void playmidi(int s, char num1, char num2);
-void sendtradestatus(int cont1, int cont2);
-void endtrade(int b1, int b2, int b3, int b4);
+void sendtradestatus(P_ITEM cont1, P_ITEM cont2);
+void endtrade(SERIAL serial);
 void tellmessage(int i, int s, char *txt);
 void gmyell(char *txt);
 

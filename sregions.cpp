@@ -269,8 +269,9 @@ void checkregion(P_CHAR pc)
 {
 //	P_CHAR pc = MAKE_CHAR_REF( i );
 	VALIDATEPC( pc );
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int calcreg, s, j;
+
+	NXWSOCKET s;
+	int calcreg, j;
 
 	calcreg=calcRegionFromXY( pc->getPosition() );
 	if (calcreg!= pc->region)
@@ -288,40 +289,36 @@ void checkregion(P_CHAR pc)
 			Calendar::commitSeason(pc);
 			if (region[ pc->region ].name[0]!=0)
 			{
-				sprintf( temp, TRANSLATE("You have left %s."), region[ pc->region].name);
-				sysmessage(s, temp);
+				pc->sysmsg(TRANSLATE("You have left %s."), region[ pc->region].name);
 			}
 			if (region[calcreg].name[0]!=0)
 			{
-				sprintf( temp, TRANSLATE("You have entered %s."), region[calcreg].name);
-				sysmessage(s, temp);
+				pc->sysmsg(TRANSLATE("You have entered %s."), region[calcreg].name);
 			}
 			j=strcmp(region[calcreg].guardowner, region[pc->region].guardowner);
-			if ( (region[calcreg].priv&0x01)!=(region[pc->region].priv&0x01) ||
-				(region[calcreg].priv&0x01 && j))
+			if ( (region[calcreg].priv & RGNPRIV_GUARDED)!=(region[pc->region].priv & RGNPRIV_GUARDED) ||
+				(region[calcreg].priv & RGNPRIV_GUARDED && j))
 			{
-				if (region[calcreg].priv&0x01)
+				if (region[calcreg].priv & RGNPRIV_GUARDED)
 				{
 					if (region[calcreg].guardowner[0]==0)
 					{
-						sysmessage(s, TRANSLATE("You are now under the protection of the guards."));
+						pc->sysmsg(TRANSLATE("You are now under the protection of the guards."));
 					}
 					else
 					{
-						sprintf( temp, TRANSLATE("You are now under the protection of %s guards."), region[calcreg].guardowner);
-						sysmessage(s, temp);
+						pc->sysmsg(TRANSLATE("You are now under the protection of %s guards."), region[calcreg].guardowner);
 					}
 				}
 				else
 				{
 					if (region[pc->region].guardowner[0]==0)
 					{
-						sysmessage(s, TRANSLATE("You are no longer under the protection of the guards."));
+						pc->sysmsg(TRANSLATE("You are no longer under the protection of the guards."));
 					}
 					else
 					{
-						sprintf(temp, TRANSLATE("You are no longer under the protection of %s guards."), region[pc->region].guardowner);
-						sysmessage(s, temp);
+						pc->sysmsg(TRANSLATE("You are no longer under the protection of %s guards."), region[pc->region].guardowner);
 					}
 				}
 			}
@@ -329,7 +326,6 @@ void checkregion(P_CHAR pc)
 		pc->region=calcreg;
 		if (s!=INVALID) dosocketmidi(s);
 	}
-
 }
 
 
@@ -372,10 +368,13 @@ void check_region_weatherchange ()
    wtype=0;
 	unsigned char packet[4] = { 0x65, 0xFF, 0x00, 0x20 };
 
-	for (i=0;i<now;i++) { if (perm[i]) { Xsend(i, packet, 4); } }
+	for (i=0;i<now;i++) { if (perm[i]) { Xsend(i, packet, 4);
+//AoS/	Network->FlushBuffer(i);
+} }
 
 	for (i=0;i<now;i++) { if (perm[i]) { pweather(i); } }
 
    ConOut("[ OK ]\n");
 
 }
+

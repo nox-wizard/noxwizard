@@ -253,7 +253,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				{
 					piz->morez = 0;
 					container->morez = 0;
-					sendtradestatus( DEREF_P_ITEM( piz ), DEREF_P_ITEM( container ) );
+					sendtradestatus( piz, container );
 				}
 			
 			/*
@@ -1250,12 +1250,11 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 {
-	
 	if (ps == NULL) return;
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int z, serial/*, serhash*/;
+	int serial/*, serhash*/;
 	tile_st tile;
 //	bool abort=false;
 	NXWSOCKET  s=ps->toInt();
@@ -1318,8 +1317,6 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		serial=calcserial(pCont->moreb1, pCont->moreb2, pCont->moreb3, pCont->moreb4);
 		if(serial==-1) return;
 
-//		z = calcItemFromSer( serial );
-//		P_ITEM pi_z=MAKE_ITEM_REF(z);
 		P_ITEM pi_z = pointers::findItemBySerial(serial);
 
 		if (ISVALIDPI(pi_z))
@@ -1327,7 +1324,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			{
 				pi_z->morez=0;
 				pCont->morez=0;
-				sendtradestatus(z, DEREF_P_ITEM(pCont));
+				sendtradestatus( pi_z, pCont );
 			}
 	}
 
