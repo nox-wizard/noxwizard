@@ -106,19 +106,19 @@ void cCustomMenu::SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& 
 	gump1[10] = type; // Gump Number
 	gump1[19] = length2>>8;
 	gump1[20] = length2%256;
-	Network->xSend( sock, gump1, 21, 0);
+	Xsend( sock, gump1, 21 );
 
 	for( line = 0; line < linecount; line++ )
 	{
 		sprintf(sect, "{ %s }", one[line]->c_str() );
-		Network->xSend( sock, sect, strlen( sect ), 0 );
+		Xsend( sock, sect, strlen( sect ) );
 	}
 
 	unsigned char gump2[4]="\x00\x00\x00";
 	gump2[1] = textlines>>8;
 	gump2[2] = textlines%256;
 
-	Network->xSend( sock, gump2, 3, 0);
+	Xsend( sock, gump2, 3 );
 
 	unsigned char gump3[3]="\x00\x00";
 	for( line = 0; line < linecount1; line++ )
@@ -127,12 +127,12 @@ void cCustomMenu::SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& 
 			break;
 		gump3[0] = ( two[line]->length() )>>8;
 		gump3[1] = ( two[line]->length() )%256;
-		Network->xSend( sock, gump3, 2, 0);
+		Xsend( sock, gump3, 2 );
 		gump3[0]=0;
 		for ( i = 0; i < two[line]->length(); i++ )
 		{
 			gump3[1] = (*two[line])[i];
-			Network->xSend( sock, gump3, 2, 0);
+			Xsend( sock, gump3, 2 );
 		}
 	}
 }
