@@ -65,7 +65,7 @@ public:
 	cMULFile( std::string idx, std::string data, bool cache  );
 	~cMULFile();
 
-	virtual bool is_open() { return idx->file.is_open() && data->file.is_open(); }
+	virtual bool isReady() { return idx->file.is_open() && data->file.is_open(); }
 	virtual bool getData( UI32 i, std::vector< T >* data );
 	std::string getPath() { return idx->path; }
 
@@ -84,7 +84,6 @@ private:
 public:
 
 	NxwMulWrapper( cMULFile<T>* mul, UI32 id );
-	NxwMulWrapper( class cStatics* statics, UI32 x, UI32 y );
 	~NxwMulWrapper();
 
 	void rewind();
@@ -104,7 +103,8 @@ public:
 
 
 
-extern std::string path_tiledata;
+extern std::string tiledata_path;
+extern bool tiledata_cache;
 
 enum {
 	TILEFLAG_BACKGROUND	=	0x00000001,
@@ -230,9 +230,9 @@ public:
 
 
 
-extern std::string path_map;
-extern UI16	width_map;
-extern UI16 height_map;
+extern std::string map_path;
+extern UI16	map_width;
+extern UI16 map_height;
 
 const int DEFAULTHEIGHTMAP = 512;
 const int DEFAULTWIDTHMAP = 768;
@@ -284,8 +284,9 @@ public:
 
 
 
-extern std::string path_multiIdx;
-extern std::string path_multi;
+extern std::string multi_idx_path;
+extern std::string multi_path;
+extern bool multi_cache;
 
 struct multi_st {
 	UI16 id;
@@ -309,8 +310,9 @@ typedef cMULFile<multi_st> cMulti;
 
 
 
-extern std::string path_staticsIdx;
-extern std::string path_statics;
+extern std::string statics_idx_path;
+extern std::string statics_path;
+extern bool statics_cache;
 
 
 struct statics_st {
@@ -352,7 +354,7 @@ public:
 
 
 
-extern std::string path_verdata;
+extern std::string verdata_path;
 
 enum MUL_FILES {
 	MUL_MAP = 0x00,
@@ -401,13 +403,13 @@ class cVerdata : private cFile {
 private:
 
 	bool isCached;	//!< true if cached on memory
-	bool isReady();
 
 public:
 
 	cVerdata( std::string path, bool cache=true );
 	~cVerdata();
 
+	bool isReady();
 	void load( cTiledata* tiledata, cMULFile<multi_st>* multi );
 };
 
@@ -431,8 +433,6 @@ std::string getPath( MUL_FILES id );
 LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap = 0 ); //<! Luxor: nMap will be used for future multiple maps support.
 LOGICAL seekLand( UI16 id, land_st& land );
 LOGICAL seekTile( UI16 id, tile_st& tile );
-//LOGICAL seekStatics( UI32 x, UI32 y, class NxwMulWrapperStatics& s_vec );
-//LOGICAL seekMulti( UI16 id, class NxwMulWrapperMulti& m_vec );
 
 } // namespace data
 

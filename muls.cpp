@@ -11,13 +11,22 @@
 #include "muls.h"
 
 
-std::string path_verdata;
-std::string path_staticsIdx;
-std::string path_statics;
-std::string path_map;
-UI16	width_map;
-UI16	height_map;
-std::string path_tiledata;
+std::string verdata_path;
+
+std::string statics_idx_path;
+std::string statics_path;
+bool statics_cache = false;
+
+std::string map_map;
+UI16 map_width;
+UI16 map_height;
+
+std::string tiledata_path;
+bool tiledata_cache = false;
+
+std::string multi_idx_path;
+std::string multi_path;
+bool multi_cache = false;
 
 
 
@@ -135,7 +144,7 @@ bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 template <typename T> 
 void cMULFile<T>::loadCache() {
 
-	if(!is_open() || isCached )
+	if(!isReady() || isCached )
 		return;
 
 	int i=INVALID;
@@ -176,21 +185,6 @@ void cMULFile<T>::loadCache() {
 template <typename T>
 NxwMulWrapper<T>::NxwMulWrapper( cMULFile<T>* mul, UI32 i ) {
 	idx=i;
-	this->mul=mul;
-	needFree=false;
-	data=NULL;
-}
-
-/*!
-\brief Constructor
-\author Endymion
-\param statics the statics mul file
-\param x the x location
-\param y the y location
-*/
-template <typename T>
-NxwMulWrapper<T>::NxwMulWrapper( cStatics* statics, UI32 x, UI32 y ) {
-	idx=statics->idFromXY(x,y);
 	this->mul=mul;
 	needFree=false;
 	data=NULL;
@@ -617,7 +611,7 @@ SERIAL cStatics::idFromXY( UI16 x, UI16 y ) {
 
 namespace data {
 
-#define CHECKMUL( A, B ) if ( !A->isReady() ) { LogError( "ERROR: Mul File %s not found...\n", B ); return; }
+#define CHECKMUL( A, B ) if ( !A->isReady() ) { LogError( "ERROR: Mul File %s not found...\n", B.c_str() ); return; }
 
 void init()
 {
@@ -628,9 +622,19 @@ void init()
 
 	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
 
-	maps = new cMap( path_map, width_map, height_map );
-	CHECKMUL( maps, path_map.c_str() );
+	maps = new cMap( map_path, map_width, map_height );
+	CHECKMUL( maps, map_path );
 
+	statics = new cStatics( statics_idx_path, statics_path, map_width, map_height, statics_cache );
+	CHECKMUL( statics, std::string( statics_idx_path + " or " + statics_path ) );
+
+	tiledata = new cTiledata( tiledata_path, tiledata_cache );
+	CHECKMUL( tiledata, tiledata_path );
+
+	verdata = new cVerdata( verdata_path );
+	CHECKMUL( verdata, verdata_path );
+
+	ConOut("[DONE] All *.mul files opened\n");
 	//
 	// MULs loaded, let's keep the server running
 	//
@@ -662,25 +666,25 @@ void setPath( MUL_FILES id, std::string path )
 	switch ( id )
 	{
 		case MUL_MAP:
-			path_map = path;
+			map_path = path;
 			break;
 		case MUL_STATIDX:
-			path_staticsIdx = path;
+			statics_idx_path = path;
 			break;
 		case MUL_STATICS:
-			path_statics = path;
+			statics_path = path;
 			break;
 		case MUL_MULTIIDX:
-			path_multiIdx = path;
+			multi_idx_path = path;
 			break;
 		case MUL_MULTI:
-			path_multi = path;
+			multi_path = path;
 			break;
 		case MUL_TILEDATA:
-			path_tiledata = path;
+			tiledata_path = path;
 			break;
 		case MUL_VERDATA:
-			path_verdata = path;
+			verdata_path = path;
 			break;
 		default:
 			break;
@@ -695,19 +699,19 @@ std::string getPath( MUL_FILES id )
 	switch ( id )
 	{
 		case MUL_MAP:
-			return path_map;
+			return map_path;
 		case MUL_STATIDX:
-			return path_staticsIdx;
+			return statics_idx_path;
 		case MUL_STATICS:
-			return path_statics;
+			return statics_path;
 		case MUL_MULTIIDX:
-			return path_multiIdx;
+			return multi_idx_path;
 		case MUL_MULTI:
-			return path_multi;
+			return multi_path;
 		case MUL_TILEDATA:
-			return path_tiledata;
+			return tiledata_path;
 		case MUL_VERDATA:
-			return path_verdata;
+			return verdata_path;
 		default:
 			return std::string("");
 	}
