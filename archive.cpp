@@ -160,7 +160,7 @@ namespace character
 	{
 		VALIDATEPC( pc );
 
-		pc->race = 0;
+		pc->setRace(0);
 
 		amxVS.deleteVariable( pc->getSerial32() );
 

@@ -132,7 +132,7 @@ void cMulti::buildmulti( P_CHAR builder, P_ITEM deed)
 	pMulti->setOwnerSerial32(builder->getSerial32());
 	pMulti->setPosition (0,0,0);
 
-	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (char)((id>>8) -0x40), (char)((id%256)), TRANSLATE("Select location for building."));
 	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
 	targ->code_callback=cMulti::target_buildmulti;
 	targ->buffer[0]=pMulti->getSerial32();
@@ -535,7 +535,7 @@ void cHouses::buildhouse( P_CHAR builder, P_ITEM housedeed)
 	newHouse->setOwner(builder->getSerial32());
 	houses.insert( make_pair( newHouse->getSerial(), newHouse ) );
 
-	mtarget(builder->getSocket(), 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
+	mtarget(builder->getSocket(), 0, 1, 0, 0, (char)((id>>8) -0x40), (char)((id%256)), TRANSLATE("Select location for building."));
 	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
 	targ->code_callback=cHouses::target_buildhouse;
 	targ->buffer[0]=newHouse->getSerial();
@@ -1999,6 +1999,13 @@ void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
 				iter->parseLine(script1, script2);
 				if (script1[0]!='}')
 				{
+					if (script1[0] == '@' )
+					{
+						if	( !LoadItemEventsFromScript( pi_l, script1, script2) )
+							WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, *item);
+
+					}
+
 					if (!(strcmp(script1,"ITEM")))
 					{
 						pi_l=item::CreateScriptItem(owner->getSocket(),str2num(script2),0);//This opens the item script... so we gotta keep track of where we are with the other script.

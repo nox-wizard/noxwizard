@@ -35,6 +35,7 @@
 #include "chars.h"
 #include "client.h"
 #include "network.h"
+#include "race.h"
 
 extern int g_nCurrentSocket;
 extern int g_nTriggeredItem;
@@ -87,6 +88,24 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 				return false;
 			}
 		}
+		if ( pi->getGender() != INVALID && pi->getGender() != pc->getGender() )
+		{
+			if ( pi->getGender() == 1 ) // it's a man item
+				pc->sysmsg(TRANSLATE("Only males of your species may use that !"));
+			else if ( pi->getGender() == 2 ) // it's a man item
+				pc->sysmsg(TRANSLATE("Only females of your species may use that !"));
+			else
+				pc->sysmsg(TRANSLATE("You may not use that !")); // Damn, whats the political correct term for "Get some recreational extensions to your body"
+			return false;
+		}
+		if ( Race::isRaceSystemActive() )
+			if ( pi->getRace() != INVALID && pi->getRace() != pc->getRace() )
+			{
+				pc->sysmsg(TRANSLATE("Your race may not use this item!")); // Hope no one sues me because of racial discrimination in item use
+				return false;
+			}
+
+
 	}
 
 	if (s >-1 && s < now) //Luxor

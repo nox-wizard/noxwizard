@@ -50,7 +50,7 @@ inline void SetSkillDelay(CHARACTER cc)
 { 
 	P_CHAR pc_cc=MAKE_CHAR_REF(cc);
 	VALIDATEPC(pc_cc);
-	SetTimerSec(&pc_cc->skilldelay,SrvParms->skilldelay);
+	SetTimerSec(&pc_cc->skilldelay,(UI16)SrvParms->skilldelay);
 }
 
 
@@ -352,7 +352,7 @@ void Skills::DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM pi_mortar)
 		tempfx::add(pc, pc, tempfx::ALCHEMY_GRIND, 0, 3, 0);
 		tempfx::add(pc, pc, tempfx::ALCHEMY_GRIND, 0, 6, 0);
 		tempfx::add(pc, pc, tempfx::ALCHEMY_GRIND, 0, 9, 0);
-		tempfx::add(pc, pi_mortar, tempfx::ALCHEMY_END, type, sub, 0);  // this will indirectly call CreatePotion()
+		tempfx::add(pc, pi_mortar, (UI08)tempfx::ALCHEMY_END, (UI08)type, (UI08)sub, 0);  // this will indirectly call CreatePotion()
 	}
 }
 
@@ -631,7 +631,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
     {
 		if ( skillused )
 		{
-			Race* r = Race::getRace( (UI32) pc->race );
+			Race* r = Race::getRace( (UI32) pc->getRace() );
 			if( r!=NULL ) 
 				incval = r->getSkillAdvanceSuccess( (UI32) sk, (UI32) pc->baseskill[sk] );
 			else 
@@ -640,7 +640,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 		}
 		else
 		{
-			Race* r = Race::getRace( (UI32) pc->race );
+			Race* r = Race::getRace( (UI32) pc->getRace() );
 			if( r!=NULL )
 				incval = r->getSkillAdvanceFailure( (UI32) sk, (UI32) pc->baseskill[sk] );
 			else 
@@ -664,7 +664,7 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 	incval *= 10;
     }
 
-    int retval=0;
+    UI08 retval=0;
     if (incval>rand()%SrvParms->skilladvancemodifier)
     {
         retval=1;
@@ -673,8 +673,8 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
     
     if(pc->amxevents[EVENT_CHR_ONADVANCESKILL]!=NULL) {
         g_bByPass = false;
-        retval = pc->amxevents[EVENT_CHR_ONADVANCESKILL]->Call(pc->getSerial32(), sk, skillused, retval);
-        if (g_bByPass==true) return retval;
+        retval = (UI08)pc->amxevents[EVENT_CHR_ONADVANCESKILL]->Call(pc->getSerial32(), sk, skillused, retval);
+        if (g_bByPass==true) return (UI08)retval;
     }
 	/*
 	if ( pc->getAmxEvent(EVENT_CHR_ONADVANCESKILL) != NULL ) {
@@ -752,9 +752,9 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 
 	int loopexit=0, limit=1000;
 	*update = false;
-	SI32 tmp;
+	SI32 tmp=0;
 
-	int stat2update1, stat2update2;
+	int stat2update1=-1, stat2update2;
 	int stat2update;
 
 	switch( stat )
@@ -765,7 +765,7 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 	}
 
 	if( Race::isRaceSystemActive() )
-		stat2update1 = Race::getRace( (UI32) pc->race )->getSkillAdvanceSuccess( sk, tmp*10 );
+		stat2update1 = Race::getRace( (UI32) pc->getRace() )->getSkillAdvanceSuccess( sk, tmp*10 );
 
 	while ((wpadvance[i+1].skill==sk) &&     // if NEXT line is for same skill and is not higher than our stat then proceed to it !
      		(wpadvance[i+1].base<=(tmp*10)) && (++loopexit < MAXLOOPS) )
@@ -821,20 +821,20 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 			switch( type )
 			{
 				case STATCAP_CAP:
-					limit = Race::getRace( (UI32) pc->race )->getStatCap();
-					SDbgOut("AdvanceOneStat() race %d %s statcap %d\n", pc->race, Race::getName( pc->race )->c_str(), limit );
+					limit = Race::getRace( (UI32) pc->getRace() )->getStatCap();
+					SDbgOut("AdvanceOneStat() race %d %s statcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
 					break;
 				case STATCAP_STR:
-					limit = Race::getRace( (UI32) pc->race )->getStrCap();
-					SDbgOut("AdvanceOneStat() race %d %s strcap %d\n", pc->race, Race::getName( pc->race )->c_str(), limit );
+					limit = Race::getRace( (UI32) pc->getRace() )->getStrCap();
+					SDbgOut("AdvanceOneStat() race %d %s strcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
 					break;
 				case STATCAP_DEX:
-					limit = Race::getRace( (UI32) pc->race )->getDexCap();
-					SDbgOut("AdvanceOneStat() race %d %s dexcap %d\n", pc->race, Race::getName( pc->race )->c_str(), limit );
+					limit = Race::getRace( (UI32) pc->getRace() )->getDexCap();
+					SDbgOut("AdvanceOneStat() race %d %s dexcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
 					break;
 				case STATCAP_INT:
-					limit = Race::getRace( (UI32) pc->race )->getIntCap();
-					SDbgOut("AdvanceOneStat() race %d %s intcap %d\n", pc->race, Race::getName( pc->race )->c_str(), limit );
+					limit = Race::getRace( (UI32) pc->getRace() )->getIntCap();
+					SDbgOut("AdvanceOneStat() race %d %s intcap %d\n", pc->getRace(), Race::getName( pc->getRace() )->c_str(), limit );
 					break;
 			}
 		}
@@ -923,7 +923,7 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 	int statcap = SrvParms->statcap;
 
 	if( Race::isRaceSystemActive() )
-		statcap = Race::getRace( pc->race )->getStatCap();
+		statcap = Race::getRace( pc->getRace() )->getStatCap();
 
 
 	
@@ -944,9 +944,9 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 
 	if ( pc->statGainedToday <= ServerScp::g_nStatDailyLimit )
 	{
-		bool strCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st ) > (UI32)(rand() % mod);
-    	bool dexCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx ) > (UI32)(rand() % mod);
-    	bool intCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceIntelligence( sk ) : skillinfo[sk].in ) > (UI32)(rand() % mod);
+		bool strCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st ) > (UI32)(rand() % mod);
+    	bool dexCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx ) > (UI32)(rand() % mod);
+    	bool intCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->getRace() )->getSkillAdvanceIntelligence( sk ) : skillinfo[sk].in ) > (UI32)(rand() % mod);
 
        	if ( strCheck )
        		if ( AdvanceOneStat( sk, i, 'S', &update, STATCAP_STR, pc ) && atCap && !pc->IsGM() )
@@ -1031,7 +1031,7 @@ void Skills::SpiritSpeak(NXWSOCKET s)
     impaction(s,0x11);          // I heard there is no action...but I decided to add one
     pc->playSFX(0x024A);   // only get the sound if you are successful
     sysmessage(s,TRANSLATE("You establish a connection to the netherworld."));
-    SetTimerSec(&(pc->spiritspeaktimer),spiritspeak_data.spiritspeaktimer+pc->in);
+    SetTimerSec(&(pc->spiritspeaktimer),(UI16)(spiritspeak_data.spiritspeaktimer+pc->in));
 }
 
 /*!
@@ -1091,7 +1091,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 	
 	bool setSkillDelay = true;
 
-	if( Race::isRaceSystemActive() && !(Race::getRace( pc->race )->getCanUseSkill( (UI32) x )) )
+	if( Race::isRaceSystemActive() && !(Race::getRace( pc->getRace() )->getCanUseSkill( (UI32) x )) )
 	{
 		sysmessage(s, TRANSLATE("Your race cannot use that skill") );
 		setSkillDelay = false;
@@ -1621,7 +1621,8 @@ void Skills::Persecute (NXWSOCKET  s)
 
 void loadskills()
 {
-    int i, noskill, l=0;
+    UI08 i;
+	int noskill, l=0;
     char sect[512];
     cScpIterator* iter = NULL;
     char script1[1024];
@@ -1960,14 +1961,14 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
                 tly -= lry - 0x0FFF;    // Subtract what is to much from the top border
                 lry = 0x0FFF;   // Set lry to correct value
             }
-            nmap->more1 = tlx>>8;   // Store the map extends
-            nmap->more2 = tlx%256;
-            nmap->more3 = tly>>8;
-            nmap->more4 = tly%256;
-            nmap->moreb1 = lrx>>8;
-            nmap->moreb2 = lrx%256;
-            nmap->moreb3 = lry>>8;
-            nmap->moreb4 = lry%256;
+            nmap->more1 = (UI08)(tlx>>8);   // Store the map extends
+            nmap->more2 = (UI08)(tlx%256);
+            nmap->more3 = (UI08)(tly>>8);
+            nmap->more4 = (UI08)(tly%256);
+            nmap->moreb1 = (SI08)(lrx>>8);
+            nmap->moreb2 = (SI08)(lrx%256);
+            nmap->moreb3 = (SI08)(lry>>8);
+            nmap->moreb4 = (SI08)(lry%256);
             nmap->morex = x;        // Store the treasure's location
             nmap->morey = y;
             tmap->Delete();    // Delete the tattered map
@@ -1975,7 +1976,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
         else
             pc->sysmsg(TRANSLATE("You fail to decipher the map"));      // Nope :P
         // Set the skill delay, no matter if it was a success or not
-        SetTimerSec(&pc->skilldelay,SrvParms->skilldelay);
+        SetTimerSec(&pc->skilldelay,(UI16)SrvParms->skilldelay);
         pc->playSFX(0x0249); // Do some inscription sound regardless of success or failure
         pc->sysmsg(TRANSLATE("You put the deciphered tresure map in your pack"));       // YAY
     }

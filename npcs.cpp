@@ -755,7 +755,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								break;
 							case 'R':
 								if	( "RACE" == script1 )
-									pc->race=str2num(script2);
+									pc->setRace((SI32)str2num(script2));
 								else if ( "REATTACKAT" == script1 )
 									pc->reattackat=str2num(script2);
 								else if ( "REGEN_HP" == script1 )

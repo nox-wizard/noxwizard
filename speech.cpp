@@ -64,8 +64,8 @@ int response(NXWSOCKET  s)
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int x=-1;
-	int y=0;
+	UI16 x=-1;
+	UI16 y=0;
 
 	char *comm;
 	static UI08 nonuni[MAXBUFFER_REAL];
@@ -76,14 +76,14 @@ int response(NXWSOCKET  s)
 		for (i=13; i<j; i+=2 )
 			nonuni[(i-13)/2]=buffer[s][i];
 		for (i=0; i < MAXBUFFER_REAL-8; ++i)
-			buffer1[i+8]=toupper(nonuni[i]); 	 // Sparhawk 	Let's forget about toupper and use strcasecmp for case insensitive comparisons
+			buffer1[i+8]=(char)toupper(nonuni[i]); 	 // Sparhawk 	Let's forget about toupper and use strcasecmp for case insensitive comparisons
 								 //		Needed for none english characters? Probably yes
 	}
         else
         {
 		ConOut("Non-Unicode speech\n");
 		for (i=7; i < MAXBUFFER_REAL; i++)
-			buffer1[i]=toupper(buffer[s][i]);	// Sparhawk 	Let's forget about toupper and use strcasecmp for case insensitive comparisons
+			buffer1[i]=(char)toupper(buffer[s][i]);	// Sparhawk 	Let's forget about toupper and use strcasecmp for case insensitive comparisons
 								//		Needed for none english characters? Probably yes
 	}
 	comm=&buffer1[8];
@@ -200,7 +200,7 @@ int response(NXWSOCKET  s)
 	bool handledRequest = false;
 
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( x, y, VISRANGE, true, false );
+	sc.fillCharsNearXYZ( (UI16)x, (UI16)y, VISRANGE, true, false );
 
 	for( sc.rewind(); !sc.isEmpty(); sc++ )
 	{
@@ -2192,7 +2192,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	j = speech.size();
 	for( i = 0; i < j; ++i)
-		speech[i] = toupper( speech[i] );
+		speech[i] = (UI08)toupper( speech[i] );
 	//
 	// Process speech for guildstones, boat tillermen, houses and npcs
 	//
@@ -2293,7 +2293,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 						for(i=0; i < strlen(script2); i++)
 							script2[i] = toupper( script2[i] );
 
-						match = (speech.find( script2 ) != std::string::npos);
+						match = (UI08)(speech.find( script2 ) != std::string::npos);
 					}
 				}
 				if (!(strcmp("SAY", script1)))

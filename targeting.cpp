@@ -614,10 +614,10 @@ void target_key( NXWCLIENT ps, P_TARGET t )
                 }
                 else
                 {
-                    pi->more1=t->buffer[0];
-                    pi->more2=t->buffer[1];
-                    pi->more3=t->buffer[2];
-                    pi->more4=t->buffer[3];
+                    pi->more1=(UI08)t->buffer[0];
+                    pi->more2=(UI08)t->buffer[1];
+                    pi->more3=(UI08)t->buffer[2];
+                    pi->more4=(UI08)t->buffer[3];
                     // soundeffect3( pi, <whatever> );
                     sysmessage(s, TRANSLATE("You copy the key.")); //Morrolan can copy keys
                 }

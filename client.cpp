@@ -41,7 +41,7 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	ShortToCharPtr(tl, talk2 +1);
+	ShortToCharPtr((UI16)tl, talk2 +1);
 	LongToCharPtr(0x01010101, talk2 +3); 	// ID
 	ShortToCharPtr(0x0101, talk2 +7);	// Model
 	talk2[9] = 0;				// Type
@@ -77,7 +77,7 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
 
-	ShortToCharPtr(tl, talk2 +1);
+	ShortToCharPtr((UI16)tl, talk2 +1);
 	talk2[3] = 1;
 	talk2[4] = 1;
 	talk2[5] = 1;
@@ -254,10 +254,10 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
         if (spells[i]) scount++;
     }
     char sbookinit[6]="\x3C\x00\x3E\x00\x03";
-    sbookinit[1]=((scount*19)+5)>>8;
-    sbookinit[2]=((scount*19)+5)%256;
-    sbookinit[3]=scount>>8;
-    sbookinit[4]=scount%256;
+    sbookinit[1]=(UI08)(((scount*19)+5)>>8);
+    sbookinit[2]=(UI08)(((scount*19)+5)%256);
+    sbookinit[3]=(UI08)(scount>>8);
+    sbookinit[4]=(UI08)(scount%256);
     if (scount>0) send(sbookinit, 5);
 
     char sbookspell[20]="\x40\x01\x02\x03\x1F\x2E\x00\x00\x01\x00\x48\x00\x7D\x40\x01\x02\x03\x00\x00";
@@ -268,8 +268,8 @@ void cNxwClientObj::sendSpellBook(P_ITEM pi)
             sbookspell[0]=0x41;
             sbookspell[1]=0x00;
             sbookspell[2]=0x00;
-            sbookspell[3]=i+1;
-            sbookspell[8]=i+1;
+            sbookspell[3]=(UI08)(i+1);
+            sbookspell[8]=(UI08)(i+1);
             sbookspell[13]= pi->getSerial().ser1;
             sbookspell[14]= pi->getSerial().ser2;
             sbookspell[15]= pi->getSerial().ser3;
@@ -288,10 +288,10 @@ void cNxwClientObj::sendSFX(unsigned char a, unsigned char b, bool bIncludeNearb
 
 	sfx[2]= a;
 	sfx[3]= b;
-	sfx[6]= charpos.x >> 8;
-	sfx[7]= charpos.x % 256;
-	sfx[8]= charpos.y >> 8;
-	sfx[9]= charpos.y % 256;
+	sfx[6]= (UI08)(charpos.x >> 8);
+	sfx[7]= (UI08)(charpos.x % 256);
+	sfx[8]= (UI08)(charpos.y >> 8);
+	sfx[9]= (UI08)(charpos.y % 256);
 	
 	if (bIncludeNearby) {
 		NxwSocketWrapper sw;

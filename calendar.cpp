@@ -78,7 +78,7 @@ static bool chrInStr(char c, char *str)
 void setSeason(int nSeason)
 {
 
-	::season = nSeason;
+	::season = (unsigned char) nSeason;
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -104,11 +104,11 @@ void commitSeason(P_CHAR pc)
 	UI08 setseason[3]={ 0xBC, 0x00, 0x01 };
 	
 	if (region[pc->region].forcedseason>=0) 
-		setseason[1] = region[pc->region].forcedseason;
+		setseason[1] = (unsigned char) region[pc->region].forcedseason;
 	else {
 		setseason[1] = ::season;
 		if (::season==3) {
-			setseason[1] = g_nWinterOverride;
+			setseason[1] = (unsigned char) g_nWinterOverride;
 		}
 	}
 	Xsend(s,setseason,3);

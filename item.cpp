@@ -301,7 +301,9 @@ namespace item
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'G':
-					if ( lha == "GOOD" )
+					if ( lha == "GENDER" )
+						pi->setGender((SI08)str2num(rha)); // Added by Magius(CHE)
+					else if ( lha == "GOOD" )
 						pi->good = str2num(rha); // Added by Magius(CHE)
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
@@ -399,13 +401,15 @@ namespace item
 					if ( lha == "POISONED" )
 						pi->poisoned = (PoisonType)str2num(rha);
 
-					if ( lha == "PILE" )
+					else if ( lha == "PILE" )
 
 						pi->pileable = str2num(rha);
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'R':
-					if ( lha == "RANK" )
+					if	( "RACE" == script1 )
+						pi->setRace((SI32)str2num(script2));
+					else if ( lha == "RANK" )
 					{
 						pi->rank = str2num(rha); // By Magius(CHE)
 						if (pi->rank <= 0)

@@ -1083,15 +1083,16 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	//		When the race system is active and users doesn't belong to a valid race start enlistment procedure
 	//
 	if ( Race::isRaceSystemActive() )
-		if ( pc->race <= 0 )
+		if ( pc->getRace() <= 0 )
 		{
-			pc->race = 0;
+			pc->setRace(0);
 
 			AmxFunction* race_enlist = NULL;
-			if( race_enlist==NULL )
-				race_enlist = new AmxFunction( "__race_enlist" );
-
-			race_enlist->Call( pc->getSerial32() );
+			race_enlist = new AmxFunction( "__race_enlist" );
+			if( race_enlist!=NULL )
+				race_enlist->Call( pc->getSerial32() );
+			else
+				LogError("Race system enabled but failed to call amx override for race enlist!") ;
 		}
 		//else
 		//	validate pc race and decide what to do if race is invalid or has been deactivated

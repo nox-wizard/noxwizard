@@ -56,13 +56,13 @@ void loadcontainers()
 				else if ( "GUMP" == script1 )
 					gump = str2num( script2 );
 				else if ( "X1" == script1 )
-					uprleft.x= str2num( script2 );
+					uprleft.x= (short)str2num( script2 );
 				else if ( "Y1" == script1 )
-					uprleft.y= str2num( script2 );
+					uprleft.y= (short)str2num( script2 );
 				else if ( "X2" == script1 )
-					dwnrght.x= str2num( script2 );
+					dwnrght.x= (short)str2num( script2 );
 				else if ( "Y2" == script1 )
-					dwnrght.y= str2num( script2 );
+					dwnrght.y= (short)str2num( script2 );
 				else
 					WarnOut("[ERROR] wrong line ( %s ) parsed on containers.xss", script1.c_str() );
 			}
@@ -237,7 +237,7 @@ SI16 cItem::getContGump()
 	if( iter==contInfo.end() || iter->second==contInfoGump.end() )
 		return 0x47;
 	else 
-		return iter->second->second.gump;
+		return (short)iter->second->second.gump;
 
 }
 

@@ -130,12 +130,6 @@ void doubleclick(NXWCLIENT ps)
 		if (g_bByPass==true)
 			return;
 	}
-	/*
-	g_bByPass = false;
-	pi->runAmxEvent( EVENT_IONDBLCLICK, pi->getSerial32(), s );
-	if (g_bByPass==true)
-		return;
-	*/
 
 	if (!checkItemUsability(pc , pi, ITEM_USE_DBLCLICK))
 		return;
@@ -505,8 +499,8 @@ void doubleclick(NXWCLIENT ps)
 		int width, height;		// Tempoary storage for w and h;
 		width = 134 + (134 * pi->morez);	// Calculate new w and h
 		height = 134 + (134 * pi->morez);
-		ShortToCharPtr(width, map1 +15);
-		ShortToCharPtr(height, map1 +17);
+		ShortToCharPtr((UI16)width, map1 +15);
+		ShortToCharPtr((UI16)height, map1 +17);
 //		END OF: By Polygon
 
 		Xsend(s, map1, 19);
@@ -667,7 +661,7 @@ void doubleclick(NXWCLIENT ps)
 			pi->ReduceAmount(1);
 			return;
 	case ITYPE_POLYMORPH:
-			pc->setId( pi->morex );
+			pc->setId( (UI16)pi->morex );
 			pc->teleport();
 			pi->type = ITYPE_POLYMORPH_BACK;
 			return;
@@ -695,7 +689,7 @@ void doubleclick(NXWCLIENT ps)
 			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{
-			P_CHAR vendor = npcs::AddNPCxyz(-1, 2117, charpos.x, charpos.y, charpos.z);
+			P_CHAR vendor = npcs::AddNPCxyz(-1, 2117, charpos.x, charpos.y, (SI08)charpos.z);
 			if ( !ISVALIDPC(vendor) )
 			{
 				WarnOut("npc-script couldnt find vendor !\n");
@@ -748,12 +742,12 @@ void doubleclick(NXWCLIENT ps)
 			// Generate message to add a map point
 			SI16 posx, posy;					// tempoary storage for map point
 			SI16 tlx, tly, lrx, lry;				// tempoary storage for map extends
-			tlx = (pi->more1 << 8) | pi->more2;
-			tly = (pi->more3 << 8) | pi->more4;
-			lrx = (pi->moreb1 << 8) | pi->moreb2;
-			lry = (pi->moreb3 << 8) | pi->moreb4;
-			posx = (256 * (pi->morex - tlx)) / (lrx - tlx);		// Generate location for point
-			posy = (256 * (pi->morey - tly)) / (lry - tly);
+			tlx = (UI16)((pi->more1 << 8) | pi->more2);
+			tly = (UI16)((pi->more3 << 8) | pi->more4);
+			lrx = (UI16)((pi->moreb1 << 8) | pi->moreb2);
+			lry = (UI16)((pi->moreb3 << 8) | pi->moreb4);
+			posx = (UI16)((256 * (pi->morex - tlx)) / (lrx - tlx));		// Generate location for point
+			posy = (UI16)((256 * (pi->morey - tly)) / (lry - tly));
 			ShortToCharPtr(posx, map3 +7);				// Store the point position
 			ShortToCharPtr(posy, map3 +9);
 			Xsend(s, map3, 11);					// Fire data to client :D
@@ -835,7 +829,7 @@ void target_dyevat( NXWCLIENT ps, P_TARGET t )
 
 		if( !ISVALIDPC(pc) || ( pc->getSerial32()==curr->getSerial32() ) ) //in world or owned
 		{
-			pi->setColor( t->buffer[0] );
+			pi->setColor( (UI16)t->buffer[0] );
 			pi->Refresh();
 			curr->playSFX(0x023E); // plays the dye sound, LB
 		}
@@ -1323,7 +1317,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 				{
 					if (ISVALIDPI(pack)) {
 						pc->showContainer(pack);
-						SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay );
+						SetTimerSec( &(pc->objectdelay), (UI16)SrvParms->objectdelay );
 					}
 					else
 						WarnOut("Pack animal %i has no backpack!\n",target->getSerial32());
@@ -1336,7 +1330,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 						{
 							pc->showContainer(pack);
 							pc->sysmsg(TRANSLATE("You successfully snoop the pack animal.") );
-							SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay+SrvParms->snoopdelay );
+							SetTimerSec( &(pc->objectdelay), (UI16)(SrvParms->objectdelay+SrvParms->snoopdelay) );
 						}
 						else
 							WarnOut("Pack animal %i has no backpack!\n",target->getSerial32());
@@ -1347,7 +1341,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 						pc->IncreaseKarma( ServerScp::g_nSnoopKarmaLoss  );
 						pc->modifyFame( ServerScp::g_nSnoopFameLoss );
 						setCrimGrey(pc, ServerScp::g_nSnoopWillCriminal );
-						SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay+SrvParms->snoopdelay );
+						SetTimerSec( &(pc->objectdelay), (UI16)(SrvParms->objectdelay+SrvParms->snoopdelay) );
 					}
 				}
 			}

@@ -277,6 +277,25 @@ public:
 	UI32	disabled;	//!< Disabled object timer, cant trigger.
 	std::string*	disabledmsg; //!< Object is disabled, so display this message.
 
+private:
+	SI08 gender; // -1 neutral, 1 man, 2 woman, ...
+//@{
+/*!
+\name Races
+\brief Race related functions and attributes
+\brief now an property of all objects
+*/
+	SI32 			race;				//!< Race index
+//@}
+public:
+	inline const SI08 getGender() const
+	{ return gender; }
+	inline void		setGender(SI08 newGender)
+	{ gender = newGender; }
+	inline const SI32 getRace() const
+	{ return race; }
+	inline void		setRace(SI32 newRace)
+	{ race = newRace; }
 
 public:
 	virtual	void		Delete();

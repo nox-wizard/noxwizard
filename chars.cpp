@@ -140,7 +140,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	privLevel = PRIVLEVEL_GUEST;
 
 	setId( BODY_MALE );
-	race=INVALID;
 	custmenu=INVALID;
 	unicode = false; // This is set to 1 if the player uses unicode speech, 0 if not
 	account=INVALID;
@@ -2071,7 +2070,7 @@ void cChar::playMonsterSound(MonsterSound sfx)
 
 	SOUND s = creature->getSound( sfx );
 	if( s!=INVALID )
-		playSFX( s );
+		playSFX( (short)s );
 
 }
 
@@ -2317,8 +2316,15 @@ LOGICAL cChar::seeForLastTime( cObject &obj, LOGICAL testCanSee )
 */
 void cChar::movingFX(P_CHAR destination, short id, SI32 speed, SI32 loop, LOGICAL explode, ParticleFx* part)
 {
-	movingeffect(DEREF_P_CHAR(this), DEREF_P_CHAR(destination), id >> 8, id & 0xFF,
-		speed & 0xFF, loop & 0xFF, explode ? '\1' : '\0', part!=NULL, part);
+	movingeffect(DEREF_P_CHAR(this), 
+		DEREF_P_CHAR(destination),
+		(unsigned char)(id >> 8), 
+		(unsigned char)(id & 0xFF),
+		(unsigned char)(speed & 0xFF), 
+		(unsigned char)(loop & 0xFF), 
+		explode ? (unsigned char)'\1' : (unsigned char)'\0', 
+		part!=NULL, 
+		part);
 }
 
 /*!
@@ -2333,11 +2339,11 @@ void cChar::movingFX(P_CHAR destination, short id, SI32 speed, SI32 loop, LOGICA
 void cChar::staticFX(short id, SI32 speed, SI32 loop, ParticleFx* part)
 {
 	if (part!=NULL) {
-		if (id<=-1) id = (part->effect[0] << 8) + part->effect[1];
+		if (id<=-1) id = (short)((part->effect[0] << 8) + part->effect[1]);
 		if (speed<=-1) speed = part->effect[2];
 		if (loop<=-1) loop = part->effect[3];
 	}
-	staticeffect(DEREF_P_CHAR(this), id >> 8, id & 0xFF, speed, loop, part!=NULL, part);
+	staticeffect(DEREF_P_CHAR(this), (unsigned char)(id >> 8), (unsigned char)(id & 0xFF), (unsigned char)speed, (unsigned char)loop, part!=NULL, part);
 }
 
 /*!
@@ -2406,7 +2412,7 @@ void cChar::boltFX(LOGICAL bNoParticles)
 */
 void cChar::circleFX(short id)
 {
-	bolteffect2(DEREF_P_CHAR(this),id >> 8,id & 0xFF);
+	bolteffect2(DEREF_P_CHAR(this),(char)(id >> 8),(char)(id & 0xFF));
 }
 
 /*!
@@ -2463,7 +2469,7 @@ void cChar::hideBySkill()
 void cChar::hideBySpell(SI32 timer)
 {
 	if (timer == INVALID) timer = SrvParms->invisibiliytimer;
-	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, 0,0,0, timer);
+	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, 0,0,(short)0, timer);
 }
 
 /*!
@@ -2645,46 +2651,80 @@ P_ITEM cChar::getHairItem()
 \todo document parameters
 */
 void cChar::morph ( short bodyid, short skincolor, short hairstyle, short haircolor,
-    short beardstyle, short beardcolor, const char* newname, LOGICAL bBackup)
+    short beardstyle, short beardcolor, const char* newname, LOGICAL bBackup, SI32 npcNumber)
 {
 	if ((bodyid==INVALID)&&(skincolor==INVALID)&&(hairstyle==INVALID)&&
 	    (haircolor==INVALID)&&(beardstyle==INVALID)&&(beardcolor==INVALID)&& (newname==NULL))
-	{ // if empty morph called, no matter which bBackup status
+	{ // if empty morph called, no matter which bBackup status, used for unmorphing
 		if(!morphed)
 		{
-			WarnOut("cChar::morph(<void>) called on non-morphed char\n");
+			WarnOut("cChar::morph(<void>) with option unmorphing called on non-morphed char\n");
 			return;
 		}
 		morphed = false; //otherwise it will inf-loop
-		morph( getOldId(), getOldColor(), oldhairstyle, oldhaircolor, oldbeardstyle, oldbeardcolor,getRealNameC(), false);
+		if ( this->getBackupStats() != NULL )
+		{
+			cCharSaver *backup = this->getBackupStats();
+			morph( backup->getId(), 
+				backup->getColor(), 
+				backup->getHairStyle(), 
+				backup->getHairColor(), 
+				backup->getBeardStyle(), 
+				backup->getBeardColor(),
+				backup->getName().c_str(), 
+				false);
+			this->setBackupStats(NULL);
+			delete backup;
+		}
 		return;
 	}
+
 
 	// if already morphed and should backup, restore old backup first
 	if ((morphed)&&(bBackup))
 		morph();
 
+
 	P_ITEM phair = getHairItem();
 	P_ITEM pbeard = getBeardItem();
-
+//Backing up all relevant things
 	if (bBackup)
 	{
-		setOldId( getId() );
-		setOldColor( getColor() );
+		// only use a temporary memory object that is destroyed on unmorphing
+		cCharSaver *backup = new cCharSaver();
+		backup->setId( getId() );
+		backup->setColor( getColor() );
 
-		setRealName( getCurrentNameC() );
+		backup->setName( getCurrentName() );
 		if(ISVALIDPI(pbeard))
 		{
-			oldbeardstyle = pbeard->getId();
-			oldbeardcolor = pbeard->getColor();
+			backup->setBeardStyle(pbeard->getId());
+			backup->setBeardColor(pbeard->getColor());
 		}
 		if(ISVALIDPI(phair))
 		{
-			oldhairstyle = phair->getId();
-			oldhaircolor = phair->getColor();
+			backup->setHairStyle(phair->getId());
+			backup->setHairColor(phair->getColor());
 		}
+		backup->setStrength(this->getStrength());
+		backup->setIntelligence(this->in);
+		backup->setDexterity(this->dx);
+		backup->setHitpoints(this->hp);
+		backup->setStamina(this->stm);
+		backup->setMana(this->mn);
+		this->setBackupStats(backup);
 	}
 
+	if ( npcNumber != INVALID )
+	{
+		P_CHAR npcCopy = npcs::AddNPC(this->getSocket(), NULL, bodyid, 50,50,0); // the npc will be created at 50,50, since he will be deleted anyway
+		this->setStrength(npcCopy->getStrength());
+		this->dx=npcCopy->dx;
+		this->in=npcCopy->in;
+		if (newname==NULL)
+			setCurrentName(npcCopy->getCurrentName());
+		setId( npcCopy->getId());
+	}
 	if(bodyid!=INVALID)
 		setId( bodyid );
 
@@ -2770,14 +2810,18 @@ void cChar::possess(P_CHAR pc)
 	pc->SetPriv2(sTemp);
 
 	//commandLevel
-	usTemp = privLevel;
+	//Wintermute: Don't save the privlevel in the possessing char, because you won't have commands anymore
+	//on switchback set set privlevel in npc to zero
+//	usTemp = privLevel;
 	privLevel = pc->privLevel;
-	pc->privLevel = usTemp;
+//	pc->privLevel = usTemp;
 
 	//Serials
 	if ( bSwitchBack ) {
 		possessorSerial = INVALID;
 		pc->possessedSerial = INVALID;
+		// We don't want admin npcs :D
+		privLevel = 0;
 	} else {
 		pc->possessorSerial = getSerial32();
 		possessedSerial = pc->getSerial32();
@@ -3144,7 +3188,7 @@ void cChar::Kill()
 	//--------------------- corpse & ghost stuff
 
 	bool hadHumanBody=HasHumanBody();
-	SI32 corpseid = (getId() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
+	SI16 corpseid = (getId() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
@@ -3183,7 +3227,7 @@ void cChar::Kill()
 		if     ( IsInnocent() )
 			pCorpse->more2 = 1;
 		else if(IsGrey())
-			pCorpse->more2 = ServerScp::g_nGreyCanBeLooted+1;
+			pCorpse->more2 = (unsigned char)(ServerScp::g_nGreyCanBeLooted+1);
 		else if (IsCriminal())
 			pCorpse->more2 = 2;
 		else if (IsMurderer())
@@ -3744,25 +3788,25 @@ void cChar::doGmEffect()
 		switch( gmMoveEff )
 		{
 		case 1:	// flamestrike
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, (UI08)0x37, (UI08)0x09, (SI08)0x09, (SI08)0x19, (SI08)0);
 			//soundeffect(s, 0x02, 0x08);
 			playSFX( 0x0802);
 			break;
 
 		case 2: // sparklie (fireworks wand style)
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x3A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x3A, 0x09, 0x19, 0); break;
 
 		case 3: // sparklie (fireworks wand style)
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x4A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x4A, 0x09, 0x19, 0); break;
 
 		case 4: // sparklie (fireworks wand style)
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x5A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x5A, 0x09, 0x19, 0); break;
 
 		case 5: // sparklie (fireworks wand style)
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x6A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x6A, 0x09, 0x19, 0); break;
 
 		case 6: // sparklie (fireworks wand style)
-			staticeffect3(charpos.x+1, charpos.y+1, charpos.z+10, 0x37, 0x7A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x7A, 0x09, 0x19, 0); break;
 		}
 	}
 	return;
@@ -4551,7 +4595,7 @@ void cChar::checkPoisoning()
 					// between 0% and 5% of player's hp reduced by racial combat poison resistance
 					hp -= SI32(
 							qmax( ( ( hp ) * RandomNum( 0, 5 ) ) / 100, 3 ) *
-							( (100 - Race::getPoisonResistance( race, POISON_WEAK ) ) / 100 )
+							( (100 - Race::getPoisonResistance( getRace(), POISON_WEAK ) ) / 100 )
 						     );
 					break;
 				case POISON_NORMAL:
@@ -4559,7 +4603,7 @@ void cChar::checkPoisoning()
 					// between 5% and 10% of player's hp reduced by racial combat poison resistance
 					hp -= SI32(
 							qmax( ( ( hp ) * RandomNum( 5, 10 ) ) / 100, 5 ) *
-							( (100 - Race::getPoisonResistance( race, POISON_NORMAL ) ) / 100 )
+							( (100 - Race::getPoisonResistance( getRace(), POISON_NORMAL ) ) / 100 )
 						      );
 					break;
 				case POISON_GREATER:
@@ -4567,7 +4611,7 @@ void cChar::checkPoisoning()
 					// between 10% and 15% of player's hp reduced by racial combat poison resistance
 					hp -= SI32(
 							qmax( ( ( hp ) * RandomNum( 10,15 ) ) / 100, 7 ) *
-							( (100 - Race::getPoisonResistance( race, POISON_GREATER ) ) / 100 )
+							( (100 - Race::getPoisonResistance( getRace(), POISON_GREATER ) ) / 100 )
 						     );
 					break;
 				case POISON_DEADLY:
@@ -4579,7 +4623,7 @@ void cChar::checkPoisoning()
 					}
 					hp -= SI32(
 							qmax( ( ( hp ) * RandomNum( 15, 20 ) ) / 100, 6) *
-							( (100 - Race::getPoisonResistance( race, POISON_DEADLY ) ) / 100 )
+							( (100 - Race::getPoisonResistance( getRace(), POISON_DEADLY ) ) / 100 )
 						     );
 					break;
 				default:
@@ -4696,18 +4740,18 @@ void cChar::do_lsd()
 			ctr++;
 
 			// lots of color consistancy checks
-			color=color%0x03E9;
+			color=(UI16)(color%0x03E9);
 			WORD2DBYTE( color, c1, c2 );
 			if (color<0x0002 || color>0x03E9 )
 				color=0x03E9;
 
 			if( ((color&0x4000)>>14)+((color&0x8000)>>15) )
-				color =0x1000 +rand()%255;
+				color =(UI16)(0x1000 +rand()%255);
 
 			if (rand()%10==0)
-				zz= pi->getPosition().z + rand()%33;
+				zz= (SI08)(pi->getPosition().z + rand()%33);
 			else
-				zz= pi->getPosition().z;
+				zz= (SI08)pi->getPosition().z;
 			if (rand()%10==0)
 				xx= pi->getPosition().x + rand()%3;
 			else
@@ -4721,7 +4765,7 @@ void cChar::do_lsd()
 			{
 				icnt++;
 				if (icnt%10==0 || icnt<10)
-					senditem_lsd(socket, DEREF_P_ITEM(pi),c1,c2,xx,yy,zz); // attempt to cut packet-bombing by this thing
+					senditem_lsd(socket, DEREF_P_ITEM(pi),(UI08)c1,(UI08)c2,xx,yy,zz); // attempt to cut packet-bombing by this thing
 			}
 		}// end of if item
 
@@ -4732,9 +4776,9 @@ void cChar::do_lsd()
 			{
 				int snd=rand()%19;
 				if (snd>9)
-					soundeffect5(socket,(0x01<<8)|((snd-10)%256));
+					soundeffect5(socket,(UI16)((0x01<<8)|((snd-10)%256)));
 				else
-					soundeffect5(socket,246+snd);
+					soundeffect5(socket,(UI16)(246+snd));
 			}
 		}
 	}

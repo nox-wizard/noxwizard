@@ -31,7 +31,7 @@ public:
 	NxwWrapper();
 	~NxwWrapper();
 
-	bool isEmpty();
+	LOGICAL isEmpty();
 	void clear();
 	UI32 size();
 	
@@ -48,8 +48,8 @@ public:
 class NxwSerialWrapper : public NxwWrapper {
 
 protected: 
-	void fillSerialInContainer( SERIAL serial, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false );
-	void fillSerialInContainer( cObject* obj, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false );
+	void fillSerialInContainer( SERIAL serial, LOGICAL bIncludeSubContained = true, LOGICAL bIncludeOnlyFirstSubcont=false );
+	void fillSerialInContainer( cObject* obj, LOGICAL bIncludeSubContained = true, LOGICAL bIncludeOnlyFirstSubcont=false );
 
 public:
 	NxwSerialWrapper();
@@ -73,12 +73,12 @@ public:
 	P_CHAR getChar();
 	void insertChar( P_CHAR pc );
 
-	void fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled = true, bool bOnlyFollowing = false );
-	void fillCharsAtXY( Location location, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
-	void fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
-	void fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
-	void fillCharsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeOfflinePlayers = true, bool bOnlyPlayer = false );
-	void fillPartyFriend( P_CHAR pc, UI32 nDistance = VISRANGE, bool bExcludeThis = false );
+	void fillOwnedNpcs( P_CHAR pc, LOGICAL bIncludeStabled = true, LOGICAL bOnlyFollowing = false );
+	void fillCharsAtXY( Location location, LOGICAL bExcludeOfflinePlayers = true, LOGICAL bOnlyPlayer = false );
+	void fillCharsAtXY( UI16 x, UI16 y, LOGICAL bExcludeOfflinePlayers = true, LOGICAL bOnlyPlayer = false );
+	void fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, LOGICAL bExcludeOfflinePlayers = true, LOGICAL bOnlyPlayer = false );
+	void fillCharsNearXYZ ( Location location, int nDistance = VISRANGE, LOGICAL bExcludeOfflinePlayers = true, LOGICAL bOnlyPlayer = false );
+	void fillPartyFriend( P_CHAR pc, UI32 nDistance = VISRANGE, LOGICAL bExcludeThis = false );
 	void fillNpcsNearXY( UI16 x, UI16 y, int nDistance = VISRANGE );
 	void fillNpcsNear( P_CHAR pc, int nDistance = VISRANGE );
 	void fillNpcsNear( P_ITEM pi, int nDistance = VISRANGE );
@@ -97,12 +97,12 @@ public:
 	P_ITEM getItem();
 	void insertItem( P_ITEM pi );
 
-	void fillItemsInContainer ( P_ITEM pi, bool bIncludeSubContained = true, bool bIncludeOnlyFirstSubcont=false);
-	void fillItemWeared( P_CHAR pc, bool bIncludeLikeHair = false, bool bIncludeProtectedLayer = false, bool bExcludeIllegalLayer=true );
+	void fillItemsInContainer ( P_ITEM pi, LOGICAL bIncludeSubContained = true, LOGICAL bIncludeOnlyFirstSubcont=false);
+	void fillItemWeared( P_CHAR pc, LOGICAL bIncludeLikeHair = false, LOGICAL bIncludeProtectedLayer = false, LOGICAL bExcludeIllegalLayer=true );
 	void fillItemsAtXY( UI16 x, UI16 y, SI32 type = INVALID, SI32 id = INVALID );
 	void fillItemsAtXY( Location location, SI32 type = INVALID, SI32 id = INVALID );
-	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
-	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
+	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, LOGICAL bExcludeNotMovableItems = true);
+	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, LOGICAL bExcludeNotMovableItems = true);
 	void fillGuilds( SERIAL guild, int options=0 );
 
 };
@@ -118,7 +118,7 @@ public:
 	void insertSocket( NXWSOCKET s );
 	void insertClient( NXWCLIENT ps );
 
-	void fillOnline( P_CHAR onlyNearThis, bool bExcludeThis = true, UI32 nDistance = VISRANGE );
+	void fillOnline( P_CHAR onlyNearThis, LOGICAL bExcludeThis = true, UI32 nDistance = VISRANGE );
 	void fillOnline( Location location, int nDistance = VISRANGE );
 	void fillOnline( P_ITEM onlyNearThis,int nDistance = VISRANGE );
 	void fillOnline( );
@@ -138,7 +138,7 @@ namespace amxSet {
 	
 	SERIAL create(  );
 	void deleteSet( SERIAL iSet );
-	bool end( SERIAL iSet );
+	LOGICAL end( SERIAL iSet );
 	void rewind( SERIAL iSet );
 	void next( SERIAL iSet );
 	UI32 size( SERIAL iSet);
@@ -147,17 +147,17 @@ namespace amxSet {
 	void add( SERIAL iSet, SERIAL nVal );
 	void copy( SERIAL iSet, const NxwWrapper& from );
 
-	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
- 	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
+	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, LOGICAL includeStabled, LOGICAL onlyFollowing );
+ 	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, LOGICAL excludeThis );
  	void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
 	void addNpcsNearObj( SERIAL iSet, P_CHAR pc, int nDistance );
 	void addNpcsNearObj( SERIAL iSet, P_ITEM pi, int nDistance );
- 	void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont );
- 	void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer );
+ 	void addItemsInContainer( SERIAL iSet, P_ITEM pi, LOGICAL includeSubCont, LOGICAL includeOnlyFirstSubCont );
+ 	void addItemWeared( SERIAL iSet, P_CHAR pc, LOGICAL includeLikeHair, LOGICAL includeProtectedLayer, LOGICAL excludeIllegalLayer );
  	void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type );
- 	void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable );
+ 	void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, LOGICAL excludeNotMovable );
  	void addAllOnlinePlayers( SERIAL iSet );
-	void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance );
+	void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, LOGICAL excludeThis, int distance );
 	void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance );
 	void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
 

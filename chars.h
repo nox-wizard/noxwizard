@@ -117,6 +117,80 @@ class cNxwClientObj;
 class cPath;
 class ClientCrypt;
 
+class cCharSaver
+{
+private:
+	SI32 strength;
+	SI32 dexterity;
+	SI32 intelligence;
+	SI32 mana;
+	SI32 stamina;
+	SI32 hitpoints;
+	UI16 oldId;
+	UI16 oldColor;
+	std::string oldName;
+	UI16 oldbeardstyle;
+	UI16 oldbeardcolor;
+	UI16 oldhairstyle;
+	UI16 oldhaircolor;
+public:
+	cCharSaver();
+	inline void setStrength(SI32 newStr)
+	{	strength = newStr; };
+	const inline SI32 getStrength()
+	{ return strength;};
+	inline void setDexterity(SI32 newDex)
+	{	dexterity = newDex; };
+	const inline SI32 getDexterity()
+	{ return dexterity;};
+	inline void setIntelligence(SI32 newInt)
+	{	intelligence = newInt; };
+	const inline SI32 getIntelligence()
+	{ return intelligence;};
+	inline void setMana(SI32 newMana)
+	{	mana = newMana; };
+	const inline SI32 getMana()
+	{ return mana;};
+	inline void setStamina(SI32 newStam)
+	{	stamina = newStam; };
+	const inline SI32 getStamina()
+	{ return stamina;};
+	inline void setHitpoints(SI32 newHits)
+	{	hitpoints = newHits; };
+	const inline SI32 getHitpoints()
+	{ return hitpoints;};
+	inline void setId( UI16 newId )
+	{ oldId = newId; }
+	inline UI16 getId() 
+	{ return oldId; }
+	inline void setColor( COLOR oldColor )
+	{ this->oldColor = oldColor; }
+	inline COLOR getColor() 
+	{ return this->oldColor; }
+	inline const string	getName() 
+	{ return oldName; }
+	inline void		setName(string s)
+	{ oldName = s; }
+	inline void setBeardStyle( UI16 beardstyle )
+	{ oldbeardstyle = beardstyle; }
+	inline UI16 getBeardStyle() 
+	{ return oldbeardstyle; }
+	inline void setBeardColor( COLOR beardcolor )
+	{ this->oldbeardcolor = beardcolor; }
+	inline COLOR getBeardColor() 
+	{ return this->oldbeardcolor; }
+	inline void setHairStyle( UI16 hairstyle )
+	{ oldhairstyle = hairstyle; }
+	inline UI16 getHairStyle() 
+	{ return oldhairstyle; }
+	inline void setHairColor( COLOR haircolor )
+	{ this->oldhaircolor = haircolor; }
+	inline COLOR getHairColor() 
+	{ return this->oldhaircolor; }
+
+
+};
+
 /*!
 \brief Character class
 */
@@ -434,14 +508,6 @@ class cChar : public cObject
 		void			modifyFame( SI32 value );
 //@}
 
-//@{
-/*!
-\name Races
-\brief Race related functions and attributes
-*/
-	public:
-		SI32 			race;				//!< Race index
-//@}
 
 //@{
 /*!
@@ -1195,7 +1261,7 @@ public:
 		P_ITEM			getHairItem();
 		void			morph ( short bodyid = INVALID, short skincolor = INVALID,
 								short hairstyle = INVALID, short haircolor = INVALID, short beardstyle = INVALID,
-								short beardcolor = INVALID, const char* newname = NULL, LOGICAL bBackup = true);
+								short beardcolor = INVALID, const char* newname = NULL, LOGICAL bBackup = true, SI32 npcNumber=INVALID);
 
 
 //@{
@@ -1227,6 +1293,14 @@ public:
 
 	public:
 		virtual void		Delete();
+	private:
+		cCharSaver *backupStats;
+	public:
+		inline cCharSaver *getBackupStats() 
+		{ return backupStats; };
+		inline void setBackupStats(cCharSaver *saver)
+		{ backupStats=saver; };
+	
 	/*
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
@@ -1246,6 +1320,7 @@ public:
 
 	private:
 		ClientCrypt * crypter;
+
 //@}
 #endif
 } PACK_NEEDED;

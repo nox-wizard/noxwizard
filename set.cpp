@@ -49,7 +49,7 @@ void deleteSet( SERIAL iSet )
 		g_oSet.erase( iter );
 }
 
-bool end( SERIAL iSet )
+LOGICAL end( SERIAL iSet )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
@@ -117,7 +117,7 @@ UI32 size( SERIAL iSet)
 }
 
 
-void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing )
+void addOwnedNpcs( SERIAL iSet, P_CHAR pc, LOGICAL includeStabled, LOGICAL onlyFollowing )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -165,7 +165,7 @@ void addNpcsNearObj( SERIAL iSet, P_ITEM pi, int nDistance )
 	}
 }
 
-void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis )
+void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, LOGICAL excludeThis )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -177,7 +177,7 @@ void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis )
 	}
 }
 
-void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont )
+void addItemsInContainer( SERIAL iSet, P_ITEM pi, LOGICAL includeSubCont, LOGICAL includeOnlyFirstSubCont )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -189,7 +189,7 @@ void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool incl
 	}
 }
 
-void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer )
+void addItemWeared( SERIAL iSet, P_CHAR pc, LOGICAL includeLikeHair, LOGICAL includeProtectedLayer, LOGICAL excludeIllegalLayer )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -213,7 +213,7 @@ void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type )
 	}
 }
 
-void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable )
+void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, LOGICAL excludeNotMovable )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -250,7 +250,7 @@ void addAllOnlinePlayers( SERIAL iSet )
 	}
 }
 
-void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance )
+void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, LOGICAL excludeThis, int distance )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -352,7 +352,7 @@ NxwWrapper::~NxwWrapper() {
 \author Endymion
 \return true if empty
 */
-bool NxwWrapper::isEmpty()
+LOGICAL NxwWrapper::isEmpty()
 {
 	return ( ( this->vect.size()==0 ) || ( current==vect.end() ) );	
 };
@@ -495,7 +495,7 @@ void NxwSerialWrapper::insertSerial( cObject* obj )
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
 */
-void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont )
+void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, LOGICAL bIncludeSubContained, LOGICAL bIncludeOnlyFirstSubcont )
 {
 	
 	std::map< SERIAL , vector<P_ITEM> >::iterator cont( pointers::pContMap.find( serial ) );
@@ -526,7 +526,7 @@ void NxwSerialWrapper::fillSerialInContainer( SERIAL serial, bool bIncludeSubCon
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
 */
-void NxwSerialWrapper::fillSerialInContainer( cObject* obj, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont )
+void NxwSerialWrapper::fillSerialInContainer( cObject* obj, LOGICAL bIncludeSubContained, LOGICAL bIncludeOnlyFirstSubcont )
 {
 	if( obj != 0 )
 		fillSerialInContainer( obj->getSerial32(), bIncludeSubContained, bIncludeOnlyFirstSubcont );
@@ -577,7 +577,7 @@ void NxwCharWrapper::insertChar( P_CHAR pc )
 \param bOnlyFollowing if true only following pets should be included
 \warning this function ADD new char to current list
 */
-void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyFollowing )
+void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, LOGICAL bIncludeStabled, LOGICAL bOnlyFollowing )
 {
 
 	VALIDATEPC( pc );
@@ -606,13 +606,13 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 \author Luxor
 \param location the location
 */
-void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
+void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, LOGICAL bExcludeOfflinePlayers, LOGICAL bOnlyPlayer )
 {
 
 	if( mapRegions->isValidCoord( x, y ) )
 	{
-		UI16 	nowx = x / REGION_GRIDSIZE,
-			nowy = y / REGION_COLSIZE;
+		UI16 	nowx = (UI16)(x / REGION_GRIDSIZE),
+			nowy = (UI16)(y / REGION_COLSIZE);
 
 		if( !mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 		{
@@ -641,9 +641,9 @@ void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers,
 \author Luxor
 \param location the location
 */
-void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
+void NxwCharWrapper::fillCharsAtXY( Location location, LOGICAL bExcludeOfflinePlayers, LOGICAL bOnlyPlayer )
 {
-	fillCharsAtXY( location.x, location.y, bExcludeOfflinePlayers, bOnlyPlayer );
+	fillCharsAtXY( (UI16)location.x, (UI16)location.y, bExcludeOfflinePlayers, bOnlyPlayer );
 }
 
 
@@ -658,7 +658,7 @@ void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlaye
 \param bExcludeOfflinePlayers if true exclude offline players from search
 \warning this function ADD new char to current list
 */
-void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
+void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL bExcludeOfflinePlayers, LOGICAL bOnlyPlayer )
 {
 	Location pos = Loc( x, y, 0,0 );
 	if( mapRegions->isValidCoord( x, y ) )
@@ -666,7 +666,7 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 			if( ix>=0 ) {
 				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
 					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-						UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
+						UI16 nowx = (UI16)(ix/REGION_GRIDSIZE), nowy= (UI16)(iy/REGION_COLSIZE);
 
 						if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 							continue;
@@ -705,9 +705,9 @@ void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 \param bExcludeOfflinePlayers if true exclude offline players from search
 \warning this function ADD new char to current list
 */
-void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool bExcludeOfflinePlayers , bool bOnlyPlayer )
+void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, LOGICAL bExcludeOfflinePlayers , LOGICAL bOnlyPlayer )
 {
-	fillCharsNearXYZ( location.x, location.y, nDistance, bExcludeOfflinePlayers );
+	fillCharsNearXYZ( (UI16)location.x, (UI16)location.y, nDistance, bExcludeOfflinePlayers );
 }
 
 
@@ -726,8 +726,8 @@ void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 			if( ix>=0 ) {
 				for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
 					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-						UI16	nowx = ix/REGION_GRIDSIZE,
-							nowy= iy/REGION_COLSIZE;
+						UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+							nowy= (UI16)(iy/REGION_COLSIZE);
 
 						if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
 							continue;
@@ -762,7 +762,7 @@ void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 void NxwCharWrapper::fillNpcsNear( P_CHAR pc, int nDistance )
 {
 	VALIDATEPC(pc)
-	fillNpcsNearXY(pc->getPosition().x, pc->getPosition().y, nDistance );
+	fillNpcsNearXY((UI16)pc->getPosition().x, (UI16)pc->getPosition().y, nDistance );
 }
 
 /*!
@@ -779,7 +779,7 @@ void NxwCharWrapper::fillNpcsNear( P_ITEM pi, int nDistance )
 
 	P_ITEM out=pi->getOutMostCont();
 	if( out->isInWorld() ) {
-		fillNpcsNearXY( out->getPosition().x, out->getPosition().y, nDistance );
+		fillNpcsNearXY( (UI16)out->getPosition().x, (UI16)out->getPosition().y, nDistance );
 	}
 	else {
 		fillNpcsNear( pointers::findCharBySerial( out->getContSerial() ), nDistance );
@@ -798,7 +798,7 @@ void NxwCharWrapper::fillNpcsNear( P_ITEM pi, int nDistance )
 \warning this function ADD new char to current list
 \note offline player are not added
 */
-void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, bool bExcludeThis )
+void NxwCharWrapper::fillPartyFriend( P_CHAR pc, UI32 nDistance, LOGICAL bExcludeThis )
 {
 	VALIDATEPC(pc);
 	if( pc->party != INVALID )
@@ -899,7 +899,7 @@ void NxwItemWrapper::insertItem( P_ITEM pi )
 \param bIncludeSubContained if true recurse subcontainers
 \param bIncludeOnlyFirstSubcont if true only recurse first sub container
 */
-void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont )
+void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, LOGICAL bIncludeSubContained, LOGICAL bIncludeOnlyFirstSubcont )
 {
 	VALIDATEPI(pi);
 	fillSerialInContainer( pi, bIncludeSubContained, bIncludeOnlyFirstSubcont );
@@ -921,7 +921,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
-	UI16 nowx = x / REGION_GRIDSIZE, nowy = y / REGION_COLSIZE;
+	UI16 nowx = (UI16)(x / REGION_GRIDSIZE), nowy = (UI16)(y / REGION_COLSIZE);
 
 	if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 		return;
@@ -955,7 +955,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 */
 void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 {
-	fillItemsAtXY( location.x, location.y, type, id ); 
+	fillItemsAtXY( (UI16)location.x, (UI16)location.y, type, id ); 
 }
 
 /*!
@@ -967,7 +967,7 @@ void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 \param bExcludeNotMovableItems if true exluce not movable items
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems )
+void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, LOGICAL bExcludeNotMovableItems )
 {
 	if( mapRegions->isValidCoord( x, y ) )
 	{
@@ -982,8 +982,8 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 			if( ix>=0 ) {
 				for( SI32 iy=y-height; iy<=y+height; iy+=REGION_COLSIZE ) {
 					if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
-						UI16	nowx = ix/REGION_GRIDSIZE,
-							nowy= iy/REGION_COLSIZE;
+						UI16	nowx = (UI16)(ix/REGION_GRIDSIZE),
+							nowy= (UI16)(iy/REGION_COLSIZE);
 
 						if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 							continue;
@@ -1018,9 +1018,9 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 \param bExcludeNotMovableItems if true exluce not movable items
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, bool bExcludeNotMovableItems )
+void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, LOGICAL bExcludeNotMovableItems )
 {
-	fillItemsNearXYZ( location.x, location.y, nDistance, bExcludeNotMovableItems );
+	fillItemsNearXYZ( (UI16)location.x, (UI16)location.y, nDistance, bExcludeNotMovableItems );
 }
 
 /*!
@@ -1032,7 +1032,7 @@ void NxwItemWrapper::fillItemsNearXYZ ( Location location, int nDistance, bool b
 \param bIncludeProtectedLayer if true add also protected layer
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bIncludeProtectedLayer, bool bExcludeIllegalLayer )
+void NxwItemWrapper::fillItemWeared( P_CHAR pc, LOGICAL bIncludeLikeHair, LOGICAL bIncludeProtectedLayer, LOGICAL bExcludeIllegalLayer )
 {
 	
 	VALIDATEPC(pc);
@@ -1067,7 +1067,7 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 
 		//race protected
 		if( Race::isRaceSystemActive() )
-			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->race, pi_j->layer ) ) ) 
+			if (!bIncludeProtectedLayer && ( Race::isProtectedLayer( (UI32) pc->getRace(), pi_j->layer ) ) ) 
 				continue;
 
 		this->insertSerial( pi_j->getSerial32() );
@@ -1184,7 +1184,7 @@ void NxwSocketWrapper::insertClient( NXWCLIENT ps )
 \warning this function ADD new char to current list
 \note Akron - Changed nDistance to UI32 and doxygen documented it
 */
-void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, bool bExcludeThis, UI32 nDistance )
+void NxwSocketWrapper::fillOnline( P_CHAR onlyNearThis, LOGICAL bExcludeThis, UI32 nDistance )
 {
 	P_CHAR	pc;
 	LOGICAL	validOnlyNearThis = ISVALIDPC(onlyNearThis);

@@ -981,7 +981,7 @@ void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubp
 			pc->setOldColor( value );
 			break;
 		case NXW_CP_S_RACE :
-			pc->race = value;
+			pc->setRace(value);
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", property );
 			break;
@@ -1589,7 +1589,7 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 				amxVS.updateVariable( pc->getSerial32(), subproperty, value );
 			break;
 		case NXW_CP_I_RACE :		 				//dec value: 315
-			pc->race = value;
+			pc->setRace(value);
 			break;
 		case NXW_CP_I_CX :			 			//dec value: 316
 			pc->setPosition("x",value);
@@ -1845,7 +1845,7 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 					return value;
 				}
 				return 0;
-		CHECK(  NXW_CP_I_RACE, pc->race ) 				//dec value: 315
+		CHECK(  NXW_CP_I_RACE, pc->getRace() ) 				//dec value: 315
 		CHECK(  NXW_CP_I_CX, pc->getPosition().x ) 			//dec value: 316
 		CHECK(  NXW_CP_I_CY, pc->getPosition().y ) 			//dec value: 317
 		CHECK(  NXW_CP_I_CZ, pc->getPosition().z ) 			//dec value: 318
@@ -1879,7 +1879,7 @@ short getCharShortProperty( P_CHAR pc, int property, int prop2 )
 			P_CREATURE_INFO creature = creatures.getCreature( pc->getId() );
 			return ( creature!=NULL )? (short)creature->getSound( static_cast<MonsterSound>(prop2) ) : (short)INVALID;
 		}
-		CHECK(  NXW_CP_S_RACE, (short)pc->race )
+		CHECK(  NXW_CP_S_RACE, (short)pc->getRace() )
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );
 			return INVALID;
@@ -4175,7 +4175,7 @@ char house_getCharProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 {
 // Byte properties
 
-	char retVal=(signed char) INVALID;
+	char retVal=(char) INVALID;
 	switch( property )
 	{
 

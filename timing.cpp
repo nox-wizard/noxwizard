@@ -71,7 +71,7 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 					case 0x3996:
 					case 0x398C: //Fire Field
 						if (!pc->resistsFire())
-							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, SI32(pi->morex/100.0), DAMAGE_FIRE, 0, 1);
+							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, (UI08)(pi->morex/100.0), DAMAGE_FIRE, 0, 1);
 						return;
 					case 0x3915:
 					case 0x3920: //Poison Field
@@ -137,16 +137,16 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 			day++;
 		uotickcount=uiCurrentTime+secondsperuominute*MY_CLOCKS_PER_SEC;
 		if (Calendar::g_nMinute%8==0)
-			moon1=(moon1+1)%8;
+			moon1=(UI08)((moon1+1)%8);
 		if (Calendar::g_nMinute%3==0)
-			moon2=(moon2+1)%8;
+			moon2=(UI08)((moon2+1)%8);
 	}
 	//
 	// Light
 	//
 	if( TIMEOUT( lighttime ) )
 	{
-		SI32 lightLevel = worldcurlevel;
+		UI08 lightLevel = worldcurlevel;
 
 		SI32 timenow = (Calendar::g_nHour * 60) + Calendar::g_nMinute;
 		SI32 dawntime = (Calendar::g_nCurDawnHour * 60) + Calendar::g_nCurDawnMin;
@@ -155,7 +155,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		SI32 morntime = qmax((dawntime-120), (0));
 		SI32 const middaytime = 750;
 //		SI32 const midnighttime = 0; // unused variable
-		SI32 dawnlight = (((worlddarklevel - worldbrightlevel))/3) + worldbrightlevel;
+		UI08 dawnlight = (UI08)((((worlddarklevel - worldbrightlevel))/3) + worldbrightlevel);
 		//
 		// default lights at dawn and sunset
 		//
@@ -165,7 +165,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		// highest light at midday
 		//
 		else if( timenow == middaytime )
-			lightLevel = qmax(worldbrightlevel-1, 0);
+			lightLevel = (UI08) qmax(worldbrightlevel-1, 0);
 		//
 		// darkest light during night
 		//
@@ -178,21 +178,21 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		// fading light slight before dawn
 		//
 		else if( timenow > morntime && timenow < dawntime )
-			lightLevel = linInterpolation(morntime, worlddarklevel, dawntime, dawnlight, timenow);
+			lightLevel = (UI08)linInterpolation(morntime, worlddarklevel, dawntime, dawnlight, timenow);
 		//
 		// fading light slight from dawn to midday
 		else if( timenow > dawntime &&  timenow < middaytime )
-			lightLevel = linInterpolation(dawntime, dawnlight, middaytime, worldbrightlevel, timenow);
+			lightLevel = (UI08)linInterpolation(dawntime, dawnlight, middaytime, worldbrightlevel, timenow);
 		//
 		// fading light slight from midday to sunset
 		//
 		else if( timenow > middaytime && timenow < sunsettime )
-			lightLevel = linInterpolation(middaytime, worldbrightlevel, sunsettime, dawnlight, timenow);
+			lightLevel = (UI08)linInterpolation(middaytime, worldbrightlevel, sunsettime, dawnlight, timenow);
 		//
 		// fading light slight from sunset to night
 		//
 		else if( timenow > sunsettime && timenow < nighttime )
-			lightLevel = linInterpolation(sunsettime, dawnlight, nighttime, worlddarklevel, timenow);
+			lightLevel = (UI08)linInterpolation(sunsettime, dawnlight, nighttime, worlddarklevel, timenow);
 
 		if (wtype)
 			lightLevel += 2;
@@ -341,7 +341,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 						if( pi->morey >= 0 && pi->morey < 25 )
 							if (pc->distFrom(pi)<=pi->morey)
 								if( (UI32)RandomNum(1,100) <= pi->morez )
-									soundeffect4(ps->toInt(), pi, pi->morex);
+									soundeffect4(ps->toInt(), pi, (UI16)pi->morex);
 						break;
 				}
 			}

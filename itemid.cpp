@@ -166,7 +166,7 @@ SI08 cItem::isFieldSpellItem() //LB
 	if( (getId()==0x3979) || (getId()==0x3967) ) a= 3; // paralyse field
 	if( (getId()==0x3956) || (getId()==0x3946) ) a= 4; // energy field;
 
-	return a;
+	return (signed char)a;
 }
 
 

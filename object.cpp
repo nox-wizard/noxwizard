@@ -116,6 +116,8 @@ cObject::cObject()
 	disabled=0;
 	spawnserial.serial32 = INVALID;
 	spawnregion.serial32 = INVALID;
+	race=INVALID;
+	gender=INVALID;
 
 }
 

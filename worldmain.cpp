@@ -567,7 +567,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'R':
 		case 'r':
-			if (!strcmp(script1, "RACE"))				pc->race = str2num(script2);
+			if (!strcmp(script1, "RACE"))				pc->setRace((SI32)str2num(script2));
 			else if (!strcmp(script1, "ROBE"))				pc->robe = str2num(script2);
 			else if (!strcmp(script1, "REATTACKAT"))		{ pc->reattackat=str2num(script2);}
 			else if (!strcmp(script1, "REGEN_HP"))		{ UI32 v=str2num(script2); pc->setRegenRate( STAT_HP, v, VAR_REAL ); pc->setRegenRate( STAT_HP, v, VAR_EFF ); }
@@ -2138,10 +2138,10 @@ void CWorldMain::SaveBinaryChar( fstream *out, P_CHAR pc)
 			out->write( reinterpret_cast<char *>(FLEEAT_ID), sizeof(FLEEAT_ID));
 			out->write( reinterpret_cast<char *>(pc->fleeat), sizeof(pc->fleeat));
 		}
-		if (pc->race!=dummy.race)
+		if (pc->getRace()!=dummy.getRace())
 		{
 			out->write( reinterpret_cast<char *>(RACE_ID), sizeof(RACE_ID));
-			out->write( reinterpret_cast<char *>(pc->race), sizeof(pc->race));
+			out->write( reinterpret_cast<char *>(pc->getRace()), sizeof(pc->getRace()));
 		}
 		if (pc->reattackat!=dummy.reattackat)
 		{
@@ -2635,8 +2635,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "MURDERSAVE %i\n", ( ( pc->murderrate-uiCurrentTime) / MY_CLOCKS_PER_SEC ) );
 			if (pc->fleeat!=dummy.fleeat)
 				fprintf(cWsc, "FLEEAT %i\n", pc->fleeat);
-			if (pc->race!=dummy.race)
-				fprintf(cWsc, "RACE %i\n", pc->race);
+			if (pc->getRace()!=dummy.getRace())
+				fprintf(cWsc, "RACE %i\n", pc->getRace());
 			if (pc->reattackat!=dummy.reattackat)
 				fprintf(cWsc, "REATTACKAT %i\n", pc->reattackat);
 			if (pc->holdg!=dummy.holdg) //Luxor: players vendors fix
