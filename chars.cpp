@@ -320,11 +320,11 @@ cChar::cChar( SERIAL ser ) : cObject()
 	targetcallback = INVALID;
 
 	statGainedToday = 0;	//Luxor
-	//resetSpeechCurrent(); //Endymion
+
 	speechCurrent = NULL; //Luxor
 	lastRunning = 0; //Luxor
 	path = NULL; //Luxor
-	sentObjects.clear(); //Luxor
+
 	resetProfile();
 	staticProfile=NULL;
 
