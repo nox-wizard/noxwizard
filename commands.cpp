@@ -713,7 +713,7 @@ namespace Commands
 		VALIDATEPC(pc);
 
 		Me->sysmsg("Trigger word set");
-		strcpy(pc->trigword,xtext[s]);
+		pc->trigword=xtext[s];
 	}
 
 	void AddHere(NXWSOCKET s, char z)
