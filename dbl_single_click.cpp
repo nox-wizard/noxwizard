@@ -52,14 +52,20 @@ static bool Item_ToolWearOut(P_ITEM pi)
 static bool Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 {
 	VALIDATEPIR(pi, false);
-	if (s < 0) return false;
+	if ( s < 0 || s >= now )
+		return false;
+
 	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
 	VALIDATEPCR(pc, false);
-	if(Item_ToolWearOut(pi)) { // has item been destroyed ??
-		pc->sysmsg("Your %s has been destroyed", pi->getCurrentNameC());
-		return true;
-	} else
-		return false;
+	if( chance(5) ) { // has item been destroyed ??
+		pi->hp--;
+		if ( pi->hp <= 0 ) {
+			pc->sysmsg("Your %s has been destroyed", pi->getCurrentNameC());
+			pi->deleteItem();
+			return true;
+		}
+	}
+	return false;
 }
 
 

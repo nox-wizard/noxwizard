@@ -52,7 +52,7 @@ static void callCustomTempFx(P_OBJECT poSrc, P_OBJECT poDest, int mode, int amxc
 // Author            : Luxor
 static bool isSrcRepeatable(int num)
 {
-	if (num < 0)
+	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return false;
 
 	switch(num)
@@ -76,7 +76,7 @@ static bool isSrcRepeatable(int num)
 // Author            : Luxor
 static bool isDestRepeatable(int num)
 {
-	if (num < 0)
+	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return false;
 
 	switch(num)
@@ -112,7 +112,7 @@ static int getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 {
 	int dur = 0;
 
-	if (num < 0)
+	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return 0;
 	
 	switch (num)
@@ -983,7 +983,7 @@ void cTempfx::deactivate()
 // Author            : Luxor
 bool cTempfx::isValid()
 {
-	if (m_nNum < 0)
+	if ( m_nNum < 0 || m_nNum >= MAX_TEMPFX_INDEX )
 		return false;
 	
 	if ( m_nNum == AMXCUSTOM && m_nAmxcback <= -2 )
@@ -1023,8 +1023,8 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_nMore2 = INVALID;
 	m_nMore3 = INVALID;
 	m_bDispellable = false;
-	m_bSrcRepeatable = true;
-	m_bDestRepeatable = true;
+	m_bSrcRepeatable = isSrcRepeatable( num );
+	m_bDestRepeatable = isDestRepeatable( num );
 	
 	//
 	//	Set serials
@@ -1052,31 +1052,17 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_nSrc = nSrc;
 	m_nDest = nDest;
 	
-	if (num < 0)
+	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return;
 
 	m_nNum = num;
-	
+
 	//
-	//	Repeatable check
+	//	If a duration is given, use it. Otherwise, use the standard value.
 	//
-	if (!isDestRepeatable(num)) {
-		if (objects.findObject(nDest)->getTempfx(num))
-			return;
-		else 
-			m_bDestRepeatable = false;
-	}
-	
-	if (!isSrcRepeatable(num)) {
-		if (objects.findObject(nSrc)->getTempfx(num))
-			return;
-		else
-			m_bSrcRepeatable = false;
-	}
-    
-	if (dur > 0) //if a duration is given use it
+	if (dur > 0)
 		m_nExpireTime = uiCurrentTime + (dur*MY_CLOCKS_PER_SEC);
-	else //if it's not defined we use the standard values
+	else
 		m_nExpireTime = uiCurrentTime + (getTempFxTime(pointers::findCharBySerial(m_nSrc), num, more1, more2, more3)*MY_CLOCKS_PER_SEC);
 
 	if (m_nNum == AMXCUSTOM && amxcback <= -2)
@@ -1098,18 +1084,35 @@ bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned cha
 	VALIDATEPOR(src, false);
 	VALIDATEPOR(dest, false);
 
+	P_OBJECT po = NULL;
+
+	//
+	//	Repeatable check
+	//
+	if ( !isDestRepeatable(num) && dest->getTempfx(num) )
+			return false;
+
+	if ( !isSrcRepeatable(num) && src->getTempfx(num) )
+			return false;
+
+
+	//
+	//	Create the tempfx
+	//
 	cTempfx addTempfx(src->getSerial32(), dest->getSerial32(), num, (int)dur, (int)more1, (int)more2, (int)more3, amxcback);
-	
+
 	if (!addTempfx.isValid())
 		return false;
 
     	addTempfx.start();
 
+	//
+	//	Put it in the priority queue
+	//
 	tempfxQueue.push(addTempfx);
 
 	return true;
 }
-
 
 ///////////////////////////////////////////////////////////////////
 // Function name     : tempeffectson
