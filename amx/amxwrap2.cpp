@@ -2351,6 +2351,12 @@ NATIVE2(_guildMember_setProperty)
 
 		switch( params[2] )
 		{
+			case NXW_GMP_I_FEALTY :
+			{
+				P_CHAR loyalTo = pointers::findCharBySerial( params[3] );
+				pc->SetGuildFealty(loyalTo->getSerial32());
+				break;
+			}
 			case INVALID:
 			default :
 				ErrOut("guildMember_setProperty called with invalid property %d!\n", params[2] );

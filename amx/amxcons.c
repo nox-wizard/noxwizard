@@ -76,6 +76,10 @@ static int dochar(AMX *amx,char ch,cell param)
     amx_GetAddr(amx,param,&cptr);
     printstring(amx,cptr,NULL,0);
     return 1;
+  case 'x':
+    amx_GetAddr(amx,param,&cptr);
+    amx_printf("%lx",(long)*cptr);
+    return 1;
   } /* switch */
   /* error in the string format, try to repair */
   amx_putchar(ch);

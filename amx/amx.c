@@ -298,10 +298,16 @@ int AMXAPI amx_Flags(AMX *amx,uint16_t *flags)
 
   *flags=0;
   if (amx==NULL)
+  {
+	WarnOut("Amx interpreter not running! Bailing out!\n");
     return AMX_ERR_FORMAT;
+  }
   hdr=(AMX_HEADER *)amx->base;
   if (hdr->magic!=AMX_MAGIC)
+  {
+	WarnOut("Amx interpreter not running! Bailing out!\n");
     return AMX_ERR_FORMAT;
+  }
   if (hdr->file_version>CUR_FILE_VERSION || hdr->amx_version<MIN_FILE_VERSION)
     return AMX_ERR_VERSION;
   *flags=hdr->flags;
@@ -321,7 +327,7 @@ int AMXAPI amx_Callback(AMX *amx, cell index, cell *result, cell *params)
   //xan change :
   // -- begin --
   if (f==NULL) {
-      if(func->name!=NULL) ConOut("\nWarning! : call to non existent native : %s\n", func->name);
+      if(func->name!=NULL) WarnOut("\nWarning! : call to non existent native : %s\n", func->name);
       return -1;
   }
   
@@ -429,7 +435,10 @@ static int amx_BrowseRelocate(AMX *amx)
     op=(OPCODE) *(ucell *)(code+(int)cip);
     assert(op>0 && op<OP_NUM_OPCODES);
     if ((int)op>=256)
-      return AMX_ERR_INVINSTR;
+	{
+		WarnOut("Amx opcode > 256! Bailing out!\n");
+		return AMX_ERR_INVINSTR;
+	}
     #if defined __GNUC__ || defined ASM32 || defined JIT
       /* relocate symbol */
       *(ucell **)(code+(int)cip) = opcode_list[op];
@@ -1008,29 +1017,37 @@ int AMXAPI amx_GetPublic(AMX *amx, int index, char *funcname)
 
 int AMXAPI amx_FindPublic(AMX *amx, char *name, int *index)
 {
-  int first,last,mid,result;
-  char pname[sEXPMAX+1];
+	int first,last,mid,result;
+	char pname[sEXPMAX+1];
 
-  amx_NumPublics(amx, &last);
-  last--;       /* last valid index is 1 less than the number of functions */
-  first=0;
-  /* binary search */
-  while (first<=last) {
-    mid=(first+last)/2;
-    amx_GetPublic(amx, mid, pname);
-    result=strcmp(pname,name);
-    if (result>0) {
-      last=mid-1;
-    } else if (result<0) {
-      first=mid+1;
-    } else {
-      *index=mid;
-      return AMX_ERR_NONE;
-    } /* if */
-  } /* while */
-  /* not found, set to an invalid index, so amx_Exec() will fail */
-  *index=INT_MAX;
-  return AMX_ERR_NOTFOUND;
+	amx_NumPublics(amx, &last);
+	last--;       /* last valid index is 1 less than the number of functions */
+	first=0;
+	/* binary search */
+	while (first<=last) 
+	{
+		mid=(first+last)/2;
+		amx_GetPublic(amx, mid, pname);
+		result=strcmp(pname,name);
+		if (result>0) 
+		{
+			last=mid-1;
+		} 
+		else if (result<0) 
+		{
+			first=mid+1;
+		} 
+		else 
+		{
+			*index=mid;
+			return AMX_ERR_NONE;
+		} /* if */
+	} /* while */
+	/* not found, set to an invalid index, so amx_Exec() will fail */
+	*index=INT_MAX;
+	WarnOut("Amx public function %s not found!\n", name);
+
+	return AMX_ERR_NOTFOUND;
 }
 
 int AMXAPI amx_NumPubVars(AMX *amx, int *number)
@@ -1199,41 +1216,49 @@ int AMXAPI amx_SetUserData(AMX *amx, long tag, void *ptr)
 
 static AMX_NATIVE findfunction(char *name, AMX_NATIVE_INFO *list, int number)
 {
-  int i;
+	int i;
 
-  assert(list!=NULL);
-  for (i=0; list[i].name!=NULL && (i<number || number==-1); i++)
-    if (strcmp(name,list[i].name)==0)
-      return list[i].func;
-  return NULL;
+	assert(list!=NULL);
+	for (i=0; list[i].name!=NULL && (i<number || number==-1); i++)
+		if (strcmp(name,list[i].name)==0)
+			return list[i].func;
+	if ( number >= 0 )
+		WarnOut("Failed to find function %s!\n", name);
+	return NULL;
 }
 
 int AMXAPI amx_Register(AMX *amx, AMX_NATIVE_INFO *list, int number)
 {
-  AMX_FUNCSTUB *func;
-  AMX_HEADER *hdr;
-  int i,numnatives,err;
-  AMX_NATIVE funcptr;
+	AMX_FUNCSTUB *func;
+	AMX_HEADER *hdr;
+	int i,numnatives,err;
+	AMX_NATIVE funcptr;
 
-  hdr=(AMX_HEADER *)amx->base;
-  assert(hdr!=NULL);
-  assert(hdr->natives<=hdr->libraries);
-  numnatives=NUMENTRIES(*hdr,natives,libraries);
+	hdr=(AMX_HEADER *)amx->base;
+	assert(hdr!=NULL);
+	assert(hdr->natives<=hdr->libraries);
+	numnatives=NUMENTRIES(*hdr,natives,libraries);
 
-  err=AMX_ERR_NONE;
-  func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives);
-  for (i=0; i<numnatives; i++) {
-    if (func->address==0) {
-      /* this function is not yet located */
-      funcptr=(list!=NULL) ? findfunction(func->name,list,number) : NULL;
-      if (funcptr!=NULL)
-        func->address=(cell)funcptr;
-      else
-        err=AMX_ERR_NOTFOUND;
-    } /* if */
-    func++;
-  } /* for */
-  return err;
+	err=AMX_ERR_NONE;
+	func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives);
+	for (i=0; i<numnatives; i++) 
+	{
+		if (func->address==0) 
+		{
+			/* this function is not yet located */
+			funcptr=(list!=NULL) ? findfunction(func->name,list,number) : NULL;
+			if (funcptr!=NULL)
+				func->address=(cell)funcptr;
+			else
+			{
+				if ( number >= 0 )
+					WarnOut("Failed to register function %s\n", func->name);
+				err=AMX_ERR_NOTFOUND;
+			}
+		} /* if */
+		func++;
+	} /* for */
+	return err;
 }
 
 AMX_NATIVE_INFO * AMXAPI amx_NativeInfo(char *name,AMX_NATIVE func)
@@ -1319,14 +1344,23 @@ static void *labels[] = {
   } /* if */
 
   if (amx->callback==NULL)
+  {
+	WarnOut("No callback handler found! Bailing out!\n");
     return AMX_ERR_CALLBACK;
+  }
   i=amx_Register(amx,NULL,0);   /* verify that all natives are registered */
   if (i!=AMX_ERR_NONE)
+  {
+	WarnOut("Not all native functions registered! Bailing out!\n");
     return i;
-
+  }
   amx->flags &= ~AMX_FLAG_BROWSE;
   if ((amx->flags & AMX_FLAG_RELOC)==0)
+  {
+	WarnOut("Error initializing amx! Bailing out!\n");
     return AMX_ERR_INIT;
+  }
+
   debug= (amx->flags & AMX_FLAG_DEBUG)!=0;
 
   /* set up the registers */
@@ -1342,7 +1376,10 @@ static void *labels[] = {
   /* get the start address */
   if (index==AMX_EXEC_MAIN) {
     if (hdr->cip<0)
-      return AMX_ERR_INDEX;
+	{
+		WarnOut("Index error in amx");
+		return AMX_ERR_INDEX;
+	}
     cip=(cell *)(code + (int)hdr->cip);
   } else if (index==AMX_EXEC_CONT) {
     /* all registers: pri, alt, frm, cip, hea, stk, reset_stk, reset_hea */
@@ -1354,13 +1391,18 @@ static void *labels[] = {
     reset_stk=amx->reset_stk;
     reset_hea=amx->reset_hea;
     cip=(cell *)(code + (int)amx->cip);
-  } else if (index<0) {
+  } else if (index<0) 
+  {
+	WarnOut("Index error in amx");
     return AMX_ERR_INDEX;
   } else {
-    if (index>=NUMENTRIES(*hdr,publics,natives))
-      return AMX_ERR_INDEX;
-    func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
-    cip=(cell *)(code + (long)func->address);
+		if (index>=NUMENTRIES(*hdr,publics,natives))
+		{
+			WarnOut("Index error in amx");
+			return AMX_ERR_INDEX;
+		}    
+		func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
+		cip=(cell *)(code + (long)func->address);
   } /* if */
   /* check values just copied */
   CHKSTACK();
@@ -2230,17 +2272,26 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
       return 0;
     } /* if */
   #endif
+	if (amx->callback==NULL)
+	{
+		WarnOut("No callback handler found! Bailing out!\n");
+		return AMX_ERR_CALLBACK;
+	}
+	i=amx_Register(amx,NULL,0);   /* verify that all natives are registered */
+	if (i!=AMX_ERR_NONE)
+	{
+		WarnOut("Not all native functions registered! Bailing out!\n");
+		return i;
+	}
 
-  if (amx->callback==NULL)
-    return AMX_ERR_CALLBACK;
-  i=amx_Register(amx,NULL,0);   /* verify that all natives are registered */
-  if (i!=AMX_ERR_NONE)
-    return i;
+	amx->flags &= ~AMX_FLAG_BROWSE;
+	if ((amx->flags & AMX_FLAG_RELOC)==0)
+	{
+		WarnOut("Error initializing amx! Bailing out!\n");
+		return AMX_ERR_INIT;
+	}
 
-  amx->flags &= ~AMX_FLAG_BROWSE;
-  if ((amx->flags & AMX_FLAG_RELOC)==0)
-    return AMX_ERR_INIT;
-  debug= (amx->flags & AMX_FLAG_DEBUG)!=0;
+	debug= (amx->flags & AMX_FLAG_DEBUG)!=0;
 
   /* set up the registers */
   hdr=(AMX_HEADER *)amx->base;
@@ -2255,7 +2306,10 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
   /* get the start address */
   if (index==AMX_EXEC_MAIN) {
     if (hdr->cip<0)
-      return AMX_ERR_INDEX;
+	{
+		WarnOut("Index error in amx");
+		return AMX_ERR_INDEX;
+	}
     cip=(cell *)(code + (int)hdr->cip);
   } else if (index==AMX_EXEC_CONT) {
     /* all registers: pri, alt, frm, cip, hea, stk, reset_stk, reset_hea */
@@ -2268,10 +2322,14 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
     reset_hea=amx->reset_hea;
     cip=(cell *)(code + (int)amx->cip);
   } else if (index<0) {
-    return AMX_ERR_INDEX;
+		WarnOut("Index error in amx");
+		return AMX_ERR_INDEX;
   } else {
     if (index>=(cell)NUMENTRIES(*hdr,publics,natives))
-      return AMX_ERR_INDEX;
+	{
+		WarnOut("Index error in amx");
+		return AMX_ERR_INDEX;
+	}
     func=(AMX_FUNCSTUB *)(amx->base + (int)hdr->publics + index*sizeof(AMX_FUNCSTUB));
     cip=(cell *)(code + (int)func->address);
   } /* if */
@@ -3168,7 +3226,10 @@ int AMXAPI amx_GetAddr(AMX *amx,cell amx_addr,cell **phys_addr)
   AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 
   if ((amx_addr>=amx->hea && amx_addr<amx->stk) || amx_addr<0 || amx_addr>=amx->stp)
+  {
+	WarnOut("Mem access error in amx Get Addr");
     return AMX_ERR_MEMACCESS;
+  }
   *phys_addr=(cell *)(amx->base + (int)(hdr->dat + amx_addr));
   return AMX_ERR_NONE;
 }
@@ -3178,7 +3239,10 @@ int AMXAPI amx_Allot(AMX *amx,int cells,cell *amx_addr,cell **phys_addr)
   AMX_HEADER *hdr=(AMX_HEADER *)amx->base;
 
   if (amx->stk - amx->hea - cells*sizeof(cell) < STKMARGIN)
+  {
+	WarnOut("Memory alloc error in amx Get Addr");
     return AMX_ERR_MEMORY;
+  }
   assert(amx_addr!=NULL);
   assert(phys_addr!=NULL);
   *amx_addr=amx->hea;
