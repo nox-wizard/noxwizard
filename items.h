@@ -186,20 +186,20 @@ public:
 \name Container
 */
 private:
-	Serial contserial;
-	Serial oldcontserial;
+	Serial 		contserial;
+	Serial		oldcontserial;
 
 public:
-	SI32			getContSerial(LOGICAL old= 0) const;
-	BYTE			getContSerialByte(UI32 nByte, LOGICAL old= false) const;
+	SI32		getContSerial(LOGICAL old= 0) const;
+	BYTE		getContSerialByte(UI32 nByte, LOGICAL old= false) const;
 	const cObject*	getContainer() const;
 
-	void			setCont(P_OBJECT obj);
-	void			setContSerial(SI32 serial, LOGICAL old= false, LOGICAL update= true);
-	void			setContSerialByte(UI32 nByte, BYTE value, LOGICAL old= false);
-	LOGICAL			isContainer(); //Endymion
-	LOGICAL			isSecureContainer(); //Endymion
-	//SI16			GetContGumpType();
+	void		setCont(P_OBJECT obj);
+	void		setContSerial(SI32 serial, LOGICAL old= false, LOGICAL update= true);
+	void		setContSerialByte(UI32 nByte, BYTE value, LOGICAL old= false);
+	LOGICAL		isContainer(); //Endymion
+	LOGICAL		isSecureContainer(); //Endymion
+	//SI16		GetContGumpType();
 	void		SetRandPosInCont(P_ITEM pCont);
 	LOGICAL		ContainerPileItem(P_ITEM pItem);	// try to find an item in the container to stack with
 	SI32		secureIt; // secured chests
@@ -346,7 +346,8 @@ public:
 	skilled!
 	*/
 	SI32		madewith;
-	char		desc[100];	//!< vendor description
+	//char		desc[100];	//!< vendor description
+	string		vendorDescription;
 //@}
 
 //@{

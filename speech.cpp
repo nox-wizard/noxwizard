@@ -1160,7 +1160,8 @@ static LOGICAL describePlayerVendorItem( P_CHAR pc, NXWSOCKET socket, string &de
 		P_ITEM pi = MAKE_ITEM_REF( pc->fx1 );
 		if( ISVALIDPI( pi ) )
 		{
-			strcpy( pi->desc, description.c_str() );
+			//strcpy( pi->desc, description.c_str() );
+			pi->vendorDescription = description;
 			sysmessage( socket, TRANSLATE("This item is now described as %s, "), description.c_str() );
 		}
 		else

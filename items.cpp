@@ -141,8 +141,8 @@ cItem& cItem::operator=(cItem& b)
                 resists[i] = b.resists[i];
         //for (i = 0; i < ALLITEMEVENTS; i++)
         //        amxevents[i] = b.amxevents[i];
-        strcpy(desc, b.desc);
-
+        //strcpy(desc, b.desc);
+	vendorDescription = b.vendorDescription;
 	amxVS.copyVariable(getSerial32(), b.getSerial32());
 	
         return *this;
@@ -915,8 +915,8 @@ cItem::cItem( SERIAL ser )
 		resists[i]=0;
 
 	//for (int X=0; X<ALLITEMEVENTS; X++) amxevents[X] = NULL;
-		desc[0]=0x00;
-
+	//desc[0]=0x00;
+	vendorDescription = "";
 	setDecayTime(); //Luxor
 
 }

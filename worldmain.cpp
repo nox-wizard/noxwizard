@@ -782,7 +782,8 @@ void loaditem()
 			else if (!(strcmp(script1, "DEF"))) 
 				pi->def=str2num(script2);
 			else if (!(strcmp(script1, "DESC")))
-				strcpy(pi->desc,script2);
+				//strcpy(pi->desc,script2);
+				pi->vendorDescription = script2;
 			else if (!(strcmp(script1, "DX")))
 				pi->dx=str2num(script2);
 			else if (!(strcmp(script1, "DX2")))
@@ -1965,8 +1966,9 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "SECUREIT %i\n", pi->secureIt);
 		if (pi->smelt!=dummy.smelt)
 			fprintf(iWsc, "SMELT %i\n", pi->smelt);
-		if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
-
+		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
+		if (!pi->vendorDescription.empty())
+			fprintf(iWsc, "DESC", pi->vendorDescription.c_str() );
 //#define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
 
 #define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) fprintf(iWsc, "%s %s\n", A, event->getFuncName()); }

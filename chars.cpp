@@ -3622,9 +3622,9 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 				if( pj->npcaitype==NPCAI_PLAYERVENDOR )
 				{
 					if (strlen(pi->creator)>0 && pi->madewith>0)
-						sprintf( temp2, TRANSLATE("%s %s by %s"), pi->desc, ::skillinfo[pi->madewith - 1].madeword, pi->creator);
+						sprintf( temp2, TRANSLATE("%s %s by %s"), pi->vendorDescription.c_str(), ::skillinfo[pi->madewith - 1].madeword, pi->creator);
 					else
-						strcpy( temp2, pi->desc);
+						strcpy( temp2, pi->vendorDescription.c_str() );
 	
 					sprintf( temp, TRANSLATE("%s at %igp"), temp2, pi->value );
 					itemmessage(calcSocketFromChar( DEREF_P_CHAR(this) ), temp, serial);
