@@ -39,7 +39,12 @@
 // To be continued ... =)
 //
 //////////////////////////////////////////////////////////////////////
+
 #include "crypt.h"
+
+extern "C" {
+#include    "table.h"
+};
 
 #include "common.h"
 #include "../console.h"
