@@ -45,7 +45,7 @@ cItem& cItem::operator=(cItem& b)
         setRealName(b.getRealName());
 
         setScriptID(b.getScriptID());
-        strcpy(creator, b.creator);
+        creator = b.creator;
         incognito = b.incognito;
         madewith = b.madewith;
         rank = b.rank;
@@ -818,7 +818,7 @@ cItem::cItem( SERIAL ser )
 	setSecondaryName("#");
 	setScriptID( 0 );
 	murderer = string("");
-	creator[0] = '\0';
+	creator = "";
 	incognito=false;//AntiChrist - incognito
 	madewith=0; // Added by Magius(CHE)
 	rank=0; // Magius(CHE)

@@ -430,7 +430,7 @@ void cGump::Input(int s)
 		case 26:	k = str2num( text );	pj->value = k;		break;	// Value
 		case 27:	k = str2num( text );	pj->good = k;		break;	// Good(for Adv.Trade system)
 		case 28:	k = str2num( text );	pj->madewith = k;	break;	// Made Skill
-		case 29:	strcpy( pj->creator, text );				break;	// Creator
+		case 29:	pj->creator = text;				break;	// Creator
 		}
 
 		pj->Refresh();
@@ -1313,7 +1313,7 @@ void ttext(int line, SERIAL serial)
 		if( --line == 0 ) strcpy( script1, "Made Skill" );
 		if( --line == 0 ) sprintf( script1, "%i", pi->madewith );
 		if( --line == 0 ) strcpy( script1, "Creator" );
-		if( --line == 0 ) strcpy(script1, pi->creator );
+		if( --line == 0 ) strcpy(script1, pi->creator.c_str() );
 
 	}
 	if( type == 2 )

@@ -147,7 +147,7 @@ namespace item
 							pi->color1 = tmp >> 8;
 							pi->color2 = tmp%256;
 						}
-						else if (!strcmp("CREATOR", script1))		strcpy(pi->creator, script2); // by Magius(CHE)
+						else if (!strcmp("CREATOR", script1))		pi->creator = script2;
 						else if (!strcmp("COLORLIST", script1))
 						{
 							tmp = addrandomcolor(pi, script2);
@@ -730,7 +730,7 @@ namespace item
 						break;
 					case 'C':
 					case 'c':
-						if (!(strcmp("CREATOR", script1))) strcpy(pi->creator, script2); // by Magius(CHE)
+						if (!(strcmp("CREATOR", script1))) pi->creator = script2; // by Magius(CHE)
 						else if (!(strcmp("COLOR",script1)))
 						{
 							tmp=hex2num(script2);

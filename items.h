@@ -324,7 +324,8 @@ public:
 	*/
 	SI32		rank;
 
-	char		creator[50];	//!< Store the name of the player made this item
+	//char		creator[50];	//!< Store the name of the player made this item
+	std::string	creator;	//!< Store the name of the player made this item
 	SI32		good;		//!< Store type of GOODs to trade system! (Plz not set as UNSIGNED)
 	SI32		rndvaluerate;	//!< Store the value calculated base on RANDOMVALUE in region.scp.
 
@@ -347,7 +348,7 @@ public:
 	*/
 	SI32		madewith;
 	//char		desc[100];	//!< vendor description
-	string		vendorDescription;
+	std::string	vendorDescription;
 //@}
 
 //@{

@@ -763,7 +763,7 @@ void loaditem()
 			else if (!(strcmp(script1, "CARVE")))
 				pi->carve=str2num(script2);
 			else if (!(strcmp(script1, "CREATOR")))
-				strcpy(pi->creator,script2);
+				pi->creator = script2;
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -1844,7 +1844,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 
 		fprintf(iWsc, "NAME2 %s\n", pi->getSecondaryNameC());
 #ifndef DESTROY_REFERENCES
-		if (strlen(pi->creator)>0)	fprintf(iWsc, "CREATOR %s\n", pi->creator ); // by Magius(CHE)
+		if ( !pi->creator.empty())	fprintf(iWsc, "CREATOR %s\n", pi->creator.c_str() ); // by Magius(CHE)
 #endif
 		if (pi->madewith!=dummy.madewith)
 			fprintf(iWsc, "SK_MADE %i\n", pi->madewith ); // by Magius(CHE)

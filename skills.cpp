@@ -329,7 +329,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 
         if(!pc->IsGM())	//AntiChrist - do this only if not a GM! bugfix - to avoid "a door mixed by GM..."
         {
-            strcpy(pi->creator, pc->getCurrentNameC()); // Memorize Name of the creator
+            pi->creator = pc->getCurrentName(); // Memorize Name of the creator
             if (pc->skill[skill]>950)
                 pi->madewith=skill+1; // Memorize Skill used
             else
@@ -337,7 +337,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
         }
         else
         {
-            pi->creator[0]='\0';
+            pi->creator = "";
             pi->madewith=0;
         }
         // End Rank System Addon
@@ -499,7 +499,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
             key->more2 = pi->more2;     // to make it fit the lock
             key->more3 = pi->more3;
             key->more4 = pi->more4;
-            strcpy(key->creator, pc->getCurrentNameC());    // Store the creator
+            key->creator = pc->getCurrentName();    // Store the creator
             key->setContSerial( pi->getSerial32() );// Set the container
             key->SetRandPosInCont(pi);              // Put the damn thing in the container
             key->Refresh();                         // Refresh it
@@ -1212,7 +1212,7 @@ void Skills::PotionToBottle(CHARACTER s, int mortar)
     // Addon for Storing creator NAME and SKILLUSED by Magius(CHE) §
     if(!pc->IsGM())
     {
-        strcpy(pi->creator, pc->getCurrentNameC()); // Magius(CHE) - Memorize Name of the creator
+        pi->creator = pc->getCurrentName(); // Magius(CHE) - Memorize Name of the creator
         if (pc->skill[ALCHEMY]>950) 
 			pi->madewith=ALCHEMY+1; // Memorize Skill used - Magius(CHE)
         else 
@@ -1220,7 +1220,7 @@ void Skills::PotionToBottle(CHARACTER s, int mortar)
     } 
 	else 
 	{
-        pi->creator[0]='\0';
+        pi->creator = "";
         pi->madewith=0;
     }
 
@@ -3129,7 +3129,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
 
 			nmap->setCurrentName("a deciphered lvl.%d treasure map", tmap->morez);   // Give it the correct name
             nmap->morez = tmap->morez;              // Give it the correct level
-            strcpy(nmap->creator, pc->getCurrentNameC());  // Store the creator
+            nmap->creator = pc->getCurrentName();  // Store the creator
 
 
             sprintf(sect, "SECTION TREASURE %i", nmap->morez);

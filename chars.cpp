@@ -3621,8 +3621,8 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 			{
 				if( pj->npcaitype==NPCAI_PLAYERVENDOR )
 				{
-					if (strlen(pi->creator)>0 && pi->madewith>0)
-						sprintf( temp2, TRANSLATE("%s %s by %s"), pi->vendorDescription.c_str(), ::skillinfo[pi->madewith - 1].madeword, pi->creator);
+					if ( !pi->creator.empty() && pi->madewith>0)
+						sprintf( temp2, TRANSLATE("%s %s by %s"), pi->vendorDescription.c_str(), ::skillinfo[pi->madewith - 1].madeword, pi->creator.c_str());
 					else
 						strcpy( temp2, pi->vendorDescription.c_str() );
 	
@@ -3645,8 +3645,8 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 			sprintf( temp, "%s : %i", itemname, pi->amount);
 
 	// Add creator's mark (if any)
-	if (strlen(pi->creator) > 0 && pi->madewith > 0)
-		sprintf( temp, TRANSLATE("%s %s by %s"), temp, ::skillinfo[pi->madewith - 1].madeword, pi->creator);
+	if ( !pi->creator.empty() && pi->madewith > 0)
+		sprintf( temp, TRANSLATE("%s %s by %s"), temp, ::skillinfo[pi->madewith - 1].madeword, pi->creator.c_str());
 
 	if (pi->type == ITYPE_WAND) // Fraz
 	{

@@ -394,11 +394,11 @@ void Skills::TasteIDTarget(NXWSOCKET s)
 
                     if (pc->checkSkill( TASTEID, 250, 500))
                     {
-                        if (strlen(pi->creator)>0)
+                        if ( !pi->creator.empty() )
                         {
-                            if (pi->madewith>0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator);
-                            else if (pi->madewith<0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator);
-                            else pc->sysmsg(TRANSLATE("It is made by %s"),pi->creator);
+                            if (pi->madewith>0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator.c_str());
+                            else if (pi->madewith<0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator.c_str());
+                            else pc->sysmsg(TRANSLATE("It is made by %s"),pi->creator.c_str());
                         } else pc->sysmsg(TRANSLATE("You don't know its creator!"));
                     } else pc->sysmsg(TRANSLATE("You can't know its creator!"));
                 }
@@ -1776,11 +1776,11 @@ void Skills::ItemIdTarget(NXWSOCKET s)
             // Show Creator by Magius(CHE)
             if (pc->checkSkill( ITEMID, 250, 500))
             {
-                if (strlen(pi->creator)>0)
+                if (!pi->creator.empty())
                 {
-                    if (pi->madewith>0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                    else if (pi->madewith<0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator); // Magius(CHE)
-                    else sprintf(temp2, TRANSLATE("It is made by %s"),pi->creator); // Magius(CHE)
+                    if (pi->madewith>0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
+                    else if (pi->madewith<0) sprintf(temp2, TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator.c_str()); // Magius(CHE)
+                    else sprintf(temp2, TRANSLATE("It is made by %s"),pi->creator.c_str()); // Magius(CHE)
                 } else strcpy(temp2, TRANSLATE("You don't know its creator!"));
             } else strcpy(temp2, TRANSLATE("You can't know its creator!"));
             sysmessage(s, temp2);

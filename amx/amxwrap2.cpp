@@ -1440,7 +1440,7 @@ NATIVE2(_setItemProperty)
 	switch( params[2] )
 	{
 		case NXW_IP_STR_CREATOR :				   //dec value :  450;
-			strcpy( pi->creator, g_cAmxPrintBuffer );
+			pi->creator = g_cAmxPrintBuffer;
 			break;
 		case NXW_IP_STR_DESCRIPTION :				   //dec value :  451;
 			//strcpy(pi->desc, g_cAmxPrintBuffer );
@@ -1648,8 +1648,7 @@ static const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
 {
 	switch( property )
 	{
-		CHECK(NXW_IP_STR_CREATOR, pi->creator )   //dec value :  450;
-		//CHECK(NXW_IP_STR_DESCRIPTION, pi->desc )   //dec value :  451;
+		CHECK(NXW_IP_STR_CREATOR, pi->creator.c_str() )   //dec value :  450;
 		CHECK(NXW_IP_STR_DESCRIPTION, pi->vendorDescription.c_str() )   //dec value :  451;
 		CHECK(NXW_IP_STR_DISABLEDMSG, pi->disabledmsg.c_str() )   //dec value :  452;
 		CHECK(NXW_IP_STR_MURDERER, pi->murderer.c_str() )   //dec value :  453;
