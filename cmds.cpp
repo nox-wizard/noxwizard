@@ -15,43 +15,12 @@
 #include "nxwcommn.h"
 #include "network.h"
 #include "cmds.h"
-#include "sregions.h"
-#include "bounty.h"
-#include "sndpkg.h"
-#include "debug.h"
-#include "amx/amxcback.h"
-#include "calendar.h"
-#include "race.h"
-#include "scp_parser.h"
-#include "commands.h"
 #include "addmenu.h"
-#include "telport.h"
-#include "accounts.h"
 #include "worldmain.h"
-#include "data.h"
-#include "spawn.h"
-#include "trade.h"
-#include "chars.h"
-#include "items.h"
-#include "basics.h"
-#include "inlines.h"
-#include "nox-wizard.h"
-#include "archive.h"
-#include "map.h"
-#include "jail.h"
-#include "skills.h"
-#include "layer.h"
-#include "scripts.h"
 
 
 
-
-// Reference to static member
-
-
-
-std::map< std::string, P_COMMAND > cCommandMap::command_map;
-
+std::map< std::string, P_COMMAND > cCommandMap::command_map;  // Reference to static member
 
 
 
@@ -181,7 +150,7 @@ P_COMMAND cCommandMap::findCommand(char* name,NXWCLIENT client){
 
 
 
-	 cCommandMap* commands = new cCommandMap();
+	 cCommandMap* commands = new cCommandMap(); // Creates the map.
 
 
 
@@ -221,9 +190,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 
 		if (tnum<1)	return;
 		
-		// Let's ignore the command prefix;
-		
-		comm = nonuni + 1;
+		comm = nonuni + 1;  // Let's ignore the command prefix;
 
 		P_COMMAND p_cmd= commands->findCommand((char*)comm,client);
 		
@@ -233,20 +200,14 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 			return;
 		}
 		
-		
 		//Control between cCommand privilege and cChar privilege.
-		client->sysmsg("%d", pc_currchar->getPrivLevel());
-		client->sysmsg("%d", p_cmd->getCommandLevel());
-
 		if( (p_cmd->getCommandLevel()) > pc_currchar->getPrivLevel()){
 		client->sysmsg("You can't use this command!");
 		return;	
 		}
 		
-		
-		//Let's call the Small Function
 	
-		p_cmd->call(pc_currchar);
+		p_cmd->call(pc_currchar); //Let's call the Small Function
    
 		
 
