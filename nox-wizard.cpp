@@ -134,17 +134,15 @@ static void item_char_test()
 		else {
 			P_CHAR p_pet = (P_CHAR)(objs.getObject());
 
-			if (p_pet->stablemaster_serial!=INVALID) // stabled ?
+			if (p_pet->isStabled())
 			{
-				P_CHAR stablemaster=pointers::findCharBySerial(p_pet->stablemaster_serial);
+				P_CHAR stablemaster=pointers::findCharBySerial(p_pet->getStablemaster());
 				if (!ISVALIDPC(stablemaster))
 				{
-					pointers::delFromStableMap(p_pet);
-					//removefromptr(&stablesp[stablemaster_serial%HASHMAX], a);
-					p_pet->stablemaster_serial=0;
+					p_pet->unStable();
+					mapRegions->add(p_pet);
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
-					mapRegions->add(p_pet);
 					LogMessage("Stabled animal got freed because stablemaster died");
 					InfoOut("stabled animal got freed because stablemaster died\n");
 				}
