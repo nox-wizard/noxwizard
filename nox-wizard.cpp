@@ -505,7 +505,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	}
 
 
-	perm[s]=1;
+	clientInfo[s]->ingame=true;
 
 	newbieitems(pc);
 
@@ -707,7 +707,7 @@ void checkkey ()
 					int found = 0;
 					InfoOut( "Disconnecting account 0 players... ");
 					for (i=0;i<now;i++)
-						if (acctno[i]==0 && perm[i])
+						if (acctno[i]==0 && clientInfo[i]->ingame)
 						{
 							found++;
 							Network->Disconnect(i);
@@ -743,7 +743,7 @@ void checkkey ()
 				for (i=0;i<now;i++)
 				{
 					P_CHAR pc_i=MAKE_CHAR_REF(currchar[i]);
-					if(ISVALIDPC(pc_i) && perm[i]) //Keeps NPC's from appearing on the list
+					if(ISVALIDPC(pc_i) && clientInfo[i]->ingame) //Keeps NPC's from appearing on the list
 					{
 						ConOut("%i) %s [ %08x ]\n", j, pc_i->getCurrentNameC(), pc_i->getSerial32());
 						j++;
@@ -1388,7 +1388,7 @@ void updateMenus();
 					continue;
 				if (!pc_r->IsGM()
 					&& pc_r->clientidletime<uiCurrentTime
-					&& perm[r]
+					&& clientInfo[r]->ingame
 					)
 				{
 					ConOut("Player %s disconnected due to inactivity !\n", pc_r->getCurrentNameC());

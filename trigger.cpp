@@ -1244,7 +1244,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			m_pcNpc->setId( DBYTE2WORD( array[0], array[1] ) );
 			m_pcNpc->setOldId( DBYTE2WORD( array[0], array[1] ) );
 			for (int j = 0; j < now; j++)
-				if (perm[j] && char_inVisRange(m_pcNpc,MAKE_CHAR_REF(currchar[j])))
+				if (clientInfo[j]->ingame && char_inVisRange(m_pcNpc,MAKE_CHAR_REF(currchar[j])))
 				m_pcNpc->teleport();
 			}
 			if ((ISNOTNPC(m_nTriggerType))&&(m_pi!=0)) {

@@ -110,6 +110,7 @@ public:
 	bool evilDrag; //!< evil dragging, we need this for UO3D clients to save dragging history
 	bool newclient; //!< is a new client
 	bool firstpacket; //!< fist packet sended
+	bool ingame; //!< is ingame
 
 	cClient();
 	~cClient();

@@ -372,11 +372,11 @@ void check_region_weatherchange ()
    wtype=0;
 	unsigned char packet[4] = { 0x65, 0xFF, 0x00, 0x20 };
 
-	for (i=0;i<now;i++) { if (perm[i]) { Xsend(i, packet, 4);
+	for (i=0;i<now;i++) { if (clientInfo[i]->ingame) { Xsend(i, packet, 4);
 //AoS/	Network->FlushBuffer(i);
 } }
 
-	for (i=0;i<now;i++) { if (perm[i]) { pweather(i); } }
+	for (i=0;i<now;i++) { if (clientInfo[i]->ingame) { pweather(i); } }
 
    ConOut("[ OK ]\n");
 

@@ -209,9 +209,9 @@ void updatehtml()//HTML
 				for(a=0;a<now;a++)
 				{
 					P_CHAR pc_a=MAKE_CHAR_REF(currchar[a]);
-					if(ISVALIDPC(pc_a)) {
-						if(pc_a->IsGM() && perm[a]) gm++;
-						else if(pc_a->IsCounselor() && perm[a]) cns++; //bugfix LB
+					if(ISVALIDPC(pc_a) && clientInfo[a]->ingame ) {
+						if( pc_a->IsGM() ) gm++;
+						else if( pc_a->IsCounselor() ) cns++;
 					}
 				}
 			}
@@ -224,9 +224,9 @@ void updatehtml()//HTML
 				for(a=0;a<now;a++)
 				{
 					P_CHAR pc_a=MAKE_CHAR_REF(currchar[a]);
-					if(ISVALIDPC(pc_a)) {
-						if(pc_a->IsGM() && perm[a]) gm++;
-						else if(pc_a->IsCounselor() && perm[a]) cns++; //bugfix LB
+					if(ISVALIDPC(pc_a) && clientInfo[a]->ingame ) {
+						if( pc_a->IsGM() ) gm++;
+						else if( pc_a->IsCounselor() ) cns++; //bugfix LB
 					}
 				}
 			}

@@ -1492,7 +1492,7 @@ MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), ef
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
 		 {
 			 NXWSOCKET j=sw.getSocket();
-			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(clientInfo[j]->ingame))
 			 {
 				Xsend(j, effect, 28);
 //AoS/				Network->FlushBuffer(j);
@@ -1509,7 +1509,7 @@ MakeGraphicalEffectPkt_(effect, 0x00, src->getSerial32(), dst->getSerial32(), ef
 		 for( sw.rewind(); !sw.isEmpty(); sw++ )
 		 {
 			 NXWSOCKET j=sw.getSocket();
-			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(clientInfo[j]->ingame))
 			 {
 				 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
 				 {
@@ -1817,7 +1817,7 @@ void dolight(NXWSOCKET s, char level)
 
 	UI08 light[2]={ 0x4F, 0x00 };
 
-	if ((s==INVALID)||(!perm[s])) return;
+	if ((s==INVALID)||(!clientInfo[s]->ingame)) return;
 
 	light[1]=level;
 	if (worldfixedlevel!=255)

@@ -350,7 +350,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		ServerLog.Write( (char*)msgDisconnect, socket, now - 1 );
 
 	if ( ISVALIDPC(pc) )
-		if ( pc->account==acctno[ socket ] && SrvParms->partmsg && perm[ socket ] && !pc->npc )
+		if ( pc->account==acctno[ socket ] && SrvParms->partmsg && clientInfo[ socket ]->ingame && !pc->npc )
 			sysbroadcast( (char*)msgPart, pc->getCurrentNameC() );
 
 	if ( acctno[ socket ] != -1 )
@@ -379,7 +379,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 			{
 				P_CHAR pi= MAKE_CHAR_REF( currchar[i] );
 				if (ISVALIDPC(pi))
-					if( pc != pi && char_inVisRange( pc, pi ) && perm[ i ] )
+					if( pc != pi && char_inVisRange( pc, pi ) && clientInfo[ i ]->ingame )
 					{
 						SendDeleteObjectPkt(i, pc_serial);
 					}
@@ -419,7 +419,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		clientip[j][2]=clientip[jj][2];
 		clientip[j][3]=clientip[jj][3];
 		acctno[j]=acctno[jj];
-		perm[j]=perm[jj];
 		binlength[j]=binlength[jj];
 		boutlength[j]=boutlength[jj];
 		clientInfo[j]=clientInfo[jj];
@@ -845,7 +844,7 @@ void cNetwork::enterchar(int s)
 	features.feature= FEATURE_T2A | FEATURE_LBR;
 	features.send( pc->getClient() );
 
-	perm[s]=1;
+	clientInfo[s]->ingame=true;
 
 	Location charpos= pc->getPosition();
 
@@ -1072,7 +1071,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 	{
 		pc->logout=INVALID; // LB bugfix, was timeout
 	} else {
-		if (perm[s])
+		if ( clientInfo[s]->ingame )
 		{
 		    pc->logout=uiCurrentTime+SrvParms->quittime*MY_CLOCKS_PER_SEC;
 		}
@@ -1295,7 +1294,6 @@ void cNetwork::CheckConn() // Check for connection requests
 				currchar[now] = INVALID;
 				cryptedClient[now]=true;
 				acctno[now]=-1;
-				perm[now]=0;
 				binlength[now]=0;
 				boutlength[now]=0;
 				clientInfo[now]= new cClient();

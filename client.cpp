@@ -130,7 +130,7 @@ void cNxwClientObj::resetDragging()
 
 bool cNxwClientObj::inGame()
 { 
-	return perm[m_sck]!='\0'; 
+	return clientInfo[m_sck]->ingame; 
 }
 
 P_CHAR cNxwClientObj::currChar() 
@@ -417,6 +417,7 @@ cClient::cClient()
 	dragging=false;
 	firstpacket=true;
 	newclient=true;
+	ingame=false;
 }
 
 cClient::~cClient()

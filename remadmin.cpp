@@ -501,7 +501,7 @@ void RemoteAdmin::ProcessInput(int s)
 			for (i=0;i<now;i++)
 			{
 				P_CHAR pc_i=MAKE_CHAR_REF(currchar[i]);				
-				if( ISVALIDPC(pc_i) && perm[i]) //Keeps NPC's from appearing on the list
+				if( ISVALIDPC(pc_i) && clientInfo[i]->ingame ) //Keeps NPC's from appearing on the list
 				{
 					j++;
 					Printf(s, "    %i) %s [%08x]\r\n", j, pc_i->getCurrentNameC(), pc_i->getSerial32());

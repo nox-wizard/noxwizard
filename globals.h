@@ -105,7 +105,6 @@ extern int client[MAXCLIENT];
 extern short int walksequence[MAXCLIENT];
 extern int acctno[MAXCLIENT];
 extern unsigned char clientip[MAXCLIENT][4];
-extern unsigned char perm[MAXCLIENT];
 extern int binlength[MAXIMUM+1];
 extern int boutlength[MAXIMUM+1];
 extern unsigned char clientDimension[MAXCLIENT]; // stores if the client is the new 3d or old 2d one
