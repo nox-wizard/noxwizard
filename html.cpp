@@ -7,6 +7,7 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
 #include "nxwcommn.h"
 #include "version.h"
 #include "debug.h"
