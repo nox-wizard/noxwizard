@@ -611,60 +611,94 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 {
 	
 	VALIDATEPIR(pItem,false);
-	pItem->setContSerial( getSerial32() );
 	SndRemoveitem( pItem->getSerial32() );
 	if (xx!=-1)	// use the given position
 	{
+		pItem->setContSerial( getSerial32() );
 		pItem->setPosition(xx, yy, 9);
 	}
 	else		// no pos given
 	{
-		if (ContainerPileItem(pItem)==INVALID)	// try to pile
+		if( !ContainerPileItem(pItem) )	{ // try to pile
 			pItem->SetRandPosInCont(this);		// not piled, random pos
-		else return true; //Luxor: we cannot do a refresh because item was piled
+			pItem->setContSerial( getSerial32() );
+		}
+		else 
+			return true; //Luxor: we cannot do a refresh because item was piled
 	}
 	pItem->Refresh();
 	return true;
 
 }
 
+/*
+\brief Check if two item are similar so pileable 
+\author Endymion
+\todo add amx vars and events
+\note if same item is compared, false is returned
+*/
+inline bool operator ==( cItem& a, cItem& b ) {
+	return  ( a.pileable && b.pileable ) &&
+			( a.getSerial32() != b.getSerial32() ) &&
+			( a.getScriptID() == b.getScriptID() ) &&
+			( a.id() == b.id() ) &&
+			( a.color == b.color ) &&
+			( a.poisoned == b.poisoned );
+}
+
+/*
+\brief Check if two item are not similar so not pileable 
+\author Endymion
+*/
+inline bool operator !=( cItem& a, cItem& b ) {
+	return !(a==b);
+}
+
+#define MAX_ITEM_AMOUNT 65535
+
 /*!
 \brief Pile two items
 \author
-\return serial of piled item or INVALID if cannot pile it
+\return true if piled, false else
+\note refresh is done if piled
 */
-SERIAL cItem::PileItem(P_ITEM pItem)
+bool cItem::PileItem( P_ITEM pItem )
 {
-	if (!(pileable && pItem->pileable &&
-		getSerial32()!=pItem->getSerial32() &&
-		id()==pItem->id() &&
-		color()==pItem->color() &&
-		poisoned==pItem->poisoned ))
-		return INVALID;	//cannot stack.
+	VALIDATEPIR( pItem, false )
+	if( (*this) != (*pItem) )
+		return false;	//cannot stack.
 
-	if (amount+pItem->amount>65535)
+	if( amount+ pItem->amount>MAX_ITEM_AMOUNT )
 	{
-		pItem->SetRandPosInCont( pointers::findItemBySerial(getContSerial()) );
+		P_ITEM cont = pointers::findItemBySerial( getContSerial());
+		if( ISVALIDPI(cont) )
+			pItem->SetRandPosInCont( cont );
+		else
+			pItem->setPosition( getPosition().x+1, getPosition().y, getPosition().z );
+			
 		pItem->setContSerial( getContSerial() );
-		pItem->amount=(amount+pItem->amount)-65535;
-		amount=65535;
+
+		pItem->amount=(amount+pItem->amount)-MAX_ITEM_AMOUNT;
+		amount=MAX_ITEM_AMOUNT;
 		pItem->Refresh();
-		return pItem->getSerial32();
 	}
 	else
 	{
-		amount+=pItem->amount;
-		pItem->deleteItem();
+		pItem->setPosition( getPosition() );
+		pItem->setContSerial( getContSerial() );
+		pItem->amount+=amount;
+		pItem->Refresh();
+		deleteItem();
 	}
-	Refresh();
-	return getSerial32();
+
+	return true;
 
 }
 
 /*!
 \brief try to find an item in the container to stack with
 */
-SERIAL cItem::ContainerPileItem( P_ITEM pItem)
+bool cItem::ContainerPileItem( P_ITEM pItem)
 {
 	VALIDATEPIR(pItem, false );
 	NxwItemWrapper si;
@@ -673,12 +707,11 @@ SERIAL cItem::ContainerPileItem( P_ITEM pItem)
 	{
 		P_ITEM pi=si.getItem();
 		if( ISVALIDPI(pi) ) {
-			SERIAL piledInto = pi->PileItem(pItem);
-			if( piledInto!=INVALID )
-				return piledInto;
+			if( pi->PileItem(pItem) )
+				return true;
 		}
 	}
-	return INVALID;
+	return false;
 
 }
 
