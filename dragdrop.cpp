@@ -186,9 +186,10 @@ void get_item( NXWCLIENT client ) // Client grabs an item
  		{
  			if( client->isDragging() )
  			{
- 				char cmd[1]= {0x29};
+ 				UI08 cmd[1]= {0x29};
  				client->resetDragging();
  				Xsend(s, cmd, 1);
+//AoS/				Network->FlushBuffer(s);
  			}
  			return;
  		}
@@ -222,9 +223,9 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		{
 			if ( !pc_currchar->IsGM() && owner->getOwnerSerial32() != pc_currchar->getSerial32() )
 			{// Own serial stuff by Zippy -^ Pack aniamls and vendors.
-				unsigned char bounce[3]="\x27\x00";
-				bounce[1] = 0;
+				UI08 bounce[2]= { 0x27, 0x00 };
 				Xsend(s, bounce, 2);
+//AoS/				Network->FlushBuffer(s);
 				if (client->isDragging())
 				{
 					client->resetDragging();
@@ -335,12 +336,12 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		tile_st tile;
 		Map->SeekTile( pi->id(), &tile);
 
-		if (!pc_currchar->IsGM() && (( pi->magic == 2 || ((tile.weight == 255) && ( pi->magic != 1))) && ((pc_currchar->priv2&1) == 0)) ||
+		if (!pc_currchar->IsGM() && (( pi->magic == 2 || ((tile.weight == 255) && ( pi->magic != 1))) && !(pc_currchar->priv2 & CHRPRIV2_ALLMOVE))  ||
 			(( pi->magic == 3|| pi->magic == 4) && !pc_currchar->isOwnerOf( pi )))
 		{
-			unsigned char bounce[3]="\x27\x00";
-			bounce[1] = 0;
+			UI08 bounce[2]={ 0x27, 0x00 };
 			Xsend(s, bounce, 2);
+//AoS/			Network->FlushBuffer(s);
 			if (client->isDragging()) // only restore item if it got draggged before !!!
 			{
 				client->resetDragging();
@@ -360,7 +361,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				soundeffect(s, 0x00, 0x57);
 			if (pi->amount>1)
 			{
-				int amount = DBYTE2WORD(buffer[s][5],buffer[s][6]);
+				SI16 amount = ShortFromCharPtr(buffer[s] +5);
 				if (amount > pi->amount)
 					amount = pi->amount;
 				else if (amount < pi->amount)
@@ -385,7 +386,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					pin->Refresh();//AntiChrist
 				}
 
-				if ( pi->id() == 0x0EED) // gold coin
+				if ( pi->id() == ITEMID_GOLD)
 				{
 					P_ITEM pack= pc_currchar->getBackpack();
 					if (ISVALIDPI(pack)) // lb
@@ -400,7 +401,6 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 			mapRegions->remove( pi );
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
-			
 		}
 	} 
 
@@ -453,7 +453,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 
 		if (tile.layer==0)
 		{
-			sysmessage(s,TRANSLATE("You can't wear that"));
+			ps->sysmsg(TRANSLATE("You can't wear that"));
 			Sndbounce5(s);
 			if (ps->isDragging())
 			{
@@ -471,7 +471,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 	{
 		if ( pck->getSerial32() == pc->getSerial32() && pi->st > pck->getStrength() && !pi->isNewbie() ) // now you can equip anything if it's newbie
 		{
-			sysmessage(s,TRANSLATE("You are not strong enough to use that."));
+			ps->sysmsg(TRANSLATE("You are not strong enough to use that."));
 			Sndbounce5(s);
 			if (ps->isDragging())
 			{
@@ -494,10 +494,10 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			return;
 		}
 
-		if (pc->id1==0x01 && pc->id2==0x90) // Ripper...so males cant wear female armor
+		if (pc->GetBodyType() == BODY_MALE) // Ripper...so males cant wear female armor
 			if (pi->id1==0x1c && ( pi->id2==0x00 || pi->id2==0x02 || pi->id2==0x04 || pi->id2==0x06 || pi->id2==0x08 || pi->id2==0x0a || pi->id2==0x0c))
 			{
-				sysmessage(s,TRANSLATE("You cant wear female armor!"));
+				ps->sysmsg(TRANSLATE("You cant wear female armor!"));
 				Sndbounce5(s);
 				if (ps->isDragging())
 				{
@@ -509,7 +509,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			}
 
 		//if (clientDimension[s]==2)
-		if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && ((pc->priv2&1)==0)) ||
+		if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && (!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 				( (pi->magic==3|| pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 		{
 			item_bounce6(ps,pi);
@@ -640,14 +640,14 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 		{
 			if ((pck->getSerial32() != pc->getSerial32())/*&&(chars[s].npc!=k)*/) //-> really don't understand this! :|, xan
 			{
-				sysmessage(s, TRANSLATE("You can't put items on other people!"));
+				ps->sysmsg(TRANSLATE("You can't put items on other people!"));
 				item_bounce6(ps,pi);
 				return;
 			}
 		}
 
-		pi->setContSerial(LongFromCharPtr(buffer[s]+6));
 		pi->layer=buffer[s][5];
+		pi->setContSerial(LongFromCharPtr(buffer[s] +6));
 
 		if (g_nShowLayers) InfoOut("Item equipped on layer %i.\n",pi->layer);
 
@@ -714,7 +714,6 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 			char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 			pi->getName(temp2);
 			itmname = temp2;
-			
 		}
 		else itmname = pi->getCurrentName();
 		sprintf(temp,TRANSLATE("* You see %s eating %s *"), pet->getCurrentNameC(), itmname.c_str() );
@@ -725,7 +724,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		pet->hunger++;
 	} else
 	{
-		sysmessage(s,TRANSLATE("It doesn't appear to want the item"));
+		ps->sysmsg(TRANSLATE("It doesn't appear to want the item"));
 		Sndbounce5(s);
 		if (ps->isDragging())
 		{
@@ -750,7 +749,7 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	P_CHAR pc_t=pointers::findCharBySerial(pp->Tserial); //the guard
 	VALIDATEPCR(pc_t,false);
 	// Search for the key word "the head of"
-	if( strstr( pi->getCurrentNameC(), "the head of" ) )
+	if( strstr( pi->getCurrentNameC(), "the head of" ) ) //!!! Wrong! it must check the ItemID, not the name :(
 	{
 		// This is a head of someone, see if the owner has a bounty on them
 		P_CHAR own=pointers::findCharBySerial(pi->getOwnerSerial32());
@@ -823,13 +822,12 @@ static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		if(pi->amount<=100)
 		{
 			pc->IncreaseKarma(10);
-			sysmessage(s,TRANSLATE("You have gain a little karma!"));
+			ps->sysmsg(TRANSLATE("You have gain a little karma!"));
 		}
 		else if(pi->amount>100)
 		{
 			pc->IncreaseKarma(50);
-
-			sysmessage(s,TRANSLATE("You have gain some karma!"));
+			ps->sysmsg(TRANSLATE("You have gain some karma!"));
 		}
 		pi->deleteItem();
 		return true;
@@ -847,7 +845,7 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	int t=calcCharFromSer(pp->Tserial);
 	P_CHAR pc_t=MAKE_CHAR_REF(t);
 
-	if( pi->id() ==0x0EED )
+	if( pi->id() == ITEMID_GOLD )
 	{ // They gave the NPC gold
 		char sk=pc_t->trainingplayerin;
 		pc_t->talk( s, TRANSLATE("I thank thee for thy payment. That should give thee a good start on thy way. Farewell!"),0);
@@ -902,9 +900,9 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	P_CHAR pc = MAKE_CHAR_REF(cc);
 	Location charpos= pc->getPosition();
 
-	if (pi->id1>=0x40) // crashfix , prevents putting multi-objects ni your backback
+	if (pi->id() >= 0x4000 ) // crashfix , prevents putting multi-objects ni your backback
 	{
-		sysmessage(s,TRANSLATE("Hey, putting houses in your pack crashes your back and client !"));
+		ps->sysmsg(TRANSLATE("Hey, putting houses in your pack crashes your back and client !"));
 		pi->MoveTo(charpos.x, charpos.y, charpos.z);
 		pi->Refresh();//AntiChrist
 		return true;
@@ -1177,7 +1175,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	
 
 	Map->SeekTile(pi->id(), &tile);
-	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&((pc->priv2&1)==0)) ||
+	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 		( (pi->magic==3 || pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 	{
 		item_bounce6(ps,pi);
@@ -1257,39 +1255,37 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int nCont=-1, nItem=-1;
-	int z, serial, serhash;
+	int z, serial/*, serhash*/;
 	tile_st tile;
-	bool abort=false;
+//	bool abort=false;
 	NXWSOCKET  s=ps->toInt();
 
+	P_CHAR pj;
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
-	P_CHAR pj;
+
 	Location charpos= pc->getPosition();
 
 	P_ITEM pack;
 
-	serial=pp->Tserial;
-	if(serial==-1) abort=true;
-	serhash=serial%HASHMAX;
-	nCont = calcItemFromSer( serial );
+//	serial=pp->Tserial;
+//	if(serial==-1) abort=true;
+//	serhash=serial%HASHMAX;
 
-	serial=pp->Iserial;
-	if(serial==-1) abort=true;
-	serhash=serial%HASHMAX;
-	nItem = calcItemFromSer( serial );
+//	serial=pp->Iserial;
+//	if(serial==-1) abort=true;
+//	serhash=serial%HASHMAX;
 
-	if (nCont==-1) return;
-	if (nItem==-1) return;
+	P_ITEM pCont = pointers::findItemBySerial(pp->Tserial);
+	VALIDATEPI(pCont);
 
-	const P_ITEM pCont=MAKE_ITEMREF_LR(nCont);	// on error return  (This one could be const ! Duke)
-	const P_ITEM pItem=MAKE_ITEMREF_LR(nItem);	// on error return
+	P_ITEM pItem = pointers::findItemBySerial(pp->Iserial);
+	VALIDATEPI(pItem);
 
-	if (pItem->id1>=0x40)
+	if (pItem->id() >= 0x4000)
 	{
-		abort=true; // LB crashfix that prevents moving multi objcts in BP's
-		sysmessage(s,TRANSLATE("Hey, putting houses in your pack crashes your back and client!"));
+//		abort=true; // LB crashfix that prevents moving multi objcts in BP's
+		ps->sysmsg(TRANSLATE("Hey, putting houses in your pack crashes your back and client!"));
 	}
 
 	pj=pCont->getPackOwner();
@@ -1297,8 +1293,8 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	if( ISVALIDPC(pj) )
 		if ((pj->npcaitype==NPCAI_PLAYERVENDOR) && (pj->npc) && (pj->getOwnerSerial32()!=pc->getSerial32()) )
 		{
-		   abort=true;
-		   sysmessage(s,TRANSLATE("This aint your vendor!"));
+//		   abort=true;
+		   ps->sysmsg(TRANSLATE("This aint your vendor!"));
 		}
 	/*
 	if (pCont->amxevents[EVENT_IONPUTITEM]!=NULL) {
@@ -1322,34 +1318,29 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		serial=calcserial(pCont->moreb1, pCont->moreb2, pCont->moreb3, pCont->moreb4);
 		if(serial==-1) return;
 
-		z = calcItemFromSer( serial );
-
-		P_ITEM pi_z=MAKE_ITEM_REF(z);
+//		z = calcItemFromSer( serial );
+//		P_ITEM pi_z=MAKE_ITEM_REF(z);
+		P_ITEM pi_z = pointers::findItemBySerial(serial);
 
 		if (ISVALIDPI(pi_z))
 			if ((pi_z->morez || pCont->morez))
 			{
 				pi_z->morez=0;
 				pCont->morez=0;
-				sendtradestatus(z, nCont);
+				sendtradestatus(z, DEREF_P_ITEM(pCont));
 			}
 	}
 
-	//
-	//AntiChrist - Special Bank Stuff
-	//
-	//if morey==123  - gold only bank
-	//
 	if(SrvParms->usespecialbank)//only if special bank is activated
 	{
-		if(pCont->morey==123 && pCont->morex==1 && pCont->type==ITYPE_CONTAINER)
+		if(pCont->morey==MOREY_GOLDONLYBANK && pCont->morex==MOREX_BANK && pCont->type==ITYPE_CONTAINER)
 		{
-			if ( pItem->id() == 0x0EED )
+			if ( pItem->id() == ITEMID_GOLD )
 			{//if they're gold ok
 				goldsfx(s, 2);
 			} else
 			{//if they're not gold..bounce on ground
-				sysmessage(s,TRANSLATE("You can only put golds in this bank box!"));
+				ps->sysmsg(TRANSLATE("You can only put golds in this bank box!"));
 
 				pItem->setContSerial(-1);
 				pItem->MoveTo(charpos.x, charpos.y, charpos.z);
@@ -1367,13 +1358,12 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 		P_ITEM pBank = NULL;
 
-		if(pCont->morex==1) pBank = pCont;
+		if(pCont->morex==MOREX_BANK) pBank = pCont;
 		else {
 			P_ITEM pi = pCont;
 			while(pi!=NULL) {
-				int i = calcItemFromSer(pi->getContSerial());
-				pi = MAKE_ITEMREF_C(i);
-				if ((pi->type == 1)&&(pi->morex==ITYPE_CONTAINER)) {
+				pi = pointers::findItemBySerial( pi->getContSerial());
+				if ((pi->type == ITYPE_CONTAINER) && (pi->morex==MOREX_BANK)) {
 					pBank = pi;
 					break;
 				}
@@ -1382,16 +1372,16 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 
 		if (pBank != NULL) {
-			if(pBank->morex==1)
+			if(pBank->morex==MOREX_BANK)
 			{
 				int n;
 				n = pBank->CountItems(-1, -1, false);
-				n -= pBank->CountItems(0x0EED, -1 , false);
+				n -= pBank->CountItems(ITEMID_GOLD, -1 , false);
 				if (pItem->type == ITYPE_CONTAINER) {
 					n += pItem->CountItems(-1, -1, false);
 				} else n++;
 				if (n > ServerScp::g_nBankLimit) {
-					sysmessage(s, TRANSLATE("You exceeded the number of maximimum items in bank of %d"), ServerScp::g_nBankLimit);
+					ps->sysmsg(TRANSLATE("You exceeded the number of maximimum items in bank of %d"), ServerScp::g_nBankLimit);
 					item_bounce6(ps,pItem);
 					return;
 				}
@@ -1414,7 +1404,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	}
 
 	Map->SeekTile(pItem->id(), &tile);
-	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&((pc->priv2&1)==0)) ||
+	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
 				( (pItem->magic==3|| pItem->magic==4) && !(pItem->getOwnerSerial32()==pc->getSerial32())))
 	{
 		Sndbounce5(s);
@@ -1422,7 +1412,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		{
 			ps->resetDragging();
 			item_bounce3(pItem);
-			if (pCont->id1>=0x40)
+			if (pCont->id() >= 0x4000)
 				senditem(s, pCont);
 		}
 		return;
@@ -1430,8 +1420,8 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	// - Trash container
 	if (pCont->type==ITYPE_TRASH)
 	{
-		archive::DeleItem(nItem);
-		sysmessage(s, TRANSLATE("As you let go of the item it disappears."));
+		archive::DeleItem(pItem);
+		ps->sysmsg(TRANSLATE("As you let go of the item it disappears."));
 		return;
 	}
 	// - Spell Book
@@ -1439,14 +1429,14 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	{
 		if (!pItem->IsSpellScroll72())
 		{
-			sysmessage(s, TRANSLATE("You can only place spell scrolls in a spellbook!"));
+			ps->sysmsg(TRANSLATE("You can only place spell scrolls in a spellbook!"));
 			Sndbounce5(s);
 			if (ps->isDragging())
 			{
 				ps->resetDragging();
 				item_bounce3(pItem);
 			}
-			if (pCont->id1>=0x40)
+			if (pCont->id() >= 0x4000)
 				senditem(s, pCont);
 			return;
 		}
@@ -1456,7 +1446,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			if ((!(pCont->getContSerial()==pc->getSerial32())) &&
 				(!(pCont->getContSerial()==pack->getSerial32())) && (!(pc->CanSnoop())))
 			{
-				sysmessage(s, TRANSLATE("You cannot place spells in other peoples spellbooks."));
+				ps->sysmsg(TRANSLATE("You cannot place spells in other peoples spellbooks."));
 				item_bounce6(ps,pItem);
 				return;
 			}
@@ -1482,7 +1472,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 						if(!(strcmp(temp,temp2)) || !(strcmp(temp,"All-Spell Scroll")))
 						{
-							sysmessage(s,TRANSLATE("You already have that spell!"));
+							ps->sysmsg(TRANSLATE("You already have that spell!"));
 							item_bounce6(ps,pItem);
 							return;
 						}
@@ -1490,7 +1480,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				// Juliunus, to prevent ppl from wasting scrolls.
 				if (pItem->amount > 1)
 				{
-					sysmessage(s,TRANSLATE("You can't put more than one scroll at a time in your book."));
+					ps->sysmsg(TRANSLATE("You can't put more than one scroll at a time in your book."));
 					item_bounce6(ps,pItem);
 					return;
 				}
@@ -1508,7 +1498,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		{
 			if ( (pj->npcaitype==NPCAI_PLAYERVENDOR) && (pj->npc) && (pj->getOwnerSerial32()==pc->getSerial32()) )
 			{
-				pc->fx1=nItem;
+				pc->fx1= DEREF_P_ITEM(pItem);
 				pc->fx2=17;
 				pc->sysmsg(TRANSLATE("Set a price for this item."));
 			}
@@ -1597,9 +1587,8 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	  // sometimes we HAVE to swallow it, sometimes it has to be interpreted
 	  // if UO:3D specific item loss problems are reported, this is probably the code to blame :)
 	  // LB
-	  ITEM i = calcItemFromSer(pp->Iserial);
 
-	  P_ITEM pi=MAKE_ITEM_REF(i);
+	  P_ITEM pi = pointers::findItemBySerial(pp->Iserial);
 
 	  #ifdef debug_dragg
 	    if (ISVALIDPI(pi)) { sprintf(temp, "%04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
@@ -1631,9 +1620,8 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 	#ifdef debug_dragg
 	  else
 	  {
-		 ITEM i = calcItemFromSer( pp->Iserial );
+		P_ITEM pi = pointers::findItemBySerial(pp->Iserial);
 
-		 P_ITEM pi=MAKE_ITEM_REF(i);
 	     if (ISVALIDPI(pi)) { sprintf(temp, "blocked: %04x %02x %02x %01x %04x i-name: %s EVILDRAG-old: %i\n",pp->Iserial, pp->TxLoc, pp->TyLoc, pp->TzLoc, pp->Tserial, pi->name, EVILDRAGG[s]); ConOut(temp); }
 	  }
     #endif

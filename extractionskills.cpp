@@ -15,13 +15,12 @@ cResources ores;
 
 cResources::cResources( UI32 areawidth, UI32 areaheight )
 {
-	this->resources.clear();
-	this->setDimArea( areawidth, areaheight );
-	this->n=10;
-	this->time=600;
-	this->rate=3;
-	this->stamina=-5;
-
+	resources.clear();
+	setDimArea( areawidth, areaheight );
+	n=10;
+	time=600;
+	rate=3;
+	stamina=-5;
 }
 
 cResources::~cResources()
@@ -30,8 +29,8 @@ cResources::~cResources()
 
 void cResources::setDimArea( UI32 areawidth, UI32 areaheight )
 {
-	this->area_width=areawidth;
-	this->area_height=areaheight;
+	area_width=areawidth;
+	area_height=areaheight;
 }
 
 UI64 cResources::getBlocks( Location location  )
@@ -222,7 +221,7 @@ void Skills::Mine(NXWSOCKET s)
 
 	if( (cx>5) || (cy>5) )
 	{
-		sysmessage(s,TRANSLATE("You are to far away to reach that"));
+		pc->sysmsg(TRANSLATE("You are to far away to reach that"));
 		return;
 	}
 
@@ -244,15 +243,15 @@ void Skills::Mine(NXWSOCKET s)
 
 	switch( id )
 	{
-		case 0x0ED3 :
-		case 0x0EDf :
-		case 0x0EE0 :
-		case 0x0EE1 :
-		case 0x0EE2 :
-		case 0x0EE8 :
+		case 0x0ED3:
+		case 0x0EDF:
+		case 0x0EE0:
+		case 0x0EE1:
+		case 0x0EE2:
+		case 0x0EE8:
 			Skills::GraveDig( s );
 			return;
-		default		:
+		default:
 			break;
 	}
 
@@ -279,9 +278,9 @@ void Skills::Mine(NXWSOCKET s)
 		 floor=1;*/
 	
 
-	if (((SrvParms->minecheck!=0)&&(!floor)&&(!mountain)))//Mine only mountains & floors
+	if ((SrvParms->minecheck!=0)&&(!floor)&&(!mountain))//Mine only mountains & floors
 	{
-		sysmessage(s,TRANSLATE("You can't mine that!"));
+		pc->sysmsg(TRANSLATE("You can't mine that!"));
 		return;
 	}
 
@@ -291,7 +290,7 @@ void Skills::Mine(NXWSOCKET s)
 
 	if( !ores.thereAreSomething( res ) )
 	{
-		sysmessage(s,TRANSLATE("There is no metal here to mine."));
+		pc->sysmsg(TRANSLATE("There is no metal here to mine."));
 		return;
 	}
 
@@ -304,7 +303,7 @@ void Skills::Mine(NXWSOCKET s)
 
 	if(!pc->checkSkill(MINING, 0, 1000))
 	{
-		sysmessage(s,TRANSLATE("You sifted thru the dirt and rocks, but found nothing useable."));
+		pc->sysmsg(TRANSLATE("You sifted thru the dirt and rocks, but found nothing useable."));
 		if( rand()%2==1)
 			return; //Randomly deplete resources even when they fail 1/2 chance you'll loose ore.
 	}

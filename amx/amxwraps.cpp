@@ -3007,15 +3007,14 @@ NATIVE( _chr_showMessage )
 		// Speech color
 		ShortToCharPtr(params[4], talk +10);
 		// Speech font
-		talk[12]= 0;
-		talk[13]= pc1->fonttype;
-
-		Xsend(pc1->getClient()->toInt(), talk, 14);
+		ShortToCharPtr((UI16)pc1->fonttype, talk +12);
 
 		UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+
+		Xsend(pc1->getClient()->toInt(), talk, 14);
 		Xsend(pc1->getClient()->toInt(), sysname, 30);
 		Xsend(pc1->getClient()->toInt(), g_cAmxPrintBuffer, length-44);
-///Network->FlushBuffer(pc1->getClient()->toInt());
+//AoS/		Network->FlushBuffer(pc1->getClient()->toInt());
 		return 0;
 	}
 	return INVALID;
@@ -3599,7 +3598,7 @@ NATIVE(_itm_speech)
 	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 	Xsend(params[1], sysname, 30);
 	Xsend(params[1], g_cAmxPrintBuffer, strlen( g_cAmxPrintBuffer ) + 1 );
-///Network->FlushBuffer(params[1]);
+//AoS/	Network->FlushBuffer(params[1]);
 
 	return 0;
 }
