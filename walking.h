@@ -20,7 +20,6 @@ int validNPCMove(int x, int y, signed char z, P_CHAR pc_s);
 void walking(P_CHAR pc, int dir, int sequence);
 void walking2(P_CHAR pc_s);
 void npcwalk( P_CHAR pc_i, int newDirection, int type);
-void npcMovement( P_CHAR pc_i );
 
 
 #endif

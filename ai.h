@@ -7,6 +7,9 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+#ifndef __AI_H__
+#define __AI_H__
+    
 /*!
 \file
 \author Luxor
@@ -17,6 +20,7 @@
 /*!
 \name Pathfinding method implementation
 */
+#include "nxwcommn.h"
 
 #define MAX_PATH_LOOPS 2000
 #define Z_COST 1
@@ -45,6 +49,7 @@ class cPath {
 public:
 	cPath( Location startPos, Location finalPos );
 	Location getNextPos();
+	inline Location getFinalPos() { return m_finalPos; }
 	LOGICAL targetReached();
 private:
 	UI32 getLocDist( Location loc1, Location loc2, LOGICAL zEnable = false );
@@ -55,12 +60,12 @@ private:
 	void addToOpenList( Location pos, path_node* parentNode, UI32 cost = 10 );
 	void addToOpenList( path_node* node );
 	void addToClosedList( path_node* node );
+        Location m_finalPos;
 	NODE_LIST open_list;
 	NODE_LIST closed_list;
 	LOCATION_LIST path_list;
 };
 
-void testAI(); // Will be removed soon, test purpose only.
-
-
 //@}
+
+#endif //__AI_H__

@@ -14,6 +14,7 @@
 #ifndef __CHARS_H
 #define __CHARS_H
 
+#include "ai.h"
 #include "object.h"
 #include "magic.h"
 
@@ -155,6 +156,7 @@ enum AmxCharEvents
 #define REPUTATION_FAME			2
 
 class cNxwClientObj;
+class cPath;
 
 /*!
 \brief Character class
@@ -451,8 +453,15 @@ class cChar : public cObject
 /*!
 \name Movement
 */
+	private:
+		cPath*			path;			//!< current path <Luxor>
+		void			walkNextStep();		//!< walk next path step <Luxor>
 	public:
-		char			dir;			//!< &0F=Direction
+		void			walk();
+		inline LOGICAL		hasPath() { return (path!=NULL); }
+		void			follow( P_CHAR pc );
+		void			pathFind( Location pos, LOGICAL bOverrideCurrentPath = true );	//!< Walk to position <Luxor>
+		SI08			dir;			//!< &0F=Direction
 		UI32			LastMoveTime;		//!< server time of last move
 //@}
 
@@ -485,8 +494,8 @@ class cChar : public cObject
 		Location foodloc;	                //!< food location (not used for now)
 		//Skyfire - End NPC's home/work/food vars'
 
-		UI08			pathnum;
-		path_st			path[PATHNUM];
+		/*UI08			pathnum;
+		path_st			path[PATHNUM];*/
 
 		TIMERVAL		nextAiCheck;
 

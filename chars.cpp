@@ -148,7 +148,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	robe = -1; // Serial number of generated death robe (If char is a ghost)
 	SetKarma(0);
 	fame=0;
-	pathnum = PATHNUM;
+	//pathnum = PATHNUM;
 	kills=0; //PvP Kills
 	deaths=0;
 	dead = false; // Is character dead
@@ -323,6 +323,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	//resetSpeechCurrent(); //Endymion
 	speechCurrent = NULL; //Luxor
 	lastRunning = 0; //Luxor
+	path = NULL; //Luxor
 	resetProfile();
 	staticProfile=NULL;
 
@@ -344,6 +345,8 @@ cChar::~cChar()
 		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
+	if ( path != NULL )
+		safedelete( path );
 }
 
 
@@ -1944,9 +1947,8 @@ void cChar::facexy(SI32 facex, SI32 facey)
 */
 void cChar::toggleCombat()
 {
-	//ConOut("togglecombat %s from %d to %d\n", name, war, !war );
-	war=(!(war));
-	walking2(this);
+	war=( !(war) );
+	walking2( this );
 }
 
 /*!
@@ -4553,7 +4555,7 @@ void cChar::npc_heartbeat()
 	//	Handle walking
 	//
 	if ( TIMEOUT( npcmovetime ) )
-		npcMovement( this );
+		walk();
 
         //
         //	Handle combat

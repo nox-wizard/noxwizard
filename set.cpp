@@ -856,13 +856,13 @@ void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, bool bIncludeSubContained,
 \param id if not INVALID only add item with this id
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, UI32 type, SI32 id )
+void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, SI32 type, SI32 id )
 {
 	
 	if(!mapRegions->isValidCoord( x, y ))
 		return;
 
-	UI16 nowx = x/REGION_GRIDSIZE, nowy= y/REGION_COLSIZE;
+	UI16 nowx = x / REGION_GRIDSIZE, nowy = y / REGION_COLSIZE;
 
 	if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
 		return;
@@ -892,7 +892,7 @@ void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, UI32 type, SI32 id )
 \param id if not INVALID only add item with this id
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillItemsAtXY( Location location, UI32 type, SI32 id )
+void NxwItemWrapper::fillItemsAtXY( Location location, SI32 type, SI32 id )
 {
 	fillItemsAtXY( location.x, location.y, type, id ); 
 }

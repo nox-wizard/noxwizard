@@ -7,7 +7,6 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#include "nxwcommn.h"
 #include "ai.h"
 
 
@@ -41,36 +40,24 @@ SI08 isWalkable( Location pos )
 		pi = si.getItem();
 		if( !ISVALIDPI(pi) )
 			continue;
-		if ( pi->getPosition().x != pos.x || pi->getPosition().y != pos.y )
-			continue;
 
 		tile_st tile;
 		Map->SeekTile( pi->id(), &tile );
-
-		if ( tile.flag1 & 0x40 ) // Block flag
-			return illegal_z;
 
 		height = tile.height;
 		if ( tile.flag2 & 0x4 ) // Stairs, ladders
 			height = tile.height / 2;
 		
-		if ( (pi->getPosition().z + height) > (pos.z + 4) && // If not, we can walk on it
-			pi->getPosition().z < (pos.z + MaxZstep) ) { // If not, we can walk under it
-
-			/*if ( pi->id() == 0x3946 || pi->id() == 0x3956 )
-				return false;
-			if ( pi->id() > 0x0854 && pi->id() < 0x0866 )
-				return false;
-			if ( pi->id1 <= 2 || ( pi->id() >= 0x0300 && pi->id() <= 0x03E2 ) )
-				return false;*/
-
-			if ( pi->type == 12 ) // Doors can be opened or avoided by passing under them.
-				return (pi->getPosition().z + height);
-
-			return illegal_z;
-		} else {
-			zRes = pi->getPosition().z + height;
-		}
+                if ( pi->getPosition().z < (pos.z + MaxZstep) ) { // We cannot walk under it
+			if ( tile.flag1 & 0x40 ) // Block flag
+				return illegal_z;
+				
+			if ( (pi->getPosition().z + height) <= (pos.z + 4) ) { // We can walk on it
+                                if ( (pi->getPosition().z + height) > zRes )
+					zRes = pi->getPosition().z + height;
+			} else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
+				return illegal_z;
+                }
 	}
 
         //
@@ -123,22 +110,21 @@ SI08 isWalkable( Location pos )
 
 		Map->SeekTile( stat->itemid, &tile );
 
-		if ( stat->zoff )
-			return illegal_z;
 		// Z elevation
 		height = tile.height;
 		if ( tile.flag2 & 0x4 ) // Stairs, ladders
 			height = tile.height / 2;
 
-		if ( (stat->zoff + height) > (pos.z + 4) && // If not, we can walk on it
-			(stat->zoff + height) < (pos.z + MaxZstep) ) // If not, we can walk under it
-			return illegal_z;
-			
-		if ( tile.flag1 & 0x40 ) // Block flag
-			return illegal_z;
+		if ( (stat->zoff + height) < (pos.z + MaxZstep) ) { // We cannot walk under it
+			if ( tile.flag1 & 0x40 ) // Block flag
+				return illegal_z;
 
-		if ( (stat->zoff + tile.height) > zRes )
-			zRes = stat->zoff + tile.height;
+			if ( (stat->zoff + height) <= (pos.z + 4) ) { // We can walk on it
+                                if ( (stat->zoff + tile.height) > zRes )
+					zRes = stat->zoff + tile.height;
+			} else
+				return illegal_z;
+                }
 	}
 
 
@@ -189,6 +175,8 @@ cPath::cPath( Location startPos, Location finalPos )
 	closed_list.clear();
 	path_list.clear();
 
+	m_finalPos = finalPos;
+
 	NODE_LIST::iterator it;
 	UI32 min_cost, curr_cost, heuristic, loops = 0;
 	LOGICAL bFound = false;
@@ -200,19 +188,22 @@ cPath::cPath( Location startPos, Location finalPos )
 	startNode.parentNode = &startNode;
 	
 	addToOpenList( &startNode );
+		
 	currNode = &startNode;
 
 	while( loops < MAX_PATH_LOOPS && bFound == false ) {
+                if ( currNode->pos == finalPos ) {
+			bFound = true;
+			break;
+		}
 		// Look for tiles reachable by currNode, add them to the open list
 		addReachableNodes( currNode );
 		
 		// Drop the current node in the closed list
 		dropToClosedList( currNode );
 
-		if ( currNode->pos == finalPos ) {
-			bFound = true;
-			continue;
-		}
+		if ( open_list.empty() )
+			break;
 
 		for ( it = open_list.begin(); it != open_list.end(); it++ ) {
 			if ( it == open_list.begin() ) {

@@ -1468,123 +1468,164 @@ int npcSelectDirWarOld(P_CHAR pc_i, int j)
 	return j;
 }
 
-void npcMovement( P_CHAR pc_i )
+/*!
+\author Luxor
+\brief Makes a character walking to a given location
+*/
+void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 {
-	VALIDATEPC(pc_i);
+	if ( hasPath() && !bOverrideCurrentPath )
+		return;
 
-	P_CHAR pc_att= pointers::findCharBySerial(pc_i->attackerserial);
-	if( !ISVALIDPC( pc_att ) )
-		pc_i->war = 0;
+	if ( hasPath() )
+		safedelete( path );
+	path = new cPath( getPosition(), pos );
+}
 
-	if ( pc_i->war && pc_i->npcWander != 5 && ( pc_att->IsOnline() || pc_att->npc ) )
-	{ // a very simple pathfinding algorithm
-		if ( pc_i->distFrom( pc_att ) > 1 )
-		{
-			if ( pc_i->blocked )
-			{
-				npcwalk( pc_i, getRightDir( pc_i->dir ), 0 );
-				pc_i->blocked = 0;
-				npcwalk( pc_i, pc_i->dir, 0 );
-			}
-			else
-				npcwalk( pc_i, getDirFromXY( pc_i, pc_att->getPosition().x, pc_att->getPosition().y ), 0);
-		}
-		else
-		{
-			if (pc_i->getPosition() != pc_att->getPosition())
-			{
-				int newdir = getDirFromXY( pc_i, pc_att->getPosition().x, pc_att->getPosition().y );
-				if ( newdir != pc_i->dir )
-				{
-					npcwalk( pc_i, newdir, 0 );
-				}
-				/*
-				else
-				{
-					//Sparhawk: TODO Let's sometimes walk to a nearby square just to keep combat dynamic
-					//ConOut("npcMovement( %s ) facing:  dir %i\n", pc_i->name, pc_i->dir );
-				}
-				*/
-			}
+/*!
+\author Luxor
+*/
+void cChar::walkNextStep()
+{
+	if ( IsFrozen() )
+		return;
+	if ( !hasPath() )
+		return;
+	Location pos = path->getNextPos();
+	if ( path->targetReached() || isWalkable( pos ) == illegal_z ) {
+                safedelete( path );
+		return;
+	}
+
+        // <LB> Flying creatures stuff
+	SI32 b = GetBodyType();
+	if ( b < 0 || b > 2047 )
+		b = 0;
+	if ( ( creatures[b].who_am_i ) & 0x1 ) { // Can it fly?
+		if ( fly_steps > 0 ) {
+			if ( chance( 33 ) )
+				playAction( 0x13 ); // Flying animation
 		}
 	}
-	else
+	// </LB>
+
+	Location oldpos = getPosition();
+        SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
+        dir = dirXY & 0x0F;
+	MoveTo( pos );
+        WalkSendToPlayers( this, dirXY, oldpos.x, oldpos.y, pos.x, pos.y );
+	setNpcMoveTime();
+}
+
+/*!
+\author Luxor
+*/
+void cChar::follow( P_CHAR pc )
+{
+	if ( UI32(dist( getPosition(), pc->getPosition() )) <= 1 ) { // Target reached
+		if ( hasPath() )
+			safedelete( path );
+		return;
+	}
+	if ( !hasPath() ) { // We haven't got a path, call the pathfinding.
+		pathFind( pc->getPosition() );
+		walkNextStep();
+		return;
+	}
+
+	if ( path->getFinalPos() == pc->getPosition() ) { // We are following the precise path
+		walkNextStep();
+		return;
+	}
+
+	R64 distance = dist( path->getFinalPos(), pc->getPosition() );
+	if ( distance <= 3.0 ) { // Path finalPos is pretty near... let's not overhead the processor
+		walkNextStep();
+	} else { // Path finalPos is too far, call the pathfinding.
+		pathFind( pc->getPosition(), true );
+		walkNextStep();
+	}
+}
+
+/*!
+\author Luxor
+*/
+void cChar::walk()
+{
+	P_CHAR pc_att = pointers::findCharBySerial( attackerserial );
+	if ( !ISVALIDPC( pc_att ) )
+		pc_att = pointers::findCharBySerial( targserial );
+	if ( !ISVALIDPC( pc_att ) )
+		war = 0;
+
+	if ( war && npcWander != 5 && ( pc_att->IsOnline() || pc_att->npc ) ) { //We are following a combat target
+                follow( pc_att );
+                return;
+        }        
+
+	switch( npcWander )
 	{
-		switch(pc_i->npcWander)
+		case 0: //No movement
+			break;
+		case 1: //Follow the follow target
 		{
-			case 0: // No movement
+			P_CHAR pc = pointers::findCharBySerial( ftargserial );
+			if ( !ISVALIDPC( pc ) )
 				break;
-			case 1: // Follow the follow target
-				{
-				if( pc_i->ftargserial == INVALID ) // Sparhawk: Prevent log warnings for unassigned (-1) ftarg
-					break;
-				P_CHAR pc_ftarg = pointers::findCharBySerial( pc_i->ftargserial );
-				VALIDATEPC( pc_ftarg );
-				if ( pc_ftarg->dead  || !TIMEOUT( pc_ftarg->disabled ) )
-					break;
-				// Dupois - Added April 4, 1999
-				// Has the Escortee reached the destination ??
-				// If so pay the Escortee and free the NPC
-				if ( pc_i->questDestRegion == pc_i->region )
-					MsgBoards::MsgBoardQuestEscortArrive( pc_i, pc_ftarg );
-
-				int dirto = getDirFromXY( pc_i, pc_ftarg->getPosition().x, pc_ftarg->getPosition().y );
-				if ( ( pc_i->distFrom( pc_ftarg ) > 1 ) || dirto != pc_i->dir )
-					npcwalk( pc_i, npcSelectDir( pc_i, dirto ) % 8, 0 );
-				//if ( char_dist( pc_i, pc_ftarg ) > 1 || chardir( DEREF_P_CHAR(pc_i), DEREF_P_CHAR(pc_ftarg))!=pc_i->dir)
-				//	npcwalk( pc_i, npcSelectDir(pc_i, chardir( DEREF_P_CHAR(pc_i), DEREF_P_CHAR(pc_ftarg)) )%8,0);
-				}
+			if ( pc->dead )
 				break;
-			case 2: // Wander freely, in a defined circle
-				npcwalk( pc_i, (chance( 20 ) ? rand()%8 : pc_i->dir), 2 );
-				break;
-			case 3: // Wander freely, within a defined box
-				npcwalk( pc_i, (chance( 20 ) ? rand()%8 : pc_i->dir), 1 );
-				break;
-			case 4:  // wander freely, avoiding obstacles
-				npcwalk( pc_i, (chance( 20 ) ? rand()%8 : pc_i->dir), 0 );
-				break;
-			case 5: //FLEE!!!!!!
-				{
-					P_CHAR target = pointers::findCharBySerial( pc_i->targserial );
-					if (ISVALIDPC(target)) {
-						if ( pc_i->distFrom( target ) < VISRANGE )
-							getDirFromXY( pc_i, target->getPosition().x, target->getPosition().y );
-							npcwalk( pc_i, npcSelectDir( pc_i, (  getDirFromXY( pc_i, target->getPosition().x, target->getPosition().y ) +4 )%8 )%8,0);
-							//npcwalk( pc_i, npcSelectDir( pc_i, (chardir( DEREF_P_CHAR(pc_i), DEREF_P_CHAR(target) ) +4 )%8 )%8,0);
-					}
-				}
-				break;
-			case 6: // Sparhawk: script controlled movement
-				{
-					UI32 l = pc_i->dir;
-					
-					if (pc_i->amxevents[EVENT_CHR_ONWALK])
-					{
-						g_bByPass = false;
-						pc_i->amxevents[EVENT_CHR_ONWALK]->Call(pc_i->getSerial32(), pc_i->dir, pc_i->dir);
-						if (g_bByPass==true)
-							return;
-					}
-					/*
-					pc_i->runAmxEvent( EVENT_CHR_ONWALK, pc_i->getSerial32(), pc_i->dir, pc_i->dir);
-					if (g_bByPass==true)
-						return;
-					*/
-					int k = pc_i->dir;
-					pc_i->dir = l;
-					l = pc_i->npcmovetime;
-					npcwalk( pc_i, k, 0);
-					if ( l != pc_i->npcmovetime ) // it's been changed through small
-						return;
-				}
-				break;
-			default:
-				ErrOut("npcMovement(%d) unknown npcwander [%i] serial %u\n", DEREF_P_CHAR(pc_i), pc_i->npcWander, pc_i->getSerial32() );
-				break;
+			if ( pc->questDestRegion == region )
+				MsgBoards::MsgBoardQuestEscortArrive( this, pc );
+			follow( pc );
 		}
+			break;
+		case 2: // Wander freely, in a defined circle
+			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 2 );
+			break;
+		case 3: // Wander freely, within a defined box
+			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 1 );
+			break;
+		case 4: // Wander freely, avoiding obstacles
+			npcwalk( this, (chance( 20 ) ? rand()%8 : dir), 0 );
+			break;
+		case 5: //FLEE!!!!!!
+		{
+			P_CHAR target = pointers::findCharBySerial( targserial );
+			if (ISVALIDPC(target)) {
+				if ( distFrom( target ) < VISRANGE )
+					getDirFromXY( this, target->getPosition().x, target->getPosition().y );
+				npcwalk( this, npcSelectDir( this, (  getDirFromXY( this, target->getPosition().x, target->getPosition().y ) +4 )%8 )%8,0);
+			}
+		}
+			break;
+		case 6: // Sparhawk: script controlled movement
+		{
+			UI32 l = dir;
+			if (amxevents[EVENT_CHR_ONWALK])
+			{
+				g_bByPass = false;
+				amxevents[EVENT_CHR_ONWALK]->Call(getSerial32(), dir, dir);
+				if (g_bByPass==true)
+					return;
+			}
+			/*
+			pc_i->runAmxEvent( EVENT_CHR_ONWALK, pc_i->getSerial32(), pc_i->dir, pc_i->dir);
+			if (g_bByPass==true)
+				return;
+			*/
+			int k = dir;
+			dir = l;
+			l = npcmovetime;
+			npcwalk( this, k, 0);
+			if ( l != npcmovetime ) // it's been changed through small
+				return;
+		}
+			break;
+		default:
+			ErrOut("cChar::walk() unknown npcwander [%i] serial %u\n", npcWander, getSerial32() );
+			break;
 	}
-	pc_i->setNpcMoveTime();
+	setNpcMoveTime();
 }
 
 int checkBounds(P_CHAR pc, int newX, int newY, int type)

@@ -385,7 +385,8 @@ void cChar::undoCombat()
 {
 	timeout = 0;
 	attackerserial = INVALID;
-	targserial= INVALID;
+        if ( !npc ) //Luxor: otherwise NPCs don't try to pathfind the target.
+		targserial = INVALID;
 	ResetAttackFirst();
 }
 
