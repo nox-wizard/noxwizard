@@ -1665,6 +1665,92 @@ NATIVE(_itm_createByDef)
 }
 
 /*
+\brief create a new item into backpack
+\author Endymion
+\param 1 scriptid
+\param 2 character
+\param 3 amount ( if INVALID use xss default )
+\since 0.82
+*/
+NATIVE(_itm_createInBp)
+{
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+		
+	cell *cstr;
+	amx_GetAddr( amx, params[1], &cstr );
+	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+
+	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->getBackpack(), params[3] );
+	g_nAmxPrintPtr = 0;
+	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
+
+}
+
+/*
+\brief create a new item into backpack
+\author Endymion
+\param 1 scriptid
+\param 2 character
+\param 3 amount ( if INVALID use xss default )
+\since 0.82
+*/
+NATIVE(_itm_createInBpDef)
+{
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+		
+	P_ITEM pi = item::CreateFromScript( params[1], pc->getBackpack(), params[3] );
+
+	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
+
+}
+
+/*
+\brief create a new item into bank
+\author Endymion
+\param 1 scriptid
+\param 2 character
+\param 3 amount ( if INVALID use xss default )
+\since 0.82
+*/
+NATIVE(_itm_createInBank)
+{
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+		
+	cell *cstr;
+	amx_GetAddr( amx, params[1], &cstr );
+	printstring( amx, cstr, params+1, (int)(params[0]/sizeof(cell))-1 );
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+
+	P_ITEM pi = item::CreateFromScript( g_cAmxPrintBuffer, pc->GetBankBox(), params[3] );
+	g_nAmxPrintPtr = 0;
+	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
+
+}
+
+/*
+\brief create a new item into bank
+\author Endymion
+\param 1 scriptid
+\param 2 character
+\param 3 amount ( if INVALID use xss default )
+\since 0.82
+*/
+NATIVE(_itm_createInBankDef)
+{
+	P_CHAR pc = pointers::findCharBySerial( params[2] );
+	VALIDATEPCR( pc, INVALID );
+		
+	P_ITEM pi = item::CreateFromScript( params[1], pc->GetBankBox(), params[3] );
+
+	return ISVALIDPI( pi )? pi->getSerial32() : INVALID;
+
+}
+
+/*
 \brief Check if given id is a weapon
 \author Endymion
 \since 0.82
@@ -5459,6 +5545,10 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_setSerial", _isetSerial },
  { "itm_create", _itm_createFromScript },
  { "itm_createByDef", _itm_createByDef },
+ { "itm_createInBp", _itm_createInBp },
+ { "itm_createInBpDef", _itm_createInBpDef },
+ { "itm_createInBank", _itm_createInBank },
+ { "itm_createInBankDef", _itm_createInBankDef },
  { "itm_checkDecay", _itm_checkDecay },
  { "itm_remove", _itm_remove },
  { "itm_getEventHandler", _itm_getEventHandler },
