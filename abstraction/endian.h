@@ -29,7 +29,8 @@ class eUI16 {
 	public:
 		eUI16() { a=0; };
 		eUI16(UI16 v);
-		eUI16& operator =( UI16 v );
+		void operator =( UI16 v );
+		void operator=( eUI16 v );
 } PACK_NEEDED;
 
 
@@ -43,7 +44,8 @@ class eUI32 {
 	public:
 		eUI32() { a=0; };
 		eUI32(UI32 v);
-		eUI32& operator =( UI32 v );
+		void operator =( UI32 v );
+		void operator=( eUI32 v );
 } PACK_NEEDED;
 
 typedef UI08 eUI08;		//!< fake endian-independent UI08

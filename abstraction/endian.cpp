@@ -10,24 +10,34 @@
 #include "nxwcommn.h"
 #include "abstraction/endian.h"
 
-eUI16& eUI16::operator =( UI16 v )
+void eUI16::operator =( UI16 v )
 {
 	a=htons( v );
-	return *this;
 }
+
+void eUI16::operator=( eUI16 v )
+{
+	this->a=v.a;
+}
+
 
 eUI16::eUI16(UI16 v)
 {
 	a=htons( v );
 }
 
-eUI32& eUI32::operator =( UI32 v )
+void eUI32::operator =( UI32 v )
 {
 	a=htonl( v );
-	return *this;
+}
+
+void eUI32::operator=( eUI32 v )
+{
+	this->a=v.a;
 }
 
 eUI32::eUI32(UI32 v)
 {
 	a=htonl( v );
 }
+
