@@ -57,12 +57,16 @@
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) 
-{
+cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) {
 
 	cmd_name=name;
-	cmd_number=number; 
+	cmd_level=number; 
 	cmd_callback=callback;
+}
+
+
+SI08 cCommand::getCommandLevel(P_COMMAND cmd) {
+	return cmd->cmd_level;
 }
 
 
@@ -71,16 +75,15 @@ cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback)
 
 SERIAL cCallCommand::current_serial = 0;
 
-cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<string>* param )
-{
+cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<string>* param ){
+
 	cmd_serial=++current_serial;
 	all_params=params;
 	single_param=param;
 }
 
 
-cCallCommand::~cCallCommand() 
-{
+cCallCommand::~cCallCommand() {
 }
 
 
@@ -104,8 +107,8 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* ca
 
 
 
-bool cCommandMap::Check( string& text )
-{
+
+bool cCommandMap::Check( string& text ){
 
 	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( text ) );
 
@@ -120,11 +123,25 @@ bool cCommandMap::Check( string& text )
 
 
 
+P_COMMAND cCommandMap::findCommand(std::string name){
+
+		
+	std::map< std::string, P_COMMAND >::iterator iter( command_map.find( "name" ) );
+
+	if ( iter != command_map.end() )	//command exists
+		return iter->second;
+	else
+		return NULL;					//command doesnt exist
+}
+
+
+
+
+
 //Implementation of cCallCommandMap Class
 
 
-cCallCommand* cCallCommand::findCallCommand(SERIAL cmd)
-{
+cCallCommand* cCallCommand::findCallCommand(SERIAL cmd){
 
 	std::map< SERIAL, cCallCommand* >::iterator iter( callcommand_map.find( cmd ) );
 
@@ -143,8 +160,7 @@ void cCallCommand::delCommand(SERIAL cmd){
 
 
 
-//cCommandMap* commands = new cCommandMap();
-//cCallCommandMap* callcommands = new cCallCommandMap()
+cCommandMap* commands = new cCommandMap();
 
 
 
@@ -158,30 +174,21 @@ void cCallCommand::delCommand(SERIAL cmd){
 
 
 
-/*******
-A function that controls if the char can do the specified command and
-prepare a cCallCommand object to be given at Small function.
-This function is called after the control in speech.cpp
-*******/
-
-
-
-
-
 
 //The function that is called after the control done in speech.cpp
-//This should be put in another file or in a namespace (?)
 
-/*
 
-void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /ADD
+void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 	{
 		unsigned char *comm;
 		unsigned char nonuni[512];
-		cCallCommand* command; 
+		//cCallCommand* command; 
 
-		cmd_offset = 1;
+		//cmd_offset = 1;
 
+		//cCallCommandMap* callcommands = new cCallCommandMap()
+		
+		
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 		VALIDATEPC( pc_currchar );
 
@@ -196,29 +203,28 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 		// Let's ignore the command prefix;
 		comm = nonuni + 1;
 
-		P_COMMAND cmd= commands->findCommand((char*)comm);
+		P_COMMAND p_cmd= commands->findCommand((char*)comm);
+		
+		
 		NXWCLIENT client= getClientFromSocket(s);
 
-		if(cmd==NULL) {
-		client->sysmsg("Unrecognized command: %s", comm);
+		
+
+		if(p_cmd==NULL) {
 			return;
 		}
 		
 		
-		//Here there must be a control between cCommand privilege and cChar privilege.
+		//Control between cCommand privilege and cChar privilege.
 
-		
-		
-		//switch(tnum-1){  
-		//case n:
-		//callcommands->addCallCommand(*n parameters*);
-		//break;
-		//}
-			
+		if(p_cmd->getCommandLevel(p_cmd)==pc_currchar->commandLevel){
+		client->sysmsg("You can't use this command!");
+			return;
+		}
+
 		
 		//Here there must be the call to small function specified in cCommand.cmd_callback.
-
-		 //callcommands->remCallCommand(*serial*);		
+		//callcommands->remCallCommand(*serial*);		
 			  
 			
 			  //To be finished...
@@ -230,7 +236,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 
 
 
-*/
+
 
 /*******
 Must complete a native function for AMX to get command property
@@ -250,18 +256,21 @@ static CP_ALLPARAMS=1;
 //Frodo:	must add the following function in AMX_NATIVE_INFO nxw_API[] 
 //			{ "getCmdProperty", _getCmdProperty } 
 	
-// params[1] = char serial
-	// params[2] = cCallCommand Serial
-	// params[3] = property
-	// params[4] = 1st param given
-	// params[5] = 2nd param given
-	// params[6] = 3rd param given
-	// params[7] = 4th param given
+	// params[1] = cCallCommand Serial
+	// params[2] = property
+	// params[3] = 1st param given
+	// params[4] = 2nd param given
+	// params[5] = 3rd param given
+	// params[6] = 4th param given
 
 
 
 NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
 
+	if (cCallCommand->findCallCommand(param[1])==NULL)
+		return NULL;
+	  
+		
 	if ( !params[2] )
 	{
 		switch( params[3] ) {
