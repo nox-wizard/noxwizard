@@ -580,6 +580,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								else if ( "ITEM" == script1 )
 								{
 									storeval=str2num(script2);
+									// ConOut("Debug: Loading item %d for pc script number %d\n", storeval, npcNum);
 									pi_n=item::CreateScriptItem( INVALID, storeval, 0, pc );
 									if (ISVALIDPI(pi_n))
 									{
@@ -624,39 +625,42 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									//				CHANCE <chance>
 									//			}
 									//
-									/*
 									std::string strLootItem = script2;
+									std::string str_keyword, str_remains, str_scriptid;
+									std::string str_amount, str_chance;
 									do
 									{
-										iter->parseLine(script1, script2);
-										if ( script1[0]!='{' && script1[0]!='}' )
+										str_keyword="";
+										str_remains="";
+										splitLine( strLootItem, str_keyword, str_remains );
+										if ( str_scriptid == "" )
+											str_scriptid=str_keyword;
+										if ( str_keyword == "AMOUNT")
 										{
-											if ( "AMOUNT" == script1 )
-											{
-												amount = getRangedValue( script2 );
-												if( amount < 1 )
-													amount = 1;
-											}
-											else if ( "CHANCE" == script1 )
-											{
-												chance = str2num( script2 );
-												if( chance < 1 )
-													chance = 1;
-												else if ( chance > 100 )
-													chance = 100;
-											}
-											else
-											{
-												unknown tag;
-											}
-										}
-									} while ( script1[0] !='}' && ++loopexit < MAXLOOPS );
+											strLootItem="";
+											splitLine( str_remains, str_amount, strLootItem );
 
-									if ( chance( chance ) )
-										pc->lootVector.push_back( makepair( str2num( strLootItem ), chance ) );
+										}
+										else if ( str_keyword == "CHANCE" )
+										{
+											strLootItem="";
+											splitLine( str_remains, str_chance, strLootItem );
+										}
+										else
+											strLootItem=str_remains;
+									} while (strLootItem != "" );
+
+									SI32 chance=str2num(str_chance);
+									SI32 amount=getRangedValue(str_amount);
+									if ( chance > 0 )
+									{
+										if ( rand()%100 > chance )
+											break;
+									}
+									for ( int count=0;count < amount; ++count)
+										pc->lootVector.push_back( str2num( strLootItem ) );
 
 									script1 = "DUMMY";
-									*/
 
 								}
 								else if ( "LUMBERJACKING" == script1 )
@@ -1033,7 +1037,6 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										if(!(strcmp((char *) tile.name, "water")))//Water
 										{//Don't spawn on water tiles... Just add other stuff here you don't want spawned on.
 											lb=0;
-											break;
 										}
 									}
 								} while (!lb);
