@@ -39,6 +39,7 @@ public:
 	virtual ~cOldMenu();
 
 	void setParameters( int numPerPage, int numpages );
+	void	setCallBack( int fn );
 	virtual void addMenuItem( int page, int idx, std::wstring& desc );
 	void setTitle( wstring& str );
 	void setWidth( int width );
