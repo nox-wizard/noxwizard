@@ -106,7 +106,7 @@ void newbieitems(P_CHAR pc)
 					std::string itemnum, amount;
 					splitLine( script2, itemnum, amount );
 					int amt= (amount!="")? str2num( amount ) : INVALID;
-					P_ITEM pi = item::SpawnItemBank( DEREF_P_CHAR(pc), str2num( itemnum ), amt ); // Tauriel 11-24-98
+					P_ITEM pi = item::CreateFromScript( str2num( itemnum ), pc->GetBankBox(), amt );
 					if (ISVALIDPI(pi)) {
 						pi->priv |= 0x02; // Mark as a newbie item
 					}

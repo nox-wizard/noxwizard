@@ -65,6 +65,10 @@ int SpawnFishingItem(NXWSOCKET  s,int nInPack, char* cScript, char* cList, char*
 {
  	/*This function gets the random item number from the list and recalls
  	  SpawnItemBackpack2 passing the new number*/
+	
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPCR( pc, INVALID )
+	
 	char sect[512];
 	int i=0,item[256]={0};
     
@@ -90,14 +94,12 @@ int SpawnFishingItem(NXWSOCKET  s,int nInPack, char* cScript, char* cList, char*
  	if(i>0)
  	{
   		i=rand()%(i);
-		if(item[i]!=-1)
-		if(nInPack)
-		{
-			item::SpawnItemBackpack2(s,item[i],1);
+		if((item[i]!=INVALID) && (nInPack) ) {
+			item::CreateFromScript( item[i], pc->getBackpack());
 			return item[i];
 		}
 	}
-	return -1;
+	return INVALID;
 }
 
 inline bool isWaterTarget(NXWSOCKET  s)

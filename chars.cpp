@@ -2465,18 +2465,6 @@ LOGICAL const cChar::IsOverWeight()
 
 /*!
 \author Xanathar
-\brief Spawns an item in the backpack
-\todo document parameter
-*/
-void cChar::spawnItemInBackpack(SI32 itemidx, LOGICAL bDigging)
-{
-	NXWCLIENT ps=getClient();
-	if ( ps!= NULL) 
-		item::SpawnItemBackpack2(ps->toInt(), itemidx, bDigging ? 1 : 0);
-}
-
-/*!
-\author Xanathar
 \brief Sets owner fields
 \param owner new owner
 */

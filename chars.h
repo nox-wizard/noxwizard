@@ -955,7 +955,6 @@ public:
 		void			boltFX(LOGICAL bNoParticles);
 		void			circleFX(short id);
 
-		void			spawnItemInBackpack(SI32 itemidx, LOGICAL bDigging = false);
 		P_ITEM			getBeardItem();
 		P_ITEM			getHairItem();
 		void			morph ( short bodyid = INVALID, short skincolor = INVALID,
