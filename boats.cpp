@@ -97,13 +97,11 @@ bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these c
 {
 	VALIDATEPIR(pi,false);
 	
-	char temp[TEMP_STR_SIZE];
-	int j;
 	multiVector m_vec;
 
 	data::seekMulti( pi->id()-0x4000, m_vec );
 
-	for ( j=0; j<m_vec.size();j++)
+	for ( int j=0; j<m_vec.size();j++)
 	{
 		Location itmpos= pi->getPosition();
 		if (/*(multi.visible)&&*/((itmpos.x+m_vec[j].x) == where.x) && ((itmpos.y+m_vec[j].y) == where.y))
@@ -869,14 +867,12 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 {
 	UI32 x= where.x, y= where.y;
 	LOGICAL good_pos=false;
-	char temp[TEMP_STR_SIZE];
 	map_st map;
-	int j;
 	multiVector m_vec;
 
 	data::seekMulti(pBoat->id()-0x4000, m_vec);
 
-	for (j=0;j<m_vec.size();j++)
+	for(int j=0;j<m_vec.size();j++)
 	{
 
 /*		if (m_vec[j].visible)
@@ -1134,12 +1130,8 @@ LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 
 LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2)
 {
-	char temp[TEMP_STR_SIZE];
-
-	int i,j;
 
 	int x,y;
-	SI32 length1,length2;			// signed long int on Intel
 	multi_st multi1,multi2;
 	multiVector m1, m2;
 
@@ -1147,9 +1139,9 @@ LOGICAL cBoat::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 	data::seekMulti( pBoat2->id()-0x4000, m2 );
 
-	for(i=0;i<m1.size();i++)
+	for(int i=0;i<m1.size();i++)
 	{
-		for (j=0;j<m2.size();j++)
+		for(int j=0;j<m2.size();j++)
 		{
 			multi1 = m1[i];
 			multi2 = m2[j];
@@ -1239,7 +1231,6 @@ P_ITEM cBoat::GetBoat(Location pos)
 		if(dist<10)
 		{
 			int i;
-			SI32 length;			// signed long int on Intel
 			multi_st multi;
 			multiVector m;
 
