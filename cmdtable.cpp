@@ -2710,19 +2710,19 @@ void command_pdump(NXWSOCKET  s)
 {
 			sysmessage(s, "Performace Dump:");
 
-			sprintf((char*)s_szCmdTableTemp, "Network code: %fmsec [%i]" _ (float)((float)networkTime/(float)networkTimeCount) _ networkTimeCount);
+			sprintf((char*)s_szCmdTableTemp, "Network code: %fmsec [%i]", (float)((float)networkTime/(float)networkTimeCount), networkTimeCount);
 			sysmessage(s,(char*) s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Timer code: %fmsec [%i]" _ (float)((float)timerTime/(float)timerTimeCount) _ timerTimeCount);
+			sprintf((char*)s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
 			sysmessage(s, (char*)s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Auto code: %fmsec [%i]" _ (float)((float)autoTime/(float)autoTimeCount) _ autoTimeCount);
+			sprintf((char*)s_szCmdTableTemp, "Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
 			sysmessage(s, (char*)s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Loop Time: %fmsec [%i]" _ (float)((float)loopTime/(float)loopTimeCount) _ loopTimeCount);
+			sprintf((char*)s_szCmdTableTemp, "Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
 			sysmessage(s, (char*)s_szCmdTableTemp);
 
-			sprintf((char*)s_szCmdTableTemp, "Simulation Cycles/Sec: %f" _ (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+			sprintf((char*)s_szCmdTableTemp, "Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 			sysmessage(s, (char*)s_szCmdTableTemp);
 			return;
 }
