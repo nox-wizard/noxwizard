@@ -178,7 +178,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		return;
 	*/
 	if (ISVALIDPI(pWeapon)) {
-		if (chance(5) && pWeapon->type != ITYPE_SPELLBOOK) {
+		if (chance(25) && pWeapon->type != ITYPE_SPELLBOOK) {
 			pWeapon->hp--;
 			if(pWeapon->hp <= 0) {
 				sysmsg(TRANSLATE("Your weapon has been destroyed"));
@@ -246,7 +246,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 			pc_def->checkSkill(PARRYING, 0, 1000);
 			if (pShield->def!=0 && fightskill!=ARCHERY) damage -= pShield->def/2;// damage absorbed by shield
 			if (pShield->def!=0 && fightskill==ARCHERY) damage -= pShield->def;// damage absorbed by shield
-			if (chance(5)) pShield->hp--;
+			if (chance(25)) pShield->hp--;
 			if (pShield->hp<=0) {
 				pc_def->sysmsg(TRANSLATE("Your shield has been destroyed"));
 				pShield->deleteItem();
@@ -814,7 +814,7 @@ int cChar::calcDef(SI32 x)
 		//Dont damage wears beard hair and backpack
 		if(pj->layer!=0x0B && pj->layer!=0x10 && pj->layer!=0x15 && pj->layer!=0x4 && pj->layer!=0x5 && pj->layer!=0x6
 			&& pj->layer!=0xC && pj->layer!=0x11 && pj->layer!=0x14 && pj->layer!=0x16) {
-			if(chance(5))
+			if(chance(25))
 				pj->hp--; //Take off a hit point
 			if(pj->hp<=0) {
 				if ( strncmp(pj->getCurrentNameC(), "#", 1) ) {
@@ -838,7 +838,7 @@ int cChar::calcDef(SI32 x)
 	if (getClient() != NULL) statwindow(this,this);
 
 	if (total<2) total=2;
-	return total;
+	return total*3;
 }
 
 //////////////////////////////////////////////////////////////////
