@@ -295,8 +295,6 @@ namespace item
 								pi->resists[params[0]] = params[1];
 							}
 						}
-						else if (!(strcmp("RESTOCK", script1)))
-							pi->restock = str2num(script2);
 						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
 						break;
 
@@ -838,7 +836,6 @@ namespace item
 					case 'R':
 					case 'r':
 						if (!strcmp("POISONED",script1)) pi->poisoned=(PoisonType)str2num(script2);
-						else if (!strcmp("RESTOCK",script1)) pi->restock=str2num(script2);
 						else if (!strcmp("RANK",script1))
 						{
 							pi->rank=str2num(script2); // By Magius(CHE)

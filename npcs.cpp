@@ -923,20 +923,24 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					if ( buyRestockContainer == INVALID )
 					{
 						
-						P_ITEM pi_z=pc->GetItemOnLayer(0x1A);
+						P_ITEM pi_z=pc->GetItemOnLayer(LAYER_TRADE_RESTOCK);
 						if (ISVALIDPI(pi_z))
 						{
-							buyRestockContainer = DEREF_P_ITEM(pi_z);
+							buyRestockContainer = pi_z->getSerial32();
 						}
 					}
 					if ( buyRestockContainer != INVALID )
 					{
 						storeval=str2num(script2);
-						pi_n=item::CreateScriptItem(INVALID, storeval, 0);
+						pi_n=item::CreateFromScript( storeval );
 						if (ISVALIDPI(pi_n))
 						{
-							pi_n->setCont(MAKE_ITEM_REF(buyRestockContainer));
-							pi_n->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
+							if( !strcmp( script3, "" ) ) //use default amount value
+								pi_n->amount=server_data.defaultSelledItem;
+							else
+								pi_n->amount = str2num( script3 );
+							pi_n->setContSerial( buyRestockContainer );
+							pi_n->SetRandPosInCont( MAKE_ITEM_REF( buyRestockContainer ) );
 							if (pi_n->getSecondaryNameC() && (strcmp(pi_n->getSecondaryNameC(),"#")))
 								pi_n->setCurrentName(pi_n->getSecondaryNameC()); // Item identified! -- by Magius(CHE) 				}
 						}
