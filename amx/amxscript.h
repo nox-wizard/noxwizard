@@ -73,10 +73,10 @@ public:
 class AmxFunction {
 private:
 	
-	static AmxProgram amxProg;
+	static AmxProgram amxProg; //!< used for amx API 
 	
-	std::string funcName;
-	int function;
+	std::string funcName; //!< function name
+	int function; //function index
 
 public:
 
