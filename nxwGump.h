@@ -26,6 +26,11 @@ class nxwGump
 	typedef map<GUMPID, std::string >		CALLBACKMAP;
 	typedef CALLBACKMAP::iterator			CALLBACKMAPIT;
 
+	/*
+	damn windows stl ports cannot handle this (nested typedef prob)
+
+	so ftb we''ll do a var declaration like map< int, map< int, map< int, std::string > > > responsemap;
+	
 	typedef map<PROPERTY, std::string >		PROPERTYMAP;
 	typedef PROPERTYMAP::iterator			PROPERTYMAPIT;
 
@@ -37,6 +42,7 @@ class nxwGump
 
 	typedef map< SERIAL, GUMPSUBJECTPROPERTYMAP >	RESPONSEMAP;
 	typedef RESPONSEMAP::iterator			RESPONSEMAPIT;
+	*/
 
 	private:
 		static GUMPMAP	gumpMap;
