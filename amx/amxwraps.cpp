@@ -3104,15 +3104,15 @@ NATIVE(_chr_speech)
 
 	switch( params[1] )
 	{
-		case NXW_SPEECH_TALK : pc2->talk(DEREF_P_CHAR(pc), g_cAmxPrintBuffer, (char) params[5]);
+		case NXW_SPEECH_TALK : pc2->talk( pc->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
 			break;
 		case NXW_SPEECH_TALK_ALL : pc2->talkAll( g_cAmxPrintBuffer, (char) params[5]);
 			break;
-		case NXW_SPEECH_TALK_RUNIC : pc2->talkRunic(DEREF_P_CHAR(pc), g_cAmxPrintBuffer, (char) params[5]);
+		case NXW_SPEECH_TALK_RUNIC : pc2->talkRunic( pc->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
 			break;
 		case NXW_SPEECH_TALK_ALL_RUNIC : pc2->talkAllRunic( g_cAmxPrintBuffer, (char) params[5]);
 			break;
-		case NXW_SPEECH_EMOTE : pc2->emote(DEREF_P_CHAR(pc), g_cAmxPrintBuffer,(char) params[5]);
+		case NXW_SPEECH_EMOTE : pc2->emote( pc->getSocket(), g_cAmxPrintBuffer,(char) params[5]);
 			break;
 		case NXW_SPEECH_EMOTE_ALL : pc2->emoteall( g_cAmxPrintBuffer, (char) params[5]);
 			break;
