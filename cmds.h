@@ -18,13 +18,27 @@
 #include "common_libs.h"
 #include "nxwcommn.h"		//for std classes
 
+
+
 class cCommand;
+
+class cCallCommand;
+
+
 
 typedef cCommand* P_COMMAND;
 
+typedef cCallCommand* P_CALLCOMMAND;
+
 typedef std::map<string, P_COMMAND> CMDMAP;
 
+typedef std::map<SERIAL, P_CALLCOMMAND> CALLCMDMAP;
+
+
+
 static SERIAL CmdNextSerial=0;
+
+
 
 //brief Declaration of cCommand Class
 
@@ -44,20 +58,26 @@ public:
 
 
 //brief Declaration of cCallCommand Class
-//a cCallCommand object is created every time a command is executed. 
-//and destroyed when the command has finished
-//All parameters given by the char who call the command goes here.
-
-//stonedz :Maybe, if Small supports it, we can use an array dynamically allocated(?).
+//a cCallCommand object is created every time a command is executed and goes in CALLCMDMAP. 
+//it is destroyed when the command has finished
+//All parameters given by the char who call the command goes in this obj.
  
 
 class cCallCommand {
 
 public:
 
-	cCallCommand(SERIAL cmdSerial);
+	cCallCommand(std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8);
 
-	SERIAL CmdNextSerial;
+	std::string param1;
+	std::string param2;
+	std::string param3;
+	std::string param4;
+	std::string param5;
+	std::string param6;
+	std::string param7;
+	std::string param8;
+
 
 }
  
