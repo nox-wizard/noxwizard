@@ -160,6 +160,7 @@ public:
 	static void cHouses::addHouse(P_HOUSE newHouse );
 	static void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi);
 	static std::map< SERIAL, P_HOUSE > cHouses::findOwnedHouses(SERIAL owner);
+	static void cHouses::archive();
 
 };
 

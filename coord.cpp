@@ -155,7 +155,7 @@ unsigned char cCoord::direction( const cCoord &dest ) const
 	else if ((xdif<0)&&(ydif>0)) dir=5;
 	else if ((xdif<0)&&(ydif==0)) dir=6;
 	else if ((xdif<0)&&(ydif<0)) dir=7;
-	else dir=-1;
+	else dir=255;
 
 	return dir;
 }
@@ -914,8 +914,8 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				//Console::instance()->send( QString( "ty:%2,cy:%3\n" ).arg( target.y ).arg( (*pit).y ) );
 				//Console::instance()->send( QString( "z1_up:%1,z2_up:%2,z1_down:%3,z2_down:%4\n" ).arg( z1_up ).arg( z2_up ).arg( z1_down ).arg( z2_down ) );
 
-				zmax = (SI08)qmax( ceil( (SI08)z1_up ), ceil( (SI08)z2_up ) );
-				zmin = (SI08)qmin( floor( (SI08)z1_down ), floor( (SI08)z2_down ) );
+				zmax = (SI08)qmax( ceil( z1_up ), ceil( z2_up ) );
+				zmin = (SI08)qmin( floor( z1_down ), floor( z2_down ) );
 
 				//Console::instance()->send( QString( "y:zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );
 
@@ -1154,12 +1154,12 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				if( z2_up == -300 )
 				{
 					zmin = (SI08)floor( z1_down );
-					zmax = (SI08)ceil( (SI08)z1_up );
+					zmax = (SI08)ceil( z1_up );
 				}
 				else
 				{
-					zmin = (SI08)qmin( floor( (SI08)z1_down ), floor( (SI08)z2_down ) );
-					zmax = (SI08)qmax( ceil( (SI08)z1_up ), ceil( (SI08) z2_up ) );
+					zmin = (SI08)qmin( floor( z1_down ), floor( z2_down ) );
+					zmax = (SI08)qmax( ceil( z1_up ), ceil(  z2_up ) );
 				}
 
 				//Console::instance()->send( QString( "zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );

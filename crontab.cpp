@@ -62,6 +62,7 @@
 #include "chars.h"
 #include "items.h"
 #include "nox-wizard.h"
+#include "house.h"
 
 
 
@@ -731,6 +732,7 @@ static void exec_backup (char *dummy)
 	Guildz.archive();
 	prison::archive();
 	Books::archive();
+	cHouses::archive();
 	// exec_isave( NULL );
 }
 

@@ -1069,9 +1069,15 @@ bool cHouse::isInsideHouse(Location where)
 
 bool cHouse::isInsideHouse(int x, int y, int z)
 {
-	if ( ! inHouse(x, y) )
+	SI32 x1,x2,y1,y2;
+	getCorners( x1, x2, y1, y2 );
+	P_ITEM iHouse = pointers::findItemBySerial(serial);
+	if ( !ISVALIDPI(iHouse) )
 		return false;
-	// ToDo: Test if the item is really inside the house(meaning: under a roof)
+	Location houseLoc=iHouse->getPosition();
+	if (( x >= houseLoc.x+x1 ) && ( x <= houseLoc.x+x2))
+		if (( y >= houseLoc.y+y1 ) && ( y <= houseLoc.y+y2))
+			return true;
 	return false;
 }
 
@@ -2112,4 +2118,38 @@ void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi)
 	}
 }
 
+void cHouses::archive()
+{
+	std::string saveFileName( SrvParms->savePath + SrvParms->houseWorldfile + SrvParms->worldfileExtension );
+	std::string timeNow( getNoXDate() );
+	for( SI32 i = timeNow.length() - 1; i >= 0; --i )
+		switch( timeNow[i] )
+		{
+			case '/' :
+			case ' ' :
+			case ':' :
+				timeNow[i]= '-';
+		}
+	std::string archiveFileName( SrvParms->archivePath + SrvParms->houseWorldfile + timeNow + SrvParms->worldfileExtension );
+
+	char tempBuf[60000]; // copy files in 60k chunks
+	ifstream oldSave;
+	ofstream archiveSave;
+	oldSave.open(saveFileName.c_str(), ios::binary );
+	archiveSave.open(archiveFileName.c_str(), ios::binary);
+	if ( ! archiveSave.is_open() || ! oldSave.is_open() )
+	{
+		LogWarning("Could not copy file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		return;
+	}
+	while ( ! oldSave.eof() )
+	{
+		int byteCount;
+		oldSave.read(&tempBuf[0], sizeof(tempBuf)); 
+		byteCount = oldSave.gcount();
+		archiveSave.write(&tempBuf[0], byteCount);
+	}
+	
+	InfoOut("Copied file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+}
 
