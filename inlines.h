@@ -110,6 +110,18 @@ inline bool isItemSerial(long ser) {return (/*ser >= 0 && */ser >= 0x40000000);}
 
 #define SETSOCK(A) g_nCurrentSocket = A;
 
+inline std::string toString(int value)
+{
+	char s[20];
+	return itoa(value, s, 10);
+}
+
+inline std::string toString(double value)
+{
+	char s[20];
+	return _gcvt(value, sizeof(s), s);
+}
+
 
 
 #endif //__INLINES_H__
