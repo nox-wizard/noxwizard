@@ -121,30 +121,37 @@ namespace Organisation
 				LogError("Organisation::Guild::Disband - Called using invalid char serial %d\n", adminSerial );
 				return false;
 			}
+			return true;
 		}
 
 		LOGICAL EnlistRecruit( SERIAL guildSerial, SERIAL recruiterSerial, SERIAL recruiteeSerial )
 		{
+			return true;
 		}
 
 		LOGICAL ResignAsRecruit( SERIAL guildSerial, SERIAL recruiteeSerial )
 		{
+			return true;
 		}
 
 		LOGICAL FireRecruit( SERIAL guildSerial, SERIAL adminSerial, SERIAL recruiteeSerial, std::string message )
 		{
+			return true;
 		}
 
 		LOGICAL EnlistMember( SERIAL adminSerial, SERIAL recruitSerial, std::string message )
 		{
+			return true;
 		}
 
 		LOGICAL ResignAsMember( SERIAL memberSerial, std::string message )
 		{
+			return true;
 		}
 
 		LOGICAL FireMember( SERIAL guildSerial, SERIAL adminSerial, SERIAL memberSerial, std::string message )
 		{
+			return true;
 		}
 	}
 }
