@@ -798,13 +798,15 @@ const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
 NATIVE2(_getCharProperty)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	cell *subsubProp;
+  	amx_GetAddr(amx,params[5],&subsubProp);
 
 	if ( ISVALIDPC( pc ) )
 	{
 		VAR_TYPE tp = getPropertyType( params[2] );
 		switch( tp ) {
 			case T_INT: {
-				int p = getCharIntProperty( pc, params[2], params[3], params[4]);
+				int p = getCharIntProperty( pc, params[2], params[3], *subsubProp);
 				cell i = p;
 				return i;
 			}
@@ -864,30 +866,31 @@ NATIVE2(_setCharProperty)
 		return INVALID;
 
 	cell *cptr;
+	cell *subsubProp;
 	amx_GetAddr(amx,params[4],&cptr);
-
+	amx_GetAddr(amx,params[5],&subsubProp);
 	VAR_TYPE tp = getPropertyType(params[2]);
-
+	
 	switch( tp ) {
 
 		case T_INT : {
 			int p = *cptr;
-			setCharIntProperty( pc, params[2], params[3], params[5], p );
+			setCharIntProperty( pc, params[2], params[3], *subsubProp, p );
 			return p;
 		}
 		case T_BOOL : {
 			bool p = *cptr ? true : false;
-			setCharBoolProperty( pc, params[2], params[3], params[5], p );
+			setCharBoolProperty( pc, params[2], params[3], *subsubProp, p );
 			return p;
 		}
 		case T_SHORT : {
 			short p = static_cast<short>(*cptr & 0xFFFF);
-			setCharShortProperty( pc, params[2], params[3], params[5], p );
+			setCharShortProperty( pc, params[2], params[3], *subsubProp, p );
 			return p;
 		}
 		case T_CHAR : {
 			char p = static_cast<char>(*cptr & 0xFF);
-			setCharCharProperty( pc, params[2], params[3], params[5], p );
+			setCharCharProperty( pc, params[2], params[3], *subsubProp, p );
 			return p;
 		}
 		case T_STRING : {
