@@ -61,7 +61,7 @@ private:
 
 public:
 	
-	cGmPagesMap();
+	cGmpagesMap();
 	P_GMPAGE addPage(P_GMPAGE page);
 	P_GMPAGE findPage(SERIAL serial);
 	P_GMPAGE findPage(SERIAL serial, UI08 page_num);

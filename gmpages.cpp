@@ -88,7 +88,7 @@ P_GMPAGE cGmpage::setPrevPage (P_GMPAGE new_prev_page){
 }
 
 
-cGmpagesMap::cGmPagesMap() {
+cGmpagesMap::cGmpagesMap() {
 
 
 }
