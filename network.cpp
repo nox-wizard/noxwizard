@@ -64,6 +64,7 @@ cNetwork	*Network;
 #define PACKET_TIPS_REQUEST      	0xB6
 #define PACKET_PROFILE_REQUEST		0xB8
 #define PACKET_UOMESSENGER		0xBB
+#define PACKET_MISC_REQ			0xBF
 #define PACKET_CLIENT_VERSION		0xBD
 
 static int m_packetLen[256] =
@@ -339,20 +340,19 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		{
 			LogOut( socket );
 
-			unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
+			UI08 removeitem[5]={ 0x1D, 0x00, };
 
-			removeitem[0]= 0x1D;
-			removeitem[1]= pc->getSerial().ser1;
-			removeitem[2]= pc->getSerial().ser2;
-			removeitem[3]= pc->getSerial().ser3;
-			removeitem[4]= pc->getSerial().ser4;
+			LongToCharPtr(pc->getSerial32(), removeitem +1);
 
 			for ( i = 0; i < now; ++i )
 			{
 				P_CHAR pi= MAKE_CHAR_REF( currchar[i] );
 				if (ISVALIDPC(pi))
 					if( pc != pi && char_inVisRange( pc, pi ) && perm[ i ] )
+					{
 						Xsend(i, removeitem, 5);
+//AoS/						Network->FlushBuffer(i);
+					}
 			}
 		}
 
@@ -539,30 +539,34 @@ void cNetwork::Login2(int s)
 {
 	const char msgLogin[] = "Client [%s] connected [first] using Account '%s'.\n";
 
-	unsigned long int i, tlen;
+	UI16 i, tlen;
 	unsigned long int ip;
-	unsigned char newlist1[7]="\xA8\x01\x23\xFF\x00\x01";
-	unsigned char newlist2[41]="\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x12\x01\x7F\x00\x00\x01";
+	UI08 newlist1[6]={ 0xA8, 0x00, };
+	UI08 newlist2[40]={ 0x00, };
 
 	InfoOut( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 	if (SrvParms->server_log)
 		ServerLog.Write( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 
 	tlen = 6 + (servcount*40);
-	ShortToCharPtr( (UI16)tlen, newlist1 +1);
+	ShortToCharPtr(tlen, newlist1 +1);
+	newlist1[3]=0xFF;			// System Info flag
 	ShortToCharPtr(servcount, newlist1 +4);
 	Xsend(s, newlist1, 6);
 
 	for( i = 0; i < servcount; ++i )
 	{
-		ShortToCharPtr( (UI16)i+1, newlist2);
+		ShortToCharPtr(i+1, newlist2);
 
 		strcpy((char*)&newlist2[2], serv[i][0]);
+		newlist2[34]=0x12;		// %Full
+		newlist2[35]=0x01;		// Timezone
 		ip=inet_addr(serv[i][1]); 	  // Host-Order
 		ip = htonl(ip);			  // swap if needs
 		LongToCharPtr(ip, newlist2 +36);  //Network order ...
 		Xsend(s, newlist2, 40);
 	}
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -610,11 +614,9 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	LongToCharPtr(ip, login03 +1);
 	ShortToCharPtr(port, login03 +5);
 	srand(ip+acctno[s]+now+uiCurrentTime); // Perform randomize
-	login03[7]='a';			// New Server Key!
-	login03[8]='K';
-	login03[9]='E';
-	login03[10]='Y';
+	LongToCharPtr( calcserial('a', 'K', 'E', 'Y'), login03 +7);	// New Server Key!
 	Xsend(s, login03, 11);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void cNetwork::ActivateFeatures(NXWSOCKET s)
@@ -641,18 +643,18 @@ void cNetwork::ActivateFeatures(NXWSOCKET s)
 
 	ShortToCharPtr(features, feat+1);
 	Xsend(s, feat, 3);
-//	FlushBuffer(s);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void cNetwork::GoodAuth(int s)
 {
-	UI32 j, tlen;
+	UI32 j;
+	UI16 tlen;
 	UI08 login04a[4]={ 0xA9, 0x09, 0x24, 0x02 }, n = startcount;
 
 	tlen=4+(5*60)+1+(startcount*63) +4;
 
-	login04a[1]=tlen>>8;
-	login04a[2]=tlen%256;
+	ShortToCharPtr(tlen, login04a +1);
 
 	Accounts->OnLogin(acctno[s],s);
 
@@ -693,6 +695,7 @@ void cNetwork::GoodAuth(int s)
 
 	for (i=0;i<startcount;i++)
 	{
+		memset(login04d, 0, 63);
 		login04d[0]=i;
 		for (j=0;j<=strlen(start[i][0]);j++) login04d[j+1]=start[i][0][j];
 		for (j=0;j<=strlen(start[i][1]);j++) login04d[j+32]=start[i][1][j];
@@ -704,16 +707,16 @@ void cNetwork::GoodAuth(int s)
 	if(server_data.feature == 2) 	// LBR: NPC Popup Menu   (not currently impl.)
 		tail[3] = 0x08;
 	Xsend(s, tail, 4);
-//	FlushBuffer(s);
+//AoS/	Network->FlushBuffer(s);
 }
 
 void cNetwork::CharList(int s) // Gameserver login and character listing
 {
 
-	signed long int i;
-	unsigned char noaccount[2]={0x82, 0x00};
-	unsigned char nopass[2]={0x82, 0x03};
-	unsigned char acctblock[2]={0x82, 0x02};
+	SI32 i;
+	UI08 noaccount[2]={0x82, 0x00};
+	UI08 nopass[2]={0x82, 0x03};
+	UI08 acctblock[2]={0x82, 0x02};
 
 	acctno[s]=-1;
 
@@ -729,14 +732,17 @@ void cNetwork::CharList(int s) // Gameserver login and character listing
 		case BAD_PASSWORD:
 			Xsend(s, nopass, 2);
 			currchar[s] = INVALID;
+//AoS/			Network->FlushBuffer(s);
 			return;
 		case ACCOUNT_BANNED:
 			Xsend(s, acctblock, 2);
 			currchar[s] = INVALID;
+//AoS/			Network->FlushBuffer(s);
 			return;
 		case LOGIN_NOT_FOUND:
 			Xsend(s, noaccount, 2);
 			currchar[s] = INVALID;
+//AoS/			Network->FlushBuffer(s);
 			return;
 		}
 	}
@@ -792,6 +798,7 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 				if ( nSer == currchar[idx] ) {
 					UI08 msg2[2]={ 0x53, 0x05 };
 					Xsend(s, msg2, 2);
+//AoS/					Network->FlushBuffer(s);
 					Disconnect(s);
 					Disconnect(idx);
 					return;
@@ -811,10 +818,10 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 		{
 			UI08 msg[2]={ 0x53, 0x05 };
 			Xsend(s, msg, 2);
+//AoS/			Network->FlushBuffer(s);
 			Disconnect(s);
 		}
 	}
-
 }
 
 void cNetwork::enterchar(int s)
@@ -823,13 +830,13 @@ void cNetwork::enterchar(int s)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	unsigned char startup[38]="\x1B\x00\x05\xA8\x90\x00\x00\x00\x00\x01\x90\x06\x08\x06\x49\x00\x0A\x04\x00\x00\x00\x7F\x00\x00\x00\x00\x00\x07\x80\x09\x60\x00\x00\x00\x00\x00\x00";
-	unsigned char world[7]="\xBF\x00\x06\x00\x08\x00";
-	unsigned char modeset[6]="\x72\x00\x00\x32\x00";
-	unsigned char techstuff[21]="\x69\x00\x05\x01\x00\x69\x00\x05\x02\x00\x69\x00\x05\x03\x00\x55\x5B\x0C\x13\x03";
+	UI08 startup[38]="\x1B\x00\x05\xA8\x90\x00\x00\x00\x00\x01\x90\x06\x08\x06\x49\x00\x0A\x04\x00\x00\x00\x7F\x00\x00\x00\x00\x00\x07\x80\x09\x60\x00\x00\x00\x00\x00\x00";
+//	UI08 techstuff[16]="\x69\x00\x05\x01\x00\x69\x00\x05\x02\x00\x69\x00\x05\x03\x00";
+	UI08 world[6]={0xBF, 0x00, 0x06, 0x00, 0x08, 0x00};
+	UI08 modeset[5]={0x72, 0x00, 0x00, 0x32, 0x00};
+	UI08 LoginOK[1] = {0x55}, TimeZ[4]={0x5B, 0x0C, 0x13, 0x03};
 
 	if (MapTileHeight<300) world[5]=0x02;
-	Xsend(s, world, 6);
 
 	cPacketFeatures features;
 	features.feature= FEATURE_T2A | FEATURE_LBR;
@@ -840,34 +847,42 @@ void cNetwork::enterchar(int s)
 
 	Location charpos= pc->getPosition();
 
-	startup[1] = pc->getSerial().ser1;
-	startup[2] = pc->getSerial().ser2;
-	startup[3] = pc->getSerial().ser3;
-	startup[4] = pc->getSerial().ser4;
-	startup[9] = pc->id1;
-	startup[10]= pc->id2;
-	startup[11]= charpos.x >> 8;
-	startup[12]= charpos.x % 256;
-	startup[13]= charpos.y >> 8;
-	startup[14]= charpos.y % 256;
+	LongToCharPtr(pc->getSerial32(), startup +1);
+	ShortToCharPtr(pc->GetBodyType(), startup +9);
+	ShortToCharPtr(charpos.x, startup +11);
+	ShortToCharPtr(charpos.y, startup +13);
 	startup[16]= charpos.z;
 	startup[17]= pc->dir;
 	startup[28]= 0;
 
 	if(pc->poisoned) startup[28]=0x04; else startup[28]=0x00; //AntiChrist -- thnx to SpaceDog
 
+	Xsend(s, world, 6);
+//AoS/	Network->FlushBuffer(s);
+
 	Xsend(s, startup, 37);
+//AoS/	Network->FlushBuffer(s);
+
+	pc->war=0;
 	Xsend(s, modeset, 5);
-	Xsend(s, techstuff, 20);
+//AoS/	Network->FlushBuffer(s);
+
+//	Xsend(s, techstuff, 16);
+//AoS/	Network->FlushBuffer(s);
+
+	Xsend(s, LoginOK, 1);
+//AoS/	Network->FlushBuffer(s);
+
+	Xsend(s, TimeZ, 4);
+//AoS/	Network->FlushBuffer(s);
 
 	pc->spiritspeaktimer=uiCurrentTime;
 	pc->begging_timer=uiCurrentTime;
 
-	pc->stealth=INVALID;//AntiChrist
+	pc->stealth=INVALID;
 	if (!(pc->IsGMorCounselor())) 
-		pc->hidden=0;//AntiChrist
+		pc->hidden=UNHIDDEN;
 
-	pc->war=0;
 	pc->wresmove=0;	//Luxor
 	pc->teleport();
 
@@ -1029,9 +1044,8 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 
 				P_ITEM p_ci=si.getItem();
 				if (!ISVALIDPI(p_ci))
-					if (p_ci->type==7 && (
-							(p_ci->more1==p_multi->getSerial().ser1) && (p_ci->more2==p_multi->getSerial().ser2) &&
-							(p_ci->more3==p_multi->getSerial().ser3) && (p_ci->more4==p_multi->getSerial().ser4)))
+					if (p_ci->type==ITYPE_KEY &&
+						(p_multi->getSerial32() == calcserial(p_ci->more1, p_ci->more2, p_ci->more3, p_ci->more4)) )
 					{//a key to this multi
 						valid=1;//Log 'em out now!
 						break;
@@ -1506,7 +1520,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			}
 			int readstat ;
 
-            if (length==PACKET_LEN_DYNAMIC)
+			if (length==PACKET_LEN_DYNAMIC)
 			{
 				if ((readstat = Receive(s, 2, 1)) > 0)
 				{
@@ -1530,9 +1544,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
         		    // LB, client activity-timestamp !!! to detect client crashes, ip changes etc and disconnect in that case
         		    // 0x73 (idle packet) also counts towards client idle time
 
-//				cClient cli(s);
-//				NXWCLIENT ps = &cli;
-
 				AMXEXECSV(s,AMXT_NETRCV, packet, AMX_BEFORE);
 
 				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;	
@@ -1542,10 +1553,11 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				case 0x04:
 					// Expermintal for God client
 					{
-						char packet[] = "\x2B\x01";
+						UI08 packet[2] = {0x2B, 0x01};
 						if (pc_currchar->IsGM()) 
 						{
 							Xsend(s, packet, 2);
+//AoS/							Network->FlushBuffer(s);
 							LogMessage("%s connected in with God Client!\n", pc_currchar->getCurrentNameC());
 						} 
 						else 
@@ -1599,6 +1611,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_PING:
 					Xsend(s, buffer[s], 2);
+//AoS/					Network->FlushBuffer(s);
 					break;
 
 				case PACKET_RESYNC_REQUEST:
@@ -1618,7 +1631,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				// Thx a lot to Beosil for laying out the basics of the new structure of that packet since client 2.0.7
 				// Thx a lot to Punt for the implementation of it (4'th Feb 2001)
-        		// Fixed a few erratas in that initial packet interpretation (LB 14-Feb 2001)
+				// Fixed a few erratas in that initial packet interpretation (LB 14-Feb 2001)
 
 				case PACKET_UNICODE_TALKREQUEST:
 					if( pc_currchar!=NULL ) {
@@ -1719,6 +1732,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						pc_currchar->war=buffer[s][1];
 						pc_currchar->targserial=INVALID;
 						Xsend(s, buffer[s], 5);
+//AoS/						Network->FlushBuffer(s);
+
 						if (pc_currchar->dead && pc_currchar->war) // Invisible ghost, resend.
 							pc_currchar->teleport();
 
@@ -1797,7 +1812,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					}
 					else
 					{
-						if ((buffer[s][2]=='\x05')&&(buffer[s][3]=='\x43'))  // Open spell book
+						if (ShortFromCharPtr(buffer[s] +2) == 0x0543)  // Open spell book
 						{
 							ps->sendSpellBook(NULL);
 						}
@@ -1899,7 +1914,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_REQUEST_TIP:
-					tips(s, (buffer[s][1]<<8)+buffer[s][2]+1);
+					tips(s, ShortFromCharPtr(buffer[s] +1) +1);
 					break;
 
 				case PACKET_ATTACK_REQUEST:
@@ -1908,12 +1923,12 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_GUMPMENU_SELECT:
 					gumps::Button(	s,
-							(buffer[s][11]<<24)| (buffer[s][12]<<16) | (buffer[s][13]<<8) | (buffer[s][14]),
+							LongFromCharPtr(buffer[s] +11),
 							buffer[s][3],
 							buffer[s][4],
 							buffer[s][5],
 							buffer[s][6],
-							(buffer[s][7]<<24)| (buffer[s][8]<<16) | (buffer[s][9]<<8) | (buffer[s][10]),
+							LongFromCharPtr(buffer[s] +7),
 							buffer[s][22]);
 					break;
 
@@ -1956,43 +1971,40 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+1);
 
 						int len = 0;
-						char packet[4000]; packet[0] = '\0';
+						UI08 packet[4000]; packet[0] = '\0';
 						if ( ISVALIDPC(pc_currchar) && pc_currchar->IsGM()) {
 							if (ISVALIDPC(pc) ) 
-								sprintf(packet, "char n°%d serial : %x", DEREF_P_CHAR(pc), pc->getSerial32());
+								sprintf((char *)packet, "char n°%d serial : %x", DEREF_P_CHAR(pc), pc->getSerial32());
 							if (ISVALIDPI(pi) ) 
-								sprintf(packet, "item n°%d serial : %x", DEREF_P_ITEM(pi), pi->getSerial32());
+								sprintf((char *)packet, "item n°%d serial : %x", DEREF_P_ITEM(pi), pi->getSerial32());
 						} 
 						else 
 						{
 							if (ISVALIDPC(pc)) 
-								charGetPopUpHelp(packet, pc);
+								charGetPopUpHelp((char *)packet, pc);
 							if (ISVALIDPI(pi)) 
-								itemGetPopUpHelp(packet, pi);
+								itemGetPopUpHelp((char *)packet, pi);
 						}
 
 						if ( !ISVALIDPC(pc) && !ISVALIDPI(pi)) 
 							break;
 						
 						if (packet[0]=='\0') break;
-						char2wchar(packet);
-						packet[0] = '\xb7';
-						packet[3] = buffer[s][1];
-						packet[4] = buffer[s][2];
-						packet[5] = buffer[s][3];
-						packet[6] = buffer[s][4];
+						char2wchar((char *)packet);
+						packet[0] = 0xB7;
+						LongToCharPtr( LongFromCharPtr(buffer[s] +1), packet +3);
 						int p = 0;
 						while (p<600) {
-							packet[7+p] = Unicode::temp[p];
-							packet[8+p] = Unicode::temp[p+1];
+							packet[7+p] = (UI08) Unicode::temp[p];
+							packet[8+p] = (UI08) Unicode::temp[p+1];
 							if ((Unicode::temp[p]=='\0')&&(Unicode::temp[p+1]=='\0')) break;
 							p += 2;
 						}
 						p += 2;
 						len = 7+p;
-						packet[1] = len >> 8;
-						packet[2] = len & 0xff;
+						ShortToCharPtr(len, packet +1);
 						Xsend(s, packet, len);
+//AoS/						Network->FlushBuffer(s);
 					}
 					break;
 
@@ -2001,7 +2013,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						cPacketCharProfileReq p;
 						p.receive( ps );
 						profileStuff( ps, p );
-
 					}
 					break;
 
@@ -2026,7 +2037,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					{
 						if ( strcmp( temp3, SUPPORTED_CLIENT) ) // check if client version matches
 						{
-                       		Disconnect(s);
+							Disconnect(s);
 							break;
 						}
 						break;
@@ -2043,14 +2054,14 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					}
            			break;
 
-				case 0xbf:
+				case PACKET_MISC_REQ:
 
 				// can't beleive this mega multipurpose packet isn't used :)
 				// thought it's about time to change this , LB 30-March 2001
 				// note: bf packet is used server and client side, here are only the client side ones
                 		// I have encountered
 
-					subcommand = static_cast<int> ( (static_cast<int> (buffer[s][3]) << 8 ) + buffer[s][4] );
+					subcommand = ShortFromCharPtr(buffer[s] +3);
 
 				// please don't remove the // unknowns ... want to have them as dokumentation
 					switch (subcommand)
@@ -2059,11 +2070,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				   		case 6:
 							PartySystem::processInputPacket(ps);
-
-							// .... party system implemation (call) goes here :)
-							 // ....
-							 // ....
-							 break;
+							break;
 
 						case 9:	//Luxor: Wrestling Disarm Macro support
 							pc_currchar->setWresMove(WRESDISARM);
@@ -2075,8 +2082,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						case 11: // client language, might be used for server localisation
 
 							// please no strcpy or memcpy optimization here, because the input ain't 0-termianted and memcpy might be overkill
-						   	client_lang[0]=buffer[s][5];
-                       		client_lang[1]=buffer[s][6];
+							client_lang[0]=buffer[s][5];
+							client_lang[1]=buffer[s][6];
 							client_lang[2]=buffer[s][7];
 							client_lang[3]=0;
 							// do dometihng with language information from client
@@ -2240,3 +2247,5 @@ NetThread::NetThread(int s)
     int n = tthreads::startTThread(startNetThread, this);
     InfoOut("Starting new network thread [%d]\n", n);
 }
+
+
