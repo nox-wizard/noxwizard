@@ -385,7 +385,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 			if (pi->amount>1)
 			{
-				SI16 amount = ShortFromCharPtr(buffer[s] +5);
+				UI16 amount = ShortFromCharPtr(buffer[s] +5);
 				if (amount > pi->amount)
 					amount = pi->amount;
 				else if (amount < pi->amount)

@@ -3247,5 +3247,6 @@ void CWorldMain::realworldsave ()
 
 	fprintf(iWsc, "EOF\n\n");
 	fclose(iWsc); iWsc=NULL;
+	Spawns->resetSpawnTime();
 }
 

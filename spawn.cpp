@@ -501,6 +501,15 @@ void cSpawns::removeSpawnDinamic( P_CHAR pc )
 
 }
 
+void cSpawns::resetSpawnTime()
+{
+	SPAWN_DINAMIC_DB::iterator iter_din( this->dinamic.begin() );
+	for( ; iter_din!=this->dinamic.end(); iter_din++ ) {
+		iter_din->second.nextspawn=uiCurrentTime+(5*MY_CLOCKS_PER_SEC);;
+	}
+
+}
+
 cSpawnDinamic *cSpawns::getDynamicSpawn(SERIAL spawnerSerial)
 {
 	if( spawnerSerial !=INVALID ) 
@@ -593,7 +602,7 @@ void cSpawnDinamic::doSpawn()
 		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
 		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
 		UI16 maxSpawn=RandomNum(min,max);
-		if ( spawn->amount - this->current - maxSpawn < 0 )
+		if ( (SI16)(spawn->amount - this->current - maxSpawn) < 0 )
 			maxSpawn=spawn->amount - this->current;
 		for ( int i = 0; i < maxSpawn;++i)
 		{
@@ -622,7 +631,7 @@ void cSpawnDinamic::doSpawn()
 		UI16 maxSpawn=RandomNum(min,max);
 		if ( maxSpawn == 0 )
 			maxSpawn = 1;
-		if ( spawn->amount - this->current - maxSpawn < 0 )
+		if ( (SI16)(spawn->amount - this->current - maxSpawn) < 0 )
 			maxSpawn=spawn->amount - this->current;
 		for ( int i = 0; i < maxSpawn;++i)
 		{
@@ -665,10 +674,17 @@ void cSpawnDinamic::remove( SERIAL serial )
 	
 	if( isCharSerial( serial ) ) {
 		SERIAL_SET::iterator iter( this->npcs_spawned.find( serial ) );
-		if( iter!=this->npcs_spawned.end() ) {
+		if( iter!=this->npcs_spawned.end() ) 
+		{
 			this->npcs_spawned.erase( iter );
 			if( current>0 )
 				current--;
+			P_ITEM spawnerItem=pointers::findItemBySerial(this->item);
+			if ( ISVALIDPI(spawnerItem))
+			{
+				spawnerItem->amount2=current;
+			}
+
 		}
 	}
 	else {
@@ -677,6 +693,11 @@ void cSpawnDinamic::remove( SERIAL serial )
 			this->items_spawned.erase( iter );
 			if( current>0 )
 				current--;
+			P_ITEM spawnerItem=pointers::findItemBySerial(this->item);
+			if ( ISVALIDPI(spawnerItem))
+			{
+				spawnerItem->amount2=current;
+			}
 		}
 	}
 

@@ -2254,7 +2254,11 @@ void cChar::Delete()
 		npcCount-=1;
 	if ( npcCount < 0 )
 		npcCount = 0;
-
+	if ( this->getSpawnSerial() > 0 )
+	{
+		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSpawnSerial());
+		spawn->remove(this->getSerial32());
+	}
     NxwSocketWrapper sc;
     sc.fillOnline( this );
 	for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
@@ -2262,6 +2266,7 @@ void cChar::Delete()
 		if ( ps != NULL )
 			ps->sendRemoveObject( static_cast<P_OBJECT>(this) );
 	}
+
 	archive::character::Delete( this );
 }
 

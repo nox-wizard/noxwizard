@@ -125,6 +125,8 @@ public:
 	void removeSpawnDinamic( P_CHAR pc );
 	cSpawnDinamic *getDynamicSpawn(SERIAL spawnerSerial);
 	cSpawnScripted *getScriptedSpawn(SERIAL spawnerSerial);
+	void resetSpawnTime();
+
 
 };
 
