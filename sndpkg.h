@@ -29,11 +29,11 @@ void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt);
 void SndRemoveitem(int serial);
 void SndShopgumpopen(NXWSOCKET  s, int serial);
 
-void soundeffect(int s, unsigned char a, unsigned char b);
+void soundeffect(NXWSOCKET s, UI16 sound);
 	//!< Play sound effect for player
 void soundeffect3(P_ITEM pi, UI16 sound);
-void soundeffect4(int p, NXWSOCKET  s, unsigned char a, unsigned char b);
-void soundeffect5(NXWSOCKET  s, unsigned char a, unsigned char b);
+void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound);
+void soundeffect5(NXWSOCKET s, UI16 sound);
 void sysbroadcast(char *txt, ...);
 	//!< System broadcast in bold text
 void sysmessage(NXWSOCKET  s, const char *txt, ...);
@@ -105,6 +105,7 @@ void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 colo
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen);
 void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color);
 void SendDrawGamePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, UI08 unk1, UI16 color, UI08 flag, Location pos, UI16 unk2, UI08 dir, bool useDispZ = false); 
+void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn, Location pos, bool useDispZ = false);
 void impowncreate(NXWSOCKET s, P_CHAR pc, int z);
 	//!< socket, player to send
 void sendshopinfo(int s, int c, P_ITEM pi);

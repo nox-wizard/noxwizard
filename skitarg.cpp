@@ -618,7 +618,7 @@ void Skills::TreeTarget(NXWSOCKET s)
 	}
 
     pc->playAction( pc->isMounting() ? 0x1C : 0x0D );
-    soundeffect(s,0x01,0x3E);
+    soundeffect(s, 0x013E);
 
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
@@ -658,7 +658,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
     pc->IncreaseKarma(-2000); // Karma loss no lower than the -2 pier
 
     pc->playAction( pc->isMounting() ? 0x1A : 0x0b );
-    soundeffect(s,0x01,0x25);
+    soundeffect(s, 0x0125);
     if(!pc->checkSkill(MINING, 0, 800))
     {
         sysmessage(s,TRANSLATE("You sifted through the dirt and found nothing."));
@@ -667,7 +667,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 
     nFame = pc->GetFame();
     pc->playAction( pc->isMounting() ? 0x1A : 0x0b );
-    soundeffect(s,0x01,0x25);
+    soundeffect(s, 0x0125);
     int nRandnum=rand()%13;
     switch(nRandnum)
     {
@@ -1010,7 +1010,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
             {
                 if(item_inRange(pc,pi,3))
                 {
-                    soundeffect(s,0x01,0xDD);   // cooking sound
+                    soundeffect(s, 0x01DD);   // cooking sound
                     if (!pc->checkSkill(COOKING, 0, 1000))
                     {
                         piRaw->ReduceAmount(1+(rand() %(piRaw->amount)));
@@ -1424,15 +1424,14 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
 
     if (pi->magic!=4) // Ripper
     {
-        short int col1=pi->color1; //-Frazurbluu- added color retention for bandage cutting from cloth
-        short int col2=pi->color2;
+        UI16 color = (pi->color1<<8)|(pi->color2%256); //-Frazurbluu- added color retention for bandage cutting from cloth
 
         if (pi->IsCloth() && pi->IsCutCloth())
         {
             amt=pi->amount;  //-Frazurbluu- changed to reflect current OSI
-            soundeffect(s,0x02,0x48);
+            soundeffect(s, 0x0248);
             sysmessage(s,TRANSLATE("You cut some cloth into bandages, and put it in your backpack"));
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"clean bandage",0,0x0E21, (col1<<8)+col2,1,1);
+            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"clean bandage",0,0x0E21, color,1,1);
             VALIDATEPI(pcc);
             // need to set amount and weight and pileable, note: cannot set pilable while spawning item -Fraz-
             pcc->weight=10;
@@ -1452,8 +1451,8 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
                 amt=(pi->amount*40);//-Frazurbluu- changed to reflect current OSI
             else
                 amt=40; //Fixed by Luxor
-            soundeffect(s,0x02,0x48);
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"cut cloth",0,0x1766,(col1<<8)+col2,1,1);
+            soundeffect(s, 0x0248);
+            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"cut cloth",0,0x1766, color,1,1);
             VALIDATEPI(pcc);
 
             pcc->weight=10;
@@ -1468,8 +1467,8 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
         if( pi->IsHide() )
         {
             amt=pi->amount;
-            soundeffect(s,0x02,0x48);
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"leather piece",0,0x1067,(col1<<8)+col2,1,1);
+            soundeffect(s, 0x0248);
+            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"leather piece",0,0x1067, color,1,1);
             VALIDATEPI(pcc);
 
             pcc->weight=100;
@@ -2412,16 +2411,16 @@ class cTinkerCombine    // Combining tinkering items
 {
 protected:
     char* failtext;
-    short badsnd1;
-    short badsnd2;
+//    short badsnd1;
+//    short badsnd2;
+    short badsnd;
     short itembits;
     short minskill;
     short id2;
 public:
-    cTinkerCombine(short badsnd=0x51, char *failmsg=TRANSLATE("You break one of the parts."))
+    cTinkerCombine(short badsnd=0x0051, char *failmsg=TRANSLATE("You break one of the parts."))
     {
-        badsnd1=badsnd>>8;
-        badsnd2=badsnd&0x00FF;
+        this->badsnd=badsnd;
         failtext=failmsg;
         itembits=0;
         minskill=100;
@@ -2432,8 +2431,8 @@ public:
     virtual void failure(SOCK s)        {delonfail(s);playbad(s);failmsg(s);}
     */
     virtual void failmsg(NXWSOCKET s)         {sysmessage(s,failtext);}
-    virtual void playbad(NXWSOCKET s)         {soundeffect(s,static_cast<unsigned char>(badsnd1),static_cast<unsigned char>(badsnd2));}
-    virtual void playgood(NXWSOCKET s)        {soundeffect(s,0,0x2A);}
+    virtual void playbad(NXWSOCKET s)         {soundeffect(s, badsnd);}
+    virtual void playgood(NXWSOCKET s)        {soundeffect(s, 0x002A);}
     virtual void checkPartID(short id)  {;}
     virtual bool decide()               {return (itembits == 3) ? true : false;}
     virtual void createIt(NXWSOCKET s)        {;}

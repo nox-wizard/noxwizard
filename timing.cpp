@@ -398,7 +398,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 						if( pi->morey >= 0 && pi->morey < 25 )
 							if (pc->distFrom(pi)<=pi->morey)
 								if( (UI32)RandomNum(1,100) <= pi->morez )
-									soundeffect4(DEREF_P_ITEM(pi),ps->toInt(), pi->morex>>8, pi->morex%256);
+									soundeffect4(ps->toInt(), pi, pi->morex);
 						break;
 					case 117	:	// Boats
 						if( pi->type2 == 1 || pi->type2 == 2 )

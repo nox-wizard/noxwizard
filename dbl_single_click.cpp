@@ -1080,7 +1080,7 @@ void doubleclick(NXWCLIENT ps)
 				pc->playAction(0x0D);
 			else
 				pc->playAction(0x1D);
-			soundeffect(s, 0x01, 0x3E);
+			soundeffect(s, 0x013E);
 			itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
 			if (ISVALIDPI(itm)) {
 				itm->setCont(pc->getBackpack());	//Luxor

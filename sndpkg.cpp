@@ -114,11 +114,11 @@ void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It i
 void goldsfx(int s, int goldtotal)
 {
 	if (goldtotal==1) 
-		soundeffect(s, 0x00, 0x35);
+		soundeffect(s, 0x0035);
 	else if (goldtotal<6)
-		soundeffect(s, 0x00, 0x36);
+		soundeffect(s, 0x0036);
 	else 
-		soundeffect(s, 0x00, 0x37);
+		soundeffect(s, 0x0037);
 	return;
 }
 
@@ -148,15 +148,15 @@ void itemsfx(NXWSOCKET  s, short item)
 		goldsfx(s, 2);
 
 	else if( (item>=0x0F0F) && (item<=0x0F20) )	// Any gem stone (typically smaller)
-		soundeffect(s, 0x00, 0x32);
+		soundeffect(s, 0x0032);
 
 	else if( (item>=0x0F21) && (item<=0x0F30) )	// Any gem stone (typically larger)
-		soundeffect(s, 0x00, 0x34);
+		soundeffect(s, 0x0034);
 
 	else if( (item>=0x1BE3) && (item<=0x1BFA) )	// Any Ingot
-		soundeffect(s, 0x00, 0x33);
+		soundeffect(s, 0x0033);
 
-	soundeffect(s, 0x00, 0x42);					// play default item move sfx // 00 48
+	soundeffect(s, 0x0042);				// play default item move sfx // 00 48
 }
 
 /*!
@@ -327,22 +327,15 @@ void dosocketmidi(NXWSOCKET s)
 	}
 }
 
-void soundeffect(NXWSOCKET s, unsigned char a, unsigned char b) // Play sound effect for player
+void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
 	Location charpos= pc->getPosition();
-	UI16 sound = (a<<8)|(b%256);
 
-	UI08 sfx[12]={ 0x54, 0x00, };
+	charpos.z = 0;
 
-	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
-	ShortToCharPtr(sound, sfx +2);			// Sound model
-	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
-	ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
-	ShortToCharPtr(charpos.y, sfx +8);		//       Y
-	ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
@@ -353,30 +346,21 @@ void soundeffect(NXWSOCKET s, unsigned char a, unsigned char b) // Play sound ef
 		P_CHAR pc_i=ps_i->currChar();
 		if( ISVALIDPC(pc_i) )
 		{
-			Xsend(ps_i->toInt(), sfx, 12);
-//AoS/			Network->FlushBuffer(ps_i->toInt());
+			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, charpos);
 		}
 	}
 }
 
-void soundeffect5(NXWSOCKET  s, unsigned char a, unsigned char b)
+void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only to me
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
 	Location charpos= pc->getPosition();
-	UI16 sound = (a<<8)|(b%256);
 
-	UI08 sfx[12]={ 0x54, 0x00, };
+	charpos.z = 0;
 
-	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
-	ShortToCharPtr(sound, sfx +2);			// Sound model
-	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
-	ShortToCharPtr(charpos.x, sfx +6);		// POS:  X
-	ShortToCharPtr(charpos.y, sfx +8);		//       Y
-	ShortToCharPtr(0 /*charpos.z*/, sfx +10);	//       Z
-	Xsend(s, sfx, 12);
-//AoS/	Network->FlushBuffer(s);
+	SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, charpos);
 }
 
 
@@ -386,14 +370,7 @@ void soundeffect3(P_ITEM pi, UI16 sound)
 	
 	Location pos = pi->getPosition();
 
-	UI08 sfx[12]={ 0x54, 0x00, };
-
-	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
-	ShortToCharPtr(sound, sfx +2);			// Sound model
-	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
-	ShortToCharPtr(pos.x, sfx +6);			// POS:  X
-	ShortToCharPtr(pos.y, sfx +8);			//       Y
-	ShortToCharPtr(0 /*pos.z*/, sfx +10);		//       Z
+	pos.z = 0;
 
 	NxwSocketWrapper sw;
 	sw.fillOnline( pi );
@@ -404,31 +381,20 @@ void soundeffect3(P_ITEM pi, UI16 sound)
 		P_CHAR pc_j=ps_i->currChar();
 		if( ISVALIDPC(pc_j))
 		{
-			Xsend(ps_i->toInt(), sfx, 12);
-//AoS/			Network->FlushBuffer(ps_i->toInt());
+			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, pos);
 		}
 	}
 }
 
-void soundeffect4(int p, NXWSOCKET  s, unsigned char a, unsigned char b)
+void soundeffect4(NXWSOCKET s, P_ITEM pi, UI16 sound)
 {
-	P_ITEM pi=MAKE_ITEMREF_LR(p);
 	VALIDATEPI(pi);
 
-	UI16 sound = (a<<8)|(b%256);
 	Location pos = pi->getPosition();
 
-	UI08 sfx[12]={ 0x54, 0x00, };
+	pos.z = 0;
 
-	sfx[1] = 0x01;					// Mode: 0x00 repeating, 0x01 single
-	ShortToCharPtr(sound, sfx +2);			// Sound model
-	ShortToCharPtr(0x0000, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
-	ShortToCharPtr(pos.x, sfx +6);			// POS:  X
-	ShortToCharPtr(pos.y, sfx +8);			//       Y
-	ShortToCharPtr(0 /*pos.z*/, sfx +10);		//       Z
-
-	Xsend(s, sfx, 12);
-//AoS/	Network->FlushBuffer(s);
+	SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, pos);
 }
 
 //xan : fast weather function.. maybe we should find a more complete system like the
@@ -2205,6 +2171,23 @@ void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI
 	Xsend(s, talk2, 18);
 	Xsend(s, sysname, 30);
 	Xsend(s, unicodetext, unicodelen);
+//AoS/	Network->FlushBuffer(s);
+}
+
+void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn, Location pos, bool useDispZ)
+{
+	UI08 sfx[12]={ 0x54, 0x00, };
+	SI16 Z;
+
+	Z = (useDispZ)? pos.dispz : pos.z;
+
+	sfx[1] = mode;					// Mode: 0x00 repeating, 0x01 single
+	ShortToCharPtr(sound_model, sfx +2);		// Sound model
+	ShortToCharPtr(unkn, sfx +4);			// unkn, (speed/volume modifier? Line of sight stuff?)
+	ShortToCharPtr(pos.x, sfx +6);			// POS:  X
+	ShortToCharPtr(pos.y, sfx +8);			//       Y
+	ShortToCharPtr(Z , sfx +10);			//       Z
+	Xsend(s, sfx, 12);
 //AoS/	Network->FlushBuffer(s);
 }
 

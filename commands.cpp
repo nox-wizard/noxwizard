@@ -648,7 +648,7 @@ namespace Commands
 
 			pi->Refresh();//AntiChrist
 
-			soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
+			soundeffect( s, 0x023E ); // plays the dye sound, LB
 			return;
 		}
 
@@ -674,7 +674,7 @@ namespace Commands
 				pc->setOldSkinColor(color);
 				pc->teleport( TELEFLAG_NONE );
 
-				soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
+				soundeffect( s, 0x023E ); // plays the dye sound, LB
 			}
 		}
 	}

@@ -1985,7 +1985,7 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		}
 		tempfx::add(pc, pc, tempfx::LSD, 60+RandomNum(1,120), 0, 0); // trigger effect
 		staticeffect(p, 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
-		soundeffect5(s, 0x00, 0xF8); // lsd sound :)
+		soundeffect5(s, 0x00F8); // lsd sound :)
 		break;
 
 	default:

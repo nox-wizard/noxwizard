@@ -2005,15 +2005,10 @@ LOGICAL cChar::losFrom(P_CHAR pc)
 void cChar::playSFX(SI16 sound)
 {
 
-	Location charpos= getPosition();
-	unsigned char sfx[13]="\x54\x01\x12\x34\x00\x00\x06\x40\x05\x9A\x00\x00";
+	Location charpos = getPosition();
 
-	ShortToCharPtr(sound, sfx+2);
-	sfx[6]= charpos.x >> 8;
-	sfx[7]= charpos.x % 256;
-	sfx[8]= charpos.y >> 8;
-	sfx[9]= charpos.y % 256;
-	
+	charpos.z = 0;
+
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
 	
@@ -2021,8 +2016,7 @@ void cChar::playSFX(SI16 sound)
 		NXWCLIENT ps=sw.getClient();
 		if(ps!=NULL)
 		{
-			Xsend(ps->toInt(), sfx, 12);
-//AoS/			Network->FlushBuffer(ps->toInt());
+			SendPlaySoundEffectPkt(ps->toInt(), 0x01, sound, 0x0000, charpos);
 		}
 	}
 }
@@ -4733,14 +4727,14 @@ void cChar::do_lsd()
 
 		if (rand()%33==0)
 		{
-			if (rand()%10>3) soundeffect5(socket, 0x00, 0xF8); // lsd sound :)
+			if (rand()%10>3) soundeffect5(socket, 0x00F8); // lsd sound :)
 			else
 			{
 				int snd=rand()%19;
 				if (snd>9) 
-					soundeffect5(socket,0x01,snd-10);
+					soundeffect5(socket,(0x01<<8)|((snd-10)%256));
 				else 
-					soundeffect5(socket,0,246+snd);
+					soundeffect5(socket,246+snd);
 			}
 		}
 	}

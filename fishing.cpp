@@ -180,7 +180,7 @@ void cFishing::FishTarget(NXWCLIENT ps)
 		pPlayer->fishingtimer=rand()%fishing_data.randomtime+fishing_data.basetime;
 	else
 		pPlayer->fishingtimer=fishing_data.basetime;
-	soundeffect(s,0x02,0x3F);
+	soundeffect(s,0x023F);
 //	pPlayer->hidden=UNHIDDEN;
 	pPlayer->unHide();
 	Fish(currchar[s]);		

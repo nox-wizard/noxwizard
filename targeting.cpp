@@ -669,9 +669,9 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
         }//if
         else if (((pi->more1==addid1[s])&&(pi->more2==addid2[s])&&
             (pi->more3==addid3[s])&&(pi->more4==addid4[s]))||
-            (addid1[s]==(unsigned char)'\xFF'))
+            (addid1[s]==(unsigned char) 0xFF))
         {
-            if (((pi->type==ITYPE_CONTAINER)||(pi->type==ITYPE_UNLOCKED_CONTAINER))&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
+            if (((pi->type==ITYPE_CONTAINER)||(pi->type==ITYPE_UNLOCKED_CONTAINER))&&(item_inRange(pc,pi,2)))
             {
                 if(pi->type==ITYPE_CONTAINER) pi->type=ITYPE_LOCKED_ITEM_SPAWNER;
                 if(pi->type==ITYPE_UNLOCKED_CONTAINER) pi->type=ITYPE_LOCKED_CONTAINER;
@@ -679,13 +679,13 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
                 sysmessage(s, TRANSLATE("You lock the container."));
                 return;
             }
-            else if ((pi->type==ITYPE_KEY)&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
+            else if ((pi->type==ITYPE_KEY)&&(item_inRange(pc,pi,2)))
             {
                 pc->keyserial=pi->getSerial32();
                 sysmessage(s,TRANSLATE("Enter new name for key."));//morrolan rename keys
                 return;
             }
-            else if ((pi->type==ITYPE_LOCKED_ITEM_SPAWNER)||(pi->type==ITYPE_LOCKED_CONTAINER)&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
+            else if ((pi->type==ITYPE_LOCKED_ITEM_SPAWNER)||(pi->type==ITYPE_LOCKED_CONTAINER)&&(item_inRange(pc,pi,2)))
             {
                 if(pi->type==ITYPE_LOCKED_ITEM_SPAWNER) pi->type=ITYPE_CONTAINER;
                 if(pi->type==ITYPE_LOCKED_CONTAINER) pi->type=ITYPE_UNLOCKED_CONTAINER;
@@ -693,14 +693,14 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
                 sysmessage(s, TRANSLATE("You unlock the container."));
                 return;
             }
-            else if ((pi->type==ITYPE_DOOR)&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
+            else if ((pi->type==ITYPE_DOOR)&&(item_inRange(pc,pi,2)))
             {
                 pi->type=ITYPE_LOCKED_DOOR;
                 // soundeffect3( pi, <whatever> );
                 sysmessage(s, TRANSLATE("You lock the door."));
                 return;
             }
-            else if ((pi->type==ITYPE_LOCKED_DOOR)&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
+            else if ((pi->type==ITYPE_LOCKED_DOOR)&&(item_inRange(pc,pi,2)))
             {
                 pi->type=ITYPE_DOOR;
                 // soundeffect3( pi, <whatever> );
@@ -725,7 +725,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
         else
         {
             if (pi->type==ITYPE_KEY) sysmessage (s, TRANSLATE("That key is not blank!"));
-            else if (pi->more1=='\x00') sysmessage(s, TRANSLATE("That does not have a lock."));
+            else if (pi->more1==0x00) sysmessage(s, TRANSLATE("That does not have a lock."));
             else sysmessage(s, TRANSLATE("The key does not fit into that lock."));
             return;
         }//else
@@ -1169,7 +1169,7 @@ void cTargets::DvatTarget(NXWSOCKET s)
             pi->color1=addid1[s];
             pi->color2=addid2[s];
             pi->Refresh();
-            soundeffect(s,0x02,0x3e); // plays the dye sound, LB
+            soundeffect(s, 0x023E); // plays the dye sound, LB
         } else
         {
             sysmessage(s,TRANSLATE("That is not yours!!"));
@@ -1186,7 +1186,6 @@ static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
 	if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
 	P_CHAR pc=archive::getNewChar();
 
-    //strcpy(pc->name, "Dummy");
 	pc->setCurrentName("Dummy");
 	pc->SetBodyType((addid1[s]<<8)|(addid2[s]%256));
 	pc->SetOldBodyType((addid1[s]<<8)|(addid2[s]%256));
@@ -2028,9 +2027,9 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 {
 	if (pC == NULL) return;
     NXWSOCKET  s = pC->toInt();
-    if (LongFromCharPtr(buffer[s]+11) == -1) return;
+    if (LongFromCharPtr(buffer[s] +11) == INVALID) return;
 
-    short id = ShortFromCharPtr(buffer[s]+0x11);
+    short id = ShortFromCharPtr(buffer[s] +17);
     if (itemById::IsTree2(id))
     {
         int px,py,cx,cy;
@@ -2038,8 +2037,8 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 		VALIDATEPC(pc);
 		Location pcpos= pc->getPosition();
    		//<Luxor>
-		px= ((buffer[s][0x0b]<<8)+(buffer[s][0x0c]%256));
-    	py= ((buffer[s][0x0d]<<8)+(buffer[s][0x0e]%256));
+	px= ShortFromCharPtr(buffer[s] +11);
+    	py= ShortFromCharPtr(buffer[s] +13);
     	cx= abs((int)pcpos.x - px);
     	cy= abs((int)pcpos.y - py);
     	if(!((cx<=5)&&(cy<=5)))
@@ -2049,8 +2048,8 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
     	}
     	//</Luxor>
 
-	pc->playAction( pc->isMounting() ? 0x0D : 0x01d );
-        soundeffect(s,0x01,0x3E);
+	pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
+        soundeffect(s, 0x013E);
         const P_ITEM pi=item::SpawnItem(s,1,"#",1,0x0DE1,0,0,0); //Kindling
         VALIDATEPI(pi);
         //item::SetPos(i, pcpos.x, pcpos.y, pcpos.z);
@@ -2074,7 +2073,7 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 
 void cTargets::NpcTarget(NXWSOCKET s)
 {
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
+    SERIAL serial=LongFromCharPtr(buffer[s] +7);
     int i=calcCharFromSer(serial);
     P_CHAR pc = MAKE_CHARREF_LR(i);
     if (i!=-1)
@@ -2196,32 +2195,6 @@ void cTargets::ReleaseTarget(NXWSOCKET s, int c)
 	P_CHAR rel = MAKE_CHAR_REF(currchar[s]);
 
 	prison::release( rel, pc  );
-    
-/*OLD MODE
-    if (pc!=NULL)
-    {
-        if (!pc->jailed)
-        {
-            sysmessage(s, "That player is not in jail!");
-        }
-        else
-        {
-			P_CHAR character = MAKE_CHARREF_LR(i);
-
-            jails[pc->cell].occupied = 0;
-            //Char_MoveTo(i, pc->oldx, pc->oldy, pc->oldz);
-			character->MoveTo( pc->getOldPosition() );
-            pc->cell = 0;
-            pc->priv2 = 0;
-            pc->jailsecs = 0;
-            pc->jailtimer = 0;
-            pc->teleport();
-            soundeffect(c, 1, 0xfd); // Play sound effect for player
-            sysmessage(c, TRANSLATE("You are released.."));
-            sysmessage(s, "Player %s released.", pc->getCurrentNameC());
-        }
-    }
-*/
 }
 
 /*!

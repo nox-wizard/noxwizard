@@ -358,7 +358,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 			pi->layer = 0;
 			if (!pi->isInWorld())
-				soundeffect(s, 0x00, 0x57);
+				soundeffect(s, 0x0057);
 			if (pi->amount>1)
 			{
 				SI16 amount = ShortFromCharPtr(buffer[s] +5);

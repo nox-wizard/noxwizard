@@ -1994,7 +1994,7 @@ void command_sfx(NXWSOCKET  s)
 {
 	if (tnum==3)
 	{
-		soundeffect(s, strtonum(1), strtonum(2));
+		soundeffect(s, (strtonum(1)<<8)|(strtonum(2)%256) );
 	}
 }
 

@@ -299,7 +299,7 @@ void Skills::Mine(NXWSOCKET s)
 	else
 		pc->playAction(0x0b);
 
-	soundeffect(s,0x01,0x25);
+	soundeffect(s,0x0125);
 
 	if(!pc->checkSkill(MINING, 0, 1000))
 	{

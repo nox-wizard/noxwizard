@@ -251,7 +251,7 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 			
 			case CARTOGRAPHY:	//Polygon: Do sounds, message and deletion if carto fails
 				Skills::DelEmptyMap(DEREF_P_CHAR(pc));
-				soundeffect(s, 0x02, 0x49);
+				soundeffect(s, 0x0249);
 				pc->sysmsg( TRANSLATE("You scratch on the map but the result is unusable"));
 				break;
 
@@ -449,25 +449,25 @@ void Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill)
 		switch( skill )
 		{
         	case MINING	:
-				soundeffect(s,0x00,0x54);
+				soundeffect(s, 0x0054);
 				break;
         	case BLACKSMITHING	:
-				soundeffect(s,0x00,0x2a);
+				soundeffect(s, 0x002A);
 				break;
         	case CARPENTRY :
-				soundeffect(s,0x02,0x3d);
+				soundeffect(s, 0x023D);
 				break;
         	case INSCRIPTION :
-				soundeffect(s,0x02,0x49);
+				soundeffect(s, 0x0249);
 				break;
         	case TAILORING :
-				soundeffect(s,0x02,0x48);
+				soundeffect(s, 0x0248);
 				break;
         	case TINKERING :
-				soundeffect(s,0x00,0x2A);
+				soundeffect(s, 0x002A);
 				break;
         	case CARTOGRAPHY :
-				soundeffect(s, 0x02, 0x49);
+				soundeffect(s, 0x0249);
 				break;
 		}
 
@@ -1101,11 +1101,11 @@ void Skills::CreatePotion(CHARACTER s, char type, char sub, int mortar)
 
 	if (pc->getAmount(0x0F0E)<1)
 	{
-		target(calcSocketFromChar(DEREF_P_CHAR(pc)), 0, 1, 0, 109, TRANSLATE("Where is an empty bottle for your potion?"));
+		target(pc->getSocket(), 0, 1, 0, 109, TRANSLATE("Where is an empty bottle for your potion?"));
 	}
 	else
 	{
-		soundeffect(DEREF_P_CHAR(pc), 0x02, 0x40); // Liquid sfx
+		soundeffect(pc->getSocket(), 0x0240); // Liquid sfx
 		pc->emoteall(TRANSLATE("*%s pours the completed potion into a bottle.*"), 0, pc->getCurrentNameC());
 		delequan(DEREF_P_CHAR(pc), 0x0F0E, 1);
 		Skills::PotionToBottle(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi_mortar));
@@ -1696,7 +1696,7 @@ void Skills::SpiritSpeak(NXWSOCKET s)
     }
 
     impaction(s,0x11);          // I heard there is no action...but I decided to add one
-    soundeffect(s,0x02,0x4A);   // only get the sound if you are successful
+    soundeffect(s,0x024A);   // only get the sound if you are successful
     sysmessage(s,TRANSLATE("You establish a connection to the netherworld."));
     SetTimerSec(&(pc->spiritspeaktimer),spiritspeak_data.spiritspeaktimer+pc->in);
 }
@@ -2512,13 +2512,13 @@ void Skills::TDummy(NXWSOCKET s)
 
 	switch(hit)
 	{
-		case 0: soundeffect(s, 0x01, 0x3B);
+		case 0: soundeffect(s, 0x013B);
 			break;
     
-		case 1: soundeffect(s, 0x01, 0x3C);
+		case 1: soundeffect(s, 0x013C);
 			break;
 
-		case 2: soundeffect(s, 0x01, 0x3D);
+		case 2: soundeffect(s, 0x013D);
 			break;
 
 		default:
@@ -2526,7 +2526,7 @@ void Skills::TDummy(NXWSOCKET s)
 			return;
 	}
 	
-	P_ITEM pj = pointers::findItemBySerial(calcserial((buffer[s][1]&0x7F),buffer[s][2],buffer[s][3],buffer[s][4]));
+	P_ITEM pj = pointers::findItemBySerial( LongFromCharPtr(buffer[s] +1) & 0x7FFFFFFF );
 
 	if (ISVALIDPI(pj))
 	{
@@ -2565,7 +2565,7 @@ void CollectAmmo(NXWSOCKET s, int a, int b)
         P_ITEM pi=item::SpawnItem(s,a,"#",1,0x0F3F,0,1,1);
 		VALIDATEPI(pi);
         pi->att=0;
-        sysmessage(s,TRANSLATE("You collect the arrows."));
+        pc->sysmsg(TRANSLATE("You collect the arrows."));
     }
 
     if (b)
@@ -2573,7 +2573,7 @@ void CollectAmmo(NXWSOCKET s, int a, int b)
         P_ITEM pi=item::SpawnItem(s,b,"#",1,0x1BFB,0,1,1);
 		VALIDATEPI(pi);
         pi->att=0;
-        sysmessage(s,TRANSLATE("You collect the bolts."));
+        pc->sysmsg(TRANSLATE("You collect the bolts."));
     }
 
 }
@@ -2708,29 +2708,29 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 			case 0:
 			case 1:
 	            pc->sysmsg( TRANSLATE("You miss the target"));
-				soundeffect(s1, 0x02, 0x38);
+				soundeffect(s1, 0x0238);
 				break;
 			case 2:
 			case 3:
 	            pc->sysmsg( TRANSLATE("You hit the outer ring!"));
-				soundeffect(s1, 0x02, 0x34);
+				soundeffect(s1, 0x0234);
 				break;
 			case 4:
 			case 5:
 			case 6:
 	            pc->sysmsg( TRANSLATE("You hit the middle ring!"));
-				soundeffect(s1, 0x02, 0x34);
+				soundeffect(s1, 0x0234);
 				break;
 			case 7:
 			case 8:
 			case 9:
 	            pc->sysmsg( TRANSLATE("You hit the inner ring!"));
-				soundeffect(s1, 0x02, 0x34);
+				soundeffect(s1, 0x0234);
 				break;
 			case 10:
 			case 11:
 	            pc->sysmsg( TRANSLATE("You hit the bullseye!!"));
-				soundeffect(s1, 0x02, 0x34);
+				soundeffect(s1, 0x0234);
 				break;
 			default:
 	            break;
@@ -2789,7 +2789,7 @@ void Skills::Meditation (NXWSOCKET  s)
 
 	pc->sysmsg( TRANSLATE("You enter a meditative trance.") );
 	pc->med = 1;
-	soundeffect(s, 0x00, 0xf9);
+	soundeffect(s, 0x00F9);
 }
 
 //AntiChrist - 5/11/99
@@ -3211,7 +3211,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
             sysmessage(s, TRANSLATE("You fail to decipher the map"));      // Nope :P
         // Set the skill delay, no matter if it was a success or not
         SetTimerSec(&pc->skilldelay,SrvParms->skilldelay);
-        soundeffect(s, 0x02, 0x49); // Do some inscription sound regardless of success or failure
+        soundeffect(s, 0x0249); // Do some inscription sound regardless of success or failure
         sysmessage(s, TRANSLATE("You put the deciphered tresure map in your pack"));       // YAY
     }
     else
