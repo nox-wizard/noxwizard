@@ -666,7 +666,21 @@ P_GUILD cGuildz::addGuild( P_ITEM stone, P_CHAR master ) {
 
 }
 
+P_GUILD cGuildz::getGuild( SERIAL guild )
+{
+	GUILDMAP::iterator iter( guilds.find( guild ) );
+	if( iter!=guilds.end() )
+		return &iter->second;
+	else
+		return NULL;
+}
 
+
+cGuildRecruit::cGuildRecruit( )
+{
+	setSerial( INVALID );
+	setRecruiter( INVALID );
+}
 
 cGuildRecruit::cGuildRecruit( P_CHAR recruit, P_CHAR recruiter )
 {
