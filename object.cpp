@@ -10,6 +10,75 @@
 #include "nxwcommn.h"
 #include "object.h"
 
+cScpIterator* cObject::getScriptIterator( std::string section, std::string& sectionId )
+{
+	cScpIterator*	iter	= 0;
+
+	if	( section == "RANDOMCOLOR" )
+		iter = Scripts::Colors->getNewIterator( "SECTION %s %s", section.c_str(), sectionId.c_str() );
+	else if	( section == "RANDOMNAME" )
+		iter = Scripts::Npc->getNewIterator( "SECTION %s %s", section.c_str(), sectionId.c_str() );
+
+	return iter;
+}
+
+std::string cObject::getRandomScriptValue( std::string section, std::string& sectionId )
+{
+	std::string 	script1;
+	int 		i	= 0,
+			j	= 0;
+	std::string	value;
+
+	cScpIterator*	iter	= getScriptIterator( section, sectionId );
+	if (iter == 0)
+	{
+		WarnOut("SECTION %s %s not found\n", section.c_str(), sectionId.c_str() );
+	}
+	else
+	{
+		int loopexit=0;
+		do
+		{
+			script1 = iter->getEntry()->getFullLine();
+			if ( script1[0]!='}' && script1[0]!='{' )
+			{
+				++i;
+			}
+		}
+		while ( script1[0] !='}' && ++loopexit < MAXLOOPS );
+
+		safedelete(iter);
+
+		if(i>0)
+		{
+			i=rand()%i;
+			iter = getScriptIterator( section, sectionId );
+			if (iter == 0)
+			{
+				WarnOut("SECTION %s %s not found\n", section.c_str(), sectionId.c_str() );
+			}
+			else
+			{
+				loopexit=0;
+				do
+				{
+					script1 = iter->getEntry()->getFullLine();
+					if ( script1[0]!='}' && script1[0]!='{' )
+					{
+						++j;
+						if(j==i)
+						{
+							value = hex2num( script1 );
+						}
+					}
+				}
+				while ( script1[0]!='}' && ++loopexit < MAXLOOPS );
+				safedelete(iter);
+			}
+		}
+	}
+	return value;
+}
 
 cObject::cObject()
 {

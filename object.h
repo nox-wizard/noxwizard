@@ -27,6 +27,8 @@
 #define VALIDATEPO(po) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
 #define VALIDATEPOR(po, r) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return r; }
 
+class cScpIterator;
+
 Location Loc(SI32 x, SI32 y, signed char z, signed char dispz=0);
 
 typedef map< UI32, AmxEvent* > AmxEventMap;
@@ -60,6 +62,12 @@ public:
 	bool			operator!=(cObject&);
 //@}
 
+public:
+	static std::string	getRandomScriptValue( std::string section, std::string& sectionId );
+private:
+	static cScpIterator*	getScriptIterator( std::string section, std::string& sectionId );
+
+public:
 	cObject();
 	virtual ~cObject();
 //@{

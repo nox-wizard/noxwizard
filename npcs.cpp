@@ -18,132 +18,6 @@
 #include "commands.h"
 #include "npcai.h"
 
-COLOR addrandomcolor(cObject* po, char *colorlist)
-{
-	
-	if( (po!=NULL) && isCharSerial( po->getSerial32() ) )
-		{ VALIDATEPCR(po,0); }
-	else 
-		VALIDATEPIR(po,0);
-	
-	char sect[512];
-	int i,j,storeval = 0;
-	i=0; j=0;
-	cScpIterator* iter = NULL;
-	char script1[1024];
-
-	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
-	iter = Scripts::Colors->getNewIterator(sect);
-	if (iter==NULL) {
-		WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
-		return 0;
-	}
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	safedelete(iter);
-
-	if(i>0)
-	{
-		i=rand()%i;
-		i++;
-		iter = Scripts::Colors->getNewIterator(sect);
-		if (iter==NULL) {
-			WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
-			return 0;
-		}
-		loopexit=0;
-		do
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				j++;
-				if(j==i)
-				{
-					storeval=hex2num(script1);
-				}
-			}
-		}
-		while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
-	}
-	return (storeval);
-
-}
-
-static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
-{
-
-	VALIDATEPCR(pc,0);
-
-	char sect[512];
-	int i,j,haircolor = 0;
-	i=0; j=0;
-	cScpIterator* iter = NULL;
-	char script1[1024];
-
-	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
-	iter = Scripts::Colors->getNewIterator(sect);
-	if (iter==NULL)
-	{
-		WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
-		return 0;
-	}
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	safedelete(iter);
-
-	if(i>0)
-	{
-		i=rand()%i;
-		i++;
-		iter = Scripts::Colors->getNewIterator(sect);
-		if (iter==NULL)
-		{
-			WarnOut("Colorlist %s not found on character: %s\n", colorlist, pc->getCurrentNameC());
-			return 0;
-		}
-		loopexit=0;
-		do
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				j++;
-				if(j==i)
-				{
-					haircolor=hex2num(script1);
-				}
-			}
-		}
-		while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
-	}
-	return (haircolor);
-
-
-}
-
 char* getRandomName(char * namelist)
 {
         char sect[512];
@@ -730,10 +604,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "COLORLIST" == script1 )
 								{
-									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
 									if (ISVALIDPI(pi_n))
 									{
-										pi_n->setColor( storeval );
+										std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2)  );
+										pi_n->setColor( hex2num( value ) );
 									}
 									script1 = "DUMMY";
 								}
@@ -849,7 +723,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (ISVALIDPI(pi_n))
 									{
-										haircolor=addrandomhaircolor(pc, const_cast<char*>(script2.c_str()));
+										std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2) );
+										haircolor = hex2num( value );
 										if (haircolor!=-1)
 										{
 											pi_n->setColor( haircolor );
@@ -1188,9 +1063,9 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "SKINLIST" == script1 )
 								{
-									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
-									pc->setSkinColor(storeval);
-									pc->setOldSkinColor(storeval);
+									std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2 ) );
+									pc->setSkinColor( hex2num( value ) );
+									pc->setOldSkinColor( pc->getSkinColor() );
 									script1 = "DUMMY";
 								}
 								else if ( "SNOOPING" == script1 )

@@ -172,10 +172,8 @@ namespace item
 						pi->creator = rha;
 					else if ( lha == "COLORLIST" )
 					{
-						tmp = addrandomcolor(pi, const_cast<char*>(rha.c_str()));
-						{
-							pi->setColor(tmp);
-						}
+						std::string value(cObject::getRandomScriptValue("RANDOMCOLOR", rha ));
+						pi->setColor( hex2num(value) );
 					}
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
