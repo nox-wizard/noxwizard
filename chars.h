@@ -696,14 +696,34 @@ class cChar : public cObject
 	private:
 		P_GUILD guild; //!< the guild
 		P_GUILD_MEMBER member; //!< the guild member info
+		short	guildType; // 0 normal, 1 order, 2 chaos
+		LOGICAL	guildTraitor;
+		LOGICAL	guildToggle;
+		SERIAL	guildFealty;
+		SI32	guildNumber;
 
 	public:
 		bool	isGuilded();
 		void	setGuild( P_GUILD guild, P_GUILD_MEMBER member );
 		P_GUILD	getGuild();
 		P_GUILD_MEMBER getGuildMember();
-//@}
+		short	GetGuildType();
+		void	SetGuildType(short newGuildType);
+		LOGICAL IsGuildTraitor();
+		void	SetGuildTraitor();
+		void	ResetGuildTraitor();
+		LOGICAL	HasGuildTitleToggle();
+		void	SetGuildTitleToggle();
+		void	ResetGuildTitleToggle();
+		SERIAL	GetGuildFealty();
+		void	SetGuildFealty(SERIAL newGuildFealty);
+		SI32	GetGuildNumber();
+		void	SetGuildNumber(SI32 newGuildNumber);
+		TEXT*	GetGuildTitle();
+		void	SetGuildTitle(TEXT* newGuildTitle);
 
+
+//@}
 
 //@{
 /*!

@@ -696,7 +696,7 @@ void cChar::SetGuildNumber(SI32 newGuildNumber)
 */
 TEXT* cChar::GetGuildTitle()
 {
-	return guildTitle;
+	return (char * ) title.c_str();
 }
 
 /*!
@@ -708,6 +708,8 @@ TEXT* cChar::GetGuildTitle()
 */
 void cChar::SetGuildTitle(TEXT* newGuildTitle)
 {
+	title=newGuildTitle;
+	/*
 	if ( strlen( newGuildTitle ) < sizeof( guildTitle ) )
 		strcpy( guildTitle, newGuildTitle );
 	else
@@ -715,6 +717,7 @@ void cChar::SetGuildTitle(TEXT* newGuildTitle)
 		strncpy( guildTitle, newGuildTitle, ( sizeof( guildTitle ) - 1 ) );
 		guildTitle[ sizeof( guildTitle ) - 1 ] = '\0';
 	}
+	*/
 }
 
 void cChar::setStrength(UI32 val, bool check/*= true*/)
