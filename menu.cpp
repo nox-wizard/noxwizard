@@ -244,7 +244,8 @@ cMenu::cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool ca
 	rc_serialCurrent = 1;
 	pageCount=1;
 	pageCurrent=0;
-
+	groupCurrent=0;
+	groupCount=1;
 	for( int i=0; i<4; ++i ) {
 		buffer[i] = INVALID;
 	}
@@ -412,12 +413,21 @@ void cMenu::addPage( UI32 page )
 	}
 }
 
-/*
+/*!
+\brief Add a new group
+\author Wintermute
+\param group the group num, if INVALID is used automatic page count
+*/
 void cMenu::addGroup( UI32 group )
 {
-	addCommand( "{group %d}", group );
+	groupCurrent=group;
+	if( group>=groupCount )
+		groupCount=groupCurrent+1;
+	else
+		groupCurrent=groupCount+1;
+
+	addCommand( "{group %d}", groupCurrent );
 }
-*/
 
 SI32 cMenu::getButton( SI32 rawButton )
 {

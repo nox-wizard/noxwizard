@@ -5582,6 +5582,24 @@ NATIVE( _gui_addPage )
 	return 1;
 }
 
+
+/*!
+\brief Add a new group at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 the group
+\return false if error, true else
+*/
+NATIVE( _gui_addGroup )
+{
+	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
+	VALIDATEPMR( menu, 0 );
+
+	menu->addGroup( params[2] );
+	return 1;
+}
+
 /*!
 \brief Add a new page button at given menu
 \author Endymion
@@ -7123,6 +7141,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "gui_addXmfHtmlGump", _gui_addXmfHtmlGump },
  { "gui_addPage", _gui_addPage },
  { "gui_addPageButton", _gui_addPageButton },
+ { "gui_addGroup", _gui_addGroup },
 
  { "gui_createIconList", _gui_createIconList },
  { "gui_addIcon", _gui_addIcon },

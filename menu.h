@@ -139,6 +139,8 @@ class cMenu : public cBasicMenu
 		UI32 y; //!< y location where show
 		UI32 pageCount;	//!< page count
 		UI32 pageCurrent;	//!< current page
+		UI32 groupCount;	//!< group count
+		UI32 groupCurrent;	//!< current group
 		SERIAL buffer[MENU_BUFF_COUNT];
 		std::string buffer_str[MENU_BUFF_COUNT];
 
@@ -173,7 +175,7 @@ class cMenu : public cBasicMenu
 		void addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue = 0 );
 		void addTiledGump( UI32 x, UI32 y, UI32 width, UI32 height, UI32 gump, UI32 hue );
 		void addXmfHtmlGump( UI32 x, UI32 y, UI32 width, UI32 height, wstring clilocid, UI32 hasBack , UI32 canScroll );
-		//void 	addGroup( UI32 group = 0 );
+		void addGroup( UI32 group = 0 );
 		void addPage( UI32 page );
 		void addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page );
 
