@@ -24,6 +24,7 @@
 #include "amxvarserver.h"
 #include "amxfile.h"
 #include "nxwGump.h"
+#include "menu.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -4965,6 +4966,201 @@ NATIVE( _chr_unStable )
 
 
 
+
+
+
+
+
+
+
+
+//
+// New Menu API -- still highly experimental
+//
+
+/*!
+\brief Create a new menu
+\author Endymion
+\since 0.82
+\param 1 the menu id
+\param 2 x
+\param 3 y
+\param 2 is moveable
+\param 2 is closeable
+\param 3 is disposeable
+\return the menu serial
+*/
+NATIVE ( _menu_create )
+{
+	return ( menus.createMenu( params[1], params[2], params[3], (params[4]?true:false), (params[5]?true:false), (params[6]?true:false) ) )? 1 : 0; 
+}
+
+/*!
+\brief Delete a menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\return true if is deleted or false if error
+*/
+NATIVE ( _menu_delete )
+{
+	return ( menus.deleteMenu( params[1] ) )? 1 : 0;
+}
+
+/*!
+\brief Delete a menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 the character
+\return true if is show or false if error
+*/
+NATIVE ( _menu_show )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL ) {
+		P_CHAR pc = pointers::findCharBySerial( params[2] );
+		VALIDATEPCR( pc, 0 );
+		return ( menus.showMenu( params[1], pc ) ? 1 : 0 );
+	}
+	return 0;
+}
+
+/*!
+\brief Add a new button at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 up
+\param 5 down
+\param 6 return code
+\param 7 page ( default 1 )
+\return false if error, true else
+*/
+NATIVE ( _menu_addButton )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL )
+	{
+			menu->addButton( params[2], params[3], params[4], params[5], params[6], params[7] );
+			return 1;
+	}
+	return 0;
+}
+
+/*!
+\brief Add a new button at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 page number
+\return false if error, true else
+*/
+NATIVE ( _menu_addPage )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL )
+	{
+		menu->addPage( params[2] );
+		return 1;
+	}
+	return 0;
+}
+
+/*!
+\brief Add a resized gump at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 gump
+\param 5 width
+\param 6 height
+\return false if error, true else
+*/
+NATIVE (  _menu_addResizeGump )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL )
+	{
+		menu->addResizeGump( params[2], params[3], params[4], params[5], params[6] );
+		return 1;
+	}
+	return 0;
+}
+
+/*!
+\brief Add a page button at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 up gump
+\param 5 down gump
+\param 6 page
+\return false if error, true else
+*/
+NATIVE ( _menu_addPageButton )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL )
+	{
+		menu->addPageButton( params[2], params[3], params[4], params[5], params[6] );
+		return 1;
+	}
+	return 0;
+}
+
+/*!
+\brief Add text at given menu
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\param 2 x
+\param 3 y
+\param 4 text
+\param 5 color
+\return false if error, true else
+*/
+NATIVE ( _menu_addText )
+{
+	P_MENU menu = menus.selectMenu( params[1] );
+	if ( menu != NULL )
+	{
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		wstring s;
+		amx_GetStringUnicode( &s, cstr );
+		menu->addText( params[2], params[3], s, params[5] );
+		return 1;
+	}
+	return 0;
+}
+
+
+
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //API standard syntax :
 // for generic system functions : functionName
 // for other functions xxxx_functionName where
@@ -5263,7 +5459,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "rcve_skillsRequest", _rcve_skillsRequest },
 // Temp Effects functions :
  { "tempfx_activate", _tempfx_activate },
-// Menu functions :
+// Old Menu functions :
  { "mnu_prepare", _menu_Prepare },
  { "mnu_setStyle", _menu_SetStyle },
  { "mnu_setTitle", _menu_SetTitle },
@@ -5271,6 +5467,17 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "mnu_addItem", _menu_AddItem },
  { "mnu_show", _menu_Show },
  { "mnu_setCallback", _menu_SetCallback },
+// New Menu functions :
+
+ { "menu_create", _menu_create },
+ { "menu_delete", _menu_delete },
+ { "menu_show", _menu_show },
+ { "menu_addButton", _menu_addButton },
+ { "menu_addPage", _menu_addPage },
+ { "menu_addResizeGump", _menu_addResizeGump },
+ { "menu_addPageButton", _menu_addPageButton },
+ { "menu_addText", _menu_addText },
+
 // Region functions :
  { "rgn_setWeather", _rgn_setWeather },
  { "rgn_getWeather", _rgn_getWeather },
