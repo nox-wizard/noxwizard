@@ -505,14 +505,20 @@ void cChar::doCombat()
 				if (arrowsquant>0)
 					x=1;
 				else
+				{
 					sysmsg(TRANSLATE("You are out of ammunitions!"));
+					UnEquip(pWeapon, false);
+				}
 			}
 			else   //new ammo system
 			{
 				if ((getBackpack())->CountItemsByID(pWeapon->ammo, true))
 					x=1;
 				else
+				{
 					sysmsg(TRANSLATE("You are out of ammunitions!"));
+					UnEquip(pWeapon, false);
+				}
 			}
 		}
 		else if (dist < 2 )
