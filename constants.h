@@ -220,7 +220,7 @@ enum {	ITEM_TYPE_CHOICES = 6,
 		MAXMEMRECWAR=30, //!< max of max guildmembers, max recruits and max war
 	};
 	#define DEFAULTCHARTER "NoX-Wizard Guildstone"
-	#define DEFAULTWEBPAGE "http://www.noxwizard.com"
+	#define DEFAULTWEBPAGE "http://noxwizard.sourceforge.net/"
 //@}
 
 /*!

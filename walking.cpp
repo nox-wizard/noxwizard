@@ -49,22 +49,21 @@ int getRightDir(int dir)
 \brief Calculats and changes the given coords one step into the given direction
 \author Duke
 \param dir the direction
-\param x pointer to the x coord
-\param y pointer to the y coord
-\todo use reference instead of pointer?
+\param x reference to x coord
+\param y reference to y coord
 */
-void getXYfromDir(int dir, int *x, int *y)
+void getXYfromDir(int dir, UI16 &x, UI16 &y)
 {
 	switch(dir&0x07)
 	{
-	case 0: (*y)--;		break;
-	case 1: (*x)++; (*y)--;	break;
-	case 2: (*x)++;		break;
-	case 3: (*x)++; (*y)++;	break;
-	case 4: (*y)++;		break;
-	case 5: (*x)--; (*y)++;	break;
-	case 6: (*x)--;		break;
-	case 7: (*x)--; (*y)--;	break;
+	case 0: y--;		break;
+	case 1: x++; y--;	break;
+	case 2: x++;		break;
+	case 3: x++; y++;	break;
+	case 4: y++;		break;
+	case 5: x--; y++;	break;
+	case 6: x--;		break;
+	case 7: x--; y--;	break;
 	}
 }
 
@@ -157,11 +156,10 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 }
 
 
-///////////////
-// Name:	WalkingHandleHiding
-// history:	cut from WalkHandleRunning() by Xanathar, 14.06.2001
-// Purpose:	handles stealth/hiding
-//
+/*!
+ \brief Handles stealth/hiding
+ \author Xanathar (cut from WalkHandleRunning())
+ */
 bool WalkingHandleHiding (P_CHAR pc, int dir)
 {
 	VALIDATEPCR(pc, false);
@@ -188,11 +186,11 @@ bool WalkingHandleHiding (P_CHAR pc, int dir)
 	return true;
 
 }
-///////////////
-// Name:	WalkHandleRunning
-// history:	cut from walking() by Duke, 27.10.2000
-// Purpose:	handles running, stamina
-//
+
+/*!
+ \brief Handles running, stamina
+ \author Duke (cut from walking())
+ */
 bool WalkHandleRunning(P_CHAR pc, int dir)
 {
 	VALIDATEPCR(pc, false);
@@ -244,11 +242,10 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 
 }
 
-///////////////
-// Name:	WalkCollectBlockers
-// history:	cut from walking() by Duke, 20.11.2000
-// Purpose:	Collects Landscape plus static and dynamic items in an array
-//
+/*!
+ \brief Collects Landscape plus static and dynamic items in an array
+ \author Duke (cut from walking())
+ */
 UI32 WalkCollectBlockers(P_CHAR pc)
 {
 	VALIDATEPCR(pc, 0);
@@ -587,12 +584,10 @@ void WalkEvaluateBlockers(P_CHAR pc, SI08 *pz, SI08 *pdispz, UI32 blockers)
 
 }
 
-///////////////
-// Name:	WalkHandleBlocking
-// history:	cut from walking() by Duke, 27.10.2000
-// Purpose:	Handles a 'real move' if the Char is not only changing direction
-//
-
+/*!
+ \brief Handles a 'real move' if the Char is not only changing direction
+ \author Duke (cut from walking())
+ */
 bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 {
 	VALIDATEPCR(pc, false);
@@ -757,8 +752,8 @@ void WalkingHandleRainSnow(P_CHAR pc)
   }
 }
 
-
-/*void WalkingHandleGlowingItems(P_CHAR pc)
+#if 0
+void WalkingHandleGlowingItems(P_CHAR pc)
 {
 	VALIDATEPC(pc);
 	
@@ -781,8 +776,8 @@ void WalkingHandleRainSnow(P_CHAR pc)
 		}
 	}
 
-}*/
-
+}
+#endif
 
 void walking(P_CHAR pc, int dir, int sequence)
 {
@@ -864,9 +859,8 @@ void walking(P_CHAR pc, int dir, int sequence)
 
 } 
 
-
-
-void walking2(P_CHAR pc_s) // Only for switching to combat mode
+//! Only for switching to combat mode
+void walking2(P_CHAR pc_s) 
 {
 	VALIDATEPC(pc_s);
 	int sendit;
@@ -957,7 +951,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 		}
 	}
 }
-//</XAN>
+
 int npcSelectDir(P_CHAR pc_i, int j)
 {
 	VALIDATEPCR(pc_i, -1);
@@ -1245,7 +1239,11 @@ int checkBounds(P_CHAR pc, int newX, int newY, int type)
 	return move;
 }
 
-void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode (0 for normal, 1 for box, 2 for circle) // Sparhawk should be changed to npcwander
+/*!
+ \param type npcwalkmode (0 normal, 1 box, 2 circle)
+ \todo Should be changed to npcwander - Sparhawk
+ */
+void npcwalk( P_CHAR pc_i, int newDirection, int type)
 {
 	VALIDATEPC(pc_i);
 
@@ -1272,9 +1270,8 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 	bool valid, move;
 	if ( pc_i->dir == newDirection )  // If we're moving, not changing direction
 	{
-		int newX = charpos.x;
-		int newY = charpos.y;
-		getXYfromDir( pc_i->dir, &newX, &newY );	// get coords of the location we want to walk
+		UI16 newX = charpos.x, newY = charpos.y;
+		getXYfromDir( pc_i->dir, newX, newY );	// get coords of the location we want to walk
                 //<Luxor>
 		Location newpos = Loc( newX, newY, charpos.z );
 		valid = ( isWalkable( newpos ) != illegal_z );
@@ -1288,8 +1285,8 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 			}
 			else 	// We're out of the boundary, so we need to get back
 			{
-				int direction = getDirFromXY( pc_i, pc_i->fx1, pc_i->fy1 );
-				getXYfromDir( direction, &newX, &newY );
+				UI08 direction = getDirFromXY( pc_i, pc_i->fx1, pc_i->fy1 );
+				getXYfromDir( direction, newX, newY );
 				//<Luxor>
 				newpos = Loc( newX, newY, charpos.z );
 				valid = ( isWalkable( newpos ) != illegal_z );
@@ -1297,7 +1294,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 				if ( !valid ) // try to bounce around obstacle
 				{
 					direction = pc_i->dir;
-					getXYfromDir( pc_i->dir, &newX, &newY );
+					getXYfromDir( pc_i->dir, newX, newY );
 					//<Luxor>
 					newpos = Loc( newX, newY, charpos.z );
 					valid = ( isWalkable( newpos ) != illegal_z );
@@ -1309,7 +1306,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 							direction = getRightDir( direction );
 						else
 							direction = getLeftDir( direction );
-						getXYfromDir( pc_i->dir, &newX, &newY );
+						getXYfromDir( pc_i->dir, newX, newY );
 						//<Luxor>
 						newpos = Loc( newX, newY, charpos.z );
 						valid = ( isWalkable( newpos ) != illegal_z );
@@ -1333,7 +1330,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 				direction = getLeftDir( pc_i->dir );
 			while( !valid && direction != pc_i->dir )
 			{
-				getXYfromDir( direction, &newX, &newY );
+				getXYfromDir( direction, newX, newY );
 				//<Luxor>
 				newpos = Loc( newX, newY, charpos.z );
 				valid = ( isWalkable( newpos ) != illegal_z );
@@ -1495,7 +1492,6 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
 				return;
 		}
 
-		NXWSOCKET socket = ps->toInt();
 		UI08 flag, hi_color;
 
 		// If it's an npc, and it's fighting or following something let's show it running
