@@ -642,7 +642,7 @@ inline bool operator ==( cItem& a, cItem& b ) {
 			( a.getSerial32() != b.getSerial32() ) &&
 			( a.getScriptID() == b.getScriptID() ) &&
 			( a.id() == b.id() ) &&
-			( a.color == b.color ) &&
+			( a.color() == b.color() ) &&
 			( a.poisoned == b.poisoned );
 }
 
