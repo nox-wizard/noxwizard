@@ -3154,7 +3154,7 @@ NATIVE2(_getMenuProperty)
 			break;
 
 			default:
-				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
+				ErrOut("menu_getProperty called with invalid property %d!\n", params[2] );
 				return false;
 		}
 		return static_cast<cell>(p);

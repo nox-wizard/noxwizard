@@ -101,6 +101,7 @@ int AMXAPI amx_SetStringUnicode( cell *dest, wstring& source )
 	for( int i=0; iter!=end; ++iter, ++i ) {
 		dest[i]=(*iter);
 	}
+	dest[source.size()]='\0';
     /* On Big Endian machines, the characters are well aligned in the
      * cells; on Little Endian machines, we must swap all cells.
     */
@@ -109,7 +110,7 @@ int AMXAPI amx_SetStringUnicode( cell *dest, wstring& source )
 		while (len>=0)
 			swapcell((ucell *)&dest[len--]);
     }
-
+	
 	return AMX_ERR_NONE;
 }
 
