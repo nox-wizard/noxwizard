@@ -48,7 +48,6 @@ extern class cPartys		*Partys;
 extern struct teffect_st	*teffects;
 extern class cSpawns		*Spawns;
 extern class cAreas		*Areas;
-extern class cRestockMng	*Restocks;
 
 namespace Scripts {
 	extern class cScpScript* Advance;

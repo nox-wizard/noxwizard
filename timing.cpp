@@ -275,7 +275,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Shoprestock
 	//
-	Restocks->doRestock();
+	restocks::doRestock();
 
 	//
 	// Prison release

@@ -1040,17 +1040,15 @@ void loaditem()
 	amxVS.moveVariable( INVALID, pi->getSerial32() );
 
 	if( pi->layer==LAYER_TRADE_RESTOCK )
-		Restocks->addNewRestock( pi );
+		restocks::addNewRestock( pi );
 
 }
 
-void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
+//! Load world from NXW*.WSC
+void CWorldMain::loadNewWorld()
 {
 	std::string fileName;
-//	unsigned char memerr=0; // unused variable
 	char outper[4];
-//	unsigned int i=0; // unused variable
-//	unsigned int percent=0,a=0,pred=0,maxm=0; // unused variable
 	*outper='\0';
 
 
