@@ -122,13 +122,13 @@ SOURCES =	\
 		trigger.cpp \
 		thievery.cpp \
 		utils.cpp \
+		unicode.cpp \
 		walking.cpp \
 		weight.cpp \
 		worldmain.cpp \
 		commands/addremove.cpp \
 		commands/privlevels.cpp \
 		commands/tweaking.cpp
-		#unicode.cpp \
 
 OBJECTS := $(SOURCES:.cpp=.o)
 SOURCES += $(AMXSRCS)
@@ -219,7 +219,7 @@ HEADERS =	\
 		translation.h \
 		trigger.h \
 		typedefs.h \
-		#unicode.h \
+		unicode.h \
 		version.h \
 		worldmain.h \
 		commands/addremove.h \
