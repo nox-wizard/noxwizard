@@ -564,12 +564,16 @@ void cOldMenu::buildClassicMenu()
 
 	UI32 curr_style = style & ~MENUSTYLE_LARGE;
 
+	setId( curr_style );
+	setX( 0x6E );
+	setY( 0x46 );
+
 	//--static pages
 	if( curr_style==MENUSTYLE_STONE ) {
 		setCloseAble( false );
 		addPage( 0 );
 		addResizeGump( 0, 0, 2600, width, 340 );
-		addPageButton( 250, 17, 4017, 4017+1, 1 );
+		addButton( 250, 17, 4017, 4017+1, 1 );
 		addText( 30, 40, title, color );
 		pagebtny = 300;
 	}
@@ -577,7 +581,7 @@ void cOldMenu::buildClassicMenu()
 		setCloseAble( false );
 		addPage( 0 );
 		addResizeGump( 0, 0, 2620, 320, 340 );
-		addPageButton( 250, 17, 4017, 4017+1, 1 );
+		addButton( 250, 17, 4017, 4017+1, 1 );
 		addText( 45, 17, title, color );
 		pagebtny = 307;
 	}
@@ -585,7 +589,7 @@ void cOldMenu::buildClassicMenu()
 		setCloseAble( false );
 		addPage( 0 );
 		addResizeGump( 0, 0, 0x0DAC, 320, 340 );
-		addPageButton( 250, 7, 4017, 4017+1, 1 );
+		addButton( 250, 7, 4017, 4017+1, 1 );
 		addText( 45, 7, title, color );
 		pagebtny = 307;
 	}
@@ -593,13 +597,13 @@ void cOldMenu::buildClassicMenu()
 		setCloseAble( false );
 		addPage( 0 );
 		addResizeGump( 0, 0, 0x1432, 320, 340 );
-		addPageButton( 250, 27, 4017, 4017+1, 1 );
+		addButton( 250, 27, 4017, 4017+1, 1 );
 		addText( 45, 27, title, color );
 		pagebtny = 290;
 	}
 	else if (curr_style==MENUSTYLE_TRASPARENCY) {
 		setCloseAble( true );
-		addPageButton( 250, 27, 4017, 4017+1, 1 );
+		addButton( 250, 27, 4017, 4017+1, 1 );
 		addText( 45, 27, title, color );
 		pagebtny = 290;
 	}
@@ -647,8 +651,9 @@ void cOldMenu::buildClassicMenu()
 
 	curr_page = allPages.begin();
 
-	if( allPages.size()==1 )
-		return; //not need back and forward buttons with only a page
+	//there is not this check in old code
+	//if( allPages.size()==1 )
+	//	return; //not need back and forward buttons with only a page
 
 	//now add back and forward buttons
 	for( int p=1; curr_page!=last_page; ++curr_page, ++p )
