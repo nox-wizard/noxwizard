@@ -932,7 +932,7 @@ public:
 
 		UI32			distFrom(P_CHAR pc);
 		UI32			distFrom(P_ITEM pi);
-		void			teleport();
+		void			teleport( UI08 flags = TELEFLAG_SENDALL, NXWCLIENT cli = NULL );
 		void			facexy(SI32 facex, SI32 facey);
 		LOGICAL			losFrom(P_CHAR pc);
 		void			playSFX(SI16 sound);

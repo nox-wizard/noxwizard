@@ -359,7 +359,7 @@ bool WalkHandleAllowance(P_CHAR pc, int sequence)
 			{
 			  pc->sysmsg(TRANSLATE("You are too fatigued to move."));
 			  walksequence[s]=INVALID;
-			  pc->teleport();
+			  pc->teleport( TELEFLAG_NONE );
 			  deny(s, pc, sequence); // !!!
 			  return false;
 			}

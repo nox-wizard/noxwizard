@@ -1737,7 +1737,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 //AoS/						Network->FlushBuffer(s);
 
 						if (pc_currchar->dead && pc_currchar->war) // Invisible ghost, resend.
-							pc_currchar->teleport();
+							pc_currchar->teleport( TELEFLAG_NONE );
 
 						walking2(pc_currchar);
 						dosocketmidi(s);

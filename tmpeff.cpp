@@ -823,7 +823,7 @@ void cTempfx::executeExpireCode()
 			dest->sysmsg(TRANSLATE("You have hidden yourself well."));
 			//dest->hideBySkill();
 			dest->hidden = HIDDEN_BYSKILL;
-			dest->teleport();
+			dest->teleport( TELEFLAG_NONE );
 			break;
 
 		case GM_UNHIDING:

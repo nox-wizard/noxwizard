@@ -1760,40 +1760,38 @@ UI32 cChar::distFrom(P_ITEM pi)
 /*!
 \author Luxor
 \brief Teleports character to its current set coordinates.
+\todo Rewrite this function and where it's used to reduce lag. Implement a bitfield to choose what has to be sent.
 */
-void cChar::teleport()
+void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
 	P_ITEM p_boat = Boats->GetBoat(getPosition());
 
-	if(ISVALIDPI(p_boat))
-	{
+	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
 		setPosition("z",boatpos.z+3 );
 		setPosition("dz",boatpos.z+3 );
-	}
-	else
-	{
+	} else
 		setMultiSerial(-1);
-	}
 
-	setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
+	setcharflag2( this ); //AntiChrist - Update highlight color
 
 	NXWSOCKET socket = getSocket();
 
-	if ( socket!=INVALID )
-	{
+        //
+        // Send the draw player packet
+        //
+	if ( socket != INVALID ) {
 		UI08 flag = 0x00;
 		Location pos = getPosition();
 
-		if(poisoned)
+		if( poisoned )
 			flag |= 0x04;
 
-		if (IsHidden())
+		if ( IsHidden() )
 			flag |= 0x80;
 
 		SendDrawGamePlayerPkt(socket, getSerial32(), id, 0x00, skin, flag, pos, 0x0000, dir | 0x80, true);
-
 
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -1802,55 +1800,83 @@ void cChar::teleport()
 
 	NxwSocketWrapper sw;
 
-	sw.fillOnline();
-	for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
-		NXWCLIENT ps_w = sw.getClient();
-		if ( ps_w != NULL )
-			ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
+        //
+        // Send the object remove packet
+        //
+	if ( cli == NULL ) {
+		sw.fillOnline();
+		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
+			NXWCLIENT ps_w = sw.getClient();
+			if ( ps_w != NULL )
+				ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
+		}
+	} else
+		cli->sendRemoveObject(static_cast<P_OBJECT>(this));
+
+        //
+        // Send worn items and the char itself to the char (if online) and other players
+        //
+	if ( cli == NULL ) {
+		sw.fillOnline( this, false );
+		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
+			NXWCLIENT ps_i = sw.getClient();
+			if( ps_i != NULL ) {
+				impowncreate( ps_i->toInt(), this, 1 );
+				//ndEndy not too sure of this
+				if ( flags&TELEFLAG_SENDWORNITEMS )
+					wornitems( ps_i->toInt(), getSerial32() );
+			}
+		}
+	} else {
+		impowncreate( cli->toInt(), this, 1 );
+		if ( flags&TELEFLAG_SENDWORNITEMS )
+			wornitems( cli->toInt(), getSerial32() );
 	}
 
-	sw.fillOnline( this, false );
-	for ( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWCLIENT ps_i=sw.getClient();
-		if( ps_i!=NULL ) {
-			impowncreate(ps_i->toInt(), this, 1);
-			//ndEndy not too sure of this
-			wornitems( ps_i->toInt(), getSerial32() );
+
+        //
+        // Send other players and items to char (if online)
+        //
+        if ( cli == NULL || cli == getClient() )
+	if ( socket != INVALID ) {
+                if ( flags&TELEFLAG_SENDNEARCHARS ) {
+                        NxwCharWrapper sc;
+			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
+			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+				P_CHAR pc=sc.getChar();
+				if( ISVALIDPC( pc ) )
+					if( getSerial32() != pc->getSerial32() ) {
+						impowncreate( socket, pc, 1 );
+					}
+			}
+		}
+
+		if ( flags&TELEFLAG_SENDNEARITEMS ) {
+			NxwItemWrapper si;
+			si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
+			for( si.rewind(); !si.isEmpty(); si++ ) {
+				P_ITEM pi = si.getItem();
+				if( ISVALIDPI( pi ) )
+					senditem( socket, pi );
+			}
 		}
 	}
 
+	//
+	// Send the light level
+	//
+	if ( socket != INVALID && (flags&TELEFLAG_SENDLIGHT) )
+		dolight( socket, worldcurlevel );
 
+        //
+        // Check if the region changed
+        //
+	checkregion( this );
 
-	if ( socket!= INVALID )
-	{
-
-		NxwCharWrapper sc;
-		sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
-		for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			P_CHAR pc=sc.getChar();
-			if( ISVALIDPC( pc ) )
-				if( getSerial32() != pc->getSerial32() )
-				{
-					impowncreate( socket, pc, 1 );
-				}
-		}
-
-		NxwItemWrapper si;
-		si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
-		for( si.rewind(); !si.isEmpty(); si++ ) {
-
-			P_ITEM pi=si.getItem();
-			if( ISVALIDPI( pi ) )
-				senditem( socket, pi );
-		}
-	}
-
-	if (perm[socket])
-		dolight(socket, worldcurlevel);
-
-	checkregion(this);
-	if(socket!=INVALID)
+	//
+	// Send the weather
+	//
+	if( socket != INVALID && (flags&TELEFLAG_SENDWEATHER) )
 		pweather(socket);
 }
 
@@ -1897,7 +1923,7 @@ void cChar::facexy(SI32 facex, SI32 facey)
 			else dir = 4; // north
 	}
 	if (dir != olddir)
-		teleport();
+		teleport( TELEFLAG_NONE );
 }
 
 /*!
@@ -2318,7 +2344,7 @@ void cChar::hideBySkill()
 		sysmsg( TRANSLATE("You have hidden yourself well.") );
 
 	hidden = HIDDEN_BYSKILL;
-	teleport();
+	teleport( TELEFLAG_NONE );
 }
 
 /*!
@@ -2405,7 +2431,7 @@ void cChar::resurrect( NXWCLIENT healer )
 			pi->setContSerial(getSerial32());
 			pi->dye=1;
 		}
-		teleport();
+		teleport( TELEFLAG_SENDWORNITEMS | TELEFLAG_SENDLIGHT );
 	}
 		else
 			if( healer!=NULL )
@@ -2576,7 +2602,7 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 
 	morphed = bBackup;
 
-	teleport();
+	teleport( TELEFLAG_SENDWORNITEMS );
 
 }
 
@@ -2796,7 +2822,7 @@ void cChar::Kill()
 	{ // legacy code : should be cut when polymorph will be translated to morph
 		id = xid;
 		polymorph=false;
-		teleport();
+		teleport( TELEFLAG_SENDWORNITEMS );
 	}
     
 	murdererSer = INVALID;
@@ -3032,7 +3058,7 @@ void cChar::Kill()
 		
 	}
 
-	teleport();
+	teleport( TELEFLAG_SENDWORNITEMS );
 
 	//<Luxor>
 	pCorpse->Refresh();
@@ -3183,7 +3209,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 	pi->setContSerial(getSerial32());
 
 	checkSafeStats();
-	teleport();
+	teleport( TELEFLAG_SENDWORNITEMS );
 
 	return 0;
 }
@@ -4124,7 +4150,7 @@ void cChar::pc_heartbeat()
 	{
 		Accounts->SetOffline( account);
 		logout = INVALID;
-		teleport();
+		teleport( TELEFLAG_NONE );
 		return;
 	}
 	if( !IsOnline() )

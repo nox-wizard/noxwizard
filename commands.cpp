@@ -672,7 +672,7 @@ namespace Commands
 			{
 				pc->setSkinColor(color);
 				pc->setOldSkinColor(color);
-				pc->teleport();
+				pc->teleport( TELEFLAG_NONE );
 
 				soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
 			}

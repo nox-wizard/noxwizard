@@ -302,13 +302,13 @@ int cChar::unmountHorse()
 					p_pet->teleport();
 
 					pi->deleteItem();
-					teleport();
+					teleport( TELEFLAG_SENDWORNITEMS );
 					return 0;
 				}
 			}
 
 			pi->deleteItem();
-			teleport();
+			teleport( TELEFLAG_SENDWORNITEMS );
 			InfoOut("Horse not found");
 			return 1;
 

@@ -3887,7 +3887,7 @@ NATIVE(_chr_hide)
 			break;
 		case 1:
 			pc->hidden = 1;
-			pc->teleport();
+			pc->teleport( TELEFLAG_NONE );
 			break;
 		case 2:
 			pc->hideBySpell();

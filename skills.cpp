@@ -823,7 +823,7 @@ void Skills::Stealth(NXWSOCKET s)
     {
         pc->hidden = UNHIDDEN;
         pc->stealth = INVALID;
-	pc->teleport();
+	pc->teleport( TELEFLAG_SENDWORNITEMS );
         return;
     }
     
