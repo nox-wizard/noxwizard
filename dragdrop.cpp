@@ -202,10 +202,12 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 		if ( isCharSerial( pi->getContSerial()))
 		{
+			ConOut( "container is a char\n" );
 			owner = pointers::findCharBySerial( pi->getContSerial());
 		}
 		else  // its an item
 		{
+			ConOut( "container is an item\n" );
 			//Endymion Bugfix:
 			//before check the container.. but if this cont is a subcont?
 			//so get the outmostcont and check it else:
@@ -217,28 +219,66 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				owner=pointers::findCharBySerial( container->getContSerial() );
 		}
 
-		if ( ISVALIDPC( owner ) && owner->getSerial32()!=pc_currchar->getSerial32() )
-		{
-			if ( !pc_currchar->IsGM() && owner->getOwnerSerial32() != pc_currchar->getSerial32() )
-			{// Own serial stuff by Zippy -^ Pack aniamls and vendors.
-				UI08 bounce[2]= { 0x27, 0x00 };
-				Xsend(s, bounce, 2);
-//AoS/				Network->FlushBuffer(s);
-				if (client->isDragging())
-				{
-					client->resetDragging();
-					pi->setContSerial(pi->getContSerial(),true,false);
-					item_bounce3(pi);
+		if ( ISVALIDPC( owner ) )
+			if( owner->getSerial32()!=pc_currchar->getSerial32() )
+				if ( !pc_currchar->IsGM() && owner->getOwnerSerial32() != pc_currchar->getSerial32() )
+				{// Own serial stuff by Zippy -^ Pack aniamls and vendors.
+					UI08 bounce[2]= { 0x27, 0x00 };
+					Xsend(s, bounce, 2);
+					if (client->isDragging())
+					{
+						client->resetDragging();
+						pi->setContSerial(pi->getContSerial(),true,false);
+						item_bounce3(pi);
+					}
+					return;
 				}
-				return;
-			}
-		}
 	}
 
 	if ( ISVALIDPI( container ) )
 	{
+		if ( pi->amxevents[EVENT_ITAKEFROMCONTAINER] )
+		{
+			g_bByPass = false;
+			pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), s );
+			if ( g_bByPass )
+			{
+				Sndbounce5( s );
+				if ( client->isDragging() )
+				{
+					client->resetDragging();
+					UpdateStatusWindow( s, pi );
+				}
+				pi->setContSerial( pi->getContSerial( true ) );
+				pi->setPosition( pi->getOldPosition() );
+				pi->layer = pi->oldlayer;
+				pi->Refresh();
+				return;
+			}
+		}
 
-		if ( container->layer == 0 && container->id() == 0x1E5E)
+		/*
+		//<Luxor>
+		g_bByPass = false;
+		pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
+		if (g_bByPass)
+		{
+			Sndbounce5(s);
+			if (client->isDragging())
+			{
+				client->resetDragging();
+				UpdateStatusWindow(s,pi);
+			}
+			pi->setContSerial( pi->getContSerial(true) );
+			pi->setPosition( pi->getOldPosition() );
+			pi->layer = pi->oldlayer;
+			pi->Refresh();
+			return;
+		}
+		//</Luxor>
+		*/
+
+		if ( container->layer == 0 && container->id() == 0x1E5E) // Sparhawk: What''s this??? if container = a messageboard???
 		{
 			// Trade window???
 			SERIAL serial = calcserial( pi->moreb1, pi->moreb2, pi->moreb3, pi->moreb4);
@@ -253,50 +293,6 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					container->morez = 0;
 					sendtradestatus( piz, container );
 				}
-
-
-			//<Luxor>
-			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
-			{
-				g_bByPass = false;
-				pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), s );
-				if (g_bByPass)
-				{
-					Sndbounce5(s);
-					if (client->isDragging())
-					{
-						client->resetDragging();
-						UpdateStatusWindow(s,pi);
-					}
-					pi->setContSerial( pi->getContSerial(true) );
-					pi->setPosition( pi->getOldPosition() );
-					pi->layer = pi->oldlayer;
-					pi->Refresh();
-					return;
-                		}
-			}
-			//</Luxor>
-
-			/*
-			//<Luxor>
-			g_bByPass = false;
-			pi->runAmxEvent( EVENT_ITAKEFROMCONTAINER, pi->getSerial32(), pi->getContSerial(), s );
-			if (g_bByPass)
-			{
-				Sndbounce5(s);
-				if (client->isDragging())
-				{
-					client->resetDragging();
-					UpdateStatusWindow(s,pi);
-				}
-				pi->setContSerial( pi->getContSerial(true) );
-				pi->setPosition( pi->getOldPosition() );
-				pi->layer = pi->oldlayer;
-				pi->Refresh();
-				return;
-			}
-			//</Luxor>
-			*/
 
 			if ( container->corpse )
 			{
