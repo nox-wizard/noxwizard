@@ -82,7 +82,6 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 			}
 		}
 	}
-	ConOut("RandomScriptValue %s %s = %s\n", section.c_str(), sectionId.c_str(), value.c_str());
 	return value;
 }
 
