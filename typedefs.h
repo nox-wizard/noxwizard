@@ -88,9 +88,13 @@ typedef SI32				ACCOUNT;
 typedef std::vector<UI32>		UI32VECTOR;	//!< vector of unsigned 32 bits integers
 typedef std::vector<SERIAL>		SERIAL_VECTOR;	//!< vector of serials
 typedef slist<SERIAL>                   SERIAL_SLIST;	//!< slist of serials
-typedef SERIAL SCRIPTID; //!< a script id
-
+typedef SERIAL 				SCRIPTID; 	//!< a script id
 typedef std::set<SERIAL>		SERIAL_SET;	//!< set of serials
+typedef std::vector< P_CHAR >		PCHAR_VECTOR;	//!< a vector of pointers to cChar
+typedef PCHAR_VECTOR::iterator		PCHAR_VECTOR_IT;//!< an iterator to a vector of pointers to cChar
+typedef std::vector< P_ITEM >		PITEM_VECTOR;	//!<  a vector of pointers to cItem
+typedef PITEM_VECTOR::iterator		PITEM_VECTOR_IT;//!< an iterator to a vector of pointers to cChar
+
 
 #if defined __GNUC__ && (__GNUC__ < 3 || defined(WIN32))
 	typedef std::basic_string <wchar_t> wstring;

@@ -564,11 +564,11 @@ void CWorldMain::loadChar() // Load a character from WSC
 	//
 	//
 	pc->region=static_cast<unsigned char>(calcRegionFromXY( pc->getPosition() )); //LB bugfix
-#ifdef SPAR_NEW_WR_SYSTEM
+#ifdef SPAR_C_LOCATION_MAP
 	//
 	// Hmmm...is not needed here because lowerdown a move to is done!
 	// will correct this later
-	pointers::addCharToLocationMap(pc);
+	pointers::addToLocationMap(pc);
 #else
 	mapRegions->add(pc);
 #endif
@@ -1036,8 +1036,8 @@ void loaditem()
 		int max_x = MapTileWidth  * 8;
 		int max_y = MapTileHeight * 8;
 
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::addItemToLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
+		pointers::addToLocationMap(pi);
 #else
 		mapRegions->add(pi);
 #endif

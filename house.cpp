@@ -271,8 +271,8 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			pointers::addItemToLocationMap(pHouse);
+#ifdef SPAR_I_LOCATION_MAP
+			pointers::addToLocationMap(pHouse);
 #else
 			mapRegions->add(pHouse);
 #endif
@@ -463,8 +463,8 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-#ifdef SPAR_NEW_WR_SYSTEM
-						pointers::addItemToLocationMap(pi_l);
+#ifdef SPAR_I_LOCATION_MAP
+						pointers::addToLocationMap(pi_l);
 #else
 						mapRegions->add(pi_l);
 #endif
@@ -709,8 +709,8 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::addItemToLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
+		pointers::addToLocationMap(pi);
 #else
 		mapRegions->add(pi);
 #endif
@@ -861,8 +861,8 @@ int add_hlist(int c, int h, int t)
 		pi->setCurrentName(TRANSLATE("friend of house"));
 
 		pi->setPosition( pi_h->getPosition() );
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::addItemToLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
+		pointers::addToLocationMap(pi);
 #else
 		mapRegions->add(pi);
 #endif
@@ -892,7 +892,7 @@ int del_hlist(int c, int h)
 	if(hl) {
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
-#ifdef SPAR_NEW_WR_SYSTEM
+#ifdef SPAR_I_LOCATION_MAP
 			//
 			// Hmmm....this is handled by pointers::delItem()....must remove it later
 			//

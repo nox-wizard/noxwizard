@@ -226,10 +226,9 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 				}
 
 				pc->setMultiSerial(INVALID);
-#ifdef SPAR_NEW_WR_SYSTEM
-				pointers::delCharFromLocationMap(pc);
+#ifdef SPAR_C_LOCATION_MAP
 				pc->setPosition( Loc( x, y, typ ? sz : mz, typ ? sz : mz ) );
-				pointers::addCharToLocationMap(pc);
+				pointers::updateLocationMap(pc);
 #else
 				mapRegions->remove(pc);
 				pc->setPosition( Loc( x, y, typ ? sz : mz, typ ? sz : mz ) );
@@ -269,10 +268,9 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 		itmpos.x+=dy;
 		itmpos.y+=dx*-1;
 	}
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delItemFromLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
 	pi->setPosition( itmpos );
-	pointers::addItemToLocationMap(pi);
+	pointers::updateLocationMap(pi);
 #else
 	mapRegions->remove(pi);
 	pi->setPosition( itmpos );
@@ -305,10 +303,9 @@ void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 		charpos.y+= dx*-1;
 
 	}
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delCharFromLocationMap(pc);
+#ifdef SPAR_C_LOCATION_MAP
 	pc->setPosition( charpos );
-	pointers::addCharToLocationMap(pc);
+	pointers::updateLocationMap(pc);
 #else
 	mapRegions->remove(pc);
 	pc->setPosition( charpos );
@@ -439,115 +436,102 @@ void cBoat::TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_IT
 	Location itmpos;
 	signed short int *pShipOffsets;
 
-#ifdef SPAR_NEW_WR_SYSTEM
+#ifdef SPAR_I_LOCATION_MAP
 	switch( size )
 	{
 		case 0x00:
 		case 0x04:
 			pShipOffsets = iSmallShipOffsets[dir][PORT_PLANK];
-
-			pointers::delItemFromLocationMap( pPort );
 			itmpos= pPort->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pPort->setPosition( itmpos );
-			pointers::addItemToLocationMap( pPort );
+			pointers::updateLocationMap( pPort );
 
 			pShipOffsets = iSmallShipOffsets[dir][STARB_PLANK];
-			pointers::delItemFromLocationMap( pStarboard );
 			itmpos= pStarboard->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pStarboard->setPosition( itmpos );
-			pointers::addItemToLocationMap( pStarboard );
+			pointers::updateLocationMap( pStarboard );
 
 			pShipOffsets = iSmallShipOffsets[dir][TILLER];
-			pointers::delItemFromLocationMap( pTiller );
 			itmpos= pTiller->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pTiller->setPosition( itmpos );
-			pointers::addItemToLocationMap( pTiller );
+			pointers::updateLocationMap( pTiller );
 
 			pShipOffsets = iSmallShipOffsets[dir][HOLD];
-			pointers::delItemFromLocationMap( pHold );
 			itmpos= pHold->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pHold->setPosition( itmpos );
-			pointers::addItemToLocationMap( pHold );
+			pointers::updateLocationMap( pHold );
 
 			break;
 
 		case 0x08:
 		case 0x0C:
 			pShipOffsets = iMediumShipOffsets[dir][PORT_PLANK];
-			pointers::delItemFromLocationMap( pPort );
 			itmpos= pPort->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pPort->setPosition( itmpos );
-			pointers::addItemToLocationMap( pPort );
+			pointers::updateLocationMap( pPort );
 
 			pShipOffsets = iMediumShipOffsets[dir][STARB_PLANK];
-			pointers::delItemFromLocationMap( pStarboard );
 			itmpos= pStarboard->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pStarboard->setPosition( itmpos );
-			pointers::addItemToLocationMap( pStarboard );
+			pointers::updateLocationMap( pStarboard );
 
 			pShipOffsets = iMediumShipOffsets[dir][TILLER];
-			pointers::delItemFromLocationMap( pTiller );
 			itmpos= pTiller->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pTiller->setPosition( itmpos );
-			pointers::addItemToLocationMap( pTiller );
+			pointers::updateLocationMap( pTiller );
 
 			pShipOffsets = iMediumShipOffsets[dir][HOLD];
-			pointers::delItemFromLocationMap( pHold );
 			itmpos= pHold->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pHold->setPosition( itmpos );
-			pointers::addItemToLocationMap( pHold );
+			pointers::updateLocationMap( pHold );
 
 			break;
 		case 0x10:
 		case 0x14:
 
 			pShipOffsets = iLargeShipOffsets[dir][PORT_PLANK];
-			pointers::delItemFromLocationMap( pPort );
 			itmpos= pPort->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pPort->setPosition( itmpos );
-			pointers::addItemToLocationMap( pPort );
+			pointers::updateLocationMap( pPort );
 
 			pShipOffsets = iLargeShipOffsets[dir][STARB_PLANK];
-			pointers::delItemFromLocationMap( pStarboard );
 			itmpos= pStarboard->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pStarboard->setPosition( itmpos );
-			pointers::addItemToLocationMap( pStarboard );
+			pointers::updateLocationMap( pStarboard );
 
 			pShipOffsets = iLargeShipOffsets[dir][TILLER];
-			pointers::delItemFromLocationMap( pTiller );
 			itmpos= pTiller->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pTiller->setPosition( itmpos );
-			pointers::addItemToLocationMap( pTiller );
+			pointers::updateLocationMap( pTiller );
 
 			pShipOffsets = iLargeShipOffsets[dir][HOLD];
-			pointers::delItemFromLocationMap( pHold );
 			itmpos= pHold->getPosition();
 			itmpos.x+= pShipOffsets[X];
 			itmpos.y+= pShipOffsets[Y];
 			pHold->setPosition( itmpos );
-			pointers::addItemToLocationMap( pHold );
+			pointers::updateLocationMap( pHold );
 
 			break;
 
@@ -1106,12 +1090,12 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 		break;
 	}
 
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::addItemToLocationMap( pTiller );
-	pointers::addItemToLocationMap( pPlankL );
-	pointers::addItemToLocationMap( pPlankR );
-	pointers::addItemToLocationMap( pHold );
-	pointers::addItemToLocationMap( pBoat );
+#ifdef SPAR_I_LOCATION_MAP
+	pointers::addToLocationMap( pTiller );
+	pointers::addToLocationMap( pPlankL );
+	pointers::addToLocationMap( pPlankR );
+	pointers::addToLocationMap( pHold );
+	pointers::addToLocationMap( pBoat );
 #else
 	mapRegions->add(pTiller);//Make sure everything is in da regions!
 	mapRegions->add(pPlankL);

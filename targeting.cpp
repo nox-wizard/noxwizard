@@ -1428,8 +1428,8 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
             pi->setDecay( false );
 		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
             pi->Refresh();
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::addItemToLocationMap( pi );
+#ifdef SPAR_I_LOCATION_MAP
+		pointers::addToLocationMap( pi );
 #else
             mapRegions->add(pi); // lord Binary, xan, God Rah
 #endif
@@ -1635,10 +1635,9 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	pi1->setId( 0x122A );
 	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
 	VALIDATEPI(pi2);
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delItemFromLocationMap( pi1 );
+#ifdef SPAR_I_LOCATION_MAP
 	pi1->setPosition( pi2->getPosition() );
-	pointers::addItemToLocationMap(pi1);
+	pointers::updateLocationMap(pi1);
 #else
 	mapRegions->remove(pi1);
 	pi1->setPosition( pi2->getPosition() );
@@ -1718,10 +1717,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	VALIDATEPI(pi2);
 	P_ITEM pi3=MAKE_ITEMREF_LR(i);
 	VALIDATEPI(pi3);
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delItemFromLocationMap(pi1);
+#ifdef SPAR_I_LOCATION_MAP
 	pi1->setPosition( pi2->getPosition() );
-	pointers::addItemToLocationMap(pi1);
+	pointers::updateLocationMap(pi1);
 #else
 	mapRegions->remove(pi1);
 	pi1->setPosition( pi2->getPosition() );
@@ -2087,8 +2085,8 @@ void cTargets::SwordTarget(const NXWCLIENT pC)
 		VALIDATEPI(pi);
 
 		pi->setPosition( pcpos );
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::addItemToLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
+		pointers::addToLocationMap(pi);
 #else
 		mapRegions->add(pi);
 #endif

@@ -598,10 +598,9 @@ void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
 */
 void cItem::MoveTo(Location newloc)
 {
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delItemFromLocationMap(this);
+#ifdef SPAR_I_LOCATION_MAP
 	setPosition( newloc );
-	pointers::addItemToLocationMap(this);
+	pointers::updateLocationMap(this);
 #else
 	mapRegions->remove(this);
 	setPosition( newloc );

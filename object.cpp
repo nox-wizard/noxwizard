@@ -990,3 +990,22 @@ tempfx::cTempfx* cObject::getTempfx( SI32 num, SERIAL funcidx )
 	return NULL;
 }
 
+#ifdef SPAR_LOCATION_MAP
+/*!
+\brief Get the location key
+\author Sparhawk
+*/
+UI32 cObject::getLocationKey()
+{
+	return locationKey;
+}
+
+/*!
+\brief set the location key
+\author Sparhawk
+*/
+void cObject::setLocationKey()
+{
+	locationKey = (getPosition().x << 16) + getPosition().y;
+}
+#endif

@@ -1467,8 +1467,8 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 					pc_pet->attackerserial= INVALID;
 					pc->war  	= 0;
 					pc->targserial	= INVALID;
-#ifdef SPAR_NEW_WR_SYSTEM
-					pointers::delCharFromLocationMap( pc_pet );
+#ifdef SPAR_C_LOCATION_MAP
+					pointers::delFromLocationMap( pc_pet );
 #else
 					mapRegions->remove( pc_pet );
 #endif
@@ -1617,8 +1617,8 @@ stabledPets.rewind();	// GH!
 					
 					pc_pet->timeused_last = getclock();
 					pc_pet->time_unused=0;
-#ifdef SPAR_NEW_WR_SYSTEM
-					pointers::addCharToLocationMap( pc_pet );
+#ifdef SPAR_C_LOCATION_MAP
+					pointers::addToLocationMap( pc_pet );
 #else
 					mapRegions->add( pc_pet );
 #endif

@@ -1204,10 +1204,9 @@ void cChar::MoveTo(Location newloc)
 	// Avoid crash if go to 0,0
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
-#ifdef SPAR_NEW_WR_SYSTEM
-	pointers::delCharFromLocationMap( this );
+#ifdef SPAR_C_LOCATION_MAP
 	setPosition( newloc );
-	pointers::addCharToLocationMap( this );
+	pointers::updateLocationMap( this );
 #else
 	mapRegions->remove(this);
 	setPosition( newloc );

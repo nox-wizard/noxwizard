@@ -218,8 +218,8 @@ void cChar::mounthorse( P_CHAR mount )
 
 
 		mount->mounted=true;
-#ifdef SPAR_NEW_WR_SYSTEM
-		pointers::delCharFromLocationMap( mount );
+#ifdef SPAR_C_LOCATION_MAP
+		pointers::delFromLocationMap( mount );
 #else
 		mapRegions->remove( mount );
 #endif

@@ -291,7 +291,7 @@ namespace pointers {
 	std::map<SERIAL, vector <P_CHAR> > pMultiCharMap;
 	std::map<SERIAL, vector <P_ITEM> > pMultiItemMap;
 
-#ifdef SPAR_NEW_WR_SYSTEM
+#ifdef SPAR_LOCATION_MAP
 	//
 	// Still one flaw to fix.
 	// When position of object is changed (e.g. through small) deleting objects will not work because
@@ -351,27 +351,76 @@ namespace pointers {
 			lowerRight.y = y + range;
 	}
 
-	void addCharToLocationMap( const P_CHAR who )
+	void addToLocationMap( const P_OBJECT pObject )
 	{
-		pCharLocationMap.insert( pair< UI32, P_CHAR >( locationToKey( who->getPosition() ), who ) );
-		//ConOut("addCharToWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
+		if( pObject != 0 )
+		{
+			if( isItemSerial( pObject->getSerial32() ) )
+			{
+				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+					addItemToLocationMap( static_cast<P_ITEM>(pObject) );
+			}
+			else
+			{
+				addCharToLocationMap( static_cast<P_CHAR>(pObject) );
+			}
+		}
 	}
 
-	void delCharFromLocationMap( const P_CHAR who )
+	void updateLocationMap( const P_OBJECT pObject )
 	{
-		//ConOut("delCharFromWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
-		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( locationToKey( who->getPosition() ) );
+		if( pObject != 0 )
+		{
+			if( isItemSerial( pObject->getSerial32() ) )
+			{
+				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+				{
+					delItemFromLocationMap( static_cast<P_ITEM>(pObject) );
+					addItemToLocationMap( static_cast<P_ITEM>(pObject) );
+				}
+			}
+			else
+			{
+				delCharFromLocationMap( static_cast<P_CHAR>(pObject) );
+				addCharToLocationMap( static_cast<P_CHAR>(pObject) );
+			}
+		}
+	}
+
+	void delFromLocationMap( const P_OBJECT pObject )
+	{
+		if( pObject != 0 )
+		{
+			if( isItemSerial( pObject->getSerial32() ) )
+			{
+				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+				{
+					delItemFromLocationMap( static_cast<P_ITEM>(pObject) );
+				}
+			}
+			else
+			{
+				delCharFromLocationMap( static_cast<P_CHAR>(pObject) );
+			}
+		}
+	}
+
+	void addCharToLocationMap( const P_CHAR pWho )
+	{
+		pWho->setLocationKey();
+		pCharLocationMap.insert( pair< UI32, P_CHAR >( pWho->getLocationKey(), pWho ) );
+	}
+
+	void delCharFromLocationMap( const P_CHAR pWho )
+	{
+		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( pWho->getLocationKey() );
 
 		for( ; it.first != it.second; ++it.first )
-			if( it.first->second->getSerial32() == who->getSerial32() )
+			if( it.first->second->getSerial32() == pWho->getSerial32() )
 			{
 				pCharLocationMap.erase( it.first );
 				break;
 			}
-		/*
-		if( it.first == it.second )
-			WarnOut("delCharFromWorldMap: could not delete char %i at x %i y %i from location map\n", who->getSerial32(), who->getPosition().x, who->getPosition().y );
-		*/
 	}
 
 	void showCharLocationMap()
@@ -407,11 +456,11 @@ namespace pointers {
 		ConOut( "--------------------------------\n" );
 	}
 
-	pCharVector* getCharsNearLocation( cObject* pObject, SI32 range, UI32 flags )
+	PCHAR_VECTOR* getNearbyChars( P_OBJECT pObject, SI32 range, UI32 flags )
 	{
-		pCharVector* 	pvCharsInRange	= 0;
+		PCHAR_VECTOR* 	pvCharsInRange	= 0;
 		LOGICAL		validCall	= false;
-		SERIAL		self		= INVALID;
+		P_CHAR		pSelf		= 0;
 
 		if( pObject != 0 )
 		{
@@ -422,67 +471,74 @@ namespace pointers {
 			}
 			else
 			{
-				self = pObject->getSerial32();
+				pSelf = static_cast<P_CHAR>(pObject);
 				validCall = true;
 			}
 			if( validCall )
-				pvCharsInRange = getCharsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, self );
+				pvCharsInRange = getNearbyChars( pObject->getPosition().x, pObject->getPosition().y, range, flags, pSelf );
 		}
 		return pvCharsInRange;
 	}
 
-	pCharVector* getCharsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags, SERIAL serial )
+	PCHAR_VECTOR* getNearbyChars( UI32 x, UI32 y, UI32 range, UI32 flags, P_CHAR pSelf )
 	{
-		pCharVector* pvCharsInRange = 0;
+		PCHAR_VECTOR* pvCharsInRange = 0;
 
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 )
 		{
-			pvCharsInRange = new pCharVector();
+			pvCharsInRange = new PCHAR_VECTOR();
 
 			calculateBoundary( x, y, range );
 
-			//ConOut( "getCharFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
-			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
-
 			PCHARLOCATIONMAPIT it(  pCharLocationMap.lower_bound( locationToKey( upperLeft.x,  upperLeft.y ) ) ),
 					   end( pCharLocationMap.upper_bound( locationToKey( lowerRight.x, lowerRight.y) ) );
-
-			LOGICAL select = false;
+			P_CHAR pc = 0;
 
 			for( ; it != end; ++it )
 			{
-				if( ISVALIDPC( it->second ) )
+				pc = it->second;
+				if( flags )
 				{
-					if( flags )
+					if( pSelf )
 					{
-						if ( !(flags & EXCLUDESELF) ||
-						      ((flags & EXCLUDESELF) && serial != it->second->getSerial32() ) )
+						if( (flags & EXCLUDESELF) && pSelf->getSerial32() == pc->getSerial32() )
 						{
-							if ( it->second->npc )
-							{ //Pc is an npc
-								if ( (flags & NPC) )
-									select = true;
-							}
-							else
-							{  //Pc is a player
-								if ( (flags & ONLINE) && it->second->IsOnline() )
-									select = true;
-								if ( (flags & OFFLINE) && !it->second->IsOnline() )
-									select = true;
-								if ( (flags & DEAD) && it->second->dead )
-									select = true;
-							}
+							continue;
 						}
 					}
-					if( select )
-						pvCharsInRange->push_back( it->second );
+
+					if ( pc->npc )
+					{
+						if ( (flags & NPC) )
+						{
+							pvCharsInRange->push_back( pc );
+							continue;
+						}
+						continue;
+					}
+
+					if ( (flags & ONLINE) && pc->IsOnline() )
+					{
+						pvCharsInRange->push_back( pc );
+						continue;
+					}
+
+					if ( (flags & OFFLINE) && !pc->IsOnline() )
+					{
+						pvCharsInRange->push_back( pc );
+						continue;
+					}
+
+					if ( (flags & DEAD) && pc->dead )
+					{
+						pvCharsInRange->push_back( pc );
+						continue;
+					}
 				}
-				else	// cleanup
+				else
 				{
-					pCharLocationMap.erase( it );
-					WarnOut( "getCharFromLocationMap removed invalid entry\n" );
+					pvCharsInRange->push_back( pc );
 				}
-				select = false;
 			}
 		}
 		return pvCharsInRange;
@@ -494,43 +550,38 @@ namespace pointers {
 	PITEMLOCATIONMAP	pItemLocationMap;
 
 
-	void addItemToLocationMap( const P_ITEM what )
+	void addItemToLocationMap( const P_ITEM pWhat )
 	{
-		//ConOut("addItemToWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
-		pItemLocationMap.insert( pair< UI32, P_ITEM >( locationToKey( what->getPosition() ), what ) );
+		pWhat->setLocationKey();
+		pItemLocationMap.insert( pair< UI32, P_ITEM >( pWhat->getLocationKey(), pWhat ) );
 	}
 
-	void delItemFromLocationMap( const P_ITEM what )
+	void delItemFromLocationMap( const P_ITEM pWhat )
 	{
-		//ConOut("delItemFromWorldMap serial=%d name=%s key=%i\n", what->getSerial32(), what->getCurrentNameC(), key );
-		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( locationToKey( what->getPosition() ) );
+		pair< PITEMLOCATIONMAPIT, PITEMLOCATIONMAPIT > it = pItemLocationMap.equal_range( pWhat->getLocationKey() );
 
 		for( ; it.first != it.second; ++it.first )
-			if( it.first->second->getSerial32() == what->getSerial32() )
+			if( it.first->second->getSerial32() == pWhat->getSerial32() )
 			{
 				pItemLocationMap.erase( it.first );
 				break;
 			}
-		/*
-		if( it.first == it.second )
-			WarnOut("delCharFromWorldMap: could not delete char %i at x %i y %i from location map\n", who->getSerial32(), who->getPosition().x, who->getPosition().y );
-		*/
 	}
 
 
-	pItemVector* getItemsNearLocation( cObject* pObject, UI32 range, UI32 flags )
+	PITEM_VECTOR* getNearbyItems( cObject* pObject, UI32 range, UI32 flags )
 	{
-		pItemVector* 	pvItemsInRange	= 0;
+		PITEM_VECTOR* 	pvItemsInRange	= 0;
 		LOGICAL		validCall	= false;
-		SERIAL		self		= INVALID;
+		P_ITEM		pSelf		= 0;
 
 		if( pObject != 0 )
 		{
 			if( isItemSerial( pObject->getSerial32() ) )
 			{
-				if( static_cast<P_ITEM>(pObject)->isInWorld() )
+				pSelf = static_cast<P_ITEM>(pObject);
+				if( pSelf->isInWorld() )
 				{
-					self = pObject->getSerial32();
 					validCall = true;
 				}
 			}
@@ -539,50 +590,45 @@ namespace pointers {
 				validCall = true;
 			}
 			if( validCall )
-				pvItemsInRange = getItemsNearLocation( pObject->getPosition().x, pObject->getPosition().y, range, flags, self );
+				pvItemsInRange = getNearbyItems( pObject->getPosition().x, pObject->getPosition().y, range, flags, pSelf );
 		}
 		return pvItemsInRange;
 	}
 
-	pItemVector* getItemsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags, SERIAL serial )
+	PITEM_VECTOR* getNearbyItems( UI32 x, UI32 y, UI32 range, UI32 flags, P_ITEM pSelf )
 	{
-		pItemVector* pvItemsInRange;
+		PITEM_VECTOR* pvItemsInRange = 0;
 
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 )
 		{
-			pvItemsInRange = new pItemVector();
+			pvItemsInRange = new PITEM_VECTOR();
 
 			calculateBoundary( x, y, range );
-
-			//ConOut( "getItemFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
-			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 
 			PITEMLOCATIONMAPIT it(  pItemLocationMap.lower_bound( locationToKey( upperLeft.x,  upperLeft.y ) ) ),
 					   end( pItemLocationMap.upper_bound( locationToKey( lowerRight.x, lowerRight.y) ));
 
-			LOGICAL select = false;
+			P_ITEM pi = 0;
 
 			for( ; it != end; ++it )
 			{
-				if( ISVALIDPI( it->second ) )
+				pi = it->second;
+
+				if( flags )
 				{
-					if( flags )
+					if( pSelf )
 					{
-						if ( !(flags & EXCLUDESELF) ||
-						      ((flags & EXCLUDESELF) && serial != it->second->getSerial32() ) )
+						if( (flags & EXCLUDESELF) && pSelf->getSerial32() == pi->getSerial32() )
 						{
-							select = true;
+							continue;
 						}
 					}
-					if( select )
-						pvItemsInRange->push_back( it->second );
+					pvItemsInRange->push_back( pi );
 				}
-				else	// cleanup
+				else
 				{
-					pItemLocationMap.erase( it );
-					WarnOut( "getItemFromLocationMap removed invalid entry\n" );
+					pvItemsInRange->push_back( pi );
 				}
-				select = false;
 			}
 		}
 		return pvItemsInRange;
@@ -935,8 +981,10 @@ namespace pointers {
 
 		delFromStableMap(pc);
 		delFromOwnerMap(pc);
-#ifdef SPAR_NEW_WR_SYSTEM
-		delCharFromLocationMap(pc);
+#ifdef SPAR_C_LOCATION_MAP
+		delFromLocationMap(pc);
+#else
+		mapRegions->remove(pc);
 #endif
 		objects.eraseObject( pc );
 
@@ -956,8 +1004,8 @@ namespace pointers {
 
 		if (pi->isInWorld())
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			pointers::delItemFromLocationMap(pi);
+#ifdef SPAR_I_LOCATION_MAP
+			pointers::delFromLocationMap(pi);
 #else
 			mapRegions->remove(pi);
 #endif

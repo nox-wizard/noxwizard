@@ -71,15 +71,10 @@ namespace pointers {
 	UI32 containerCountItems(SERIAL serial, short id, short color, LOGICAL bAddAmounts = true, LOGICAL recurseSubpack=true);
 	UI32 containerCountItemsByID(SERIAL serial, UI32 scriptID, LOGICAL bAddAmounts);
 	P_CHAR stableSearch(int serial, int *index);
-#ifdef SPAR_NEW_WR_SYSTEM
+#ifdef SPAR_LOCATION_MAP
 	//
 	// Sparhawk:	mapRegion replacement (work in progress)
 	//
-	typedef std::vector< P_CHAR > pCharVector;
-	typedef pCharVector::iterator pCharVectorIt;
-	typedef std::vector< P_ITEM > pItemVector;
-	typedef pItemVector::iterator pItemVectorIt;
-
 	enum
 	{
 		NONE		=  0,
@@ -87,20 +82,26 @@ namespace pointers {
 		OFFLINE 	=  2,
 		NPC		=  4,
 		EXCLUDESELF	=  8,
-		DEAD		= 16
+		DEAD		= 16,
+		PARTYMEMBER	= 32,
+		GUILDMEMBER	= 64
 	};
 
-	void showCharLocationMap();
-	void addCharToLocationMap( const P_CHAR who );
-	void delCharFromLocationMap( const P_CHAR who );
-	pCharVector* getCharsNearLocation( cObject* pObject, UI32 range, UI32 flags = 0 );
-	pCharVector* getCharsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags = 0, SERIAL self = INVALID );
+	void 		addToLocationMap( const P_OBJECT pObject );
+	void 		updateLocationMap( const P_OBJECT pObject );
+	void 		delFromLocationMap( const P_OBJECT pObject );
 
-	void showItemLocationMap();
-	void addItemToLocationMap( const P_ITEM what );
-	void delItemFromLocationMap( const P_ITEM what );
-	pItemVector* getItemsNearLocation( cObject* pObject, UI32 range, UI32 flags = 0 );
-	pItemVector* getItemsNearLocation( UI32 x, UI32 y, UI32 range, UI32 flags = 0, SERIAL self = INVALID );
+	void		showCharLocationMap();
+	void		addCharToLocationMap( const P_CHAR who );
+	void 		delCharFromLocationMap( const P_CHAR who );
+	PCHAR_VECTOR*	getNearbyChars( P_OBJECT pObject, UI32 range, UI32 flags = 0 );
+	PCHAR_VECTOR*	getNearbyChars( UI32 x, UI32 y, UI32 range, UI32 flags = 0, P_CHAR pSelf = 0 );
+
+	void		showItemLocationMap();
+	void		addItemToLocationMap( const P_ITEM what );
+	void		delItemFromLocationMap( const P_ITEM what );
+	PITEM_VECTOR*	getNearbyItems( cObject* pObject, UI32 range, UI32 flags = 0 );
+	PITEM_VECTOR*	getNearbyItems( UI32 x, UI32 y, UI32 range, UI32 flags = 0, P_ITEM pSelf = 0 );
 #endif
 }
 

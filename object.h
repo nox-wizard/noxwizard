@@ -180,7 +180,13 @@ public:
 
 public:
 	virtual	void		Delete();
-
+#ifdef SPAR_LOCATION_MAP
+private:
+	UI32			locationKey;
+public:
+	UI32			getLocationKey();
+	void			setLocationKey();
+#endif
 /*
 private:
 	AmxEventMap		*amxEvents;

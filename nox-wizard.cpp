@@ -143,8 +143,8 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-#ifdef SPAR_NEW_WR_SYSTEM
-					pointers::addCharToLocationMap( p_pet );
+#ifdef SPAR_C_LOCATION_MAP
+					pointers::addToLocationMap( p_pet );
 #else
 					mapRegions->add(p_pet);
 #endif
