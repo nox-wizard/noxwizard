@@ -3107,6 +3107,50 @@ NATIVE( _set_addOnlinePlNearXY )
 }
 
 /*!
+\brief Add to given set all guild member
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the guild
+\return 0
+*/
+NATIVE( _set_addGuildMembers )
+{
+	amxSet::addGuildMembers( params[1], params[2] );
+	return 0;
+}
+
+/*!
+\brief Add to given set all guild recruit
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the guild
+\return 0
+*/
+NATIVE( _set_addGuildRecruit )
+{
+	amxSet::addGuildRecruits( params[1], params[2] );
+	return 0;
+}
+
+/*!
+\brief Add to given set all guild or guild political
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the guild ( if INVALID all, else use options )
+\param 3 the options ( WAR, ALLIED )
+\return 0
+*/
+NATIVE( _set_addGuilds )
+{
+	amxSet::addGuilds( params[1], params[2], static_cast<GUILD_POLITICAL>(params[3]) );
+	return 0;
+}
+
+
+/*!
 \brief Resurrect a character
 \author Xanathar
 \param 1: the character
@@ -5554,6 +5598,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addAllOnlinePl", _set_addAllOnlinePl },
  { "set_addOnPlNearObj", _set_addOnlinePlNearObj },
  { "set_addOnPlNearXY", _set_addOnlinePlNearXY },
+ { "set_addGuildMembers", _set_addGuildMembers },
+ { "set_addGuildRecruit", _set_addGuildRecruit },
+ { "set_addGuilds", _set_addGuilds },
 // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
