@@ -1678,6 +1678,7 @@ static bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_B_ISBEINGTRAINED, pc->isBeingTrained() )  	//dec value: 13;
 		CHECK(  NXW_CP_B_GUILDTOGGLE , pc->HasGuildTitleToggle() )  	//dec value: 14;
 		CHECK(  NXW_CP_B_OVERWEIGHTED, pc->IsOverWeight() )     	//dec value: 15;
+		CHECK(  NXW_CP_B_MOUNTED, pc->mounted )     	//dec value: 15;
 	}
 	ErrOut("chr_getProperty called with invalid property %d!\n", property );
 	return false;

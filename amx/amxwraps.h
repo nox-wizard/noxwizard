@@ -86,6 +86,7 @@ const int NXW_CP_B_ATTACKFIRST = 12;
 const int NXW_CP_B_ISBEINGTRAINED = 13;
 const int NXW_CP_B_GUILDTOGGLE = 14;
 const int NXW_CP_B_OVERWEIGHTED = 15;
+const int NXW_CP_B_MOUNTED = 16;
 
 const int NXW_CP_C_BLOCKED = 101;
 const int NXW_CP_C_CELL = 102;
