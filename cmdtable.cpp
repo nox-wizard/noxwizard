@@ -1455,6 +1455,7 @@ void command_fix(NXWSOCKET  s)
 	}
 
 	pc_cs->setPosition( charpos );
+	pc_cs->teleport();
 	return;
 }
 
