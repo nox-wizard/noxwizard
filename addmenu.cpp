@@ -353,7 +353,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 button )
 \param inMenu if write a sysmessage on error
 \todo Add message if haven't enough item..
 */
-bool cMakeItem::checkReq( P_CHAR pc, bool inMenu )
+bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cMakeItem* def )
 {
 
     if( pc->IsGM() ) 
@@ -368,7 +368,8 @@ bool cMakeItem::checkReq( P_CHAR pc, bool inMenu )
 	for( int i=0; i<2; ++i ) {
         cRawItem& raw = reqitems[i];
 		if( raw.id!=0 ) {
-			if( pc->CountItems( raw.id, raw.color)< raw.number ) {
+			bool have = ( def!=NULL )? (def->reqitems[i].number>=raw.number) : ( pc->CountItems( raw.id, raw.color)>= raw.number );
+			if( !have ) {
 				if( !inMenu )
 					pc->sysmsg(TRANSLATE("You've not enough resources"));
 				return false;

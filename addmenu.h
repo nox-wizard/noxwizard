@@ -56,7 +56,7 @@ public:
     
 	cMakeItem();
 	~cMakeItem();
-    bool checkReq( P_CHAR pc, bool inMenu = false );
+    bool checkReq( P_CHAR pc, bool inMenu = false, cMakeItem* def = NULL );
 };
 
 class cMakeMenu : public cBasicMenu 
