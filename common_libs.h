@@ -40,7 +40,6 @@ warnings/errors/issues.
 	#endif
 	#pragma pack(1)
 
-	#define vsnprintf _vsnprintf
 	#define snprintf _snprintf
 	typedef int socklen_t;
 #endif
@@ -135,6 +134,7 @@ warnings/errors/issues.
 		#pragma pack(pop)
 		#pragma warning(disable: 4103)
 		#pragma warning(disable: 4786)
+		#define vsnprintf _vsnprintf
 	#endif
 #endif
 
