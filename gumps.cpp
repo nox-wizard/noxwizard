@@ -454,7 +454,7 @@ void gumps::Input(int s)
 		{
 		//case 2:		strcpy( pc_j->name, (char*)text );			break;	// Name
 		case 2:		pc_j->setCurrentName( text );								break;
-		case 3:		strcpy( pc_j->title, text );						break;	// Title
+		case 3:		pc_j->title = text;						break;	// Title
 		case 4:		k = str2num( text );	pc_j->setPosition("x", k);		break;	// X
 		case 5:		k = str2num( text );	pc_j->setPosition("y", k);		break;	// Y
 		case 6:		k = str2num( text ); 	pc_j->setPosition("z", k);
@@ -1308,7 +1308,7 @@ void ttext(int line, SERIAL serial)
 		if( --line == 0 ) strcpy( script1, "Name" );
 		if( --line == 0 ) strcpy( script1,  pc_j->getCurrentNameC() );
 		if( --line == 0 ) strcpy( script1, "Title" );
-		if( --line == 0 ) strcpy( script1,  pc_j->title );
+		if( --line == 0 ) strcpy( script1,  pc_j->title.c_str() );
 		if( --line == 0 ) strcpy( script1, "X" );
 		if( --line == 0 ) sprintf( script1,"%i", charpos.x );
 		if( --line == 0 ) strcpy( script1, "Y" );

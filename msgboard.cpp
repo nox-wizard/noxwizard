@@ -1940,7 +1940,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 					// NPC title
 				case 't':
 					{
-						strcpy( flagPos, pc_s->title );
+						strcpy( flagPos, pc_s->title.c_str() );
 						strcat( temp, tempString );
 						break;
 					}
