@@ -677,7 +677,7 @@ public:
 	
 	public:
 		SI32		npcaitype; //!< NPC ai
-		AmxEvent*	npcai_func; //!< function to call for amx npc ai 
+		AmxFunction*	npcai_func; //!< function to call for amx npc ai 
 
 	public:
 
