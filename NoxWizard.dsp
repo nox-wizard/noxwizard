@@ -390,10 +390,6 @@ SOURCE=.\oldmenu.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\organisation.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\packets.cpp
 # End Source File
 # Begin Source File
@@ -827,10 +823,6 @@ SOURCE=.\object.h
 # Begin Source File
 
 SOURCE=.\oldmenu.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\organisation.h
 # End Source File
 # Begin Source File
 
