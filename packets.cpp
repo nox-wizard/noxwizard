@@ -373,3 +373,12 @@ SEND( CharProfile ) {
 
 CREATE( Features, PKG_FEATURES, 0x03 )
 
+CREATE( WebBrowser, PKG_WEB_BROWSER, 0x03 )
+SEND( WebBrowser ) {
+	if( ps == NULL ) return; 
+	this->size=this->headerSize + (link.size()+1 );
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	Xsend( ps->toInt(), this->link.c_str(), link.size()+1 );
+}
+
+

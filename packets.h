@@ -1773,4 +1773,25 @@ Note3: a 3 doesn’t seem to “hurt” older (NON LBR) clients.
 
 //@}
 
+#define PKG_WEB_BROWSER 0xA5;
+
+/*!
+\brief Launch web browser
+\author Endymion
+\since 0.83
+\note 0xA5
+*/
+class cPacketWebBrowser : public cServerPacket {
+private:
+	eUI16 size; //<! size
+public:
+
+	std::string link;
+
+	cPacketWebBrowser();
+	void send( NXWCLIENT ps );
+};
+
+
+
 #endif

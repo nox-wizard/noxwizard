@@ -1461,16 +1461,10 @@ void deny(NXWSOCKET  k,P_CHAR pc, int sequence)
 
 void weblaunch(int s, const char *txt) // Direct client to a web page
 {
-	int l;
-	char launchstr[4]="\xA5\x00\x00";
-
-	sysmessage(s, TRANSLATE("Launching your web browser. Please wait..."));
-	l=strlen(txt)+4;
-	launchstr[1]=l>>8;
-	launchstr[2]=l%256;
-	Xsend(s, launchstr, 3);
-	Xsend(s, txt, strlen(txt)+1);
-
+	cPacketWebBrowser launch;
+	
+	launch.link+=txt;
+	launch.send( getClientFromSocket(s) );
 }
 
 void broadcast(int s) // GM Broadcast (Done if a GM yells something)
