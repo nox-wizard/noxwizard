@@ -1061,7 +1061,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				else if ( !strcmp( "TAMING", script1 ) )		pc->baseskill[TAMING] = getRangedValue(script2);
 				else if ( !strcmp( "TASTEID", script1 ) )		pc->baseskill[TASTEID] = getRangedValue(script2);
 				else if ( !strcmp( "TINKERING", script1 ) )		pc->baseskill[TINKERING] = getRangedValue(script2);
-				else if ( !strcmp( "TITLE", script1 ) )			strcpy(pc->title, script2);
+				else if ( !strcmp( "TITLE", script1 ) )			pc->title = script2;
 				else if ( !strcmp( "TOTAME", script1 ) || !strcmp("TAMING", script1 ) )
 											pc->taming=str2num(script2);
 				else if ( !strcmp( "TRACKING", script1 ) )		pc->baseskill[TRACKING] = getRangedValue(script2);

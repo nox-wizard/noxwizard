@@ -493,7 +493,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'T':
 		case 't':
-			if (!strcmp(script1, "TITLE"))				{ strcpy(pc->title,script2); }
+			if (!strcmp(script1, "TITLE"))				{ pc->title =script2; }
 			else if (!strcmp(script1, "TAMING"))			{ pc->taming=str2num(script2);}
 			else if (!strcmp(script1, "TRIGGER"))		{ pc->trigger=str2num(script2);;}
 			else if (!strcmp(script1, "TRIGWORD"))		{ strcpy(pc->trigword,script2);}
@@ -1359,7 +1359,7 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			}
 
 #ifndef DESTROY_REFERENCES
-			fprintf(cWsc, "TITLE %s\n", pc->title);
+			fprintf(cWsc, "TITLE %s\n", pc->title.c_str());
 #endif
 			if(pc->account!=dummy.account)
 				fprintf(cWsc, "ACCOUNT %i\n", pc->account);

@@ -333,9 +333,9 @@ char *complete_title(P_CHAR pc) // generates the ENTIRE title plus criminal stuf
 		sprintf(tempstr, "%s%s", title3(pc), pc->getCurrentNameC());		//Repuation + Name
 		{//NoTownTitle
 			strcpy(temp,tempstr);
-			if (strlen(pc->title)>0)
+			if (pc->title.length()>0)
 			{//Titled & Skill
-				sprintf(tempstr, "%s %s, %s %s", temp, pc->title, title1(pc), title2(pc));
+				sprintf(tempstr, "%s %s, %s %s", temp, pc->title.c_str(), title1(pc), title2(pc));
 			}
 			else
 			{//Just skilled

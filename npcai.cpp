@@ -422,7 +422,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 						pj->dead ||
 						pj->npcaitype == NPCAI_EVIL ||
 						pj->npcaitype == NPCAI_HEALER ||
-						( SrvParms->monsters_vs_animals == 0 && (strlen(pj->title) == 0 && !pj->IsOnline()) ) ||
+						( SrvParms->monsters_vs_animals == 0 && ((pj->title.size() == 0) && !pj->IsOnline()) ) ||
 						( SrvParms->monsters_vs_animals == 1 && chance( SrvParms->animals_attack_chance ) )
 					) 
 					continue;
