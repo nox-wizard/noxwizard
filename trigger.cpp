@@ -410,7 +410,7 @@ void triggerItem(NXWSOCKET  ts, P_ITEM pi, int eventType)
 	VALIDATEPC(pc);
 
 	if ( (pi->disabled>0)&&(pi->disabled>=uiCurrentTime)) {
-		sysmessage(ts, "%s", pi->disabledmsg);
+		sysmessage(ts, "%s", pi->disabledmsg.c_str());
 		return;
 	}
 

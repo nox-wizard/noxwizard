@@ -1447,7 +1447,7 @@ NATIVE2(_setItemProperty)
 			pi->vendorDescription = g_cAmxPrintBuffer;
 			break;
 		case NXW_IP_STR_DISABLEDMSG :				   //dec value :  452;
-			strcpy(pi->disabledmsg, g_cAmxPrintBuffer);
+			pi->disabledmsg = g_cAmxPrintBuffer;
 			break;
 		case NXW_IP_STR_MURDERER :				   //dec value :  453;
 			pi->murderer = string(g_cAmxPrintBuffer);
@@ -1651,7 +1651,7 @@ static const char* getItemStrProperty( P_ITEM pi, int property, int prop2)
 		CHECK(NXW_IP_STR_CREATOR, pi->creator )   //dec value :  450;
 		//CHECK(NXW_IP_STR_DESCRIPTION, pi->desc )   //dec value :  451;
 		CHECK(NXW_IP_STR_DESCRIPTION, pi->vendorDescription.c_str() )   //dec value :  451;
-		CHECK(NXW_IP_STR_DISABLEDMSG, pi->disabledmsg )   //dec value :  452;
+		CHECK(NXW_IP_STR_DISABLEDMSG, pi->disabledmsg.c_str() )   //dec value :  452;
 		CHECK(NXW_IP_STR_MURDERER, pi->murderer.c_str() )   //dec value :  453;
 		CHECK(NXW_IP_STR_NAME, pi->getCurrentNameC() )   //dec value :  454;
 		CHECK(NXW_IP_STR_NAME2, pi->getSecondaryNameC() )   //dec value :  455;
@@ -1968,7 +1968,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_STR_DISABLEDMSG , pc->disabledmsg )  		//dec value: 450;
 		CHECK(  NXW_CP_STR_GUILDTITLE , pc->GetGuildTitle() )  		//dec value: 451;
 		CHECK(  NXW_CP_STR_LASTON , "<obsolete>" )  			//dec value: 452;
-        CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
+		CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
 		CHECK(  NXW_CP_STR_ORGNAME , "<obsolete>" )  			//dec value: 454;
 		CHECK(  NXW_CP_STR_TITLE , pc->title )  			//dec value: 455;
 		CHECK(  NXW_CP_STR_TRIGWORD , pc->trigword )  			//dec value: 456;

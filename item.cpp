@@ -169,7 +169,7 @@ namespace item
 						else if (!strcmp("DISABLED", (char*)script1))
 							pi->disabled = uiCurrentTime + (str2num(script2)*MY_CLOCKS_PER_SEC);// AntiChrist
 						else if (!strcmp("DISABLEMSG", (char*)script1))
-							strcpy(pi->disabledmsg, (char*)script2);
+							pi->disabledmsg = script2;
 						else if (!strcmp("DISPELLABLE", (char*)script1))
 							pi->setDispellable();
 						else if (!strcmp("DECAY", (char*)script1))
@@ -750,7 +750,7 @@ namespace item
 						else if (!(strcmp("DIR",(char*)script1))) pi->dir=str2num(script2);
 						else if (!(strcmp("DECAY",(char*)script1))) pi->setDecay();
 						else if (!(strcmp("DISPELLABLE",(char*)script1))) pi->setDispellable();
-						else if (!(strcmp("DISABLEMSG",(char*)script1))) strcpy(pi->disabledmsg,script2);  // Added by Magius(CHE) §
+						else if (!(strcmp("DISABLEMSG",(char*)script1))) pi->disabledmsg = script2;  // Added by Magius(CHE) §
 						else if (!(strcmp("DISABLED",(char*)script1))) pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);//AntiChrist
 					break;
 
