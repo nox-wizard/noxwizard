@@ -16,7 +16,6 @@
 namespace Organisation
 {
 
-	public:
 	class 	Guild;
 	typedef SERIAL 	GUILDID;
 	typedef class Guild*	P_GUILD;
