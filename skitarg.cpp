@@ -116,7 +116,7 @@ void Skills::target_tailoring( NXWCLIENT ps, P_TARGET t )
     {
 		if (CheckInPack(s,pi))
         {
-			if(pc->getAmount(pi->id())<1)
+			if(pc->getAmount(pi->id)<1)
 			{
 				pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
 				return;
@@ -320,9 +320,9 @@ void Skills::target_smith( NXWCLIENT ps, P_TARGET t )
         if (!CheckInPack(ps->toInt(),pi)) 
 			return;
 
-        if (pi->id()==0x1BEF || pi->id()==0x1BF2)   // is it an ingot ?
+        if (pi->id==0x1BEF || pi->id==0x1BF2)   // is it an ingot ?
         {
-			AnvilTarget( ps->toInt(), pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
+			AnvilTarget( ps->toInt(), pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color), NULL);
 			return;
         }
     }
@@ -564,7 +564,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 		{
 			P_ITEM pi=item::SpawnRandomItem(s,"ITEMLIST","1001"); // Armor and shields - Random
 			if(ISVALIDPI(pi))
-				if((pi->id()>=7026)&&(pi->id()<=7035))
+				if((pi->id>=7026)&&(pi->id<=7035))
 					pc->sysmsg(TRANSLATE("You unearthed an old shield and placed it in your pack"));
 				else
 		            pc->sysmsg(TRANSLATE("You have found an old piece armor and placed it in your pack."));
@@ -641,7 +641,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
                     case 11: iID=0x1C; break;
                 }
                 pBone = item::CreateFromScript( "$item_bone", pc->getBackpack() );
-                pBone->setId( 0x1B00 + iID );
+                pBone->id = 0x1B00 + iID;
                 pc->sysmsg(TRANSLATE("You have unearthed some old bones and placed them in your pack."));
                 break;
             default: // found an empty grave
@@ -683,7 +683,7 @@ void Skills::target_smeltOre( NXWCLIENT ps, P_TARGET t )
                 P_ITEM pix=pointers::findItemBySerial( t->buffer[0] );
 				VALIDATEPI( pix );
 
-                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color() >> 8), (pix->color() % 256), pix->getSerial32());
+                AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXSMELTORE), s, (pix->color >> 8), (pix->color % 256), pix->getSerial32());
             }
         }
     }
@@ -704,7 +704,7 @@ void Skills::target_wheel( NXWCLIENT ps, P_TARGET t )	//Spinning wheel
     int tailme=0;
 
 
-    if( pi->id() >= 0x10A4 || pi->id() <= 0x10A6 )
+    if( pi->id >= 0x10A4 || pi->id <= 0x10A6 )
     {
         if(item_inRange(pc_currchar,pi,3))
         {
@@ -722,13 +722,13 @@ void Skills::target_wheel( NXWCLIENT ps, P_TARGET t )	//Spinning wheel
             if (mat==YARN)
             {
                 pti->setCurrentName("#");
-                pti->setId(0x0E1D);
+                pti->id =0x0E1D;
                 pti->amount=pti->amount*3;
             }
             else if (mat==THREAD)
             {
                 pti->setCurrentName("#");
-                pti->setId(0x0FA0);
+                pti->id =0x0FA0;
                 pti->amount=pti->amount*3;
             }
 
@@ -756,7 +756,7 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 
 	if (pi->magic!=4) // Ripper
 	{
-		if ( pi->id() >= 0x105F && pi->id() <= 0x1066 )
+		if ( pi->id >= 0x105F && pi->id <= 0x1066 )
 		{
 			if(item_inRange(pc_currchar,pi,3))
 			{
@@ -778,14 +778,14 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 					return;
 				}
 
-				switch( pti->id() )
+				switch( pti->id )
 				{
 					case 0x0E1E: // Yarn
 					case 0x0E1D:
 					case 0x0E1F:
 						pc_currchar->sysmsg(TRANSLATE("You have made your cloth."));
 						pti->setCurrentName("#");
-						pti->setId(0x175D);
+						pti->id =0x175D;
 						pti->priv |= ITMPRIV_DECAY;
 						pti->amount=(pti->amount-1)*10;
 						break;
@@ -793,7 +793,7 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 					case 0x0FA1:
 						pc_currchar->sysmsg(TRANSLATE("You have made a bolt of cloth."));
 						pti->setCurrentName("#");
-						pti->setId(0x0F95);
+						pti->id =0x0F95;
 						pti->priv |= ITMPRIV_DECAY;
 						pti->amount=(UI16)(pti->amount*0.25);
 						break;
@@ -849,7 +849,7 @@ void Skills::target_cookOnFire( NXWCLIENT ps, P_TARGET t )
                         VALIDATEPI(pi);
 
                         pi->setCurrentName( "#" );
-                        pi->setId( id );
+                        pi->id = id;
                         pi->type=ITYPE_FOOD;
                         pi->Refresh();
                         piRaw->Delete();
@@ -1150,7 +1150,7 @@ void Skills::target_alchemy( NXWCLIENT ps, P_TARGET t )
 		return;
 	}
 
-    switch (pi->id())
+    switch (pi->id)
     {
 		case 0x0F7B: itemmenu( s, 7021 ); break;   // Agility,
 		case 0x0F84: itemmenu( s, 7022 ); break;   // Cure, Garlic
@@ -1654,7 +1654,7 @@ void Skills::target_begging( NXWCLIENT ps, P_TARGET t )
 
                         if (ISVALIDPI(pj))
                         {
-                            if (pj->id()==0x0EED  )
+                            if (pj->id==0x0EED  )
                             {
                                 gold+=pj->amount; // calc total gold in pack
 
@@ -1913,7 +1913,7 @@ void target_poisoning2( NXWCLIENT ps, P_TARGET t )
 	//spawn an empty bottle after poisoning
 	P_ITEM emptybottle=archive::item::New();
 
-	emptybottle->setId(0x0F0E);
+	emptybottle->id =0x0F0E;
 	emptybottle->pileable=1;
 	emptybottle->MoveTo( pc->getPosition() );
 	emptybottle->priv|=0x01;
@@ -1950,12 +1950,12 @@ void Skills::target_tinkering( NXWCLIENT ps, P_TARGET t )
 
     if ( pi->magic!=4) // Ripper
     {
-        if(pi->id()==0x1BEF || pi->id()==0x1BF2 || pi->IsLog() )
+        if(pi->id==0x1BEF || pi->id==0x1BF2 || pi->IsLog() )
         {
             if (CheckInPack(s,pi))
             {
                 int amt;
-                amt=pc_currchar->CountItems(pi->id(), pi->color());
+                amt=pc_currchar->CountItems(pi->id, pi->color);
                 if(amt<2)
                 {
                     sysmessage(s,TRANSLATE("You don't have enough ingots to make anything."));
@@ -2051,8 +2051,8 @@ public:
         }
 
         // make sure the parts are of correct IDs AND they are different
-        checkPartID( piClick->id() );
-        checkPartID( piTarg->id() );
+        checkPartID( piClick->id );
+        checkPartID( piTarg->id );
         if (!decide())
             sysmessage(s,TRANSLATE("You can't combine these."));
         else

@@ -319,8 +319,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								//
 								else if ( "AMXINT" == script1 )
 								{
-									splitLine( script2, script1, script3 );
-									amxVS.insertVariable( pc->getSerial32(), str2num( script1 ), str2num( script3 ) );
+									std::string rha1;
+									std::string rha2;
+									splitLine( script2, rha1, rha2 );
+									amxVS.insertVariable( pc->getSerial32(), str2num( rha1 ), str2num( rha2 ) );
 								}
 								else if ( "AMXINTVEC" == script1 )
 								{
@@ -350,8 +352,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "AMXSTR" == script1 )
 								{
-									splitLine( script2, script1, script3 );
-									amxVS.insertVariable( pc->getSerial32(), str2num( script1 ), script3 );
+									std::string rha1;
+									std::string rha2;
+									splitLine( script2, rha1, rha2 );
+									amxVS.insertVariable( pc->getSerial32(), str2num( rha1 ), rha2 );
 								}
 								else if ( "ANATOMY" == script1 )
 									pc->baseskill[ANATOMY] = getRangedValue(script2);
@@ -392,7 +396,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if( ISVALIDPI(pi_n) )
 									{
-										pi_n->setColor( hex2num(script2) );
+										pi_n->color = hex2num(script2);
 									}
 								}
 								else if ( "CAMPING" == script1 )
@@ -409,7 +413,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (ISVALIDPI(pi_n) && haircolor != INVALID )
 									{
-										pi_n->setColor( haircolor );
+										pi_n->color =haircolor;
 									}
 								}
 								else if ( "COLORLIST" == script1 )
@@ -417,7 +421,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									if (ISVALIDPI(pi_n))
 									{
 										std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2)  );
-										pi_n->setColor( hex2num( value ) );
+										pi_n->color = hex2num( value ) ;
 									}
 									script1 = "DUMMY";
 								}
@@ -537,7 +541,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										haircolor = hex2num( value );
 										if (haircolor!=-1)
 										{
-											pi_n->setColor( haircolor );
+											pi_n->color = haircolor;
 										}
 									}
 									script1 = "DUMMY";

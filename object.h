@@ -178,23 +178,10 @@ public:
 
 public:
 	virtual	void		Delete();
-#ifdef SPAR_LOCATION_MAP
-private:
-	UI32			locationKey;
-public:
-	UI32			getLocationKey();
-	void			setLocationKey();
-#endif
-/*
-private:
-	AmxEventMap		*amxEvents;
-public:
-	virtual	LOGICAL		isValidAmxEvent( UI32 eventId );
-	AmxEvent*		getAmxEvent( UI32 eventId );
-	AmxEvent*		setAmxEvent( UI32 eventId, char *amxFunction, LOGICAL dynamic = false );
-	cell			runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI32 param3 = INVALID, SI32 param4 = INVALID );
-	void 			delAmxEvent( UI32 eventID );
-*/
+
+	UI16 id;
+	COLOR color;
+
 } PACK_NEEDED;
 
 /*!

@@ -203,7 +203,7 @@ void Skills::PlayInstrumentWell(NXWSOCKET s, int i)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-    switch(pi->id())
+    switch(pi->id)
     {
     case 0x0E9C:    pc->playSFX( 0x0038);  break;
     case 0x0E9D:
@@ -229,7 +229,7 @@ void Skills::PlayInstrumentPoor(NXWSOCKET s, int i)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-    switch(pi->id())
+    switch(pi->id)
     {
     case 0x0E9C:    pc->playSFX( 0x0039);  break;
     case 0x0E9D:
@@ -454,7 +454,7 @@ void Skills::target_bottle( NXWCLIENT ps, P_TARGET t )
 	if(pi->magic==4) 
 		return;    // Ripper
 
-	if (pi->id()==0x0F0E)   // an empty potion bottle ?
+	if (pi->id==0x0F0E)   // an empty potion bottle ?
 	{
 		pi->ReduceAmount(1);
 		
@@ -1326,11 +1326,11 @@ void Skills::TDummy(NXWSOCKET s)
 
 	if (ISVALIDPI(pj))
 	{
-		if (pj->id()==0x1070)
-			pj->setId(0x1071);
+		if (pj->id==0x1070)
+			pj->id =0x1071;
         
-		if (pj->id()==0x1074)
-			pj->setId(0x1075);
+		if (pj->id==0x1074)
+			pj->id =0x1075;
 	
 		tempfx::add(pc, pj, tempfx::TRAINDUMMY, 0, 0, 0); //Luxor
 		pj->Refresh();
@@ -1358,7 +1358,7 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 
 
 	int v1;
-    if(pButte->id()==0x100A)
+    if(pButte->id==0x100A)
     { // East Facing Butte
         if ((pButte->getPosition("x") > pc->getPosition("x"))||(pButte->getPosition("y") != pc->getPosition("y")))
             v1= INVALID;

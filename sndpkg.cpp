@@ -469,7 +469,7 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 
 	if ((pi->type == ITYPE_CONTAINER && color == 0x0000)||
 		(pi->type == ITYPE_SPELLBOOK && color == 0x0000)||
-		(pi->id()==0x1BF2 && color == 0x0000))
+		(pi->id==0x1BF2 && color == 0x0000))
 		color = 0x03B2;
 
 	char2wchar(txt);
@@ -495,7 +495,7 @@ void wearIt(const NXWSOCKET  s, const P_ITEM pi)
 	wearitem[7]= 0x00;
 	wearitem[8]= pi->layer;
 	LongToCharPtr(pi->getContSerial(),wearitem+9);
-	ShortToCharPtr(pi->color(), wearitem +13);
+	ShortToCharPtr(pi->color, wearitem +13);
 	Xsend(s, wearitem, 15);
 //AoS/	Network->FlushBuffer(s);
 }
@@ -557,7 +557,7 @@ void backpack2(NXWSOCKET s, SERIAL serial) // Send corpse stuff
 			ShortToCharPtr(pi->getPosition().x, bpitem +9);
 			ShortToCharPtr(pi->getPosition().y, bpitem +11);
 			LongToCharPtr(serial, bpitem +13);
-			ShortToCharPtr(pi->color(), bpitem +17);
+			ShortToCharPtr(pi->color, bpitem +17);
 			Xsend(s, bpitem, 19);
 		}
 	}
@@ -581,7 +581,7 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	//is shown like a candle (so that he can move it),
 	//....if not, the item is a normal
 	//invisible light source!
-	if(pc->IsGM() && pi->id()==0x1647)
+	if(pc->IsGM() && pi->id==0x1647)
 	{///let's show the lightsource like a candle
 		ShortToCharPtr(0x0A0F, bpitem +4);
 	} else
@@ -593,13 +593,13 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	ShortToCharPtr(pi_pos.x, bpitem +9);
 	ShortToCharPtr(pi_pos.y, bpitem +11);
 	LongToCharPtr(pi->getContSerial(), bpitem +13);
-	if(pc->IsGM() && pi->id()==0x1647)
+	if(pc->IsGM() && pi->id==0x1647)
 	{///let's show the lightsource like a blue item
 		ShortToCharPtr(0x00C6, bpitem +17);
 	}
 	else
 	{//else like a normal item
-		ShortToCharPtr(pi->color(), bpitem +17);
+		ShortToCharPtr(pi->color, bpitem +17);
 	}
 
 	// we need to find the topmost container that the item is in
@@ -690,7 +690,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		}
 		if (pack)
 		{
-			if (pi->id()<0x4000) 			// LB client crashfix, dont show multis in BP
+			if (pi->id<0x4000) 			// LB client crashfix, dont show multis in BP
 								// we should better move it out of pack, but thats
 								// only a first bannaid
 			{
@@ -710,7 +710,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		//is shown like a candle (so that he can move it),
 		//....if not, the item is a normal
 		//invisible light source!
-		if(pc->IsGM() && pi->id()==0x1647)
+		if(pc->IsGM() && pi->id==0x1647)
 		{///let's show the lightsource like a candle
 			ShortToCharPtr(0x0A0F, itmput +7);
 		} else
@@ -723,12 +723,12 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 		ShortToCharPtr(pos.y | 0xC000, itmput +13);
 		itmput[15]= pos.z;
 
-		if(pc->IsGM() && pi->id()==0x1647)
+		if(pc->IsGM() && pi->id==0x1647)
 		{///let's show the lightsource like a blue item
 			ShortToCharPtr(0x00C6, itmput +16);
 		} else
 		{
-			ShortToCharPtr(pi->color(), itmput +16);
+			ShortToCharPtr(pi->color, itmput +16);
 		}
 
 		itmput[18]=0;
@@ -761,7 +761,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
 		{
-			if (pi->id()>=0x4000 && pi->id()<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
+			if (pi->id>=0x4000 && pi->id<=0x40FF) // LB, 25-dec-1999 litle bugfix for treasure multis, ( == changed to >=)
 			{
 				ShortToCharPtr(0x14F0, itmput +7);
 			}
@@ -814,7 +814,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 		Location pos = pi->getPosition(); 
 
 		LongToCharPtr(pi->getSerial32() | 0x80000000, itmput +3);
-		ShortToCharPtr(pi->id(), itmput +7);
+		ShortToCharPtr(pi->id, itmput +7);
 		ShortToCharPtr(pi->amount, itmput +9);
 		ShortToCharPtr(pos.x, itmput +11);
 		ShortToCharPtr(pos.y | 0xC000, itmput +13);
@@ -849,7 +849,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 
 		if (pc->priv2 & CHRPRIV2_VIEWHOUSEASICON)
 		{
-			if (pi->id()>=0x4000 && pi->id()<=0x40FF)
+			if (pi->id>=0x4000 && pi->id<=0x40FF)
 			{
 				ShortToCharPtr(0x14F0, itmput +7);
 			}
@@ -1380,7 +1380,7 @@ void itemtalk(P_ITEM pi, char *txt)
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, pi->getCurrentNameC());
 
-		SendUnicodeSpeechMessagePkt(s, pi->getSerial32(), pi->id(), 0, 0x0481, 0x0003, lang, name, unicodetext,  ucl);
+		SendUnicodeSpeechMessagePkt(s, pi->getSerial32(), pi->id, 0, 0x0481, 0x0003, lang, name, unicodetext,  ucl);
 
 	}
 }
@@ -2019,13 +2019,13 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 			if ( layers[pj->layer] == 0 )
 			{
 				LongToCharPtr(pj->getSerial32(), oc+k+0);
-				ShortToCharPtr(pj->id(), oc+k+4);
+				ShortToCharPtr(pj->id, oc+k+4);
 				oc[k+6]=pj->layer;
 				k += 7;
-				if (pj->color() != 0)
+				if (pj->color != 0)
 				{
 					oc[k-3]|=0x80;
-					ShortToCharPtr(pj->color(), oc+k);
+					ShortToCharPtr(pj->color, oc+k);
 					k+= 2;
 				}
 				layers[pj->layer] = 1;
@@ -2181,13 +2181,13 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 				if (m2t>6000 || m1t>6000) break;
 
 				LongToCharPtr(pj->getSerial32(), m1+m1t+0);//Item serial number
-				ShortToCharPtr(pj->id(), m1+m1t+4);
+				ShortToCharPtr(pj->id, m1+m1t+4);
 				m1[m1t+6]=0;			//Always zero
 				ShortToCharPtr(pj->amount, m1+m1t+7); //Amount for sale
 				ShortToCharPtr(loopexit, m1+m1t+9); 
 				ShortToCharPtr(loopexit, m1+m1t+11);
 				LongToCharPtr(pi->getSerial32(), m1+m1t+13); //Container serial number
-				ShortToCharPtr(pj->color(), m1+m1t+17);
+				ShortToCharPtr(pj->color, m1+m1t+17);
 				m1[4]++; // Increase item count.
 				m1t += 19;
 				value=pj->value;
@@ -2280,14 +2280,14 @@ int sellstuff(NXWSOCKET s, CHARACTER i)
 					strupr(ciname); // Added by Magius(CHE)
 					strupr(cinam2); // Added by Magius(CHE)
 
-					if (pj1->id()==pj->id()  && 
+					if (pj1->id==pj->id  && 
 						pj1->type==pj->type && 
 						((SrvParms->sellbyname==0)||(SrvParms->sellbyname==1 && (!strcmp(ciname,cinam2))))) // If the names are the same! --- Magius(CHE)
 					{
 						UI08 namelen;
 						LongToCharPtr(pj1->getSerial32(), m1+m1t+0);
-						ShortToCharPtr(pj1->id(),m1+m1t+4);
-						ShortToCharPtr(pj1->color(),m1+m1t+6);
+						ShortToCharPtr(pj1->id,m1+m1t+4);
+						ShortToCharPtr(pj1->color,m1+m1t+6);
 						ShortToCharPtr(pj1->amount,m1+m1t+8);
 						value=pj->value;
 						value=calcValue(DEREF_P_ITEM(pj1), value);

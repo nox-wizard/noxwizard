@@ -1297,7 +1297,7 @@ NATIVE(_color)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR( pi, INVALID );
-	return pi->color();
+	return pi->color;
 }
 
 /*
