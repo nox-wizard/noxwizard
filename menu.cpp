@@ -175,14 +175,14 @@ void cMenu::addCommand( const std::string& command )
 
 void cMenu::addCommand( char const *formatStr, ... )
 {
-	std::string s("");
+	char temp[TEMP_STR_SIZE];
 	
 	va_list vargs;
 	va_start(vargs, formatStr );
-	vsnprintf( (char*)s.c_str(), s.size()-1, formatStr, vargs);
+	vsnprintf( temp, sizeof(temp)-1, formatStr, vargs);
 	va_end(vargs);
 
-	addCommand( s );
+	addCommand( std::string( temp ) );
 }
 
 
