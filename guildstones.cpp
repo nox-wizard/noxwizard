@@ -1062,9 +1062,9 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 									pc->SetGuildTitleToggle();
 								pc->sysmsg(TRANSLATE("Candidate %s is now a guildmember."), pc_recruit->getCurrentNameC());
 								if ( guilds[guildnumber].type == 1 )
-							            item::SpawnItemBackpack2( pc_recruit->getSocket(), 29, 1 );
-							        if ( guilds[guildnumber].type == 2 )
-								    item::SpawnItemBackpack2( pc_recruit->getSocket(), 28, 1 );
+									item::CreateFromScript( "$item_order_shield", pc_recruit->getBackpack() );
+							    if ( guilds[guildnumber].type == 2 )
+									item::CreateFromScript( "$item_chaos_shield", pc_recruit->getBackpack() );
 							}
 							else 
 								pc->sysmsg(TRANSLATE("This guild is full, maximum amount of members reached!") );
@@ -1361,7 +1361,7 @@ void cGuilds::SetType(int guildnumber, int type)
 				if (ISVALIDPC(hold))
 				{
 					RemoveShields(hold);
-					item::SpawnItemBackpack2( hold->getSocket(), 29, 1 );	// will not work for offline chars (Duke)
+					item::CreateFromScript( "$item_order_shield", hold->getBackpack() );	// will not work for offline chars (Duke)
 				}
 			}
 			Guilds->Broadcast( guildnumber, TRANSLATE("Your guild is now an Order guild.") );
@@ -1374,7 +1374,7 @@ void cGuilds::SetType(int guildnumber, int type)
 				if (ISVALIDPC(hold))
 				{
 					RemoveShields(hold);
-					item::SpawnItemBackpack2( hold->getSocket(), 28, 1 );
+					item::CreateFromScript( "$item_chaos_shield", hold->getBackpack() );	// will not work for offline chars (Duke)
 				}
 			}
 			Guilds->Broadcast( guildnumber, TRANSLATE("Your guild is now a Chaos guild.") );
