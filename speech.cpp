@@ -2093,7 +2093,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		talk.send( a_pc->getClient() );
 
 		if( ( pc->getSpeechCurrent()!=speechUni ) && ( pc->getSpeechCurrent()!=speechGhostUni ) ) //so was modified in event
-			pc->deleteSpeechUni();
+			pc->deleteSpeechCurrent();
 	}
 
 
