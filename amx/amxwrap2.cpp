@@ -2242,7 +2242,7 @@ NATIVE2(_getGuildProperty)
 		return INVALID;
 	}
 
-	VARTYPE tp = getPropertyType(params[2]);
+	VAR_TYPE tp = getPropertyType(params[2]);
 
 	switch( tp ) {
 	
