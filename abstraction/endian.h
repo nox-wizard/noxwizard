@@ -27,10 +27,12 @@ class eUI16 {
 	private:
 		UI16 a;
 	public:
-		eUI16() { a=0; };
+		eUI16();
 		eUI16(UI16 v);
-		void operator =( UI16 v );
-		void operator=( eUI16 v );
+		eUI16& operator =( UI16 v );
+		eUI16& operator=( eUI16 v );
+		UI16 get( );
+
 } PACK_NEEDED;
 
 
@@ -42,10 +44,12 @@ class eUI32 {
 	private:
 		UI32 a;
 	public:
-		eUI32() { a=0; };
+		eUI32();
 		eUI32(UI32 v);
-		void operator =( UI32 v );
-		void operator=( eUI32 v );
+		eUI32& operator =( UI32 v );
+		eUI32& operator=( eUI32 v );
+		UI32 get( );
+
 } PACK_NEEDED;
 
 typedef UI08 eUI08;		//!< fake endian-independent UI08
