@@ -1660,10 +1660,25 @@ NATIVE(_itm_createByDef)
 }
 
 /*
+\brief Check if given id is a weapon
+\author Endymion
+\since 0.82
+\param 1 the id
+\param 2 weapon type
+\param 3 weapon type 2 ( or INVALID if not used )
+\param 4 weapon type 3 ( or INVALID if not used )
+\return true or false
+*/
+NATIVE(_itm_isWeaponLike)
+{
+	return isWeaponLike( params[1], static_cast<WEAPONTYPE>(params[2]), static_cast<WEAPONTYPE>(params[3]), static_cast<WEAPONTYPE>(params[4]) );
+}
+
+/*
 \brief get the backpack of given character
 \author Xanathar
 \since 0.50
-\param 1: character
+\param 1 character
 \return backpack item or INVALID if not valid char or haven't backpack
 */
 NATIVE(_itm_getCharBackPack)
@@ -5412,6 +5427,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 // Items functions :
  { "itm_getProperty", _getItemProperty},
  { "itm_setProperty", _setItemProperty},
+ { "itm_isWeaponLike", _itm_isWeaponLike},
  { "itm_getCharBackPack", _itm_getCharBackPack },
  { "itm_contAddItem", _contAddItem },
  { "itm_color", _color },
