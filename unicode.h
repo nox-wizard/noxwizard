@@ -50,7 +50,8 @@ public:
 	~endian() {}
 };
 
-typedef UI08 eUI08;
+typedef UI08 PACK_NEEDED eUI08;
+typedef bool PACK_NEEDED eBool;
 
 
 /*

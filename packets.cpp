@@ -17,7 +17,7 @@
 \since 0.83
 */
 char* cPacket::getBeginValid() {
-	return (char*)((char*)this +sizeof( headerSize ));
+	return (char*)(&this->cmd);
 }
 
 /*!
@@ -26,7 +26,7 @@ char* cPacket::getBeginValid() {
 \since 0.83
 */
 char* cPacket::getBeginValidForReceive() {
-	return ( getBeginValid() +sizeof( cmd ) );
+	return ( getBeginValid() +sizeof(cmd) );
 }
 
 
@@ -39,7 +39,7 @@ char* cPacket::getBeginValidForReceive() {
 \param size the number of byte to read
 \param from offset
 */
-void cClientPacket::getFromSocket( NXWSOCKET socket, char* buffer, int size, int& from ) 
+void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size, int& from ) 
 {
 /*
 	int count;
@@ -48,7 +48,7 @@ void cClientPacket::getFromSocket( NXWSOCKET socket, char* buffer, int size, int
 		LogSocketError("Socket Recv Error %s\n", errno) ;
 	}
 */
-	memcpy( buffer, &buffer[socket]+from, size );
+	memcpy( b, &buffer[socket][from], size );
 	from+=size;
 };
 
@@ -78,7 +78,7 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int lenght
 void cClientPacket::receive( NXWCLIENT ps ) {
 	int i=1;
 	if ( ps != NULL )
-		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize -1, i );
+		getFromSocket( ps->toInt(), getBeginValidForReceive(), headerSize, i );
 };
 
 /*!

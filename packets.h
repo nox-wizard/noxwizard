@@ -49,12 +49,11 @@ protected:
 */
 class cClientPacket : public cPacket {
 protected:
-	void getFromSocket( NXWSOCKET socket, char* buffer, int size, int& from );
+	void getFromSocket( NXWSOCKET socket, char* b, int size, int& from );
 	void getStringFromSocket( NXWSOCKET socket, string& s, int lenght, int& from );
 
 public:
-	virtual ~cClientPacket() {}
-	virtual void receive( NXWCLIENT ps );
+	void receive( NXWCLIENT ps );
 };
 
 /*!
@@ -1609,16 +1608,16 @@ public:
 
 };
 
-enum NOTORIETY {
+typedef enum {
 	NOT_VALID =0, //!< invalid/across server line
 	INNOCENT, //!< innocent (blue)
 	GUILDED, //!< guilded/ally (green)
 	ATTACKABLE, //!< attackable but not criminal (gray)
 	CRIMINAL, //!< criminal (gray)
-	ENEMY, //!< enemy (orange)
+	ENEMYY, //!< enemy (orange)
 	MURDERER, //!< murderer (red)
 	TRASLUCENT //!< unknown use (translucent (like 0x4000 hue))
-};
+} NOTORIETY;
 
 #define PKG_WALK_REJECT 0x21;
 /*!
@@ -1660,7 +1659,7 @@ class cPacketCharProfileReq : public cClientPacket {
 private:
 	eUI16	size; //!< size
 public:
-	eUI08	mode; //!< mode
+	eBool	update; //!< update
 	eSERIAL chr; //!< character
 
 	cPacketCharProfileReq();
@@ -1677,7 +1676,7 @@ class cPacketCharProfileUpdate : public cClientPacket {
 private:
 	eUI16	size;	//!< size
 public:
-	eUI08	mode;	//!< mode
+	eBool	update; //!< update
 	eSERIAL	chr;	//!< character
     eUI16	type;	//!< type (0x0001 – Update)
 private:
