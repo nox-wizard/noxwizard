@@ -1843,7 +1843,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 		case SPELL_TELEPORT:
 			//Luxor: now a mage cannot teleport to water
-			bool isWater = false;
+			/*bool isWater = false;
 			map_st map;
 			data::seekMap(x, y, map);
 			switch(map.id)
@@ -1866,19 +1866,12 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			}
 			land_st land;
 			data::seekLand(map.id, land);
-			if (land.flags&TILEFLAG_WET) isWater = true;
-			int s;
-			if (src->getClient()!=NULL) {
-				s = src->getClient()->toInt();
-				if(buffer[s][0x11]==0x17 && buffer[s][0x12]==0x98 || buffer[s][0x11]==0x17 && buffer[s][0x12]==0x9B || buffer[s][0x11]==0x17 && buffer[s][0x12]==0x9C || buffer[s][0x11]==0x17 && buffer[s][0x12]==0x99 || buffer[s][0x11]==0x17 && buffer[s][0x12]==0x97 || buffer[s][0x11]==0x17 && buffer[s][0x12]==0x9A) {
-					isWater = true;
-				}
-			}
-			if (!isWater) {
+			if (land.flags&TILEFLAG_WET) isWater = true;*/
+			//if (!isWater) {
 				src->MoveTo( x,y,z );
 	                        src->teleport();
                         	spellFX(spellnumber, src, pd);
-			}
+			//}
 		break;
 	}
 	if (g_Spells[spellnumber].attackSpell) src->attackStuff(pd);	//Luxor
@@ -2070,7 +2063,7 @@ cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 {
 	VALIDATEPC( pc );
 	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL )
-		addIcon( 0x2106, 0, pc->GetOldBodyType(), string("Undo polymorph") );
+		addIcon( 0x2106, 0, pc->getOldId(), string("Undo polymorph") );
 	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
 	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
 	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
@@ -2115,7 +2108,7 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	pc->delTempfx( tempfx::SPELL_WEAKEN );
 
 
-	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->GetOldBodyType() ) {
+	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->getOldId() ) {
 		pc->delTempfx( tempfx::SPELL_POLYMORPH );
 		return;
 	}
