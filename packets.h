@@ -1774,6 +1774,12 @@ Note3: a 3 doesn’t seem to “hurt” older (NON LBR) clients.
 
 //@}
 
+//@{
+/*!
+\name utilitys packets
+\brief utilitys related packets
+*/
+
 #define PKG_WEB_BROWSER 0xA5;
 
 /*!
@@ -1793,6 +1799,96 @@ public:
 	void send( NXWCLIENT ps );
 };
 
+//@}
 
+//@{
+/*!
+\name utilitys packets
+\brief utilitys related packets
+*/
+
+
+#define PKG_MENU 0xB0;
+
+/*!
+\brief Show an menu
+\author Endymion
+\since 0.83
+\note 0xB0
+*/
+class cPacketMenu : public cServerPacket {
+private:
+	eUI16 size; //<! size
+public:
+
+	eSERIAL id; //!< the serial
+	eSERIAL gump; //!< gump serial
+	eUI32	x; //!< x location
+	eUI32	y; //!< x location
+
+private:
+	eUI16 cmd_length; //!< command section length
+public:
+	std::string commands; //!< commands ( zero terminated )
+
+private:
+	 eUI16 numTextLines; //!<text lines number
+public:
+
+
+//	for everty vector item
+	eUI16 len; //!< text lenth for every unicode string	
+	std::vector< cUnicodeString > texts; //!< text 
+//end
+
+	cPacketMenu();
+	void send( NXWCLIENT ps );
+};
+
+
+typedef struct {
+	eUI16	id; //!< textentries id
+	eUI16	textlength; //!< text length
+	cUnicodeString text; //!< text ( not nullterminated )
+} text_entry_st;
+
+
+#define PKG_MENU_SELECTION 0xB1;
+
+/*!
+\brief A menu item is selected
+\author Endymion
+\since 0.83
+\note 0xB1
+*/
+
+class cPacketMenuSelection : public cClientPacket {
+
+private:
+	eUI16	size;	//!< size
+public:
+
+	eSERIAL id; //!< the serial ( first Id in PKG_MENU )
+	eSERIAL gump; //!< gump serial (second Id in PKG_MENU )
+	eUI32	buttonId; //!< which button pressed or 0 if closed
+
+private:
+	eUI32	switchcount; //!<  response info for radio buttons and checkboxes, any switches listed here are switched on
+public:
+	std::vector<SERIAL> switchs; //!< switch ids
+private:
+	eUI32 textcount; //!< response info for textentries
+public:
+	std::vector<text_entry_st> text_entries; //!< text entries
+
+	cPacketMenuSelection();
+	void receive( NXWCLIENT PS );
+
+};
+
+
+
+
+//@}
 
 #endif

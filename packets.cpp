@@ -392,4 +392,20 @@ SEND( WebBrowser ) {
 	Xsend( ps->toInt(), this->link.c_str(), link.size()+1 );
 }
 
+CREATE( Menu, PKG_MENU, 0x15 )
+SEND( Menu ) {
+	if( ps == NULL ) return; 
+	this->size=this->headerSize + (commands.size()+1 );
+	this->cmd_length=this->commands.size();
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	Xsend( ps->toInt(), this->commands.c_str(), commands.size()+1 );
+	numTextLines=texts.size();
+
+	std::vector<cUnicodeString>::iterator iter( texts.begin() ), end( texts.end() );
+	for( ; iter!=end; iter++ ) {
+		len=iter->length();
+		Xsend( ps->toInt(), (char*)&len, sizeof( eUI16) );
+	}
+
+}
 
