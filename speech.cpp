@@ -1914,7 +1914,7 @@ inline void makeGhost( cUnicodeString* from, cUnicodeString* to ) {
 	std::vector<UI08>::iterator iter( from->s.begin() ), end( from->s.end() );
 	bool u=false; 
 	int v=0;
-	for( ; iter!=end; iter++ , u!=u ) {
+	for( ; iter!=end; iter++, u!=u ) {
 		if( u ) {
 			v+=(*iter);
 			if( v!=32 && v!=0x0000 )
@@ -1979,8 +1979,6 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	*/
 	pc->runAmxEvent( EVENT_CHR_ONSPEECH, pc->getSerial32() );
 	if( g_bByPass == true )
-		return;
-	if( pc->dead )	// Killed as result of script action
 		return;
 	//</Luxor>
 
