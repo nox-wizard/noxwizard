@@ -592,8 +592,18 @@ public:
 	void updateRegenTimer( StatType stat );
 //@}
 
+//@{
+/*!
+\name Npc Vendor
+\note fist draft.. need to make map with id used in recive for make faster
+*/
 		
+public:
+	std::vector<vendor_item>*	vendorItemsSell; //!< all items sell by vendor
+	std::vector<vendor_item>*	vendorItemsBuy; //!< all items sell by vendor
 		
+//@}
+
 	/********************************/
 	/*     TO REMOVE/REPLACE        */
 	/********************************/

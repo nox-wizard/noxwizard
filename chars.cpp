@@ -330,6 +330,9 @@ cChar::cChar( SERIAL ser ) : cObject()
 	speechCurrent = NULL; //Luxor
 	resetProfile();
 	staticProfile=NULL;
+
+	vendorItemsSell=NULL;
+	vendorItemsBuy=NULL;
 }
 
 /*

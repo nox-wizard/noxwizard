@@ -62,4 +62,12 @@ namespace npcs
 }	//namespace npcs
 
 
+typedef struct {
+	SERIAL script;
+	COLOR color;
+	UI32 amount;
+	UI32 id;
+} vendor_item;
+
+
 #endif
