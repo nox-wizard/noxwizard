@@ -360,8 +360,9 @@ RECEIVE( DeleteCharacter ) {
 
 CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
-	if( ps == NULL ) return; 
-	this->size=this->headerSize +30 + msg->size()*2+2; 
+	if( ps == NULL || msg == NULL ) return;
+	SI32 nSize = sizeof( UI16 );
+	this->size=this->headerSize +30 + msg->size()*nSize+nSize;
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
