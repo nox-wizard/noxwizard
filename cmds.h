@@ -18,6 +18,7 @@
 #include "common_libs.h"
 #include "nxwcommn.h"		//for std classes
 
+
 enum PrivLevel
 {
 	PRIVLEVEL_ADMIN = 255,
@@ -29,12 +30,12 @@ enum PrivLevel
 }
 
 
-
 typedef class cCommand* P_COMMAND;
 
 /*
 \brief Declaration of cCommand Class
 */
+
 class cCommand {
 
 	private:
@@ -49,6 +50,7 @@ class cCommand {
 		void call( std::string params );
 
 };
+
 
 
 
@@ -67,10 +69,11 @@ private:
 
 public:
 
-	std::string params;
-	cCallCommand* findCallCommand(SERIAL);
-	void delCommand(SERIAL);
-	std::vector< string >* param;
+	cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param>;
+	std::string all_params;
+	cCallCommand* findCallCommand(SERIAL cmd);
+	void delCommand(SERIAL cmd);
+	std::vector< string >* single_param;
 
 };
  

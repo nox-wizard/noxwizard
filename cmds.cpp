@@ -64,20 +64,16 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
 	cmd_callback=callback;
 }
 
+
+
 //Implementation of cCallCommand Class
 
-cCallCommand::cCallCommand (std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL){
 
-	param1=par1;
-	param2=par2;
-	param3=par3;
-	param4=par4;
-	param5=par5;
-	param6=par6;
-	param7=par7;
-	param8=par8;
+cCallCommand::cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param>;
 
-
+	cmd_serial=++current_serial;
+	all_params=params;
+	single_param=param;
 }
 
 
@@ -85,6 +81,8 @@ cCallCommand::~cCallCommand() {
 
 	
 }
+
+
 
 
 //Implementation of cCommandMap Class
@@ -116,31 +114,36 @@ else
 }
 
 
+
+
+
 //Implementation of cCallCommandMap Class
 
-void cCallCommandMap::addCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL) {
 
-	P_CALLCOMMAND cllcmd= new cCallCommand(std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL);
-    
-	if (callCommand_map.empty())
-		CmdNextSerial=0;
+cCallCommand::findCallCommand(SERIAL cmd){
+
+CMDMAP::iterator iter( command_map.find( cmd ) );
+
+if ( iter != command_map.end() )	//command exists
+    return iter->second.callback;
+else
+    return NULL;					//command doesnt exist
+}
 	
-	//Inserts a cCallCommand object into map
-	callCommand_map[++CmdNextSerial]= cllcmd;
-	//return callCommand_map[CmdNextSerial];
- 	
-}
 
-void cCallCommandMap::remCallCommand (SERIAL cmdserial){
 
-	callCommand_map.erase(cmdserial);
+void cCallCommand::delCommand(SERIAL cmd){
+
+	callCommand_map.erase(cmd);
 }
 
 
 
+//cCommandMap* commands = new cCommandMap();
+//cCallCommandMap* callcommands = new cCallCommandMap()
 
-cCommandMap* commands = new cCommandMap();
-cCallCommandMap* callcommands = new cCallCommandMap()
+
+
 
 
 /*///////////////////////////////////////////////////////////////////////////////////
@@ -160,6 +163,7 @@ This function is called after the control in speech.cpp
 */
 
 
+/*
 
 //The function that is called after the control done in speech.cpp
 //This should be put in another file or in a namespace (?)
@@ -232,6 +236,8 @@ for use it in small scripting.
 
 */
 
+/*
+
 static CP_PARAM=0;
 static CP_ALLPARAMS=1;
 
@@ -246,7 +252,7 @@ static CP_ALLPARAMS=1;
 	// params[6] = 3rd param given
 	// params[7] = 4th param given
 
-
+/*
 
 NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting for list of properties
 
@@ -264,3 +270,5 @@ NATIVE (_getCmdProperty) {		//this is only a copy of getCharProperty, waiting fo
   	return INVALID;
 }
 
+
+*/
