@@ -2069,7 +2069,7 @@ SI32 cChar::getCombatSkill()
 LOGICAL cChar::losFrom(P_CHAR pc)
 {
 	VALIDATEPCR(pc, false );
-	return ( line_of_sight(-1, getPosition(), pc->getPosition(), WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING) == 0 )? false : true;
+	return lineOfSight( getPosition(), pc->getPosition() );
 }
 
 /*!

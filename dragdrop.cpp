@@ -1061,72 +1061,14 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
                         ps->resetDragging();
                         UpdateStatusWindow(s,pi);
                 }
-		pi->MoveTo( pi->getOldPosition() );
 		pi->setContSerial( pi->getContSerial(true) );
+		pi->MoveTo( pi->getOldPosition() );
 		pi->layer = pi->oldlayer;
 		pi->Refresh();
 		return;
 	}
 
-        //<Luxor>: Line of sight check
-        //This part avoids the circle of transparency walls bug
 
-        //-----
-        if ((!line_of_sight(INVALID, Loc(pp->TxLoc - 1, pp->TyLoc, pp->TzLoc), Loc(pp->TxLoc + 1, pp->TyLoc, pp->TzLoc), 63)) &&
-        (!line_of_sight(INVALID, Loc(pp->TxLoc, pp->TyLoc - 1, pp->TzLoc), Loc(pp->TxLoc, pp->TyLoc + 1, pp->TzLoc), 63))
-        ) {
-                ps->sysmsg(TRANSLATE("You cannot place an item there!"));
-
-                Sndbounce5(s);
-                if (ps->isDragging()) {
-                        ps->resetDragging();
-                        UpdateStatusWindow(s,pi);
-                }
-                pi->setContSerial( pi->getContSerial(true) );
-                pi->setPosition( pi->getOldPosition() );
-                pi->layer = pi->oldlayer;
-                pi->Refresh();
-                return;
-        }
-        //</Luxor>
-
-        //<Luxor> Items count check
-        if (!pc->IsGM()) {
-
-			NxwItemWrapper si;
-			si.fillItemsAtXY( pp->TxLoc, pp->TyLoc );
-			UI16 itcount = 0;
-			for( si.rewind(); !si.isEmpty(); si++ ) {
-
-				P_ITEM pi_onground = si.getItem();
-				if(ISVALIDPI(pi_onground)) {
-                        if ( pi_onground->getPosition("x") == pp->TxLoc &&
-                             pi_onground->getPosition("y") == pp->TyLoc )
-							{
-                                itcount++;
-                                if (itcount >= 2) { //Only 2 items permitted
-									ps->sysmsg(TRANSLATE("There is not enough space there!"));
-									Sndbounce5(s);
-									if (ps->isDragging()) {
-										ps->resetDragging();
-										UpdateStatusWindow(s,pi);
-									}
-									if (ISVALIDPI(pc->getBackpack())) {
-										pi->setCont(pc->getBackpack());
-										pi->SetRandPosInCont(pc->getBackpack());
-									} else {
-										pi->setContSerial( pi->getContSerial(true) );
-										pi->setPosition( pi->getOldPosition() );
-									}
-									pi->layer = pi->oldlayer;
-									pi->Refresh();
-									return;
-								}
-							}
-				}
-			}
-        }
-        //</Luxor>
 
 
         if(pi!=NULL)
@@ -1208,7 +1150,52 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	}
 	else
 	{
-		ItemDroppedOnChar(ps, pp, pi);
+		if ( !ItemDroppedOnChar(ps, pp, pi) ) {
+			//<Luxor>: Line of sight check
+			//This part avoids the circle of transparency walls bug
+
+			//-----
+			if ( !lineOfSight( pc->getPosition(), Loc( pp->TxLoc, pp->TyLoc, pp->TzLoc ) ) ) {
+		                ps->sysmsg(TRANSLATE("You cannot place an item there!"));
+
+        	        	Sndbounce5(s);
+	                	if (ps->isDragging()) {
+	                        	ps->resetDragging();
+                        		UpdateStatusWindow(s,pi);
+                		}
+                		pi->setContSerial( pi->getContSerial(true) );
+                		pi->setPosition( pi->getOldPosition() );
+                		pi->layer = pi->oldlayer;
+                		pi->Refresh();
+                		return;
+        		}
+        		//</Luxor>
+
+	        	//<Luxor> Items count check
+	        	if (!pc->IsGM()) {
+				NxwItemWrapper si;
+				si.fillItemsAtXY( pp->TxLoc, pp->TyLoc );
+				if (si.size() >= 2) { //Only 2 items permitted
+					ps->sysmsg(TRANSLATE("There is not enough space there!"));
+					Sndbounce5(s);
+					if (ps->isDragging()) {
+						ps->resetDragging();
+						UpdateStatusWindow(s,pi);
+					}
+					if (ISVALIDPI(pc->getBackpack())) {
+						pi->setCont(pc->getBackpack());
+						pi->SetRandPosInCont(pc->getBackpack());
+					} else {
+						pi->setContSerial( pi->getContSerial(true) );
+						pi->setPosition( pi->getOldPosition() );
+					}
+					pi->layer = pi->oldlayer;
+					pi->Refresh();
+					return;
+				}
+			}
+        		//</Luxor>
+		}
 
 		weights::NewCalc(pc);  // Ison 2-20-99
 		statwindow(pc,pc);

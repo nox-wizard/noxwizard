@@ -426,7 +426,7 @@ void teleporters(P_CHAR pc)
 	{
 		if( charpos.y == iter_tele_locations->second.origem.y )
 		{
-			if( iter_tele_locations->second.origem.z == 127 || abs( charpos.z - iter_tele_locations->second.origem.z ) < 10 )
+			if( iter_tele_locations->second.origem.z == 127 || abs( charpos.z - iter_tele_locations->second.origem.z ) <= 30 )
 			{
 				if ( !pc->npc )
 				{
@@ -453,7 +453,6 @@ void teleporters(P_CHAR pc)
 						iter_tele_locations->second.destination.y,
 						iter_tele_locations->second.destination.z );
 				pc->teleport();
-				ConOut(" TAKEN");
 				return;
 			}
 		}

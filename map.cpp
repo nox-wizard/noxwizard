@@ -216,7 +216,7 @@ LOGICAL lineOfSight( Location A, Location B )
 	UI32 i = ( max_i == max_x ) ? min( A.x, B.x ) : min( A.y, B.y );
 
 	Location pos;
-	for ( ; i <= max_i; i++ ) {
+	for ( i++; i < max_i; i++ ) {
 		pos = ( max_i == max_x ) ? line.getPosAtX( i ) : line.getPosAtY( i );
 		if ( isWalkable( pos, WALKFLAG_DYNAMIC+WALKFLAG_MAP+WALKFLAG_STATIC ) == illegal_z )
 			return false;

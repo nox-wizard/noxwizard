@@ -116,7 +116,7 @@ void doubleclick(NXWCLIENT ps)
 		return;
 	*/
 
-	if (!checkItemUsability(pc , pi, ITEM_USE_DBLCLICK)) 
+	if (!checkItemUsability(pc , pi, ITEM_USE_DBLCLICK))
 		return;
 
 	Location charpos= pc->getPosition();
@@ -225,8 +225,8 @@ void doubleclick(NXWCLIENT ps)
 		}
 	} // </Anthalir>
 
+
 	//<Luxor>: Circle of transparency bug fix
-	
 	P_ITEM pCont;
 	Location dst;
 
@@ -244,9 +244,9 @@ void doubleclick(NXWCLIENT ps)
 	charPos.z = dst.z;
 	charPos.dispz = dst.dispz;
 
-	if (!line_of_sight(INVALID, charPos, dst, 63)) {
-		if (pi->getContainer() == NULL && pi->type != ITYPE_DOOR && pi->type != ITYPE_LOCKED_DOOR)
-			return;                                               	
+	if ( !pc->IsGM() && !lineOfSight( charPos, dst ) ) {
+		pc->sysmsg( TRANSLATE( "You cannot reach the item" ) );
+		return;
 	}
 	//</Luxor>
 	
