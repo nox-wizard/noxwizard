@@ -7691,14 +7691,7 @@ NATIVE ( _chr_getIP )
 
 NATIVE ( _account_delete )
 {
-	cell *cstr;
-	amx_GetAddr(amx, params[1], &cstr);
-	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
- 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	g_nAmxPrintPtr=0;	
-	std::string accname = g_cAmxPrintBuffer;
-
-	return Accounts->RemoveAccount(accname);
+	return Accounts->RemoveAccount(params[1]);
 }
 
 /*
@@ -7750,6 +7743,24 @@ NATIVE ( _account_getLastIP )
 		return 0;
 	return 1;
 }
+
+/*
+\brief returns the name of the account
+\param 1 account number
+*/
+NATIVE ( _account_getName )
+{
+	cAccount *acc = Accounts->GetAccount(params[1]);
+	cell *cptr;
+	amx_GetAddr(amx, params[2], &cptr);
+	if ( acc != NULL ) 
+	{
+		amx_SetString(cptr,	(char * )(acc->name.c_str()), g_nStringMode);
+		return 0;
+	}
+	return 1;
+}
+
 
 NATIVE ( _chr_showSellGump )
 {
@@ -8275,6 +8286,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "account_block", _account_block },
  { "account_changePW", _account_changePW },
  { "account_getLastIP", _account_getLastIP },
+ { "account_getName", _account_getName},
 
 // Terminator :
  { NULL, NULL }

@@ -126,6 +126,7 @@ public:
 	ACCOUNT GetAccountByName(std::string name);
 	cAccount *GetAccount(ACCOUNT acctnumb);
 	bool RemoveAccount( std::string name );
+	bool RemoveAccount(ACCOUNT acctnumb);
 
 };
 

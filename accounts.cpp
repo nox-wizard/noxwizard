@@ -769,6 +769,34 @@ cAccount *cAccounts::GetAccount(ACCOUNT acctnumb)
 		return NULL;
 }
 
+/*!
+\brief Delete an account
+\author Akron
+\return true if account is deleted correctly, or false
+\param ACCOUNT acctnumb
+*/
+bool cAccounts::RemoveAccount(ACCOUNT acctnumb)
+{
+	if ( IsOnline(acctnumb) )
+	{
+		unsigned int r = pointers::findCharBySerial(GetInWorld(acctnumb))->getClient()->toInt();
+		Network->Disconnect(r);
+	}
+	
+	NxwCharWrapper acc_chars;
+	GetAllChars( acctnumb, acc_chars );
+	for( acc_chars.rewind(); !acc_chars.isEmpty(); acc_chars++ )
+	{
+		P_CHAR pc = acc_chars.getChar();
+		if(ISVALIDPC(pc))
+			pc->Delete();
+	}
+	
+	acctlist.erase( acctnumb );
+	SaveAccounts();
+	return true;
+}
+
 
 /*!
 \brief Delete an account
