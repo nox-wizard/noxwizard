@@ -4830,12 +4830,12 @@ void cChar::doTarget()
 	}
 }
 
-cUnicodeString* cChar::getProfile()
+wstring* cChar::getProfile()
 {
 	return this->profile;
 }
 
-void cChar::setProfile( cUnicodeString* profile )
+void cChar::setProfile( wstring* profile )
 {
 	if( this->profile!=NULL )
 		safedelete(this->profile);
@@ -4847,12 +4847,12 @@ void cChar::resetProfile()
 	this->profile=NULL;
 }
 	
-cUnicodeString* cChar::getSpeechCurrent()
+wstring* cChar::getSpeechCurrent()
 {
 	return this->speechCurrent;
 }
 
-void cChar::setSpeechCurrent( cUnicodeString* speech )
+void cChar::setSpeechCurrent( wstring* speech )
 {
 	deleteSpeechCurrent();
 	this->speechCurrent=speech;
