@@ -20,8 +20,8 @@
 class NxwWrapper {
 
 private:
-	SERIAL_VECTOR vect;
-	SERIAL_VECTOR::iterator current, end;
+	SERIAL_SET vect;
+	SERIAL_SET::iterator current, end;
 
 protected:
 	void next();
