@@ -3075,6 +3075,7 @@ NATIVE2(_setMenuProperty)
 			case NXW_MP_STR_BUFFER :
 				if( ISVALIDMENUBUFFER( params[3] ) )
 					menu->buffer_str[ params[3] ] = g_cAmxPrintBuffer;
+				break;
 			default :
 				ErrOut("menu_setProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -3213,7 +3214,7 @@ NATIVE2(_getMenuProperty)
 	  	char str[100];
 		cell *cptr;
 		switch(params[2]) {
-			case NXW_MP_I_BUFFER:
+			case NXW_MP_STR_BUFFER:
 				if( !ISVALIDMENUBUFFER( params[3] ) )
 					return INVALID;
 				else
@@ -3265,6 +3266,8 @@ NATIVE2(_getMenuProperty)
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
+
+//Semi-Total Restyling by Frodo
 
 
 NATIVE2(_getRaceProperty)
