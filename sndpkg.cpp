@@ -378,7 +378,7 @@ void weather(NXWSOCKET  s, unsigned char bolt)
 	if (wtype==1) type = 0x00;
 	if (wtype==2) { type = 0x02; temperature = 0xEC; }
 
-	SendSetWeather(s, type, num, temperature);
+	SendSetWeatherPkt(s, type, num, temperature);
 }
 
 void pweather(NXWSOCKET  s)
@@ -392,7 +392,7 @@ void pweather(NXWSOCKET  s)
 	if (region[pc->region].wtype==1) type = 0x00;
 	if (region[pc->region].wtype==2) { type = 0x02; temperature = 0xEC; }
 
-	SendSetWeather(s, type, num, temperature);
+	SendSetWeatherPkt(s, type, num, temperature);
 }
 
 void sysbroadcast(char *txt, ...) // System broadcast in bold text
@@ -1918,7 +1918,7 @@ void SendPlaySoundEffectPkt(NXWSOCKET s, UI08 mode, UI16 sound_model, UI16 unkn,
 //AoS/	Network->FlushBuffer(s);
 }
 
-void SendSetWeather(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature)
+void SendSetWeatherPkt(NXWSOCKET s, UI08 type, UI08 num, UI08 temperature)
 {
 	UI08 packet[4] = { 0x65, 0x00, };
 

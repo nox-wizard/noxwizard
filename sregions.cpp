@@ -355,7 +355,7 @@ void check_region_weatherchange ()
 	//here : we should commit weather changes to players
 	wtype=0;
 
-	for (i=0;i<now;i++) if (perm[i]) SendSetWeather(i, 0xFF, 0x00, 0x20);
+	for (i=0;i<now;i++) if (perm[i]) SendSetWeatherPkt(i, 0xFF, 0x00, 0x20);
 
 	for (i=0;i<now;i++) if (perm[i]) pweather(i);
 
