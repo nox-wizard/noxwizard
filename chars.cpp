@@ -345,6 +345,8 @@ cChar::~cChar()
 		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
+	if( disabledmsg!=NULL )
+		safedelete( disabledmsg );
 }
 
 
