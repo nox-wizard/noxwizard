@@ -15,7 +15,7 @@ cTiledata* tiledata=NULL;
 cMap* mappa=NULL;
 cStatics* statics=NULL;
 cVerdata* verdata=NULL;
-cMulti* multi=NULL;
+cMULFile<multi_st>* multi=NULL;
 
 
 
@@ -31,11 +31,23 @@ cFile::~cFile() {
 
 
 
+/*!
+\brief Constructor
+\author Endymion
+\param idx the path of index file
+\param data the path of data file
+\param cache if true are cached
+\param verdata if valid pointer add verdata patches
+*/
 template <typename T>
-cMULFile<T>::cMULFile( std::string idx, std::string data ) {
+cMULFile<T>::cMULFile( std::string idx, std::string data, bool cache, class cVerdata* verdata ) {
 	this->idx = new cFile( idx );
 	this->data = new cFile( data );
 	isCached = false;
+	if( cache ) 
+		loadCache();
+	if( verdata!=NULL )
+		loadVerdata( verdata );
 }
 
 template <typename T>
@@ -47,24 +59,33 @@ cMULFile<T>::~cMULFile() {
 template <typename T>
 bool cMULFile<T>::getData( UI32 i, std::vector< T >* data ) {
 	
-	data = new std::vector<T>;
-	if( i==INVALID ) 
-		return true;
+	//ndEndy need because can be into verdata
+	std::map< SERIAL, std::vector<T>>::iterator iter( cache.find( i ) );
+	if( iter!=cache.end() ) {
+		data=iter->second;
+		return false;
+	}
 
-	if( i*sizeof(TINDEX) >= idx->file.width() )
-		return true;
+	if( (i==INVALID) || ( isCached ) || ( i*sizeof(TINDEX) >= idx->file.width() ) ) {
+		data=NULL;
+		return false;
+	}
 
 	TINDEX index;
 	idx->file.seekg( i*sizeof(TINDEX) );
 	idx->file.read( (char*)&index, sizeof(TINDEX) );
-	if( index.start==INVALID || index.size==INVALID )
-		return true;
+	if( index.start==INVALID || index.size==INVALID ) {
+		data=NULL;
+		return false;
+	}
 
 	if( ( index.size % sizeof(T) ) != 0  ) {
 		ErrOut( "data corrupted ( index=%i ) in %s ", i, idx.path.c_str() );
-		return true;
+		data=NULL;
+		return false;
 	}
 
+	data = new std::vector<T>;
 	data.seekg( index.start );
 	T buffer;
 	for( int s=0; s< (index.size % sizeof(T)); ++s ) {
@@ -76,22 +97,12 @@ bool cMULFile<T>::getData( UI32 i, std::vector< T >* data ) {
 
 }
 
-template <typename T> 
-cMULFileCached<T>::cMULFileCached( std::string idx, std::string data ) {
-	loadCache();
-}
-
-template <typename T> 
-cMULFileCached<T>::~cMULFileCached() {
-}
-
-
 /*!
 \brief Cache data
 \author Endymion
 */
 template <typename T> 
-void cMULFileCached<T>::loadCache() {
+void cMULFile<T>::loadCache() {
 
 	if(!isReady() || isCached )
 		return;
@@ -125,60 +136,64 @@ void cMULFileCached<T>::loadCache() {
 
 }
 
+/*!
+\brief Cache data
+\author Endymion
+*/
 template <typename T> 
-bool cMULFileCached<T>::getData( UI32 i, std::vector< T >* data ) {
-	
-	if( i==INVALID )
-		return true;
-
-	std::vector<T>::iterator iter( cache.find( i ) );
-	if( iter!=cache.end() ) {
-	}
-
-
+void cMULFile<T>::loadVerdata() {
 }
 
-template <typename T, typename M>
-NxwMulWrapper<T,M>::NxwMulWrapper( cMULFile<M>* mul, UI32 i ) {
+template <typename T>
+NxwMulWrapper<T>::NxwMulWrapper( cMULFile<T>* mul, UI32 i ) {
 	idx=i;
 	this->mul=mul;
 	needFree=false;
 	data=NULL;
 }
 
-template <typename T, typename M>
-NxwMulWrapper<T,M>::~NxwMulWrapper() {
+template <typename T>
+NxwMulWrapper<T>::NxwMulWrapper( cStatics* statics, UI32 x, UI32 y ) {
+	idx=statics->idFromXY(x,y);
+	this->mul=mul;
+	needFree=false;
+	data=NULL;
+}
+
+
+template <typename T>
+NxwMulWrapper<T>::~NxwMulWrapper() {
 	if( needFree )
 		delete data;
 }
 
-template <typename T, typename M>
-void NxwMulWrapper<T,M>::rewind() {
-	needFree = mul->getData( i );
+template <typename T>
+void NxwMulWrapper<T>::rewind() {
+	needFree = mul->getData( i, data );
 }
 
-template <typename T, typename M>
-UI32 NxwMulWrapper<T,M>::size() {
+template <typename T>
+UI32 NxwMulWrapper<T>::size() {
 	return (data!=NULL)? data->size() : 0;
 }
 
-template <typename T, typename M>
-bool NxwMulWrapper<T,M>::end() {
-	return current==data->end();
+template <typename T>
+bool NxwMulWrapper<T>::end() {
+	return (data==NULL) || (current==data->end());
 }
 
-template <typename T, typename M>
-bool NxwMulWrapper<T,M>::isEmpty() {
+template <typename T>
+bool NxwMulWrapper<T>::isEmpty() {
 	return size()<=0;
 }
 
-template <typename T, typename M>
-NxwMulWrapper<T,M>& NxwMulWrapper<T,M>::operator++(int) {
+template <typename T>
+NxwMulWrapper<T>& NxwMulWrapper<T>::operator++(int) {
 	current++;
 }
 
-template <typename T, typename M>
-T NxwMulWrapper<T,M>::get() {
+template <typename T>
+T NxwMulWrapper<T>::get() {
 	return *current;
 }
 
@@ -209,7 +224,8 @@ cTiledata::cTiledata( std::string path, bool cache, class cVerdata* verdata ) : 
 	isCached=false;
 	if( cache )
 		loadForCaching();
-	addVerdata();
+	if( verdata!=NULL )
+		addVerdata(verdata);
 };
 
 /*!
@@ -327,7 +343,7 @@ void cTiledata::loadForCaching() {
 \brief Add all tiledata records contained in verdata
 \author Endymion
 */
-void cTiledata::addVerdata() {
+void cTiledata::addVerdata( cVerdata* verdata ) {
 	
 	if(verdata==NULL)
 		return;
@@ -517,14 +533,10 @@ void cVerdata::loadForCaching() {
 \param height the height of the map
 \param cache if true are cached
 */
-cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache )
+cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache, cVerdata* verdata ) : cMULFile<statics_st>( pathidx, pathdata, cache, verdata )
 {
 	width=width;
 	height=height;
-	if( cache )
-		file = new cMULFileCached<statics_st>( pathidx, pathdata );
-	else 
-		file = new cMULFile<statics_st>( pathidx, pathdata );
 }
 
 /*!
@@ -536,16 +548,6 @@ cStatics::~cStatics()
 }
 
 /*!
-\brief Check of Statics are ready for read
-\author Endymion
-\return true if ready
-*/
-bool cStatics::isReady()
-{
-	return file->is_open();
-}
-
-/*!
 \brief Get the Statics at given location
 \author Endymion
 \return true if valid statics
@@ -553,133 +555,29 @@ bool cStatics::isReady()
 \param y the y location
 \param stats the statics vector
 */
-bool cStatics::getStatics( UI16 x, UI16 y, P_STATICSVET stats )
+bool cStatics::getData( UI16 x, UI16 y, std::vector<statics_st>* stats )
 { 
+
+	SERIAL id=idFromXY( x, y );
+	if( id==INVALID ) {
+		stats = NULL;
+		return false;
+	}
+
+	return cMULFile<statics_st>::getData( id, stats );
+
+}
+
+
+SERIAL cStatics::idFromXY( UI16 x, UI16 y ) {
 
 	if( x>=width || y>=height ) {
-		ErrOut( "Bad static ( x=%i y=%i ) search in map %s ( width=%i height=%i )",x,y,file->getPath().c_str(),width,height );
-		return file->getData( INVALID, stats );
+		ErrOut( "Bad static ( x=%i y=%i ) search in map %s ( width=%i height=%i )",x,y,getPath().c_str(),width,height );
+		return INVALID;
 	}
 
-	bool needFree = file->getData( x*height+y, stats );
-
-
-	/*	TINDEX index;
-		idx.seekg( (x*height+y)*sizeof(TINDEX) );
-		idx.read( (char*)&index, sizeof(TINDEX) );
-		if( index.start==INVALID || index.size==INVALID )
-			return false;
-		else {
-			if( ( index.size % sizeof(statics_st) ) != 0 /*|| index.start>data.size()*//* ) {
-				ErrOut( "static data corrupted ( x=%i y=%i ) search in map %s ( width=%i height=%i )",x,y,pathdata.c_str(),width,height );
-				return false;
-			}
-			else {
-				data.seekg( index.start );
-				statics_st buffer;
-				for( UI32 s=0; s< (index.size % sizeof(statics_st)); s++ ) {
-					data.read( (char*)&buffer, sizeof(statics_st));
-					stats.push_back( buffer );
-				}
-				return true;
-			}				
-		}
-	}*/
-
+	return x*height+y;
 }
 
-
-/*!
-\brief Constructor
-\author Endymion
-\param pathidx the path of multi.idx
-\param pathdata the path of multi.mul
-\param cache if true are cached
-\param verdata if valip pointer add verdata multi
-*/
-cMulti::cMulti( std::string pathidx, std::string pathdata, bool cache, class cVerdata* verdata )
-{
-	if( cache )
-		file = new cMULFileCached<multi_st>( pathidx, pathdata );
-	else
-		file = new cMULFile<multi_st>( pathidx, pathdata );
-
-	if( verdata!=NULL )
-		addVerdata();
-}
-
-/*!
-\brief Destructor
-\author Endymion
-*/
-cMulti::~cMulti()
-{
-}
-
-/*!
-\brief Check of Multis are ready for read
-\author Endymion
-\return true if ready
-*/
-bool cMulti::isReady()
-{
-	return file->is_open();
-}
-
-void cMulti::addVerdata( )
-{
-	if(verdata==NULL)
-		return;
-}
-
-/*!
-\brief Get the multi at given id
-\author Endymion
-\return true if valid multi
-\param id the id
-\param multi the multi vector
-*/
-bool cMulti::getMulti( UI32 id, P_MULTISVEC multi )
-{ 
-
-	return file->getData( id, multi );
-/*	multi.clear();
-
-	MULTISMAP::iterator iter( multisCached.find(id) );
-	if( iter!=multisCached.end() ) {
-		multi = iter->second;
-		return true;
-	}
-	else
-		if( isCached )
-			return false;
-		else {
-
-			if( !isReady() )
-				return false;
-
-			TINDEX index;
-			idx.seekg( id *sizeof(TINDEX) );
-			idx.read( (char*)&index, sizeof(TINDEX) );
-			if( index.start==INVALID || index.size==INVALID )
-				return false;
-			else {
-				if( ( index.size % sizeof(TMULTI) ) != 0 /*|| index.start>data.size()*/ /*) {
-					ErrOut( "Multi data corrupted ( id=%i ) in %s",id,pathdata.c_str() );
-					return false;
-				}
-				else {
-					data.seekg( index.start );
-					TMULTI buffer;
-					for( UI32 s=0; s< (index.size % sizeof(TMULTI)); s++ ) {
-						data.read( (char*)&buffer, sizeof(TMULTI));
-						multi.push_back( buffer );
-					}
-					return true;
-				}				
-			}
-		}*/
-
-}
 
 

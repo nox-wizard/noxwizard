@@ -20,7 +20,6 @@
 
 extern class cTiledata* tiledata; //!<the tiledata class istance
 extern class cMap* mappa; //!<the map class istance
-extern class cMulti* multi;
 extern class cStatics* statics; //!<the statics class istance
 extern class cVerdata* verdata; //!<the verdata class istance
 
@@ -43,11 +42,15 @@ private:
 	cFile* idx;	//!< index file
 	cFile* data;	//!< data file
 
+	std::map< UI32, std::vector< T > > cache;
+	void loadCache();
+	void loadVerdata();
+
 public:
 
 	bool isCached;	//!< true if cached on memory
 
-	cMULFile( std::string idx, std::string data );
+	cMULFile( std::string idx, std::string data, bool cache, class cVerdata* verdata );
 	~cMULFile();
 
 	virtual bool is_open() { return idx->is_open() && data->is_open(); }
@@ -56,42 +59,27 @@ public:
 
 };
 
-template <typename T> class cMULFileCached : public cMULFile<T> {
 
-private:
-
-	std::map< UI32, std::vector< T > > cache;
-	void loadCache();
-
-public:
-	
-	cMULFileCached( std::string idx, std::string data );
-	~cMULFileCached();
-
-	virtual bool is_open() { return true; }
-	virtual bool getData( UI32 i, std::vector< T >* data );
-
-};
-
-template <typename T, typename M> class NxwMulWrapper {
+template <typename T> class NxwMulWrapper {
 
 private:
 	std::vector< T >* data; 
 	std::vector< T >::iterator current;
 	bool needFree;
 	UI32 idx;
-	cMULFile<M>* mul;
+	cMULFile<T>* mul;
 
 public:
 
-	NxwMulWrapper( cMULFile<M>* mul, UI32 i );
+	NxwMulWrapper( cMULFile<T>* mul, UI32 i );
+	NxwMulWrapper( cStatics* statics, UI32 x, UI32 y );
 	~NxwMulWrapper();
 
 	void rewind();
 	UI32 size();
 	bool end();
 	bool isEmpty();
-	NxwMulWrapper<T,M>& operator++(int);
+	NxwMulWrapper<T>& operator++(int);
 	T get();
 
 };
@@ -164,6 +152,7 @@ private:
 
 	STATICINFOMAP staticsCached;	//!< all static info cached
 	LANDINFOMAP landsCached;	//!< all land info cached
+	void addVerdata( class cVerdata* verdata );
 
 public:
 
@@ -171,9 +160,7 @@ public:
 	~cTiledata();
 	bool isReady();
 	
-
 	void loadForCaching();
-	void addVerdata(  );
 	bool getLand( SERIAL id, TLANDINFO& land );
 	bool getStatic( SERIAL id, TSTATICINFO& stat );
 
@@ -239,22 +226,6 @@ typedef multi_st TMULTI;
 #define MULTISMAP std::map< UI32, MULTISVEC >
 typedef MULTISVEC* P_MULTISVEC;
 
-class cMulti {
-
-private:
-
-	cMULFile<multi_st>* file;
-
-public:
-
-	cMulti( std::string pathidx, std::string pathdata, bool cache=false, class cVerdata* verdata=NULL );
-	~cMulti();
-	bool isReady();
-
-	void addVerdata( );
-	bool getMulti( UI32 id, P_MULTISVEC multi );
-
-};
 
 
 
@@ -273,23 +244,20 @@ typedef STATICSVET* P_STATICSVET;
 /*!
 \brief Statics
 */
-class cStatics {
+class cStatics : public cMULFile< statics_st >{
 
 private:
-
-	cMULFile<statics_st>* file;
 
 	UI16 width;	//!< width of map
 	UI16 height; //!< height of map
 
-
 public:
 
-	cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache=false );
+	cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache, class cVerdata* verdata );
 	~cStatics();
-	bool isReady();
 
-	bool getStatics( UI16 x, UI16 y, P_STATICSVET stats );
+	SERIAL idFromXY( UI16 x, UI16 y ); 
+	virtual bool getData( UI16 x, UI16 y, std::vector<statics_st>* stats );
 
 };
 
@@ -356,6 +324,7 @@ public:
 	void loadForCaching();
 };
 
+extern cMULFile<multi_st>* multi;
 
 
 
