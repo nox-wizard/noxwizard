@@ -55,7 +55,7 @@ private:
 public:
 	class AmxEvent *listNext;
 	class AmxEvent *hashNext;
-	cell Call (int param1, int param2=-1, int param3=-1, int param4=-1);
+	cell Call (int param1, int param2=-1, int param3=-1, int param4=-1, int param5=-1);
 	char *getFuncName (void);
 	bool shouldBeSaved(void) { return !dynamic; }
 	AmxEvent(char *fnname, bool dyn);

@@ -132,10 +132,10 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 \param param3 parameter passed to amx callback fn
 \param param4 parameter passed to amx callback fn
 */
-cell AmxEvent::Call (int param1, int param2, int param3, int param4)
+cell AmxEvent::Call (int param1, int param2, int param3, int param4, int param5)
 { 
 	g_nCurrentSocket = g_nTriggeredItem = g_nTriggerType = -1;
-	if (valid) return AmxFunction::g_prgOverride->CallFn(function, param1, param2, param3, param4); 
+	if (valid) return AmxFunction::g_prgOverride->CallFn(function, param1, param2, param3, param4, param5); 
 	else return -1;
 }
 

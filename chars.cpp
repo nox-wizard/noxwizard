@@ -1361,7 +1361,7 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 
 	if (amxevents[EVENT_CHR_ONWOUNDED]) {
 		g_bByPass = false;
-		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att);
+		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att, typeofdamage, stattobedamaged);
 		if (g_bByPass==true) return;
 	}
 	/*
