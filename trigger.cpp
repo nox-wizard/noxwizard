@@ -107,12 +107,13 @@ void cTriggerContext::parseIfCommand(char* cmd, char* par, int comparevalue)
 */
 void cTriggerContext::parseIAddCommand(char* par)
 {
-	int array[2];
-	fillIntArray(par, array, 2, 0);
+	int array[3];
+	fillIntArray(par, array, 3, 0);
 	int triggerx, triggery, triggerz;
 
-	unsigned int InBackpack = array[1];
-	unsigned int itmNumber = array[0];
+	UI32 itmNumber = array[0];
+	UI32 InBackpack = array[1];
+	UI32 itmamount = (array[2]<=0)? 1 : array[2];
     
 	NXWSOCKET  ts = m_socket;
 	Location charpos= m_pcCurrChar->getPosition();
@@ -158,26 +159,32 @@ void cTriggerContext::parseIAddCommand(char* par)
     }
     triggerz = charpos.z;
 
-	P_ITEM boh = NULL;
+	P_ITEM pi = NULL;
 	if (!InBackpack) 
 	{
-		P_ITEM pi=item::CreateFromScript( itmNumber);
-		pi->MoveTo(triggerx, triggery, triggerz);
-		pi->Refresh();
+		pi=item::CreateFromScript( itmNumber );
+		if( ISVALIDPI(pi) ) {
+			pi->MoveTo(triggerx, triggery, triggerz);
+			pi->Refresh();
+		}
 	} 
 	else 
 	{
-		boh = item::SpawnItemBackpack2(ts, itmNumber , 0);
+		pi = item::SpawnItemBackpack2(ts, itmNumber , 0);
 	}
 
     // Added colormem token here! by Magius(CHE) §
-    if (ISVALIDPI(boh) && m_nColor1!=0xFF)
-    {
-        boh->setColor( (m_nColor1<<8)|(m_nColor2%256) );
-        boh->Refresh();
+    if( ISVALIDPI(pi) ) {
+		if( itmamount>1 ) {
+			pi->amount=itmamount;
+		}
+		if( m_nColor1!=0xFF ) {
+			pi->setColor( (m_nColor1<<8)|(m_nColor2%256) );
+			pi->Refresh();
+		}
     }
     // end addons
-	m_piAdded = boh;
+	m_piAdded = pi;
 }
 
 /*!
