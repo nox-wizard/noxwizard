@@ -371,8 +371,8 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					
 					if( pj->hidden )
 						continue;
-
-					if( pj->IsInnocent() )
+					// Stop talking npcs to each other
+					if( pj->IsInnocent() && !pj->npc )
 					{
 						sprintf( temp,TRANSLATE("Hello %s, Welcome to my shop, How may i help thee?."), pj->getCurrentNameC());
 						pc->talkAll( temp, 1);

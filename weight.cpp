@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
+#include "layer.h"
 #include "weight.h"
 #include "set.h"
 #include "chars.h"
@@ -33,7 +34,8 @@ void weights::NewCalc(P_CHAR pc)
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
-		if (ISVALIDPI(pi))
+		// Wintermute: Exclude mounted layer (counts as worn item)
+		if (ISVALIDPI(pi) && pi->layer != LAYER_MOUNT)
 		{
 			totalweight+=(pi->getWeightActual()/100.0);
 		}

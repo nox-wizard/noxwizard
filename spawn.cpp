@@ -477,7 +477,7 @@ void cSpawnDinamic::doSpawn()
 	P_ITEM spawn=pointers::findItemBySerial( this->item );
 	VALIDATEPI(spawn);
 
-	if( this->current>=spawn->amount )
+	if( this->current>=spawn->amount || spawn->morex == 0)
 		return;
 	if( !spawn->isInWorld() )
 		return; //npc spawned in container? ahhah i have a gremlin in backpack :P

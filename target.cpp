@@ -335,6 +335,8 @@ void TargetLocation::extendItemTarget()
 // Changes           : none yet
 TargetLocation::TargetLocation( P_TARGET pp )
 {
+	Location loc = pp->getLocation();
+	init( loc.x, loc.y, loc.z );
 	if( pp->type==0 ) {
 
 		P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
@@ -350,18 +352,18 @@ TargetLocation::TargetLocation( P_TARGET pp )
 		}
 	}
 	else if( pp->type==1 ) {
-		Location loc = pp->getLocation();
-		init( loc.x, loc.y, loc.z );
 		return;
 	}
-
+// Wintermute: Always return a valid location, or spells can't target ground
 	this->m_pc=NULL;
 	this->m_pcSerial=INVALID;
 	this->m_pi=NULL;
 	this->m_piSerial=INVALID;
+/*
 	this->m_x=0;
 	this->m_y=0;
 	this->m_z=0;
+*/
 }
 
 

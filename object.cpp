@@ -79,6 +79,8 @@ std::string cObject::getRandomScriptValue( std::string section, std::string& sec
 						if(j==i)
 						{
 							value = script1;
+							// Wintermute stop going through the whole loop
+							break;
 						}
 						++j;
 					}
