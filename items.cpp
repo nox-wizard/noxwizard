@@ -26,6 +26,7 @@
 #include "basics.h"
 #include "utils.h"
 #include "house.h"
+#include "spawn.h"
 
 /*!
 \author Duke
@@ -1081,6 +1082,11 @@ void cItem::Delete()
 	if (amxevents[EVENT_IONUNEQUIP] != NULL)
 	{
 		amxevents[EVENT_IONUNEQUIP]->Call(getSerial32(), getSerial32());
+	}
+	if ( this->getSpawnSerial() > 0 )
+	{
+		cSpawnDinamic * spawn = Spawns->getDynamicSpawn(this->getSpawnSerial());
+		spawn->remove(this->getSerial32());
 	}
 
 	archive::deleteItem(this);
