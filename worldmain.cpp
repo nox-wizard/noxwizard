@@ -749,7 +749,7 @@ void loaditem()
 		case 'd':
 		case 'D':
 			if (!(strcmp(script1, "DISABLEMSG")))
-				pi->disabledmsg = script2;
+				pi->disabledmsg = new std::string( script2 );
 			else if (!(strcmp(script1, "DISABLED")))
 				pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);
 			else if (!(strcmp(script1, "DIR"))) 
@@ -1927,8 +1927,8 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "TRIGTYPE %i\n", pi->trigtype);
 		if (pi->disabled!=dummy.disabled)
 			fprintf(iWsc, "DISABLED %i\n", pi->disabled);
-		if (pi->disabledmsg != dummy.disabledmsg)
-			fprintf(iWsc, "DISABLEMSG %s\n", pi->disabledmsg.c_str() );
+		if (pi->disabledmsg!=NULL)
+			fprintf(iWsc, "DISABLEMSG %s\n", pi->disabledmsg->c_str() );
 		if (pi->tuses!=dummy.tuses)
 			fprintf(iWsc, "USES %i\n", pi->tuses);
 		if (pi->good!=dummy.good )

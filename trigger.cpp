@@ -408,8 +408,9 @@ void triggerItem(NXWSOCKET  ts, P_ITEM pi, int eventType)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[ts]);
 	VALIDATEPC(pc);
 
-	if ( (pi->disabled>0)&&(pi->disabled>=uiCurrentTime)) {
-		sysmessage(ts, "%s", pi->disabledmsg.c_str());
+	if ( (pi->disabled>0)&&(!TIMEOUT(pi->disabled))) {
+		if(pi->disabledmsg!=NULL)
+			sysmessage(ts, "%s", pi->disabledmsg->c_str());
 		return;
 	}
 
@@ -589,11 +590,21 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			else if (!(strcmp("DISABLE", cmd))) {  // Disable NPC for n seconds
 				if ((ISNPC(m_nTriggerType))&&(m_pcNpc!=0)) {
 					m_pcNpc->disabled = (uiCurrentTime +(MY_CLOCKS_PER_SEC*str2num(par)));
-					if (m_pcNpc) strncpy(m_pcNpc->disabledmsg, m_szDisableMsg, 48);
+					if (m_pcNpc) {
+						if( m_pcNpc->disabledmsg!=NULL )
+							(*m_pcNpc->disabledmsg) = m_szDisableMsg;
+						else
+							m_pcNpc->disabledmsg= new std::string( m_szDisableMsg );
+					}
 				}
 				if ((ISNOTNPC(m_nTriggerType))&&(m_pi!=0)) {
 					m_pi->disabled = (uiCurrentTime +(MY_CLOCKS_PER_SEC*str2num(par)));
-					if (m_pcNpc) strncpy(m_pcNpc->disabledmsg, m_szDisableMsg, 48);
+					if (m_pi) {
+						if( m_pi->disabledmsg!=NULL )
+							(*m_pi->disabledmsg)=m_szDisableMsg;
+						else
+							m_pi->disabledmsg = new std::string( m_szDisableMsg ); 
+					}
 				}
 			} else if (!(strcmp("DISABLEMSG", cmd))) { // Disable NPC Message
 				strncpy(m_szDisableMsg, par, 48);
