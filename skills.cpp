@@ -308,16 +308,13 @@ P_ITEM Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount)
 		}
 		itemmake[s].Mat1id=0;
 		itemmake[s].Mat2id=0;
-		P_ITEM pi = item::CreateFromScript( x );
+		P_ITEM pi = item::CreateFromScript( x, pack, amount );
         if (!ISVALIDPI(pi))
         {
             LogWarning("bad script item # %d(Item Not found).", x);
 			//delete targ;
             return NULL; //invalid script item
         }
-		if( amount!=INVALID )
-			pi->amount=amount;
-		pack->AddItem( pi );
 		//int c=DEREF_P_ITEM(pi);
         // Starting Rank System Addon, Identify Item and Store the Creator Name- by Magius(CHE)
 
