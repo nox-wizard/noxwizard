@@ -2037,7 +2037,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.name+=pc->getCurrentName();
 
 	
-	pc->speechCurrent = new cUnicodeString( speech );
+	cUnicodeString* speechUni= new cUnicodeString( speech );
 
 	cUnicodeString* speechGhostUni=NULL;
 
@@ -2065,6 +2065,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			continue;
 
 		NXWSOCKET a_socket = ps->toInt();
+		pc->speechCurrent = speechUni;
 
 		if( a_pc->unicode )			// language
 		{
@@ -2075,20 +2076,27 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			talk.language = calcserial( 'E', 'N', 'U',  0 );
 		}
 
+		bool ghost=false;
 		if( pc->dead && !a_pc->dead && !a_pc->IsGMorCounselor() && a_pc->spiritspeaktimer == 0 ) {
 			if( speechGhostUni==NULL ) {
 				speechGhostUni=new cUnicodeString();
 				makeGhost( pc->speechCurrent, speechGhostUni );
 			}
 			talk.msg=speechGhostUni;
+			ghost=true;
 		}
 		else
 			talk.msg=pc->speechCurrent;
+
+		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
+			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
+		}		
+
 		talk.send( ps );
 	}
 
 
-	delete pc->speechCurrent;
+	pc->speechCurrent=NULL;
 	if( speechGhostUni!=NULL )
 		delete speechGhostUni;
 
