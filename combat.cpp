@@ -417,7 +417,7 @@ void cChar::undoCombat()
 */
 void cChar::doCombat()
 {
-	if ( !war || dead || IsHiddenBySpell() || IsFrozen() || (!npc && !IsOnline()) )
+	if ( !war || dead || IsHiddenBySpell() || isFrozen() || (!npc && !IsOnline()) )
 	{
 		undoCombat();
 		return;
