@@ -322,6 +322,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	statGainedToday = 0;	//Luxor
 	//resetSpeechCurrent(); //Endymion
 	speechCurrent = NULL; //Luxor
+	setRunning( false ); //Luxor
 	resetProfile();
 	staticProfile=NULL;
 
@@ -4072,6 +4073,23 @@ void cChar::setOldSkinColor( UI16 newColor )
 	xskin = newColor;
 }
 
+/*!
+\author Luxor
+\brief tells if a character is running
+*/
+LOGICAL cChar::isRunning()
+{
+	return running_status;
+}
+
+/*!
+\author Luxor
+*/
+void cChar::setRunning( LOGICAL status )
+{
+	running_status = status;
+}
+
 void cChar::heartbeat()
 {
 	if ( dead )
@@ -4081,6 +4099,8 @@ void cChar::heartbeat()
 		npc_heartbeat();
 	else
 		pc_heartbeat();
+
+	setRunning( false );
 }
 
 void cChar::generic_heartbeat()
