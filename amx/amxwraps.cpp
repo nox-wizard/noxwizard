@@ -2728,6 +2728,46 @@ NATIVE(_set_close)
 }
 
 /*!
+\brief Rewind a set
+\author Endymion
+\since 0.82
+\param 1: the set
+\return 0
+*/
+NATIVE(_set_rewind)
+{
+	nxwset::rewind(params[1]);
+	return 0;
+}
+
+/*!
+\brief Move to next item
+\author Endymion
+\since 0.82
+\param 1: the set
+\return 0
+*/
+NATIVE(_set_next)
+{
+	nxwset::next(params[1]);
+	return 0;
+}
+
+/*!
+\brief Check if at end of the given set
+\author Endymion
+\since 0.82
+\param 1: the set
+\return 0
+*/
+NATIVE(_set_end)
+{
+	return nxwset::end(params[1]);
+}
+
+
+ 
+/*!
 \brief Fill a set with chars owned by a player
 \author Xanathar
 \since 0.55
@@ -5202,13 +5242,18 @@ AMX_NATIVE_INFO nxw_API[] = {
 // Set functions :
  { "set_open", _set_open },
  { "set_close", _set_close },
+ { "set_rewind", _set_rewind },
+ { "set_next", _set_next },
+ { "set_end", _set_end },
+ { "set_size", _set_size },
+ 
  { "set_fillOnline", _set_fillOnline },
  { "set_fillOwnedChars", _set_fillChrOwndByChr },
  { "set_fillChrNearXY", _set_fillChrNearXY },
  { "set_fillItemsInCont", _set_fillItemsInCont },
+ 
  { "set_pop", _set_pop },
  { "set_push", _set_push },
- { "set_size", _set_size },
  { "set_fillItemsAtXY", _set_fillItemsAtXY },
  { "set_fillItemsNearXY", _set_fillItemsNearXY},
 // calendar properties - [Sparhawk] 2001-09-15
