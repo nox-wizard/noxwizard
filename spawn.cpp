@@ -14,6 +14,7 @@
 #include "chars.h"
 #include "inlines.h"
 #include "scripts.h"
+#include "sregions.h"
 
 cSpawns* Spawns=NULL;
 
@@ -175,6 +176,25 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 			}
 		}
 	}
+	if( itms.size()>0 )
+	{
+		UI32 counter = rand()%itms.size();
+		{
+			Location location= { 0,0,0,0};
+			location.x=location.y=location.z=location.dispz=0;
+			if( c.findValidLocation( location ) )
+			{
+				P_ITEM item = item::CreateScriptItem( INVALID, itms[counter],  true, NULL );
+				if (ISVALIDPC(item))
+				{
+					item->setPosition(location);
+					safeCreate( item, c );
+					return;
+				}
+			}
+		}
+	}
+
 
 	c.disabled = true;
 	WarnOut("Scripted spawn %i [%s] couldn't find anything to spawn, check scripts.\n",serial, name.c_str());
@@ -195,6 +215,73 @@ void cSpawnScripted::doSpawn( )
 
 }
 
+void cSpawnScripted::doSpawn(SPAWNFLAG_ENUM spawnWhat, UI32 amount )
+{
+
+	if( max==0 )
+		return;
+	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	for( ; iter!=end; iter++ ) 
+	{
+		if( (*iter).needSpawn() )
+		{
+			cSpawnArea c = *iter;
+			if( npclists.size() > 0 )
+			{
+				UI32 counter = rand()%npclists.size();
+				{
+					Location location= { 0,0,0,0};
+					if( c.findValidLocation( location ) )
+					{
+						P_CHAR npc = npcs::AddNPCxyz( INVALID, npclists[counter], location );
+						if(ISVALIDPC(npc))
+						{
+							safeCreate( npc, c );
+							return;
+						}
+					}
+				}
+			}
+			if( itemlists.size() > 0 )
+			{
+
+				UI32 counter = rand()%itemlists.size();
+				{
+					Location location= { 0,0,0,0};
+					if( c.findValidLocation( location) )
+					{
+						char list[512];
+						sprintf( list, "%i", itemlists[counter] ); // morrolan
+						int num = item::CreateRandomItem( list );
+						P_ITEM item = item::CreateScriptItem( INVALID, num, 0 );
+						if( ISVALIDPI( item ) ) {
+							safeCreate( item, c );
+							return;
+						}
+					}
+				}
+			}
+			if( npcs.size()>0 )
+			{
+				UI32 counter = rand()%npcs.size();
+				{
+					Location location= { 0,0,0,0};
+					location.x=location.y=location.z=location.dispz=0;
+					if( c.findValidLocation( location ) )
+					{
+						P_CHAR npc = npcs::AddNPCxyz( INVALID, npcs[counter], location  );
+						if (ISVALIDPC(npc))
+						{
+							safeCreate( npc, c );
+							return;
+						}
+					}
+				}
+			}
+		}		
+	}
+}
+
 
 void cSpawnScripted::doSpawnAll()
 {
@@ -209,6 +296,27 @@ void cSpawnScripted::doSpawnAll()
 	}
 
 }
+
+void cSpawnScripted::clear( )
+{
+	SPAWNAREA_VECTOR::iterator iter( this->singles.begin() ), end( this->singles.end() );
+	for( ; iter!=end; iter++ ) 
+	{
+		SERIAL_SET::iterator itm( (*iter).items_spawned.begin() );
+		if( itm!=(*iter).items_spawned.end() ) {
+			(*iter).items_spawned.erase( itm );
+			if( (*iter).current>0 )
+				(*iter).current--;
+		}
+		SERIAL_SET::iterator npc( (*iter).npcs_spawned.begin() );
+		if( npc!=(*iter).npcs_spawned.end() ) {
+			(*iter).npcs_spawned.erase( npc );
+			if( (*iter).current>0 )
+				(*iter).current--;
+		}
+	}
+}
+
 
 void cSpawnScripted::removeObject( P_ITEM pi )
 {
@@ -429,6 +537,138 @@ void cSpawns::doSpawn()
 	else
 		check = uiCurrentTime+ 30*MY_CLOCKS_PER_SEC;
 }
+
+void cSpawns::doRegionClearSpawn(UI32 region, SPAWNTYPE_ENUM clearWhat)
+{
+	if (( clearWhat == SPAWN_ALL )|| ( clearWhat == SPAWN_STATIC ))
+	{
+		SPAWN_SCRIPTED_DB::iterator iter_scr( this->scripted.begin() );
+		for( ; iter_scr!=this->scripted.end(); iter_scr++ ) 
+		{
+			// Spawn for all regions
+			LOGICAL found=false;
+			cSpawnArea *mySpawnArea = iter_scr->second.singles.begin();
+			for ( ; mySpawnArea!=iter_scr->second.singles.end();mySpawnArea++)
+			{
+				AREA_ITER myArea = mySpawnArea->where;
+				short areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y1);
+				// test the corners of the spawn area if they are within the region, as soon as we find one
+				// break out of the for
+				// upper left
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// lower left
+				areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y2);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// upper right
+				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y1);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// lower right
+				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y2);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+
+			}
+			if ( found)
+				// the spawn region is at least partially inside the region
+				iter_scr->second.clear();
+		}
+	}
+	if (( clearWhat == SPAWN_ALL )|| ( clearWhat == SPAWN_DYNAMIC ))
+	{
+		SPAWN_DINAMIC_DB::iterator iter_din( this->dinamic.begin() );
+		for( ; iter_din!=this->dinamic.end(); iter_din++ ) 
+		{
+			P_ITEM spawn=pointers::findItemBySerial( iter_din->second.item );
+			if( region == calcRegionFromXY(spawn->getPosition() ))
+				iter_din->second.clear();
+		}
+	}
+}
+
+void cSpawns::doRegionSpawn(UI32 region, SPAWNFLAG_ENUM spawnWhat, UI32 amount)
+{
+	SPAWN_SCRIPTED_DB::iterator iter_scr( this->scripted.begin() );
+	for( ; iter_scr!=this->scripted.end(); iter_scr++ ) 
+	{
+		// Spawn for all regions
+		if ( region == -1 )
+		{
+			iter_scr->second.doSpawn(spawnWhat, amount);
+		}
+		else
+		{
+			LOGICAL found=false;
+			cSpawnArea *mySpawnArea = iter_scr->second.singles.begin();
+			for ( ; mySpawnArea!=iter_scr->second.singles.end();mySpawnArea++)
+			{
+				AREA_ITER myArea = mySpawnArea->where;
+				short areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y1);
+				// test the corners of the spawn area if they are within the region, as soon as we find one
+				// break out of the for
+				// upper left
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// lower left
+				areaRegionNumber = calcRegionFromXY(myArea->second.x1, myArea->second.y2);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// upper right
+				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y1);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+				// lower right
+				areaRegionNumber = calcRegionFromXY(myArea->second.x2, myArea->second.y2);
+				if ( region == areaRegionNumber )
+				{
+					found=true;
+					break;
+				}
+
+			}
+			if ( found)
+				// the spawn region is at least partially inside the region
+				iter_scr->second.doSpawn(spawnWhat, amount);
+		}
+	}
+
+	SPAWN_DINAMIC_DB::iterator iter_din( this->dinamic.begin() );
+	for( ; iter_din!=this->dinamic.end(); iter_din++ ) 
+	{
+		P_ITEM spawn=pointers::findItemBySerial( iter_din->second.item );
+		if( region == calcRegionFromXY(spawn->getPosition() ))
+			iter_din->second.doSpawn(spawnWhat, amount);
+	}
+
+	if( speed.srtime!=UINVALID )
+		check = uiCurrentTime+ speed.srtime*MY_CLOCKS_PER_SEC; //Don't check them TOO often (Keep down the lag)
+	else
+		check = uiCurrentTime+ 30*MY_CLOCKS_PER_SEC;
+}
+
 
 void cSpawns::doSpawnAll()
 {
@@ -652,6 +892,31 @@ void cSpawnDinamic::doSpawn()
 		}
 		this->nextspawn=uiCurrentTime+ (60*RandomNum( spawn->morey, spawn->morez)*MY_CLOCKS_PER_SEC);
 	}
+
+}
+
+/*!
+\author Wintermute
+\brief spawn a npc/item from a dynamic spawner
+\note spawn is the item of the spawn in the world
+\note amount holds the maximum number of spawnables
+\note morey the minimum delay, morez the maximum delay
+\note morex is the xss number to be spawned
+*/
+
+void cSpawnDinamic::doSpawn(SPAWNFLAG_ENUM spawnWhat, UI32 amount)
+{
+	P_ITEM spawn=pointers::findItemBySerial( this->item );
+	VALIDATEPI(spawn);
+	UI32 amountToSpawn=0;
+	if ( spawnWhat == SPAWN_AMOUNT )
+		amountToSpawn=amount;
+	else if ( spawnWhat == SPAWN_RANDOM )
+		amountToSpawn=rand()%(spawn->amount-this->current);
+	else if ( spawnWhat == SPAWN_MAX )
+		amountToSpawn=spawn->amount-this->current;
+	while (amountToSpawn>= 0 && this->current<=spawn->amount )
+		doSpawn();
 
 }
 

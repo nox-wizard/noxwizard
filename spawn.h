@@ -12,6 +12,20 @@
 
 #include "area.h"
 
+enum SPAWNFLAG_ENUM
+{
+	SPAWN_AMOUNT,
+	SPAWN_RANDOM,
+	SPAWN_MAX
+} ;
+
+enum SPAWNTYPE_ENUM
+{
+	SPAWN_ALL,
+	SPAWN_DYNAMIC,
+	SPAWN_STATIC
+} ;
+
 class cSpawnArea {
 
 public:
@@ -66,11 +80,14 @@ public:
 	void doSpawn( cSpawnArea& c );
 	void doSpawn( );
 	void doSpawnAll();
+	void doSpawn(SPAWNFLAG_ENUM spawnWhat, UI32 amount=0 );
+
+	void doRegionClearSpawn(UI32 region, SPAWNTYPE_ENUM clearWhat);
 
 	void removeObject( P_ITEM pi );
 	void removeObject( P_CHAR pc );
 	void addSpawned(P_OBJECT obj);
-
+	void clear();
 };
 
 class cSpawnDinamic {
@@ -91,6 +108,7 @@ public:
 	void remove( SERIAL serial );
 	void addSpawned(P_OBJECT obj);
 	void clear();
+	void doSpawn(SPAWNFLAG_ENUM spawnWhat, UI32 amount);
 
 
 };
@@ -126,6 +144,8 @@ public:
 	cSpawnDinamic *getDynamicSpawn(SERIAL spawnerSerial);
 	cSpawnScripted *getScriptedSpawn(SERIAL spawnerSerial);
 	void resetSpawnTime();
+	void doRegionSpawn(UI32 region, SPAWNFLAG_ENUM spawnWhat, UI32 amount=0);
+	void doRegionClearSpawn(UI32 region, SPAWNTYPE_ENUM clearWhat);
 
 
 };

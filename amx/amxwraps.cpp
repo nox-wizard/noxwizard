@@ -48,6 +48,7 @@
 #include "layer.h"
 #include "dragdrop.h"
 #include "accounts.h"
+#include "spawn.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -2595,7 +2596,37 @@ NATIVE( _rgn_getRegion )
 	return calcRegionFromXY(params[1], params[2]);
 }
 
+/*
+\brief Respawn all spawns in region
+\author Wintermute
+\since 0.82
+\param 1: the region
+\param 2: the spawning effect 
+\return false if invalid region, true otherwise
+*/
+NATIVE( _region_respawn )
+{
+	if ( ! region[params[1]].inUse )
+		return false;
+	Spawns->doRegionSpawn(params[1],static_cast<SPAWNFLAG_ENUM>( params[2]), params[3]);
+	return true;
+}
 
+/*
+\brief Clear all spawns in region
+\author Wintermute
+\since 0.82
+\param 1: x koordinate
+\param 2: y koordinate
+\return region or INVALID if not valid character else return length of param[4]
+*/
+NATIVE( _rgn_clearSpawn )
+{
+	if ( ! region[params[1]].inUse )
+		return false;
+	Spawns->doRegionClearSpawn(params[1],static_cast<SPAWNTYPE_ENUM>( params[2]));
+	return true;
+}
 /*
 \brief send a bolt effect
 \author Xanathar
@@ -7767,6 +7798,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "rgn_getRegion", _rgn_getRegion },
  { "rgn_getProperty", _region_getProperty },
  { "rgn_setProperty", _region_setProperty },
+ { "rgn_respawn", _region_respawn },
+ { "rgn_clearSpawn", _rgn_clearSpawn },
+
 // Trigger functions :
  { "trig_getTItem", _getTriggeredItem },
  { "trig_getTrigType", _getTriggeredItemTrigType },
