@@ -343,7 +343,7 @@ void cTempfx::start()
 			dest->playSFX(0x0208);
 			break;
 		case SPELL_PARALYZE:
-			if (dest->resistFreeze())
+			if (dest->resistsFreeze())
 				return;
 			dest->freeze();
 			break;
@@ -966,7 +966,7 @@ void cTempfx::activate()
 			break;
 
 		case GREY:
-			dest->nxwflags[0] |= NCF0_GREY;
+			dest->setGreyFlag(false);
 			break;
 
 		case CRIMINAL:
@@ -974,7 +974,7 @@ void cTempfx::activate()
 			break;
 
 		case SPELL_TELEKINESYS:
-			dest->nxwflags[0] |= NCF0_TELEKINESYS;
+			dest->setTelekinesisFlag(false);
 			break;
 
 		default:
@@ -1050,14 +1050,14 @@ void cTempfx::deactivate()
 			break;
 
 		case GREY:
-			dest->nxwflags[0] &= ~NCF0_GREY;
+			dest->setGreyFlag(false);
 			break;
 
 		case CRIMINAL:
 			dest->SetInnocent();
 			break;
 		case SPELL_TELEKINESYS:
-			dest->nxwflags[0] &= ~NCF0_TELEKINESYS;
+			dest->setTelekinesisFlag(false);
 			break;
 
 		default:
