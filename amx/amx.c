@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.4 2003/07/13 18:42:16 dgp85 Exp $
+ *  Version: $Id: amx.c,v 1.5 2003/07/13 19:09:48 dgp85 Exp $
  */
 
 //XAN
@@ -2297,7 +2297,7 @@ int AMXAPI amx_Exec(AMX *amx, cell *retval, int index, int numparams, ...)
   assert(OP_SYMBOL==126);
   #if defined(BIT16)
     assert(sizeof(cell)==2);
-  #elif !defined(__alpha__)
+  #elif defined(__alpha__)
     assert(sizeof(cell)==8);
   #else
     assert(sizeof(cell)==4);

@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.h,v 1.2 2003/07/13 16:59:06 dgp85 Exp $
+ *  Version: $Id: amx.h,v 1.3 2003/07/13 19:09:48 dgp85 Exp $
  *
  *  Changed by Luxor for FreeBSD Compatibility
  */
@@ -83,6 +83,9 @@ extern  "C" {
   #if defined(BIT16)
     typedef uint16_t  ucell;    /* only for type casting */
     typedef int16_t   cell;
+  #elif defined(__alpha__)
+    typedef uint64_t  ucell;
+    typedef int64_t   cell;
   #else
     typedef uint32_t  ucell;
     typedef int32_t   cell;
