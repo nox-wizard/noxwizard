@@ -35,6 +35,7 @@
 #include "archive.h"
 #include "map.h"
 #include "jail.h"
+#include "skills.h"
 
 // Includes command definitions
 #include "commands/tweaking.h"
@@ -271,10 +272,10 @@ cCommandTable::cCommandTable() {
     addGmCommand("HEAL",            3, 9,  CMD_TARGET,      (CMD_DEFINE)&target_s_heal);
 //    addGmCommand("NPCTARGET",       3, 10, CMD_TARGET,      (CMD_DEFINE)&target_s_npctarget);
 //    addGmCommand("CACHESTATS",      3, 11, CMD_FUNC,        (CMD_DEFINE)&command_cachestats);
-    addGmCommand("NPCRECT",         3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrect);
-    addGmCommand("NPCCIRCLE",       3, 13, CMD_FUNC,        (CMD_DEFINE)&command_npccircle);
-    addGmCommand("NPCWANDER",       3, 14, CMD_FUNC,        (CMD_DEFINE)&command_npcwander);
-    addGmCommand("NPCRECTCODED",    3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrectcoded);
+//    addGmCommand("NPCRECT",         3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrect);
+//    addGmCommand("NPCCIRCLE",       3, 13, CMD_FUNC,        (CMD_DEFINE)&command_npccircle);
+//    addGmCommand("NPCWANDER",       3, 14, CMD_FUNC,        (CMD_DEFINE)&command_npcwander);
+//    addGmCommand("NPCRECTCODED",    3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrectcoded);
     addGmCommand("TWEAK",			3, 15, CMD_FUNC,		(CMD_DEFINE)&command_tweak);
 //    addGmCommand("SBOPEN",          3, 16, CMD_TARGET,      (CMD_DEFINE)&target_s_sbopen);
 	addGmCommand("SECONDSPERUOMINUTE", 3, 17, CMD_FUNC,        (CMD_DEFINE)&command_secondsperuominute);
@@ -284,7 +285,7 @@ cCommandTable::cCommandTable() {
     addGmCommand("TIME",            3, 21, CMD_FUNC,        (CMD_DEFINE)&command_time);
     addGmCommand("MANA",            3, 22, CMD_TARGET,      (CMD_DEFINE)&target_s_mana);
     addGmCommand("STAMINA",         3, 23, CMD_TARGET,      (CMD_DEFINE)&target_s_stamina);
-    addGmCommand("GMOPEN",          3, 24, CMD_FUNC,        (CMD_DEFINE)&command_gmopen);
+//    addGmCommand("GMOPEN",          3, 24, CMD_FUNC,        (CMD_DEFINE)&command_gmopen);
 //    addGmCommand("MAKESHOP",        3, 25, CMD_TARGET,      (CMD_DEFINE)&target_s_makeshop);
 //    addGmCommand("BUY",             3, 26, CMD_TARGET,      (CMD_DEFINE)&target_s_buy);
 //    addGmCommand("SETVALUE",        3, 27, CMD_TARGETX,     (CMD_DEFINE)&target_s_setvalue);
@@ -1828,6 +1829,18 @@ void command_itemmenu(NXWSOCKET  s)
 
 }
 
+void target_additem( NXWCLIENT ps, P_TARGET t )
+{
+	Location loc=t->getLocation();
+
+	P_ITEM pi = item::CreateFromScript( t->buffer[0], NULL, INVALID );
+	VALIDATEPI(pi);
+
+	pi->MoveTo( loc );
+	pi->Refresh();
+
+}
+
 // (d) Adds the specified item from ITEMS.XSS
 void command_additem(NXWSOCKET  s)
 {
@@ -1836,23 +1849,27 @@ void command_additem(NXWSOCKET  s)
 
 	if (tnum==2)
 	{
-		if ( tbuffer[Commands::cmd_offset+8] == '$')
+		int item=0;
+		if( tbuffer[Commands::cmd_offset+8] == '$')
 		{
 			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+8]) ) 
 			{
 				pc->sysmsg("Item symbol %s undefined !", &tbuffer[Commands::cmd_offset+8]);
 				return;
 			}
-			addmitem[s] = str2num(&tbuffer[Commands::cmd_offset+8],10);
+			item = str2num(&tbuffer[Commands::cmd_offset+8],10);
 		}
 		else
 		{
-			addmitem[s] = strtonum(1);
+			item = strtonum(1);
 		}
-		sprintf(s_szCmdTableTemp, "Select location for item. [Number: %i]", addmitem[s]);
-		target(s, 0, 1, 0, 26, s_szCmdTableTemp);
+		
+		P_TARGET targ=clientInfo[s]->newTarget( new cLocationTarget() );
+		targ->buffer[0]=item;
+		targ->code_callback=target_additem;
+		targ->send( getClientFromSocket(s) );
+		sysmessage( s, "Select location for item. [Number: %i]", item);
 	}
-	return;
 }
 
 void target_dupe( NXWCLIENT ps, P_TARGET t )
@@ -1956,43 +1973,93 @@ void command_hidehs(NXWSOCKET  s)
 }
 
 
+void target_allSet( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+
+    NXWSOCKET k = ps->toInt();
+
+	if( t->buffer_str[0]=="STR" ) 
+	{
+        pc->setStrength( t->buffer[0] );
+        pc->st3=t->buffer[0];
+		for( int j=0;j<TRUESKILLS;j++)
+        {
+			Skills::updateSkillLevel(pc,j);
+            updateskill(k,j);
+        }
+        statwindow(pc,pc);
+	}
+    else if( t->buffer_str[0]=="DEX" )
+    {
+        pc->dx=t->buffer[0];
+        pc->dx3=t->buffer[0];
+        for( int j=0;j<TRUESKILLS;j++)
+        {
+			Skills::updateSkillLevel(pc,j);
+            updateskill(k,j);
+        }
+        statwindow(pc,pc);
+    }
+    else if( t->buffer_str[0]=="INT" )
+    {
+        pc->in=t->buffer[0];
+        pc->in3=t->buffer[0];
+        for( int j=0;j<TRUESKILLS;j++)
+        {
+			Skills::updateSkillLevel(pc,j);
+            updateskill(k,j);
+        }
+        statwindow(pc,pc);
+    }
+    else if( t->buffer_str[0]=="FAME" )
+    {
+        pc->SetFame(t->buffer[0]);
+    }
+    else if( t->buffer_str[0]=="KARMA" )
+    {
+        pc->SetKarma(t->buffer[0]);
+    }
+	else 
+    {
+        for( int j=0;j<TRUESKILLS;j++)
+        {
+			if( t->buffer_str[0]==skillname[j] ) {
+				pc->baseskill[j]=t->buffer[0];
+				Skills::updateSkillLevel(pc,j);
+				updateskill(k,j);
+		        statwindow(pc,pc);
+				break;
+			}
+        }
+    }
+}
+
 void command_set(NXWSOCKET  s)
 // (text, d) Set STR/DEX/INT/Skills on yourself arguments are skill & amount.
 {
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	int i;
-	int loopexit=0;
 	if (tnum==3)
 	{
-		i=0;
-		script1[0]=0;
-		while (tbuffer[Commands::cmd_offset+4+i]!=' ' && tbuffer[Commands::cmd_offset+4+i]!=0 && (++loopexit < MAXLOOPS) ) i++;
-		strncpy(script1,&tbuffer[Commands::cmd_offset+4],i);
-		script1[i]=0;
-		strupr(script1);
-		addx[s]=-1;
+		std::string prop;
+		int i=Commands::cmd_offset+4;
+		int loopexit=0;
+		while( tbuffer[i]!=' ' && tbuffer[i]!=0 && (++loopexit < MAXLOOPS) ) 
+			i++;
 
-		for (i=0;i<SKILLS;i++)
-		{
-			if (!(strcmp(skillname[i], script1))) { /*ConOut("%s\n",skillname[i]);*/
-				if (i == I_ACCOUNT) {
-					if (pc->account!=0) {
-						pc->sysmsg("Only Admin can do this!!!");
-						return;
-					}
-				}
-				addx[s]=i;
-			}
-		}
+		prop.copy( &tbuffer[Commands::cmd_offset+4], i-Commands::cmd_offset+4);
+		strupr(prop);
 
+		P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+		targ->buffer_str[0]=prop;
+		targ->buffer[0]=strtonum(2);
+		targ->code_callback=target_allSet;
+		targ->send( getClientFromSocket(s) );
+		sysmessage( s, "Select character to modify.");
 
-		if (addx[s]!=-1)
-		{
-			addy[s]=strtonum(2);
-			target(s, 0, 1, 0, 36, "Select character to modify.");
-		}
 	}
 }
 
@@ -2067,58 +2134,6 @@ void command_addnpc( NXWCLIENT ps )
 }
 
 
-void command_npcrect(NXWSOCKET  s)
-// (d d d d) Set bounding box for a NPC with a NPCWANDER of 3.
-{
-	if (tnum==5)
-	{
-		addx[s]=strtonum(1); // bugfix, LB, old npcshape worked only if its only excuted by ONE player at the same time
-		addy[s]=strtonum(2);
-		addx2[s]=strtonum(3);
-		addy2[s]=strtonum(4);
-		target(s, 0, 1, 0, 67, "Select the NPC to set the bounding rectangle for."); // lb bugfix, was 58 ...
-	}
-}
-
-void command_npccircle(NXWSOCKET  s)
-// (d d d) Set bounding circle for a NPC with a NPCWANDER of 2.
-{
-	if (tnum==4)
-	{
-		addx[s]=strtonum(1);
-		addy[s]=strtonum(2);
-		addx2[s]=strtonum(3);
-		target(s, 0, 1, 0, 59, "Select the NPC to set the bounding circle for.");
-	}
-}
-
-void command_npcwander(NXWSOCKET  s)
-// (d) Sets the type of wandering a NPC does.
-// <UL><LI>0 = NPC Does not move.</LI>
-// <LI>1 = NPC Follows specified target. (See
-// <A HREF="npctarget.html">/NPCTARGET</A>)</LI>
-// <LI>2 = NPC Wanders Freely.</LI>
-// <LI>3 = NPC stays in box specified by <A HREF="npcrect.html">NPCRECT</A>.</LI>
-// <LI>4 = NPC stays in circle specified by <A HREF="npccircle.html">NPCCIRCLE</A>.</LI></UL>
-{
-	if (tnum==2)
-	{
-		npcshape[0]=strtonum(1);
-		target(s, 0, 1, 0, 60, "Select the NPC to set the wander method for.");
-	}
-}
-
-//
-// Set the wander area for a small controlled walking npc (npcwander = 6 )
-//
-void command_npcrectcoded(NXWSOCKET  s)
-{
-	clickx[s]=-1;
-	clicky[s]=-1;
-	target(s,0,1,0,73,"Select first corner of bounding box.");
-}
-
-
 void command_tweak( NXWSOCKET s )
 {
 	static AmxFunction* cmd = NULL;
@@ -2167,22 +2182,6 @@ void command_dungeonlight(NXWSOCKET  s)
 		dungeonlightlevel=qmin(strtonum(1), 27);
 		sysmessage(s, "Dungeon light level set.");
 	}
-}
-
-void command_gmopen(NXWSOCKET  s)
-// (h / nothing) Opens specified layer on player/NPC, or player's pack if no layer specified.
-// <P>Useful hex codes for this command are:</P>
-// <TABLE BORDER=1>
-// <TR><TD><B>15</B></TD><TD>Backpack</TD></TR>
-// <TR><TD><B>1A</B></TD><TD>NPC Buy Restock container</TD></TR>
-// <TR><TD><B>1B</B></TD><TD>NPC Buy no restock container</TD></TR>
-// <TR><TD><B>1C</B></TD><TD>NPC Sell container</TD></TR>
-// <TR><TD><B>1D</B></TD><TD>Bank Box</TD></TR>
-// </TABLE>
-{
-	if (tnum==2) addmitem[s]=strtonum(1);
-	else addmitem[s]=0x15;
-	target(s, 0, 1, 0, 115, "Select the character to open the container on.");
 }
 
 void command_restock(NXWSOCKET  s)
@@ -2312,19 +2311,36 @@ void command_minecheck(NXWSOCKET  s)
 		SrvParms->minecheck=strtonum(1);
 }
 
+
+void target_invul( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc);
+	
+	if( t->buffer[0]==1 )
+		pc->MakeInvulnerable();
+	else
+		pc->MakeVulnerable();
+}
+
 void command_invul(NXWSOCKET  s)
 // Makes the targeted character immortal.
 {
-			addx[s]=1;
-			target(s,0,1,0,179,"Select creature to make invulnerable.");
-
+	P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+	targ->code_callback=target_invul;
+	targ->buffer[0]=1;
+	targ->send( getClientFromSocket(s) );
+	sysmessage( s, "Select creature to make invulnerable.");
 }
 
 void command_noinvul(NXWSOCKET  s)
 // Makes the targeted character mortal.
 {
-			addx[s]=0;
-			target(s,0,1,0,179,"Select creature to make mortal again.");
+	P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
+	targ->code_callback=target_invul;
+	targ->buffer[0]=0;
+	targ->send( getClientFromSocket(s) );
+	sysmessage( s, "Select creature to make mortal again.");
 
 }
 

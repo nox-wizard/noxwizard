@@ -71,33 +71,24 @@ bool CheckInPack(NXWSOCKET  s, P_ITEM pi)
 }
 
 
-void Skills::RemoveTraps(NXWSOCKET s)
+void Skills::target_removeTraps( NXWCLIENT ps, P_TARGET t )
 {
 
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
-
+	NXWSOCKET s = ps->toInt();
 
 	if (pi->amxevents[EVENT_IONREMOVETRAP]==NULL)
 	{
 		sysmessage(s, TRANSLATE("There are no traps on this object"));
-		if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750); //ndEny is good?
-		return;
+		if ((rand()%3)==0) 
+			pc->checkSkill( REMOVETRAPS, 0, 750); //ndEny is good?
 	}
+	else
+		pi->amxevents[EVENT_IONREMOVETRAP]->Call(pi->getSerial32(), s);
 
-	pi->amxevents[EVENT_IONREMOVETRAP]->Call(pi->getSerial32(), s);
-	/*
-
-	if ( pi->getAmxEvent( EVENT_IONREMOVETRAP ) == 0 )
-	{
-		sysmessage(s, TRANSLATE("There are no traps on this object"));
-		if ((rand()%3)==0) pc->checkSkill( REMOVETRAPS, 0, 750);
-		return;
-	}
-
-	pi->runAmxEvent( EVENT_IONREMOVETRAP, pi->getSerial32(), s );*/
 }
 
 
@@ -334,74 +325,6 @@ void Skills::target_smith( NXWCLIENT ps, P_TARGET t )
         }
     }
     ps->sysmsg( TRANSLATE("You cannot use that material for blacksmithing") );
-}
-
-void Skills::TasteIDTarget(NXWSOCKET s)
-{
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-	VALIDATEPI(pi);
-
-	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-
-    AMXEXECSV(s,AMXT_SKITARGS,TASTEID,AMX_BEFORE);
-    if (pi->magic!=4) // Ripper
-    {
-        if( pi->type!=ITYPE_POTION && pi->type!=ITYPE_FOOD )
-        {
-            pc->sysmsg(TRANSLATE("You cant taste that!"));
-            return;
-        }
-        if (!pc->checkSkill( TASTEID, 0, 250))
-        {
-            pc->sysmsg(TRANSLATE("You can't quite tell what this item is..."));
-        }
-        else
-        {
-            if(pi->corpse)
-            {
-                pc->sysmsg(TRANSLATE("You have to use your forensics evalutation skill to know more on this corpse."));
-                return;
-            }
-
-            // Identify Item by Antichrist // Changed by MagiusCHE)
-            if (pc->checkSkill( TASTEID, 250, 500))
-                if (pi->getSecondaryNameC() && (strcmp(pi->getSecondaryNameC(),"#")))
-                    pi->setCurrentName(pi->getSecondaryNameC()); // Item identified! -- by Magius(CHE)
-
-                // ANTICHRIST -- FOR THE "#" BUG -- now you see the real name
-                if( strncmp(pi->getCurrentNameC(), "#", 1) )
-					pi->getName(temp2);
-                else
-					strcpy(temp2, pi->getCurrentNameC());
-
-                pc->sysmsg(TRANSLATE("You found that this item appears to be called: %s"), temp2);
-
-                if (pc->checkSkill( TASTEID, 250, 500))
-                {
-                    if((pi->poisoned>0) || (pi->morex==4 && pi->morey==6 && pi->morez==1))
-                        pc->sysmsg(TRANSLATE("This item is poisoned!"));
-                    else
-                        pc->sysmsg(TRANSLATE("This item shows no poison."));
-
-                    if (pc->checkSkill( TASTEID, 250, 500))
-                    {
-                        if ( !pi->creator.empty() )
-                        {
-                            if (pi->madewith>0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[pi->madewith-1].madeword,pi->creator.c_str());
-                            else if (pi->madewith<0) pc->sysmsg(TRANSLATE("It is %s by %s"),skillinfo[0-pi->madewith-1].madeword,pi->creator.c_str());
-                            else pc->sysmsg(TRANSLATE("It is made by %s"),pi->creator.c_str());
-                        } else pc->sysmsg(TRANSLATE("You don't know its creator!"));
-                    } else pc->sysmsg(TRANSLATE("You can't know its creator!"));
-                }
-        }
-    }
-
-    AMXEXECSV(s,AMXT_SKITARGS,TASTEID,AMX_AFTER);
 }
 
 struct Ore
@@ -1669,132 +1592,6 @@ void Skills::target_itemId( NXWCLIENT ps, P_TARGET t )
     AMXEXECSV(s,AMXT_SKITARGS,ITEMID,AMX_AFTER);
 }
 
-///////////////
-// Name:    Evaluate_int_Target
-// history: unknown, revamped by Duke, 2.10.2000
-// Purpose: implements the 'evaluate intelligence' skill
-//
-void Skills::target_evaluateInt( NXWCLIENT ps, P_TARGET t )
-{
-
-	P_CHAR eval=ps->currChar();
-	VALIDATEPC(eval);
-
-	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
-	VALIDATEPC(pc);
-
-	NXWSOCKET s = ps->toInt();
-
-
-    // blackwind distance fix
-    if( pc->distFrom( eval ) >= 10 )
-    {
-        eval->sysmsg(TRANSLATE("You need to be closer to find out" ));
-        return;
-    }
-
-    AMXEXECSV(s,AMXT_SKITARGS,EVALUATINGINTEL,AMX_BEFORE);
-
-    if (eval->getSerial32() == pc->getSerial32() ) {
-        eval->sysmsg(TRANSLATE("You cannot analyze yourself!"));
-        return;
-    }
-
-    if (!eval->checkSkill(EVALUATINGINTEL, 0, 1000))
-    {
-        eval->sysmsg(TRANSLATE("You are not certain.."));
-        return;
-    }
-    if ((pc->in == 0))
-        eval->sysmsg(TRANSLATE("That does not appear to be a living being."));
-    else
-    {
-        if      (pc->in <= 10)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("slightly less intelligent than a rock."));
-        else if (pc->in <= 20)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("fairly stupid."));
-        else if (pc->in <= 30)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("not the brightest."));
-        else if (pc->in <= 40)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("about average."));
-        else if (pc->in <= 50)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("moderately intelligent."));
-        else if (pc->in <= 60)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("very intelligent."));
-        else if (pc->in <= 70)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("extraordinarily intelligent."));
-        else if (pc->in <= 80)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("like a formidable intellect, well beyond the ordinary."));
-        else if (pc->in <= 90)  eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("like a definite genius."));
-        else if (pc->in > 90)   eval->sysmsg("%s %s", TRANSLATE("That person looks"), TRANSLATE("superhumanly intelligent in a manner you cannot comprehend."));
-    }
-
-    AMXEXECSV(s,AMXT_SKITARGS,EVALUATINGINTEL,AMX_AFTER);
-}
-
-///////////////
-// Name:    AnatomyTarget
-// history: unknown, revamped by Duke, 2.10.2000
-// Purpose: implements the 'evaluate anatomy' skill
-//
-void Skills::target_anatomy( NXWCLIENT ps, P_TARGET t )
-{
-	P_CHAR pc = ps->currChar();
-	VALIDATEPC(pc);
-
-	P_CHAR target = pointers::findCharBySerial( t->getClicked() );
-	VALIDATEPC(target);
-
-	NXWSOCKET s = ps->toInt();
-
-
-	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_BEFORE);
-
-	if (target->getSerial32()==pc->getSerial32()) {
-        	pc->sysmsg(TRANSLATE("You cannot analyze yourself!"));
-        	return;
-	}
-
-	if( target->distFrom( pc ) >= 10 )
-	{
-        	pc->sysmsg(TRANSLATE("You need to be closer to find out more about them" ));
-		return;
-	}
-
-
-	if (!target->checkSkill( ANATOMY, 0, 1000))
-	{
-		pc->sysmsg(TRANSLATE("You are not certain.."));
-		return;
-	}
-
-	if ((target->getStrength() == 0) && (target->dx == 0))
-		pc->sysmsg(TRANSLATE("That does not appear to be a living being."));
-	else
-	{
-		char *ps1,*ps2;
-		if      (target->getStrength() <= 10)  ps1=TRANSLATE("rather feeble");
-		else if (target->getStrength() <= 20)  ps1=TRANSLATE("somewhat weak");
-		else if (target->getStrength() <= 30)  ps1=TRANSLATE("to be of normal strength");
-		else if (target->getStrength() <= 40)  ps1=TRANSLATE("somewhat strong");
-		else if (target->getStrength() <= 50)  ps1=TRANSLATE("very strong");
-		else if (target->getStrength() <= 60)  ps1=TRANSLATE("extremely strong");
-		else if (target->getStrength() <= 70)  ps1=TRANSLATE("extraordinarily strong");
-		else if (target->getStrength() <= 80)  ps1=TRANSLATE("as strong as an ox");
-		else if (target->getStrength() <= 90)  ps1=TRANSLATE("like one of the strongest people you have ever seen");
-		else if (target->getStrength() > 90)   ps1=TRANSLATE("superhumanly strong");
-		else ps1 = TRANSLATE("of unknown strenght"); //just for warns
-
-		if      (target->dx <= 10)  ps2=TRANSLATE("very clumsy");
-		else if (target->dx <= 20)  ps2=TRANSLATE("somewhat uncoordinated");
-		else if (target->dx <= 30)  ps2=TRANSLATE("moderately dexterous");
-		else if (target->dx <= 40)  ps2=TRANSLATE("somewhat agile");
-		else if (target->dx <= 50)  ps2=TRANSLATE("very agile");
-		else if (target->dx <= 60)  ps2=TRANSLATE("extremely agile");
-		else if (target->dx <= 70)  ps2=TRANSLATE("extraordinarily agile");
-		else if (target->dx <= 80)  ps2=TRANSLATE("like they move like quicksilver");
-		else if (target->dx <= 90)  ps2=TRANSLATE("like one of the fastest people you have ever seen");
-		else if (target->dx > 90)   ps2=TRANSLATE("superhumanly agile");
-		else ps2 = TRANSLATE("of unknown dexterity"); //just for warns
-
-		pc->sysmsg(TRANSLATE("That person looks %s and %s."), ps1, ps2);
-
-	}
-
-	AMXEXECSV(s, AMXT_SKITARGS, ANATOMY, AMX_AFTER);
-}
 
 void Skills::target_tame( NXWCLIENT ps, P_TARGET t )
 {
@@ -2075,20 +1872,21 @@ void Skills::target_forensics( NXWCLIENT ps, P_TARGET t )
 }
 
 
+
 /*!
 \brief Poison target
 \author AntiChrist, rewritten by Endymion
 \param ps the client
 \note pi->morez is the poison type
 */
-void Skills::target_poisoning( NXWCLIENT ps, P_TARGET t )
+void target_poisoning2( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR pc = ps->currChar();
     VALIDATEPC(pc);
 	NXWSOCKET s = ps->toInt();
 
     AMXEXECSV(s,AMXT_SKITARGS,POISONING,AMX_BEFORE);
-    P_ITEM poison=pointers::findItemBySerial(pc->poisonserial);
+    P_ITEM poison=pointers::findItemBySerial(t->buffer[0]);
     VALIDATEPI(poison);
 
     if(poison->type!=ITYPE_POTION || poison->morey!=6)
@@ -2100,12 +1898,10 @@ void Skills::target_poisoning( NXWCLIENT ps, P_TARGET t )
 
     if ( ! CheckInPack( s, poison) )
     {
-	pc->objectdelay = 0;
-	return;
+		pc->objectdelay = 0;
+		return;
     }
 
-
-    pc->poisonserial=0;
 
     const P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
     if( !ISVALIDPI(pi) ) {
@@ -2207,9 +2003,21 @@ void Skills::target_poisoning( NXWCLIENT ps, P_TARGET t )
 	emptybottle->priv|=0x01;
 	emptybottle->Refresh();
 
-    pc->poisonserial=0;
-
     AMXEXECSV(s,AMXT_SKITARGS,POISONING,AMX_AFTER);
+}
+
+
+void Skills::target_poisoning( NXWCLIENT ps, P_TARGET t )
+{
+	P_ITEM poison = pointers::findItemBySerial( t->getClicked() );
+	VALIDATEPI(poison);
+
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cItemTarget() );
+	targ->code_callback=target_poisoning2;
+	targ->buffer[0]=poison->getSerial32();
+	targ->send( ps );
+	ps->sysmsg( TRANSLATE("What item do you want to poison?") );
+
 }
 
 

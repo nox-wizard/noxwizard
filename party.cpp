@@ -57,15 +57,12 @@ void askPartyPermission( NXWCLIENT ps )
 
 // Description	 : target handler for add member
 // Argument	     : NXWSOCKET  s -> socket which fired the target
-void targetParty( NXWCLIENT ps )
+void target_party( NXWCLIENT ps, P_TARGET t )
 {
-	if( ps==NULL)
-		return;
-	
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 	
-	P_CHAR target=pointers::findCharBySerPtr(buffer[ps->toInt()]+7);
+	P_CHAR target=pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(target);
 
 	//if player has choosen a one-person party, exit from here :)
@@ -140,9 +137,13 @@ void processInputPacket( NXWCLIENT ps )
 
 
 	switch(subsubcommand) {
-		case NET_ADDMEMBER: 
-			target(s, 0, 1, 0, PARTYSYSTARGET, 	TRANSLATE("Select the one to add to the party..") );
+		case NET_ADDMEMBER: {
+			P_TARGET targ = clientInfo[s]->newTarget( new cCharTarget() );
+			targ->code_callback = target_party;
+			targ->send( ps );
+			ps->sysmsg( TRANSLATE("Select the one to add to the party..") );
 			return;
+		}
 		case NET_DELMEMBER: {
 			if (pc->party==INVALID) {
 				ps->sysmsg( TRANSLATE("You're not in a party!"));
@@ -211,7 +212,14 @@ void cPartyMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg )
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 		
-	SERIAL button;
+	UI32 button;
+	if( isIconList( pkg->cmd ) )
+		button = ((cPacketResponseToDialog*)pkg)->index.get();
+	else {
+		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
+		if( button!=MENU_CLOSE )
+			button = ((cMenu*)type)->rc_button[ button ];
+	}
 	
 	if( button == 1 ) {
 		

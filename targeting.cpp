@@ -86,79 +86,11 @@ void target_allAttack( NXWCLIENT ps, P_TARGET t )
 \author Magius
 \param s socket
 */
-void cTargets::triggertarget(NXWSOCKET s)
-{
-
-    if (s<0) return;
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-    if (i!=-1)//Char
-    {
-        //triggernpc//triggerwitem(s,-1,1); //is this used also for npcs?!?!
-                              //why shouldn't ? [xan]
-    } else
-    {//item
-        i=calcItemFromSer(serial);
-        if(i!=-1)
-        {
-            P_ITEM pi = MAKE_ITEM_REF(i);
-			VALIDATEPI(pi);
-            triggerItem(s, pi, TRIGTYPE_TARGET);
-        }
-    }
-
-
-}
 
 void cTargets::BanTarg(NXWSOCKET s)
 {
 
 }
-
-/*!
-\brief Select npc rectangle then store xyz info compressed into FX1 & FX2
-
-Used with small controlled npc's with npcwander 6
-\param s socket
-\param pp 0x6c packet
-*/
-static void CodedNpcRectangle(NXWSOCKET s, PKGx6C *pp)
-{
-	if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-	if (clickx[s]==-1 && clicky[s]==-1)
-	{
-        	clickx[s]=-2;
-        	clicky[s]=-2;
-		addx[s]=pp->TxLoc;
-		addy[s]=pp->TyLoc;
-		addz[s]=pp->TzLoc;
-        	target(s,0,1,0,73,TRANSLATE("Select second corner of bounding box."));
-        	return;
-    	}
-	if (clickx[s]==-2 && clicky[s]==-2 )
-    	{
-		clickx[s] = clicky[s]= -3;
-		addx2[s]=pp->TxLoc;
-		addy2[s]=pp->TyLoc;
-		//addz2[s]=pp->TzLoc;
-		target(s,0,1,0,73,TRANSLATE("Select the NPC to set the bounding rectangle for."));
-		return;
-	}
-    	SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    	if (serial == 0) //Client sends zero if invalid!
-        	return;
-    	if (isCharSerial(serial))//Char
-    	{
-		P_CHAR target = pointers::findCharBySerial(serial);
-		if ( target != NULL )
-		{
-			target->fx1 = ((addx[s]<< 19) | (addy[s]<< 6) | addz[s]);
-			target->fy1 = ((addx2[s]<<19) | (addy2[s]<<6) | addz[s]);
-		}
-	}
-	clickx[s] = clicky[s]= -1;
-}
-
 
 
 
@@ -456,22 +388,6 @@ int cTargets::AddMenuTarget(NXWSOCKET s, int x, int addmitem)
 }
 
 // public !!!
-int cTargets::NpcMenuTarget(NXWSOCKET s)
-{
-    if (s < 0) return INVALID; // Luxor
-
-    cPacketTargeting targetData;
-
-    if( targetData.getX( s ) <= 0 && targetData.getY( s ) <= 0 )
-		return INVALID;
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPCR(pc,INVALID);
-
-    P_CHAR npc = npcs::AddRespawnNPC(pc,addmitem[s]);
-    VALIDATEPCR(npc, INVALID);
-    return DEREF_P_CHAR(npc);
-}
 
 void cTargets::VisibleTarget (NXWSOCKET s)
 {
@@ -568,90 +484,6 @@ static void OwnerTarget(NXWCLIENT ps, P_ITEM pi)
 }
 
 
-void cTargets::AllSetTarget(NXWSOCKET s)
-{
-    int j;
-
-    P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
-
-    if(ISVALIDPC(pc))
-    {
-        NXWSOCKET k = pc->getSocket();
-        if (addx[s]<TRUESKILLS)
-        {
-            pc->baseskill[addx[s]]=addy[s];
-			Skills::updateSkillLevel(pc, addx[s]);
-            if (k!=-1) updateskill(k, addx[s]);
-        }
-        else if (addx[s]==ALLSKILLS)
-        {
-            for (j=0;j<TRUESKILLS;j++)
-            {
-                pc->baseskill[j]=addy[s];
-				Skills::updateSkillLevel(pc, j);
-                if (k!=-1) updateskill(k,j);
-            }
-        }
-        else if (addx[s]==STR)
-        {
-            pc->setStrength(addy[s]);
-            pc->st3=addy[s];
-            for (j=0;j<TRUESKILLS;j++)
-            {
-				Skills::updateSkillLevel(pc,j);
-                if (k!=-1) updateskill(k,j);
-            }
-            if (k!=-1) statwindow(pc,pc);
-        }
-        else if (addx[s]==DEX)
-        {
-            pc->dx=addy[s];
-            pc->dx3=addy[s];
-            for (j=0;j<TRUESKILLS;j++)
-            {
-				Skills::updateSkillLevel(pc,j);
-                if (k!=-1) updateskill(k,j);
-            }
-            if (k!=-1) statwindow(pc,pc);
-        }
-        else if (addx[s]==INTEL)
-        {
-            pc->in=addy[s];
-            pc->in3=addy[s];
-            for (j=0;j<TRUESKILLS;j++)
-            {
-				Skills::updateSkillLevel(pc,j);
-                if (k!=-1) updateskill(k,j);
-            }
-            if (k!=-1) statwindow(pc,pc);
-        }
-        else if (addx[s]==FAME)
-        {
-            pc->SetFame(addy[s]);
-        }
-        else if (addx[s]==KARMA)
-        {
-            pc->SetKarma(addy[s]);
-        }
-        else if (addx[s]==I_ACCOUNT)
-        {
-            pc->account = addy[s];
-        }
-        else if ((addx[s]>=NXWFLAG0)&&(addx[s]<=NXWFLAG3))
-        {
-            pc->nxwflags[addx[s]-NXWFLAG0] = addy[s];
-        }
-        else if ((addx[s]>=AMXFLAG0)&&(addx[s]<=AMXFLAGF))
-        {
-						//
-						// OLD AMXFLAGS ARE NOW HANDLED BY NEW STYLE AMXVARS
-						//
-						amxVS.updateVariable( pc->getSerial32(), addx[s]-AMXFLAG0, addy[s] );
-        }
-
-
-    }
-}
 
 static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with map-tiles, not only static ones by LB
 {
@@ -721,95 +553,6 @@ void cTargets::TweakTarget(NXWSOCKET s)//Lag fix -- Zippy
 }
 */
 
-static void SetInvulFlag(NXWCLIENT ps, P_CHAR pc)
-{
-    if (addx[ps->toInt()]==1)
-        pc->MakeInvulnerable();
-    else
-        pc->MakeVulnerable();
-}
-
-
-static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and places it (unmovable) at that spot
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-    int x, y, z;
-    if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-    x=pp->TxLoc;
-    y=pp->TyLoc;
-    z=pp->TzLoc;
-
-    // ANTICHRIST -- CHECKS LINE OF SIGHT!
-    if(line_of_sight(s, pc->getPosition(), Loc(x,y,z,z), WALLS_CHIMNEYS + DOORS + ROOFING_SLANTED))
-    {
-        P_ITEM pi=pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
-        if (ISVALIDPI(pi)) // crashfix LB
-        {
-            pi->MoveTo( x, y, z);
-            pi->setContSerial(INVALID);
-            pi->magic=2; //make item unmovable once thrown
-            movingeffect2(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), 0x0F, 0x0D, 0x11, 0x00, 0x00);
-            pi->Refresh();
-        }
-    }
-    else pc->sysmsg(TRANSLATE("You cannot throw the potion there!"));
-}
-
-/*!
-\brief implements the 'telestuff GM command
-\author Luxor
-*/
-static void TeleStuff(NXWSOCKET s, PKGx6C *pp)
-{
-	static P_OBJECT po = NULL;
-
-	if (s < 0 || s >= now)
-		return;
-
-	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
-	VALIDATEPC(pc);
-
-	if ( po == NULL ) {
-		po = objects.findObject( LongFromCharPtr(buffer[s]+7) );
-		if ( !ISVALIDPO(po) ) {
-			po = NULL;
-			return;
-		}
-		target(s,0,1,0,222,TRANSLATE("Select location to put this object."));
-	} else {
-		SI32 x, y, z;
-		x = pp->TxLoc;
-		y = pp->TyLoc;
-		z = pp->TzLoc + tileHeight(pp->model);
-		if ( x < 0 || y < 0 ) {
-			po = NULL;
-			return;
-		}
-
-		SERIAL nSerial = INVALID;
-		nSerial = po->getSerial32();
-		if (isCharSerial(nSerial)) {
-			P_CHAR pt = static_cast<P_CHAR>(po);
-			if (!ISVALIDPC(pt)) {
-				po = NULL;
-				return;
-			}
-			pt->MoveTo(x,y,z);
-			pt->teleport();
-		} else if (isItemSerial(nSerial)) {
-			P_ITEM pi = static_cast<P_ITEM>(po);
-			if (!ISVALIDPI(pi)) {
-				po = NULL;
-				return;
-			}
-			pi->MoveTo(x,y,z);
-			pi->Refresh();
-		}
-		po = NULL;
-	}
-}
 
 void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, int bird)
 {
@@ -2251,15 +1994,15 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 152: Skills::BeggingTarget(s); break;
         case 153: Skills::AnimalLoreTarget(s); break;
         case 154: Skills::ForensicsTarget(s); break;
-        case 155:
-            {
-                curr->poisonserial=LongFromCharPtr(buffer[s]+7);
-                target(s, 0, 1, 0, 156, TRANSLATE("What item do you want to poison?"));
-                return;
-            }
-        case 156: Skills::PoisoningTarget(ps); break;
+//        case 155:
+//            {
+//                curr->poisonserial=LongFromCharPtr(buffer[s]+7);
+//                target(s, 0, 1, 0, 156, TRANSLATE("What item do you want to poison?"));
+///                return;
+//            }
+//        case 156: Skills::PoisoningTarget(ps); break;
 
-        case 160: Skills::Inscribe(s); break;
+//        case 160: Skills::Inscribe(s); break;
 
 //        case 162: Skills::LockPick(ps); break;
 
@@ -2381,204 +2124,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 #endif
 }
 
-///////////////////////////////////////////////////////////////////////
-//
-// TARGETLOCATION CLASS
-//
-///////////////////////////////////////////////////////////////////////
 
-
-///////////////////////////////////////////////////////////////////
-// Function name     : TargetLocation::TargetLocation
-// Author            : Xanathar
-// Changes           : none yet
-void TargetLocation::init(P_CHAR pc)
-{
-	Location pcpos= pc->getPosition();
-
-	m_pc = pc;
-	m_x = pcpos.x;
-	m_y = pcpos.y;
-	m_z = pcpos.z;
-	m_pi = NULL;
-	m_piSerial = INVALID;
-	m_pcSerial = pc->getSerial32();
-}
-///////////////////////////////////////////////////////////////////
-// Function name     : void TargetLocation::init
-// Author            : Xanathar
-// Changes           : none yet
-void TargetLocation::init(P_ITEM pi)
-{
-	m_pc = NULL;
-	if (pi->isInWorld()) {
-		m_x = pi->getPosition("x");
-		m_y = pi->getPosition("y");
-		m_z = pi->getPosition("z");
-	} else {
-		m_x = m_y = m_z = 0;
-	}
-	m_pi = pi;
-	m_piSerial = pi->getSerial32();
-	m_pcSerial = INVALID;
-}
-
-///////////////////////////////////////////////////////////////////
-// Function name     : TargetLocation::init
-// Author            : Xanathar
-// Changes           : none yet
-void TargetLocation::init(int x, int y, int z)
-{
-	m_x = x;
-	m_y = y;
-	m_z = z;
-	m_pi = NULL;
-	m_pc = NULL;
-	m_piSerial = m_pcSerial = INVALID;
-}
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : TargetLocation::revalidate
-// Description       : recalculates item & char from their serial :)
-// Return type       : void
-// Author            : Xanathar
-// Changes           : none yet
-void TargetLocation::revalidate()
-{
-	m_pi=pointers::findItemBySerial(m_piSerial);
-
-	m_pc=pointers::findCharBySerial(m_piSerial);
-
-	if (ISVALIDPI(m_pi)) {
-		m_pi = NULL;
-		m_piSerial = INVALID;
-	}
-
-	if (ISVALIDPC(m_pc)) {
-		m_pc = NULL;
-		m_pcSerial = INVALID;
-	}
-}
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : TargetLocation::extendItemTarget
-// Description       : extends item data to x,y,z and eventually owner char
-// Return type       : void
-// Author            : Xanathar
-// Changes           : none yet
-void TargetLocation::extendItemTarget()
-{
-	if (m_pc!=NULL)
-		return;
-	if (m_pi==NULL)
-		return;
-	if (m_pi->isInWorld()) {
-		m_x = m_pi->getPosition("x");
-		m_y = m_pi->getPosition("y");
-		m_z = m_pi->getPosition("z");
-	}
-	else {
-		int it, ch;
-		getWorldCoordsFromSerial (m_pi->getSerial32(), m_x, m_y, m_z, ch, it);
-		m_pc=MAKE_CHAR_REF(ch);
-		m_pcSerial = (ISVALIDPC(m_pc))? m_pc->getSerial32() : INVALID;
-	}
-	revalidate();
-}
-
-
-
-///////////////////////////////////////////////////////////////////
-// Function name     : TargetLocation::TargetLocation
-// Author            : Xanathar
-// Changes           : none yet
-TargetLocation::TargetLocation( P_TARGET pp )
-{
-	if( pp->pkg.type==0 ) {
-
-		P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
-		if(ISVALIDPC(pc)) {
-			init(pc);
-			return;
-		}
-
-		P_ITEM pi= pointers::findItemBySerial( pp->getClicked() );
-		if (ISVALIDPI(pi))  {
-			init(pi);
-			return;
-		}
-	}
-	else if( pp->pkg.type==1 ) {
-		Location loc = pp->getLocation();
-		init( loc.x, loc.y, loc.z );
-		return;
-	}
-
-	this->m_pc=NULL;
-	this->m_pcSerial=INVALID;
-	this->m_pi=NULL;
-	this->m_piSerial=INVALID;
-	this->m_x=0;
-	this->m_y=0;
-	this->m_z=0;
-}
-
-
-
-cPacketTargeting::cPacketTargeting()
-{
-}
-
-cPacketTargeting::~cPacketTargeting()
-{
-}
-
-UI08 cPacketTargeting::getTargetType( NXWSOCKET socket )
-{
-	return buffer[socket][1];
-}
-
-SI32 cPacketTargeting::getCharacterSerial( NXWSOCKET socket )
-{
-	return LongFromCharPtr( buffer[socket] + 2 );
-}
-
-UI08 cPacketTargeting::getCursorType( NXWSOCKET socket )
-{
-	return buffer[socket][6];
-}
-
-SI32 cPacketTargeting::getItemSerial( NXWSOCKET socket )
-{
-	return LongFromCharPtr( buffer[socket] + 7 );
-}
-
-SI16 cPacketTargeting::getX( NXWSOCKET socket )
-{
-	return ShortFromCharPtr( buffer[socket] + 11 );
-}
-
-SI16 cPacketTargeting::getY( NXWSOCKET socket )
-{
-	return ShortFromCharPtr( buffer[socket] + 13 );
-}
-
-SI08 cPacketTargeting::getZ( NXWSOCKET socket )
-{
-	return (buffer[socket][17]);
-}
-
-SI16 cPacketTargeting::getModel( NXWSOCKET socket )
-{
-	return ShortFromCharPtr( buffer[socket] + 17 );
-}
-
-SI08 cPacketTargeting::getUnknown( NXWSOCKET socket )
-{
-	return (buffer[socket][15]);
-}
 
 
 void target_playerVendorBuy( NXWCLIENT ps, P_TARGET t )
@@ -2897,4 +2443,94 @@ void target_transfer( NXWCLIENT ps, P_TARGET t )
     pc1->ftargserial=INVALID;
     pc1->npcWander=WANDER_NOMOVE;
 }
+
+ //Throws the potion and places it (unmovable) at that spot
+void target_expPotion( NXWCLIENT ps, P_TARGET t )
+{
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+    Location loc=t->getLocation();
+
+	NXWSOCKET s=ps->toInt();
+
+    if(line_of_sight(s, pc->getPosition(), loc, WALLS_CHIMNEYS + DOORS + ROOFING_SLANTED))
+    {
+        P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );
+        if (ISVALIDPI(pi)) // crashfix LB
+        {
+            pi->MoveTo( loc );
+            pi->setContSerial(INVALID);
+            pi->magic=2; //make item unmovable once thrown
+            movingeffect2(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), 0x0F, 0x0D, 0x11, 0x00, 0x00);
+            pi->Refresh();
+        }
+    }
+    else 
+		pc->sysmsg(TRANSLATE("You cannot throw the potion there!"));
+}
+
+
+void target_trigger( NXWCLIENT ps, P_TARGET t )
+{
+
+	P_ITEM pi = MAKE_ITEM_REF(t->getClicked());
+	VALIDATEPI(pi);
+    
+	triggerItem(ps->toInt(), pi, TRIGTYPE_TARGET);
+
+}
+
+void target_npcMenu( NXWCLIENT ps, P_TARGET t )
+{
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+    P_CHAR npc = npcs::AddRespawnNPC(pc,t->buffer[0]);
+
+}
+
+/*!
+\brief implements the 'telestuff GM command
+\author Endymion
+*/
+void target_telestuff( NXWCLIENT ps, P_TARGET t )
+{
+
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC(pc);
+
+	NXWSOCKET s = ps->toInt();
+
+	P_OBJECT po = objects.findObject( t->getClicked() );
+
+	if( ISVALIDPO(po) ) { //clicked on obj to move
+		P_TARGET targ=clientInfo[s]->newTarget( new cLocationTarget() );
+		targ->code_callback=target_telestuff;
+		targ->buffer[0]=po->getSerial32();
+		targ->send(ps);
+		ps->sysmsg( TRANSLATE("Select location to put this object.") );
+	} else { //on ground.. so move it
+		
+		Location loc=t->getLocation();
+		loc.z+=tileHeight( t->getModel() );
+
+		SERIAL serial = t->buffer[0];
+		if( isCharSerial(serial) ) {
+			P_CHAR pt = pointers::findCharBySerial( serial );
+			VALIDATEPC(pt);
+
+			pt->MoveTo( loc );
+			pt->teleport();
+		} else if ( isItemSerial(serial) ) {
+			P_ITEM pi = pointers::findItemBySerial( serial );
+			VALIDATEPI(pi);
+
+			pi->MoveTo(loc);
+			pi->Refresh();
+		}
+	}
+}
+
 

@@ -29,6 +29,7 @@
 #include "scripts.h"
 #include "inlines.h"
 #include "range.h"
+#include "network.h"
 
 cScriptCommand::cScriptCommand( )
 {
@@ -98,10 +99,11 @@ void cScriptCommand::execute( NXWSOCKET s )
 			now,Accounts->Count());
 		return;
 	} else if ( command == "NPC" ) {
-		addmitem[s]=str2num(param);
-		char tstring[1024];
-		sprintf(tstring, "Select location for NPC. [Number: %i]", addmitem[s]);
-		target(s, 0, 1, 0, 27, tstring);
+		P_TARGET targ= clientInfo[s]->newTarget( new cLocationTarget() );
+		targ->code_callback = target_npcMenu;
+		targ->buffer[0]=str2num(param);
+		targ->send( getClientFromSocket(s) );
+		sysmessage( s, "Select location for NPC. [Number: %i]", addmitem[s]);
 		return;
 	} else if ( command == "NOP" ) {
 	    return;
@@ -139,8 +141,6 @@ void cScriptCommand::execute( NXWSOCKET s )
 		int sub = type % 10;
 		type /= 10 ;
 		Skills::DoPotion(s, type, sub, pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s])));
-	} else if ( command == "WRITESCROLL" ) {
-		TellScroll( "new xan inscription,sorry :P", s, str2num(param) );
 	} else if ( command == "ADDBYID" ) {
 		if (s<=INVALID) return;
 		P_ITEM pb = pc->getBackpack();

@@ -32,16 +32,6 @@ namespace Skills {
 	void updateSkillLevel(P_CHAR pc, int s);
 	//@}
 
-	//@{
-	/*!
-	\name Tracking stuff
-	*/
-	void Tracking(NXWSOCKET s, int selection);
-	int TrackingDirection(NXWSOCKET s, CHARACTER i);
-	void Track(CHARACTER i);
-	void CreateTrackingMenu(NXWSOCKET s, int m);
-	void TrackingMenu(NXWSOCKET s, int gmindex);
-	//@}
 
 	//@{
 	/*!
@@ -63,8 +53,6 @@ namespace Skills {
 	void target_enticement1( NXWCLIENT ps, P_TARGET t );
 	//@}
 
-	void TellScroll(char *menu_name, int player, long item_param);
-
 	void Meditation(NXWSOCKET s);
 
 	//@{
@@ -73,7 +61,6 @@ namespace Skills {
 	*/
 	int CalcRank(NXWSOCKET s,int skill); // by Magius(CHE)
 	void ApplyRank(NXWSOCKET s,int c,int rank); // by Magius(CHE)
-	void Zero_Itemmake(NXWSOCKET s); // by Magius(CHE)
 	int GetSubIngotAmt(int p, char id1, char id2, char color1, char color2);
 	int DeleSubIngot(int p, int id1, int id2, int color1, int color2, int amount);
 	void target_repair( NXWCLIENT ps, P_TARGET t );
@@ -84,7 +71,6 @@ namespace Skills {
 	/*!
 	\name ID-Stuff
 	*/
-	void TasteIDTarget(NXWSOCKET s);
 	void target_itemId( NXWCLIENT ps, P_TARGET t );
 	//@}
 
@@ -132,7 +118,7 @@ namespace Skills {
 	void BowCraft(NXWSOCKET s);
 	//@}
 
-	void RemoveTraps(NXWSOCKET s);
+	void target_removeTraps( NXWCLIENT ps, P_TARGET t );
 	
 	void target_carpentry( NXWCLIENT ps, P_TARGET t );
 
@@ -162,8 +148,6 @@ namespace Skills {
 	void SpiritSpeak(NXWSOCKET s);
 	
 	void target_armsLore( NXWCLIENT ps, P_TARGET t );
-	void target_evaluateInt( NXWCLIENT ps, P_TARGET t );
-	void target_anatomy( NXWCLIENT ps, P_TARGET t );
 	void target_tame( NXWCLIENT ps, P_TARGET t );
 
 	//@{
@@ -184,10 +168,6 @@ namespace Skills {
 	
 	void target_poisoning( NXWCLIENT ps, P_TARGET t );
 
-	void Inscribe(NXWSOCKET s);
-	
-	int EngraveAction(NXWSOCKET s, int i, int cir, int spl);
-	
 	void TDummy(NXWSOCKET s);
 	
 	void target_tinkering( NXWCLIENT ps, P_TARGET t );
@@ -213,6 +193,5 @@ void snooping( P_CHAR snooper, P_ITEM cont );
 
 void SkillVars();
 void loadskills();
-void TellScroll( char *menu_name, int player, long item_param );
 
 #endif

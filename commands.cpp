@@ -27,11 +27,6 @@
 #include "inlines.h"
 
 
-static inline void _do_target(NXWSOCKET s, TARGET_S *ts) {
-	target(s, ts->a1, ts->a2, ts->a3, ts->a4, ts->txt);
-	return;
-}
-
 namespace Commands
 {
 	SI32 cmd_offset;
@@ -79,7 +74,7 @@ namespace Commands
 				(*((CMD_EXEC)cmd->cmd_extra)) (s);
 				break;
 			case CMD_TARGET: {
-				P_TARGET target = clientInfo[s]->newTarget();
+				P_TARGET target = clientInfo[s]->newTarget( new cTarget() );
 				target->code_callback=((target_st*)cmd->cmd_extra)->func;
 				target->send( client, true );
 				client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );

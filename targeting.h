@@ -142,66 +142,6 @@ public:
 };
 
 
-class TargetLocation
-{
-private:
-	P_CHAR m_pc;
-	int    m_pcSerial;
-	P_ITEM m_pi;
-	int    m_piSerial;
-	int    m_x;
-	int    m_y;
-	int    m_z;
-	void   init(int x, int y, int z);
-	void   init(P_CHAR pc);
-	void   init(P_ITEM pi);
-
-public:
-	//!creates a target loc from a character
-	TargetLocation(P_CHAR pc) { init(pc); }
-	//!creates a target loc from an item
-	TargetLocation(P_ITEM pi) { init(pi); }
-	//!creates a target loc from a target net packet
-	TargetLocation( P_TARGET pp );
-	//!creates a target loc from a xyz position in the map
-	TargetLocation(int x, int y, int z) { init(x,y,z); }
-
-	//!recalculates item&char from their serial
-	void revalidate();
-
-	//!gets the targetted char if any, NULL otherwise
-	inline P_CHAR getChar() { return m_pc; }
-	//!gets the targetted item if any, NULL otherwise
-	inline P_ITEM getItem() { return m_pi; }
-	//!gets the XYZ location of this target location
-	inline void getXYZ(int& x, int& y, int& z) { x = m_x; y = m_y; z = m_z; }
-	//!extends a P_ITEM data to P_CHAR and x,y,z
-	void extendItemTarget();
-};
-
-/*!
-\brief new wrapper for packet 0x6c
-\author Sparhawk
-*/
-class cPacketTargeting
-{
-	public:
-			cPacketTargeting();
-			~cPacketTargeting();
-
-		UI08	getPacketType( NXWSOCKET socket );
-		UI08	getTargetType( NXWSOCKET socket );
-		SERIAL	getCharacterSerial( NXWSOCKET socket );
-		UI08	getCursorType( NXWSOCKET socket );
-		SERIAL	getItemSerial( NXWSOCKET socket );
-		SI16	getX( NXWSOCKET socket );
-		SI16	getY( NXWSOCKET socket );
-		SI08	getZ( NXWSOCKET socket );
-		SI16	getModel( NXWSOCKET socket );
-		SI08	getUnknown( NXWSOCKET socket );
-};
-
-
 extern cTargets* Targ;
 
 
@@ -211,6 +151,9 @@ void target_key( NXWCLIENT ps, P_TARGET t );
 void target_axe( NXWCLIENT ps, P_TARGET t );
 void target_sword( NXWCLIENT ps, P_TARGET t );
 
+void target_expPotion( NXWCLIENT ps, P_TARGET t );
+void target_npcMenu( NXWCLIENT ps, P_TARGET t );
+void target_trigger( NXWCLIENT ps, P_TARGET t );
 
 void target_follow( NXWCLIENT ps, P_TARGET t );
 void target_attack( NXWCLIENT ps, P_TARGET t );

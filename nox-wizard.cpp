@@ -1144,10 +1144,6 @@ void updateMenus();
 	//ConOut(" [FAIL]  <-!!! DISABLED FOR THIS DEBUG VERSION\n");
 	//End Boats --^
 
-/*	ConOut("Loading IM menus...");
-	im_loadmenus( "inscribe.gmp", TellScroll ); //loading gump for inscribe()
-	ConOut(" [DONE]\n");
-*/
 	gcollect();
 
 //	ConOut("Initializing glowing-items...");
@@ -1891,24 +1887,25 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		impowncreate(s,pc,1); //Lb, makes the green bar blue or the blue bar blue !
 		break;
 
-	case 3: // Explosion Potion
+	case 3: {// Explosion Potion
 		if (region[pc->region].priv&0x01) // Ripper 11-14-99
 		{
 			pc->sysmsg(TRANSLATE(" You cant use that in town!"));
 			return;
 		}
-		addid1[s]= pi->getSerial().ser1;
-		addid2[s]= pi->getSerial().ser2;
-		addid3[s]= pi->getSerial().ser3;
-		addid4[s]= pi->getSerial().ser4;
 		pc->sysmsg(TRANSLATE("Now would be a good time to throw it!"));
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 1, 3);
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 2, 2);
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 3, 1);
 		tempfx::add(pc, pi, tempfx::EXPLOTIONEXP, 0, 4, 0);
-		target(s,0,1,0,207,"*throw*");
-		return; // lb bugfix, break is wronh here because it would delete bottle
 
+		P_TARGET targ= clientInfo[s]->newTarget( new cTarget() );
+		targ->code_callback=target_expPotion;
+		targ->buffer[0]= pi->getSerial32();
+		targ->send( getClientFromSocket(s) );
+		sysmessage( s, "*throw*" );
+		return; 
+	}
 	case 4: // Heal Potion
 		switch(pi->morez)
 		{

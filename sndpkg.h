@@ -52,8 +52,6 @@ void senditem(NXWSOCKET  s, P_ITEM pi);
 void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, signed char z);
 void chardel (NXWSOCKET  s);
 	//!< Deletion of character
-void sendTargetCursor(NXWSOCKET s, int a1, int a2, int a3, int a4);
-	//!< Send targetting cursor to client
 void updatechar(P_CHAR pc);
 	//!< If character status has been changed (Polymorph);, resend him
 void target(NXWSOCKET  s, int a1, int a2, int a3, int a4, char *txt);

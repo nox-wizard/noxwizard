@@ -26,6 +26,8 @@
 #include "range.h"
 #include "utils.h"
 #include "scripts.h"
+#include "network.h"
+
 
 
 //debugger things :] --begin--
@@ -1362,7 +1364,10 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			//////////////////////////////////////////////////////////////////////////
 		if (!(strcmp("TARG", cmd)))  // Give a targeter with trigger number
 		{
-			target(m_socket, 0, 1, 0, 204, TRANSLATE("Select a target"));
+			P_TARGET targ=clientInfo[m_socket]->newTarget( new cItemTarget() );
+			targ->code_callback=target_trigger;
+			targ->send( getClientFromSocket(m_socket) );
+			sysmessage( m_socket, TRANSLATE("Select a target") );
 			m_pcCurrChar->targtrig = str2num(par);
 		}
 		break;

@@ -317,25 +317,6 @@ void cNxwClientObj::sendSFX(unsigned char a, unsigned char b, bool bIncludeNearb
 	else send(sfx,12); //Endy fix for double send
 }
 
-void cNxwClientObj::doTargeting(char* message) {
-    sysmsg(message);
-    sendTargetCursor(m_sck, 0, 1, 0, 255);
-}
-
-void cNxwClientObj::receiveTarget(TargetLocation tl) {
-    targets.push_back(tl);
-}
-
-td_targets cNxwClientObj::getTargets() {
-	return targets;
-}
-
-TargetLocation* cNxwClientObj::getLastTarget() {
-	if(targets.empty())
-		return NULL;
-	return &(targets.back());
-}
-
 void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
     if(cmd==NULL) {
       	sysmsg("Command not found.");
@@ -372,7 +353,7 @@ void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
 							needtargets= true;
 							targets.clear();
 						}
-						receiveTarget(*new TargetLocation(self));
+						//receiveTarget(*new TargetLocation(self));
 						currentCommand= currentCommand->nextStep;
                     } else
                         warn= "Target \"self\" not supported by the command: %s";

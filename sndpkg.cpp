@@ -974,25 +974,6 @@ void chardel (NXWSOCKET  s) // Deletion of character
 //AoS/	Network->FlushBuffer(s);
 }
 
-// Send targetting cursor to client
-void sendTargetCursor(NXWSOCKET s, int a1, int a2, int a3, int a4) {
-	UI08 tarcrs[19]={ 0x6C, 0x00, };
-	SERIAL a = calcserial(a1, a2, a3, a4);
-
-	targetok[s]=1;
-	
-	tarcrs[1]=0x01;		// Target type: 0 - Select Object, 1 - Select X Y Z
-	LongToCharPtr(a, tarcrs +2);
-	Xsend(s, tarcrs, 19);
-//AoS/	Network->FlushBuffer(s);
-}
-
-void target(NXWSOCKET  s, int a1, int a2, int a3, int a4, char *txt) // Send targetting cursor to client (wrapper to above funct() )
-{
-	sysmessage(s, txt);
-	sendTargetCursor(s, a1, a2, a3, a4);
-}
-
 void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.2b by LB
 {
 

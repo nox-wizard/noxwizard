@@ -91,10 +91,6 @@ public:
 	void sysmsg(short color, char* szFormat, ...);
 	//@}
 
-	void receiveTarget(TargetLocation tl);
-	void doTargeting(char* message);
-	td_targets getTargets();
-	TargetLocation* getLastTarget();
 	void startCommand(P_COMMAND cmd, char* params);
 	void continueCommand();
 	string getParamsAsString();
