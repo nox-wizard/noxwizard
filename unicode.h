@@ -40,17 +40,22 @@ public:
 /*
 \brief endian buster
 \author Endymion
+\note used to remove problem with big-little endian 
 */
-
 class endian {
+public:
 	endian() {}
-	virtual ~endian() {}
+	~endian() {}
 };
 
 typedef UI08 eUI08;
 
 
-class eUI16  {
+/*
+\brief endian buster 16Bit
+\author Endymion
+*/
+class eUI16 : public endian {
 private:
 	UI08 a, b;
 public:
@@ -61,7 +66,11 @@ public:
 
 typedef eUI16 eCOLOR;
 
-class eUI32  {
+/*
+\brief endian buster 32Bit
+\author Endymion
+*/
+class eUI32 : public endian {
 private:
 	eUI16 a, b;
 public:
