@@ -195,11 +195,11 @@ NATIVE2(_getCharProperty)
 		}
 		if (tp==T_UNICODE )
 		{
-			if( pc->speechCurrent!=NULL ) {
+			if( pc->getSpeechCurrent()!=NULL ) {
 				cell *cptr;
 	  			amx_GetAddr(amx,params[4],&cptr);
-				amx_SetStringUnicode(cptr, &pc->speechCurrent->s );
-				return pc->speechCurrent->length();
+				amx_SetStringUnicode(cptr, &pc->getSpeechCurrent()->s );
+				return pc->getSpeechCurrent()->length();
 			}
 		}
 
@@ -961,8 +961,8 @@ NATIVE2(_setCharProperty)
 		switch( params[2] )
 		{
 			case NXW_CP_UNI_SPEECH_CURRENT :		
-				pc->speechCurrent= new cUnicodeString();
-				amx_GetStringUnicode( &pc->speechCurrent->s, cstr );
+				pc->setSpeechCurrent( new cUnicodeString() );
+				amx_GetStringUnicode( &pc->getSpeechCurrent()->s, cstr );
 				break;
 			case NXW_CP_UNI_PROFILE :				
 				pc->setProfile( new cUnicodeString() );
@@ -1989,7 +1989,7 @@ static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{
-		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , (pc->speechCurrent!=NULL)? pc->speechCurrent : &emptyUnicodeString )
+		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , (pc->getSpeechCurrent()!=NULL)? pc->getSpeechCurrent() : &emptyUnicodeString )
 		CHECK(  NXW_CP_UNI_PROFILE , (pc->getProfile()!=NULL)? pc->getProfile() : &emptyUnicodeString )
 	}
 	ErrOut("chr_getProperty called with invalid property %d!\n", property );

@@ -636,7 +636,15 @@ class cChar : public cObject
 	public:
 		cUnicodeString* getProfile();
 		void setProfile( cUnicodeString* profile );
+		void resetProfile();
 	
+	private:
+		cUnicodeString* speechCurrent;
+	public:
+		cUnicodeString* getSpeechCurrent();
+		void setSpeechCurrent( cUnicodeString* speech );
+		void resetSpeechCurrent();
+
 	
 	public:
 
@@ -821,7 +829,6 @@ class cChar : public cObject
 	public:
 
 
-		cUnicodeString* speechCurrent;
 		void 			updateStats(SI32 stat);
 
 		void 			setNextMoveTime(short tamediv=1);
