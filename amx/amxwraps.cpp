@@ -5827,12 +5827,28 @@ NATIVE ( _addGmPage )
 /*!
 \brief Return a set with all paging characters,every character appears only once in the set, even if he did multiple pages.
 \author Frodo and stonedz
-\return NULL if no pages are present at the moment
+\param 1 the set
+\return false if no pages are present at the moment
 */
 NATIVE ( _getGmPageList )
 {
-	//to be implemented
-	return NULL;
+	
+	extern cGmpagesMap* pages;
+	
+	int i, empty=1;
+
+	SERIAL_VECTOR pagers = pages->getAllPagers();
+	
+	for(i=0; i<pagers.size(); i++){
+
+		amxSet::add( params[1], pagers[i] );
+		empty=0;
+	}
+	
+	if(empty) 
+		return false;
+	else 
+		return true;
 }
 
 /*!
@@ -5843,12 +5859,27 @@ NATIVE ( _getGmPageList )
 \param 2 page number (range 1-3)
 \param 3 string to be filled with the reason of selected page
 \param 4 string to be filled with the time the selected page was sent
-\return NULL if no page corresponds to the given one 
+\return false if no page corresponds to the given one 
 */
 NATIVE ( _chr_getGmPage )
 {
-	//to be implemented
-	return NULL;
+/*	extern cGmpagesMap* pages;
+
+	char* page_reason, timeofcall;
+
+	P_GMPAGE page=pages->findPage(params[1], params[2]);
+
+	if( pages==NULL )
+		return false;
+	
+	page_reason = (char*)(page->getReason()).c_str();
+	timeofcall = (char*)(page->getTime()).c_str();
+	
+	//strcpy(params[3], page_reason);
+	//strcpy(params[4], timeofcall);*/
+
+	return true;
+
 }
 
 /*!
@@ -5856,7 +5887,7 @@ NATIVE ( _chr_getGmPage )
 \author Frodo and stonedz
 \param 1 character
 \param 2 page number (range 1-3)
-\return NULL if no page corresponds to the given one
+\return false if no page corresponds to the given one
 */
 NATIVE ( _chr_solveGmPage )
 {
@@ -5866,7 +5897,7 @@ NATIVE ( _chr_solveGmPage )
 	VALIDATEPCR(pc, INVALID);
 	
 	if (pages->deletePage(pc->getSerial32(), (UI08) params[2] ) == false)
-		return NULL;
+		return false;
 	
 	return true;
 }
