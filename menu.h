@@ -121,7 +121,7 @@ class cMenus
 		cMenus();
 		virtual ~cMenus();
 
-		SERIAL	createMenu( UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose );
+		SERIAL createMenu( P_MENU menu );
 		LOGICAL	deleteMenu( SERIAL gump );
 		LOGICAL	handleMenu( NXWCLIENT ps );
 		P_MENU selectMenu( SERIAL menu );

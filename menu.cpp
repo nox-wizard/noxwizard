@@ -37,17 +37,12 @@ cMenus::~cMenus()
 /*!
 \brief Create a new menu
 \author Endymion
-\param id the menu id
-\param x the x location on screen
-\param y the y location on screen
-\param canMove true if can move
-\param canClose true if can close
-\param canDispose true if can dispose
+\param menu the menu
 \return the serial of new menu
 */
-SERIAL	cMenus::createMenu( UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose )
+SERIAL cMenus::createMenu( P_MENU menu )
 {
-	menuMap.insert( make_pair( current_serial++, new cMenu( current_serial++, id, x, y, canMove, canClose, canDispose ) ) );
+	menuMap.insert( make_pair( current_serial++, menu ) );
 	return current_serial -1;
 }
 
