@@ -598,13 +598,21 @@ void cTempfx::start()
 	//if (ISVALIDPC(dest)) item::CheckEquipment(DEREF_P_CHAR(dest));
 }
 
-LOGICAL cTempfx::checkForExpire()
+/*!
+\author Luxor
+*/
+SI08 cTempfx::checkForExpire()
 {
 	if ( !TIMEOUT(m_nExpireTime) )
-		return false;
+		return 0;
 
 	executeExpireCode();
-	return true;
+
+        P_OBJECT po = objects.findObject( m_nDest );
+	if ( !ISVALIDPO( po ) )
+		return INVALID;
+
+	return 1;
 }
 
 /*!
@@ -621,7 +629,7 @@ void cTempfx::executeExpireCode()
 		case SPELL_PARALYZE:
 			VALIDATEPC(dest);
 			if (dest->IsFrozen())
-				dest->unfreeze();
+				dest->unfreeze( true );
 			break;
 
 		case SPELL_LIGHT:
@@ -961,7 +969,7 @@ void cTempfx::deactivate()
 	{
 		case SPELL_PARALYZE:
 			if (dest->IsFrozen())
-				dest->unfreeze();
+				dest->unfreeze( true );
 			break;
 
 		case SPELL_LIGHT:

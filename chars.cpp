@@ -1346,9 +1346,11 @@ void cChar::applyPoison(PoisonType poisontype, SI32 secs )
 \author Xanathar
 \brief unfreezes the char
 */
-void cChar::unfreeze()
+void cChar::unfreeze( LOGICAL calledByTempfx )
 {
-	//delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
+        if ( !calledByTempfx )
+		delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
+
 	if (priv2 & CHRPRIV2_FROZEN)
 	{
 		priv2 &= ~CHRPRIV2_FROZEN;

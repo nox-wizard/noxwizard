@@ -909,7 +909,7 @@ public:
 		void			setOwner(P_CHAR owner);
 		void			curePoison();
 		void			resurrect(NXWCLIENT healer = NULL);
-		void			unfreeze();
+		void			unfreeze( LOGICAL calledByTempfx = false );
 		void			damage(SI32 amount, DamageType typeofdamage = DAMAGE_PURE, StatType stattobedamaged = STAT_HP);
 		void			playAction(SI32 action);
 

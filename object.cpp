@@ -847,11 +847,13 @@ void cObject::checkTempfx()
 
 	TempfxVector::iterator it( tempfx->begin() );
         for ( ; it != tempfx->end(); it++ ) {
-                if ( !(*it).checkForExpire() )
-			continue;
-
-		tempfx->erase( it );
-		it--;
+                SI08 result = (*it).checkForExpire();
+                if ( result == 1 ) { // Tempfx has been executed
+			tempfx->erase( it );
+			it--;
+		} else if ( result == INVALID ) { // Tempfx has deleted the object!! Avoid Crash!
+			return;
+		}
 	}
 }
 

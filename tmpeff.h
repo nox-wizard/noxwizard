@@ -52,7 +52,7 @@ namespace tempfx {
 		void activate();
 		void deactivate();
 		bool isValid();
-		bool checkForExpire();
+		SI08 checkForExpire();
 		void executeExpireCode();
 		void start();
 		int getNum() { return m_nNum; }
