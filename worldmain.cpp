@@ -71,7 +71,7 @@ wstring* HexVector2UnicodeString( char* s )
 	do {
 		memcpy( &temp[2], &s[i], 4 );
 		char* dummy; 
-		baffer = strtol( temp, &dummy, 0 );
+		baffer = static_cast<wchar_t>( strtol( temp, &dummy, 0 ) );
 		if( baffer!=0 )
 			(*w) += baffer;
 		i+=4;
