@@ -1124,7 +1124,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					}
 					// End - Dupois
 #ifdef SPAR_C_LOCATION_MAP
-					pointers::updateFromLocationMap( pc ); // Spahawk: it has allready been added by MoveTo
+					pointers::updateLocationMap( pc ); // Spahawk: it has allready been added by MoveTo
 #else
 					//Char mapRegions
 					mapRegions->add(pc);
