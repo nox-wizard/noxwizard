@@ -2213,8 +2213,6 @@ void impowncreate(NXWSOCKET s, P_CHAR pc, int z) //socket, player to send
 	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_currchar);
 
-	Location charpos= pc->getPosition();
-
 	if (pc->isStabled() || pc->mounted) 
 		return; // dont **show** stabled pets
 
