@@ -28,21 +28,19 @@
 \param dir initial direction
 \return the adjacent direction
 */
-int getLeftDir(int dir)
+inline UI08 getLeftDir(UI08 dir)
 {
-	dir &= 7;	// make sure it's valid
-	return dir==0 ? 7 : dir-1;
+	return (dir+7)&0x7;
 }
 /*!
 \brief Calculates the adjacent direction (clockwise)
-\author Duke
+\author Duke, rewritten by Akron
 \param dir initial direction
 \return the adjacent direction
 */
-int getRightDir(int dir)
+inline UI08 getRightDir(UI08 dir)
 {
-	dir &= 7;
-	return dir==7 ? 0 : dir+1;
+	return (dir+1)&0x7;
 }
 
 /*!
