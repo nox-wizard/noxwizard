@@ -186,7 +186,7 @@ void cTriggerContext::parseIAddCommand(char* par)
     // Added colormem token here! by Magius(CHE) §
     if( ISVALIDPI(pi) ) {
 		if( m_nColor1!=0xFF ) {
-			pi->setColor( DBYTE2WORD( m_nColor1, m_nColor2 ) );
+			pi->setColor( (UI16)DBYTE2WORD( m_nColor1, m_nColor2 ) );
 			pi->Refresh();
 		}
     }
@@ -596,9 +596,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			if (m_pcCurrChar->dx < 1) m_pcCurrChar->dx = 1;
 				} else { //extended syntax
 					if (params[0]<0)
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CLUMSY, params[0], 0, 0, params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CLUMSY, (UI08)params[0], (UI08)0, (UI08)0, (UI16)params[1]);
 					else
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_AGILITY, params[0], 0, 0, params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_AGILITY, (UI08)params[0], (UI08)0, (UI08)0, (UI16)params[1]);
 				}
 			}
 
@@ -755,9 +755,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
-				pc->setId( DBYTE2WORD( array[0], array[1] ) );
+				pc->setId( (UI16)DBYTE2WORD( array[0], array[1] ) );
 				if( m_nColor1 != 0xFF)
-					pc->setColor( DBYTE2WORD( m_nColor1, m_nColor2 ) );
+					pc->setColor( (UI16)DBYTE2WORD( m_nColor1, m_nColor2 ) );
 
 				if( ISVALIDPC( m_pcCurrChar ) ) {
 					P_ITEM pack=m_pcCurrChar->getBackpack();
@@ -788,9 +788,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 						m_pcCurrChar->in = 1;
 				} else { //extended syntax
 					if (params[0]<0)
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_FEEBLEMIND, params[0], 0, 0, params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_FEEBLEMIND, (UI08)params[0], 0, 0, (UI16)params[1]);
 					else
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CUNNING, params[0], 0, 0, params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CUNNING, (UI08)params[0], 0, 0, (UI16)params[1]);
 				}
 			} else if (!(strcmp("IADD", cmd))) { // Add item in front of player //if 2nd param. is 1, add item into player's backpack - AntiChrist (with autostack)
 				parseIAddCommand(par);
@@ -921,9 +921,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if (uiNpcNum==0) return;
 				Location charpos= m_pcCurrChar->getPosition();
 
-				int triggerx = charpos.x + 1;
-				int triggery = charpos.y + 1;
-				int triggerz = charpos.z;
+				UI16 triggerx = (UI16)(charpos.x + 1);
+				UI16 triggery = (UI16)(charpos.y + 1);
+				SI08 triggerz = charpos.z;
 
 				m_pcAdded = npcs::AddNPC(m_socket,NULL,uiNpcNum,triggerx,triggery,triggerz);
 

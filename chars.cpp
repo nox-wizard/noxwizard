@@ -960,7 +960,15 @@ void cChar::unHide()
 					SendDeleteObjectPkt(i, my_serial);
 					impowncreate(i, this, 0);
 				} else {
-					SendDrawGamePlayerPkt(i, my_serial, getId(), (unsigned char)0x00, getColor(), (poisoned ? (unsigned char)0x04 : (unsigned char)0x00), my_pos, (unsigned char)0x0000, dir|0x80);
+					SendDrawGamePlayerPkt(i, 
+						my_serial, 
+						getId(), 
+						(unsigned char)0x00, 
+						getColor(), 
+						(poisoned ? (unsigned char)0x04 : (unsigned char)0x00), 
+						my_pos, 
+						(unsigned char)0x0000, 
+						(UI08)dir|0x80);
 				}
 			}
 		}
@@ -1800,7 +1808,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		if ( IsHidden() )
 			flag |= 0x80;
 
-		SendDrawGamePlayerPkt(socket, getSerial32(), getId(), 0x00, getColor(), flag, pos, 0x0000, dir | 0x80, true);
+		SendDrawGamePlayerPkt(socket, getSerial32(), getId(), 0x00, getColor(), flag, pos, 0x0000, (UI08)(dir | 0x80), true);
 
 		weights::NewCalc(this);
 		statwindow( this, this );
@@ -3311,8 +3319,8 @@ void cChar::Kill()
 		pi_j->setContSerial( pCorpse->getSerial32() );
 		//General Lee
 		Location lj = pi_j->getPosition();
-		lj.y = RandomNum(85,160);
-		lj.x = RandomNum(20,70);
+		lj.y = (UI16) RandomNum(85,160);
+		lj.x = (UI16) RandomNum(20,70);
 		pi_j->setPosition( lj );
 		pi_j->Refresh();
 		//General Lee
@@ -3788,25 +3796,25 @@ void cChar::doGmEffect()
 		switch( gmMoveEff )
 		{
 		case 1:	// flamestrike
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, (UI08)0x37, (UI08)0x09, (SI08)0x09, (SI08)0x19, (SI08)0);
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), (UI08)0x37, (UI08)0x09, (SI08)0x09, (SI08)0x19, (SI08)0);
 			//soundeffect(s, 0x02, 0x08);
 			playSFX( 0x0802);
 			break;
 
 		case 2: // sparklie (fireworks wand style)
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x3A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), 0x37, 0x3A, 0x09, 0x19, 0); break;
 
 		case 3: // sparklie (fireworks wand style)
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x4A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), 0x37, 0x4A, 0x09, 0x19, 0); break;
 
 		case 4: // sparklie (fireworks wand style)
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x5A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), 0x37, 0x5A, 0x09, 0x19, 0); break;
 
 		case 5: // sparklie (fireworks wand style)
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x6A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), 0x37, 0x6A, 0x09, 0x19, 0); break;
 
 		case 6: // sparklie (fireworks wand style)
-			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)charpos.z+10, 0x37, 0x7A, 0x09, 0x19, 0); break;
+			staticeffect3((UI16)(charpos.x+1), (UI16)(charpos.y+1), (SI08)(charpos.z+10), 0x37, 0x7A, 0x09, 0x19, 0); break;
 		}
 	}
 	return;

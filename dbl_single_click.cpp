@@ -223,7 +223,8 @@ void doubleclick(NXWCLIENT ps)
 						}
 					}
 				}
-				pc->playSFX( itemsfx(pi->getId()) );
+				if ( pi->getSound() == INVALID )
+					pc->playSFX( itemsfx(pi->getId()) );
 				pc->Equip( pi );
 			}
 			else
@@ -364,6 +365,10 @@ void doubleclick(NXWCLIENT ps)
 
 
 	P_TARGET targ = NULL;
+	if ( pi->getSound() > 0 )
+	{
+		pc->playSFX(pi->getSound());
+	}
 
 	switch (pi->type)
 	{

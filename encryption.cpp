@@ -39,12 +39,12 @@ static void asciipack (char *packing)
 {
 	char buf[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 	int i;
-	for(i=0;i<9; i++) buf[i]=packing[i]-32; //7-bit ASCII
+	for(i=0;i<9; i++) buf[i]=(UI08)packing[i]-32; //7-bit ASCII
 	
 	for (i=0; i<=7; i++)
 		buf[i]|= (buf[8]&(1<<i)) << (7-i);
 
-	for(i=0;i<8; i++) packing[i]=buf[i]; //7-bit ASCII
+	for(i=0;i<8; i++) packing[i]=(UI08)buf[i]; //7-bit ASCII
 	packing[8] = 0;
 	
 }
@@ -70,8 +70,8 @@ static void asciifacelift (char *packing)
 	int i;
 
 	for(i=0;i<9; i++) {
-		buf[i*2]=(packing[i]&0x0F) + 'A'; //7-bit ASCII
-		buf[i*2+1]=((packing[i]&0xF0) >> 4) + 'A'; //7-bit ASCII
+		buf[i*2]=(UI08)((packing[i]&0x0F) + 'A'); //7-bit ASCII
+		buf[i*2+1]=(UI08)(((packing[i]&0xF0) >> 4) + 'A'); //7-bit ASCII
 	}
 	strcpy(packing, buf);
 
@@ -106,7 +106,7 @@ char* pwdcypher(char *pwd, int salt)
 	asciifacelift(pad);
 
 	char *c = new char[25];
-	c[0] = (salt&0xFF)+'A';
+	c[0] = (UI08)((salt&0xFF)+'A');
 	for(i=0;i<20; i++) c[i+1]=pad[i]; //7-bit ASCII
 
 	return c;
@@ -522,7 +522,7 @@ static int spinit()
 	for(p=0;p<32;p++){
 		for(i=0;i<32;i++){
 			if(p32i[i]-1 == p){
-				pbox[p] = i;
+				pbox[p] =(UI08) i;
 				break;
 			}
 		}

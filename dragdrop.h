@@ -18,5 +18,6 @@
 void get_item(NXWCLIENT ps);	//!< Client grabs an item
 void wear_item(NXWCLIENT ps);	//!< Item is dropped on paperdoll
 void drop_item(NXWCLIENT ps);	//!< Item is dropped on ground, char or item
+LOGICAL  checkWearable(P_CHAR pc, P_ITEM pi);
 
 #endif

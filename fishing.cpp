@@ -147,7 +147,7 @@ inline bool isWaterTarget(NXWSOCKET  s)
 			break;
 	}
 
-	data::seekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), tile);
+	data::seekTile((UI16)(((buffer[s][0x11]<<8)+buffer[s][0x12])), tile);
 	if(!(strstr((char *) tile.name, "water") || strstr((char *) tile.name, "lava")))
 	{
 		data::seekLand(map.id, land);
@@ -333,14 +333,14 @@ void Fishing::Fish(CHARACTER i)
 			if (no_idea_for_variable_name<=0) no_idea_for_variable_name=1; // prevent modulo crashes	
 			if (rand()%no_idea_for_variable_name==0) 
 			{ 		
-				color=(charpos.x + charpos.y);
+				color=(UI16)(charpos.x + charpos.y);
 				color+= rand()%10;
-				color= color%0x03E9; 
-				if((color <0x0002) || (color > 0x03E9)) color = 0x03E9;
+				color=(UI16)(color%0x03E9); 
+				if((color <0x0002) || (color > 0x03E9)) color = (UI16)0x03E9;
 
 				if( ((color&0x4000)>>14) + ((color&0x8000)>>15) )
 				{
-					color = DBYTE2WORD(0x01, rand()%255);
+					color = (UI16)DBYTE2WORD(0x01, rand()%255);
 				}
 			} else color=0;
 		

@@ -394,7 +394,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 					P_ITEM pin =archive::item::New();
 					(*pin)=(*pi);
 
-					pin->amount = pi->amount - amount;
+					pin->amount = (UI16)( pi->amount - amount);
 
 					pin->setContSerial(pi->getContSerial());	//Luxor
 					pin->setPosition( pi->getPosition() );
@@ -438,6 +438,55 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		pc_currchar->weight += wgt;
 		statwindow(pc_currchar, pc_currchar);
 	}
+}
+
+LOGICAL  checkWearable(P_CHAR pc, P_ITEM pi)
+{
+	bool wearable = false;
+	NXWSOCKET s = pc->getSocket();
+	if (s < 0)
+		return false;
+	if( (pi->getId()>>8) >= 0x40)  // LB, client crashfix if multi-objects are moved to PD
+		return false;
+	tile_st tile;
+
+	data::seekTile(pi->getId(), tile);
+
+	if( ( clientDimension[s]==3 ) &&  (tile.quality==0) )
+	{
+		pc->sysmsg(TRANSLATE("You can't wear that"));
+		return false;
+	}
+	else 
+	{
+		P_ITEM outmost = pi->getOutMostCont();
+		P_CHAR vendor = pointers::findCharBySerial( outmost->getContSerial() );
+		if( ISVALIDPC( vendor ) && ( vendor->getOwnerSerial32() != pc->getSerial32() ) )
+		{
+			return false;
+		}
+
+	}
+	if ( !pc->IsGM() && pi->st > pc->getStrength() && !pi->isNewbie() ) // now you can equip anything if it's newbie
+	{
+		pc->sysmsg(TRANSLATE("You are not strong enough to use that."));
+		return false;
+	}
+	else if ( !pc->IsGM() && !checkItemUsability(pc, pi, ITEM_USE_WEAR) )
+	{
+		return false;
+	}
+	else if ( (pc->getId() == BODY_MALE) && ( pi->getId()==0x1c00 || pi->getId()==0x1c02 || pi->getId()==0x1c04 || pi->getId()==0x1c06 || pi->getId()==0x1c08 || pi->getId()==0x1c0a || pi->getId()==0x1c0c ) ) // Ripper...so males cant wear female armor
+	{
+		pc->sysmsg(TRANSLATE("You cant wear female armor!"));
+		return false;
+	}
+	else if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && !pc->canAllMove()) ||
+			( (pi->magic==3|| pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
+	{
+		return false;
+	}
+	return true;
 }
 
 void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
@@ -726,7 +775,7 @@ static bool ItemDroppedOnPet(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 	if((pet->hunger<6) && (pi->type==ITYPE_FOOD))//AntiChrist new hunger code for npcs
 	{
-		pc->playSFX( 0x3A+(rand()%3) );	//0x3A - 0x3C three different sounds
+		pc->playSFX( (UI16)(0x3A+(rand()%3)) );	//0x3A - 0x3C three different sounds
 
 		if(pi->poisoned)
 		{
@@ -1032,7 +1081,7 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 					{
 						if ( pi->amount > pTC->getHireFee() )
 						{
-							pi->amount=pi->amount - pTC->getHireFee();
+							pi->amount=(UI16)(pi->amount - pTC->getHireFee());
 							pTC->talk(s, TRANSLATE("Thank thee kindly, but this is more than i need for the day."),0);
 							Sndbounce5(s);
 							if (ps->isDragging())
@@ -1048,7 +1097,7 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 							0, 
 							0, 
 							0, 
-							MY_CLOCKS_PER_SEC*secondsperuominute*60*24 ); // call callback every uo day
+							(UI16)(MY_CLOCKS_PER_SEC*secondsperuominute*60*24 )); // call callback every uo day
 						return true;
 					}
 				}

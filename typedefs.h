@@ -384,8 +384,8 @@ struct title_st
 \since 0.82a
 */
 struct Location{
-	UI32			x, y;
-	SI32		z, dispz;		// dispz is used for the char location
+	UI16			x, y;
+	SI08		z, dispz;		// dispz is used for the char location
 };
 
 

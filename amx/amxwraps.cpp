@@ -45,6 +45,8 @@
 #include "gmpages.h"
 #include "house.h"
 #include "msgboard.h"
+#include "layer.h"
+#include "dragdrop.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -3709,8 +3711,77 @@ NATIVE(_chr_equip)
     VALIDATEPCR(pc, INVALID);
     P_ITEM pi = pointers::findItemBySerial(params[2]);
     VALIDATEPIR(pi, INVALID);
+	int drop[2]= {-1, -1};	// list of items to drop, there no reason for it to be larger
+	int curindex= 0;
+	if ( ! checkWearable(pc, pi) )
+		return INVALID;
+	tile_st item;
+	data::seekTile( pi->getId(), item );
 
-    return pc->Equip(pi);
+	NxwItemWrapper wea;
+	wea.fillItemWeared( pc, true, true, true );
+	for( wea.rewind(); !wea.isEmpty(); wea++ )
+	{
+		P_ITEM pj=wea.getItem();
+		if(!ISVALIDPI(pj))
+			continue;
+		if ((item.quality == LAYER_1HANDWEAPON) || (item.quality == LAYER_2HANDWEAPON))// weapons
+		{
+			if (pi->itmhand == 2) // two handed weapons or shield
+			{
+				if (pj->itmhand == 2)
+					drop[curindex++]= DEREF_P_ITEM(pj);
+				if ( (pj->itmhand == 1) || (pj->itmhand == 3) )
+					drop[curindex++]= DEREF_P_ITEM(pj);
+			}
+			if (pi->itmhand == 3)
+			{
+				if ((pj->itmhand == 2) || pj->itmhand == 3)
+					drop[curindex++]= DEREF_P_ITEM(pj);
+			}
+			if ((pi->itmhand == 1) && ((pj->itmhand == 2) || (pj->itmhand == 1)))
+				drop[curindex++]= DEREF_P_ITEM(pj);
+		}
+		else	// not a weapon
+		{
+			if (pj->layer == item.quality)
+				drop[curindex++]= DEREF_P_ITEM(pj);
+		}
+	}
+
+	if (ServerScp::g_nUnequipOnReequip)
+	{
+		if (drop[0] > -1)	// there is at least one item to drop
+		{
+			for (int i= 0; i< 2; i++)
+			{
+				if (drop[i] > -1)
+
+				{
+
+					P_ITEM p_drop=MAKE_ITEM_REF(drop[i]);
+
+					if(ISVALIDPI(p_drop))
+						pc->UnEquip( p_drop );
+
+				}
+			}
+		}
+		if ( pi->getSound() == INVALID )
+			pc->playSFX( itemsfx(pi->getId()) );
+		return pc->Equip( pi );
+	}
+	else
+	{
+		if (drop[0] == -1)
+		{
+			if ( pi->getSound() == INVALID )
+				pc->playSFX( itemsfx(pi->getId()) );
+			return pc->Equip( pi );
+		}
+	}
+
+    return INVALID;
 }
 
 

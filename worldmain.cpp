@@ -43,6 +43,7 @@
 #include "utils.h"
 #include "nox-wizard.h"
 #include "house.h"
+#include "race.h"
 
 #ifdef _WIN32
 	using namespace std;
@@ -417,9 +418,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "FZ1"))			{ pc->fz1=(signed char)str2num(script2);}
 			else if (!strcmp(script1, "FX2"))			{ pc->fx2=str2num(script2);}
 			else if (!strcmp(script1, "FY2"))			{ pc->fy2=str2num(script2);}
-			else if (!strcmp(script1, "FOODX"))			{pc->foodloc.x=str2num(script2);}
-			else if (!strcmp(script1, "FOODY"))			{pc->foodloc.y=str2num(script2);}
-			else if (!strcmp(script1, "FOODZ"))			{pc->foodloc.z=str2num(script2);}
+			else if (!strcmp(script1, "FOODX"))			{pc->foodloc.x=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "FOODY"))			{pc->foodloc.y=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "FOODZ"))			{pc->foodloc.z=(SI08)str2num(script2);}
 			else if (!strcmp( script1, "FOLLOWSPEED" ) ){ pc->npcFollowSpeed = (float)atof( script2 ); }
 
 
@@ -465,9 +466,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 			else if (!strcmp(script1, "HIDDEN"))			{ pc->hidden=(unsigned char)str2num(script2);}
 			else if (!strcmp(script1, "HUNGER"))			{ pc->hunger=str2num(script2);}
 			else if (!strcmp(script1, "HOLDGOLD"))		{ pc->holdg=str2num(script2);}
-			else if (!strcmp(script1, "HOMEX"))			{ pc->homeloc.x=str2num(script2);}
-			else if (!strcmp(script1, "HOMEY"))			{ pc->homeloc.y=str2num(script2);}
-			else if (!strcmp(script1, "HOMEZ"))			{ pc->homeloc.z=str2num(script2);}
+			else if (!strcmp(script1, "HOMEX"))			{ pc->homeloc.x=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "HOMEY"))			{ pc->homeloc.y=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "HOMEZ"))			{ pc->homeloc.z=(SI08)str2num(script2);}
 			else if (!strcmp(script1, "HIRE"))			{ pc->setHireFee(str2num(script2));}
 		break;
 
@@ -658,9 +659,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'W':
 		case 'w':
 			if (!strcmp(script1, "WAR"))					{ pc->war=(char)str2num(script2);}
-			else if (!strcmp(script1, "WORKX"))			{ pc->workloc.x=str2num(script2);}
-			else if (!strcmp(script1, "WORKY"))			{ pc->workloc.y=str2num(script2);}
-			else if (!strcmp(script1, "WORKZ"))			{ pc->workloc.z=str2num(script2);}
+			else if (!strcmp(script1, "WORKX"))			{ pc->workloc.x=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "WORKY"))			{ pc->workloc.y=(UI16)str2num(script2);}
+			else if (!strcmp(script1, "WORKZ"))			{ pc->workloc.z=(SI08)str2num(script2);}
 		break;
 
 		case 'Y':
@@ -737,7 +738,23 @@ void CWorldMain::loadChar() // Load a character from WSC
 	}
 
 	setcharflag2(pc);//AntiChrist
-
+// Set gender variable according to race system or normal system 
+	if ( Race::isRaceSystemActive() )
+	{
+		if ( pc->getRace() > 0 )
+		{
+		// Lookup gender here, but this is not possible with current code	
+		}
+	}
+	else
+	{
+		if ( pc->getId() == BODY_MALE || pc->getId() == BODY_DEADMALE )
+			pc->setGender(GENDER_MALE);
+		else if ( pc->getId() == BODY_FEMALE || pc->getId() == BODY_DEADFEMALE )
+			pc->setGender(GENDER_FEMALE);
+		else
+			pc->setGender(GENDER_NEUTRAL);
+	}
 	amxVS.moveVariable( INVALID, pc->getSerial32() );
 
 }
@@ -1067,6 +1084,8 @@ void loaditem()
 				pi->smelt=str2num(script2);
 			else if (!(strcmp(script1, "SECUREIT")))
 				pi->secureIt=str2num(script2);
+			else if (!(strcmp(script1, "SOUNDFX")))
+				pi->itemSoundEffect=(UI16) str2num(script2);
 			else if (!(strcmp(script1, "ST")))
 				pi->st=str2num(script2);
 			else if (!(strcmp(script1, "ST2")))
@@ -3007,6 +3026,8 @@ void CWorldMain::SaveItem( P_ITEM pi )
 			fprintf(iWsc, "SECUREIT %i\n", pi->secureIt);
 		if (pi->smelt!=dummy.smelt)
 			fprintf(iWsc, "SMELT %i\n", pi->smelt);
+		if (pi->itemSoundEffect!=dummy.itemSoundEffect)
+			fprintf(iWsc, "SOUNDFX %i\n", pi->itemSoundEffect);
 		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 		if (!pi->vendorDescription.empty())
 			fprintf(iWsc, "DESC %s\n", pi->vendorDescription.c_str() );
@@ -3092,13 +3113,13 @@ void CWorldMain::loadjailed()
 			case 'O':
 			case 'o':
 				if (!(strcmp(script1, "OLDX")))
-					j.oldpos.x=str2num(script2);
+					j.oldpos.x=(UI16)str2num(script2);
 				else if(!(strcmp(script1, "OLDY")))
-					j.oldpos.y=str2num(script2);
+					j.oldpos.y=(UI16)str2num(script2);
 				else if(!(strcmp(script1, "OLDZ")))
-					j.oldpos.z=str2num(script2);
+					j.oldpos.z=(SI08)str2num(script2);
 				else if(!(strcmp(script1, "OLDDISPZ")))
-					j.oldpos.dispz=str2num(script2);
+					j.oldpos.dispz=(SI08)str2num(script2);
 				break;
 			case 'W':
 			case 'w':

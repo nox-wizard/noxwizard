@@ -54,12 +54,6 @@ enum DelType
 	DELTYPE_GMREMOVE
 };
 
-typedef struct 
-{
-	UI16 openfx;
-	UI16 closefx;
-} soundFX;
-
 /*!
 \brief Item class
 */
@@ -410,7 +404,7 @@ public:
 //	SI08		glow_effect;
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
-	soundFX		itemSoundEffect;
+	UI16		itemSoundEffect;
 	void		explode(NXWSOCKET  s);
 
 
@@ -422,14 +416,10 @@ private:
 	TIMERVAL	decaytime;
 
 public:
-	inline const UI16 getOpeningSound() const
-	{ return itemSoundEffect.openfx; }
-	inline const UI16 getClosingSound() const
-	{ return itemSoundEffect.closefx; }
-	inline		void setOpeningSound(UI16 newSound) 
-	{ itemSoundEffect.openfx = newSound; }
-	inline		void setClosingSound(UI16 newSound) 
-	{ itemSoundEffect.closefx = newSound; }
+	inline const UI16 getSound() const
+	{ return itemSoundEffect; }
+	inline		void setSound(UI16 newSound) 
+	{ itemSoundEffect = newSound; }
 
 	LOGICAL		doDecay();
 

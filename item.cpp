@@ -302,7 +302,7 @@ namespace item
 					break;
 				case 'G':
 					if ( lha == "GENDER" )
-						pi->setGender((SI08)str2num(rha)); // Added by Magius(CHE)
+						pi->setGender((SI08)str2num(rha)); // Added by Wintermute
 					else if ( lha == "GOOD" )
 						pi->good = str2num(rha); // Added by Magius(CHE)
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
@@ -849,8 +849,7 @@ namespace item
 						break;
 					case 'C':
 					case 'c':
-						if (script1=="CLOSEFX") pi->setClosingSound((UI16) str2num(script2));
-						else if ( script1=="CREATOR") pi->creator = script2; // by Magius(CHE)
+						if ( script1=="CREATOR") pi->creator = script2; // by Magius(CHE)
 						else if (script1=="COLOR")
 						{
 							tmp=hex2num(script2);
@@ -935,7 +934,6 @@ namespace item
 					case 'O':
 					case 'o':
 						if (script1=="OFFSPELL") pi->offspell=str2num(script2);
-						else if (script1=="OPENFX") pi->setOpeningSound((UI16) str2num(script2));
 					break;
 
 					case 'P':
@@ -952,7 +950,8 @@ namespace item
 
 					case 'S':
 					case 's':
-						if (script1=="SPD") pi->spd=str2num(script2);
+						if (script1=="SOUNDFX") pi->setSound((UI16) str2num(script2));
+						else if (script1=="SPD") pi->spd=str2num(script2);
 						else if ( script1=="SK_MADE") pi->madewith=str2num(script2); // by Magius(CHE)
 						else if ( script1=="STR") pi->st=str2num(script2);
 						else if ( script1=="STRADD") pi->st2=str2num(script2);

@@ -53,21 +53,21 @@ void read_in_teleport()
 
 			token = strtok( text, seps );
 
-			dummy.origem.x = atoi(token);
+			dummy.origem.x = (UI16)atoi(token);
 			token = strtok( NULL, seps );
-			dummy.origem.y = atoi(token);
+			dummy.origem.y = (UI16)atoi(token);
 			token = strtok( NULL, seps );
 			if (token[0] == 'A')
 				dummy.origem.z = 127/*999*/;
 			else
-				dummy.origem.z = atoi(token);
+				dummy.origem.z = (SI08) atoi(token);
 
 			token = strtok( NULL, seps );
-			dummy.destination.x = atoi(token);
+			dummy.destination.x = (UI16)atoi(token);
 			token = strtok(NULL, seps );
-			dummy.destination.y = atoi(token);
+			dummy.destination.y = (UI16)atoi(token);
 			token = strtok(NULL, seps);
-			dummy.destination.z = atoi(token);
+			dummy.destination.z = (SI08)atoi(token);
 
 			tele_locations.insert(pair<int, tele_locations_st>(dummy.origem.x, dummy));
 

@@ -212,7 +212,7 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir)//Turn an item that was o
 	VALIDATEPI(p_b);
 	VALIDATEPI(pi);
 
-	int dx, dy;
+	UI16 dx, dy;
 
 	Location bpos	= p_b->getPosition();
 	Location itmpos = { bpos.x, bpos.y, pi->getPosition().z, pi->getPosition().dispz };
@@ -247,7 +247,7 @@ void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir)//Turn an item that was o
 	VALIDATEPI(p_b);
 	VALIDATEPC(pc);
 
-	int dx, dy;
+	UI16 dx, dy;
 	Location bpos= p_b->getPosition();
 	Location charpos= pc->getPosition();
 	dx= charpos.x - bpos.x;
@@ -444,7 +444,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 void cBoat::TurnShip( UI08 size, SI32 dir, P_ITEM pPort, P_ITEM pStarboard, P_ITEM pTiller, P_ITEM pHold )
 {
 	Location itmpos;
-	signed short int *pShipOffsets;
+	SI16 *pShipOffsets;
 
 #ifdef SPAR_I_LOCATION_MAP
 	switch( size )

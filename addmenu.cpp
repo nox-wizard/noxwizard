@@ -336,7 +336,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 
 			UI16 matToDel = (unsigned short)raw.number;
 			if( failed )
-				matToDel = ( matToDel/2>0 )? (unsigned short)(matToDel/2) : 1;
+				matToDel = ( matToDel/2>0 )? (unsigned short)(matToDel/2) : (unsigned short)1;
 
 	        pc->delItems( (short)raw.id, matToDel, (short)raw.color );
 		}
@@ -436,8 +436,8 @@ void Skills::MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second 
 {
 
 	Skills::MakeMenu( 
-		pc, m, skill, ISVALIDPI(first)? (unsigned short)first->getId() : 0, ISVALIDPI(first)? (unsigned short)first->getColor() : 0,
-		ISVALIDPI(second)? (unsigned short)second->getId() : 0, ISVALIDPI(second)? (unsigned short)second->getColor() : 0 
+		pc, m, skill, ISVALIDPI(first)? (unsigned short)first->getId() : (unsigned short)0, ISVALIDPI(first)? (unsigned short)first->getColor() : (unsigned short)0,
+		ISVALIDPI(second)? (unsigned short)second->getId() : (unsigned short)0, ISVALIDPI(second)? (unsigned short)second->getColor() : (unsigned short)0 
 	);
 	
 }
