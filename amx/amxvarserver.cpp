@@ -129,7 +129,7 @@ SI32 amxStringVariable::getSize()
 {
 	return value.size();
 }
-SI32 amxIntegerVariable::getSize( const SI32 index )
+SI32 amxStringVariable::getSize( const SI32 index )
 {
 	return value.size();
 }
