@@ -3304,6 +3304,18 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 
 	// AntiChrist -- remove BONUS STATS given by equipped special items
 	modifyStrength( pi->st2, false );
+	if ( dx + pi->dx2  < 0 )
+	{
+		sysmsg(TRANSLATE("You are not dexterious enough to equip that."));
+		return 1;
+	}
+
+	if ( in + pi->in2 < 0 )
+	{
+		sysmsg(TRANSLATE("You are not intelligent enough to equip that."));
+		return 1;
+	}
+	
 	dx += pi->dx2;
 	in += pi->in2;
 
