@@ -22,6 +22,12 @@
 #include "nxw_utils.h"
 #include "srvparms.h"
 
+#ifdef _MSC_VER
+	#define GETBYTE(x) 	static_cast<SI08>(x)
+#else
+	#define GETBYTE(x) 	x
+#endif
+
 MULFile::MULFile(char *fileName, char *mode)
 {
   char  localMode[16];
@@ -101,7 +107,7 @@ SI08 MULFile::wpgetch()
 		refill();
 	
 	if (bSize != 0)
-		return ioBuff[bIndex++];
+		return GETBYTE(ioBuff[bIndex++]);
 	else 
 		return -1;
 }
