@@ -2005,6 +2005,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	// Process speech which should not be send/echoed to others
 	//
+	if( magic::checkMagicalSpeech( pc, speech.c_str() ) ) //Luxor
+		return;
 	if( pricePlayerVendorItem( pc, socket, speech ) )
 		return;
 

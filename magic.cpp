@@ -43,6 +43,27 @@ static const char* g_szSpellName[] = {
 };
 
 g_Spell g_Spells[MAX_SPELLS];
+std::map< std::string, SpellId > speechMap;
+
+/*!
+\author Luxor
+*/
+LOGICAL checkMagicalSpeech( P_CHAR pc, const char* speech )
+{
+	VALIDATEPCR( pc, false );
+	NXWCLIENT client = pc->getClient();
+	if ( client == NULL )
+		return false;
+	char *upSpeech;
+	strcpy( upSpeech, speech );
+	strupr( upSpeech );
+	std::map< std::string, SpellId >::iterator it( speechMap.find( upSpeech ) );
+	if ( it == speechMap.end() )
+		return false;
+	SpellId spell = it->second;
+	beginCasting( spell, client, CASTINGTYPE_SPELL );
+	return true;
+}
 
 ///////////////////////////////////////////////////////////////////
 // Function name	 : loadSpellsFromScript
@@ -81,7 +102,10 @@ void loadSpellsFromScript()
 			else if (!strcmp("ATTACKSPELL", script1))g_Spells[curspell].attackSpell = true;
 			else if (!strcmp("ALWAYSFLAG", script1)) g_Spells[curspell].alwaysflag = str2num(script2);
 			else if (!strcmp("AREASIZE", script1))	g_Spells[curspell].areasize = str2num(script2);
-			else if (!strcmp("MANTRA", script1)) 	g_Spells[curspell].mantra += script2;
+			else if (!strcmp("MANTRA", script1)) 	{ g_Spells[curspell].mantra += script2;
+				//Luxor: speech cast
+				speechMap.insert( pair< std::string, SpellId >( string( strupr( script2 ) ), static_cast<SpellId>(curspell) ) );
+			}
 			else if (!strcmp("ACTION", script1)) 	g_Spells[curspell].action = hex2num(script2);
 			else if (!strcmp("DELAY", script1))		g_Spells[curspell].delay = str2num(script2);
 			else if (!strcmp("ASH", script1))		g_Spells[curspell].reagents.ash = str2num(script2);
