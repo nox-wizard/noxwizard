@@ -543,7 +543,7 @@ int response(NXWSOCKET  s)
 									sprintf(temp2, TRANSLATE(" Very well I, can train thee up to the level of %i percent for %i gold. Pay for less and I shall teach thee less."),perc,delta);
 									strcat(temp, temp2);
 									pc->trainer=pc_map->getSerial32();
-									pc_map->trainingplayerin=x;
+									pc_map->trainingplayerin=(UI08)x;
 								}
 								pc_map->talk(s, temp,0);
 								return 1;

@@ -1371,17 +1371,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 				//if not on horse, treat ourselves as any other char
 			}//self
 
-			UI08 pdoll[66] = { 0x88, 0x00, 0x05, 0xA8, 0x90, 0x00, };
-
-			LongToCharPtr(target->getSerial32(), pdoll +1);
-			if (ServerScp::g_showTitle == 2 || (ServerScp::g_showTitle == 1 && target->npc))
-			{
-				completetitle = complete_title(target);
-				if ( strlen(completetitle) >= 60 )
-					completetitle[60]=0;
-				strcpy((char*)&pdoll[5], completetitle);
-			}
-			Xsend(s, pdoll, 66);
+			pc->showPaperdoll(target);
 //AoS/			Network->FlushBuffer(s);
 			return;
 		//

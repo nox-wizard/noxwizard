@@ -3338,6 +3338,29 @@ NATIVE( _chr_showMessage )
 }
 
 /*
+\brief shows the paperdoll of a player to the character
+\author Wintermute
+\since 0.82
+\param 1: show to whom
+\param 2: show whom
+\return 0 or INVALID if not valid character
+*/
+NATIVE( _chr_showPaperdoll )
+{
+	P_CHAR pc1 = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc1, INVALID);
+	P_CHAR pc2 = pointers::findCharBySerial(params[2]);
+	VALIDATEPCR(pc2, INVALID);
+
+	if (pc1->getClient() != NULL)
+	{
+		pc1->showPaperdoll(pc2);
+		return 0;
+	}
+	return INVALID;
+}
+
+/*
 \brief get distance from two character
 \author Luxor
 \since 0.82
@@ -7244,6 +7267,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_applyDamage", _chr_applyDamage },
  { "chr_setRandomName", _chr_setRandomName},
  { "chr_showMessage", _chr_showMessage },
+ { "chr_showPaperdoll", _chr_showPaperdoll },
  { "chr_setCreationDay", _chr_setCreationDay },
  { "chr_getCreationDay", _chr_getCreationDay },
  { "chr_morph", _chr_morph },

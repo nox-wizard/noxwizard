@@ -1074,6 +1074,12 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 */
 void cItem::Delete()
 {
+	// call unequip before an item gets deleted, but don't allow bypassing it
+	if (amxevents[EVENT_IONUNEQUIP] != NULL)
+	{
+		amxevents[EVENT_IONUNEQUIP]->Call(getSerial32(), getSerial32());
+	}
+
 	archive::deleteItem(this);
 }
 

@@ -7,7 +7,7 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
+#include "globals.h"
 #include "nxwcommn.h"
 #include "itemid.h"
 #include "sregions.h"
@@ -44,6 +44,7 @@
 #include "targeting.h"
 #include "cmds.h"
 #include "spawn.h"
+#include "titles.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -3523,13 +3524,11 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	g_bByPass= false;
 
 	if (pi->amxevents[EVENT_IONUNEQUIP] != NULL)
+	{
 		pi->amxevents[EVENT_IONUNEQUIP]->Call(pi->getSerial32(), this->getSerial32());
-	/*
-	pi->runAmxEvent( EVENT_IONUNEQUIP, pi->getSerial32(), s );
-	if (g_bByPass)
-		return 1;
-	*/
-
+		if (g_bByPass)
+			return 1;
+	}
 	// AntiChrist -- remove BONUS STATS given by equipped special items
 	modifyStrength(-pi->st2, false);
 	dx -= pi->dx2;
@@ -5103,4 +5102,19 @@ void cChar::modifyFame( SI32 value )
 const LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
 {
 	return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd);
+}
+
+void cChar::showPaperdoll(P_CHAR viewer)
+{
+	UI08 pdoll[66] = { 0x88, 0x00, 0x05, 0xA8, 0x90, 0x00, };
+
+	LongToCharPtr(viewer->getSerial32(), pdoll +1);
+	if (ServerScp::g_showTitle == 2 || (ServerScp::g_showTitle == 1 && viewer->npc))
+	{
+		completetitle = complete_title(viewer);
+		if ( strlen(completetitle) >= 60 )
+			completetitle[60]=0;
+		strcpy((char*)&pdoll[5], completetitle);
+	}
+	Xsend(this->getSocket(), pdoll, 66);
 }

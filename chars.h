@@ -1183,6 +1183,7 @@ public:
 		void			showContainer( P_ITEM pCont );
 		P_ITEM 			getBackpack();
 		LOGICAL			isInBackpack( P_ITEM pi );
+		void			showPaperdoll(P_CHAR viewer);
 
 		//! Show Backpack to player
 		inline void		showBackpack()
