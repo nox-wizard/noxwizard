@@ -1838,7 +1838,7 @@ public:
 
 //	for everty vector item
 	eUI16 len; //!< text lenth for every unicode string	
-	std::vector< cUnicodeString >* texts; //!< text 
+	std::vector< cUnicodeString >* texts; //!< text ( every string is NOT null terminated )
 //end
 
 	cPacketMenu();

@@ -443,7 +443,9 @@ SEND( Menu ) {
 	for( ; itu!=endu; itu++ ) {
 		len=itu->length();
 		Xsend( s, (char*)&len, sizeof( len ) );
-		Xsend( s, itu->s.begin(), itu->s.end() );
+		std::vector< UI08 >::iterator bef_term= itu->s.end();
+		bef_term--; bef_term--;
+		Xsend( s, itu->s.begin(), bef_term ); //not send null terminator
 	}
 
 }
