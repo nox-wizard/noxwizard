@@ -3984,7 +3984,7 @@ void cChar::drink(P_ITEM pi)
 */
 bool cChar::isGuilded()
 {
-	return Guildz.find( getGuild() );
+	return ISVALIDGUILD( getGuild() );
 }
 
 /*!
