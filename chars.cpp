@@ -4098,9 +4098,9 @@ void cChar::generic_heartbeat()
 		if(SrvParms->armoraffectmana)
 		{
 			if (med)
-				manarate += calcDef(0) - UI32( skill[MEDITATION]/222.2 );
+				manarate += UI32( calcDef(0) / 10.0 ) - UI32( skill[MEDITATION]/222.2 );
 			else
-				manarate += calcDef(0)*2;
+				manarate += UI32( calcDef(0) / 5.0 );
 		}
 		else
 		{
