@@ -297,9 +297,9 @@ void Skills::Mine(NXWSOCKET s)
 	if (pc->isMounting())
 		pc->playAction(0x1A);
 	else
-		pc->playAction(0x0b);
+		pc->playAction(0x0B);
 
-	soundeffect(s,0x0125);
+	pc->playSFX(0x0125);
 
 	if(!pc->checkSkill(MINING, 0, 1000))
 	{

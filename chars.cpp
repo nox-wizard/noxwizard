@@ -3108,7 +3108,7 @@ void cChar::checkEquipement()
 				strcpy(temp2,pi->getCurrentNameC());
 
 			if( pi->st > getStrength()) sysmsg(TRANSLATE("You are not strong enough to keep %s equipped!"), temp2);
-			itemsfx(getSocket(), pi->id());
+			playSFX( itemsfx(pi->id()) );
 
 			//Subtract stats bonus and poison
 			modifyStrength(-pi->st2,false);

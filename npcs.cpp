@@ -281,7 +281,7 @@ void SpawnGuard(P_CHAR pc, P_CHAR pc_i, int x, int y, signed char z)
 	{
 		t=RandomNum(1000,1001);
 		t=region[pc_i->region].guardnum[(rand()%10)+1];
-		P_CHAR pc_c=npcs::AddNPCxyz(calcSocketFromChar(DEREF_P_CHAR(pc)), t, x, y, z);
+		P_CHAR pc_c = npcs::AddNPCxyz(pc->getSocket(), t, x, y, z);
 
 		if (ISVALIDPC(pc_c))
 		{
@@ -294,7 +294,7 @@ void SpawnGuard(P_CHAR pc, P_CHAR pc_i, int x, int y, signed char z)
 		  pc_c->setNpcMoveTime();
 		  pc_c->summontimer=(getclock()+(MY_CLOCKS_PER_SEC*25));
 
-		  pc_c->playSFX( 0x01FE);	//Tauriel 1-9-99 changed to stop crashing used to call soundeffect (expeted socket)
+		  pc_c->playSFX(0x01FE);
 		  staticeffect(DEREF_P_CHAR(pc_c), 0x37, 0x2A, 0x09, 0x06);
 
 		  pc_c->teleport();

@@ -263,7 +263,6 @@ void Skills::StealingTarget(NXWCLIENT ps)
 */
 void Skills::PickPocketTarget(NXWCLIENT ps)
 {
-
 	if( ps == 0 ) return;
 	P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
@@ -274,7 +273,7 @@ void Skills::PickPocketTarget(NXWCLIENT ps)
 	{
 		pc_currchar->checkSkill( STEALING, 0, 1000);
 		// check their skill
-		soundeffect(s, 0x0249);
+		pc_currchar->playSFX(0x0249);
 		// rustling sound..dont know if right but it works :)
 	}
 	else

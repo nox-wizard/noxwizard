@@ -1160,25 +1160,27 @@ static void OwnerTarget(NXWCLIENT ps, P_ITEM pi)
 
 void cTargets::DvatTarget(NXWSOCKET s)
 {
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-    if (pi && pi->dye==1)//if dyeable
-    {
-        P_CHAR pc= pi->getPackOwner();
-        if(DEREF_P_CHAR(pc)==currchar[s] || pi->isInWorld())
-        {//if on ground or currchar is owning the item - AntiChrist
-            pi->color1=addid1[s];
-            pi->color2=addid2[s];
-            pi->Refresh();
-            soundeffect(s, 0x023E); // plays the dye sound, LB
-        } else
-        {
-            sysmessage(s,TRANSLATE("That is not yours!!"));
-        }
-    }
-    else
-    {
-        sysmessage(s, TRANSLATE("You can only dye clothes with this."));
-    }
+	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);   
+	VALIDATEPC(Me); 
+    
+	P_ITEM pi=pointers::findItemBySerPtr(buffer[s] +7);
+
+	if (pi && pi->dye==1)//if dyeable
+	{
+		P_CHAR pc = pi->getPackOwner();
+
+		if( pc == Me  || pi->isInWorld())
+		{
+			pi->color1=addid1[s];
+			pi->color2=addid2[s];
+			pi->Refresh();
+			Me->playSFX(0x023E); // plays the dye sound, LB
+		} else {
+			Me->sysmsg(TRANSLATE("That is not yours!!"));
+		}
+	} else {
+		Me->sysmsg(TRANSLATE("You can only dye clothes with this."));
+	}
 }
 
 static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
@@ -2026,49 +2028,48 @@ static void CorpseTarget(const NXWCLIENT pC)
 void cTargets::SwordTarget(const NXWCLIENT pC)
 {
 	if (pC == NULL) return;
-    NXWSOCKET  s = pC->toInt();
-    if (LongFromCharPtr(buffer[s] +11) == INVALID) return;
-
-    short id = ShortFromCharPtr(buffer[s] +17);
-    if (itemById::IsTree2(id))
-    {
-        int px,py,cx,cy;
+	NXWSOCKET  s = pC->toInt();
         P_CHAR pc = pC->currChar();
-		VALIDATEPC(pc);
+	VALIDATEPC(pc);
+
+	if (LongFromCharPtr(buffer[s] +11) == INVALID) return;
+
+	short id = ShortFromCharPtr(buffer[s] +17);
+	if (itemById::IsTree2(id))
+	{
+		int px,py,cx,cy;
 		Location pcpos= pc->getPosition();
-   		//<Luxor>
-	px= ShortFromCharPtr(buffer[s] +11);
-    	py= ShortFromCharPtr(buffer[s] +13);
-    	cx= abs((int)pcpos.x - px);
-    	cy= abs((int)pcpos.y - py);
-    	if(!((cx<=5)&&(cy<=5)))
-    	{
-	        sysmessage(s,TRANSLATE("You are to far away to reach that"));
-        	return;
-    	}
-    	//</Luxor>
+   	//<Luxor>
+		px= ShortFromCharPtr(buffer[s] +11);
+		py= ShortFromCharPtr(buffer[s] +13);
+		cx= abs((int)pcpos.x - px);
+		cy= abs((int)pcpos.y - py);
+		if(!((cx<=5)&&(cy<=5)))
+		{
+			pc->sysmsg(TRANSLATE("You are to far away to reach that"));
+			return;
+		}
+	//</Luxor>
 
-	pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
-        soundeffect(s, 0x013E);
-        const P_ITEM pi=item::SpawnItem(s,1,"#",1,0x0DE1,0,0,0); //Kindling
-        VALIDATEPI(pi);
-        //item::SetPos(i, pcpos.x, pcpos.y, pcpos.z);
+		pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
+		pc->playSFX(0x013E);
+
+		const P_ITEM pi=item::SpawnItem(s,1,"#",1,0x0DE1,0,0,0); //Kindling
+		VALIDATEPI(pi);
+
 		pi->setPosition( pcpos );
-
-        mapRegions->add(pi); // lord Binary
-        pi->Refresh();
-        sysmessage(s, TRANSLATE("You hack at the tree and produce some kindling."));
-    }
-    else if(itemById::IsLog(id)) // vagrant
-    {
+		mapRegions->add(pi);
+		pi->Refresh();
+		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
+	}
+	else if(itemById::IsLog(id)) // vagrant
+	{
 		Skills::BowCraft(s);
-    }
-    else if (itemById::IsCorpse(id))
-    {
-        CorpseTarget(pC);
-    }
-    else
-        sysmessage(s,TRANSLATE("You can't think of a way to use your blade on that."));
+	} else if(itemById::IsCorpse(id))
+	{
+		CorpseTarget(pC);
+	} else
+		pc->sysmsg(TRANSLATE("You can't think of a way to use your blade on that."));
 }
 
 void cTargets::NpcTarget(NXWSOCKET s)

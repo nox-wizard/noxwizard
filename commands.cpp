@@ -619,6 +619,9 @@ namespace Commands
 	{
 		UI16 color, body;
 
+		P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(Me);
+
 		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
 		if(ISVALIDPI(pi))
 		{
@@ -646,9 +649,9 @@ namespace Commands
 				pi->color2 = color % 256;
 			}
 
-			pi->Refresh();//AntiChrist
+			pi->Refresh();
 
-			soundeffect( s, 0x023E ); // plays the dye sound, LB
+			Me->playSFX(0x023E);
 			return;
 		}
 
@@ -656,9 +659,6 @@ namespace Commands
 		if(ISVALIDPC(pc))
 		{
 			color = ShortFromCharPtr(buffer[s] +7);
-
-			P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
-			VALIDATEPC(Me);
 
 			if( !Me->IsGM() ) return; // Only gms dye characters
 
@@ -674,7 +674,7 @@ namespace Commands
 				pc->setOldSkinColor(color);
 				pc->teleport( TELEFLAG_NONE );
 
-				soundeffect( s, 0x023E ); // plays the dye sound, LB
+				Me->playSFX(0x023E);
 			}
 		}
 	}

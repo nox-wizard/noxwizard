@@ -124,7 +124,7 @@ void buyaction(int s)
 				    sprintf(temp, TRANSLATE("Here you are, %s.  That will be %d gold coin%s.  I thank thee for thy business."),
 					pc->getCurrentNameC(), goldtotal, (goldtotal==1) ? "" : "s");
 				}
-			    goldsfx(s, goldtotal);	// Dupois, SFX for gold movement. Added Oct 08, 1998
+			    pc->playSFX( goldsfx(goldtotal) );
 			}
 			npc->talkAll(temp,0);
 			npc->playAction(0x20);	// bow (Duke, 17/03/2001)
@@ -135,12 +135,11 @@ void buyaction(int s)
 				if( useBank )
 				{
 					P_ITEM bank= pc->GetBankBox();
-					bank->DeleteAmount(goldtotal, 0x0EED, 0);
-					//DeleBankItem( cc, 0x0EED, 0, goldtotal );
+					bank->DeleteAmount(goldtotal, ITEMID_GOLD, 0);
 				}
 				else
 				{ 
-					pack->DeleteAmount( goldtotal, 0x0EED);
+					pack->DeleteAmount( goldtotal, ITEMID_GOLD);
 				}
 			}
 
@@ -263,9 +262,9 @@ void sellaction(NXWSOCKET s)
 		{
 			P_ITEM pi=si.getItem();
 			if(ISVALIDPI(pi)) {
-				if (pi->layer==0x1A) npa=pi;	// Buy Restock container
-				if (pi->layer==0x1B) npb=pi;	// Buy no restock container
-				if (pi->layer==0x1C) npc=pi;	// Sell container
+				if (pi->layer == LAYER_TRADE_RESTOCK) npa=pi;	// Buy Restock container
+				if (pi->layer == LAYER_TRADE_NORESTOCK) npb=pi;	// Buy no restock container
+				if (pi->layer == LAYER_TRADE_BOUGHT) npc=pi;	// Sell container
 			}
 		}
 
@@ -351,8 +350,8 @@ void sellaction(NXWSOCKET s)
 				}
 			}
 		}
-		addgold(s, totgold);
-		goldsfx(s, totgold);	// Dupois, SFX for gold movement	// Added Oct 08, 1998
+		addgold(pc->getSocket(), totgold);
+		pc->playSFX( goldsfx(totgold) );
 	}
 
 	char clearmsg[9];

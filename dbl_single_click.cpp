@@ -88,7 +88,7 @@ void doubleclick(NXWCLIENT ps)
 	NXWSOCKET s = ps->toInt();
 
 	// the 0x80 bit in the first byte is used later for "keyboard" and should be ignored
-	SERIAL serial = calcserial(buffer[s][1]&0x7F, buffer[s][2], buffer[s][3], buffer[s][4]);
+	SERIAL serial = LongFromCharPtr(buffer[s] +1) & 0x7FFFFFFF;
 
 	if (isCharSerial(serial))
 	{
@@ -208,14 +208,14 @@ void doubleclick(NXWCLIENT ps)
 						}
 					}
 				}
-				itemsfx(s, pi->id());
+				pc->playSFX( itemsfx(pi->id()) );
 				pc->Equip( pi );
 			}
 			else
 			{
 				if (drop[0] == -1)
 				{
-					itemsfx(s, pi->id());
+					pc->playSFX( itemsfx(pi->id()) );
 					pc->Equip( pi );
 				}
 			}
@@ -918,11 +918,11 @@ void doubleclick(NXWCLIENT ps)
   					//cx=abs(chars[currchar[s]].x-px);
   					//cy=abs(chars[currchar[s]].y-py);
   					//if(!((cx<=5)&&(cy<=5)))
-  					if ( !item_inRange( pc, pi, 3 ) )
-  					{
-						pc->sysmsg(TRANSLATE("You are to far away to reach that"));
-						return;
-  					}
+  			if ( !item_inRange( pc, pi, 3 ) )
+  			{
+				pc->sysmsg(TRANSLATE("You are to far away to reach that"));
+				return;
+  			}
   					//</Luxor>
 			if (pc->checkSkill(  CAMPING, 0, 500)) // Morrolan TODO: insert logout code for campfires here
 			{
@@ -1080,7 +1080,7 @@ void doubleclick(NXWCLIENT ps)
 				pc->playAction(0x0D);
 			else
 				pc->playAction(0x1D);
-			soundeffect(s, 0x013E);
+			pc->playSFX(0x013E);
 			itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
 			if (ISVALIDPI(itm)) {
 				itm->setCont(pc->getBackpack());	//Luxor

@@ -108,18 +108,21 @@ void SndShopgumpopen(NXWSOCKET  s, SERIAL serial)	//it's really necessary ? It i
 
 /*!
 \brief play sound
-\param s socket
 \param goldtotal ?
+\return soundsfx to play
 */
-void goldsfx(int s, int goldtotal)
+UI16 goldsfx(int goldtotal)
 {
+	UI16 sound;
+
 	if (goldtotal==1) 
-		soundeffect(s, 0x0035);
+		sound = 0x0035;
 	else if (goldtotal<6)
-		soundeffect(s, 0x0036);
+		sound = 0x0036;
 	else 
-		soundeffect(s, 0x0037);
-	return;
+		sound = 0x0037;
+
+	return sound;
 }
 
 /*!
@@ -132,31 +135,31 @@ with the proper sound function to play for a certain item as shown.
 \author Dupois Duke
 \date 09/10/1998 creation
 	  25/03/2001 new interface by duke
-\param s socket
 \param item the item
-\note I wasn't sure what the different soundeffect() func's did so I just used
-		soundeffect() and it seemed to work fairly well.
+\return soundfx for the item
 \remarks \remark Use the DEFAULT case for ranges of items (like all ingots make the same thump).
 		 \remark Sounds: 
 			\li coins dropping (all the same no matter what amount because all id's equal 0x0EED
 			\li ingot dropping (makes a big thump - used the heavy gem sound)
 			\li gems dropping (two type broke them in half to make some sound different then others)
 */
-void itemsfx(NXWSOCKET  s, short item)
+UI16 itemsfx(UI16 item)
 {
-	if( item==0x0EED )
-		goldsfx(s, 2);
+	UI16 sound = 0x0042;				// play default item move sfx // 00 48
+
+	if( item == ITEMID_GOLD )
+		sound = goldsfx(2);
 
 	else if( (item>=0x0F0F) && (item<=0x0F20) )	// Any gem stone (typically smaller)
-		soundeffect(s, 0x0032);
+		sound = 0x0032;
 
 	else if( (item>=0x0F21) && (item<=0x0F30) )	// Any gem stone (typically larger)
-		soundeffect(s, 0x0034);
+		sound = 0x0034;
 
 	else if( (item>=0x1BE3) && (item<=0x1BFA) )	// Any Ingot
-		soundeffect(s, 0x0033);
+		sound = 0x0033;
 
-	soundeffect(s, 0x0042);				// play default item move sfx // 00 48
+	return sound;
 }
 
 /*!
@@ -333,24 +336,6 @@ void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
 	VALIDATEPC(pc);
 
 	pc->playSFX(sound);
-/* ---- WRAPPER ---- 
-	Location charpos= pc->getPosition();
-
-	charpos.z = 0;
-
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc, false );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWCLIENT ps_i=sw.getClient();
-		if(ps_i==NULL) continue;
-		P_CHAR pc_i=ps_i->currChar();
-		if( ISVALIDPC(pc_i) )
-		{
-			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, charpos);
-		}
-	} */
 }
 
 void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only to me

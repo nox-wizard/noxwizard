@@ -618,7 +618,7 @@ void Skills::TreeTarget(NXWSOCKET s)
 	}
 
     pc->playAction( pc->isMounting() ? 0x1C : 0x0D );
-    soundeffect(s, 0x013E);
+    pc->playSFX(0x013E);
 
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
@@ -646,19 +646,16 @@ void Skills::TreeTarget(NXWSOCKET s)
 
 void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 {
-
     P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
 	VALIDATEPC(pc);
-
 
     int nAmount, nFame;
     char iID=0;
 
-
     pc->IncreaseKarma(-2000); // Karma loss no lower than the -2 pier
 
     pc->playAction( pc->isMounting() ? 0x1A : 0x0b );
-    soundeffect(s, 0x0125);
+    pc->playSFX(0x0125);
     if(!pc->checkSkill(MINING, 0, 800))
     {
         sysmessage(s,TRANSLATE("You sifted through the dirt and found nothing."));
@@ -667,7 +664,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 
     nFame = pc->GetFame();
     pc->playAction( pc->isMounting() ? 0x1A : 0x0b );
-    soundeffect(s, 0x0125);
+    pc->playSFX(0x0125);
     int nRandnum=rand()%13;
     switch(nRandnum)
     {
@@ -698,7 +695,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
         { // Create between 1 and 15 goldpieces and place directly in backpack
             nAmount=1+(rand()%15);
             addgold(DEREF_P_CHAR(pc),nAmount);
-            goldsfx(s,nAmount);
+            pc->playSFX( goldsfx(nAmount) );
             if (nAmount==1)
                 pc->sysmsg(TRANSLATE("You unearthed %i gold coin."), nAmount);
             else
@@ -1010,7 +1007,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
             {
                 if(item_inRange(pc,pi,3))
                 {
-                    soundeffect(s, 0x01DD);   // cooking sound
+                    pc->playSFX(0x01DD);   // cooking sound
                     if (!pc->checkSkill(COOKING, 0, 1000))
                     {
                         piRaw->ReduceAmount(1+(rand() %(piRaw->amount)));
@@ -1429,8 +1426,8 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
         if (pi->IsCloth() && pi->IsCutCloth())
         {
             amt=pi->amount;  //-Frazurbluu- changed to reflect current OSI
-            soundeffect(s, 0x0248);
-            sysmessage(s,TRANSLATE("You cut some cloth into bandages, and put it in your backpack"));
+            pc->playSFX(0x0248);
+            pc->sysmsg(TRANSLATE("You cut some cloth into bandages, and put it in your backpack"));
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"clean bandage",0,0x0E21, color,1,1);
             VALIDATEPI(pcc);
             // need to set amount and weight and pileable, note: cannot set pilable while spawning item -Fraz-
@@ -1451,7 +1448,7 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
                 amt=(pi->amount*40);//-Frazurbluu- changed to reflect current OSI
             else
                 amt=40; //Fixed by Luxor
-            soundeffect(s, 0x0248);
+            pc->playSFX(0x0248);
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"cut cloth",0,0x1766, color,1,1);
             VALIDATEPI(pcc);
 
@@ -1467,7 +1464,7 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
         if( pi->IsHide() )
         {
             amt=pi->amount;
-            soundeffect(s, 0x0248);
+            pc->playSFX(0x0248);
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"leather piece",0,0x1067, color,1,1);
             VALIDATEPI(pcc);
 

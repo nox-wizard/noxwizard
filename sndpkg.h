@@ -116,11 +116,12 @@ void endtrade(SERIAL serial);
 void tellmessage(int i, int s, char *txt);
 void gmyell(char *txt);
 
-void goldsfx(int s, int goldtotal);
+UI16 goldsfx(int goldtotal);
+UI16 itemsfx(UI16 item);
+
 void weather(int s, unsigned char bolt);
 void dosocketmidi(int s);
 void wornitems(NXWSOCKET  s, CHARACTER j);
-void itemsfx(NXWSOCKET  s, short item);
 void bgsound(int s);
 void pweather(NXWSOCKET  s);
 

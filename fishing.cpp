@@ -157,8 +157,8 @@ void cFishing::FishTarget(NXWCLIENT ps)
 
 	Location charpos= pPlayer->getPosition();
 
-	px=((buffer[s][0x0b]<<8)+(buffer[s][0x0c]%256));
-	py=((buffer[s][0x0d]<<8)+(buffer[s][0x0e]%256));
+	px = ShortFromCharPtr(buffer[s] +11);
+	py = ShortFromCharPtr(buffer[s] +13);
 	cx=abs((int)charpos.x - px);
 	cy=abs((int)charpos.y - py);
 
@@ -175,15 +175,15 @@ void cFishing::FishTarget(NXWCLIENT ps)
 	}
 	
 	pPlayer->facexy(px, py);
-	pPlayer->playAction(0x0b);
+	pPlayer->playAction(0x0B);
 	if (fishing_data.randomtime!=0)
 		pPlayer->fishingtimer=rand()%fishing_data.randomtime+fishing_data.basetime;
 	else
 		pPlayer->fishingtimer=fishing_data.basetime;
-	soundeffect(s,0x023F);
+	pPlayer->playSFX(0x023F);
 //	pPlayer->hidden=UNHIDDEN;
 	pPlayer->unHide();
-	Fish(currchar[s]);		
+	Fish(DEREF_P_CHAR(pPlayer));		
 }
 
 

@@ -355,10 +355,11 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 			pi->setOldPosition( pi->getPosition() ); // first let's save the position
 			
 			pi->oldlayer = pi->layer;	// then the layer
-
 			pi->layer = 0;
+
 			if (!pi->isInWorld())
-				soundeffect(s, 0x0057);
+				pc_currchar->playSFX(0x0057);
+
 			if (pi->amount>1)
 			{
 				SI16 amount = ShortFromCharPtr(buffer[s] +5);
@@ -408,7 +409,6 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 	wgt = (int)weights::LockeddownWeight( pi, &amt);
 	pc_currchar->weight += wgt;
 	statwindow(pc_currchar, pc_currchar);
-
 }
 
 void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
@@ -623,14 +623,14 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 						}
 					}
 				}
-				itemsfx(s, pi->id());
+				pc->playSFX( itemsfx(pi->id()) );
 				pc_currchar->Equip(pi, 1);
 			}
 			else
 			{
 				if (drop[0] == -1)
 				{
-					itemsfx(s, pi->id());
+					pc->playSFX( itemsfx(pi->id()) );
 					pc_currchar->Equip(pi, 1);
 				}
 			}
@@ -663,7 +663,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 				wornitems(j, DEREF_P_CHAR(pck));
 		}
 
-		itemsfx(s, pi->id());	// Dupois - see itemsfx() for details	// Added Oct 09, 1998
+		pc->playSFX( itemsfx(pi->id()) );
 		weights::NewCalc(pc);	// Ison 2-20-99
 		statwindow(pc_currchar,pc_currchar);
 
@@ -676,8 +676,8 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 
 		if ( pck->Equip(pi, 1) == 2)	// bypass called
 		{
-			cItem *pack= pck->getBackpack();
-			itemsfx(s, pi->id());
+			P_ITEM pack = pck->getBackpack();
+			pc->playSFX( itemsfx(pi->id()) );
 			pi->layer= 0;
 			pi->setContSerial( pack->getSerial32() );
 			sendbpitem(s, pi);
@@ -759,7 +759,7 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 			{
 				// give them the gold for bringing the villan to justice
 				addgold( s, own->questBountyReward );
-				goldsfx( s, own->questBountyReward );
+				pc->playSFX( goldsfx( own->questBountyReward ) );
 
 				// Now thank them for their hard work
 				sprintf( temp, TRANSLATE("Excellent work! You have brought us the head of %s. Here is your reward of %d gold coins."),
@@ -835,11 +835,11 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 {
 	if (ps == NULL) return false;
 	VALIDATEPIR(pi, false);
-	NXWSOCKET  s=ps->toInt();
-	CHARACTER cc=ps->currCharIdx();
-	P_CHAR pc_currchar = MAKE_CHAR_REF(cc);
-	int t=calcCharFromSer(pp->Tserial);
-	P_CHAR pc_t=MAKE_CHAR_REF(t);
+	NXWSOCKET  s = ps->toInt();
+//	CHARACTER cc = ps->currCharIdx();
+	P_CHAR pc_currchar = ps->currChar();
+//	int t=calcCharFromSer(pp->Tserial);
+	P_CHAR pc_t = pointers::findCharBySerial(pp->Tserial); //  MAKE_CHAR_REF(t);
 
 	if( pi->id() == ITEMID_GOLD )
 	{ // They gave the NPC gold
@@ -871,8 +871,8 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		updateskill(s,sk);
 
 		pc_currchar->trainer=-1;
-		pc_t->trainingplayerin='\xFF';
-		itemsfx(s, pi->id());//AntiChrist - do the gold sound
+		pc_t->trainingplayerin=0xFF;
+		pc_currchar->playSFX( itemsfx(pi->id()) );
 	}
 	else // Did not give gold
 	{
@@ -892,8 +892,8 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	if (ps == NULL) return false;
 	VALIDATEPIR(pi, false);
 	NXWSOCKET  s=ps->toInt();
-	CHARACTER cc=ps->currCharIdx();
-	P_CHAR pc = MAKE_CHAR_REF(cc);
+//	CHARACTER cc=ps->currCharIdx();
+	P_CHAR pc = ps->currChar(); // MAKE_CHAR_REF(cc);
 	Location charpos= pc->getPosition();
 
 	if (pi->id() >= 0x4000 ) // crashfix , prevents putting multi-objects ni your backback
@@ -922,7 +922,7 @@ static bool ItemDroppedOnSelf(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 
 		weights::NewCalc(pc);//AntiChrist bugfixes
 		statwindow(pc,pc);
-		itemsfx(s, pi->id());
+		pc->playSFX( itemsfx(pi->id()) );
 	}
 	return true;
 }
@@ -1226,7 +1226,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 		weights::NewCalc(pc);  // Ison 2-20-99
 		statwindow(pc,pc);
-		itemsfx(s, pi->id());	// Dupois - see itemsfx() for details// Added Oct 09, 1998
+		pc->playSFX( itemsfx(pi->id()) );
 
 		//Boats !
 		if (pc->getMultiSerial32() > 0) //How can they put an item in a multi if they aren't in one themselves Cut lag by not checking everytime something is put down
@@ -1330,7 +1330,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		{
 			if ( pItem->id() == ITEMID_GOLD )
 			{//if they're gold ok
-				goldsfx(s, 2);
+				pc->playSFX( goldsfx(2) );
 			} else
 			{//if they're not gold..bounce on ground
 				ps->sysmsg(TRANSLATE("You can only put golds in this bank box!"));
@@ -1338,7 +1338,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				pItem->setContSerial(-1);
 				pItem->MoveTo(charpos.x, charpos.y, charpos.z);
 				pItem->Refresh();
-				itemsfx(s,pItem->id());
+				pc->playSFX( itemsfx(pItem->id()) );
 				return;
 			}
 		}
@@ -1503,7 +1503,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 		pCont->AddItem(pItem,xx,yy);
 
-		itemsfx(s, pItem->id());// see itemsfx() for details - Dupois Added Oct 09, 1998
+		pc->playSFX( itemsfx(pItem->id()) );
 		statwindow(pc,pc);
 	}
 	// end of player run vendors
@@ -1513,7 +1513,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 		if (pCont->type==ITYPE_UNLOCKED_CONTAINER || pCont->type==ITYPE_NODECAY_ITEM_SPAWNER || pCont->type==ITYPE_DECAYING_ITEM_SPAWNER)
 		{
 			pCont->AddItem(pItem, pp->TxLoc, pp->TyLoc); //Luxor
-			itemsfx(s, pItem->id());
+			pc->playSFX( itemsfx(pItem->id()) );
 
 		}
 		else  // - Pileable
