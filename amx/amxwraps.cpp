@@ -1711,58 +1711,6 @@ NATIVE(_chr_CheckEquipment)
 }
 
 /*
-\brief created an item of given type in the backpack of char with given socket
-\author Xanathar
-\since ??
-\param 1: socket
-\param 2: item type
-\return created item or INVALID if not valid socket or item
-*/
-NATIVE(_createiteminbackpack)
-{
-    NXWCLIENT s = getClientFromSocket(params[1]);
-    P_ITEM pi = item::SpawnItemBackpack2(s->toInt(), params[2] , 0);
-    VALIDATEPIR(pi, INVALID);
-    return pi->getSerial32();
-}
-
-/*
-\brief Spawn given item in the bank of char with given socket
-\author Xanathar
-\since ??
-\param 1: socket
-\param 2: item
-\return Spawn item or INVALID if not valid socket or item
-*/
-NATIVE(_itm_spawnBank)
-{
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if( s==NULL ) return INVALID;
-    P_CHAR pc = s->currChar();
-    VALIDATEPCR(pc, INVALID);
-    P_ITEM pi = item::SpawnItemBank(DEREF_P_CHAR(pc), params[2]);
-    VALIDATEPIR(pi, INVALID);
-    return pi->getSerial32();
-}
-
-/*
-\brief Spawn given item in the bank of given char
-\author Xanathar
-\since ??
-\param 1: character
-\param 2: item
-\return Spawn item or INVALID if not valid char or item
-*/
-NATIVE(_chr_spawnIteminBank)
-{
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
-    P_ITEM pi = item::SpawnItemBank(DEREF_P_CHAR(pc), params[2]);
-    VALIDATEPIR(pi, INVALID);
-    return pi->getSerial32();
-}
-
-/*
 \brief Check the item for decay
 \author Xanathar
 \since 0.50
@@ -5402,7 +5350,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_setOwnSerOnly", _setOwnSerialOnly},
  { "chr_setProperty", _setCharProperty },
  { "chr_checkEquipment", _chr_CheckEquipment },
- { "chr_spawnIteminBank", _chr_spawnIteminBank },
  { "chr_unhide", _unhide},
  { "chr_calcAtt", _chr_calcAtt },
  { "chr_calcDef", _chr_calcDef },
@@ -5512,10 +5459,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "itm_setSerial", _isetSerial },
  { "itm_create", _itm_createFromScript },
  { "itm_createByDef", _itm_createByDef },
- { "itm_spawnBank", _itm_spawnBank },
  { "itm_checkDecay", _itm_checkDecay },
  { "itm_remove", _itm_remove },
- { "itm_spawnBackpack", _createiteminbackpack },
  { "itm_getEventHandler", _itm_getEventHandler },
  { "itm_setEventHandler", _itm_setEventHandler  },
  { "itm_delEventHandler", _itm_delEventHandler  },
