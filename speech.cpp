@@ -2030,14 +2030,13 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	//
 	cPacketUnicodeSpeech talk;
 	talk.obj=pc->getSerial32();
-	talk.model=DBYTE2WORD( pc->id1, pc->id2 );
+	talk.model=pc->GetBodyType();
 	talk.type= buffer[socket][3];
 	talk.color= DBYTE2WORD( buffer[socket][4], buffer[socket][5] );
 	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
-	cUnicodeString* speechUni=new cUnicodeString();
-	speechUni->copy( speech );
+	cUnicodeString* speechUni=new cUnicodeString( speech );
 
 	cUnicodeString* speechGhostUni=NULL;
 
