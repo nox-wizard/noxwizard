@@ -13,9 +13,13 @@
 #include "inlines.h"
 #include "network.h"
 
+
+SERIAL cTarget::serial_current = 0;
+
 cTarget::cTarget( bool selectLocation )
 {
 	pkg.type = selectLocation;
+	this->serial= ++serial_current;
 }
 
 cTarget::~cTarget()

@@ -623,33 +623,6 @@ NATIVE(_getCurrentSocket)
 }
 
 /*
-\brief get the targetted char
-\author Xanathar
-\since 0.10
-\return the targetted char
-*/
-NATIVE(_getCharTarget)
-{
-    P_CHAR pc = pointers::findCharBySerPtr( buffer[g_nCurrentSocket] +7);
-    VALIDATEPCR(pc, INVALID);
-    return pc->getSerial32();
-}
-
-/*
-\brief get the targetted item
-\author Xanathar
-\since 0.10
-\return the targetted item
-*/
-NATIVE(_getItemTarget)
-{
-    P_ITEM pi = pointers::findItemBySerPtr( buffer[g_nCurrentSocket] +7);
-    VALIDATEPIR(pi, INVALID);
-    return pi->getSerial32();
-}
-
-
-/*
 \brief get the current string mode used
 \author Xanathar
 \since 0.10
@@ -5157,7 +5130,7 @@ NATIVE( _chr_unStable )
 
 
 //
-// New Menu API -- still highly experimental
+// New Menu API 
 //
 
 /*!
@@ -5715,6 +5688,44 @@ NATIVE( _gui_addIcon )
 	return 1;
 }
 
+
+
+//
+// New Target API 
+//
+
+/*!
+\brief Create a new target
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\return the target serial
+*/
+NATIVE( _target_create )
+{
+
+}
+
+/*!
+\brief Send target to character
+\author Endymion
+\since 0.82
+\param 1 the menu serial
+\return true if sender, false if error
+*/
+NATIVE( _target_do )
+{
+}
+
+NATIVE( _target_getProperty )
+{
+}
+
+NATIVE( _target_getProperty )
+{
+}
+
+
 /*!
 \file
 
@@ -5762,8 +5773,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "getNXWVersion", _getNXWVersion },
  { "getNXWVersionType", _getNXWVersionType },
  { "getNXWPlatform", _getNXWPlatform },
- { "getCharTarget", _getCharTarget },
- { "getItemTarget", _getItemTarget },
  { "getCurrentSocket", _getCurrentSocket },
  { "getStringMode", _getStringMode },
  { "setStringMode", _setStringMode },
@@ -6127,6 +6136,11 @@ AMX_NATIVE_INFO nxw_API[] = {
 // race functions - Endymion
  { "race_getProperty",	_getRaceProperty },
  { "race_getGlobalProp",	_getRaceGlobalProp },
+// target functions - Endymion
+// { "target_create",	_target_create },
+// { "target_do",	_target_do },
+// { "target_getProperty", _target_getProperty },
+// { "target_setProperty", _target_getProperty },
 // Terminator :
  { NULL, NULL }
 };

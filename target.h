@@ -22,8 +22,13 @@ typedef void ( *processTarget )			( NXWCLIENT, P_TARGET );
 
 class cTarget {
 
+private:
+
+	static SERIAL serial_current;
+
 public:
 
+	SERIAL serial;
 	cPacketTargetingCursor pkg;
 	SERIAL buffer[4];
 	std::string buffer_str[4];
