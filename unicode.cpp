@@ -65,20 +65,20 @@ cUnicodeString& cUnicodeString::operator+=( wchar_t c )
 }
 
 
-template < class T >
-  void u < T >::set( T value )
+
+
+
+
+
+void eUI16::operator =( UI32 v )
 {
-	for( int i=0; i<sizeof(T); ++i ) {
-		this->byte[i]=value%256;
-		value/=256;
-	}
+	this->a=v >>  8;
+	this->b=v & 0xFF;
 }
 
-template < class T >
-  T u < T >::get()
-{
-	T v=0;
-	for( int i=sizeof(T)-1; i>0; --i )
-		v+=this->byte[i]<< (8*i);
-}
 
+void eUI32::operator =( UI32& v )
+{
+	this->a= v >>  16;
+	this->b= v & 0xFFFF;
+}

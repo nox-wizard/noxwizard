@@ -38,17 +38,42 @@ public:
 };
 
 /*
-\brief useful template
+\brief endian buster 16bit
 \author Endymion
-\note endian now is not a problem
 */
-template < class T > 
-class u{
-private: 	
-	UI08 byte[sizeof(T)];
+
+template< class T >
+class endian {
+protected:
+	T a;
+	T b;
 public:
-	void set( T value );
-	T get();
+	endian() { a=0; b=0; }
+	virtual ~endian( ) { };
 };
+
+
+class eUI16 : endian<UI08> {
+public:
+	eUI16() : endian<UI08>() { };
+	virtual ~eUI16() { };
+	void operator =( UI32 v );
+};
+
+typedef eUI16 eCOLOR;
+
+/*
+\brief endian buster 16bit
+\author Endymion
+*/
+class eUI32 : endian<eUI16> {
+public:
+	eUI32() : endian<eUI16>() { };
+	virtual ~eUI32() { };
+	void operator =( UI32& v );
+};
+
+typedef eUI32 eSERIAL;
+
 
 #endif
