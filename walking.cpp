@@ -1425,6 +1425,7 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 
 		P_ITEM pi=si.getItem();
+		UI16 di = item_dist(pc, pi);
 		if(!ISVALIDPI(pi))
 			continue;
 			if( pi->id()>=0x407C && pi->id()<=0x407E )
@@ -1437,8 +1438,10 @@ bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 				}
 
 			}
-			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
+			else if ( (di <= VISRANGE) && pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
 				senditem( ps->toInt(), pi );
+			else if ( di > VISRANGE )
+				pc->seeForLastTime(P_OBJECT(pi));
 	}
 	return true;
 }
