@@ -680,10 +680,10 @@ LOGICAL cObject::isValidAmxEvent( UI32 eventId )
 	if ( eventId < 0 )
 		return false;
 
-	if ( isCharSerial(getSerial32()) && eventId > ALLCHAREVENTS )
+	if ( isCharSerial(getSerial32()) && eventId >= ALLCHAREVENTS )
 		return false;
 
-	if ( isItemSerial(getSerial32()) && eventId > ALLITEMEVENTS )
+	if ( isItemSerial(getSerial32()) && eventId >= ALLITEMEVENTS )
 		return false;
 
 	return true;
@@ -736,15 +736,18 @@ cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2, SI32 param3, 
 
 void cObject::delAmxEvent( UI32 eventId )
 {
-	if( amxEvents )
+	if( isValidAmxEvent( eventId ) )
 	{
-		AmxEventMap::iterator it = amxEvents->find( eventId );
-		if( it != amxEvents->end() )
+		if( amxEvents )
 		{
-			// we do not delete the actual AmxEvent instance as it's part of a vital hash queue in amxcback.cpp
-			amxEvents->erase( it );
+			AmxEventMap::iterator it = amxEvents->find( eventId );
+			if( it != amxEvents->end() )
+			{
+				// we do not delete the actual AmxEvent instance as it's part of a vital hash queue in amxcback.cpp
+				amxEvents->erase( it );
+			}
+			if( amxEvents->empty() )
+				safedelete( amxEvents );
 		}
-		if( amxEvents->empty() )
-			safedelete( amxEvents );
 	}
 }
