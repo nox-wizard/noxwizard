@@ -3070,12 +3070,13 @@ void cChar::Kill()
 	//
 	if( !lootVector.empty() )
 	{
-		SI32 last = lootVector.size();
-		char lootId[32];
-		for( SI32 index = 0; index < last; ++index )
+		std::vector< UI32 >::iterator it( lootVector.begin() ), end( lootVector.end() );
+		while( it != end )
 		{
-			sprintf( lootId, "%i", lootVector[index] );
-			npcs::AddRandomLoot( pBackPack, lootId );
+			char lootItem[32];
+			numtostr( *it, lootItem );
+			npcs::AddRandomLoot( pBackPack, lootItem );
+			++it;
 		}
 		lootVector.clear();
 	}
