@@ -213,7 +213,7 @@ void npcCastSpell(P_CHAR pc_att, P_CHAR pc_def)
 
 
 	if (spherespells[sphere][spell]==0) return;
-	
+
 	if (pc_att->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		pc_att->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc_att->getSerial32(), spell, -1, sphere);
@@ -336,13 +336,13 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 	if( pc->amxevents[ EVENT_CHR_ONCHECKNPCAI ]!=NULL ) {
 
 		NxwCharWrapper sc;
-		sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false ); 
+		sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
 		SERIAL set = amxSet::create();
 		amxSet::copy( set, sc );
-			
+
 		g_bByPass = false;
 		pc->amxevents[ EVENT_CHR_ONCHECKNPCAI ]->Call( pc->getSerial32(), set, uiCurrentTime );
-		
+
 		amxSet::deleteSet( set );
 
 		if (g_bByPass==true)
@@ -357,7 +357,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 			if( pc->npcWander == WANDER_FLEE )
 				return;
-			
+
 			if( pc->shopkeeper )
 			{
 				NxwCharWrapper sc;
@@ -365,10 +365,10 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 					P_CHAR pj=sc.getChar();
 					if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
-					
+
 					if( pj->dead )
 						continue;
-					
+
 					if( pj->hidden )
 						continue;
 					// Stop talking npcs to each other
@@ -387,14 +387,14 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), 3, true, true );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
-				
+
 				if ( !ISVALIDPC(pj) || !pj->dead )
 			  		continue;
-					
+
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 			  	if ( !pj->IsInnocent() || pj->IsCriminal() || pj->IsMurderer())
 			  	{
@@ -427,7 +427,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 				return;
 			if ( pc->npcWander == WANDER_FLEE )
 				return;
-			
+
 			if (pc->baseskill[MAGERY] > 400)
 			{
 				if ( chance( 50 ) )
@@ -501,8 +501,8 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					continue;
 
 				if ( !pc->losFrom( pj ) )
-					continue;	
-					
+					continue;
+
 				if ( pc_target != NULL ) {
                                         curr_value = pc->distFrom( pj ) + pj->hp/3;
 					if ( curr_value < att_value )
@@ -524,7 +524,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), 3, true, true );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pj=sc.getChar();
 				if ( !ISVALIDPC( pj ) || !pj->dead )
@@ -556,14 +556,14 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), 3, true, true );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
 				if (!ISVALIDPC(pj)) continue;
-				
+
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
-				if ( pj->dead || !pj->IsInnocent() || pj->hidden > 0) 
+				if ( pj->dead || !pj->IsInnocent() || pj->hidden > 0)
 					continue;
 
 				switch (RandomNum(0,2))
@@ -617,9 +617,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR character=sc.getChar();
 				if ( ISVALIDPC( character ) )
 				{
@@ -657,11 +657,11 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if (!pc->tamed) return;
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), 10, true, false );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
-				
+
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
 				if( ISVALIDPC(pj) && pj->npc && pj->npcaitype==NPCAI_EVIL)
 				{
@@ -676,9 +676,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if (pc->war) return;
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), 10, true, false );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
 				if (!ISVALIDPC(pj)) continue;
 				if (pj->getSerial32() == pc->getSerial32()) continue; //Luxor
@@ -694,9 +694,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if (!pc->tamed) return;
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
 				if (!(ISVALIDPC(pj))) continue;
 				if (pj->npc || pj->dead || pj->guarded == false) continue;
@@ -720,9 +720,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if (pc->attackerserial == INVALID) {
 				NxwCharWrapper sc;
 				sc.fillCharsNearXYZ( pc->getPosition(), 10, true, false );
-			
+
 				for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 					P_CHAR pj=sc.getChar();
 					if ( !pj->IsInvul() && !pj->dead && pj->hidden == UNHIDDEN && pj->npcaitype != NPCAI_MADNESS) {
 						pc->fight(pj);
@@ -738,9 +738,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 		{
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
-			
+
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
 				if (!(ISVALIDPC(pj))) continue;
 				if (pj->dead ||
@@ -792,15 +792,15 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					pc->talkAll("An Nox", 1);
 					NPC_CASTSPELL(magic::SPELL_CURE, pc);
 				}
-				if (pj->priv2 & CHRPRIV2_DISPELLABLE) {
+				if ( pj->isDispellable() ) {
 					pc->talkAll("An Ort", 1);
 					NPC_CASTSPELL(magic::SPELL_DISPEL, pj);
 				}
 
-				if (pj->hidden == UNHIDDEN) npcattacktarget(pc, pj);
+				if ( !pj->IsHidden() ) npcattacktarget(pc, pj);
 				return;
 			}
-		} 
+		}
 		break;
 		default:
 			WarnOut("cCharStuff::CheckAI-> Error npc %i ( %08x ) has invalid AI type %i\n", pc->getSerial32(), pc->getSerial32(), pc->npcaitype);

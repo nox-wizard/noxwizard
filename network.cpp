@@ -2045,7 +2045,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 							if (pc_currchar->dead) {
 								pc_currchar->sysmsg(TRANSLATE("Ethereal souls really can't cast spells"));
 							} else {
-								if (pc_currchar->priv2&CHRPRIV2_FROZEN) {
+								if (pc_currchar->IsFrozen()) {
 									if (pc_currchar->casting)
 										pc_currchar->sysmsg(TRANSLATE("You are already casting a spell."));
 									else

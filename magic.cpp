@@ -154,7 +154,7 @@ bool checkGateCollision( P_CHAR pc )
 	P_ITEM pgate = NULL;
 
         Location charpos = pc->getPosition();
-	
+
 	NxwItemWrapper si;
 	// WIntermute: Only check items beneath the feet or neighbouring items may be triggered first
 	si.fillItemsNearXYZ( charpos, 0, false );
@@ -162,7 +162,7 @@ bool checkGateCollision( P_CHAR pc )
 		pgate = si.getItem();
 		if ( !ISVALIDPI( pgate ) )
 			return false;
-		
+
 		if ( pgate->type != 51 )
 			pgate = NULL;
 	}
@@ -171,7 +171,7 @@ bool checkGateCollision( P_CHAR pc )
 		return false;
 
 	Location gatepos = pgate->getPosition();
-		
+
 	if ( charpos.x != gatepos.x || charpos.y != gatepos.y || UI32(charpos.z - gatepos.z) > 2 )
 		return false;
 
@@ -181,7 +181,7 @@ bool checkGateCollision( P_CHAR pc )
         for ( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		if ( !ISVALIDPC( (pnpc=sc.getChar()) ) )
 			continue;
-			
+
 		pnpc->MoveTo( pgate->morex, pgate->morey, pgate->morez );
 	}
 
@@ -227,27 +227,19 @@ static inline bool checkTownLimits(SpellId spellnum, P_CHAR pa, P_CHAR pd, int s
 	return false;
 }
 
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////
-// Function name	 : inline bool checkMana
-// Description		 : checks if char has enough mana
-// Return type		 : static
-// Author			 : Xanathar
-// Argument 		 : P_CHAR pc -> -- as default --
-// Argument 		 : int num -> -- as default --
-// Changes			 : none yet
+/*!
+\brief Checks if char has enough mana
+\author Xanathar
+\param pc the player who want to cast
+\param num spell id
+\return true if the pc has enough mana, else false
+*/
 static inline bool checkMana(P_CHAR pc, SpellId num)
 {
 	VALIDATEPCR(pc, false);
 
 //	if( pc->IsGM() ) return true;
-	if (pc->priv2&CHRPRIV2_DONTUSEUPMANA) return true;
+	if (pc->priv2&flagPriv2NoUseMana) return true;
 
 	if (pc->mn >= g_Spells[num].mana) return true;
 
@@ -268,7 +260,7 @@ static inline void subtractMana(P_CHAR pc, SpellId spellnumber)
 {
 	VALIDATEPC(pc);
 
-	if (pc->priv2&CHRPRIV2_DONTUSEUPMANA) return;
+	if (pc->priv2&flagPriv2NoUseMana) return;
 
 	if (pc->mn >= g_Spells[spellnumber].mana) pc->mn -= g_Spells[spellnumber].mana;
 	else pc->mn = 0;
@@ -291,8 +283,8 @@ static bool checkReflection(P_CHAR &pa, P_CHAR &pd)
 {
 	VALIDATEPCR(pa, false);
 	VALIDATEPCR(pd, false);
-	if (pd->priv2 & CHRPRIV2_REFLECTION) {
-		pd->priv2 &= ~CHRPRIV2_REFLECTION;
+	if (pd->priv2 & flagPriv2Reflection) {
+		pd->priv2 &= ~flagPriv2Reflection;
 		pd->staticFX(0x373A, 0, 15);
 		qswap(pa, pd);
 		return !checkReflection(pa, pd);
@@ -660,7 +652,7 @@ static void damage(P_CHAR pa, P_CHAR pd, SpellId spellnum, int spellflags = 0, i
 
 	if (resist > evint) {
 		mod = 1.0 + (evint - resist) / 200.0;
-	} else if (resist == evint || pd->nxwflags[0] & NCF0_PROTECTION) { //Luxor
+	} else if (resist == evint || pd->nxwflags[0] & cChar::flagSpellProtection) { //Luxor
 		mod = 1.0 + (evint - resist) / 300.0;
 	} else {
 		mod = 1.0 + (evint - resist) / 500.0;
@@ -701,7 +693,7 @@ bool checkReagents(P_CHAR pc, reag_st reagents)
 
 //	if( pc->IsGM() ) return true;
 
-	if (pc->priv2&CHRPRIV2_DONTUSEREAGENTS) return true;
+	if (pc->priv2&flagPriv2NoUseReagents) return true;
 	if (pc->npc) return true;
 
 	fail.ash=fail.drake=fail.garlic=fail.moss=fail.pearl=fail.shade=fail.silk = 0;
@@ -1034,7 +1026,7 @@ bool checkRequiredTargetType(SpellId spellnum, TargetLocation& t)
 void consumeReagents( P_CHAR pc, reag_st reags )
 {
 	VALIDATEPC(pc);
-	if (pc->priv2&CHRPRIV2_DONTUSEREAGENTS) return;
+	if (pc->priv2&flagPriv2NoUseReagents) return;
 	pc->delItems(0x0F7A, reags.pearl);
 	pc->delItems(0x0F7B, reags.moss);
 	pc->delItems(0x0F84, reags.garlic);
@@ -1345,7 +1337,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					CHECKDISTANCE(src, pd);
 					spellFX(spellnumber, src, pd);
 					damage(src, pd, spellnumber, flags, param);
-				} 
+				}
 				else
 				{
 					if ( spellnumber == SPELL_EARTHQUAKE ) {  //Luxor
@@ -1554,9 +1546,9 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					src->sysmsg("That is not a rune!!");
 			}
 			break;
-			
+
 		case SPELL_MASSCURSE: {
-			
+
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( x, y, src->skill[MAGERY] / 100, true);
 
@@ -1566,7 +1558,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					spellFX(spellnumber, src, pd);
 					castStatPumper(SPELL_CURSE, dest, src, flags, param);
 				}
-			} 
+			}
 			}
 			break;
 
@@ -1630,7 +1622,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_REFLECTION:
 			spellFX(spellnumber, src, pd);
 			if ((pd==NULL)&&(src!=NULL)) pd = src;
-			if (pd!=NULL) pd->priv2|=CHRPRIV2_REFLECTION;
+			if (pd!=NULL) pd->priv2|=flagPriv2Reflection;
 			break;
 
 
@@ -2020,7 +2012,7 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 		return false;
 	}
 
-	
+
 	if (pc->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		pc->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc->getSerial32(), num, type, INVALID );

@@ -104,7 +104,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 */
 void doubleclick(NXWCLIENT ps)
 {
-	
+
 	if(ps==NULL) return;
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC( pc );
@@ -152,10 +152,8 @@ void doubleclick(NXWCLIENT ps)
 	else
 		pc->objectdelay = SrvParms->objectdelay * MY_CLOCKS_PER_SEC + uiCurrentTime;
 
-
-
 	///MODIFY, CANT CLICK ITEM AT DISTANCE >2//////////////
-	if ( (pc->distFrom(pi)>2) && !pc->IsGM() && !(pc->nxwflags[0] & NCF0_TELEKINESYS) ) //Luxor: let's check also for the telekinesys spell
+	if ( (pc->distFrom(pi)>2) && !pc->IsGM() && !(pc->nxwflags[0] & cChar::flagSpellTelekinesys) ) //Luxor: let's check also for the telekinesys spell
 	{
 		pc->sysmsg( TRANSLATE("Must be closer to use this!"));
 		pc->objectdelay=0;
@@ -255,7 +253,7 @@ void doubleclick(NXWCLIENT ps)
 
 	if(pCont->isInWorld()) {
 		dst = pCont->getPosition();
-	} else { 
+	} else {
 		P_CHAR pg_dst = pointers::findCharBySerial( pCont->getContSerial() );
 		VALIDATEPC(pg_dst);
 		dst = pg_dst->getPosition();
@@ -265,12 +263,12 @@ void doubleclick(NXWCLIENT ps)
 	charPos.z = dst.z;
 	charPos.dispz = dst.dispz;
 
-	if ( !pc->IsGM() && !lineOfSight( charPos, dst ) && !(pc->nxwflags[0] & NCF0_TELEKINESYS) ) {
+	if ( !pc->IsGM() && !lineOfSight( charPos, dst ) && !(pc->nxwflags[0] & cChar::flagSpellTelekinesys) ) {
 		pc->sysmsg( TRANSLATE( "You cannot reach the item" ) );
 		return;
 	}
 	//</Luxor>
-	
+
 	P_CHAR itmowner = pi->getPackOwner();
 
 	if(!pi->isInWorld()) {
@@ -433,8 +431,8 @@ void doubleclick(NXWCLIENT ps)
 				return;
 			}
 		}
-		if(ISVALIDPC(itmowner)) 
-			snooping(pc, pi ); 
+		if(ISVALIDPC(itmowner))
+			snooping(pc, pi );
 		return;
 	case ITYPE_TELEPORTRUNE:
 		targ = clientInfo[s]->newTarget( new cLocationTarget() );
@@ -479,7 +477,7 @@ void doubleclick(NXWCLIENT ps)
 			else
 				pc->sysmsg(TRANSLATE("If you wish to open a spellbook, it must be equipped or in your main backpack."));
 			return;
-	case ITYPE_MAP: 
+	case ITYPE_MAP:
 		LongToCharPtr(pi->getSerial32(), map1 +1);
 		map2[1] = map1[1];
 		map2[2] = map1[2];
@@ -514,7 +512,7 @@ void doubleclick(NXWCLIENT ps)
 		return;
 	case ITYPE_DOOR:
 		dooruse(s, pi);
-		return; 
+		return;
 	case ITYPE_LOCKED_DOOR:
 		// Wintermute: GMs or Counselors should be able to open locked doors always
 		if ( pc->IsGMorCounselor())
@@ -542,7 +540,7 @@ void doubleclick(NXWCLIENT ps)
 		}
 		pc->sysmsg(TRANSLATE("This door is locked."));
 		return;
-	case ITYPE_FOOD: 
+	case ITYPE_FOOD:
 
 		if (pc->hunger >= 6)
 		{
@@ -652,7 +650,7 @@ void doubleclick(NXWCLIENT ps)
 			pc->sysmsg( TRANSLATE("Enter your new name."));
 			pi->ReduceAmount(1);
 			return;
-	case ITYPE_POLYMORPH: 
+	case ITYPE_POLYMORPH:
 			pc->setId( pi->morex );
 			pc->teleport();
 			pi->type = ITYPE_POLYMORPH_BACK;
@@ -675,7 +673,7 @@ void doubleclick(NXWCLIENT ps)
 			{
 				case 0: pc->playSFX(0x0031); break;
 				case 1: pc->playSFX(0x0030); break;
-			}	
+			}
 			pi->ReduceAmount(1);
 			pc->sysmsg( TRANSLATE("Gulp !"));
 			return;
@@ -724,7 +722,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 	case ITYPE_TREASURE_MAP:
 			Skills::Decipher(pi, s);
-			return; 
+			return;
 
 	case ITYPE_DECIPHERED_MAP:
 			map1[ 1] = map2[1] = map3[1] = pi->getSerial().ser1;
@@ -776,7 +774,7 @@ void doubleclick(NXWCLIENT ps)
 				magic::SpellId spn = magic::spellNumberFromScrollId(pi->getId());	// avoid reactive armor glitch
 				if ((spn>=0)&&(magic::beginCasting(spn, ps, magic::CASTINGTYPE_SCROLL)))
 					pi->ReduceAmount(1);							// remove scroll if successful
-			} 
+			}
 			else pc->sysmsg(TRANSLATE("The scroll must be in your backpack to envoke its magic."));
 	}
 	CASE(IsAnvil) {
@@ -840,10 +838,10 @@ void target_dyevat( NXWCLIENT ps, P_TARGET t )
 			pi->setColor( t->buffer[0] );
 			pi->Refresh();
 			curr->playSFX(0x023E); // plays the dye sound, LB
-		} 
-		else 
+		}
+		else
 			curr->sysmsg(TRANSLATE("That is not yours!!"));
-	} 
+	}
 	else
 		curr->sysmsg( TRANSLATE("You can only dye clothes with this.") );
 }
@@ -928,7 +926,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1032:// Smoothing plane
 		case 0x1033:
 		case 0x1034:// Saw
-		case 0x1035: 
+		case 0x1035:
 			targ = clientInfo[s]->newTarget( new cItemTarget() );
 			targ->code_callback=Skills::target_carpentry;
 			targ->send( ps );
@@ -1249,7 +1247,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 		case 0x1074: // training dummies
 			if (item_inRange(pc, pi, 1))
 			{
-				if (pc->hidden==HIDDEN_BYSKILL) 
+				if (pc->hidden==HIDDEN_BYSKILL)
 					pc->unHide();
 				Skills::TDummy(s);
 			}
@@ -1276,7 +1274,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			break;
 	}
 
-	
+
 }
 
 /*!

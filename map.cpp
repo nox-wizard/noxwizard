@@ -165,7 +165,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 			)
 			return illegal_z;
 
-		if ( !ISVALIDPC( pc ) || !(pc->nxwflags[0] & NCF0_WATERWALK) ) {
+		if ( !ISVALIDPC( pc ) || !(pc->nxwflags[0] & cChar::flagWaterWalk) ) {
 			if ( mapid >= 0x0A8 && mapid <= 0x0AB) 	// Water
 				return illegal_z;
 		}
@@ -175,7 +175,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
         // STATIC TILES -- Check for static tiles Z elevation
         //
 	if ( flags & WALKFLAG_STATIC ) {
-        	
+
 		staticVector s;
 		data::collectStatics( pos.x, pos.y, s );
 

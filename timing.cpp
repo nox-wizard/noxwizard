@@ -57,7 +57,7 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 #else
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( pc->getPosition(), 2, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) 
+	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
 #endif
@@ -66,11 +66,11 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 			if ( pi->getPosition().x == pc->getPosition().x && pi->getPosition().y == pc->getPosition().y )
 
 				//Luxor: added new field damage handling
-				switch( pi->getId() ) 
+				switch( pi->getId() )
 				{
 					case 0x3996:
 					case 0x398C: //Fire Field
-						if (!pc->resist(RES_FIRE))
+						if (!pc->resistsFire())
 							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, SI32(pi->morex/100.0), DAMAGE_FIRE, 0, 1);
 						return;
 					case 0x3915:

@@ -123,7 +123,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	foodloc.x=0;
 	foodloc.y=0;
 	foodloc.z=0;
-	
+
 
 	party=INVALID;
 	privlevel = PRIVLEVEL_GUEST;
@@ -258,7 +258,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
 	SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
 	SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
-	
+
 	flag=0x02; //1=red 2=grey 4=Blue 8=green 10=Orange // grey as default - AntiChrist
 	tempflagtime=0;
 
@@ -313,7 +313,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	holydamaged = false;
 	damagetype = DAMAGE_BLUDGEON;
 	fstm=0.0f;
-	
+
 	setGuild( NULL, NULL );
 
 	jailed=false;
@@ -937,7 +937,7 @@ void cChar::disturbMed()
 void cChar::unHide()
 {
 	//if hidden but not permanently or forced unhide requested
-	if ( IsHiddenBySkill() && !(priv2&CHRPRIV2_PERMAHIDDEN) )
+	if ( IsHiddenBySkill() && !(priv2 & flagPriv2PermaHidden) )
 	{
 		stealth=-1;
 		hidden=UNHIDDEN;
@@ -1390,21 +1390,12 @@ void cChar::unfreeze( LOGICAL calledByTempfx )
     if( !calledByTempfx )
 		delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
 
-	if (priv2 & CHRPRIV2_FROZEN)
+	if (priv2 & flagPriv2Frozen)
 	{
-		priv2 &= ~CHRPRIV2_FROZEN;
+		priv2 &= ~flagPriv2Frozen;
 		if (!casting) //Luxor
 			sysmsg(TRANSLATE("You are no longer frozen."));
 	}
-}
-
-/*!
-\brief freezes the char
-\author Xanathar
-*/
-void cChar::freeze()
-{
-	priv2 |= CHRPRIV2_FROZEN;
 }
 
 /*!
@@ -1423,7 +1414,7 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 		return;
 	P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
 	SERIAL serial_att= ISVALIDPC(pc_att)? pc_att->getSerial32() : INVALID;
-	
+
 	if (amxevents[EVENT_CHR_ONWOUNDED]) {
 		g_bByPass = false;
 		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att);
@@ -1577,11 +1568,6 @@ LOGICAL const cChar::IsOnline() const
 		return true;
 
 	return false;
-}
-
-LOGICAL const cChar::IsFrozen() const
-{
-	return ((priv2&CHRPRIV2_FROZEN)!=0);
 }
 
 /*!
@@ -1832,7 +1818,7 @@ LOGICAL cChar::canSee( cObject &obj )
 			if ( pc->dead && !pc->war && !dead ) // Non-persecuting ghosts can be seen only by other ghosts
 				return false;
 		}
-		else 
+		else
 		{
 			if ( !pc->IsOnline() && !pc->npc)
 				return false;
@@ -1939,12 +1925,12 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 			{
 				NxwCharWrapper sc;
 				sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
-				for( sc.rewind(); !sc.isEmpty(); sc++ ) 
+				for( sc.rewind(); !sc.isEmpty(); sc++ )
 				{
 					P_CHAR pc=sc.getChar();
 					if( ISVALIDPC( pc ) )
 					{
-						if( getSerial32() != pc->getSerial32() ) 
+						if( getSerial32() != pc->getSerial32() )
 						{
 							if ( !pc->IsOnline() && !pc->npc )
 							{
@@ -1961,11 +1947,11 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 					}
 				}
 
-				if ( flags&TELEFLAG_SENDNEARITEMS ) 
+				if ( flags&TELEFLAG_SENDNEARITEMS )
 				{
 					NxwItemWrapper si;
 					si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
-					for( si.rewind(); !si.isEmpty(); si++ ) 
+					for( si.rewind(); !si.isEmpty(); si++ )
 					{
 						P_ITEM pi = si.getItem();
 						if( ISVALIDPI( pi ) )
@@ -3159,13 +3145,13 @@ void cChar::Kill()
 				pk->toggleCombat(); // ripper
 
 		}
-			
-		
+
+
 	}
 #endif
 
 	// Remove summoned monsters
-	
+
 	//--------------------- trade stuff
 
 	if ( summontimer > 0 )
@@ -3540,57 +3526,12 @@ const LOGICAL cChar::HasHumanBody()
 	return ((getId()==BODY_MALE) || (getId()==BODY_FEMALE));
 }
 
-const bool cChar::IsGM() const
-{
-	return ( privLevel > PRIVLEVEL_GM );
-}
-
-bool const cChar::IsCounselor() const
-{
-	return ( privLevel > PRIVLEVEL_CNS );
-}
-
-const LOGICAL cChar::IsInvul() const
-{
-	return (priv&CHRPRIV_INVUL);
-}
-
-const LOGICAL cChar::CanSnoop() const
-{
-	return (priv&CHRPRIV_CANSNOOPALL);
-}
-
-const LOGICAL cChar::CanBroadcast() const
-{
-	return (priv&CHRPRIV_BROADCAST);
-}
-
-const LOGICAL cChar::CanSeeSerials() const
-{
-	return (priv&CHRPRIV_CANVIEWSERIALS);
-}
-
-const LOGICAL cChar::IsInnocent() const
-{
-	return (flag&CHRFLAG_INNOCENT);
-}
-
-const LOGICAL cChar::IsMurderer() const
-{
-	return (flag&CHRFLAG_MURDERER);
-}
-
-const LOGICAL cChar::IsCriminal() const
-{
-	return (flag&CHRFLAG_CRIMINAL);
-}
-
 const LOGICAL cChar::IsGrey() const
 {
 	if ( npc || IsMurderer() || IsCriminal() )
 		return false;
 	else
-		if ( (karma <= -10000) || (nxwflags[0]&NCF0_PERMAGREY) || (nxwflags[0]&NCF0_GREY) )
+		if ( (karma <= -10000) || (nxwflags[0] & flagPermaGrey) || (nxwflags[0] & flagGrey) )
 			return true;
 		else
 			return false;
@@ -3599,46 +3540,6 @@ const LOGICAL cChar::IsGrey() const
 const LOGICAL cChar::InGuardedArea() const
 {
 	return ::region[region].priv & RGNPRIV_GUARDED;
-}
-
-UI08 cChar::GetPriv() const
-{
-	return priv;
-}
-
-void cChar::SetPriv(UI08 p)
-{
-	priv = p;
-}
-
-void cChar::MakeInvulnerable()
-{
-	priv |= CHRPRIV_INVUL;
-}
-
-void cChar::MakeVulnerable()
-{
-	priv &= ~CHRPRIV_INVUL;
-}
-
-SI08 cChar::GetPriv2() const
-{
-	return priv2;
-}
-
-void cChar::SetPriv2(SI08 p)
-{
-	priv2 = p;
-}
-
-SI08 cChar::GetPriv4() const
-{
-	return priv4;
-}
-
-void cChar::SetPriv4(SI08 p)
-{
-	priv4 = p;
 }
 
 void cChar::SetMurderer()
@@ -3667,81 +3568,6 @@ void cChar::SetCriminal()
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_CRIMINAL;
-}
-
-void cChar::SetPermaGrey()
-{
-	nxwflags[0]|=NCF0_GREY+NCF0_PERMAGREY;
-}
-
-LOGICAL cChar::isBeingTrained()
-{
-	return (trainer != INVALID);
-}
-
-SERIAL	cChar::getTrainer()
-{
-	return trainer;
-}
-
-char cChar::getSkillTaught()
-{
-	return trainingplayerin;
-}
-
-LOGICAL cChar::canTrain()
-{
-	return cantrain;
-}
-
-void cChar::setCanTrain()
-{
-	cantrain = true;
-}
-
-LOGICAL	cChar::IsWearing(P_ITEM pi)
-{
-	return (getSerial32() == pi->getContSerial());
-}
-
-void cChar::resetCanTrain()
-{
-	cantrain = false;
-}
-
-LOGICAL cChar::HasAttackedFirst()
-{
-	return attackfirst;
-}
-
-void cChar::SetAttackFirst()
-{
-	attackfirst = true;
-}
-
-void cChar::ResetAttackFirst()
-{
-	attackfirst = false;
-}
-
-LOGICAL const cChar::IsHidden() const
-{
-	return (hidden != UNHIDDEN);
-}
-
-LOGICAL const cChar::IsHiddenBySpell() const
-{
-	return ( (hidden & HIDDEN_BYSPELL)!=0);
-}
-
-LOGICAL const cChar::IsHiddenBySkill() const
-{
-	return ((hidden & HIDDEN_BYSKILL)!=0);
-}
-
-UI32 cChar::CountGold()
-{
-	return CountItems(ITEMID_GOLD);
 }
 
 void cChar::doSingleClickOnCharacter( SERIAL serial )
@@ -3943,7 +3769,7 @@ void cChar::onSingleClick( P_CHAR clickedBy )
 */
 void cChar::doGmEffect()
 {
-	if( !(priv2 & CHRPRIV2_PERMAHIDDEN) )
+	if( !(priv2 & flagPriv2PermaHidden) )
 	{
 		Location charpos= getPosition();
 
@@ -4048,7 +3874,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 			strcat(temp1,temp);
 		}
 	}
-	if (priv2 & CHRPRIV2_FROZEN)
+	if ( IsFrozen() )
 	{
 		if (strcmp(::title[13].other,""))
 		{
@@ -4533,7 +4359,7 @@ void cChar::pc_heartbeat()
 		}
 	}
 
-	if ( clientInfo[socket]->lsd ) 
+	if ( clientInfo[socket]->lsd )
 		do_lsd(); //LB's LSD potion-stuff
 
 	if ( TIMEOUT( mutetime ) && squelched == 2 )

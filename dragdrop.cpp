@@ -357,7 +357,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		tile_st tile;
 		data::seekTile( pi->getId(), tile);
 
-		if (!pc_currchar->IsGM() && (( pi->magic == 2 || ((tile.weight == 255) && ( pi->magic != 1))) && !(pc_currchar->priv2 & CHRPRIV2_ALLMOVE))  ||
+		if (!pc_currchar->IsGM() && (( pi->magic == 2 || ((tile.weight == 255) && ( pi->magic != 1))) && !(pc_currchar->priv2 & flagPriv2AllMove))  ||
 			(( pi->magic == 3|| pi->magic == 4) && !pc_currchar->isOwnerOf( pi )))
 		{
 			UI08 bounce[2]={ 0x27, 0x00 };
@@ -469,7 +469,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 	else {
 		P_ITEM outmost = pi->getOutMostCont();
 		P_CHAR vendor = pointers::findCharBySerial( outmost->getContSerial() );
-		if( ISVALIDPC( vendor ) && ( vendor->getOwnerSerial32() != pc->getSerial32() ) ) 
+		if( ISVALIDPC( vendor ) && ( vendor->getOwnerSerial32() != pc->getSerial32() ) )
 		{
 			resetDragging = true;
 		}
@@ -489,7 +489,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 
 	if ( pck->getSerial32() == pc->getSerial32() || pc->IsGM() )
 	{
-		
+
 		if ( !pc->IsGM() && pi->st > pck->getStrength() && !pi->isNewbie() ) // now you can equip anything if it's newbie
 		{
 			ps->sysmsg(TRANSLATE("You are not strong enough to use that."));
@@ -504,7 +504,7 @@ void wear_item(NXWCLIENT ps) // Item is dropped on paperdoll
 			ps->sysmsg(TRANSLATE("You cant wear female armor!"));
 			resetDragging = true;
 		}
-		else if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && (!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
+		else if ((((pi->magic==2)||((tile.weight==255)&&(pi->magic!=1))) && (!(pc->priv2 & flagPriv2AllMove))) ||
 				( (pi->magic==3|| pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 		{
 			resetDragging = true;
@@ -1122,7 +1122,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 
 	data::seekTile(pi->getId(), tile);
-	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
+	if (!pc->IsGM() && ((pi->magic==2 || (tile.weight==255 && pi->magic!=1))&&(!(pc->priv2 & flagPriv2AllMove))) ||
 		( (pi->magic==3 || pi->magic==4) && !(pi->getOwnerSerial32()==pc->getSerial32())))
 	{
 		item_bounce6(ps,pi);
@@ -1377,7 +1377,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	}
 
 	data::seekTile(pItem->getId(), tile);
-	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&(!(pc->priv2 & CHRPRIV2_ALLMOVE))) ||
+	if ((((pItem->magic==2)||((tile.weight==255)&&(pItem->magic!=1)))&&(!(pc->priv2 & flagPriv2AllMove))) ||
 				( (pItem->magic==3|| pItem->magic==4) && !(pItem->getOwnerSerial32()==pc->getSerial32())))
 	{
 		Sndbounce5(s);
@@ -1513,7 +1513,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 						SendDeleteObjectPkt(sw.getSocket(), pItem->getSerial32() );
 					mapRegions->remove(pItem);
 				}
-				
+
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				pItem->setContSerial( pCont->getContSerial() );
 
@@ -1573,7 +1573,7 @@ void drop_item(NXWCLIENT ps) // Item is dropped
 		  item_bounce6(ps, pi);
 		  return;
 	  }
-	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) ) 
+	  else if ( ( (pp->TxLoc!=-1) && (pp->TyLoc!=-1) && ( pp->Tserial!=-1)) || ( (pp->Iserial>=0x40000000) && (pp->Tserial>=0x40000000) ) )
 		  clientInfo[s]->evilDrag=true; // calc new evildrag value
 	  else clientInfo[s]->evilDrag=false;
 	}

@@ -109,7 +109,7 @@ int AddRandomNPC(NXWSOCKET s, char * npclist)
 //o---------------------------------------------------------------------------o
 P_CHAR AddRespawnNPC(P_ITEM pi, int npcNum)
 {
-        //type 1 remember 
+        //type 1 remember
         VALIDATEPIR(pi, NULL);
         return AddNPC(INVALID, pi, npcNum, 0,0,0);
 }
@@ -130,7 +130,7 @@ P_CHAR AddNPCxyz(NXWSOCKET s, int npcNum, Location where)
 P_CHAR AddNPCxyz(NXWSOCKET s, int npcNum, int x1, int y1, signed char z1) //Morrolan - replacement for old npcs::AddNPCxyz(), fixes a LOT of problems.
 {
 
-	return AddNPC(s, NULL, npcNum, x1,y1,z1); 
+	return AddNPC(s, NULL, npcNum, x1,y1,z1);
 
 }
 
@@ -962,7 +962,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								break;
 							case 'W':
 								if	( "WATERWALK" == script1 )
-									pc->nxwflags[0]|=NCF0_WATERWALK;
+									pc->nxwflags[0] |= cChar::flagWaterWalk;
 								else if ( "WRESTLING" == script1 )
 									pc->baseskill[WRESTLING] = getRangedValue(script2);
 								break;
@@ -1023,7 +1023,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									
+
 									staticVector s;
 									data::collectStatics( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, s );
 									UI32 i;

@@ -35,9 +35,9 @@ void tempeffectson()
 {
 	if ( tempfxCheck.empty() )
 		return;
-		
+
 	P_OBJECT po = NULL;
-	
+
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
 	for ( ; it != tempfxCheck.end(); ) {
 		po = objects.findObject( (*it) );
@@ -51,11 +51,11 @@ void tempeffectson()
 			it = tempfxCheck.erase( it );
 			continue;
 	        }
-	        
+
 	        po->tempfxOn();
-	        
+
 	        it++;
-	}	
+	}
 }
 
 /*!
@@ -65,7 +65,7 @@ void tempeffectsoff()
 {
         if ( tempfxCheck.empty() )
 		return;
-	
+
 	P_OBJECT po = NULL;
 
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
@@ -94,7 +94,7 @@ void checktempeffects()
 {
         if ( tempfxCheck.empty() )
 		return;
-		
+
 	P_OBJECT po = NULL;
 
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
@@ -110,7 +110,7 @@ void checktempeffects()
 			it = tempfxCheck.erase( it );
 			continue;
 	        }
-	        
+
 	        po->checkTempfx();
 	        it++;
 	}
@@ -145,7 +145,7 @@ LOGICAL isSrcRepeatable(int num)
 		case SPELL_POLYMORPH:
 		case DRINK_FINISHED:
 			return false;
-			
+
 		default:
 			return true;
 	}
@@ -181,7 +181,7 @@ LOGICAL isDestRepeatable(int num)
 		default:
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -343,7 +343,7 @@ void cTempfx::start()
 			dest->playSFX(0x0208);
 			break;
 		case SPELL_PARALYZE:
-			if (dest->resist(RES_FREEZE))
+			if (dest->resistFreeze())
 				return;
 			dest->freeze();
 			break;
@@ -563,7 +563,7 @@ void cTempfx::start()
 			break;
 
 		case SPELL_PROTECTION:
-			dest->nxwflags[0] |= NCF0_PROTECTION;
+			dest->nxwflags[0] |= cChar::flagSpellProtection;
 			break;
 
 		case GM_HIDING:
@@ -588,7 +588,7 @@ void cTempfx::start()
 			break;
 
 		case GREY:
-			dest->nxwflags[0] |= NCF0_GREY;
+			dest->nxwflags[0] |= cChar::flagGrey;
 			break;
 
 		case COMBAT_PARALYZE:
@@ -609,7 +609,7 @@ void cTempfx::start()
 			break;
 
 		case SPELL_TELEKINESYS:
-			dest->nxwflags[0] |= NCF0_TELEKINESYS;
+			dest->nxwflags[0] |= cChar::flagSpellTelekinesys;
 			break;
 
 		default:
@@ -827,7 +827,7 @@ void cTempfx::executeExpireCode()
 
 		case SPELL_PROTECTION:
 			VALIDATEPC(dest);
-			dest->nxwflags[0] &= ~NCF0_PROTECTION;
+			dest->nxwflags[0] &= ~cChar::flagSpellProtection;
 			break;
 
 		case DRINK_EMOTE:
@@ -877,7 +877,7 @@ void cTempfx::executeExpireCode()
 
 		case GREY:
 			VALIDATEPC(dest);
-			dest->nxwflags[0] &= ~NCF0_GREY;
+			dest->nxwflags[0] &= ~cChar::flagGrey;
 			break;
 
 		case CRIMINAL:
@@ -888,7 +888,7 @@ void cTempfx::executeExpireCode()
 
 		case SPELL_TELEKINESYS:
 			VALIDATEPC( dest );
-			dest->nxwflags[0] &= ~NCF0_TELEKINESYS;
+			dest->nxwflags[0] &= ~cChar::flagSpellTelekinesys;
 			break;
 
 		default:

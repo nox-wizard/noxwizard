@@ -6,7 +6,7 @@
     ||                                                                         ||
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
- 
+
 
 #include "nxwcommn.h"
 #include "network.h"
@@ -93,8 +93,8 @@ void command_bounty( NXWCLIENT ps)
 			P_CHAR pchar_murderer = pointers::findCharBySerial(pc_cs->murdererSer);
 			if( BountyCreate( pchar_murderer, nAmount ) )
 			{
-				if(ISVALIDPC(pchar_murderer)) 
-				pc_cs->sysmsg(TRANSLATE("You have placed a bounty of %d gold coins on %s."), 
+				if(ISVALIDPC(pchar_murderer))
+				pc_cs->sysmsg(TRANSLATE("You have placed a bounty of %d gold coins on %s."),
 						nAmount, pchar_murderer->getCurrentNameC() );
 			}
 			else
@@ -123,7 +123,7 @@ void command_bounty( NXWCLIENT ps)
 void command_serversleep( NXWCLIENT ps )
 {
 	NXWSOCKET s=ps->toInt();
-	
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	int seconds;
@@ -159,7 +159,7 @@ void command_serversleep( NXWCLIENT ps )
 				Network->FlushBuffer(ps->toInt());
 		}
 	}
-	else 
+	else
 	{
 		pc->sysmsg("Invalid number of arguments");
 	}
@@ -185,7 +185,7 @@ void command_reloadracescript( NXWCLIENT ps )
 // Returns the current bulletin board posting mode for the player
 void command_post( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -218,7 +218,7 @@ void command_post( NXWCLIENT ps )
 // ALL bulletin boards will see the next message posted to any bulletin board
 void command_gpost(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -233,7 +233,7 @@ void command_gpost(NXWCLIENT ps )
 // next message posted
 void command_rpost(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -247,7 +247,7 @@ void command_rpost(NXWCLIENT ps )
 // Only this bulletin board will have this post
 void command_lpost(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -313,7 +313,7 @@ void command_where(NXWCLIENT ps )
 
 	if (strlen(region[pc_cs->region].name)>0)
 		pc_cs->sysmsg("You are at: %s",region[pc_cs->region].name);
-	else 
+	else
 		pc_cs->sysmsg("You are at: unknown area");
 
 	pc_cs->sysmsg("%i %i (%i)", charpos.x, charpos.y, charpos.z);
@@ -322,7 +322,7 @@ void command_where(NXWCLIENT ps )
 //! Shows the GM or Counsellor queue.
 void command_q(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -337,7 +337,7 @@ void command_q(NXWCLIENT ps )
 //! For Counselors or GM's, goes to next call in queue.
 void command_next(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -352,7 +352,7 @@ void command_next(NXWCLIENT ps )
 //! For Counselor's and GM's, removes current call from queue.
 void command_clear(NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -367,7 +367,7 @@ void command_clear(NXWCLIENT ps )
 //! (d) Teleports you to a location from the LOCATIONS.SCP file.
 void command_goplace(NXWCLIENT ps )
 {
- 
+
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
@@ -385,7 +385,7 @@ void command_goplace(NXWCLIENT ps )
 //! (h h h h) Teleports you to another character.
 void command_gochar(NXWCLIENT ps )
 {
- 
+
 	P_CHAR pc_cs = ps->currChar();
 	VALIDATEPC(pc_cs);
 
@@ -393,7 +393,7 @@ void command_gochar(NXWCLIENT ps )
 
 	switch( tnum ) {
 		case 5:	{
-		
+
 			Serial serial;
 			serial.ser1=strtonum(1);
 			serial.ser2=strtonum(2);
@@ -404,7 +404,7 @@ void command_gochar(NXWCLIENT ps )
 			break;
 		}
 		case 2: {
-		
+
 			NXWCLIENT ps_target = getClientFromSocket( strtonum(1) );
 			if( ps_target == NULL )
 				return;
@@ -419,7 +419,7 @@ void command_gochar(NXWCLIENT ps )
 	if( ISVALIDPC(pc_i) ) {
 
 		pc_cs->doGmEffect();
-		
+
 		pc_cs->MoveTo( pc_i->getPosition() );
 		pc_cs->teleport();
 
@@ -575,7 +575,7 @@ void command_action( NXWCLIENT ps )
 // BYTE season	(0 spring, 1 summer, 2 fall, 3 winter, 4 dead, 5 unknown (rotating?))
 // BYTE unknown	If 0, cannot change from undead, so 1 is the default
 void command_setseason( NXWCLIENT ps )
-{ 
+{
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 	UI08 setseason[3]={ 0xBC, 0x00, 0x01 };
@@ -620,7 +620,7 @@ void command_xtele( NXWCLIENT ps )
 //! (d d d) Go to the specified X/Y/Z coordinates
 void command_go( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==4)
@@ -631,7 +631,7 @@ void command_go( NXWCLIENT ps )
 
 			P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 			pc_currchar->doGmEffect(); 	// Adding the gmmove effects ..Aldur
-			
+
 
 			pc_currchar->MoveTo( x,y,z );
 			pc_currchar->teleport();
@@ -667,7 +667,7 @@ void command_appetite( NXWCLIENT ps )
 
 	switch( (pc->IsGMorCounselor()	? 6 : pc->hunger) )
 	{
-		case 6: 
+		case 6:
 		case 5: pc->sysmsg(TRANSLATE("You are still stuffed from your last meal"));
 						break;
 		case 4: pc->sysmsg(TRANSLATE("You are not very hungry but could eat more"));
@@ -686,12 +686,12 @@ void command_appetite( NXWCLIENT ps )
 //! Adds an item when using 'add # #
 void target_addTarget( NXWCLIENT ps, P_TARGET t )
 {
-    
+
     P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
     VALIDATEPI(pi);
 
 	UI16 id = DBYTE2WORD( t->buffer[0], t->buffer[1] );
-	
+
 	tile_st tile;
     data::seekTile( id, tile );
 
@@ -713,12 +713,12 @@ void command_add( NXWCLIENT ps )
 	if( tnum==1 )
 	{
 		showAddMenu( pc, 1 );
-	} 
+	}
 	else if( tnum==3 )
 	{
 		UI32 a;
 		UI32 b;
-		if ( server_data.always_add_hex ) { 
+		if ( server_data.always_add_hex ) {
 			a=hexnumber(1);
 			b=hexnumber(2);
 		}
@@ -743,7 +743,7 @@ void command_add( NXWCLIENT ps )
 //! (h h) Adds a new item to your current location.
 void command_addx( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc = ps->currChar();
@@ -788,7 +788,7 @@ void command_rename( NXWCLIENT ps )
 //! (text) Renames any dynamic item in the game.
 void command_cfg( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -882,7 +882,7 @@ void command_nodecay( NXWCLIENT ps )
 // Displays the current UO time.
 void command_showtime( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -939,32 +939,32 @@ void command_shutdown( NXWCLIENT ps )
 // List of all online player
 void command_playerlist( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	static AmxFunction* cmd = NULL;
 	if( cmd==NULL )
 		cmd= new AmxFunction( "command_playerlist" );
-	
+
 	cmd->Call( s );
 }
 
 void command_skills(  NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	static AmxFunction* cmd = NULL;
 	if( cmd==NULL )
 		cmd= new AmxFunction( "command_skills" );
-	
+
 	cmd->Call( s );
 }
 
 // Debugging command.
 void command_blt2( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -975,7 +975,7 @@ void command_blt2( NXWCLIENT ps )
 // (h h) Plays the specified sound effect.
 void command_sfx( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==3)
@@ -998,7 +998,7 @@ void command_light( NXWCLIENT ps )
 // Debugging command.
 void command_web( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum>1)
@@ -1017,7 +1017,7 @@ void command_disconnect( NXWCLIENT ps )
 // (d text) Sends an anonymous message to the user logged in under the specified slot.
 void command_tell( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum>2)
@@ -1083,7 +1083,7 @@ void command_snow( NXWCLIENT ps )
 				weather( ps->toInt(), 0 );
 		}
 	}
-	
+
 	wtype=2;
 	sw.clear();
 	sw.fillOnline();
@@ -1097,7 +1097,7 @@ void command_snow( NXWCLIENT ps )
 // (d) Opens the specified GM Menu.
 void command_gmmenu( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2) gmmenu(s, strtonum(1));
@@ -1106,13 +1106,13 @@ void command_gmmenu( NXWCLIENT ps )
 // (d) Opens the specified Item Menu from ITEMS.SCP.
 void command_itemmenu( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	if (tnum==2) 
+	if (tnum==2)
 		showAddMenu(pc, strtonum(1)); //itemmenu(s, strtonum(1));
 
 }
@@ -1151,7 +1151,7 @@ void menu_additem( P_MENU menu, NXWCLIENT ps, SERIAL button )
 // (d) Adds the specified item from ITEMS.XSS
 void command_additem( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
@@ -1162,7 +1162,7 @@ void command_additem( NXWCLIENT ps )
 		int item=0;
 		if( tbuffer[Commands::cmd_offset+8] == '$')
 		{
-			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+8]) ) 
+			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+8]) )
 			{
 				pc->sysmsg("Item symbol %s undefined !", &tbuffer[Commands::cmd_offset+8]);
 				return;
@@ -1173,7 +1173,7 @@ void command_additem( NXWCLIENT ps )
 		{
 			item = strtonum(1);
 		}
-		
+
 		P_TARGET targ=clientInfo[s]->newTarget( new cLocationTarget() );
 		targ->buffer[0]=item;
 		targ->code_callback=target_additem;
@@ -1227,7 +1227,7 @@ void command_dupe( NXWCLIENT ps )
 // Executes a trigger scripting command.
 void command_command( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 			int i;
@@ -1250,7 +1250,7 @@ void command_command( NXWCLIENT ps )
 // Runs garbage collection routines.
 void command_gcollect( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	gcollect();
@@ -1261,13 +1261,13 @@ void command_gcollect( NXWCLIENT ps )
 // Enables GM ability to pick up all objects.
 void command_allmoveon( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	pc->priv2 |= CHRPRIV2_ALLMOVE;
+	pc->priv2 |= flagPriv2AllMove;
 	pc->teleport();
 	pc->sysmsg("ALLMOVE enabled.");
 }
@@ -1275,13 +1275,13 @@ void command_allmoveon( NXWCLIENT ps )
 // Disables GM ability to pick up all objects.
 void command_allmoveoff( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	pc->priv2 &= ~CHRPRIV2_ALLMOVE;
+	pc->priv2 &= ~flagPriv2AllMove;
 	pc->teleport();
 	pc->sysmsg("ALLMOVE disabled.");
 }
@@ -1289,13 +1289,10 @@ void command_allmoveoff( NXWCLIENT ps )
 // Makes houses appear as deeds. (The walls disappear and there's a deed on the ground in their place.)
 void command_showhs( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	pc->priv2 |= CHRPRIV2_VIEWHOUSEASICON;
+	pc->priv2 |= flagPriv2ViewHouseIcon;
 	pc->teleport();
 	pc->sysmsg("House icons visible. (Houses invisible)");
 }
@@ -1303,13 +1300,10 @@ void command_showhs( NXWCLIENT ps )
 // Makes houses appear as houses (opposite of /SHOWHS).
 void command_hidehs( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	pc->priv2 &= ~CHRPRIV2_VIEWHOUSEASICON;
+	pc->priv2 &= ~flagPriv2ViewHouseIcon;
 	pc->teleport();
 	pc->sysmsg("House icons hidden. (Houses visible)");
 }
@@ -1322,7 +1316,7 @@ void target_allSet( NXWCLIENT ps, P_TARGET t )
 
     NXWSOCKET k = ps->toInt();
 
-	if( t->buffer_str[0]=="STR" ) 
+	if( t->buffer_str[0]=="STR" )
 	{
         pc->setStrength( t->buffer[0] );
         pc->st3=t->buffer[0];
@@ -1363,7 +1357,7 @@ void target_allSet( NXWCLIENT ps, P_TARGET t )
     {
         pc->SetKarma(t->buffer[0]);
     }
-	else 
+	else
     {
         for( int j=0;j<TRUESKILLS;j++)
         {
@@ -1381,7 +1375,7 @@ void target_allSet( NXWCLIENT ps, P_TARGET t )
 // (text, d) Set STR/DEX/INT/Skills on yourself arguments are skill & amount.
 void command_set( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
@@ -1415,7 +1409,7 @@ void command_set( NXWCLIENT ps )
 // Debugging command.
 void command_temp( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	sysmessage(s, TRANSLATE("This command is simply no more supported. Sorry :["));
@@ -1425,7 +1419,7 @@ void command_temp( NXWCLIENT ps )
 void target_addNpc( NXWCLIENT ps, P_TARGET t )
 {
 	if( t->buffer[0]==0 ) {
-	
+
 		P_CHAR pc=archive::character::New();
 
 		pc->setCurrentName("Dummy");
@@ -1464,7 +1458,7 @@ void command_addnpc( NXWCLIENT ps )
 	{
 		if ( tbuffer[Commands::cmd_offset+7] == '$')
 		{
-			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+7]) ) 
+			if( !evaluateOneDefine(&tbuffer[Commands::cmd_offset+7]) )
 			{
 				pc->sysmsg("Char symbol %s undefined !", &tbuffer[Commands::cmd_offset+8]);
 				clientInfo[s]->resetTarget();
@@ -1486,11 +1480,11 @@ void command_addnpc( NXWCLIENT ps )
 
 void command_tweak(  NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	static AmxFunction* cmd = NULL;
-	if( cmd==NULL ) 
+	if( cmd==NULL )
 		cmd = new AmxFunction( "command_tweak" );
 
 	cmd->Call( s );
@@ -1500,7 +1494,7 @@ void command_tweak(  NXWCLIENT ps )
 // (d) Sets the number of real-world seconds that pass for each UO minute.
 void command_secondsperuominute( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1513,7 +1507,7 @@ void command_secondsperuominute( NXWCLIENT ps )
 // (h) Sets default daylight level.
 void command_brightlight( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1526,7 +1520,7 @@ void command_brightlight( NXWCLIENT ps )
 // (h) Sets default nighttime light level.
 void command_darklight( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1539,7 +1533,7 @@ void command_darklight( NXWCLIENT ps )
 // (h) Sets default dungeon light level.
 void command_dungeonlight( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1552,7 +1546,7 @@ void command_dungeonlight( NXWCLIENT ps )
 // Forces a manual vendor restock.
 void command_restock( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	sysmessage(s, "Manual shop restock has occurred.");
@@ -1562,7 +1556,7 @@ void command_restock( NXWCLIENT ps )
 // Forces a manual vendor restock to maximum values.
 void command_restockall( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	sysmessage(s, "Restocking all shops to their maximums");
@@ -1572,7 +1566,7 @@ void command_restockall( NXWCLIENT ps )
 // (d) Sets the universe's shop restock rate.
 void command_setshoprestockrate( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1587,7 +1581,7 @@ void command_setshoprestockrate( NXWCLIENT ps )
 // (d d) Plays the specified MIDI file.
 void command_midi( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 			if (tnum==3) playmidi(s, strtonum(1), strtonum(2));
@@ -1598,13 +1592,13 @@ void command_midi( NXWCLIENT ps )
 // Forces a respawn.
 void command_respawn( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	sysbroadcast(TRANSLATE("World is now respawning, expect some lag!"));
 	LogMessage(s_szCmdTableTemp,"Respawn command called by %s.\n", pc->getCurrentNameC());
 	//Respawn->Start();
@@ -1615,12 +1609,12 @@ void command_respawn( NXWCLIENT ps )
 // (d) Spawns in all regions up to the specified maximum number of NPCs/Items.
 void command_regspawnmax( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	if (tnum==2)
 	{
 		sprintf(s_szCmdTableTemp,"MAX Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
@@ -1634,12 +1628,12 @@ void command_regspawnmax( NXWCLIENT ps )
 // (d d) Preforms a region spawn. First argument is region, second argument is max # of items/NPCs to spawn in that region.
 void command_regspawn( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+
 	if (tnum==3)
 	{
 		sprintf(s_szCmdTableTemp,"Specific Region Respawn command called by %s.\n", pc->getCurrentNameC());//AntiChrist
@@ -1651,7 +1645,7 @@ void command_regspawn( NXWCLIENT ps )
 
 void command_regedit( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
@@ -1664,7 +1658,7 @@ void command_regedit( NXWCLIENT ps )
 // Reloads the SERVER.cfg file.
 void command_reloadserver( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	loadserverscript();
@@ -1680,7 +1674,7 @@ void command_loaddefaults( NXWCLIENT ps )
 // Display the counselor queue.
 void command_cq( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	Commands::ShowGMQue(s, 0); // Show the Counselor queue, not GM queue
@@ -1689,7 +1683,7 @@ void command_cq( NXWCLIENT ps )
 // Attend to the next call in the counselor queue.
 void command_cnext( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	Commands::NextCall(s, 0); // Show the Counselor queue, not GM queue
@@ -1699,7 +1693,7 @@ void command_cnext( NXWCLIENT ps )
 // Remove the current call from the counselor queue.
 void command_cclear( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	donewithcall(s, 0); // Show the Counselor queue, not GM queue
@@ -1717,7 +1711,7 @@ void target_invul( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
-	
+
 	if( t->buffer[0]==1 )
 		pc->MakeInvulnerable();
 	else
@@ -1727,7 +1721,7 @@ void target_invul( NXWCLIENT ps, P_TARGET t )
 // Makes the targeted character immortal.
 void command_invul( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
@@ -1740,7 +1734,7 @@ void command_invul( NXWCLIENT ps )
 // Makes the targeted character mortal.
 void command_noinvul( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_TARGET targ=clientInfo[s]->newTarget( new cCharTarget() );
@@ -1781,7 +1775,7 @@ void command_decay( NXWCLIENT ps )
 // Display some performance information.
 void command_pdump( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	sysmessage(s, "Performace Dump:");
@@ -1805,7 +1799,7 @@ void command_pdump( NXWCLIENT ps )
 // (text) GM Yell - Announce a message to all online GMs.
 void command_gy( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -1850,7 +1844,7 @@ void command_gy( NXWCLIENT ps )
 // (text) GM Yell - Announce a message to all online players.
 void command_yell( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -1956,7 +1950,7 @@ void command_squelch( NXWCLIENT ps )
 // (d) Kills spawns from the specified spawn region in SPAWN.SCP.
 void command_spawnkill( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (tnum==2)
@@ -1967,7 +1961,7 @@ void command_spawnkill( NXWCLIENT ps )
 
 void command_stats( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	AmxFunction* cmd=NULL;
@@ -1979,7 +1973,7 @@ void command_stats( NXWCLIENT ps )
 
 void command_options( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	AmxFunction* cmd=NULL;
@@ -1993,7 +1987,7 @@ void command_options( NXWCLIENT ps )
 // Goes to the current call in the GM/Counsellor Queue
 void command_gotocur( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2031,7 +2025,7 @@ void command_gotocur( NXWCLIENT ps )
 // Escilate a Counsellor Page into the GM Queue
 void command_gmtransfer( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2085,7 +2079,7 @@ void command_gmtransfer( NXWCLIENT ps )
 // Displays a list of users currently online.
 void command_who( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -2098,7 +2092,7 @@ void command_who( NXWCLIENT ps )
 
 	int j=0;
 	pc->sysmsg("Current Users in the World:");
-	
+
 	NxwSocketWrapper sw;
 	sw.fillOnline();
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
@@ -2120,7 +2114,7 @@ void command_who( NXWCLIENT ps )
 
 void command_gms( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	int j=0;
@@ -2150,19 +2144,19 @@ void command_gms( NXWCLIENT ps )
 
 void command_regspawnall( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	sysbroadcast(TRANSLATE("ALL Regions Spawning to MAX, this will cause some lag."));
 
 	Spawns->doSpawnAll();
-	
+
 	sysmessage(s, "[DONE] All NPCs/items spawned in regions");
 }
 
 void command_sysm( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	if (now == 1)
@@ -2177,7 +2171,7 @@ void target_jail( NXWCLIENT ps, P_TARGET t )
 {
 	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC( pc );
-	
+
 	prison::jail( ps->currChar(), pc, t->buffer[0] );
 }
 
@@ -2207,7 +2201,7 @@ void command_jail( NXWCLIENT ps )
 // (h) set your movement effect.
 void command_setGmMoveEff( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
 	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
@@ -2221,10 +2215,10 @@ void command_setGmMoveEff( NXWCLIENT ps )
 // (text) Changes the account password
 void command_password( NXWCLIENT ps )
 {
- 
+
 	NXWSOCKET s = ps->toInt();
 
-		
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
@@ -2240,21 +2234,21 @@ void command_password( NXWCLIENT ps )
 
 		ret = Accounts->ChangePassword(pc->account, pwd);
 
-		if (ret==0) 
+		if (ret==0)
 			sprintf(pwd, "Password changed to %s", &tbuffer[Commands::cmd_offset+9]);
-		else 
+		else
 			sprintf(pwd, "Some Error occured while changing password!");
 
 		sysmessage(s, pwd);
 	}
-	else 
+	else
 		sysmessage(s, "You must digit 'PASSWORD <newpassword>");
 		return;
 }
 
 void target_tele( NXWCLIENT ps, P_TARGET t )
 {
-	
+
 	P_CHAR pc= ps->currChar();
 	VALIDATEPC(pc);
 
@@ -2275,9 +2269,9 @@ void target_tele( NXWCLIENT ps, P_TARGET t )
 
 void target_remove( NXWCLIENT ps, P_TARGET t )
 {
-	
+
 	SERIAL serial = t->getClicked();
-	
+
 	if( isCharSerial( serial ) )	{
 		P_CHAR pc=pointers::findCharBySerial( serial );
 		VALIDATEPC(pc);
@@ -2311,9 +2305,9 @@ void target_remove( NXWCLIENT ps, P_TARGET t )
 
 void target_dye( NXWCLIENT ps, P_TARGET t )
 {
-	
+
 	SERIAL serial = t->getClicked();
-	
+
 	UI16 color = t->buffer[0];
 
 	P_CHAR curr = ps->currChar();
@@ -2326,7 +2320,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 			if( color==UINVALID16 ) //open dye vat
 			{
 				SndDyevat( ps->toInt(), pi->getSerial32(), pi->getId() );
-			}	
+			}
 			else {
 				if (! ((color & 0x4000) || (color & 0x8000)) )
 				{
@@ -2351,7 +2345,7 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 				SndDyevat( ps->toInt(), pc->getSerial32(), 0x2106 );
 			}
 			else {
-				
+
 				UI16 body = pc->getId();
 
 				if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
@@ -2377,13 +2371,13 @@ void target_dye( NXWCLIENT ps, P_TARGET t )
 void command_dye( NXWCLIENT ps )
 // (h h/nothing) Dyes an item a specific color, or brings up a dyeing menu if no color is specified.
 {
-	
+
 	P_TARGET targ = clientInfo[ ps->toInt() ]->newTarget( new cObjectTarget() );
-	
+
 
 	if (tnum==3)
 	{
-		if ( server_data.always_add_hex ) { 
+		if ( server_data.always_add_hex ) {
 			targ->buffer[0]=DBYTE2WORD( hexnumber(1), hexnumber(2) );
 		}
 		else {
@@ -2546,7 +2540,7 @@ void target_hide( NXWCLIENT ps, P_TARGET t )
 			ps->sysmsg(  TRANSLATE("He is already hiding.") );
 	}
 	else {
-		pc->priv2 |= CHRPRIV2_PERMAHIDDEN;
+		pc->priv2 |= flagPriv2PermaHidden;
 		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_HIDING, 1, 0, 0);
@@ -2569,7 +2563,7 @@ void target_unhide( NXWCLIENT ps, P_TARGET t )
 			ps->sysmsg( TRANSLATE("He is not hiding."));
 	}
 	else {
-		pc->priv2 &= ~CHRPRIV2_PERMAHIDDEN;
+		pc->priv2 &= ~flagPriv2PermaHidden;
 		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_UNHIDING, 1, 0, 0);
@@ -2636,7 +2630,7 @@ void target_tiledata( NXWCLIENT ps, P_TARGET t )
 
     if( tilenum==0 )   // damn osi not me why the tilenum is only send for static tiles
     {   // manually calculating the ID's if it's a maptype
-        
+
 		map_st map1;
 	    land_st land;
 
@@ -2775,8 +2769,8 @@ void target_makegm( NXWCLIENT ps, P_TARGET t )
 
 	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
-	
-    if (pc->dead) 
+
+    if (pc->dead)
 		return;
 
 	P_CHAR curr=ps->currChar();
@@ -2844,7 +2838,7 @@ void target_makecns( NXWCLIENT ps, P_TARGET t )
 
 	P_CHAR pc=pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc);
-	
+
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
 
@@ -2889,7 +2883,7 @@ void target_xbank( NXWCLIENT ps, P_TARGET t )
 
 	P_CHAR pc2 = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(pc2);
-	
+
 	P_CHAR pc = ps->currChar();
 
 	pc->openBankBox(pc2);
