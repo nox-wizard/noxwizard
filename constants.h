@@ -44,7 +44,7 @@ enum
 	HASHMAX = 8191,		//!< lord binary, hashmax must be a prime for maximum performce
 	MY_CLOCKS_PER_SEC = 1000,
 
-	DOORTYPES = 17,
+	DOORTYPES = 20,
 	WEIGHT_PER_STR = 4,
 	POLYMORPHMENUOFFSET = 8196,
 				//!< polymorph spell menu offset
