@@ -47,6 +47,7 @@
 #include "msgboard.h"
 #include "layer.h"
 #include "dragdrop.h"
+#include "accounts.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"
@@ -7186,6 +7187,37 @@ NATIVE ( _world_save )
 
 
 /*!
+\brief reload all accounts
+\author stonedz
+\since 0.82
+\fn reload_accounts
+\
+*/
+
+NATIVE (_reload_accounts )
+{
+
+	InfoOut("Reloading accounts file...");
+	Accounts->LoadAccounts();
+	cAllObjectsIter objs;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ )
+	{
+		if( isCharSerial( objs.getSerial() ) )
+		{
+			P_CHAR pc = (P_CHAR) objs.getObject();
+			if ( ! pc->npc ) // seems to be a player
+			{
+				Accounts->AddCharToAccount(pc->account, pc);
+			}
+		}
+	}
+	ConOut("[DONE]\n");
+	
+
+}
+
+
+/*!
 \brief
 \author stonedz
 \since 0.82
@@ -7747,6 +7779,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "world_save", _world_save },
  { "chr_setPostType", _chr_setPostType },
  { "setLightLevel", _setLightLevel },
+ { "reload_accounts", _reload_accounts},
 
 // speech APIs
  { "chr_getSpeech", _chr_getCmdSpeech },
