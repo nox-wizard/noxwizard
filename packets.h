@@ -1488,14 +1488,14 @@ public:
 class cPacketUnicodeSpeech : public cServerPacket {
 
 private:
-	UI16	size; 
+	eUI16	size; 
 public:
-	Serial	obj;		//!< from ( 0xFFFFFFFF=system message)
-	UI16	model;		//!< item hex number | 0xFFFF=system
-	UI08	type;		//!< text type
-	Color	color;		//!< text color
-	UI16	font;		//!< text font
-	Serial	language;   //!< language
+	eSERIAL	obj;		//!< from ( 0xFFFFFFFF=system message)
+	eUI16 model;		//!< item hex number | 0xFFFF=system
+	eUI08	type;		//!< text type
+	eCOLOR	color;		//!< text color
+	eUI16	font;		//!< text font
+	eSERIAL	language;   //!< language
 	string	name;		//!< name of who speech ( 30 character )
 	cUnicodeString*	msg;	//!< message
 

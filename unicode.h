@@ -52,6 +52,8 @@ public:
 	virtual ~endian( ) { };
 };
 
+typedef UI08 eUI08;
+
 
 class eUI16 : endian<UI08> {
 public:
