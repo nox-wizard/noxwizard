@@ -137,6 +137,7 @@ enum AmxCharEvents
 	EVENT_CHR_ONDOCOMBAT,
 	EVENT_CHR_ONCOMBATHIT,
 	EVENT_CHR_ONSPEECH,
+	EVENT_CHR_ONCHECKNPCAI,
 	ALLCHAREVENTS
 };
 
@@ -677,7 +678,6 @@ public:
 	
 	public:
 		SI32		npcaitype; //!< NPC ai
-		AmxFunction*	npcai_func; //!< function to call for amx npc ai 
 
 	public:
 

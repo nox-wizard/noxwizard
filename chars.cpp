@@ -330,7 +330,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	vendorItemsSell = NULL;
 	vendorItemsBuy = NULL;
 
-	npcai_func=NULL;
 }
 
 /*
@@ -344,8 +343,6 @@ cChar::~cChar()
 		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
-	if( npcai_func!=NULL )
-		safedelete( npcai_func );
 }
 
 
@@ -438,6 +435,7 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 	else if (!strcmp("@ONDOCOMBAT",script1)) 	setAmxEvent( EVENT_CHR_ONDOCOMBAT, script2 );
 	else if (!strcmp("@ONCOMBATHIT",script1)) 	setAmxEvent( EVENT_CHR_ONCOMBATHIT, script2 );
 	else if (!strcmp("@ONSPEECH",script1))		setAmxEvent( EVENT_CHR_ONSPEECH, script2 );
+	else if (!strcmp("@ONCHECKNPCAI",script1))	setAmxEvent( EVENT_CHR_ONCHECKNPCAI, script2 );
 
 	else if (!strcmp("@ONCREATION",script1)) 	newAmxEvent(script2)->Call(getSerial32(), INVALID);
 }
