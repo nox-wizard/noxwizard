@@ -336,7 +336,8 @@ TargetLocation::TargetLocation( P_TARGET pp )
 {
 	Location loc = pp->getLocation();
 	init( loc.x, loc.y, loc.z );
-	if( pp->type==0 ) {
+	if( pp->type==0 ) 
+	{
 
 		P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
 		if(ISVALIDPC(pc)) {
@@ -350,7 +351,20 @@ TargetLocation::TargetLocation( P_TARGET pp )
 			return;
 		}
 	}
-	else if( pp->type==1 ) {
+	else if( pp->type==1 ) 
+	{
+		if ( isCharSerial(pp->getClicked()))
+		{
+			P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
+			if(ISVALIDPC(pc))
+				init(pc);
+		}
+		else if ( isItemSerial(pp->getClicked()))
+		{
+			P_ITEM pi= pointers::findItemBySerial( pp->getClicked() );
+			if (ISVALIDPI(pi)) 
+				init(pi);
+		}
 		return;
 	}
 // Wintermute: Always return a valid location, or spells can't target ground

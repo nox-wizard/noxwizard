@@ -240,7 +240,7 @@ static inline bool checkMana(P_CHAR pc, SpellId num)
 {
 	VALIDATEPCR(pc, false);
 
-//	if( pc->IsGM() ) return true;
+	if( pc->IsGM() ) return true;
 	if ( pc->dontUseMana() ) return true;
 
 	if (pc->mn >= g_Spells[num].mana) return true;
@@ -1009,7 +1009,7 @@ bool checkRequiredTargetType(SpellId spellnum, TargetLocation& t)
 			return (pi!=NULL);
 		case TARGTYPE_RUNE:
 			if (!(ISVALIDPI(pi))) return false;
-			return (pi->type == ITYPE_RUNE);
+			return (pi->type == ITYPE_RUNE || pi->type == ITYPE_MOONGATE);
 		default:
 			return (ISVALIDPI(pi)); // needz to be changed
 	}
@@ -1911,9 +1911,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags, int param)
 {
 
-	if (!checkRequiredTargetType(spellnumber, dest)) return;
-
 	VALIDATEPC(src);
+	if (!checkRequiredTargetType(spellnumber, dest)) return;
 
 	// initial checks and unhide/unfreeze/disturbmed
 	if (src->dead) return;

@@ -1010,7 +1010,7 @@ void NxwCharWrapper::fillBanned( SERIAL house )
 \param house the house
 \warning this function ADD new char to current list
 */
-void NxwCharWrapper::fillCharsInsideHouse( SERIAL house , UI32 scriptID)
+void NxwCharWrapper::fillCharsInsideHouse( SERIAL house)
 {
 	P_HOUSE pHouse = cHouses::findHouse(house);
 	if( pHouse != NULL )
@@ -1058,7 +1058,7 @@ void NxwCharWrapper::fillCharsInsideHouse( SERIAL house , UI32 scriptID)
 \param house the house
 \warning this function ADD new char to current list
 */
-void NxwCharWrapper::fillCharsOutsideHouse( SERIAL house , UI32 scriptID)
+void NxwCharWrapper::fillCharsOutsideHouse( SERIAL house )
 {
 	P_HOUSE pHouse = cHouses::findHouse(house);
 	if( pHouse != NULL )

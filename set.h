@@ -87,8 +87,8 @@ public:
 	void fillCoOwners ( SERIAL house );
 	void fillFriends ( SERIAL house );
 	void fillBanned ( SERIAL house );
-	void fillCharsInsideHouse(SERIAL house, UI32 scriptID=INVALID);
-	void fillCharsOutsideHouse(SERIAL house, UI32 scriptID=INVALID);
+	void fillCharsInsideHouse(SERIAL house);
+	void fillCharsOutsideHouse(SERIAL house);
 };
 
 class NxwItemWrapper : public NxwSerialWrapper {

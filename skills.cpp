@@ -654,9 +654,9 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
     
 	int i = 0;
 	int loopexit=0;
-    	while ( (wpadvance[1+i+skillinfo[sk].advance_index].skill == sk &&
-      	         wpadvance[1+i+skillinfo[sk].advance_index].base  <= pc->baseskill[sk] ) &&
-    	     	  (++loopexit < MAXLOOPS) ) ++i;
+    while ( (wpadvance[i+skillinfo[sk].advance_index].skill == sk &&
+      	     wpadvance[i+skillinfo[sk].advance_index].base  <= pc->baseskill[sk] ) &&
+    	      (++loopexit < MAXLOOPS) ) ++i;
 	if(skillused)
    		incval=(wpadvance[i+skillinfo[sk].advance_index].success);
 	else
