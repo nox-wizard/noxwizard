@@ -213,7 +213,7 @@ int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 
 int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 {
-	int sent, loopexit=30;
+	int sent=0, loopexit=30;
 	while( --loopexit>0 )
 	{
 		sent = send( client[ socket ], xoutbuffer, len, boh );
@@ -511,7 +511,6 @@ void cNetwork::LoginMain(int s)
 
 	acctno[s]=INVALID;
 #ifdef ENCRYPTION
-	NXWCLIENT ps = getClientFromSocket(s);
 	int length=0x3e;
 	int j;
 	unsigned char decryptPacket[MAXBUFFER+1];
@@ -1172,7 +1171,8 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 	if (pc->getMultiSerial32() == INVALID )
 	{
 		P_HOUSE house=cHouses::findHouse(pc->getPosition());
-		P_ITEM p_multi = pointers::findItemBySerial (house->getSerial());
+		if ( house != NULL )
+			p_multi = pointers::findItemBySerial (house->getSerial());
 	}
 	else
 		p_multi = pointers::findItemBySerial( pc->getMultiSerial32() );
