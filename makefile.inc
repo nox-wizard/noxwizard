@@ -121,6 +121,7 @@ SOURCES =	\
 		walking.cpp \
 		weight.cpp \
 		worldmain.cpp \
+		cmds.cpp \
 		abstraction/endian.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
@@ -209,3 +210,4 @@ HEADERS =	\
 		typedefs.h \
 		version.h \
 		worldmain.h \
+		cmds.h \
