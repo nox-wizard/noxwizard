@@ -633,7 +633,8 @@ void checkkey ()
 				secure=1;
 				return;
 			}
-		} else {
+		} 
+		else {
 			if (secure && c != '?')  //Allows help in secure mode.
 			{
 				InfoOut("Secure mode prevents keyboard commands! Press 'S' to disable.\n");
@@ -782,21 +783,13 @@ void checkkey ()
 				break;
 			case 'r':
 			case 'R':
-				InfoOut("Command is disabled\n");
+				ConOut("Recompiling AMX scripts...\n");
+				initAmxEvents();
+				LoadOverrides ();
+				AMXEXECV(AMXT_SPECIALS,0,AMX_AFTER);
+				ConOut("\n[DONE]\n");
 				break;
-/*				ConOut("NoX-Wizard: Reloading server.cfg, spawn.scp, and regions.scp...\n");
-				loadspawnregions();
-				loadregions();
-				ConOut("Loading vital scripts... ");
-				loadmetagm();
-				loadmenuprivs();
-				ConOut("[DONE]\n");
-				loadserverscript();
-				ConOut("NoX-Wizard: Reloading IP Blocking rules...");
-				Network->LoadHosts_deny();
-				ConOut("[DONE]\n");
-				break;
-*/			case '?':
+			case '?':
 				ConOut("Console commands:\n");
 				ConOut("	<Esc> or Q: Shutdown the server.\n");
 				ConOut("	T - System Message: The server is shutting down in 2 minutes.\n");
@@ -812,7 +805,9 @@ void checkkey ()
 				ConOut("	W - Display logged in characters\n");
 				ConOut("	A - Reload accounts file\n");
 				ConOut("	X - Reload XSS scripts\n");
+				ConOut("	R - Recompile amx small scripts\n");
 				ConOut("	S - Toggle Secure mode ");
+
 				if (secure)
 					ConOut("[enabled]\n");
 				else

@@ -7473,6 +7473,7 @@ NATIVE (_recompileSmall )
 {
 	initAmxEvents();
 	LoadOverrides ();
+	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
 	return true;
 }
 /*!

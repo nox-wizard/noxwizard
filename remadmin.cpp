@@ -538,6 +538,7 @@ void RemoteAdmin::ProcessInput(int s)
 		Printf(s,"AMXRUN <program> : executes an external AMX program\r\n");
 		Printf(s,"AMXBUILD <sourcefile> <outputprogram> : compiles a Small program\r\n");
 		Printf(s,"RELOADBLOCKS : reload hosts_deny.scp\r\n");
+		Printf(s,"RELOADSMALL : recompile and reload small scritps\r\n");
 
 		return;
 	}
@@ -663,6 +664,14 @@ void RemoteAdmin::ProcessInput(int s)
 			Printf(s,"hosts_deny.scp reloaded.");
 			return;
 	}									//wad }
+	if (!strcmp(inp,"RELOADSMALL")) 
+	{
+			initAmxEvents();
+			LoadOverrides ();
+			AMXEXECV(AMXT_SPECIALS,0,AMX_AFTER);
+			Printf(s,"Recompiled Small scripts");
+			return;
+	}									
 
 
 	if ((!strcmp(tkn,"BROADCAST"))||(!strcmp(tkn,"BC"))||(!strcmp(tkn,"!"))) 
