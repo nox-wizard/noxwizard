@@ -332,6 +332,8 @@ void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
+	pc->playSFX(sound);
+/* ---- WRAPPER ---- 
 	Location charpos= pc->getPosition();
 
 	charpos.z = 0;
@@ -348,7 +350,7 @@ void soundeffect(NXWSOCKET s, UI16 sound) // Play sound effect for player to all
 		{
 			SendPlaySoundEffectPkt(ps_i->toInt(), 0x01, sound, 0x0000, charpos);
 		}
-	}
+	} */
 }
 
 void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only to me
