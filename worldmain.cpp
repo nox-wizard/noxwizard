@@ -496,7 +496,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 			if (!strcmp(script1, "TITLE"))				{ pc->title =script2; }
 			else if (!strcmp(script1, "TAMING"))			{ pc->taming=str2num(script2);}
 			else if (!strcmp(script1, "TRIGGER"))		{ pc->trigger=str2num(script2);;}
-			else if (!strcmp(script1, "TRIGWORD"))		{ strcpy(pc->trigword,script2);}
+			else if (!strcmp(script1, "TRIGWORD"))		{ pc->trigword=script2;}
 			else if (!strcmp(script1, "TIME_UNUSED"))	{ pc->time_unused=str2num(script2);}
 		break;
 
@@ -1512,8 +1512,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "SPEECH %i\n", pc->speech);
 			if (pc->trigger!=dummy.trigger)
 				fprintf(cWsc, "TRIGGER %i\n", pc->trigger);
-			if (strlen(pc->trigword))
-				fprintf(cWsc, "TRIGWORD %s\n", pc->trigword);
+			if (pc->trigword.length()>0)
+				fprintf(cWsc, "TRIGWORD %s\n", pc->trigword.c_str());
 			//Changed by Magius(CHE) §
 			//tmpdisable=(long) pc->disabled-currenttime;
 			if (pc->disabledmsg!=NULL)

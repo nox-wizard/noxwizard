@@ -1066,7 +1066,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 											pc->taming=str2num(script2);
 				else if ( !strcmp( "TRACKING", script1 ) )		pc->baseskill[TRACKING] = getRangedValue(script2);
 				else if ( !strcmp( "TRIGGER", script1 ) )		pc->trigger=str2num(script2);
-				else if ( !strcmp( "TRIGWORD", script1 ) )		strcpy(pc->trigword,script2);
+				else if ( !strcmp( "TRIGWORD", script1 ) )		pc->trigword=script2;
 				break;
 			case 'V':
 				if	( !strcmp( "VALUE", script1 ) )

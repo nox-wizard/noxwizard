@@ -1024,7 +1024,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		{
 		if (m_pcAdded!=0)
 		{
-			strcpy(m_pcAdded->trigword, par);
+			m_pcAdded->trigword= par;
 		}
 		}
 		//////////////////////////////////////////////////////////////////////////
@@ -1294,7 +1294,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			//////////////////////////////////////////////////////////////////////////
 		else if (!(strcmp("SETWORD", cmd)))  // Sets the trigger word of an NPC
 		{
-			if (m_pcNpc!=0) strcpy(m_pcNpc->trigword, par);
+			if (m_pcNpc!=0) m_pcNpc->trigword= par;
 		}
 		//////////////////////////////////////////////////////////////////////////
 			// SKL

@@ -807,11 +807,11 @@ int response(NXWSOCKET  s)
 				//
 				// 	Handle speech trigger
 				//
-				if ( pc_map->trigger && strlen( pc_map->trigword ) )
+				if ( pc_map->trigger && ( pc_map->trigword.length()>0 ) )
 				{
-					if (strlen(pc_map->trigword))
+					if (pc_map->trigword.length()>0)
 					{
-						strcpy(search1, pc_map->trigword);
+						strcpy(search1, pc_map->trigword.c_str());
 						strupr(search1);
 						bool requestTrigger = ( strstr( comm, search1) != NULL );
 						if ( requestTrigger )
