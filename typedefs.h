@@ -433,4 +433,15 @@ struct tele_locations_st {
 	Location destination, origem;
 };
 
+
+/*! 
+\brief Stat regeneration info
+\author Endymion
+\since 0.83
+*/
+typedef struct {
+	TIMERVAL timer; //!< the timer
+	UI32 rate; //!< regeneration rate ( milliseconds )
+} regen_st;
+
 #endif //__TYPEDEFS_H__
