@@ -282,12 +282,9 @@ void npcCastSpell(P_CHAR pc_att, P_CHAR pc_def)
 
 
 
-///////////////////////////////////////////////////////////////////
-// Function name     : checkAI
-// Return type       : void
-// Author            : Luxor
-// Argument          : int currenttime -> the current time
-// Argument          : P_CHAR pc -> the npc
+/*!
+\author Luxor
+*/
 void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 {
 	VALIDATEPC(pc);
@@ -394,8 +391,6 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			if ( pc->npcWander == 5 )
 				return;
 			
-			//if ( pc->hp < pc->st )  -- sparhawk working here on ai
-						
 			if (pc->baseskill[MAGERY] > 400)
 			{
 				if ( chance( 50 ) )
@@ -409,8 +404,9 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			}
 
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( pc->getPosition(), 20, true, false );
-			
+			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
+			P_CHAR pc_target = NULL;
+			SI32 att_value = 0, curr_value = 0;
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 			
 				P_CHAR pj=sc.getChar();
@@ -427,14 +423,26 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					) 
 					continue;
 
-				if ( pc->losFrom( pj ) )
-				{
-					if (pc->baseskill[MAGERY] > 400 && (pj->priv2 & CHRPRIV2_DISPELLABLE))
-						NPC_CASTSPELL(magic::SPELL_DISPEL, pj);
-					pc->fight( pj );
+				if ( !pc->losFrom( pj ) )
+					continue;	
+					
+                                if ( pc->baseskill[MAGERY] > 400 && pj->summontimer ) {
+                                        pc->facexy( pj->getPosition().x, pj->getPosition().y );
+					NPC_CASTSPELL( magic::SPELL_DISPEL, pj );
 					return;
 				}
+				
+				if ( pc_target != NULL ) {
+                                        curr_value = pc->distFrom( pj ) + pj->hp/3;
+					if ( curr_value < att_value )
+						pc_target = pj;
+				} else {
+					att_value = curr_value = pc->distFrom( pj ) + pj->hp/3;
+					pc_target = pj;
+				}
 			}
+                        if ( pc_target != NULL )
+				pc->fight( pc_target );
 		}
 		break;
 		case NPCAI_EVILHEALER:
@@ -535,7 +543,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 			}
 
 			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( pc->getPosition(), 15, true, false );
+			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
 			
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 			

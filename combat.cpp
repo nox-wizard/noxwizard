@@ -87,7 +87,17 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	if((dist > 1 && fightskill != ARCHERY) || !los) return;
 	
-	if(pc_def->npc && pc_def->IsInvul()) return;
+	if ( pc_def->npc ) {
+		if ( pc_def->IsInvul() )
+			return;
+		P_CHAR pc_target = pointers::findCharBySerial( pc_def->targserial );
+		if ( ISVALIDPC( pc_target ) ) {
+                        SI32 att_value = pc_target->hp/3 + pc_def->distFrom( pc_target );
+                        SI32 this_value = hp/3 + distFrom( pc_def );
+                        if ( this_value < att_value )
+				pc_def->fight( this );
+		}
+	}
 
 	P_ITEM def_Weapon = pc_def->getWeapon();
 	(ISVALIDPI(def_Weapon)) ? def_fightskill = def_Weapon->getCombatSkill() : def_fightskill=WRESTLING;
@@ -383,9 +393,10 @@ bool cChar::combatTimerOk()
 */
 void cChar::undoCombat()
 {
+	if ( war ) //Luxor
+		toggleCombat();
 	timeout = 0;
-        if ( !npc ) //Luxor: otherwise NPCs don't try to pathfind the target.
-		attackerserial = INVALID;
+	attackerserial = INVALID;
 	targserial = INVALID;
 	ResetAttackFirst();
 }
@@ -411,16 +422,19 @@ void cChar::doCombat()
 	bool	validWeapon = ISVALIDPI( pWeapon );
 	P_CHAR	pc_def = pointers::findCharBySerial(targserial);
 
-	if(!ISVALIDPC(pc_def))
+	if( !ISVALIDPC(pc_def) )
 	{
 		undoCombat();
 		return;
 	}
 
-	if ((!pc_def->npc && !pc_def->IsOnline()) || pc_def->IsHidden() || !losFrom(pc_def) || pc_def->dead || (pc_def->npc && pc_def->npcaitype==NPCAI_PLAYERVENDOR) )
+	if ( (!pc_def->npc && !pc_def->IsOnline()) || pc_def->IsHidden() || pc_def->dead || (pc_def->npc && pc_def->npcaitype==NPCAI_PLAYERVENDOR) )
 	{
 		undoCombat();
 		return;
+	}
+	if ( !npc && !losFrom(pc_def) ) {
+		undoCombat();
 	}
 
 	dist = distFrom(pc_def);
@@ -447,26 +461,20 @@ void cChar::doCombat()
 		return;
 	*/
 
-	if (npc)
-		npcs::npcMagicAttack(this, pc_def);
+	if ( npc ) {
+		npcs::npcMagicAttack( this, pc_def );
+	}
 
-	if (dist>15)
+	if ( dist > VISRANGE )
 	{
-		targserial = INVALID;
-		timeout = 0;
+		undoCombat();
 
 		P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
-		if (ISVALIDPC(pc_att))
+		if ( ISVALIDPC(pc_att) )
 		{
 			pc_att->ResetAttackFirst();
 			pc_att->attackerserial=INVALID;
 		}
-
-		attackerserial=INVALID;
-		ResetAttackFirst();
-
-		if (npc && npcaitype!=NPCAI_PLAYERVENDOR && !dead && war)
-			toggleCombat();
 	}
 	else if ( combatTimerOk() )
 	{
