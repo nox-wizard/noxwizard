@@ -348,7 +348,8 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 			safedelete(cse);
 		}
 		if (buffer[0]=='#') {
-			if (!strncmp(buffer,"#copy ", strlen("#copy "))) {
+			if (!strncmp(buffer,"#copy ", strlen("#copy "))) 
+			{
 				char script1[1024];
 				cScpIterator* iter = NULL;
 				sprintf(script1, "SECTION %s", buffer+strlen("#copy "));
@@ -359,6 +360,10 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 				}
 				do {
 					strcpy(script1, iter->getEntry()->getFullLine().c_str());
+					if ( !strncmp(script1, "SECTION" , strlen("SECTION")))
+					{
+						ConOut ("Warning: SECTION without previous } in line %s", script1);
+					}
 					if ((script1[0]!='}')&&(script1[0]!='{')) {
 						cse = new cScpEntry(script1);
 						m_vLines.push_back(*cse);
