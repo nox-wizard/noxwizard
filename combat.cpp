@@ -180,9 +180,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	if (fightskill != WRESTLING || npc) {
 		basedamage = calcAtt();
 	} else {
-		if (skill[WRESTLING]/500.0 > 0.0) {
-			basedamage = (int)((skill[WRESTLING]/500.0)+RandomNum(1,2));
-		} else basedamage = RandomNum(1,2);
+		basedamage = UI32( (skill[WRESTLING]/100.0)/2 + RandomNum(1,2) );
 
 		//Luxor (6 dec 2001): Wrestling Disarm & Stun punch
 		if (wresmove == WRESDISARM)	{
@@ -259,9 +257,11 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	if (damage>0 && ISVALIDPI( pWeapon ) )
 	{
-		damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32() );
-		if (g_bByPass==true)
-			return;
+		if ( pWeapon->getAmxEvent(EVENT_IONDAMAGE) != NULL ) {
+			damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32() );
+			if (g_bByPass==true)
+				return;
+		}
 	}
 
 	//when hitten and damage >1, defender fails if casting a spell!

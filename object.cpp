@@ -670,9 +670,23 @@ string cObject::getSecondaryName() const
 	return secondary_name;
 }
 
+/*!
+\brief Tell if the AmxEvent id is valid
+\author Luxor
+\since 0.82
+*/
 LOGICAL cObject::isValidAmxEvent( UI32 eventId )
 {
-	return false;
+	if ( eventId < 0 )
+		return false;
+
+	if ( isCharSerial(getSerial32()) && eventId > ALLCHAREVENTS )
+		return false;
+
+	if ( isItemSerial(getSerial32()) && eventId > ALLITEMEVENTS )
+		return false;
+
+	return true;
 }
 
 AmxEvent* cObject::getAmxEvent( UI32 eventId )

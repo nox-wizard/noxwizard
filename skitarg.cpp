@@ -2304,10 +2304,11 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 		if (g_bByPass==true) return;
 	}
 	*/
-	g_bByPass = false;
-	poison->morez = pi->runAmxEvent( EVENT_IONPOISONED, pi->getSerial32(), s, poison->morez );
-	if (g_bByPass==true)
-		return;
+	if ( pi->getAmxEvent(EVENT_IONPOISONED) != NULL ) {
+		poison->morez = pi->runAmxEvent( EVENT_IONPOISONED, pi->getSerial32(), s, poison->morez );
+		if (g_bByPass==true)
+			return;
+	}
 
 	int success=0;
     switch(poison->morez)

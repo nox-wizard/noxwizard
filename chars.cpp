@@ -1382,10 +1382,11 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 		if (g_bByPass==true) return;
 	}
 	*/
-	g_bByPass = false;
-	amount = runAmxEvent( EVENT_CHR_ONWOUNDED, getSerial32(), amount, serial_att );
-	if (g_bByPass==true)
-		return;
+	if ( getAmxEvent(EVENT_CHR_ONWOUNDED) != NULL ) {
+		amount = runAmxEvent( EVENT_CHR_ONWOUNDED, getSerial32(), amount, serial_att );
+		if (g_bByPass==true)
+			return;
+	}
 	unfreeze();
 
 	if (amount <= 0) return;
@@ -3770,7 +3771,7 @@ void cChar::doGmEffect()
 
 void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 {
-	VALIDATEPC(showToWho);
+	VALIDATEPC( showToWho );
 	NXWSOCKET socket = showToWho->getSocket();
 	if (socket < 0 || socket > now) return;
 
