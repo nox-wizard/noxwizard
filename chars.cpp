@@ -4548,15 +4548,10 @@ void cChar::npc_heartbeat()
 	//
 	if ( TIMEOUT( nextAiCheck ) )
 		npcs::checkAI( this );
+
 	//
 	//	Handle walking
 	//
-	//ENDYDEBUG
-	/*if( getSerial32()==2070358 ) {
-		ConOut( "before npcmovecheck called", 0);
-	}*/
-	//ENDYDEBUG END
-
 	if ( TIMEOUT( npcmovetime ) )
 		npcMovement( this );
 

@@ -1772,9 +1772,25 @@ int validNPCMove(int x, int y, signed char z, P_CHAR pc_s )
 	signed char mapz = Map->AverageMapElevation(x, y, mapid);	// just to get the map-ID
 	if (mapz != illegal_z)
 	{
-		if ((mapid >= 0x25A && mapid <= 0x261) ||	// cave wall
-			(mapid >= 0x266 && mapid <= 0x26D) ||	// cave wall
-			(mapid >= 0x2BC && mapid <= 0x2CB) )	// cave wall
+		if ( 	//<Luxor>: denied texture map IDs
+			(mapid >= 0x00DC && mapid <= 0x00E7) ||
+			(mapid >= 0x00EC && mapid <= 0x00F7) ||
+			(mapid >= 0x00FC && mapid <= 0x0107) ||
+			(mapid >= 0x010C && mapid <= 0x0117) ||
+			(mapid >= 0x011E && mapid <= 0x0129) ||
+			(mapid >= 0x0141 && mapid <= 0x0144) ||
+			(mapid >= 0x01AF && mapid <= 0x01B0) ||
+			(mapid >= 0x01DE && mapid <= 0x01DB) ||
+			(mapid >= 0x021F && mapid <= 0x0244) ||
+			(mapid >= 0x025A && mapid <= 0x026D) ||
+			(mapid >= 0x02BC && mapid <= 0x02CB) ||
+			(mapid >= 0x06CD && mapid <= 0x06DD) ||
+			(mapid >= 0x06EB && mapid <= 0x073E) ||
+			(mapid >= 0x0745 && mapid <= 0x075C) ||
+			(mapid >= 0x07BD && mapid <= 0x07D4) ||
+			(mapid >= 0x0834 && mapid <= 0x08C6)
+			//</Luxor>
+			) 	
 			return 0;
 		if ( mapid >= 0x0A8 && mapid <= 0x0AB) 	// water (ocean ?)
 			return 0;
