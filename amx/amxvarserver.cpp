@@ -214,6 +214,12 @@ SI32 amxScriptIdVariable::getSize()
 	return sizeof( value );
 }
 
+SI32 amxScriptIdVariable::getSize( const SI32 index )
+{
+	return sizeof( value );
+}
+
+
 //@}
 
 
