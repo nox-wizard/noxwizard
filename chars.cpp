@@ -315,7 +315,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	
 	mounted=false;
 	lootVector.clear();
-	
+
 	SetInnocent(); //Luxor
 	targetcallback = INVALID;
 
@@ -324,6 +324,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	speechCurrent = NULL; //Luxor
 	lastRunning = 0; //Luxor
 	path = NULL; //Luxor
+	sentObjects.clear(); //Luxor
 	resetProfile();
 	staticProfile=NULL;
 
@@ -2281,11 +2282,14 @@ void cChar::deleteChar()
 */
 LOGICAL cChar::seeForFirstTime( P_OBJECT po )
 {
+	SERIAL objser = po->getSerial32();
         //
         // The char cannot see itself for the first time ;)
         //
-	if ( po->getSerial32() == getSerial32() )
+	if ( objser == getSerial32() )
 		return false;
+
+	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
 
 	//
 	// Check if the object is in visRange
@@ -2294,15 +2298,46 @@ LOGICAL cChar::seeForFirstTime( P_OBJECT po )
 	if ( distance > VISRANGE ) // We cannot see it!
 		return false;
 
-        //
-        // Check if the object was visible even before
-        //
-	distance = dist( po->getPosition(), getOldPosition(), false );
-	if ( distance <= VISRANGE )
+	if ( it != sentObjects.end() ) // Already sent before
 		return false;
+
+	sentObjects.push_front( objser );
 
 	return true;
 }
+
+
+/*!
+\author Luxor
+\brief Tells if a char sees an object for the last time
+*/
+LOGICAL cChar::seeForLastTime( P_OBJECT po )
+{
+	SERIAL objser = po->getSerial32();
+
+        //
+        // The char cannot see itself for the last time ;)
+        //
+	if ( objser == getSerial32() )
+		return false;
+
+	SERIAL_SLIST::iterator it( find( sentObjects.begin(), sentObjects.end(), objser ) );
+
+	//
+	// Check if the object is in visRange
+	//
+	R64 distance = dist( po->getPosition(), getPosition(), false );
+	if ( distance <= VISRANGE ) // We should see it
+		return false;
+
+	if ( it == sentObjects.end() ) // Never sent before, so why remove it from the display?
+		return false;
+
+	sentObjects.erase( it );
+
+	return true;
+}
+
 
 /*!
 \author Xanathar

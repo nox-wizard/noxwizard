@@ -729,231 +729,6 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	return true;
 }
 
-/*!
-\author Luxor
-*/
-LOGICAL WalkSendToPlayers( P_CHAR pc, SI08 dir, Location oldpos, Location pos )
-{
-	VALIDATEPCR( pc, false );
-
-	NXWCLIENT ps = NULL;
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc );
-	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
-                ps = sw.getClient();
-		if( ps == NULL )
-			continue;
-
-		P_CHAR pc_curr = ps->currChar();
-		if( !ISVALIDPC(pc_curr) )
-			continue;
-
-		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) { // It's seen for the first time, send a draw packet
-			impowncreate( ps->toInt(), pc, 1 );
-			continue;
-		}
-
-                if ( !pc_curr->IsGM() ) { // Players only
-			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
-				return false;
-			if ( pc->dead && !pc->war && !pc_curr->dead ) // Non-persecuting ghosts can be seen only by other ghosts
-				return false;
-		}
-
-		NXWSOCKET socket = ps->toInt();
-		UI08 flag, hi_color;	
-
-		// If it's an npc, and it's fighting or following something let's show it running
-		if ( pc->npc && ( pc->war || pc->ftargserial != INVALID ) ) {
-			dir |= 0x80;
-		}
-
-		// <LB> Flying stuff for npcs
-		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
-			SI32 d;
-			UI16 skid = pc->GetBodyType();
-			if ( skid > 2047 ) skid = 0;
-			if ( (creatures[skid].who_am_i) & 0x1 ) { // If true, the npc can fly
-				if ( pc->fly_steps > 0 ) {
-					pc->fly_steps--;
-					dir |= 0x80; // run mode = fly for that ones that can fly
-				} else {
-					if ( fly_p != 0 )
-						d = rand() % fly_p;
-					else
-						d = 0;
-					if ( d == 0 ) {
-						if ( fly_steps_max != 0 )
-							pc->fly_steps = ( rand() % fly_steps_max ) + 2;
-						else
-							pc->fly_steps += 2;
-					}
-				}
-			}
-		}
-		// </LB>
-
-		if ( pc->war )
-			flag = 0x40;
-		else
-			flag = 0x00;
-		if ( pc->IsHidden() )
-			flag |= 0x80;
-		if ( pc->dead && !pc->war )
-			flag |= 0x80; // Ripper
-		if ( pc->poisoned )
-			flag |= 0x04; // AntiChrist -- thnx to SpaceDog
-
-		SI32 guild = Guilds->Compare( pc, pc_curr );
-		if ( guild == 1 )		// Same guild (Green)
-			hi_color = 2;
-		else if ( guild == 2 )		// Enemy guild.. set to orange
-			hi_color = 5;
-		else if ( pc->IsGrey() )
-			hi_color = 3;           // grey
-		else if ( pc->IsMurderer() )
-			hi_color = 6;		// If a bad, show as red.
-		else if ( pc->IsInnocent() )
-			hi_color = 1;		// If a good, show as blue.
-		else if ( pc->flag == 0x08 )
-			hi_color = 2;		// green (guilds)
-		else if ( pc->flag == 0x10 ) 
-			hi_color = 5;		// orange (guilds)
-		else
-			hi_color = 3;		// grey
-
-		SendUpdatePlayerPkt( ps->toInt(), pc->getSerial32(), pc->GetBodyType(), pos, dir, pc->getSkinColor(), flag, hi_color );
-	}
-
-	return true;
-}
-
-
-
-
-
-
-///////////////
-// Name:	WalkHandleCharsAtNewPos
-// history:	cut from walking() by Duke, 27.10.2000
-// Purpose:	sends the newly visible Chars to the screen and checks for shoving
-//
-bool WalkHandleCharsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
-{
-	VALIDATEPCR(pc, false);
-
-	Location pcpos= pc->getPosition();
-
-	NxwCharWrapper si;
-	//si.fillCharsNearXYZ( pc->getPosition(), VISRANGE +5, !pc->IsGM(), false );
-
-	// Luxor: VISRANGE + 1 would be sufficient, but people experiencing lag won't see a lot of things then.
-	si.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 5, !pc->IsGM(), false );
-
-	for( si.rewind(); !si.isEmpty(); si++ )
-	{
-		P_CHAR pc_i=si.getChar();
-		if(ISVALIDPC(pc_i)) 
-		{
-			if ( pc->distFrom( pc_i ) > VISRANGE ) { // Luxor: The pc has just walked over the vis circle
-				if ( pc->getClient() != NULL )
-					pc->getClient()->sendRemoveObject( P_OBJECT(pc_i) );
-                                if ( pc_i->getClient() != NULL )
-					pc_i->getClient()->sendRemoveObject( P_OBJECT(pc) );
-				continue;
-			}
-                        if ( pc->seeForFirstTime( P_OBJECT(pc_i) ) ) //Luxor
-				impowncreate( pc->getSocket(), pc_i, 1);
-
-			if(pc_i->getPosition()==pcpos)
-			
-				if (!pc->IsGMorCounselor() && pc_i->getSerial32()!=pc->getSerial32() )
-
-					  if(!pc_i->dead && !pc_i->IsInvul() && !pc_i->IsGM() )
-						  
-						 if (pc_i->IsHidden() ) {
-								pc->sysmsg(TRANSLATE("You shoved something invisible aside."));
-								pc->stm=qmax(pc->stm-ServerScp::g_nShoveStmDamage, 0);
-								pc->updateStats(2);  // arm code
-								if (pc->IsHidden() && !pc->IsHiddenBySpell())
-									pc->unHide(); //xan, shoving in stealth will unhide
-						  }
-						  else {
-								pc->sysmsg(TRANSLATE("Being perfectly rested, you shove %s out of the way."), pc_i->getCurrentNameC());
-								pc->stm=qmax(pc->stm-ServerScp::g_nShoveStmDamage, 0);
-								pc->updateStats(2);  // arm code
-								if (pc->IsHidden() && !pc->IsHiddenBySpell())
-									pc->unHide(); //xan, shoving in stealth will unhide
-						  }
-		}
-	}
-
-	return true;
-
-}
-
-///////////////
-// Name:	WalkHandleItemsAtNewPos
-// history:	cut from walking() by Duke, 27.10.2000
-// Purpose:	sends the newly visible items to the screen and checks for item effects
-//
-bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
-{
-	VALIDATEPCR(pc, false);
-
-	NXWCLIENT ps=pc->getClient();
-	if ( ps == NULL ) //Luxor
-		return false;
-
-	Location pcpos=pc->getPosition();
-	
-	NxwItemWrapper si;
-	si.fillItemsNearXYZ( pcpos, VISRANGE + 5, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) {
-	
-		P_ITEM pi=si.getItem();
-		if(!ISVALIDPI(pi))
-			continue;
-		/*if ( pi->getPosition()==pcpos )
-		{
-                        if ( pi->id()==0x3996 || pi->id()==0x398C )		//Fire Field
-			{
-				//<Luxor>: new fire field handle
-				if (!pc->getTempfx(tempfx::FIELD_DAMAGE))
-					tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, SI32(pi->morex/300.0), DAMAGE_FIRE, 0, 3);
-				//</Luxor>
-			}
-
-			if ( pi->id()==0x3915 || pi->id()==0x3920 )		//Poison field
-			{
-				pc->applyPoison(POISON_WEAK);	//Luxor
-				pc->playSFX(0x0208);
-			}
-
-			if ( pi->id()==0x3979 || pi->id()==0x3967 )		//Para Field
-			{
-				tempfx::add(pc, pc, tempfx::SPELL_PARALYZE, 0, 0, 0, 3);
-				pc->playSFX(0x0204);
-			}
-		}
-		else if( ps!=NULL )*/
-
-			if( pi->id()>=0x407C && pi->id()<=0x407E )
-			{
-				int di= item_dist(pc, pi);
-
-				if (di<=BUILDRANGE && di>=VISRANGE)
-				{
-					senditem(ps->toInt(), pi);
-				}
-
-			}
-			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
-				senditem( ps->toInt(), pi );
-	}
-	return true;
-}
-
 
 void WalkingHandleRainSnow(P_CHAR pc)
 {
@@ -976,11 +751,11 @@ void WalkingHandleRainSnow(P_CHAR pc)
 	// bugfix LB
 
 		int kk=noweather[s];
-		if (j || i || x!=-127 ) 
+		if (j || i || x!=-127 )
 			noweather[s]=1;
-		else 
+		else
 			noweather[s]=0; // no rain & snow in static buildings+dungeons;
-		if (kk-noweather[s]!=0) 
+		if (kk-noweather[s]!=0)
 			weather(s, 0); // iff outside-inside changes resend weather ...
 	// needs to be de-rem'd if weather is available again
   }
@@ -1051,7 +826,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 	newx= pc->getPosition().x;
 	newy= pc->getPosition().y;
 
-	WalkSendToPlayers( pc, dir, pc->getOldPosition(), pc->getPosition() );
+	sendToPlayers( pc, dir );
 
 	if (dir>INVALID && (dir&0x0F)<8)
 		pc->dir=(dir&0x0F);
@@ -1062,10 +837,10 @@ void walking(P_CHAR pc, int dir, int sequence)
 	if( oldx!=newx || oldy!=newy ) 
 	{
 		//Luxor: moved WalkHandleItemsAtNewPos before socket check.
-		WalkHandleItemsAtNewPos(pc, oldx, oldy, newx, newy);
+		handleItemsAtNewPos( pc, oldx, oldy, newx, newy );
 		if (s!=INVALID)
 		{
-			WalkHandleCharsAtNewPos(pc, oldx, oldy, newx, newy);
+			handleCharsAtNewPos( pc );
 			pc->LastMoveTime = uiCurrentTime;
 		}
 
@@ -1141,7 +916,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 					{
 						dir |= 0x80;
 					}
-					
+
 
 					if (pc_s->war)
 						flag = 0x40;
@@ -1344,7 +1119,7 @@ void cChar::walkNextStep()
         SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
         dir = dirXY & 0x0F;
 	MoveTo( pos );
-        WalkSendToPlayers( this, dirXY, oldpos, pos );
+        sendToPlayers( this, dirXY );
 	setNpcMoveTime();
 }
 
@@ -1602,3 +1377,194 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 	}
 }
 
+
+//namespace walking {
+
+/*!
+\author Luxor
+*/
+void handleCharsAtNewPos( P_CHAR pc )
+{
+	VALIDATEPC( pc );
+
+	NxwCharWrapper sc;
+	P_CHAR pc_curr;
+	sc.fillCharsAtXY( pc->getPosition(), !pc->IsGM(), false );
+
+	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+		pc_curr = sc.getChar();
+		if ( !ISVALIDPC( pc_curr ) )
+			continue;
+		if ( pc->IsGMorCounselor() || pc_curr->getSerial32() == pc->getSerial32() )
+			continue;
+		if ( pc_curr->dead || pc_curr->IsInvul() )
+			continue;
+		if ( pc_curr->IsHidden() )
+			pc->sysmsg( TRANSLATE("You shoved something invisible aside.") );
+		else
+			pc->sysmsg( TRANSLATE("Being perfectly rested, you shove %s out of the way."), pc_curr->getCurrentNameC() );
+
+		pc->stm = qmax( pc->stm-ServerScp::g_nShoveStmDamage, 0 );
+		pc->updateStats( STAT_STAMINA );
+		if ( pc->IsHidden() && !pc->IsHiddenBySpell() )
+			pc->unHide(); //xan, shoving in stealth will unhide
+	}
+}
+
+///////////////
+// Name:	WalkHandleItemsAtNewPos
+// history:	cut from walking() by Duke, 27.10.2000
+// Purpose:	sends the newly visible items to the screen and checks for item effects
+//
+bool handleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
+{
+	VALIDATEPCR(pc, false);
+
+	NXWCLIENT ps=pc->getClient();
+	if ( ps == NULL ) //Luxor
+		return false;
+
+	Location pcpos=pc->getPosition();
+
+	NxwItemWrapper si;
+	si.fillItemsNearXYZ( pcpos, VISRANGE + 5, false );
+	for( si.rewind(); !si.isEmpty(); si++ ) {
+
+		P_ITEM pi=si.getItem();
+		if(!ISVALIDPI(pi))
+			continue;
+			if( pi->id()>=0x407C && pi->id()<=0x407E )
+			{
+				int di= item_dist(pc, pi);
+
+				if (di<=BUILDRANGE && di>=VISRANGE)
+				{
+					senditem(ps->toInt(), pi);
+				}
+
+			}
+			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
+				senditem( ps->toInt(), pi );
+	}
+	return true;
+}
+
+
+/*!
+\author Luxor
+*/
+void sendToPlayers( P_CHAR pc, SI08 dir )
+{
+	VALIDATEPC( pc );
+
+	NXWCLIENT ps = NULL;
+	NXWCLIENT cli = pc->getClient();
+	NxwCharWrapper sc;
+	sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE * 3, !pc->IsGM() );
+
+	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+		P_CHAR pc_curr = sc.getChar();
+		if( !ISVALIDPC(pc_curr) )
+			continue;
+
+		if ( pc->seeForLastTime( pc_curr ) ) {
+			if ( cli != NULL )
+				cli->sendRemoveObject( P_OBJECT(pc_curr) );
+		}
+		if ( pc->seeForFirstTime( pc_curr ) ) {
+			if ( cli != NULL )
+				impowncreate( cli->toInt(), pc_curr, 1);
+		}
+
+		ps = pc_curr->getClient();
+		if ( ps == NULL )
+			continue;
+
+		// pc has just walked out pc_curr's vis circle
+		if ( pc_curr->seeForLastTime( pc ) ) {
+			ps->sendRemoveObject( P_OBJECT(pc) );
+			continue;
+		}
+
+		// It's seen for the first time, send a draw packet
+		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) {
+			impowncreate( ps->toInt(), pc, 1 );
+			continue;
+		}
+
+                if ( !pc_curr->IsGM() ) { // Players only
+			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
+				return;
+			if ( pc->dead && !pc->war && !pc_curr->dead ) // Non-persecuting ghosts can be seen only by other ghosts
+				return;
+		}
+
+		NXWSOCKET socket = ps->toInt();
+		UI08 flag, hi_color;
+
+		// If it's an npc, and it's fighting or following something let's show it running
+		if ( pc->npc && ( pc->war || pc->ftargserial != INVALID ) )
+			dir |= 0x80;
+
+		// <LB> Flying stuff for npcs
+		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
+			SI32 d;
+			UI16 skid = pc->GetBodyType();
+			if ( skid > 2047 ) skid = 0;
+			if ( (creatures[skid].who_am_i) & 0x1 ) { // If true, the npc can fly
+				if ( pc->fly_steps > 0 ) {
+					pc->fly_steps--;
+					dir |= 0x80; // run mode = fly for that ones that can fly
+				} else {
+					if ( fly_p != 0 )
+						d = rand() % fly_p;
+					else
+						d = 0;
+					if ( d == 0 ) {
+						if ( fly_steps_max != 0 )
+							pc->fly_steps = ( rand() % fly_steps_max ) + 2;
+						else
+							pc->fly_steps += 2;
+					}
+				}
+			}
+		}
+		// </LB>
+
+		if ( pc->war )
+			flag = 0x40;
+		else
+			flag = 0x00;
+		if ( pc->IsHidden() )
+			flag |= 0x80;
+		if ( pc->dead && !pc->war )
+			flag |= 0x80; // Ripper
+		if ( pc->poisoned )
+			flag |= 0x04; // AntiChrist -- thnx to SpaceDog
+
+		SI32 guild = Guilds->Compare( pc, pc_curr );
+		if ( guild == 1 )		// Same guild (Green)
+			hi_color = 2;
+		else if ( guild == 2 )		// Enemy guild.. set to orange
+			hi_color = 5;
+		else if ( pc->IsGrey() )
+			hi_color = 3;           // grey
+		else if ( pc->IsMurderer() )
+			hi_color = 6;		// If a bad, show as red.
+		else if ( pc->IsInnocent() )
+			hi_color = 1;		// If a good, show as blue.
+		else if ( pc->flag == 0x08 )
+			hi_color = 2;		// green (guilds)
+		else if ( pc->flag == 0x10 ) 
+			hi_color = 5;		// orange (guilds)
+		else
+			hi_color = 3;		// grey
+
+		SendUpdatePlayerPkt( ps->toInt(), pc->getSerial32(), pc->GetBodyType(), pc->getPosition(), dir, pc->getSkinColor(), flag, hi_color );
+	}
+}
+
+
+
+
+//} //namespace walking

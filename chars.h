@@ -459,8 +459,10 @@ class cChar : public cObject
 	private:
 		cPath*			path;			//!< current path <Luxor>
 		void			walkNextStep();		//!< walk next path step <Luxor>
+		SERIAL_SLIST		sentObjects;
 	public:
-                LOGICAL			seeForFirstTime( P_OBJECT po );	//!< does it see po for the first time? <Luxor>
+		LOGICAL			seeForFirstTime( P_OBJECT po );	//!< does it see the object for the first time? <Luxor>
+		LOGICAL			seeForLastTime( P_OBJECT po ); //!< does it see the object for the first time? <Luxor>
 		void			walk();			//!< execute walk code <Luxor>
 		inline LOGICAL		hasPath() { return (path!=NULL); } //!< has a path set? <Luxor>
 		void			follow( P_CHAR pc ); //!< follow pc <Luxor>
