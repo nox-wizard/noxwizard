@@ -1531,7 +1531,13 @@ void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
 	builder->fx1=shipdeed->getSerial32();
 	newBoat->createMulti(shipdeed->morex, piShip);
 	id = piShip->getId();
-	newBoat->Build(builder->getSocket(), piShip,(char) (id%256));
+	LOGICAL success = newBoat->Build(builder->getSocket(), piShip,(char) (id%256));
+	if ( !success )
+	{
+		piShip->Delete();
+		delete newBoat;
+		return;
+	}
 	newBoat->p_serial=piShip;
 	newBoat->setSerial(piShip->getSerial32());
 	if (ps->isDragging()) 
