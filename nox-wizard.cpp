@@ -3162,7 +3162,7 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 				if( ((pc_j==NULL) ) &&
 					((pi_j==NULL) ) )
 				{
-					pi->deleteItem();
+					pi->Delete();
 					++removed;
 				}
 			}

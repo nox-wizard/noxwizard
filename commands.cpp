@@ -1025,7 +1025,7 @@ namespace Commands
 		for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
 			pi = pointers::findItemBySerial( objs.getSerial() );
 			if ( ISVALIDPI(pi) && pi->isInWorld() && pi->wipe == 0 )
-				pi->deleteItem();
+				pi->Delete();
 		}
 		
 		sysbroadcast( TRANSLATE("All items have been wiped") );

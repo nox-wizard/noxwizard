@@ -1032,7 +1032,7 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                         pi->setId( id );
                         pi->type=ITYPE_FOOD;
                         pi->Refresh();
-                        piRaw->deleteItem();
+                        piRaw->Delete();
                         pc->sysmsg(TRANSLATE("You have cooked the %s,and it smells great."),matname);
                     }
                 }
@@ -1096,7 +1096,7 @@ void Skills::MakePizza(NXWSOCKET s)
 				if (!pc->checkSkill(COOKING, 0, 1000))
 				{
 					pc->sysmsg(TRANSLATE("You failed to mix."));
-					pi->deleteItem();
+					pi->Delete();
 					return;
 				}
 
@@ -2038,7 +2038,7 @@ void Skills::BeggingTarget(NXWSOCKET s)
                                 else // not enough money in this pile -> only delete it
                                 {
                                     realgold+=pj->amount;
-                                    pj->deleteItem();
+                                    pj->Delete();
                                     pj->Refresh();
                                 }
                             }
@@ -2270,12 +2270,12 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 				pc->sysmsg(TRANSLATE("Your weapon has been destroyed"));
                                 //<Luxor>
 				ps->sendRemoveObject( static_cast<P_OBJECT>(pi) );
-				pi->deleteItem();
+				pi->Delete();
 			}
 		}
 	}
 
-	poison->deleteItem();
+	poison->Delete();
 	//spawn an empty bottle after poisoning
 	P_ITEM emptybottle=archive::getNewItem();
 

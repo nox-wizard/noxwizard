@@ -81,7 +81,7 @@ void cSpawnScripted::safeCreate( P_CHAR npc, cSpawnArea& single  )
 	}
 	else {
 		WarnOut("[ERROR] Problem with scripted spawn %i [%s] found. Nothing will be spawned.\n", serial, name.c_str() );
-		npc->deleteChar();
+		npc->Delete();
 	}
 }
 
@@ -101,7 +101,7 @@ void cSpawnScripted::safeCreate( P_ITEM pi, cSpawnArea& single  )
 	}
 	else {
 		WarnOut("[ERROR] Problem with scripted spawn %i [%s] found. Nothing will be spawned.\n", serial, name.c_str() );
-		pi->deleteItem();
+		pi->Delete();
 	}
 }
 

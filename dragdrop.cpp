@@ -759,7 +759,7 @@ static bool ItemDroppedOnGuard(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 				pc_t->talk( s, TRANSLATE("You can not claim that prize scoundrel. You are lucky I don't strike you down where you stand!"),0);
 
 			// Delete the item
-			pi->deleteItem();
+			pi->Delete();
 		}
 	}
 	return true;
@@ -807,7 +807,7 @@ static bool ItemDroppedOnBeggar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 			pc->IncreaseKarma(50);
 			ps->sysmsg(TRANSLATE("You have gain some karma!"));
 		}
-		pi->deleteItem();
+		pi->Delete();
 		return true;
 	}
 	return true;
@@ -846,7 +846,7 @@ static bool ItemDroppedOnTrainer(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 		{
 			if(pi->amount < delta)		// Gave less gold
 				delta = pi->amount;		// so adjust skillgain
-			pi->deleteItem();
+			pi->Delete();
 		}
 		pc->baseskill[sk]+=delta;
 		Skills::updateSkillLevel(pc, sk);
@@ -1139,7 +1139,7 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	{
 		pc->playSFX( 0x01FE);
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x2A, 0x09, 0x06);
-		pi->deleteItem();
+		pi->Delete();
 		return;
 	}
 
@@ -1358,7 +1358,6 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	//ndEndy this not needed because when is dragging cont serial is INVALID
 	//testing UOP Blocking Tauriel 1-12-99
 	if (!pItem->isInWorld())
-
 	{
 		item_bounce6(ps,pItem);
 		return;
@@ -1381,7 +1380,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 	// - Trash container
 	if( pCont->type==ITYPE_TRASH)
 	{
-		archive::DeleItem(pItem);
+		pItem->Delete();
 		ps->sysmsg(TRANSLATE("As you let go of the item it disappears."));
 		return;
 	}

@@ -341,9 +341,9 @@ cChar::cChar( SERIAL ser ) : cObject()
 cChar::~cChar()
 {
 	if( profile!=NULL )
-		safedelete( profile ); 
+		safedelete( profile );
 	if( staticProfile!=NULL )
-		safedelete( staticProfile ); 
+		safedelete( staticProfile );
 	if( speechCurrent!=NULL )
 		safedelete( speechCurrent );
 	if ( path != NULL )
@@ -2266,7 +2266,7 @@ UI32 cChar::getAmount(short id, short col, bool onlyPrimaryBackpack)
 \brief sends a remove packet to everyone nearby and deletes itself
 \author Luxor
 */
-void cChar::deleteChar()
+void cChar::Delete()
 {
         NxwSocketWrapper sc;
         sc.fillOnline( this );
@@ -2520,7 +2520,7 @@ void cChar::resurrect( NXWCLIENT healer )
 
 		P_ITEM pj= pointers::findItemBySerial(robe);
 		if( ISVALIDPI(pj))
-			pj->deleteItem();
+			pj->Delete();
 
 		P_ITEM pi = item::CreateFromScript( "$item_robe_1", this );
 		if(ISVALIDPI(pi)) {
@@ -3178,7 +3178,7 @@ void cChar::Kill()
 	}
 
 	if ( npc )
-		deleteChar();
+		Delete();
 }
 
 /*!
@@ -4493,7 +4493,7 @@ void cChar::pc_heartbeat()
 			if( pHorse->canDecay() && pHorse->getDecayTime() != 0 && TIMEOUT( pHorse->getDecayTime() ) )
 			{
 				onhorse = false;
-				pHorse->deleteItem();
+				pHorse->Delete();
 			}
 	}
 
@@ -4578,7 +4578,7 @@ void cChar::npc_heartbeat()
 		{
 			playSFX( 0x01FE );
 			dead = true;
-			deleteChar();
+			Delete();
 		}
 		return;
 	}
@@ -4613,7 +4613,7 @@ void cChar::npc_heartbeat()
 					playSFX( 0x01FE);
 					if( SrvParms->tamed_disappear )
 					{
-						deleteChar();
+						Delete();
 						return;
 					}
 					break;

@@ -169,6 +169,6 @@ void usehairdye(NXWSOCKET  s, P_ITEM piDye)	// x is the hair dye bottle object n
 				pi->Refresh();
 			}
 	}
-	piDye->deleteItem();	//Now delete the hair dye bottle!
+	piDye->Delete();	//Now delete the hair dye bottle!
 
 }

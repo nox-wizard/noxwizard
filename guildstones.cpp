@@ -73,7 +73,8 @@ void cGuilds::StonePlacement(int s)
 			pStone->type= ITYPE_GUILDSTONE;
 			pStone->priv= 0;
 			pStone->Refresh();
-			archive::DeleItem(pc->fx1);
+			pi_fx1->Delete();
+			pc->fx1 = 0;
 			guilds[guildnumber].stone= pStone->getSerial32();
 			guilds[guildnumber].master= pc->getSerial32();
 			entrygump(s, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4,100,1,40,TRANSLATE("Enter a name for the guild."));
@@ -103,7 +104,7 @@ void cGuilds::StonePlacement(int s)
 				pStone->type= ITYPE_GUILDSTONE;
 				pStone->priv= 0;
 				pStone->Refresh();//AntiChrist
-				archive::DeleItem(pc->fx1);
+				pi_fx1->Delete();
 				pc->fx1 = 0;
 				guilds[guildnumber].stone = pStone->getSerial32();
 			}
@@ -526,7 +527,7 @@ void cGuilds::EraseGuild(int guildnumber)
 	int counter;
 	memset(&guilds[guildnumber], 0, sizeof(guild_st));
 	guilds[guildnumber].free=1;
-	archive::DeleItem(pi_stone);
+	pi_stone->Delete();
 	for (counter=1;counter<MAXGUILDS; ++counter)
 	{
 		if (guilds[counter].free==0)
@@ -775,7 +776,7 @@ void cGuilds::StoneMove(int s)
 
 	pNewstone->type = ITYPE_GUILDSTONE;			// Set Guildstone to Type 'Guild Related'
 	guilds[guildnumber].stone=pNewstone->getSerial32();	// Remember its serial number
-	archive::DeleItem(stone);				// Remove the guildstone
+	stone->Delete();				// Remove the guildstone
 	pc->sysmsg(TRANSLATE("Take care of that stone!"));	// And tell him also
 }
 

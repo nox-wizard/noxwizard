@@ -963,7 +963,7 @@ void chardel (NXWSOCKET  s) // Deletion of character
 				return;
 			}
 			
-			TrashMeUp->deleteChar();
+			TrashMeUp->Delete();
 
 			Accounts->GetAllChars( acctno[s], sc );
 			
@@ -2466,8 +2466,8 @@ void endtrade(SERIAL serial)
 		}
 	}
 
-	c1->deleteItem();
-	c2->deleteItem();
+	c1->Delete();
+	c2->Delete();
 }
 
 void tellmessage(int i, int s, char *txt)

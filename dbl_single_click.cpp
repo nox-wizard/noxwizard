@@ -61,7 +61,7 @@ static bool Item_ToolWearOut(NXWSOCKET  s, P_ITEM pi)
 		pi->hp--;
 		if ( pi->hp <= 0 ) {
 			pc->sysmsg("Your %s has been destroyed", pi->getCurrentNameC());
-			pi->deleteItem();
+			pi->Delete();
 			return true;
 		}
 	}
@@ -610,7 +610,7 @@ void doubleclick(NXWCLIENT ps)
 			return;
 	case ITYPE_ARMY_ENLIST:
 			enlist(s, pi->morex);
-			pi->deleteItem();
+			pi->Delete();
 			return;
 	case ITYPE_TELEPORT:
 			pc->MoveTo( pi->morex,pi->morey,pi->morez );
@@ -672,7 +672,7 @@ void doubleclick(NXWCLIENT ps)
 			vendor->SetInnocent();
 			vendor->setOwnerSerial32( pc->getSerial32() );
 			vendor->tamed = false;
-			pi->deleteItem();
+			pi->Delete();
 			vendor->teleport();
 			char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 			sprintf( temp, TRANSLATE("Hello sir! My name is %s and i will be working for you."), vendor->getCurrentNameC());
@@ -882,11 +882,11 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			return;
 		case 0x14ED: // Build cannon
 			target(s, 0, 1, 0, 171, TRANSLATE("Build this Monster!"));
-			pi->deleteItem();
+			pi->Delete();
 			return;
 		case 0x0E73: // cannon ball
 			target(s, 0, 1, 0, 170, TRANSLATE("Select cannon to load."));
-			pi->deleteItem();
+			pi->Delete();
 			return;
 		case 0x0FF8:
 		case 0x0FF9: // pitcher of water to flour

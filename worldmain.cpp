@@ -602,7 +602,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 		if( !pc->npc )
 			pc->MoveTo( 900,300,30 ); //player in an invalid location
 		else
-			pc->deleteChar();
+			pc->Delete();
 	}
 
 	setcharflag2(pc);//AntiChrist
@@ -1008,7 +1008,7 @@ void loaditem()
 	} while (strcmp(script1, "}") && loops<=200);
 
 	if (bad)
-		pi->deleteItem();
+		pi->Delete();
 
 	amxVS.setUserMode();
 	//StoreItemRandomValue(pi,-1); // Magius(CHE) (2)
@@ -1036,7 +1036,7 @@ void loaditem()
 		}
 
 		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
-			pi->deleteItem();
+			pi->Delete();
 	}
 
 	amxVS.moveVariable( INVALID, pi->getSerial32() );
@@ -1766,7 +1766,7 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		if ( ( pi->getPosition().x < 100) && ( pi->getPosition().y < 100 ) ) { //garbage positions
 			//Luxor: we must check if position is 0,0 for dragged items
 			if (pi->getPosition().x != 0 && pi->getPosition().y != 0) {
-				pi->deleteItem();
+				pi->Delete();
 				return;
 			}
 		}

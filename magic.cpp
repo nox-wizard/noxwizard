@@ -1562,7 +1562,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				if( pi->isDispellable() )
 				{
 					spellFX(spellnumber, src, pd);
-					pi->deleteItem();
+					pi->Delete();
 				}
 			}
 			break;

@@ -995,8 +995,6 @@ public:
 
 		void			setNpcMoveTime();
 
-		void			deleteChar();
-
 	public:
 	#ifdef SPAR_NEW_WR_SYSTEM
 		NxwCharWrapper*		nearbyChars;
@@ -1006,6 +1004,8 @@ public:
 	public:
 		std::vector< UI32 >	lootVector;
 
+	public:
+		virtual void		Delete();
 	/*
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );

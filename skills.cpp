@@ -3178,7 +3178,7 @@ void Skills::Decipher(P_ITEM tmap, NXWSOCKET s)
             nmap->moreb4 = lry%256;
             nmap->morex = x;        // Store the treasure's location
             nmap->morey = y;
-            tmap->deleteItem();    // Delete the tattered map
+            tmap->Delete();    // Delete the tattered map
         }
         else
             pc->sysmsg(TRANSLATE("You fail to decipher the map"));      // Nope :P

@@ -280,7 +280,7 @@ int response(NXWSOCKET  s)
 					pDeed->Refresh();
 					sprintf(temp, TRANSLATE("Packed up vendor %s."), pc_map->getCurrentNameC());
 					pc_map->playMonsterSound(SND_DIE);
-					pc_map->deleteChar();
+					pc_map->Delete();
 					sysmessage(s, temp);
 					// return 1;
 					handledRequest = true;
@@ -769,7 +769,7 @@ int response(NXWSOCKET  s)
 							pc_map->talkAll(temp,0);
 							pc_map->playSFX( 0x01FE );
 							if(SrvParms->tamed_disappear==1)
-								pc_map->deleteChar();
+								pc_map->Delete();
 							return 1;
 						}
 					}
@@ -796,7 +796,7 @@ int response(NXWSOCKET  s)
 						pc_map->talkAll(temp,0);
 						pc_map->playSFX( 0x01FE);
 						if(SrvParms->tamed_disappear==1)
-							pc_map->deleteChar();
+							pc_map->Delete();
 						handledRequest = true;	// Sparhawk	all pets in vicinity should be released
 					}
 					else

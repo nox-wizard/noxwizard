@@ -245,7 +245,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							if (ISVALIDPI(pii_i))
 								if ((pii_i->layer==LAYER_HAIR) && (pii_i->getContSerial()==serial))
 								{
-									pii_i->deleteItem();
+									pii_i->Delete();
 									break;
 								}
 						}
@@ -262,7 +262,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							if (ISVALIDPI(pii_i))
 								if ((pii_i->layer==LAYER_BEARD) && (pii_i->getContSerial()==serial))
 								{
-									pii_i->deleteItem();
+									pii_i->Delete();
 									break;
 								}
 						}
@@ -279,7 +279,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							if (ISVALIDPI(pii_i))
 								if ((pii_i->layer==LAYER_BACKPACK) && (pii_i->getContSerial()==serial))
 								{
-									pii_i->deleteItem();
+									pii_i->Delete();
 									break;
 								}
 						}

@@ -110,15 +110,15 @@ public:
 
 namespace archive {
 
-	P_ITEM getNewItem();
-	P_ITEM getItemForCopy();
-	void DeleItem( P_ITEM pi );
-	void DeleItem( SERIAL i );
+	P_ITEM	getNewItem();
+	P_ITEM	getItemForCopy();
+	void	deleteItem( P_ITEM pi );
+	void	deleteItem( SERIAL i );
 
-	P_CHAR getNewChar();
-	P_CHAR getCharForCopy();
-	void DeleteChar( P_CHAR pc );
-	void DeleteChar( SERIAL k );
+	P_CHAR	getNewChar();
+	P_CHAR	getCharForCopy();
+	void	DeleteChar( P_CHAR pc );
+	void	DeleteChar( SERIAL k );
 
 }
 

@@ -204,7 +204,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 			if(pWeapon->hp <= 0) {
 				sysmsg(TRANSLATE("Your weapon has been destroyed"));
 				//XAN TO-DO : Insert event handler here ? :)
-				pWeapon->deleteItem();
+				pWeapon->Delete();
 			}
 		}
 	}
@@ -281,7 +281,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 			if (chance(5)) pShield->hp--;
 			if (pShield->hp<=0) {
 				pc_def->sysmsg(TRANSLATE("Your shield has been destroyed"));
-				pShield->deleteItem();
+				pShield->Delete();
 			}
 		}
 	}
@@ -924,7 +924,7 @@ int cChar::calcDef(SI32 x)
 				dx -= pj->dx2;
 				in -= pj->in2;
 				sysmsg(temp);
-				pj->deleteItem();
+				pj->Delete();
 			}
 		}
 	}

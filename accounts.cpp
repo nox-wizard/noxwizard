@@ -700,7 +700,7 @@ bool cAccounts::RemoveAccount(std::string name)
 	{
 		P_CHAR pc = acc_chars.getChar();
 		if(ISVALIDPC(pc))
-			pc->deleteChar();
+			pc->Delete();
 	}
 	
 	accbyname.erase( name );

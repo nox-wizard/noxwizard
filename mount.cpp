@@ -302,13 +302,13 @@ int cChar::unmountHorse()
 					p_pet->dir = dir; // Luxor
 					p_pet->teleport();
 
-					pi->deleteItem();
+					pi->Delete();
 					teleport( TELEFLAG_SENDWORNITEMS );
 					return 0;
 				}
 			}
 
-			pi->deleteItem();
+			pi->Delete();
 			teleport( TELEFLAG_SENDWORNITEMS );
 			InfoOut("Horse not found");
 			return 1;

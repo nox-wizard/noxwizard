@@ -85,7 +85,6 @@ public:
 	SI32		maxhp;	//!< Max number of hit points an item can have.
 
 	void		Refresh();
-	void		deleteItem();
 	SI32		getName(char* itemname);
 	const char*	getRealItemName();
 //@}
@@ -433,6 +432,9 @@ public:
 
 	UI32		distFrom( P_CHAR pc );
 	UI32		distFrom( P_ITEM pi );
+
+public:
+	virtual void	Delete();
 /*
 public:
 	LOGICAL 	isValidAmxEvent( UI32 eventId );

@@ -926,7 +926,7 @@ void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 but
 										backpack->AddItem( pi );
 								}
 								else	
-									pi->deleteItem();
+									pi->Delete();
 							}
 						}
 					}

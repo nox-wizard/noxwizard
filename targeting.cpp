@@ -421,7 +421,7 @@ public:
             return;
         }
         sysmessage(s, TRANSLATE("Removing character."));
-	pc->deleteChar();
+	pc->Delete();
     }
     void ItemSpecific()
     {
@@ -431,7 +431,7 @@ public:
         if (pi->amxevents[EVENT_IONDECAY])
            pi->amxevents[EVENT_IONDECAY]->Call(pi->getSerial32(), DELTYPE_GMREMOVE);
 		//pi->runAmxEvent( EVENT_IONDECAY, pi->getSerial32(), DELTYPE_GMREMOVE );
-        pi->deleteItem();
+        pi->Delete();
     }
 };
 
@@ -650,7 +650,7 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
                 {
                     sysmessage(s,TRANSLATE("You fail and destroy the key blank."));
                     // soundeffect3( pi, <whatever> );
-                    pi->deleteItem();
+                    pi->Delete();
                 }
                 else
                 {
@@ -839,7 +839,7 @@ static void MoveBelongingsToBp(P_CHAR pc, P_CHAR pc_2)
         else if (pc->IsWearing(pi) &&
             (pi->layer==LAYER_HAIR || pi->layer==LAYER_BEARD))
         {
-            pi->deleteItem();
+            pi->Delete();
         }
     }
     pc_2->teleport();
@@ -944,7 +944,7 @@ void KillTarget(P_CHAR pc, int ly)
 
 	P_ITEM pi=pc->GetItemOnLayer( ly );
 	if(ISVALIDPI(pi))
-		pi->deleteItem();
+		pi->Delete();
 }
 
 void cTargets::GhostTarget(NXWSOCKET s)
@@ -1890,7 +1890,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 				pj->Refresh();
 			}
         }
-        pi3->deleteItem();
+        pi3->Delete();
     }
 }
 

@@ -93,14 +93,13 @@ P_ITEM getItemForCopy()
 	return new cItem( INVALID ); //oh yes
 }
 
-void DeleItem( P_ITEM pi )
+void deleteItem( P_ITEM pi )
 {
-
 	VALIDATEPI( pi );
 
-	amxVS.deleteVariable( pi->getSerial32() );
+	SI32 serial = pi->getSerial32();
 
-	UI32 pi_serial = pi->getSerial32();
+	amxVS.deleteVariable( serial );
 
 	if (pi->spawnregion!=INVALID )
 	{
@@ -118,7 +117,7 @@ void DeleItem( P_ITEM pi )
 	{
 		NXWSOCKET j=sw.getSocket();			
 		if (j!=INVALID)
-			SendDeleteObjectPkt(j, pi_serial);
+			SendDeleteObjectPkt( j, serial );
 	}
 
 	// - remove from pointer arrays
@@ -140,9 +139,9 @@ void DeleItem( P_ITEM pi )
 
 }
 
-void DeleItem( SERIAL i )
+void deleteItem( SERIAL i )
 {
-	DeleItem( MAKE_ITEM_REF(i) );
+	deleteItem( MAKE_ITEM_REF(i) );
 }
 
 

@@ -233,7 +233,7 @@ namespace item
 					}
 					else if ( lha == "ITEMLIST" )
 					{
-						pi->deleteItem();
+						pi->Delete();
 						pi=item::CreateScriptRandomItem( const_cast<char*>(rha.c_str()), cont);
 						/*
 						if( ISVALIDPI(pi) )

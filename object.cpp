@@ -887,6 +887,13 @@ LOGICAL cObject::hasTempfx()
 
 	return true;
 }
+/*!
+\author Sparhawk
+\brief Tells if the object has tempfx in queue
+*/
+void cObject::Delete()
+{
+}
 
 /*!
 \brief Get the tempfx from given num and funcidx

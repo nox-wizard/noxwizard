@@ -170,6 +170,8 @@ public:
 	std::string*	disabledmsg; //!< Object is disabled, so display this message.
 					
 
+public:
+	virtual	void		Delete();
 
 /*
 private:

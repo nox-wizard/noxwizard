@@ -95,7 +95,7 @@ void cAddRemove::WipeArea(NXWCLIENT client, bool inverse, UI32 x1, UI32 y1, UI32
 			if(inverse)
 				del= !del;
 			if(del && pi->isInWorld() && pi->wipe==0)
-				pi->deleteItem();
+				pi->Delete();
 		}
     }
 }
@@ -116,7 +116,7 @@ void cAddRemove::WipeAll(NXWCLIENT client) {
 	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
 		pi = pointers::findItemBySerial( objs.getSerial() );
 		if ( ISVALIDPI(pi) && pi->isInWorld() && pi->wipe == 0 )
-			pi->deleteItem();
+			pi->Delete();
 	}
 	
 	sysbroadcast( TRANSLATE("All items have been wiped") );

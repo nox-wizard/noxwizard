@@ -1822,7 +1822,7 @@ NATIVE(_itm_remove)
 {
 	P_ITEM pi = pointers::findItemBySerial(params[1]);
 	VALIDATEPIR(pi, INVALID);
-	pi->deleteItem();
+	pi->Delete();
 	return 0;
 }
 
@@ -1854,7 +1854,7 @@ NATIVE(_chr_remove)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    pc->deleteChar();
+    pc->Delete();
     return 0;
 }
 

@@ -1171,7 +1171,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 					if (m_pi->amount>1)
 						m_pi->amount--;
 					else {
-						m_pi->deleteItem();
+						m_pi->Delete();
 						m_pi = 0;
 					}
 		}
@@ -1378,7 +1378,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 					if (m_piNeededItem->amount>1)
 						m_piNeededItem->amount--;
 					else {
-						m_piNeededItem->deleteItem();
+						m_piNeededItem->Delete();
 						m_piNeededItem = 0;
 					}
 		}
@@ -1427,7 +1427,7 @@ void cTriggerContext::parseDurCommand(P_ITEM pi, char *par)
 					--pi->amount;
 				else
 				{
-					pi->deleteItem();
+					pi->Delete();
 					pi = 0;
 				}
 			}
@@ -1476,7 +1476,7 @@ void cTriggerContext::parseMaxDurCommand(P_ITEM pi, char *par)
 					--pi->amount;
 				else
 				{
-					pi->deleteItem();
+					pi->Delete();
 					pi = 0;
 				}
 			}

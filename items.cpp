@@ -418,7 +418,7 @@ LOGICAL cItem::doDecay()
 				}
 			}
 		}
-		deleteItem();
+		Delete();
 		return true;
 	}
 	else
@@ -478,7 +478,7 @@ void cItem::explode(NXWSOCKET  s)
 		}
 	}
 
-	deleteItem();
+	Delete();
 
 }
 
@@ -501,7 +501,7 @@ SI32 cItem::ReduceAmount(const short amt)
 	else
 	{
 		rest=amt-amount;
-		deleteItem();
+		Delete();
 	}
 	return rest;
 
@@ -689,7 +689,7 @@ bool cItem::PileItem( P_ITEM pItem )
 		pItem->setContSerial( getContSerial() );
 		pItem->amount+=amount;
 		pItem->Refresh();
-		deleteItem();
+		Delete();
 	}
 
 	return true;
@@ -1122,9 +1122,9 @@ LOGICAL cItem::containsSpell(magic::SpellId spellnum)
 \author Luxor
 \brief deletes the item
 */
-void cItem::deleteItem()
+void cItem::Delete()
 {
-	archive::DeleItem(this);
+	archive::deleteItem(this);
 }
 
 /*!
@@ -1307,7 +1307,7 @@ LOGICAL cContainerItem::pileItem( P_ITEM pItem)	// try to find an item in the co
 		else
 		{
 			amount+=pItem->amount;
-			pItem->deleteItem();
+			pItem->Delete();
 		}
 		Refresh();
 		return true;

@@ -2078,7 +2078,7 @@ void MsgBoardQuestEscortCreate( int npcIndex )
 	if ( !npc->questDestRegion )
 	{
 		ErrOut("MsgBoardQuestEscortCreate() No valid regions defined for escort quests\n");
-		npc->deleteChar();
+		npc->Delete();
 		//deletechar( npcIndex );
 		return;
 	}
@@ -2088,7 +2088,7 @@ void MsgBoardQuestEscortCreate( int npcIndex )
 	{
 		ConOut( "NoX-Wizard: MsgBoardQuestEscortCreate() Failed to add quest post for %s\n", npc->getCurrentNameC() );
 		ConOut( "NoX-Wizard: MsgBoardQuestEscortCreate() Deleting NPC %s\n", npc->getCurrentNameC() );
-		npc->deleteChar();
+		npc->Delete();
 		//deletechar( npcIndex );
 		return;
 	}
@@ -2176,7 +2176,7 @@ void MsgBoardQuestEscortDelete( int npcIndex )
 	P_CHAR npc=MAKE_CHAR_REF(npcIndex);
 	VALIDATEPC(npc);
 	npc->Kill();
-	npc->deleteChar();
+	npc->Delete();
 
 }
 

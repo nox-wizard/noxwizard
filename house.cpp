@@ -284,13 +284,17 @@ void buildhouse(int s, int i)
 		{
 			if(!Boats->Build(s,pHouse, id%256/*id2*/))
 			{
-				pHouse->deleteItem();
+				pHouse->Delete();
 				return;
 			}
 		}
 
 		if (i)//Boats->.. Moved from up there ^
-			archive::DeleItem(pc->fx1); // this will del the deed no matter where it is
+		{
+			P_ITEM pFx1 = MAKE_ITEM_REF( pc->fx1 );
+			if ( pFx1 != 0 )
+				pFx1->Delete(); // this will del the deed no matter where it is
+		}
 
 		pc->fx1=-1; //reset fx1 so it does not interfere
 		// bugfix LB ... was too early reseted
@@ -363,8 +367,8 @@ void buildhouse(int s, int i)
 		}
 		if(nokey)
 		{
-			pKey->deleteItem(); // No key for .. nokey items
-			pKey2->deleteItem(); // No key for .. nokey items
+			pKey->Delete(); // No key for .. nokey items
+			pKey2->Delete(); // No key for .. nokey items
 		}
 
 		for (k=0;k<icount;k++)//Loop through the HOUSE_ITEMs
@@ -510,7 +514,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		VALIDATEPI(pi_ii);
 
 		sysmessage( s, TRANSLATE("Demolishing House %s"), pi->getCurrentNameC());
-		pi->deleteItem();
+		pi->Delete();
 		sysmessage(s, TRANSLATE("Converted into a %s."), pi_ii->getCurrentNameC());
 		// door/sign delete
 
@@ -534,7 +538,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 
 						pDeed->Refresh();
 						sprintf(temp, TRANSLATE("Packed up vendor %s."), p_index->getCurrentNameC());
-						p_index->deleteChar();
+						p_index->Delete();
 						sysmessage(s, temp);
 					}
 				}		
@@ -552,7 +556,7 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 					(p_item->getPosition().y >= (UI32)y1) &&
 					(p_item->getPosition().y <= (UI32)y2) )
 					{
-							p_item->deleteItem();
+							p_item->Delete();
 					}
 				}
 			}
@@ -732,7 +736,7 @@ void killkeys(SERIAL serial) // Crackerjack 8/11/99
 
 		if ( ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->type == ITYPE_KEY && calcserial(pi->more1, pi->more2, pi->more3, pi->more4) == serial )
-				pi->deleteItem();
+				pi->Delete();
 		}
 	}
 }
@@ -879,7 +883,7 @@ int del_hlist(int c, int h)
 		if(ISVALIDPI(pli)) {
 			mapRegions->remove(pli);
 			pointers::delItemFromLocationMap(pli);
-			pli->deleteItem();
+			pli->Delete();
 		}
 	}
 	return(hl);
