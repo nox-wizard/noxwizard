@@ -5604,6 +5604,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_resignMember", _guild_resignMember },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
+ { "guild_exists", _guild_exists },
 // Timer function - Endymion
  { "timer_add", _timer_add },
 // Log message functions - Sparhawk
