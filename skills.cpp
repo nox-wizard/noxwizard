@@ -1244,7 +1244,6 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 
     P_CHAR pc = MAKE_CHARREF_LRV(s, 0)
 
-    char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
     int a,ges=0,d=0;
     unsigned char lockstate;
     int skillcap = SrvParms->skillcap;
@@ -1588,8 +1587,6 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 	if ( sk < 0 || sk >= TRUESKILLS ) //Luxor
 		return;
 
-
-	char	temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	P_CHAR pc = MAKE_CHARREF_LR(s)
 

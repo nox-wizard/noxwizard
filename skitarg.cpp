@@ -2545,8 +2545,7 @@ public:
 	VALIDATEPC( pc );
         
         
-         char sztemp[15] ;
-        if (id2 == 0x4F)
+    if (id2 == 0x4F)
           item::CreateFromScript( "$item_clock_parts", pc->getBackpack() );
         else
           item::CreateFromScript( "$item_sextant_parts", pc->getBackpack() );
