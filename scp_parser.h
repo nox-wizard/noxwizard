@@ -18,6 +18,12 @@
 
 bool evaluateOneDefine (char *szLine, bool check=true);
 
+/*!
+\brief script iterator
+
+This class provides access to a section's entries
+\todo is this really necessary? it does not provide much additional features to cScpSection class
+*/
 class cScpIterator
 {
 private:
@@ -34,7 +40,11 @@ public:
 	void rewind();
 };
 
+/*!
+\brief a script entry
 
+This class encapsulates a script line
+*/
 class cScpEntry
 {
 private:
@@ -50,7 +60,11 @@ public:
 };
 
 
+/*!
+\brief script section
 
+encapsulates a script section
+*/
 class cScpSection
 {
 private:
@@ -65,7 +79,11 @@ public:
 	cScpEntry* getEntry(int nPosition);
 };
 
+/*!
+\brief script class
 
+\todo add REAL parsing capabilities, as now it's only a text container with #define parsing. Should have a parse(parsingRules) member that calls appropriate parsing functions for each command. This would make other classes' parsers easier to write nad more standard
+*/
 class cScpScript
 {
 private:

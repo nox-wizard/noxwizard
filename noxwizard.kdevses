@@ -1,28 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="4" >
-  <Doc0 NumberOfViews="1" URL="file:/home/fax/UO/nox/src/race.h" >
-   <View0 line="71" Type="???" >
-    <AdditionalSettings Top="2" Width="953" Attach="1" Height="487" Left="2" MinMaxMode="0" />
-   </View0>
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:/home/fax/UO/nox/src/race.cpp" >
-   <View0 line="293" Type="???" >
-    <AdditionalSettings Top="2" Width="953" Attach="1" Height="487" Left="2" MinMaxMode="0" />
-   </View0>
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:/home/fax/UO/nox/src/scp_parser.h" >
-   <View0 line="26" Type="???" >
-    <AdditionalSettings Top="2" Width="953" Attach="1" Height="487" Left="2" MinMaxMode="0" />
-   </View0>
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:/home/fax/UO/nox/src/scp_parser.cpp" >
-   <View0 line="507" Type="???" >
-    <AdditionalSettings Top="2" Width="953" Attach="1" Height="487" Left="2" MinMaxMode="0" />
-   </View0>
-  </Doc3>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevbookmarks>
    <bookmarks/>
@@ -33,6 +12,8 @@
   <kdevvalgrind>
    <executable path="" params="" />
    <valgrind path="" params="" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
   </kdevvalgrind>
   <kdevdebugger>
    <breakpointList>

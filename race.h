@@ -62,6 +62,7 @@ typedef enum
 \brief Race class
 
 \todo port all static members into a wrapper class cAllRaces. Comments in the class decalration explain wich are to be ported.
+\todo remove ather race-like classes (racetype, racerequiredtype ...) because they are useless wrappers for a single variable and moreover they are used very seldomly in the code
 */
 
 class Race
@@ -119,10 +120,10 @@ public:
 	static void reload( const char* scriptName );
 	static void parse( void );
 
-	static void enlist( const NXWSOCKET socket );
+	static void enlist( const NXWSOCKET socket ); //!< adds a pg to a race
 	//static void resurrect( const P_CHAR pc );
 
-	static bool isRaceSystemActive( void );
+	static bool isRaceSystemActive( void ); //!< tellsif racesystem is globally active
 	
 	static Race* getRace( UI32 raceId ); //!< gets a pointer from a race serial
 	
@@ -214,7 +215,7 @@ public:
 	vector< UI32 > skinColor;
 	string webLink;
 	std::vector< string > description;
-	RaceType raceType;
+	RaceType raceType; //rave type
 	UI32 skin;
 	//UI32		skinColor;
 	RequiredType hairPerm;

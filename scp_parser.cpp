@@ -57,38 +57,49 @@
 =========================================================================================*/
 
 
-
-static std::map<std::string, std::string> s_mapDefines;
+static std::map<std::string, std::string> s_mapDefines; //!< contains all #defines
 
 
 /*!
 \brief Parses a #define command
 \author Xanathar
 \param line the line containing the #define command
+
+#define syntax is: \n
+ #define $name value
+
+\todo why is this global? can be put into one of the classes?
 */
 static void parseDefineCommand(char *line)
 {
-	//syntax is #define $name=value
 	std::string str1, str2;
-	char *val = NULL;
 	char *trimmedline = NULL;
 	int i, ln = strlen(line);
 
-	for (i=0; i<ln; i++) {
-		if (line[i]=='$') {
+	//seek $
+	for (i=0; i<ln; i++) 
+	{
+		if (line[i]=='$') 
+		{
 			trimmedline = line+i;
 			break;
 		}
 	}
 
-	if (trimmedline == NULL || *trimmedline == '\0') {
+	//handle invalid define name
+	if (trimmedline == NULL || *trimmedline == '\0') 
+	{
 		ConOut("[ERROR] invalid define, missing $.\n");
 		return;
 	}
 
+	//seek value
+	char *val = NULL;
 	ln = strlen(trimmedline);
-	for (i=1; i<ln; i++) {
-		if (isspace(trimmedline[i])) {
+	for (i=1; i<ln; i++) 
+	{
+		if (isspace(trimmedline[i])) 
+		{
 			trimmedline[i] = '\0';
 			val = trimmedline + i + 1;
 			break;
@@ -97,7 +108,8 @@ static void parseDefineCommand(char *line)
 
 	val = linestart(val);
 
-	if (val == NULL || *val == '\0') {
+	if (val == NULL || *val == '\0') 
+	{
 		ConOut("[ERROR] invalid define, syntax is #define $symbol content\n");
 		return;
 	}
@@ -113,7 +125,8 @@ static void parseDefineCommand(char *line)
 \return true if valid
 \author Xanathar
 \param szLine the line with *MUST* have some spare bytes at its end
-\todo fix the MUST, maybe?
+\todo fix the MUST, maybe? (this todo was already here - Fax)
+\todo why is this global? can be put into one of the classes?
 */
 bool evaluateOneDefine (char *szLine, bool check)
 {
@@ -127,9 +140,11 @@ bool evaluateOneDefine (char *szLine, bool check)
 	if (ln>=PARSELINELIMIT) return false;
 
 	szBuffer[0] = szSymbol[0] = '\0'; //initialize strings :)
-
+	
+	//check if there is a symbol
 	szToken = strstr(szLine, "$");
-	if (szToken==NULL) return false; //no symbols in string -> go out :]
+	if (szToken==NULL) 
+		return false; 
 
 	// copy the part before the symbol in the buffer
 	*szToken = '\0';
@@ -138,10 +153,12 @@ bool evaluateOneDefine (char *szLine, bool check)
 	// now extract the symbol name
 	ln = strlen(szToken);
 
-	for (i = 0; i < ln; i++) {
+	for (i = 0; i < ln; i++) 
+	{
 		if (!isspace(szToken[i]))
 			szSymbol[i] = szToken[i];
-		else {
+		else 
+		{
 			szSymbol[i] = '\0';
 			szAfter = szToken+i;
 			break;
@@ -155,12 +172,14 @@ bool evaluateOneDefine (char *szLine, bool check)
 
 	iter = s_mapDefines.find(std::string(szSymbol));
 
-	if (iter==s_mapDefines.end()) {
+	if (iter==s_mapDefines.end()) 
+	{
 		if ( check )
 			LogError("symbol %s not previously defined.\n", szSymbol);
 		return false;
 	}
-
+	
+	//this rebuilds the line with symbol changed to its value
 	strcat(szBuffer, iter->second.c_str());
 	strcat(szBuffer, szAfter);
 	strcpy(szLine, szBuffer);
@@ -174,19 +193,19 @@ bool evaluateOneDefine (char *szLine, bool check)
 \return the line evaluated
 \author Xanathar
 \param szLine the line with *MUST* have some free bytes at its end
-\todo fix the MUST, maybe?
+\todo strange thing inside function, check it
+\param why is this global? can be put in one of the classes?
 */
 static char* evaluateAllDefines (char *szLine, bool check=true)
 {
-//	//this is an XSS builder metacommand, internal use
-//	if ((szLine[0]=='/')&&(szLine[1]=='/')&&(szLine[2]=='$')&&(szLine[3]=='$')) return szLine;
-
 	// ignore comments, so it doesn't give errors for undefined identifiers commented out
-	// it make non-sense the previous check. Akron
 	if ( szLine[0] == '/' && szLine[1] == '/' ) return szLine;
-
+	
+	//what's this?? Someone please check - Fax
 	if ((szLine[0]=='#')&&(szLine[1]=='d')) return szLine;
+	
 	while (evaluateOneDefine(szLine, check));
+	
 	return szLine;
 }
 
@@ -197,7 +216,7 @@ namespace xss {
 \return the integer value of a define 
 \author Xanathar
 \param szLine the line with *MUST* have some free bytes at its end
-\todo fix the MUST, maybe?
+\param why is this global? can be put in one of the classes?
 */
 int getIntFromDefine (char *szLine, bool check)
 {
@@ -212,7 +231,7 @@ int getIntFromDefine (char *szLine, bool check)
 \return the line with all defines evaluated
 \author Xanathar
 \param szLine the line with *MUST* have some free bytes at its end
-\todo fix the MUST, maybe?
+\param why is this global? can be put in one of the classes?
 */
 char* evalDefines (char *szLine)
 {
@@ -234,6 +253,7 @@ char* evalDefines (char *szLine)
 \param buffer the buffer in which the sz should be stored
 \param len maximum lenght of the buffer
 \param fileHandle the file handle
+\param why is this global? can be put in one of the classes?
 */
 static char* getSzFromFile(char* buffer, int len, FILE* fileHandle)
 {
@@ -268,7 +288,7 @@ static char* getSzFromFile(char* buffer, int len, FILE* fileHandle)
 \brief Constructs a new cScpEntry object parsing a string
 \author Xanathar
 \param szStringToParse the string to be parsed
-\todo change it to use dynamic constants!!
+\todo change it to use dynamic constants!! (this todo was already here - Fax)
 */
 cScpEntry::cScpEntry(char* szStringToParse)
 {
@@ -279,8 +299,10 @@ cScpEntry::cScpEntry(char* szStringToParse)
 	int i;
 	char *szPar2 = NULL;
 
-	for (i=0; i<ln; i++) {
-		if (szStringToParse[i]==' ') {
+	for (i=0; i<ln; i++) 
+	{
+		if (szStringToParse[i]==' ') 
+		{
 			szStringToParse[i] = '\0';
 			szPar2 = szStringToParse + i + 1;
 			break;
@@ -338,41 +360,58 @@ cScpSection::cScpSection (FILE *file, cScpScript* parent)
 	buffer = realbuffer;
 	m_vLines.clear();
 
-	while ((!feof(file))&&(buffer[0]!='}')) {
-   	buffer = getSzFromFile(realbuffer, MAXLINELENGHT-3, file);
+	while ((!feof(file))&&(buffer[0]!='}')) 
+	{
+   		buffer = getSzFromFile(realbuffer, MAXLINELENGHT-3, file);
+		
+		//file can end only after a closing brace
 		if ( (feof(file)) && (buffer[0]!='}') )
 		{
 			ConOut("[FAIL] : Unexpected end of file!..");
 			break;
 		}
-		if ((buffer[0]!='/')&&(buffer[0]!='#')&&(buffer[0]!=';')) {
+		
+		//store non-comment lines
+		if ((buffer[0]!='/')&&(buffer[0]!='#')&&(buffer[0]!=';')) 
+		{
 			cse = new cScpEntry(buffer);
 			m_vLines.push_back(*cse);
 			safedelete(cse);
 		}
-		if (buffer[0]=='#') {
+		
+		//parse special directives
+		if (buffer[0]=='#') 
+		{
+			//parse #copy: extend section content with that of section specified in #copy
 			if (!strncmp(buffer,"#copy ", strlen("#copy "))) 
 			{
 				char script1[1024];
 				cScpIterator* iter = NULL;
 				sprintf(script1, "SECTION %s", buffer+strlen("#copy "));
+				
 				iter = parent->getNewIterator(script1);
-				if (iter==NULL) {
+				if (iter==NULL) 
+				{
 					ConOut("Can't extend section : %s\n", buffer);
 					continue;
 				}
-				do {
+				
+				do 
+				{
 					strcpy(script1, iter->getEntry()->getFullLine().c_str());
 					if ( !strncmp(script1, "SECTION" , strlen("SECTION")))
 					{
 						ConOut ("Warning: SECTION without previous } in line %s", script1);
 					}
-					if ((script1[0]!='}')&&(script1[0]!='{')) {
+					
+					if ((script1[0]!='}')&&(script1[0]!='{')) 
+					{
 						cse = new cScpEntry(script1);
 						m_vLines.push_back(*cse);
 						safedelete(cse);
 					}
 				} while (script1[0]!='}');
+				
 				safedelete(iter);
 			}
 		}
@@ -439,10 +478,13 @@ cScpScript::cScpScript(char *szFileName)
 	FILE *file = fopen(szFileName, "rt");
 	ConOut("\tLoading script : %s ... ", szFileName);
 
-	if (file==NULL) {
+	if (file==NULL) 
+	{
 		ConOut("[FAIL] - Can't open file\n");
 		return;
-	} else {
+	} 
+	else 
+	{
 		ConOut("\n");
 		fclose(file);
 		load(szFileName);
@@ -466,7 +508,8 @@ void cScpScript::load(char *szFileName)
 
 	FILE *file = fopen(szFileName, "rt");
 
-	if (file==NULL) {
+	if (file==NULL) 
+	{
 		ConOut("[FAIL] - Can't open file");
 		m_nErrors++;
 		return;
@@ -476,24 +519,31 @@ void cScpScript::load(char *szFileName)
 	{
 		buffer = getSzFromFile(realbuffer, MAXLINELENGHT-3, file);
 		if (feof(file)) break;
-		if (buffer[0]=='#') {
+		if (buffer[0]=='#') 
+		{
 			//preprocessor directive :)
-			if (!strncmp(buffer, "#include ", strlen("#include "))) {
+			if (!strncmp(buffer, "#include ", strlen("#include "))) 
+			{
 				ConOut("\t\tLoading subscript : %s... ", buffer+9);
 				load(buffer+9);
 				ConOut("\n");
 			}
-			else if (!strncmp(buffer, "#define ", strlen("#define "))) {
+			else if (!strncmp(buffer, "#define ", strlen("#define "))) 
+			{
 				parseDefineCommand(buffer+8);
 			}
 			continue;
 		}
-		if (!strncmp(buffer, "UNIQUE ", strlen("UNIQUE "))) {
+		
+		if (!strncmp(buffer, "UNIQUE ", strlen("UNIQUE "))) 
+		{
 			char *p = buffer; //just ignore UNIQUE keyword
 			buffer = (strstr(buffer, "SECTION"));
 			if (buffer == NULL) buffer = p;
 		}
-		if (!strncmp(buffer, "SECTION ", strlen("SECTION "))) {
+		
+		if (!strncmp(buffer, "SECTION ", strlen("SECTION "))) 
+		{
 			//a new section was found!
 			std::string* str = new std::string(buffer);
 			cScpSection* section = new cScpSection(file, this);

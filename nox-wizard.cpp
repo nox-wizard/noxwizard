@@ -2468,6 +2468,9 @@ void InitMultis()
 	}
 }
 
+/*!
+\brief allocates global wrapper class variables
+*/
 void StartClasses()
 {
 	ConOut("Initializing classes...");

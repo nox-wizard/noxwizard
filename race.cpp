@@ -27,7 +27,7 @@
 
 using namespace std;
 
-//Why this?these variables are already in the class implementation
+//Why this? these variables are already in the class implementation
 bool	Race::activeRaceSystem	= false;
 string	Race::globalWebRoot;
 string  Race::globalWebLink;
@@ -37,10 +37,8 @@ bool	Race::withWebInterface	= false;
 std::map<UI32, class Race*> Race::raceMap;
 cScpScript* Race::script ;
 
-//
-//	STATIC FUNCTIONS
-//
 
+//======================== cAllRaces members ======================================//
 /*!
 \brief returns a race pointer from serial
 \return the race pointer
@@ -74,7 +72,6 @@ bool Race::isPlayerRace( const UI32 raceId )
 {
 	return raceMap[raceId]->isPlayerRace();
 }
-
 
 /*!
 \brief loads race script
@@ -398,6 +395,9 @@ void Race::parseRaceSection( void )
 	} while ( --raceCount );
 }
 
+/*!
+\brief parses race description
+*/
 void Race::parseRaceDescription( const string& sectionName )
 {
 	UI32		loopexit,
@@ -712,6 +712,26 @@ void Race::reload( const char* fileName )
 }
 
 
+//================== cRace members ==============================================//
+
+Race::Race( void )
+{
+	activeRace = false;
+	skinColor.clear();
+	poisonResistance[1] = 0.0;
+	poisonResistance[2] = 0.0;
+	poisonResistance[3] = 0.0;
+	poisonResistance[4] = 0.0;
+	poisonResistance[5] = 0.0;
+	tileId = 0;
+	webLink = "";
+	startItems.clear();
+	skillCap = SrvParms->skillcap;
+}
+
+Race::~Race( void )
+{
+}
 
 const std::string* Race::getName( const UI32 raceId )
 {
@@ -750,24 +770,6 @@ R32 Race::getPoisonResistance( const UI32 raceId, PoisonType poisonStrength )
 	return pr;
 }
 
-Race::Race( void )
-{
-	activeRace = false;
-	skinColor.clear();
-	poisonResistance[1] = 0.0;
-	poisonResistance[2] = 0.0;
-	poisonResistance[3] = 0.0;
-	poisonResistance[4] = 0.0;
-	poisonResistance[5] = 0.0;
-	tileId = 0;
-	webLink = "";
-	startItems.clear();
-	skillCap = SrvParms->skillcap;
-}
-
-Race::~Race( void )
-{
-}
 
 bool Race::isRaceActive( void )
 {
@@ -783,6 +785,8 @@ void Race::setRacialRelation( UI32 raceId, RACIALRELATION relation )
 {
 	m_mapRacialRelations[ raceId ] = relation;
 }
+
+//Getters
 
 RACIALRELATION Race::getRacialRelation( UI32 raceId1, UI32 raceId2 )
 {

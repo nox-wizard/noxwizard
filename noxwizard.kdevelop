@@ -14,9 +14,9 @@
   </general>
   <kdevcustomproject>
     <run>
-      <mainprogram>/home/fax/nox/src/noxwizard</mainprogram>
+      <mainprogram>/home/fax/UO/nox/src/noxwizard</mainprogram>
       <directoryradio>custom</directoryradio>
-      <customdirectory>/home/fax/nox/scripts/</customdirectory>
+      <customdirectory>/home/fax/UO/isdf/nox/</customdirectory>
       <programargs/>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -30,11 +30,13 @@
       <abortonerror>false</abortonerror>
       <numberofjobs>1</numberofjobs>
       <dontact>false</dontact>
-      <makebin>make -f makefile.debug noxwizard</makebin>
+      <makebin>make -f makefile.linux noxwizard</makebin>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
       </environments>
+      <prio>0</prio>
+      <makeoptions/>
     </make>
   </kdevcustomproject>
   <kdevdebugger>
@@ -52,6 +54,7 @@
     <display>
       <staticmembers>false</staticmembers>
       <demanglenames>false</demanglenames>
+      <outputradix>10</outputradix>
     </display>
   </kdevdebugger>
   <kdevdoctreeview>
