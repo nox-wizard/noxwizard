@@ -16,7 +16,6 @@ namespace npcs {
 
 ///////////////NPC MAGIC STUFF
 ///////////////BY LUXOR & XANATHAR
-#define CHECKSPELL(NAME,VALUE) { if (!strcmp(script1, NAME)) { spherespells[section][ptr++] = VALUE; continue;	} }
 #define NPCMAGIC_FLAGS (SPELLFLAG_DONTCRIMINAL+SPELLFLAG_DONTREQREAGENTS+SPELLFLAG_DONTCHECKSPELLBOOK+SPELLFLAG_IGNORETOWNLIMITS+SPELLFLAG_DONTCHECKSKILL)
 //#define NPC_CASTSPELL(A,B) pc_att->castSpell(A, TargetLocation DUMMYTMP(B), NPCMAGIC_FLAGS);
 #define NPC_CASTSPELL(A,B) { TargetLocation INSTANCETEMP(B); pc_att->castSpell(A, INSTANCETEMP , NPCMAGIC_FLAGS); }
@@ -109,69 +108,71 @@ void npcMagicAttack(P_CHAR pc_att, P_CHAR pc_def)
 	}
 }
 
+#define CHECKSPELL(NAME,VALUE) { if ( script1 == NAME ) { spherespells[section][ptr++] = VALUE; continue;	} }
 void initNpcSpells ()
 {
-	int section = 0, i, j;
 	int ptr = 0;
 
 	ConOut("Loading custom NPC grimoires (npcmagic.xss)...");
 
-	for (i=0; i<256; i++)
-		for (j=0; j<256; j++)
+	for ( int i=0; i<256; ++i )
+		for ( int j=0; j<256; ++j )
 			spherespells[i][j] = 0;
 
-	cScpIterator* iter = NULL;
-	char script1[1024];
-	char script2[1024];
-	char sect[512];
+	cScpIterator*	iter = NULL;
+	std::string	script1,
+			script2;
 
-	for (section=0; section<256; section++) {
+	for (int section=0; section<256; ++section )
+	{
 		safedelete(iter);
-		sprintf(sect, "SECTION SPHERE %d", section);
-		iter = Scripts::NpcMagic->getNewIterator(sect);
-		if (iter==NULL) continue;
-		ptr = 0;
-		do {
-			iter->parseLine(script1, script2);
-			if ((script1[0]!='}')&&(script1[0]!='{')) {
-				CHECKSPELL("SUMMON", (-atoi(script2)));
-				CHECKSPELL("MAGICARROW", 1);
-				CHECKSPELL("HARM", 2);
-				CHECKSPELL("CLUMSY", 3);
-				CHECKSPELL("FEEBLEMIND", 4);
-				CHECKSPELL("WEAKEN", 5);
-				CHECKSPELL("FIREBALL", 6);
-				CHECKSPELL("CURSE", 7);
-				CHECKSPELL("LIGHTNING", 8);
-				CHECKSPELL("PARALYZE", 9);
-				CHECKSPELL("MINDBLAST", 10);
-				CHECKSPELL("ENERGYBOLT", 11);
-				CHECKSPELL("EXPLOSION", 12);
-				CHECKSPELL("FLAMESTRIKE", 13);
-				CHECKSPELL("FIREFIELD", 14);
-				CHECKSPELL("POISONFIELD", 15);
-				CHECKSPELL("PARALYZEFIELD", 16);
-				CHECKSPELL("HEAL", 17);
-				CHECKSPELL("GREATHEAL", 18);
-				CHECKSPELL("GREATCURE", 19);
-				CHECKSPELL("PIROMANCY", 20);
-				CHECKSPELL("POISOMANCY", 21);
-				CHECKSPELL("POISON", 22);
-				CHECKSPELL("MANADRAIN", 23);
-				CHECKSPELL("MANAVAMPIRE", 24);
-				CHECKSPELL("BLADESPIRITS", 25);
-				CHECKSPELL("ENERGYVORTEX", 26);
-				CHECKSPELL("MAGICREFLECTION", 27);
-				CHECKSPELL("CHAINLIGHTNING", 28);
-				CHECKSPELL("METEORSWARM", 29);
-				CHECKSPELL("EARTHQUAKE", 30);
-			}
-		} while (script1[0]!='}');
+		iter = Scripts::NpcMagic->getNewIterator( "SECTION SPHERE %d", section );
+		if (iter != 0 )
+		{
+			ptr = 0;
+			do {
+				iter->parseLine(script1, script2);
+				if ((script1[0]!='}')&&(script1[0]!='{')) {
+					CHECKSPELL("SUMMON", (-atoi(script2.c_str())));
+					CHECKSPELL("MAGICARROW", 1);
+					CHECKSPELL("HARM", 2);
+					CHECKSPELL("CLUMSY", 3);
+					CHECKSPELL("FEEBLEMIND", 4);
+					CHECKSPELL("WEAKEN", 5);
+					CHECKSPELL("FIREBALL", 6);
+					CHECKSPELL("CURSE", 7);
+					CHECKSPELL("LIGHTNING", 8);
+					CHECKSPELL("PARALYZE", 9);
+					CHECKSPELL("MINDBLAST", 10);
+					CHECKSPELL("ENERGYBOLT", 11);
+					CHECKSPELL("EXPLOSION", 12);
+					CHECKSPELL("FLAMESTRIKE", 13);
+					CHECKSPELL("FIREFIELD", 14);
+					CHECKSPELL("POISONFIELD", 15);
+					CHECKSPELL("PARALYZEFIELD", 16);
+					CHECKSPELL("HEAL", 17);
+					CHECKSPELL("GREATHEAL", 18);
+					CHECKSPELL("GREATCURE", 19);
+					CHECKSPELL("PIROMANCY", 20);
+					CHECKSPELL("POISOMANCY", 21);
+					CHECKSPELL("POISON", 22);
+					CHECKSPELL("MANADRAIN", 23);
+					CHECKSPELL("MANAVAMPIRE", 24);
+					CHECKSPELL("BLADESPIRITS", 25);
+					CHECKSPELL("ENERGYVORTEX", 26);
+					CHECKSPELL("MAGICREFLECTION", 27);
+					CHECKSPELL("CHAINLIGHTNING", 28);
+					CHECKSPELL("METEORSWARM", 29);
+					CHECKSPELL("EARTHQUAKE", 30);
+				}
+			} while (script1[0]!='}');
+		}
 
 	}
 	safedelete(iter);
 	ConOut("[DONE]\n");
 }
+#undef CHECKSPELL
 
 void npcCastSpell(P_CHAR pc_att, P_CHAR pc_def)
 {
