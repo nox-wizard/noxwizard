@@ -389,6 +389,10 @@
 				RelativePath="..\regions.cpp">
 			</File>
 			<File
+				RelativePath="..\resourcemap.cpp">
+			</File>
+
+			<File
 				RelativePath="..\remadmin.cpp">
 			</File>
 			<File
@@ -743,6 +747,9 @@
 			</File>
 			<File
 				RelativePath="..\resource.h">
+			</File>
+			<File
+				RelativePath="..\resourcemap.h">
 			</File>
 			<File
 				RelativePath="..\sclinux.h">
