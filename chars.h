@@ -148,6 +148,7 @@ enum AmxCharEvents
 
 class cNxwClientObj;
 class cPath;
+class ClientCrypt;
 
 /*!
 \brief Character class
@@ -337,8 +338,11 @@ class cChar : public cObject
 	public: // this will become private and i don't think 3 variables are needed to store privs...
 		SI08			priv2;	            /*!< 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
 										10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
+										100: allshow toggle
 						*/
 		SI32 			priv3[7];           //!< needed for Lord binarys meta-gm stuff
+		SI08			priv4;	            /*!< 1: allshow toggle
+						*/
 
 	public:
 		const LOGICAL		IsTrueGM() const;
@@ -358,6 +362,8 @@ class cChar : public cObject
 
 		SI08			GetPriv2() const;	//!< Temporary workaround until priv vars are settled
 		void 			SetPriv2(SI08 p);
+		SI08			GetPriv4() const;	//!< Temporary workaround until priv vars are settled
+		void 			SetPriv4(SI08 p);
 //@}
 
 //@{
@@ -959,7 +965,12 @@ public:
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
 	*/
-
+#ifdef ENCRYPTION
+	// Encryption per client
+	void setCrypter(ClientCrypt * crypt);
+	ClientCrypt * getCrypter();
+	ClientCrypt * crypter;
+#endif
 } PACK_NEEDED;
 
 

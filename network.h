@@ -16,6 +16,7 @@
 #include <iostream>
 #include "debug.h"
 
+class ClientCrypt;
 using namespace std ;
 
 #if defined(__unix__)
@@ -70,6 +71,7 @@ enum {
 	LBR = 0x0002
 };
 
+
 class cNetwork
 {
 	public:
@@ -108,6 +110,11 @@ class cNetwork
 		void pSplit(char *pass0);
 		void sockInit();
 		void ActivateFeatures(NXWSOCKET s);
+#ifdef ENCRYPTION
+		unsigned char calculateLoginKey(unsigned char loginKey [4], unsigned char packetId );
+		ClientCrypt * clientCrypter[MAXCLIENT+1]; //! save crypter per client socket
+		unsigned char clientSeed[MAXCLIENT+1][4]; 
+#endif
 };
 
 extern class cNetwork	*Network;

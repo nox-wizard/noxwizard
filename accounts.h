@@ -115,6 +115,7 @@ public:
 	void SetEntering( ACCOUNT acctnum );
 	void SetOffline( ACCOUNT acctnum );
 	void OnLogin( ACCOUNT acctnum, NXWSOCKET socket );
+	SI32 verifyPassword(std::string username, std::string password);
 	SI32 ChangePassword( ACCOUNT acctnum, std::string password);
 	void AddCharToAccount( ACCOUNT acctnum, P_CHAR pc );
 	void GetAllChars( ACCOUNT acctnum, NxwCharWrapper& sc );

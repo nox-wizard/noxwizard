@@ -122,7 +122,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	foodloc.x=0;
 	foodloc.y=0;
 	foodloc.z=0;
-
+	
 
 	party=INVALID;
 
@@ -140,6 +140,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	SetPriv(0); // 1:GM clearance, 2:Broadcast, 4:Invulnerable, 8: single click serial numbers
 	// 10: Don't show skill titles, 20: GM Pagable, 40: Can snoop others packs, 80: Counselor clearance
 	priv2=0;	// 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
+	priv4=0;	// 1:Allshow
 	// 10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
 	resetPriv3();
 	fonttype=3; // Speech font to use
@@ -256,7 +257,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
 	SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
 	SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
-
+	
 	flag=0x02; //1=red 2=grey 4=Blue 8=green 10=Orange // grey as default - AntiChrist
 	tempflagtime=0;
 
@@ -311,7 +312,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	holydamaged = false;
 	damagetype = DAMAGE_BLUDGEON;
 	fstm=0.0f;
-
+	
 	setGuild( NULL, NULL );
 
 	jailed=false;
@@ -349,6 +350,13 @@ cChar::cChar( SERIAL ser ) : cObject()
 
 	oldmenu=INVALID;
 
+	commandLevel=0;
+	// initializing crypt
+#ifdef ENCRYPTION
+	crypter = NULL;
+#endif
+	// initializing amx
+	resetAmxEvents();
 }
 
 /*
@@ -362,6 +370,10 @@ cChar::~cChar()
 		safedelete( speechCurrent );
 	if ( path != NULL )
 		safedelete( path );
+#ifdef ENCRYPTION
+	if ( crypter != NULL )
+		safedelete(crypter);
+#endif
 }
 
 
@@ -1411,10 +1423,12 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 {
 	if (!npc && !IsOnline())
 		return;
-
+	P_CHAR myself=pointers::findCharBySerial(getSerial32());
+	if ( ! ISVALIDPC(myself) )
+		return;
 	P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
 	SERIAL serial_att= ISVALIDPC(pc_att)? pc_att->getSerial32() : INVALID;
-
+	
 	if (amxevents[EVENT_CHR_ONWOUNDED]) {
 		g_bByPass = false;
 		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att);
@@ -1790,7 +1804,9 @@ UI32 cChar::distFrom(P_ITEM pi)
 	VALIDATEPIR(cont, VERY_VERY_FAR);
 
 	if(cont->isInWorld())
+	{
 		return (UI32)dist(getPosition(),cont->getPosition());
+	}
 	else
 		if(isCharSerial(cont->getContSerial())) //can be weared
 			return distFrom( pointers::findCharBySerial(cont->getContSerial()) );
@@ -1819,6 +1835,11 @@ LOGICAL cChar::canSee( cObject &obj )
 			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
 				return false;
 			if ( pc->dead && !pc->war && !dead ) // Non-persecuting ghosts can be seen only by other ghosts
+				return false;
+		}
+		else 
+		{
+			if ( !pc->IsOnline() && !pc->npc)
 				return false;
 		}
 	}
@@ -1917,31 +1938,47 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
     // Send other players and items to char (if online)
     //
     if ( cli == NULL || cli == getClient() )
-	if ( socket != INVALID )
-	{
-		if ( flags&TELEFLAG_SENDNEARCHARS )
+		if ( socket != INVALID )
 		{
-			NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
-			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-				P_CHAR pc=sc.getChar();
-				if( ISVALIDPC( pc ) )
-					if( getSerial32() != pc->getSerial32() ) {
-						impowncreate( socket, pc, 1 );
+			if ( flags&TELEFLAG_SENDNEARCHARS )
+			{
+				NxwCharWrapper sc;
+				sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
+				for( sc.rewind(); !sc.isEmpty(); sc++ ) 
+				{
+					P_CHAR pc=sc.getChar();
+					if( ISVALIDPC( pc ) )
+					{
+						if( getSerial32() != pc->getSerial32() ) 
+						{
+							if ( !pc->IsOnline() && !pc->npc )
+							{
+								if ( seeForLastTime( *pc ))
+									getClient()->sendRemoveObject( P_OBJECT(pc) );
+							}
+							else
+							{
+								seeForLastTime( *pc );
+								seeForFirstTime( *pc );
+								impowncreate( socket, pc, 1 );
+							}
+						}
+					}
+				}
+
+				if ( flags&TELEFLAG_SENDNEARITEMS ) 
+				{
+					NxwItemWrapper si;
+					si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
+					for( si.rewind(); !si.isEmpty(); si++ ) 
+					{
+						P_ITEM pi = si.getItem();
+						if( ISVALIDPI( pi ) )
+							senditem( socket, pi );
 					}
 				}
 			}
-
-			if ( flags&TELEFLAG_SENDNEARITEMS ) {
-				NxwItemWrapper si;
-				si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
-				for( si.rewind(); !si.isEmpty(); si++ ) {
-					P_ITEM pi = si.getItem();
-					if( ISVALIDPI( pi ) )
-						senditem( socket, pi );
-			}
 		}
-	}
 
 	//
 	// Send the light level
@@ -3133,13 +3170,22 @@ void cChar::Kill()
 				pk->amxevents[EVENT_CHR_ONKILL]->Call( pk->getSerial32(), getSerial32() );
 			if (pk->war)
 				pk->toggleCombat(); // ripper
+
 		}
+			
+		
 	}
 #endif
 
+	// Remove summoned monsters
+	
 	//--------------------- trade stuff
 
-
+	if ( summontimer > 0 )
+	{
+		Delete();
+		return;
+	}
 	NxwItemWrapper weared;
 	weared.fillItemWeared( this, true, true, false );
 	for( weared.rewind(); !weared.isEmpty(); weared++ ) {
@@ -3307,7 +3353,9 @@ void cChar::Kill()
 	}
 
 	if ( npc )
+	{
 		Delete();
+	}
 	else
 		++deaths;
 }
@@ -3400,7 +3448,6 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 
 	if (pi->amxevents[EVENT_IONEQUIP] != NULL)
 		pi->amxevents[EVENT_IONEQUIP]->Call(pi->getSerial32(), this->getSerial32() );
-
 	//runAmxEvent( EVENT_IONEQUIP, pi->getSerial32(), s );
 
 	// if bypass() function called return
@@ -3472,7 +3519,6 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 
 	if (pi->amxevents[EVENT_IONUNEQUIP] != NULL)
 		pi->amxevents[EVENT_IONUNEQUIP]->Call(pi->getSerial32(), this->getSerial32());
-
 	/*
 	pi->runAmxEvent( EVENT_IONUNEQUIP, pi->getSerial32(), s );
 	if (g_bByPass)
@@ -3609,12 +3655,21 @@ void cChar::SetPriv2(SI08 p)
 	priv2 = p;
 }
 
+SI08 cChar::GetPriv4() const
+{
+	return priv4;
+}
+
+void cChar::SetPriv4(SI08 p)
+{
+	priv4 = p;
+}
+
 void cChar::SetMurderer()
 {
 
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
-
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 
 	flag=CHRFLAG_MURDERER;
@@ -3625,7 +3680,6 @@ void cChar::SetInnocent()
 
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
-
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_INNOCENT;
 }
@@ -3635,7 +3689,6 @@ void cChar::SetCriminal()
 
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
-
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_CRIMINAL;
 }
@@ -4292,7 +4345,8 @@ void cChar::heartbeat()
 {
 	if ( dead )
 		return;
-
+	if ( pointers::findCharBySerial(getSerial32()) == NULL )
+		return;
 	if( npc )
 		npc_heartbeat();
 	else
@@ -4503,7 +4557,7 @@ void cChar::pc_heartbeat()
 		}
 	}
 
-	if ( clientInfo[socket]->lsd )
+	if ( clientInfo[socket]->lsd ) 
 		do_lsd(); //LB's LSD potion-stuff
 
 	if ( TIMEOUT( mutetime ) && squelched == 2 )
@@ -4837,7 +4891,7 @@ void cChar::checkPoisoning()
 				if ( hp < 1 )
 				{
 					Kill();
-					if ( ! npc )
+					if ( !npc )
 						sysmsg( TRANSLATE("The poison has killed you.") );
 				}
 				else
@@ -5309,8 +5363,19 @@ void cChar::modifyFame( SI32 value )
 		}
 	}
 }
+#ifdef ENCRYPTION
 
+void cChar::setCrypter(ClientCrypt * crypt)
+{
+	crypter=crypt;
+}
 
+ClientCrypt * cChar::getCrypter()
+{
+	return crypter;
+}
+
+#endif
 void cChar::setSkillDelay( UI32 seconds )
 {
 	skilldelay =  uiCurrentTime + seconds * MY_CLOCKS_PER_SEC;

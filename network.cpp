@@ -38,7 +38,9 @@
 #include "scripts.h"
 
 
-
+#ifdef ENCRYPTION
+#include "encryption/clientcrypt.h"
+#endif
 //#define USE_MTHREAD_SEND
 
 cNetwork	*Network;
@@ -129,38 +131,38 @@ static int m_packetLen[256] =
 
 static unsigned int bit_table[257][2] =
 {
-{0x0002, 0x0000}, {0x0005, 0x001F}, {0x0006, 0x0022}, {0x0007, 0x0034}, {0x0007, 0x0075}, {0x0006, 0x0028}, {0x0006, 0x003B}, {0x0007, 0x0032}, 
-{0x0008, 0x00E0}, {0x0008, 0x0062}, {0x0007, 0x0056}, {0x0008, 0x0079}, {0x0009, 0x019D}, {0x0008, 0x0097}, {0x0006, 0x002A}, {0x0007, 0x0057}, 
-{0x0008, 0x0071}, {0x0008, 0x005B}, {0x0009, 0x01CC}, {0x0008, 0x00A7}, {0x0007, 0x0025}, {0x0007, 0x004F}, {0x0008, 0x0066}, {0x0008, 0x007D}, 
-{0x0009, 0x0191}, {0x0009, 0x01CE}, {0x0007, 0x003F}, {0x0009, 0x0090}, {0x0008, 0x0059}, {0x0008, 0x007B}, {0x0008, 0x0091}, {0x0008, 0x00C6}, 
-{0x0006, 0x002D}, {0x0009, 0x0186}, {0x0008, 0x006F}, {0x0009, 0x0093}, {0x000A, 0x01CC}, {0x0008, 0x005A}, {0x000A, 0x01AE}, {0x000A, 0x01C0}, 
-{0x0009, 0x0148}, {0x0009, 0x014A}, {0x0009, 0x0082}, {0x000A, 0x019F}, {0x0009, 0x0171}, {0x0009, 0x0120}, {0x0009, 0x00E7}, {0x000A, 0x01F3}, 
-{0x0009, 0x014B}, {0x0009, 0x0100}, {0x0009, 0x0190}, {0x0006, 0x0013}, {0x0009, 0x0161}, {0x0009, 0x0125}, {0x0009, 0x0133}, {0x0009, 0x0195}, 
-{0x0009, 0x0173}, {0x0009, 0x01CA}, {0x0009, 0x0086}, {0x0009, 0x01E9}, {0x0009, 0x00DB}, {0x0009, 0x01EC}, {0x0009, 0x008B}, {0x0009, 0x0085}, 
-{0x0005, 0x000A}, {0x0008, 0x0096}, {0x0008, 0x009C}, {0x0009, 0x01C3}, {0x0009, 0x019C}, {0x0009, 0x008F}, {0x0009, 0x018F}, {0x0009, 0x0091}, 
-{0x0009, 0x0087}, {0x0009, 0x00C6}, {0x0009, 0x0177}, {0x0009, 0x0089}, {0x0009, 0x00D6}, {0x0009, 0x008C}, {0x0009, 0x01EE}, {0x0009, 0x01EB}, 
-{0x0009, 0x0084}, {0x0009, 0x0164}, {0x0009, 0x0175}, {0x0009, 0x01CD}, {0x0008, 0x005E}, {0x0009, 0x0088}, {0x0009, 0x012B}, {0x0009, 0x0172}, 
-{0x0009, 0x010A}, {0x0009, 0x008D}, {0x0009, 0x013A}, {0x0009, 0x011C}, {0x000A, 0x01E1}, {0x000A, 0x01E0}, {0x0009, 0x0187}, {0x000A, 0x01DC}, 
-{0x000A, 0x01DF}, {0x0007, 0x0074}, {0x0009, 0x019F}, {0x0008, 0x008D}, {0x0008, 0x00E4}, {0x0007, 0x0079}, {0x0009, 0x00EA}, {0x0009, 0x00E1}, 
-{0x0008, 0x0040}, {0x0007, 0x0041}, {0x0009, 0x010B}, {0x0009, 0x00B0}, {0x0008, 0x006A}, {0x0008, 0x00C1}, {0x0007, 0x0071}, {0x0007, 0x0078}, 
-{0x0008, 0x00B1}, {0x0009, 0x014C}, {0x0007, 0x0043}, {0x0008, 0x0076}, {0x0007, 0x0066}, {0x0007, 0x004D}, {0x0009, 0x008A}, {0x0006, 0x002F}, 
-{0x0008, 0x00C9}, {0x0009, 0x00CE}, {0x0009, 0x0149}, {0x0009, 0x0160}, {0x000A, 0x01BA}, {0x000A, 0x019E}, {0x000A, 0x039F}, {0x0009, 0x00E5}, 
-{0x0009, 0x0194}, {0x0009, 0x0184}, {0x0009, 0x0126}, {0x0007, 0x0030}, {0x0008, 0x006C}, {0x0009, 0x0121}, {0x0009, 0x01E8}, {0x000A, 0x01C1}, 
-{0x000A, 0x011D}, {0x000A, 0x0163}, {0x000A, 0x0385}, {0x000A, 0x03DB}, {0x000A, 0x017D}, {0x000A, 0x0106}, {0x000A, 0x0397}, {0x000A, 0x024E}, 
-{0x0007, 0x002E}, {0x0008, 0x0098}, {0x000A, 0x033C}, {0x000A, 0x032E}, {0x000A, 0x01E9}, {0x0009, 0x00BF}, {0x000A, 0x03DF}, {0x000A, 0x01DD}, 
-{0x000A, 0x032D}, {0x000A, 0x02ED}, {0x000A, 0x030B}, {0x000A, 0x0107}, {0x000A, 0x02E8}, {0x000A, 0x03DE}, {0x000A, 0x0125}, {0x000A, 0x01E8}, 
-{0x0009, 0x00E9}, {0x000A, 0x01CD}, {0x000A, 0x01B5}, {0x0009, 0x0165}, {0x000A, 0x0232}, {0x000A, 0x02E1}, {0x000B, 0x03AE}, {0x000B, 0x03C6}, 
-{0x000B, 0x03E2}, {0x000A, 0x0205}, {0x000A, 0x029A}, {0x000A, 0x0248}, {0x000A, 0x02CD}, {0x000A, 0x023B}, {0x000B, 0x03C5}, {0x000A, 0x0251}, 
-{0x000A, 0x02E9}, {0x000A, 0x0252}, {0x0009, 0x01EA}, {0x000B, 0x03A0}, {0x000B, 0x0391}, {0x000A, 0x023C}, {0x000B, 0x0392}, {0x000B, 0x03D5}, 
-{0x000A, 0x0233}, {0x000A, 0x02CC}, {0x000B, 0x0390}, {0x000A, 0x01BB}, {0x000B, 0x03A1}, {0x000B, 0x03C4}, {0x000A, 0x0211}, {0x000A, 0x0203}, 
-{0x0009, 0x012A}, {0x000A, 0x0231}, {0x000B, 0x03E0}, {0x000A, 0x029B}, {0x000B, 0x03D7}, {0x000A, 0x0202}, {0x000B, 0x03AD}, {0x000A, 0x0213}, 
-{0x000A, 0x0253}, {0x000A, 0x032C}, {0x000A, 0x023D}, {0x000A, 0x023F}, {0x000A, 0x032F}, {0x000A, 0x011C}, {0x000A, 0x0384}, {0x000A, 0x031C}, 
-{0x000A, 0x017C}, {0x000A, 0x030A}, {0x000A, 0x02E0}, {0x000A, 0x0276}, {0x000A, 0x0250}, {0x000B, 0x03E3}, {0x000A, 0x0396}, {0x000A, 0x018F}, 
-{0x000A, 0x0204}, {0x000A, 0x0206}, {0x000A, 0x0230}, {0x000A, 0x0265}, {0x000A, 0x0212}, {0x000A, 0x023E}, {0x000B, 0x03AC}, {0x000B, 0x0393}, 
-{0x000B, 0x03E1}, {0x000A, 0x01DE}, {0x000B, 0x03D6}, {0x000A, 0x031D}, {0x000B, 0x03E5}, {0x000B, 0x03E4}, {0x000A, 0x0207}, {0x000B, 0x03C7}, 
-{0x000A, 0x0277}, {0x000B, 0x03D4}, {0x0008, 0x00C0}, {0x000A, 0x0162}, {0x000A, 0x03DA}, {0x000A, 0x0124}, {0x000A, 0x01B4}, {0x000A, 0x0264}, 
-{0x000A, 0x033D}, {0x000A, 0x01D1}, {0x000A, 0x01AF}, {0x000A, 0x039E}, {0x000A, 0x024F}, {0x000B, 0x0373}, {0x000A, 0x0249}, {0x000B, 0x0372}, 
-{0x0009, 0x0167}, {0x000A, 0x0210}, {0x000A, 0x023A}, {0x000A, 0x01B8}, {0x000B, 0x03AF}, {0x000A, 0x018E}, {0x000A, 0x02EC}, {0x0007, 0x0062}, 
+{0x0002, 0x0000}, {0x0005, 0x001F}, {0x0006, 0x0022}, {0x0007, 0x0034}, {0x0007, 0x0075}, {0x0006, 0x0028}, {0x0006, 0x003B}, {0x0007, 0x0032},
+{0x0008, 0x00E0}, {0x0008, 0x0062}, {0x0007, 0x0056}, {0x0008, 0x0079}, {0x0009, 0x019D}, {0x0008, 0x0097}, {0x0006, 0x002A}, {0x0007, 0x0057},
+{0x0008, 0x0071}, {0x0008, 0x005B}, {0x0009, 0x01CC}, {0x0008, 0x00A7}, {0x0007, 0x0025}, {0x0007, 0x004F}, {0x0008, 0x0066}, {0x0008, 0x007D},
+{0x0009, 0x0191}, {0x0009, 0x01CE}, {0x0007, 0x003F}, {0x0009, 0x0090}, {0x0008, 0x0059}, {0x0008, 0x007B}, {0x0008, 0x0091}, {0x0008, 0x00C6},
+{0x0006, 0x002D}, {0x0009, 0x0186}, {0x0008, 0x006F}, {0x0009, 0x0093}, {0x000A, 0x01CC}, {0x0008, 0x005A}, {0x000A, 0x01AE}, {0x000A, 0x01C0},
+{0x0009, 0x0148}, {0x0009, 0x014A}, {0x0009, 0x0082}, {0x000A, 0x019F}, {0x0009, 0x0171}, {0x0009, 0x0120}, {0x0009, 0x00E7}, {0x000A, 0x01F3},
+{0x0009, 0x014B}, {0x0009, 0x0100}, {0x0009, 0x0190}, {0x0006, 0x0013}, {0x0009, 0x0161}, {0x0009, 0x0125}, {0x0009, 0x0133}, {0x0009, 0x0195},
+{0x0009, 0x0173}, {0x0009, 0x01CA}, {0x0009, 0x0086}, {0x0009, 0x01E9}, {0x0009, 0x00DB}, {0x0009, 0x01EC}, {0x0009, 0x008B}, {0x0009, 0x0085},
+{0x0005, 0x000A}, {0x0008, 0x0096}, {0x0008, 0x009C}, {0x0009, 0x01C3}, {0x0009, 0x019C}, {0x0009, 0x008F}, {0x0009, 0x018F}, {0x0009, 0x0091},
+{0x0009, 0x0087}, {0x0009, 0x00C6}, {0x0009, 0x0177}, {0x0009, 0x0089}, {0x0009, 0x00D6}, {0x0009, 0x008C}, {0x0009, 0x01EE}, {0x0009, 0x01EB},
+{0x0009, 0x0084}, {0x0009, 0x0164}, {0x0009, 0x0175}, {0x0009, 0x01CD}, {0x0008, 0x005E}, {0x0009, 0x0088}, {0x0009, 0x012B}, {0x0009, 0x0172},
+{0x0009, 0x010A}, {0x0009, 0x008D}, {0x0009, 0x013A}, {0x0009, 0x011C}, {0x000A, 0x01E1}, {0x000A, 0x01E0}, {0x0009, 0x0187}, {0x000A, 0x01DC},
+{0x000A, 0x01DF}, {0x0007, 0x0074}, {0x0009, 0x019F}, {0x0008, 0x008D}, {0x0008, 0x00E4}, {0x0007, 0x0079}, {0x0009, 0x00EA}, {0x0009, 0x00E1},
+{0x0008, 0x0040}, {0x0007, 0x0041}, {0x0009, 0x010B}, {0x0009, 0x00B0}, {0x0008, 0x006A}, {0x0008, 0x00C1}, {0x0007, 0x0071}, {0x0007, 0x0078},
+{0x0008, 0x00B1}, {0x0009, 0x014C}, {0x0007, 0x0043}, {0x0008, 0x0076}, {0x0007, 0x0066}, {0x0007, 0x004D}, {0x0009, 0x008A}, {0x0006, 0x002F},
+{0x0008, 0x00C9}, {0x0009, 0x00CE}, {0x0009, 0x0149}, {0x0009, 0x0160}, {0x000A, 0x01BA}, {0x000A, 0x019E}, {0x000A, 0x039F}, {0x0009, 0x00E5},
+{0x0009, 0x0194}, {0x0009, 0x0184}, {0x0009, 0x0126}, {0x0007, 0x0030}, {0x0008, 0x006C}, {0x0009, 0x0121}, {0x0009, 0x01E8}, {0x000A, 0x01C1},
+{0x000A, 0x011D}, {0x000A, 0x0163}, {0x000A, 0x0385}, {0x000A, 0x03DB}, {0x000A, 0x017D}, {0x000A, 0x0106}, {0x000A, 0x0397}, {0x000A, 0x024E},
+{0x0007, 0x002E}, {0x0008, 0x0098}, {0x000A, 0x033C}, {0x000A, 0x032E}, {0x000A, 0x01E9}, {0x0009, 0x00BF}, {0x000A, 0x03DF}, {0x000A, 0x01DD},
+{0x000A, 0x032D}, {0x000A, 0x02ED}, {0x000A, 0x030B}, {0x000A, 0x0107}, {0x000A, 0x02E8}, {0x000A, 0x03DE}, {0x000A, 0x0125}, {0x000A, 0x01E8},
+{0x0009, 0x00E9}, {0x000A, 0x01CD}, {0x000A, 0x01B5}, {0x0009, 0x0165}, {0x000A, 0x0232}, {0x000A, 0x02E1}, {0x000B, 0x03AE}, {0x000B, 0x03C6},
+{0x000B, 0x03E2}, {0x000A, 0x0205}, {0x000A, 0x029A}, {0x000A, 0x0248}, {0x000A, 0x02CD}, {0x000A, 0x023B}, {0x000B, 0x03C5}, {0x000A, 0x0251},
+{0x000A, 0x02E9}, {0x000A, 0x0252}, {0x0009, 0x01EA}, {0x000B, 0x03A0}, {0x000B, 0x0391}, {0x000A, 0x023C}, {0x000B, 0x0392}, {0x000B, 0x03D5},
+{0x000A, 0x0233}, {0x000A, 0x02CC}, {0x000B, 0x0390}, {0x000A, 0x01BB}, {0x000B, 0x03A1}, {0x000B, 0x03C4}, {0x000A, 0x0211}, {0x000A, 0x0203},
+{0x0009, 0x012A}, {0x000A, 0x0231}, {0x000B, 0x03E0}, {0x000A, 0x029B}, {0x000B, 0x03D7}, {0x000A, 0x0202}, {0x000B, 0x03AD}, {0x000A, 0x0213},
+{0x000A, 0x0253}, {0x000A, 0x032C}, {0x000A, 0x023D}, {0x000A, 0x023F}, {0x000A, 0x032F}, {0x000A, 0x011C}, {0x000A, 0x0384}, {0x000A, 0x031C},
+{0x000A, 0x017C}, {0x000A, 0x030A}, {0x000A, 0x02E0}, {0x000A, 0x0276}, {0x000A, 0x0250}, {0x000B, 0x03E3}, {0x000A, 0x0396}, {0x000A, 0x018F},
+{0x000A, 0x0204}, {0x000A, 0x0206}, {0x000A, 0x0230}, {0x000A, 0x0265}, {0x000A, 0x0212}, {0x000A, 0x023E}, {0x000B, 0x03AC}, {0x000B, 0x0393},
+{0x000B, 0x03E1}, {0x000A, 0x01DE}, {0x000B, 0x03D6}, {0x000A, 0x031D}, {0x000B, 0x03E5}, {0x000B, 0x03E4}, {0x000A, 0x0207}, {0x000B, 0x03C7},
+{0x000A, 0x0277}, {0x000B, 0x03D4}, {0x0008, 0x00C0}, {0x000A, 0x0162}, {0x000A, 0x03DA}, {0x000A, 0x0124}, {0x000A, 0x01B4}, {0x000A, 0x0264},
+{0x000A, 0x033D}, {0x000A, 0x01D1}, {0x000A, 0x01AF}, {0x000A, 0x039E}, {0x000A, 0x024F}, {0x000B, 0x0373}, {0x000A, 0x0249}, {0x000B, 0x0372},
+{0x0009, 0x0167}, {0x000A, 0x0210}, {0x000A, 0x023A}, {0x000A, 0x01B8}, {0x000B, 0x03AF}, {0x000A, 0x018E}, {0x000A, 0x02EC}, {0x0007, 0x0062},
 {0x0004, 0x000D}
 };
 
@@ -239,7 +241,29 @@ int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 void cNetwork::DoStreamCode( NXWSOCKET  socket )
 {
 	int status ;
+/*
+	FILE *debugout=fopen("d:\\packets.log", "a");
+	for ( int i = 0; i < boutlength[socket];++i)
+	{
+		if ( i % 32 == 0 )
+		{
+			fprintf(debugout, "\n0x%04x ", i);
+		}
+		fprintf(debugout, "%02x ", outbuffer[socket][i]);
+	}
+	fprintf(debugout, "\n------------------------------------------", i);
+	fclose(debugout);
+*/
 	int len = Pack( outbuffer[socket], xoutbuffer, boutlength[socket] );
+	// ConOut("Packed %d bytes input to %d bytes out\n", boutlength[socket], len);
+	NXWCLIENT ps = getClientFromSocket(socket);
+	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
+#ifdef ENCRYPTION
+	if ( clientCrypter[socket] != NULL && clientCrypter[socket]->getCryptVersion() >= CRYPT_3_0_0c )
+		clientCrypter[socket] ->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
+	else if (pc_currchar != NULL && pc_currchar->getCrypter() != NULL && pc_currchar->getCrypter()->getCryptVersion() >= CRYPT_3_0_0c )
+		pc_currchar->getCrypter()->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
+#endif
 	if ((status = MTsend(socket, xoutbuffer, len, MSG_NOSIGNAL)) == SOCKET_ERROR)
 	{
    		LogSocketError("Socket Send error %s\n", errno) ;
@@ -285,8 +309,19 @@ void cNetwork::xSend( NXWSOCKET socket, const void *point, int length  ) // Buff
 
 	if ( boutlength[ socket ] + length > MAXBUFFER )
 		FlushBuffer( socket );
-	memcpy( &outbuffer[ socket ][ boutlength[ socket ] ], point, length );
-	boutlength[ socket ] += length;
+	// Still too long
+	if ( boutlength[ socket ] + length > MAXBUFFER )
+	{
+		memcpy( &outbuffer[ socket ][ boutlength[ socket ] ], point, MAXBUFFER );
+		boutlength[ socket ] += MAXBUFFER;
+		FlushBuffer( socket );
+		xSend(socket, (char *)point + (int )MAXBUFFER, length - MAXBUFFER );
+	}
+	else
+	{
+		memcpy( &outbuffer[ socket ][ boutlength[ socket ] ], point, length );
+		boutlength[ socket ] += length;
+	}
 }
 
 void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
@@ -389,7 +424,13 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 	FlushBuffer( socket );
 
 	closesocket( client[ socket ] ); //so it bombs and free the mutex :]
-
+#ifdef ENCRYPTION
+	if ( clientCrypter[socket] != NULL && !clientCrypter[socket]->getEntering())
+	{
+		delete (ClientCrypt * ) clientCrypter[socket] ;
+		clientCrypter[socket]=NULL;
+	}
+#endif
 #ifdef USE_MTHREAD_SEND
 	g_NT[ socket ]->mtxrun.enter();
 	NetThread* NT = g_NT[ socket ];
@@ -414,6 +455,9 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		client[j]=client[jj];
 		currchar[j]=currchar[jj];
 		cryptedClient[j]=cryptedClient[jj];
+#ifdef ENCRYPTION
+		clientCrypter[jj] = clientCrypter[j];
+#endif
 		clientip[j][0]=clientip[jj][0];
 		clientip[j][1]=clientip[jj][1];
 		clientip[j][2]=clientip[jj][2];
@@ -444,7 +488,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 #endif
 
 	P_CHAR pj = NULL;
-
 	for ( i = 0; i < MAXCLIENT; ++i ) {
 		pj = pointers::findCharBySerial(currchar[i]);
 		if ( ISVALIDPC(pj) )
@@ -466,15 +509,63 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 void cNetwork::LoginMain(int s)
 {
 	signed long int i;
-        unsigned char noaccount[2]={0x82, 0x00};
+    unsigned char noaccount[2]={0x82, 0x00};
 	unsigned char acctused[2]={0x82, 0x01};
 	unsigned char acctblock[2]={0x82, 0x02};
 	unsigned char nopass[2]={0x82, 0x03};
+	NXWCLIENT ps = getClientFromSocket(s);
+
 
 	SERIAL chrSerial;
 
 	acctno[s]=INVALID;
-
+	int length=0x3e;
+#ifdef ENCRYPTION
+	int j;
+	unsigned char decryptPacket[MAXBUFFER+1];
+	unsigned char cryptPacket[MAXBUFFER+1];
+	ClientCrypt * crypter;
+	memcpy(&cryptPacket[0], &buffer[s][0],length);
+	if ( clientCrypter[s] != NULL )
+	{
+		crypter = clientCrypter[s] ;
+		for ( j = 0 ; j <= CRYPT_3_0_6j;++j)
+		{
+			memcpy(&cryptPacket[0], &buffer[s][0],length);
+			crypter->setLoginCryptKeys(loginKeys [j] [0], loginKeys [j] [1]);
+			crypter->setCryptMode(CRYPT_LOGIN);
+			crypter->setGameEncryption(j+1);
+			crypter->init(&clientSeed[s][0]);
+			crypter->decrypt(&cryptPacket[0], decryptPacket, length);
+			if ( decryptPacket[0x3e-1] == 0xFF )
+			{
+				// crypt key is correct only if Authentication is ok
+				memcpy (&cryptPacket[0], decryptPacket, length);
+				pSplit((char*)&cryptPacket[31]);
+				i = Accounts->verifyPassword((char*)&cryptPacket[1], (char*)pass1);
+				if( i >= 0 )
+				{
+					memcpy(&buffer[s][0],&cryptPacket[0] ,length);
+					// is this client logged in already ?
+					if ( Accounts->IsOnline(i) )
+					{
+						// Look for accountno
+						for ( int j = 0;j < s;++j)
+						{
+							if ( acctno[j] == i )
+							{
+								// Found logged in account
+								Disconnect(acctno[j]);
+								break;
+							}
+						}
+					}
+					break;
+				}
+			}
+		}
+	}
+#endif
 	pSplit((char*)&buffer[s][31]);
 	i = Accounts->Authenticate((char*)&buffer[s][1], (char*)pass1);
 
@@ -516,17 +607,17 @@ void cNetwork::LoginMain(int s)
 
 	if (Accounts->IsOnline(acctno[s]) )
 	{
-          Xsend(s, acctused, 2);
-          //<Luxor>: Let's kick the current player
-          chrSerial = Accounts->GetInWorld(acctno[s]);
-          if (chrSerial == INVALID)
-                return;
-          P_CHAR pc = pointers::findCharBySerial(chrSerial);
-          VALIDATEPC(pc);
-          pc->kick();
-	  currchar[s] = INVALID;
-          return;
-          //</Luxor>
+		Xsend(s, acctused, 2);
+		//<Luxor>: Let's kick the current player
+		chrSerial = Accounts->GetInWorld(acctno[s]);
+		if (chrSerial == INVALID)
+			return;
+		P_CHAR pc = pointers::findCharBySerial(chrSerial);
+		VALIDATEPC(pc);
+		pc->kick();
+		currchar[s] = INVALID;
+		return;
+		//</Luxor>
 	}
 
 	//ndEndy now better
@@ -581,16 +672,16 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	ip=inet_addr(serv[buffer[s][2]-1][1]);
 	port=str2num(serv[buffer[s][2]-1][2]);
 
-	// Enable autodetect unless you bind to a specific ip address 
-        // otherwise you should lead in some security issue 
+	// Enable autodetect unless you bind to a specific ip address
+        // otherwise you should lead in some security issue
         if(ServerScp::g_nAutoDetectIP || ServerScp::g_nBehindNat) { //Luxor
-		//Xan : plug'n'play mode under windows :) 
-                //Rik : and for linux too ;) (should run on other bsd compatible systems too) 
+		//Xan : plug'n'play mode under windows :)
+                //Rik : and for linux too ;) (should run on other bsd compatible systems too)
 		socklen_t n = sizeof(sockaddr_in);
                 sockaddr_in sa;
 		getsockname (client[s], (sockaddr*)(&sa), (socklen_t*)(&n));
 		unsigned long oldip = ip;
-		//Luxor: REALLY tricky... i should change this soon, but no time to make it better by now :P 
+		//Luxor: REALLY tricky... i should change this soon, but no time to make it better by now :P
 		unsigned long int serverip = sa.sin_addr.s_addr;
 		unsigned long int clientip = client_addr.sin_addr.s_addr;
 //		printf("IP: %d.%d.%d.%d\n", IPPRINTF(ip));
@@ -616,9 +707,27 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 	LongToCharPtr(ip, login03 +1);
 	ShortToCharPtr(port, login03 +5);
 	srand(ip+acctno[s]+now+uiCurrentTime); // Perform randomize
-	LongToCharPtr( calcserial('a', 'K', 'E', 'Y'), login03 +7);	// New Server Key!
+#ifdef ENCRYPTION
+	if ( clientCrypter[s] != NULL )
+	{
+		ClientCrypt *crypter = clientCrypter[s];
+		// unsigned int loginseed = clientip[s][3] + ( clientip[s][2] << 8) + (clientip[s][1] << 16) + ( clientip[s][0] << 24);
+		unsigned long loginseed = 1 + ( 127 << 24 )  ;
+		crypter->setCryptSeed(loginseed);
+		crypter->setCryptMode(CRYPT_GAME);
+		crypter->setEntering(true);
+		// memcpy(login03 +7, &clientip[s][0],4);
+		LongToCharPtr (loginseed, login03 +7); // set crypt key
+		// if ( clientCrypter[s]->getCryptVersion() < CRYPT_3_0_0c )
+		LongToCharPtr (ip, login03 +1); // set game server ip
+
+
+	}
+	else
+#endif
+		LongToCharPtr( calcserial('a', 'K', 'E', 'Y'), login03 +7);	// New Server Key!
 	Xsend(s, login03, 11);
-//AoS/	Network->FlushBuffer(s);
+	Network->FlushBuffer(s);
 }
 
 void cNetwork::ActivateFeatures(NXWSOCKET s)
@@ -676,7 +785,7 @@ void cNetwork::GoodAuth(int s)
 	for ( sc.rewind(); !sc.isEmpty(); sc++ )
 	{
 		P_CHAR pc_a=sc.getChar();
-		if(!ISVALIDPC(pc_a) ) 
+		if(!ISVALIDPC(pc_a) )
 			continue;
 
 		strcpy((char*)login04b, pc_a->getCurrentNameC());
@@ -813,7 +922,6 @@ void cNetwork::charplay (int s) // After hitting "Play Character" button //Insta
 			currchar[s] = pc_k->getSerial32();
 
 			pc_k->setClient(new cNxwClientObj(s));
-
 			startchar(s);
 		}
 		else
@@ -859,36 +967,46 @@ void cNetwork::enterchar(int s)
 	if(pc->poisoned) startup[28]=0x04; else startup[28]=0x00; //AntiChrist -- thnx to SpaceDog
 
 	Xsend(s, world, 6);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	Xsend(s, startup, 37);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	pc->war=0;
 	Xsend(s, modeset, 5);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	techstuff[3]=0x01;
 	Xsend(s, techstuff, 5);
-//AoS/	Network->FlushBuffer(s);
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	techstuff[3]=0x02;
 	Xsend(s, techstuff, 5);
-//AoS/	Network->FlushBuffer(s);
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	techstuff[3]=0x03;
 	Xsend(s, techstuff, 5);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	Xsend(s, LoginOK, 1);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	Xsend(s, TimeZ, 4);
-//AoS/	Network->FlushBuffer(s);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	pc->spiritspeaktimer=uiCurrentTime;
 	pc->begging_timer=uiCurrentTime;
 
 	pc->stealth=INVALID;
-	if (!(pc->IsGMorCounselor())) 
+	if (!(pc->IsGMorCounselor()))
 		pc->hidden=UNHIDDEN;
 
 	pc->wresmove=0;	//Luxor
@@ -906,21 +1024,28 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 		return;
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-	
+#ifdef ENCRYPTION
+	pc->setCrypter(clientCrypter[s]);
+#endif
 	//<Luxor>: possess stuff
 	if (pc->possessedSerial != INVALID) {
 		P_CHAR pcPos = pointers::findCharBySerial(pc->possessedSerial);
 		if (ISVALIDPC(pcPos)) {
 			currchar[s] = pcPos->getSerial32();
 			pcPos->setClient(new cNxwClientObj(s));
+#ifdef ENCRYPTION
+			pcPos->setCrypter(clientCrypter[s]);
+			pc->setCrypter(NULL);
+#endif
 			pc->setClient(NULL);
 			Accounts->SetOffline(pc->account);
 			Accounts->SetOnline(pc->account, pcPos);
 		} else pc->possessedSerial = INVALID;
 	}
 	//</Luxor>
-
-
+#ifdef ENCRYPTION
+	clientCrypter[s]=NULL;
+#endif
 	char zbuf[255];
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -928,11 +1053,17 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	AMXEXECSV( pc->getSerial32(),AMXT_SPECIALS, 4, AMX_BEFORE);
 
 	enterchar( s );
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	sysmessage(s,0x058, TRANSLATE("%s %s %s [%s] Compiled by %s"), PRODUCT, VER, VERNUMB, OS , NAME);
-
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	sysmessage(s,0x038, TRANSLATE("Programmed by: %s"),PROGRAMMERS);
-	
+#ifdef ENCRYPTION
+	Network->FlushBuffer(s);
+#endif
 	// log last time signed on
 	time_t ltime;
 	time( &ltime );
@@ -981,11 +1112,17 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	if ( !(strcmp(temp, "ALL") ) )
 	{
   	  pc->sysmsg(TRANSLATE("There is NO client version checking active on this shard. The recommanded-dev-team-supported client version for this server version is client version %s though"), SUPPORTED_CLIENT);
+#ifdef ENCRYPTION
+	  Network->FlushBuffer(s);
+#endif
 	  return;
 
 	} else if ( !(strcmp(temp, "SERVER_DEFAULT") ) )
 	{
 	  pc->sysmsg(TRANSLATE("This shard requires the recommanded-dev-team-supported client version for this server version client version %s"), SUPPORTED_CLIENT);
+#ifdef ENCRYPTION
+	  Network->FlushBuffer(s);
+#endif
 	  return;
 	}
 	else
@@ -1011,12 +1148,13 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	strcat(idname, SUPPORTED_CLIENT);
 
 	pc->sysmsg(idname);
+	Network->FlushBuffer(s);
 }
 
 char cNetwork::LogOut(NXWSOCKET s)//Instalog
 {
 	if (s < 0 || s >= now) return 0; //Luxor
-	
+
 	P_CHAR pc = pointers::findCharBySerial(currchar[s]);
 	VALIDATEPCR(pc, 0);
 
@@ -1042,7 +1180,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 	P_ITEM p_multi=NULL;
 	if (pc->getMultiSerial32() == INVALID )
 		p_multi=findmulti( pc->getPosition() );
-	else 
+	else
 		p_multi = pointers::findItemBySerial( pc->getMultiSerial32() );
 
 	if (ISVALIDPI(p_multi) && !valid)//It they are in a multi... and it's not already valid (if it is why bother checking?)
@@ -1149,9 +1287,9 @@ void cNetwork::sockInit()
 		faul=1;
 		return;
 	}
-	
+
 	g_nMainTCPPort = str2num(serv[0][2]);
-	
+
 	len_connection_addr=sizeof (struct sockaddr_in);
 	connection.sin_family=AF_INET;
 	connection.sin_addr.s_addr=INADDR_ANY;		// All interfaces
@@ -1313,13 +1451,13 @@ void cNetwork::CheckConn() // Check for connection requests
 				sprintf((char*)temp,"client %i [%s] %s [Total:%i].\n",now,inet_ntoa(client_addr.sin_addr), temp2, now+1);
 				InfoOut(temp);
 
-				if (SrvParms->server_log) 
+				if (SrvParms->server_log)
 					ServerLog.Write("%s", temp);
 
 #ifdef USE_MTHREAD_SEND
                 		if (g_NT[now]==NULL)
 					g_NT[now] = new NetThread(client[now]);
-                		else 
+                		else
 					g_NT[now]->set(client[now]);
                 		g_NT[now]->mtxrun.leave();
 #endif
@@ -1389,6 +1527,12 @@ void cNetwork::CheckMessage() // Check for messages from the clients
 cNetwork::cNetwork() // Initialize sockets
 {
     sockInit();
+#ifdef ENCRYPTION
+	for (int i = 0;i< MAXCLIENT+1;++i)
+	{
+		clientCrypter[i]=0;
+	}
+#endif
 }
 
 int cNetwork::Pack(void *pvIn, void *pvOut, int len)
@@ -1445,12 +1589,56 @@ int cNetwork::Pack(void *pvIn, void *pvOut, int len)
 
 }
 
+#ifdef ENCRYPTION
+unsigned char cNetwork::calculateLoginKey(unsigned char loginKey[4], unsigned char packetId)
+{
+	unsigned int seed;
+	int  m_key [2], index = -1;
+	unsigned char out;
+	bool found;
+	out=packetId;
+	seed = (loginKey[0] << 24 ) + (loginKey[1] << 16 ) + (loginKey[2] << 8 ) + (loginKey[3] );
+	found = true;
+	for ( int i = 0; i < 6; ++i)
+	{
+		index=i;
+		m_key[0] =
+				(((~seed) ^ 0x00001357) << 16)
+			|   ((seed ^ 0xffffaaaa) & 0x0000ffff);
+		m_key[1] =
+				((seed ^ 0x43210000) >> 16)
+			|   (((~seed) ^ 0xabcdffff) & 0xffff0000);
+		unsigned char med = static_cast<unsigned char>(m_key[0]);
+	    out = packetId ^ med;
+		if ( (out != 0x80) && (out != 0x91) )
+		{
+			found = false;
+			continue;
+		}
+		else
+			break;
+	}
+	return out;
+}
+#endif
+
 void cNetwork::GetMsg(int s) // Receive message from client
 {
-
+#ifdef ENCRYPTION
+	ClientCrypt *crypter=NULL;
+#endif
 	NXWCLIENT ps = getClientFromSocket(s);
-
 	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
+#ifdef ENCRYPTION
+	if ( pc_currchar != NULL )
+	{
+		crypter=pc_currchar->getCrypter();
+	}
+	else if ( clientCrypter[s] != NULL )
+	{
+		crypter=clientCrypter[s];
+	}
+#endif
 
 	int count, i, book,length, dyn_length,loopexit=0, fb;
 	unsigned char nonuni[512];
@@ -1459,18 +1647,21 @@ void cNetwork::GetMsg(int s) // Receive message from client
 	unsigned char mytempbuf[512] ;
 	char client_lang[4];
 
-
-
 	std::string cpps;
 	std::vector<std::string>::const_iterator viter;
 
 	if ( clientInfo[s]->newclient )
 	{
+
 		if((count=recv(client[s], (char*)buffer[s], 4, MSG_NOSIGNAL))==SOCKET_ERROR)
 		{
 			LogSocketError("Socket Recv Error %s\n", errno) ;
 		}
-		
+		// an encrypted client sends its ip as a seed for the encryption
+
+#ifdef ENCRYPTION
+		memcpy(&clientSeed[s][0], &buffer[s][0], 4);
+#endif
 		struct sockaddr_in tmp_addr;
 		socklen_t tmp_addr_len=sizeof(struct sockaddr_in);
 
@@ -1484,24 +1675,58 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 		clientInfo[s]->newclient=false;
 		clientInfo[s]->firstpacket=true;
-
 	}
 	else
 	{
+#ifdef ENCRYPTION
+		int cryptBufferOffset=0;
+#endif
 		fb = Receive(s, 1, 0);
 		if (fb >0)
 		{
-
+#ifdef ENCRYPTION
+			if ( crypter != NULL )
+			{
+				crypter->decrypt( &buffer[s][0], &buffer[s][0], 1);
+				// crypter->preview( &buffer[s][0], &buffer[s][0], 1);
+				cryptBufferOffset++;
+			}
+#endif
 			packet = buffer[s][0];
+
 			length = m_packetLen[packet];
 
 			// Lets assure the data is valid, this stops server freezes caused by receiving nonsense data
 			// (remark: useres that dont use ignition do that)
 			if ( clientInfo[s]->firstpacket && packet != 0x80 && packet !=0x91 )
 			{
-				Disconnect(s);
-				InfoOut("received garbage from a client, disconnected it to prevent bad things.\n User probably didnt use ignition or UO-RICE\n");
-				return;
+#ifdef ENCRYPTION
+				// Let's see if the paket is encrypted
+				packet = calculateLoginKey(clientSeed[s], packet);
+#endif
+				if (packet != 0x80 && packet !=0x91 )
+				{
+#ifdef ENCRYPTION
+					// reset crypt memories
+					if ( clientCrypter[s] != NULL )
+					{
+						delete (ClientCrypt * ) crypter ;
+						clientCrypter[s]=NULL;
+					}
+#endif
+					Disconnect(s);
+					InfoOut("received garbage from a client, disconnected it to prevent bad things.\n User probably didnt use ignition or UO-RICE\n");
+					return;
+				}
+#ifdef ENCRYPTION
+				else
+				{
+					ClientCrypt * crypter = new ClientCrypt();
+					crypter->setCryptMode(CRYPT_NONE);
+					clientCrypter[s] = crypter;
+					length = m_packetLen[packet];
+				}
+#endif
 			}
 
 
@@ -1519,7 +1744,18 @@ void cNetwork::GetMsg(int s) // Receive message from client
 			{
 				if ((readstat = Receive(s, 2, 1)) > 0)
 				{
+#ifdef ENCRYPTION
+					if ( crypter != NULL )
+					{
+						unsigned char decryptPacket[3];
+						crypter->decrypt(&buffer[s][0]+cryptBufferOffset, decryptPacket, 2);
+						cryptBufferOffset+=2;
+						buffer[s][1]=decryptPacket[0];
+						buffer[s][2]=decryptPacket[1];
+					}
+#endif
 					dyn_length = (int) (  ( (int) buffer[s][1]<<8) + (int) buffer[s][2] );
+					length=dyn_length;
 					readstat = Receive(s, dyn_length-3, 3) ;
 				//ConOut("dyn-length: %i\n",dyn_length);
 				} else return;
@@ -1539,9 +1775,24 @@ void cNetwork::GetMsg(int s) // Receive message from client
         		    // LB, client activity-timestamp !!! to detect client crashes, ip changes etc and disconnect in that case
         		    // 0x73 (idle packet) also counts towards client idle time
 
-				AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
+				if (ISVALIDPC(pc_currchar))
+					AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
 
-				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;	
+				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;
+#ifdef ENCRYPTION
+				if ( packet == PACKET_LOGINREQUEST && clientCrypter[s] != NULL )
+				{
+					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, 4);
+					unsigned int loginseed= buffer[s][4] + ( buffer[s][3] << 8) + (buffer[s][2] << 16) + ( buffer[s][1] << 24);
+					// clientCrypter[s]->setCryptSeed(&buffer[s][1]);
+					cryptBufferOffset+=4;
+				}
+
+				if ( crypter != NULL && crypter->getCryptMode() > 0 )
+				{
+					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, length-cryptBufferOffset);
+				}
+#endif
 				switch(packet)
 				{
 
@@ -1549,13 +1800,13 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					// Expermintal for God client
 					{
 						UI08 packet[2] = {0x2B, 0x01};
-						if (pc_currchar->IsGM()) 
+						if (pc_currchar->IsGM())
 						{
 							Xsend(s, packet, 2);
 //AoS/							Network->FlushBuffer(s);
 							LogMessage("%s connected in with God Client!\n", pc_currchar->getCurrentNameC());
-						} 
-						else 
+						}
+						else
 						{
 							sysmessage(s, TRANSLATE("Access Denied!!!"));
 							Disconnect(s);
@@ -1571,6 +1822,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_FIRSTLOGINREQUEST:
+#ifdef ENCRYPTION
+					if ( clientCrypter[s] != NULL )
+						clientCrypter[s]->setCryptMode(CRYPT_LOGIN) ;
+#endif
 					clientInfo[s]->firstpacket=false;
 					LoginMain(s);
 					break;
@@ -1582,6 +1837,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				case PACKET_LOGINREQUEST:
 					clientInfo[s]->firstpacket=false;
 					clientInfo[s]->compressOut=true;
+#ifdef ENCRYPTION
+					if ( clientCrypter[s] != NULL )
+						clientCrypter[s]->setEntering(false);
+#endif
 					CharList(s);
 					break;
 
@@ -1716,7 +1975,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						target->error( ps );
 					else
 						target->code_callback( ps, target );
-				}	
+				}
 				break;
 
 				case PACKET_WEARITEM:
@@ -1831,7 +2090,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_DIALOG_RESPONSE:
 					//choice(s);
-					Menus.handleMenu( ps ); 
+					Menus.handleMenu( ps );
 					break;
 
 				case PACKET_DYEITEM:
@@ -1842,10 +2101,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
                                         if ( pc_currchar != NULL ) {
 						if (buffer[s][5]==4)
 							statwindow(pc_currchar, pointers::findCharBySerPtr(buffer[s] +6));
-							
-						if (buffer[s][5]==5) 
+
+						if (buffer[s][5]==5)
 							skillwindow(s);
-					}	
+					}
 					break;
 
 				case PACKET_RENAMECHARACTER: ///Lag Fix -- Zippy //Bug Fix -- Zippy
@@ -1913,7 +2172,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_SET_SKILL_LOCKS:
-					
+
 								// client 1.26.2b+ skill managment packet
 								// -> 0,1,2,3 -> ignore them
 								// -> 4 = skill number
@@ -1931,8 +2190,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_GUMPMENU_SELECT:
-					Menus.handleMenu( ps ); 
-					
+					Menus.handleMenu( ps );
+
 					/*gumps::Button(	s,
 							LongFromCharPtr(buffer[s] +11),
 							buffer[s][3],
@@ -1959,7 +2218,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						}
 						sysmessage(s, TRANSLATE("You are now a ghost."));
 					}
-					if(buffer[s][1]==0x01) 
+					if(buffer[s][1]==0x01)
 						sysmessage(s, TRANSLATE("The connection between your spirit and the world is too weak."));
 					break;
 
@@ -1985,22 +2244,22 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						int len = 0;
 						UI08 packet[4000]; packet[0] = '\0';
 						if ( ISVALIDPC(pc_currchar) && pc_currchar->IsGM()) {
-							if (ISVALIDPC(pc) ) 
+							if (ISVALIDPC(pc) )
 								sprintf((char *)packet, "char n°%d serial : %x", DEREF_P_CHAR(pc), pc->getSerial32());
-							if (ISVALIDPI(pi) ) 
+							if (ISVALIDPI(pi) )
 								sprintf((char *)packet, "item n°%d serial : %x", DEREF_P_ITEM(pi), pi->getSerial32());
-						} 
-						else 
+						}
+						else
 						{
-							if (ISVALIDPC(pc)) 
+							if (ISVALIDPC(pc))
 								charGetPopUpHelp((char *)packet, pc);
-							if (ISVALIDPI(pi)) 
+							if (ISVALIDPI(pi))
 								itemGetPopUpHelp((char *)packet, pi);
 						}
 
-						if ( !ISVALIDPC(pc) && !ISVALIDPI(pi)) 
+						if ( !ISVALIDPC(pc) && !ISVALIDPI(pi))
 							break;
-						
+
 						if (packet[0]=='\0') break;
 						char2wchar((char *)packet);
 						packet[0] = 0xB7;
@@ -2021,7 +2280,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_PROFILE_REQUEST: {// T2A Profile request
-					
+
 						cPacketCharProfileReq p;
 						p.receive( ps );
 						profileStuff( ps, p );
@@ -2123,11 +2382,22 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
     				} // end switch
-				AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_AFTER);
+				if (ISVALIDPC(pc_currchar))
+					AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_AFTER);
 
 			}
 			else
+			{
+			// reset crypt memories
+#ifdef ENCRYPTION
+				if ( clientCrypter[s] != NULL)
+				{
+					delete (ClientCrypt * ) clientCrypter[s] ;
+					clientCrypter[s]=NULL;
+				}
+#endif
 				Disconnect(s) ; // Error on a read
+			}
   		} // end if recv >0
   		else
   		{
@@ -2156,7 +2426,7 @@ void cNetwork::LoadHosts_deny()
 		std::string	sScript1,
 				sToken1;
 		UI32 		siEnd ;
-		
+
 		do
 		{
 			//let's load a IP addresss/NetMask

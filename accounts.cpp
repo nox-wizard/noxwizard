@@ -344,6 +344,46 @@ void cAccounts::SaveAccounts( void )
 }
 
 /*!
+\brief Verify a password, currently only needed by encryption due to two crypt versions returning a valid username, but one an invalid password
+\return account, of why not right
+\param username Username
+\param password Password
+*/
+
+SI32 cAccounts::verifyPassword(std::string username, std::string password)
+{
+	ACCOUNT_LIST_BY_NAME::iterator iter_account_by_name(this->accbyname.find(username));
+
+	if (iter_account_by_name != this->accbyname.end())
+	{
+		ACCOUNT_LIST::iterator iter_account( this->acctlist.find(iter_account_by_name->second) );
+		if( iter_account==this->acctlist.end() )
+			return LOGIN_NOT_FOUND;
+
+		if ((iter_account->second.pass[0])=='!') {
+			//these are encrypted passwords!!!
+			char str[100];
+			strcpy(str,password.c_str());
+			char *pwd = pwdcypher(str, (iter_account->second.pass[1])-'A');
+			if (pwd==NULL) 
+				return LOGIN_NOT_FOUND;
+			str[0] = '!'; str[1] = '\0';
+			strcat(str,pwd);
+			safedelete(pwd); //xan : avoid a repetitive memory leak :)
+			password.erase();
+			password = str;    //someone with a bit of knowledge about STL strings.. plz chg this!
+		}
+
+		if( iter_account->second.pass != password )
+		{
+			return BAD_PASSWORD;
+		}
+	}
+	return 0;
+}
+
+
+/*!
 \brief Get info about account by username and password
 \return account, of why not right
 \param username Username
