@@ -19,8 +19,14 @@ namespace tempfx {
 
 SERIAL_VECTOR tempfxCheck;
 
+/*!
+\author Luxor
+*/
 void tempeffectson()
 {
+        if ( tempfxCheck.empty() )
+		return;
+		
 	P_OBJECT po = NULL;
 	
 	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
@@ -43,8 +49,14 @@ void tempeffectson()
 	}	
 }
 
+/*!
+\author Luxor
+*/
 void tempeffectsoff()
 {
+        if ( tempfxCheck.empty() )
+		return;
+	
 	P_OBJECT po = NULL;
 
 	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
@@ -67,8 +79,14 @@ void tempeffectsoff()
 	}
 }
 
+/*!
+\author Luxor
+*/
 void checktempeffects()
 {
+        if ( tempfxCheck.empty() )
+		return;
+		
 	P_OBJECT po = NULL;
 
 	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
@@ -77,6 +95,8 @@ void checktempeffects()
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );
+			if ( tempfxCheck.empty() )
+				return;
 			it--;
 			continue;
 	        }
@@ -91,11 +111,10 @@ void checktempeffects()
 	}
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : callCustomTempFx
-// Return type       : void
-// Author            : Luxor
-// Purpose			 : calls a custom tempfx defined in small code
+/*!
+\author Luxor
+\brief Calls a custom tempfx defined in small code
+*/
 static void callCustomTempFx(P_OBJECT poSrc, P_OBJECT poDest, int mode, int amxcallback, int more1, int more2, int more3)
 {
 	VALIDATEPO(poSrc);
@@ -106,10 +125,9 @@ static void callCustomTempFx(P_OBJECT poSrc, P_OBJECT poDest, int mode, int amxc
 	g_prgOverride->CallFn(amxcallback, poSrc->getSerial32(), poDest->getSerial32(), more, mode);
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : isSrcRepeteable
-// Return type       : bool
-// Author            : Luxor
+/*!
+\author Luxor
+*/
 LOGICAL isSrcRepeatable(int num)
 {
 	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
@@ -163,17 +181,16 @@ LOGICAL isDestRepeatable(int num)
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name     : getTempFxTime
-// Return type       : int
-// Author            : Luxor
+/*!
+\author Luxor
+*/
 SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 {
 	int dur = 0;
 
 	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return 0;
-	
+
 	switch (num)
 	{
 		case FIELD_DAMAGE:
@@ -183,12 +200,12 @@ SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 			VALIDATEPCR(src, 0);
 			dur = src->skill[MAGERY]/100;
 			break;
-		
+
 		case SPELL_LIGHT:
 			VALIDATEPCR(src, 0);
 			dur = src->skill[MAGERY]*10;
 			break;
-		
+
 		case SPELL_CLUMSY:
 		case SPELL_FEEBLEMIND:
 		case SPELL_WEAKEN:
@@ -202,63 +219,63 @@ SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 			VALIDATEPCR(src, 0);
 			dur = src->skill[MAGERY]/10;
 			break;
-		
+
 		case SPELL_POLYMORPH:
 			dur = polyduration;
 			break;
-		
+
 		case SPELL_INCOGNITO:
 			dur = 90;
 			break;
-		
+
 		case SPELL_INVISIBILITY:
 			dur = 90;
 			break;
-		
+
 		case ALCHEMY_GRIND:
 			dur = more2;
 			break;
-		
+
 		case ALCHEMY_END:
 			dur = 12;
 			break;
-		
+
 		case AUTODOOR:
 			dur = 10;
 			break;
-		
+
 		case TRAINDUMMY:
 			dur = 5;
 			break;
-		
+
 		case EXPLOTIONMSG:
 			dur = more2;
 			break;
-		
+
 		case EXPLOTIONEXP:
 			dur = 4;
 			break;
-		
+
 		case LSD:
 			dur = 90;
 			break;
-		
+
 		case HEALING_HEAL:
 			dur = 0;
 			break;
-		
+
 		case HEALING_CURE:
 			dur = 0;
 			break;
-		
+
 		case HEALING_RESURRECT:
 			dur = 0;
 			break;
-		
+
 		case POTION_DELAY:
 			dur = 0;
 			break;
-		
+
 		case GM_HIDING:
 			dur = more1;
 			break;
@@ -266,35 +283,35 @@ SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 		case GM_UNHIDING:
 			dur = more1;
 			break;
-		
+
 		case HEALING_DELAYHEAL:
 			dur = more3;
 			break;
-		
+
 		case COMBAT_PARALYZE:
 			dur = 5;
 			break;
-		
+
 		case COMBAT_CONCUSSION:
 			dur = 30;
 			break;
-		
+
 		case AMXCUSTOM:
 			dur = 0;
 			break; //Luxor's note: AMXCUSTOM will never get into this function :P
-		
+
 		case GREY:
 			dur = 240;
 			break;
-		
+
 		case CRIMINAL:
 			dur = repsys.crimtime;
 			break;
-		
+
 		case DRINK_FINISHED:
 			dur = 3;
 			break;
-		
+
 		default:
 			dur = 0;
 			break;
@@ -303,10 +320,9 @@ SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 	return dur;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::start
-// Return type       : void
-// Author            : Luxor
+/*!
+\author Luxor
+*/
 void cTempfx::start()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
@@ -326,13 +342,13 @@ void cTempfx::start()
 				return;
 			dest->freeze();
 			break;
-		
+
 		case SPELL_LIGHT:
 			dest->fixedlight = worldbrightlevel;
 			if (dest->getClient())
 				dolight(dest->getClient()->toInt(), worldbrightlevel);
 			break;
-		
+
 		case SPELL_CLUMSY:
 			if (dest->dx < m_nMore1)
 				m_nMore1 = dest->dx;
@@ -341,7 +357,7 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_FEEBLEMIND:
 			if (dest->in < m_nMore1)
 				m_nMore1 = dest->in;
@@ -349,7 +365,7 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_WEAKEN:
 			if (dest->getStrength() < m_nMore1)
 				m_nMore1 = dest->getStrength();
@@ -357,25 +373,25 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_AGILITY:
 			dest->dx += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_STRENGHT:
 			dest->modifyStrength(m_nMore1);
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_CUNNING:
 			dest->in += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_BLESS:
 			dest->modifyStrength(m_nMore1);
 			dest->dx += m_nMore2;
@@ -387,7 +403,7 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_CURSE:
 			if (dest->getStrength() < m_nMore1)
 				m_nMore1 = dest->getStrength();
@@ -401,7 +417,7 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_INVISIBILITY:
 			dest->hidden = HIDDEN_BYSPELL;
 			dest->morph(0);
@@ -409,26 +425,26 @@ void cTempfx::start()
 
 		case ALCHEMY_GRIND:
 			break;
-		
+
 		case ALCHEMY_END:
 			break;
-		
+
 		case AUTODOOR:
 			break;
-		
+
 		case TRAINDUMMY:
 			break;
-		
+
 		case SPELL_REACTARMOR:
 			dest->ra = 1;
 			break;
-		
+
 		case EXPLOTIONMSG:
 			break;
-		
+
 		case EXPLOTIONEXP:
 			break;
-		
+
 		case SPELL_POLYMORPH:
 			if (dest->morphed)
 				dest->morph();  //if the char is morphed, unmorph him
@@ -436,7 +452,7 @@ void cTempfx::start()
 			dest->morph((m_nMore1<<8)+m_nMore2, -1, -1, -1, -1, -1, NULL, true);
 			dest->polymorph = true;
 			break;
-		
+
 		case SPELL_INCOGNITO:
 			//Luxor's incognito code :)
 			if (dest->morphed)
@@ -535,10 +551,10 @@ void cTempfx::start()
 
 		case GM_HIDING:
 			break;
-		
+
 		case GM_UNHIDING:
 			break;
-		
+
 		case HEALING_DELAYHEAL:
 			if (ISVALIDPC(src)) {
 				if (src->war)
@@ -549,19 +565,19 @@ void cTempfx::start()
 					src->sysmsg(TRANSLATE("You continue to heal..."));
 			}
 			break;
-		
+
 		case AMXCUSTOM:
 			callCustomTempFx(src, dest, MODE_START, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
 			break;
-		
+
 		case GREY:
 			dest->nxwflags[0] |= NCF0_GREY;
 			break;
-		
+
 		case COMBAT_PARALYZE:
 			dest->freeze();
 			break;
-		
+
 		case COMBAT_CONCUSSION:
 			if (dest->in < m_nMore1)
 				m_nMore1 = dest->in;
@@ -569,16 +585,16 @@ void cTempfx::start()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case CRIMINAL:
 			dest->SetCriminal();
 			dest->sysmsg( TRANSLATE("You are now a criminal!") );
 			break;
-			
+
 		default:
 			break;
 	}
-	
+
 	//if (ISVALIDPC(dest)) item::CheckEquipment(DEREF_P_CHAR(dest));
 }
 
@@ -607,21 +623,21 @@ void cTempfx::executeExpireCode()
 			if (dest->IsFrozen())
 				dest->unfreeze();
 			break;
-			
+
 		case SPELL_LIGHT:
 			VALIDATEPC(dest);
 			dest->fixedlight = 0xFF;
 			if (dest->getClient())
 				dolight(dest->getClient()->toInt(), worldbrightlevel);
 			break;
-		
+
 		case SPELL_CLUMSY:
 			VALIDATEPC(dest);
 			dest->dx += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-			
+
 		case SPELL_FEEBLEMIND:
 			VALIDATEPC(dest);
 			dest->in += m_nMore1;
@@ -643,7 +659,7 @@ void cTempfx::executeExpireCode()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_STRENGHT:
 			VALIDATEPC(dest);
 			dest->modifyStrength(-m_nMore1);
@@ -659,7 +675,7 @@ void cTempfx::executeExpireCode()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_BLESS:
 			VALIDATEPC(dest);
 			dest->modifyStrength(-m_nMore1);
@@ -671,7 +687,7 @@ void cTempfx::executeExpireCode()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_CURSE:
 			VALIDATEPC(dest);
 			dest->modifyStrength(m_nMore1);
@@ -680,7 +696,7 @@ void cTempfx::executeExpireCode()
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
-		
+
 		case SPELL_INVISIBILITY:
 			VALIDATEPC(dest);
 			if (dest->IsHiddenBySpell()) {
@@ -690,7 +706,7 @@ void cTempfx::executeExpireCode()
 			}
 			break;
 
-		
+
 		case ALCHEMY_GRIND:
 			VALIDATEPC(dest);
 			if (m_nMore1 == 0)
@@ -701,14 +717,14 @@ void cTempfx::executeExpireCode()
 				dest->playSFX(0x242);
 			}
 			break;
-		
-		
+
+
 		case ALCHEMY_END:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);
 			Skills::CreatePotion(DEREF_P_CHAR(src), m_nMore1, m_nMore2, DEREF_P_ITEM(pi_dest));
 			break;
-		
+
 		case AUTODOOR:
 			VALIDATEPI(pi_dest);
 			if (pi_dest->dooropen == 0)
@@ -716,7 +732,7 @@ void cTempfx::executeExpireCode()
 			pi_dest->dooropen = 0;
 			dooruse(INVALID, pi_dest);
 			break;
-		
+
 		case TRAINDUMMY:
 			VALIDATEPI(pi_dest);
 			if (pi_dest->id() == 0x1071)
@@ -732,30 +748,30 @@ void cTempfx::executeExpireCode()
 				pi_dest->Refresh();
 			}
 			break;
-		
+
 		case SPELL_REACTARMOR:
 			VALIDATEPC(dest);
 			dest->ra = 0;
 			break;
-		
+
 		case EXPLOTIONMSG:
 			VALIDATEPC(dest);
 			dest->sysmsg("%i", m_nMore3);
 			break;
-		
+
 		case EXPLOTIONEXP:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);
 			if (src->getClient())
 				pi_dest->explode(src->getClient()->toInt());
 			break;
-		
+
 		case SPELL_POLYMORPH:
 			VALIDATEPC(dest);
 			dest->morph();
 			dest->polymorph = false;
 			break;
-		
+
 		case SPELL_INCOGNITO:
 			VALIDATEPC(dest);
 			dest->morph();
@@ -779,23 +795,23 @@ void cTempfx::executeExpireCode()
 				}
 			} nextIndex(p_nearchar);*/
 			break;
-		
+
 		case SPELL_PROTECTION:
 			VALIDATEPC(dest);
 			dest->baseskill[PARRYING] = max(0, dest->baseskill[PARRYING] - m_nMore1);
 			break;
-		
+
 		case DRINK_EMOTE:
 			VALIDATEPC(src);
 			src->emote(calcSocketFromChar(DEREF_P_CHAR(src)),"*glu*",1);
 			break;
-		
+
 		case DRINK_FINISHED:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);
 			usepotion(DEREF_P_CHAR(src), pi_dest);
 			break;
-		
+
 		case GM_HIDING:
 			VALIDATEPC(dest);
 			dest->sysmsg(TRANSLATE("You have hidden yourself well."));
@@ -809,7 +825,7 @@ void cTempfx::executeExpireCode()
 			dest->unHide();
 			dest->sysmsg(TRANSLATE("You are now visible."));
 			break;
-		
+
 		case HEALING_DELAYHEAL:
 			VALIDATEPC(src);
 			VALIDATEPC(dest);
@@ -823,29 +839,29 @@ void cTempfx::executeExpireCode()
 			if (!m_nMore2)
 				add(src, dest, m_nNum, m_nMore1 +1, 1, m_nMore3);
 			break;
-		
+
 		case AMXCUSTOM:
 			VALIDATEPC(src);
 			VALIDATEPC(dest);
 			callCustomTempFx(src, dest, MODE_END, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
 			break;
-		
+
 		case GREY:
 			VALIDATEPC(dest);
 			dest->nxwflags[0] &= ~NCF0_GREY;
 			break;
-		
+
 		case CRIMINAL:
 			dest->SetInnocent();
 			dest->sysmsg(TRANSLATE("You are no longer a criminal."));
 			break;
-			
+
 		default:
 			break;
 	}
-	
 
-	
+
+
 	if (ISVALIDPC(dest))
 		dest->checkEquipement();
 }
@@ -859,7 +875,7 @@ void cTempfx::activate()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
-	
+
 	if ( !ISVALIDPC(dest) ) return;
 
 	switch(m_nNum)
@@ -867,78 +883,77 @@ void cTempfx::activate()
 		case SPELL_PARALYZE:
 			dest->freeze();
 			break;
-		
+
 		case SPELL_LIGHT:
 			dest->fixedlight = worldbrightlevel;
 			break;
-		
+
 		case SPELL_CLUMSY:
 			dest->dx -= m_nMore1;
 			break;
-		
+
 		case SPELL_FEEBLEMIND:
 			dest->in -= m_nMore1;
 			break;
-		
+
 		case SPELL_WEAKEN:
 			dest->modifyStrength(-m_nMore1);
 			break;
-		
+
 		case SPELL_AGILITY:
 			dest->dx += m_nMore1;
 			break;
-		
+
 		case SPELL_STRENGHT:
 			dest->modifyStrength(m_nMore1);
 			break;
-		
+
 		case SPELL_CUNNING:
 			dest->in += m_nMore1;
 			break;
-		
+
 		case SPELL_BLESS:
 			dest->modifyStrength(m_nMore1);
 			dest->dx += m_nMore2;
 			dest->in += m_nMore3;
 			break;
-		
+
 		case SPELL_CURSE:
 			dest->modifyStrength(-m_nMore1);
 			dest->dx -= m_nMore2;
 			dest->in -= m_nMore3;
 			break;
-		
+
 		case SPELL_INVISIBILITY:
                         break;
 
 		case AMXCUSTOM:
 			callCustomTempFx(src, dest, MODE_ON, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
 			break;
-		
+
 		case GREY:
 			dest->nxwflags[0] |= NCF0_GREY;
 			break;
-		
+
 		case CRIMINAL:
 			dest->SetCriminal();
 			break;
-			
+
 		default:
 			break;
 	}
-	
+
 
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::deactivate
-// Return type       : void
-// Author            : Luxor
+/*!
+\author Luxor
+*/
 void cTempfx::deactivate()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
-	
+
 	if ( !ISVALIDPC(dest) )
 		return;
 
@@ -948,66 +963,66 @@ void cTempfx::deactivate()
 			if (dest->IsFrozen())
 				dest->unfreeze();
 			break;
-		
+
 		case SPELL_LIGHT:
 			dest->fixedlight = 0xFF;
 			break;
-		
+
 		case SPELL_CLUMSY:
 			dest->dx += m_nMore1;
 			break;
-		
+
 		case SPELL_FEEBLEMIND:
 			dest->in += m_nMore1;
 			break;
-		
+
 		case SPELL_WEAKEN:
 			dest->modifyStrength(m_nMore1);
 			break;
-		
+
 		case SPELL_AGILITY:
 			dest->dx -= m_nMore1;
 			break;
-		
+
 		case SPELL_STRENGHT:
 			dest->modifyStrength(-m_nMore1);
 			break;
-		
+
 		case SPELL_CUNNING:
 			dest->in -= m_nMore1;
 			break;
-		
+
 		case SPELL_BLESS:
 			dest->modifyStrength(-m_nMore1);
 			dest->dx -= m_nMore2;
 			dest->in -= m_nMore3;
 			break;
-		
+
 		case SPELL_CURSE:
 			dest->modifyStrength(m_nMore1);
 			dest->dx += m_nMore2;
 			dest->in += m_nMore3;
 			break;
-		
+
 		case SPELL_INVISIBILITY:
 			break;
 
 		case AMXCUSTOM:
 			callCustomTempFx(src, dest, MODE_OFF, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
 			break;
-		
+
 		case GREY:
 			dest->nxwflags[0] &= ~NCF0_GREY;
 			break;
-		
+
 		case CRIMINAL:
 			dest->SetInnocent();
-			break;			
-			
+			break;
+
 		default:
 			break;
 	}
-	
+
 
 }
 
@@ -1020,7 +1035,7 @@ bool cTempfx::isValid()
 {
 	if ( m_nNum < 0 || m_nNum >= MAX_TEMPFX_INDEX )
 		return false;
-	
+
 	if ( m_nNum == AMXCUSTOM && m_nAmxcback <= -2 )
 		return false;
 
@@ -1029,7 +1044,7 @@ bool cTempfx::isValid()
 
 	if ( !ISVALIDPO(src) || !ISVALIDPO(dest) )
 		return false;
-	
+
 	return true;
 }
 
@@ -1051,7 +1066,7 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_bDispellable = false;
 	m_bSrcRepeatable = isSrcRepeatable( num );
 	m_bDestRepeatable = isDestRepeatable( num );
-	
+
 	//
 	//	Set serials
 	//
@@ -1059,7 +1074,7 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 		if ( !ISVALIDPC(pointers::findCharBySerial(nSrc)) )
 			return;
 	}
-	
+
 	if ( isItemSerial(nSrc) ) {
 		if ( !ISVALIDPI(pointers::findItemBySerial(nSrc)) )
 			return;
@@ -1069,15 +1084,15 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 		if ( !ISVALIDPC(pointers::findCharBySerial(nDest)) )
 			return;
 	}
-	
+
 	if ( isItemSerial(nDest) ) {
 		if ( !ISVALIDPI(pointers::findItemBySerial(nDest)) )
 			return;
 	}
-	
+
 	m_nSrc = nSrc;
 	m_nDest = nDest;
-	
+
 	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return;
 
@@ -1112,7 +1127,9 @@ bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned cha
 	return dest->addTempfx( *src, num, (int)more1, (int)more2, (int)more3, (int)dur, amxcback );
 }
 
-
+/*!
+\author Luxor
+*/
 void addTempfxCheck( SERIAL serial )
 {
 	P_OBJECT po = objects.findObject( serial );
@@ -1128,159 +1145,3 @@ void addTempfxCheck( SERIAL serial )
 
 
 
-
-
-/*!
-\author Luxor
-\brief Adds a temp effect to the object
-*/
-bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback )
-{
-	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
-		return false;
-
-	//
-	//	Repeatable check
-	//
-	if ( !tempfx::isDestRepeatable(num) && getTempfx( num ) )
-			return false;
-
-	if ( !tempfx::isSrcRepeatable(num) && src.getTempfx( num ) )
-			return false;
-
-	//
-	//	Create the tempfx
-	//
-	tempfx::cTempfx tmpeff( src.getSerial32(), getSerial32(), num, dur, more1, more2, more3, amxcback );
-
-	if ( !tmpeff.isValid() )
-		return false;
-
-        //
-        //	Put the object in the global check vector if necessary
-        //
-        tempfx::addTempfxCheck( getSerial32() );
-
-	//
-	//	Start the tempfx
-	//
-	tmpeff.start();
-
-	//
-	//	Put it in the class vector
-	//
-	if ( tempfx == NULL )
-		tempfx = new TempfxVector;
-
-	tempfx->push_back( tmpeff );
-
-	return true;
-}
-
-/*!
-\author Luxor
-\brief Deletes every tempfx of the specified number
-*/
-void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
-{
-	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
-		return;
-
-	if ( !hasTempfx() )
-		return;
-
-	TempfxVector::iterator it( tempfx->begin() );
-        for ( ; it != tempfx->end(); it++ ) {
-                if ( (*it).getNum() != num )
-			continue;
-
-		if ( executeExpireCode )
-			(*it).executeExpireCode();
-
-		tempfx->erase( it );
-		it--;
-	}
-
-	if ( tempfx->empty() )
-		safedelete( tempfx );
-}
-
-/*!
-\author Luxor
-\brief Activates the temp effects
-*/
-void cObject::tempfxOn()
-{
-	if ( !hasTempfx() )
-		return;
-
-	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
-		(*tempfx)[i].activate();
-	}
-}
-
-/*!
-\brief Deactivates the temp effects
-\author Luxor
-*/
-void cObject::tempfxOff()
-{
-	if ( !hasTempfx() )
-		return;
-
-	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
-		(*tempfx)[i].deactivate();
-	}
-}
-
-/*!
-\author Luxor
-*/
-void cObject::checkTempfx()
-{
-	if ( !hasTempfx() )
-		return;
-
-
-	TempfxVector::iterator it( tempfx->begin() );
-        for ( ; it != tempfx->end(); it++ ) {
-                if ( !(*it).checkForExpire() )
-			continue;
-
-		tempfx->erase( it );
-		it--;
-	}
-}
-
-/*!
-\author Luxor
-\brief Tells if the object has tempfx in queue
-*/
-LOGICAL cObject::hasTempfx()
-{
-	if ( tempfx == NULL )
-		return false;
-
-	if ( tempfx->empty() ) {
-		safedelete( tempfx );
-		return false;
-	}
-
-	return true;
-}
-
-tempfx::cTempfx* cObject::getTempfx( SI32 num )
-{
-	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
-		return NULL;
-
-	if ( !hasTempfx() )
-		return NULL;
-
-	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
-		if ( (*tempfx)[i].getNum() == num )
-			return &((*tempfx)[i]);
-	}
-
-	return NULL;
-}

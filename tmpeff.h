@@ -25,9 +25,13 @@ namespace tempfx {
 	};
 
 	bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1 = 0, unsigned char more2 = 0, unsigned char more3 = 0,short dur=-1, int amxcback = -3);
+        LOGICAL isSrcRepeatable(int num);
+        LOGICAL isDestRepeatable(int num);
+        void addTempfxCheck( SERIAL serial );
+
 	
 	//Begin -- Luxor's new temp effects system :D
-	class cTempfx {
+        class cTempfx {
 	private:
 		SERIAL m_nSrc;
 		SERIAL m_nDest;
@@ -60,7 +64,5 @@ namespace tempfx {
 
 	//End Luxor's temp effects system
 }
-
-
 
 #endif //__TMPEFF_H__

@@ -730,3 +730,165 @@ void cObject::delAmxEvent( UI32 eventId )
 		}
 	}
 }
+
+
+/*!
+\author Luxor
+\brief Adds a temp effect to the object
+*/
+bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback )
+{
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
+		return false;
+
+	//
+	//	Repeatable check
+	//
+	if ( !tempfx::isDestRepeatable(num) && getTempfx( num ) )
+			return false;
+
+	if ( !tempfx::isSrcRepeatable(num) && src.getTempfx( num ) )
+			return false;
+
+	//
+	//	Create the tempfx
+	//
+	tempfx::cTempfx tmpeff( src.getSerial32(), getSerial32(), num, dur, more1, more2, more3, amxcback );
+
+	if ( !tmpeff.isValid() )
+		return false;
+
+        //
+        //	Put the object in the global check vector if necessary
+        //
+        tempfx::addTempfxCheck( getSerial32() );
+
+	//
+	//	Start the tempfx
+	//
+	tmpeff.start();
+
+	//
+	//	Put it in the class vector
+	//
+	if ( tempfx == NULL )
+		tempfx = new TempfxVector;
+
+	tempfx->push_back( tmpeff );
+
+	return true;
+}
+
+/*!
+\author Luxor
+\brief Deletes every tempfx of the specified number
+*/
+void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
+{
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
+		return;
+
+	if ( !hasTempfx() )
+		return;
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                if ( (*it).getNum() != num )
+			continue;
+
+		if ( executeExpireCode )
+			(*it).executeExpireCode();
+
+		tempfx->erase( it );
+		it--;
+	}
+
+	if ( tempfx->empty() )
+		safedelete( tempfx );
+}
+
+/*!
+\author Luxor
+\brief Activates the temp effects
+*/
+void cObject::tempfxOn()
+{
+	if ( !hasTempfx() )
+		return;
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                (*it).activate();
+	}
+}
+
+/*!
+\brief Deactivates the temp effects
+\author Luxor
+*/
+void cObject::tempfxOff()
+{
+	if ( !hasTempfx() )
+		return;
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                (*it).deactivate();
+        }
+}
+
+/*!
+\author Luxor
+*/
+void cObject::checkTempfx()
+{
+	if ( !hasTempfx() )
+		return;
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                if ( !(*it).checkForExpire() )
+			continue;
+
+		tempfx->erase( it );
+		it--;
+	}
+}
+
+/*!
+\author Luxor
+\brief Tells if the object has tempfx in queue
+*/
+LOGICAL cObject::hasTempfx()
+{
+	if ( tempfx == NULL )
+		return false;
+
+	if ( tempfx->empty() ) {
+		safedelete( tempfx );
+		return false;
+	}
+
+	return true;
+}
+
+/*!
+\author Luxor
+*/
+tempfx::cTempfx* cObject::getTempfx( SI32 num )
+{
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
+		return NULL;
+
+	if ( !hasTempfx() )
+		return NULL;
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                if ( (*it).getNum() == num )
+			return &(*it);
+	}
+
+	return NULL;
+}
+

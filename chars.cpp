@@ -331,8 +331,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetProfile();
 	staticProfile=NULL;
 
-	vendorItemsSell=NULL;
-	vendorItemsBuy=NULL;
+	vendorItemsSell = NULL;
+	vendorItemsBuy = NULL;
 }
 
 /*
@@ -1348,7 +1348,7 @@ void cChar::applyPoison(PoisonType poisontype, SI32 secs )
 */
 void cChar::unfreeze()
 {
-	delTempfx( tempfx::SPELL_PARALYZE );
+	//delTempfx( tempfx::SPELL_PARALYZE, false ); //Luxor
 	if (priv2 & CHRPRIV2_FROZEN)
 	{
 		priv2 &= ~CHRPRIV2_FROZEN;
@@ -1572,7 +1572,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 	LOGICAL machwas= true;
 	unsigned char talk[15];
 
-	if( s<0 ) 
+	if( s < 0 || s >= now ) 
 		return;
 
 	if( antispam )
