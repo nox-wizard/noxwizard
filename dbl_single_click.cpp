@@ -1315,7 +1315,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 
 	if (pc->amxevents[EVENT_CHR_ONDBLCLICK]!=NULL) {
 		g_bByPass = false;
-		pi->amxevents[EVENT_CHR_ONDBLCLICK]->Call( pc->getSerial32(), target->getSerial32() );
+		pc->amxevents[EVENT_CHR_ONDBLCLICK]->Call( pc->getSerial32(), target->getSerial32() );
 		if (g_bByPass==true)
 			return;
 	}
