@@ -364,23 +364,24 @@ void gumps::Input(int s)
 	VALIDATEPC(pc);
 	
 	char type, index ;
-	unsigned char tser1, tser2, tser3, tser4;
+//	unsigned char tser1, tser2, tser3, tser4;
 	char *text;
-	int c1,body,b,k,serial;
+	int c1,body,b,k;
+	SERIAL serial;
 
-	type=buffer[s][7];
-	index=buffer[s][8];
-	tser1=buffer[s][3];
+/*	tser1=buffer[s][3];
 	tser2=buffer[s][4];
 	tser3=buffer[s][5];
 	tser4=buffer[s][6];
+	serial=calcserial(tser1,tser2,tser3,tser4); */
+	serial = LongFromCharPtr(buffer[s] +3);
+	type=buffer[s][7];
+	index=buffer[s][8];
 	text=(char*)&buffer[s][12];
-	serial=calcserial(tser1,tser2,tser3,tser4);
 
 	Guilds->GumpInput(s,type,index,text);
 
-	//if (type==1 && (chars[currchar[s]].priv|1))//uhm?? what was that |1?! i think it should be &1...AntiChrist
-	if (type==1 && (pc->IsGM()))//AntiChrist
+	if (type==1 && (pc->IsGM()))
 	{
 		P_ITEM pj= pointers::findItemBySerial(serial);
 		VALIDATEPI(pj);
@@ -392,20 +393,16 @@ void gumps::Input(int s)
 		}
 		switch( index )
 		{
-		case 2:		pj->setCurrentName( text );	break;	 // Name
-		case 3:		k = hex2num( text );
-					pj->setId(k);
-					break;	 // ID
-		case 4:		k = hex2num( text );
-					pj->setColor(k);
-					break;	// Hue
-		case 5:		k = str2num( text );	pj->setPosition("x", k);	break;	// X
-		case 6:		k = str2num( text );	pj->setPosition("y", k);	break;	// Y
-		case 7:		k = str2num( text );	pj->setPosition("z", k);	break;	// Z
-		case 8:		k = str2num( text );	pj->type = k;	break;	 // Type
-		case 9:		k = str2num( text );	pj->itmhand = k;	break;	// Itemhand - added by Xuri
-		case 10:	k = str2num( text );	pj->layer = k;	break;	// Layer
-		case 11:	k = str2num( text );	pj->amount = k;	break;	// Amount
+		case 2:		pj->setCurrentName(text);	break;
+		case 3:		pj->setId( hex2num(text) );	break;	 // ID
+		case 4:		pj->setColor( hex2num(text) );	break;	// Hue
+		case 5:		pj->setPosition("x", str2num(text) );	break;	// X
+		case 6:		pj->setPosition("y", str2num(text) );	break;	// Y
+		case 7:		pj->setPosition("z", str2num(text) );	break;	// Z
+		case 8:		pj->type = str2num(text);	break;	 // Type
+		case 9:		pj->itmhand = str2num(text);	break;	// Itemhand - added by Xuri
+		case 10:	pj->layer = str2num(text);	break;	// Layer
+		case 11:	pj->amount = str2num(text);	break;	// Amount
 		case 12:	k = hex2num( text );	// More
 					pj->more1 = (unsigned char)(k>>24);
 					pj->more2 = (unsigned char)(k>>16);
@@ -418,29 +415,29 @@ void gumps::Input(int s)
 					pj->moreb3 = (unsigned char)(k>>8);
 					pj->moreb4 = (unsigned char)(k%256);
 					break;
-		case 14: 	k = str2num( text );	pj->pileable = k;	break;	// Pileable
-		case 15:	k = str2num( text );	pj->dye = k;		break;	// Dye
-		case 16:	k = str2num( text );	pj->corpse = k;	break;	// Corpse
-		case 17:	k = str2num( text );	pj->lodamage = k;	break;	// LoDamage
-		case 18:	k = str2num( text );	pj->hidamage = k;	break;	// HiDamage
-		case 19:	k = str2num( text );	pj->def = k;		break;	// Def
-		case 20:	k = str2num( text );	pj->magic = k;		break;	// Magic
-		case 21:	k = str2num( text );	pj->visible = k;	break;	// Visible
-		case 22:	k = str2num( text );	pj->hp = k;		break;	// Current Hitpoints
-		case 23:	k = str2num( text );	pj->maxhp = k;		break;	// MAX Hitpoints
-		case 24:	k = str2num( text );	pj->spd = k;		break;	// Speed (for Combat)
-		case 25:	k = str2num( text );	pj->rank = k;		break;	// Rank
-		case 26:	k = str2num( text );	pj->value = k;		break;	// Value
-		case 27:	k = str2num( text );	pj->good = k;		break;	// Good(for Adv.Trade system)
-		case 28:	k = str2num( text );	pj->madewith = k;	break;	// Made Skill
-		case 29:	pj->creator = text;				break;	// Creator
+		case 14: 	pj->pileable = str2num(text);	break;	// Pileable
+		case 15:	pj->dye = str2num(text);	break;	// Dye
+		case 16:	pj->corpse = str2num(text);	break;	// Corpse
+		case 17:	pj->lodamage = str2num(text);	break;	// LoDamage
+		case 18:	pj->hidamage = str2num(text);	break;	// HiDamage
+		case 19:	pj->def = str2num(text);	break;	// Def
+		case 20:	pj->magic = str2num(text);	break;	// Magic
+		case 21:	pj->visible = str2num(text);	break;	// Visible
+		case 22:	pj->hp = str2num(text);		break;	// Current Hitpoints
+		case 23:	pj->maxhp = str2num(text);	break;	// MAX Hitpoints
+		case 24:	pj->spd = str2num(text);	break;	// Speed (for Combat)
+		case 25:	pj->rank = str2num(text);	break;	// Rank
+		case 26:	pj->value = str2num(text);	break;	// Value
+		case 27:	pj->good = str2num(text);	break;	// Good(for Adv.Trade system)
+		case 28:	pj->madewith = str2num(text);	break;	// Made Skill
+		case 29:	pj->creator = text;		break;	// Creator
 		}
 
 		pj->Refresh();
 		tweakmenu(s, pj->getSerial32());
 	}
-	//if (type==2 && (+[currchar[s]].priv|1))//uhm?? what was that |1?! i think it should be &1...AntiChrist
-	if (type==2 && (pc->IsGM()))//AntiChrist
+
+	if (type==2 && (pc->IsGM()))
 	{
 		P_CHAR pc_j= pointers::findCharBySerial(serial);
 		VALIDATEPC(pc_j);
@@ -453,14 +450,13 @@ void gumps::Input(int s)
 
 		switch( index )
 		{
-		//case 2:		strcpy( pc_j->name, (char*)text );			break;	// Name
-		case 2:		pc_j->setCurrentName( text );								break;
-		case 3:		pc_j->title = text;						break;	// Title
-		case 4:		k = str2num( text );	pc_j->setPosition("x", k);		break;	// X
-		case 5:		k = str2num( text );	pc_j->setPosition("y", k);		break;	// Y
-		case 6:		k = str2num( text ); 	pc_j->setPosition("z", k);
-											pc_j->setPosition("dz", k);		break;	// Z
-		case 7:		k = str2num( text );	pc_j->dir = k&0x0F;	break;// make sure the high-bits are clear // Dir
+		case 2:		pc_j->setCurrentName( text );			break;  // Name
+		case 3:		pc_j->title = text;				break;	// Title
+		case 4:		pc_j->setPosition("x", str2num(text) );		break;	// X
+		case 5:		pc_j->setPosition("y", str2num(text) );		break;	// Y
+		case 6:	 	pc_j->setPosition("z", str2num(text) );
+				pc_j->setPosition("dz", str2num(text) );	break;	// Z
+		case 7:		pc_j->dir = str2num(text) & 0x0F;		break;  // make sure the high-bits are clear // Dir
 		case 8: // Body
 			k = hex2num( text );
 			if (k>=0x000 && k<=0x3e1) // lord binary, body-values >0x3e crash the client
@@ -499,14 +495,14 @@ void gumps::Input(int s)
 				   }
 					break;
 
-		case 10:	k = str2num( text );	pc_j->def = k;			break;	// Defence
-		case 11:	k = str2num( text );	pc_j->hunger = k;		break;	// Hunger
-		case 12:	k = str2num( text );	pc_j->setStrength(k);	break;	// Strength
-		case 13:	k = str2num( text );	pc_j->dx = k;			break;	// Dexterity
-		case 14:	k = str2num( text );	pc_j->in = k;			break;	// Intelligence
-		case 15:	k = str2num( text );	pc_j->SetKarma(k);		break;	// Karma
-		case 16:	k = str2num( text );	pc_j->SetFame(k);			break;	// Fame
-		case 17:	k = str2num( text );	pc_j->kills = k;		break;	// Kills
+		case 10:	pc_j->def = str2num(text);		break;	// Defence
+		case 11:	pc_j->hunger = str2num(text);		break;	// Hunger
+		case 12:	pc_j->setStrength( str2num(text) );	break;	// Strength
+		case 13:	pc_j->dx = str2num(text);		break;	// Dexterity
+		case 14:	pc_j->in = str2num(text);		break;	// Intelligence
+		case 15:	pc_j->SetKarma( str2num(text) );	break;	// Karma
+		case 16:	pc_j->SetFame( str2num(text) );		break;	// Fame
+		case 17:	pc_j->kills = str2num(text);		break;	// Kills
 
 		}
 

@@ -35,7 +35,7 @@ class cTriggerContext
 		void parseMaxDurCommand(P_ITEM pi, char* par);
 		void parseDurCommand(P_ITEM pi, char* par);
 		void parseLine(char* cmd, char* par);
-		void init(int number, NXWSOCKET  s, int trigtype, char id1 = 0, char id2 = 0);
+		void init(int number, NXWSOCKET  s, int trigtype, UI16 id = 0);
 		void checkPtrsValidity();
 
 	public:

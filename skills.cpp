@@ -1108,7 +1108,7 @@ void Skills::CreatePotion(CHARACTER s, char type, char sub, int mortar)
 		pc->playSFX(0x0240); // Liquid sfx
 		pc->emoteall(TRANSLATE("*%s pours the completed potion into a bottle.*"), 0, pc->getCurrentNameC());
 		delequan(DEREF_P_CHAR(pc), 0x0F0E, 1);
-		Skills::PotionToBottle(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi_mortar));
+		Skills::PotionToBottle(pc, pi_mortar);
 	}
 }
 
@@ -1141,7 +1141,7 @@ void Skills::BottleTarget(NXWSOCKET s)
 		if (pi_mortar->type==17)
 		{
 			pc->emoteall(TRANSLATE("*%s pours the completed potion into a bottle.*"), 0, pc->getCurrentNameC());
-			Skills::PotionToBottle(DEREF_P_CHAR(pc),DEREF_P_ITEM(pi_mortar));
+			Skills::PotionToBottle(pc, pi_mortar);
 		}
 	}
 	else
@@ -1156,22 +1156,21 @@ void Skills::BottleTarget(NXWSOCKET s)
 \param s the crafter
 \param mortar the mortar
 */
-void Skills::PotionToBottle( SERIAL s, SERIAL mortar)
+void Skills::PotionToBottle( P_CHAR pc, P_ITEM pi_mortar )
 {
-	P_CHAR pc=MAKE_CHAR_REF(s);
+//	P_CHAR pc=MAKE_CHAR_REF(s);
 	VALIDATEPC(pc);
 
 	NXWCLIENT ps=pc->getClient();
 	if( ps==NULL ) return;
 
-	P_ITEM pi_mortar=MAKE_ITEM_REF(mortar);
+//	P_ITEM pi_mortar=MAKE_ITEM_REF(mortar);
 	VALIDATEPI(pi_mortar);
 
-    P_ITEM pi=NULL;
+	P_ITEM pi=NULL;
 
-//	item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( "" ), pc->getBackpack() );
+	int potionType= (10*pi_mortar->more1)+pi_mortar->more2;
 
-    int potionType= (10*pi_mortar->more1)+pi_mortar->more2;
 	switch( potionType )    {
 		case 11: CREATEINBACKPACK( "$normal_agility_potion" )		break;
 		case 12: CREATEINBACKPACK( "$greater_agility_potion" )		break;
@@ -1202,28 +1201,29 @@ void Skills::PotionToBottle( SERIAL s, SERIAL mortar)
 		case 82: CREATEINBACKPACK( "$greater_strength_potion" )		break;
 		default: 
 			LogError("switch reached default into PotionToBottle");
-	return;
-    }
+			return;
+	}
 
 	VALIDATEPI(pi);
 
-    if(!pc->IsGM())
-    {
-        pi->creator = pc->getCurrentName();
-        if (pc->skill[ALCHEMY]>950) 
-			pi->madewith=ALCHEMY+1;
-        else 
-			pi->madewith=0-ALCHEMY-1;
-    } 
-	else 
+    
+	if(!pc->IsGM())
+    
 	{
-        pi->creator = "";
-        pi->madewith=0;
-    }
+		pi->creator = pc->getCurrentName();
+
+		if (pc->skill[ALCHEMY]>950) 
+			pi->madewith=ALCHEMY+1;
+		else 
+			pi->madewith=0-ALCHEMY-1;
+    
+	} else  {
+		pi->creator = "";
+		pi->madewith=0;
+	}
 
     pi->Refresh();
     pi_mortar->type=0;
-
 }
 
 char Skills::CheckSkillSparrCheck(int c, unsigned short int sk, int low, int high, P_CHAR pcd)

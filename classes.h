@@ -342,7 +342,7 @@ namespace Skills {
 	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM mortar);
 	void AlchemyTarget(NXWSOCKET s);
 	void BottleTarget(NXWSOCKET s);
-	void PotionToBottle(SERIAL s, int mortar);
+	void PotionToBottle(P_CHAR pc, P_ITEM mortar);
 	//@}
 
 	//@{

@@ -513,13 +513,14 @@ void cGuilds::EraseGuild(int guildnumber)
 {
 	if (guildnumber<0 || guildnumber >=MAXGUILDS) return;
 
-	int stone = calcItemFromSer(guilds[guildnumber].stone);
-	if (stone==-1) return;
+	P_ITEM pi_stone = pointers::findItemBySerial(guilds[guildnumber].stone);
+	VALIDATEPI(pi_stone);
+
 	int war;
 	int counter;
 	memset(&guilds[guildnumber], 0, sizeof(guild_st));
 	guilds[guildnumber].free=1;
-	archive::DeleItem(stone);
+	archive::DeleItem(pi_stone);
 	for (counter=1;counter<MAXGUILDS; ++counter)
 	{
 		if (guilds[counter].free==0)
@@ -750,8 +751,8 @@ void cGuilds::StoneMove(int s)
 
 	int guildnumber=Guilds->SearchByStone(s);
 	if (guildnumber==-1) return;
-	int stone = calcItemFromSer( guilds[guildnumber].stone );
-	if (stone==-1) return;
+	P_ITEM stone = pointers::findItemBySerial( guilds[guildnumber].stone );
+	VALIDATEPI(stone);
 	// Get stone
 
 	P_ITEM pNewstone;		// For the new stone
@@ -1184,8 +1185,6 @@ void cGuilds::ChangeName(NXWSOCKET s, char *text)
 	if (guildnumber==-1) 
 		return;
 	
-//	int stone = calcItemFromSer( guilds[guildnumber].stone );
-//	P_ITEM pStone=MAKE_ITEM_REF(stone);
 	P_ITEM pStone = pointers::findItemBySerial( guilds[guildnumber].stone );
 
 	if (!ISVALIDPI(pStone)) 
@@ -1767,10 +1766,10 @@ int cGuilds::CheckValidPlace(int s)
 
 void cGuilds::CheckConsistancy(void )
 {
+	int guildnumber,members,serial,ok=1,error=0;
 
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-	int guildnumber,members,serial,ok=1,i,error=0;
+	P_ITEM stone;
+	P_CHAR pc;
 
 	ConOut("Checking guild data consistancy...");
 
@@ -1782,25 +1781,21 @@ void cGuilds::CheckConsistancy(void )
 		{
 			// is the guildmaster still alive ?
 			ok=1;
-			serial=guilds[guildnumber].master;
-			i = calcCharFromSer( serial );
-			if (i==-1) // if not, erase the guild !
+			pc = pointers::findCharBySerial(guilds[guildnumber].master);
+			if (!pc) // if not, erase the guild !
 			{
 				ok=0;
-				sprintf( temp,"guild: %s ereased because guildmaster vanished",guilds[guildnumber].name);
-				LogWarning(temp);
+				LogWarning("guild: %s ereased because guildmaster vanished",guilds[guildnumber].name);
 				Guilds->EraseGuild(guildnumber);
 			}
 			// guildstone deleted ? yes -> erase guild !
 			if (ok) // don't erease twice ;)
 			{
-				serial=guilds[guildnumber].stone;
-				i = calcItemFromSer( serial );
-				if (i==-1)
+				stone = pointers::findItemBySerial(guilds[guildnumber].stone);
+				if (!stone)
 				{
 					ok=0;
-					sprintf(temp,"guild: %s ereased because guildstone vanished",guilds[guildnumber].name);
-					LogWarning(temp);
+					LogWarning("guild: %s ereased because guildstone vanished",guilds[guildnumber].name);
 					Guilds->EraseGuild(guildnumber);
 				}
 			}
@@ -1809,13 +1804,11 @@ void cGuilds::CheckConsistancy(void )
 			 // check for guildmembers that don't exist anymore and remove from guild structure if so
 				for (members=1; members<MAXGUILDMEMBERS; members++)
 				{
-					serial=guilds[guildnumber].member[members];
-					i = calcCharFromSer( serial );
-					if (i==-1 && serial !=0)
+					pc = pointers::findCharBySerial(guilds[guildnumber].member[members]);
+					if (!pc && serial !=0)
 					{
 						ok=0;
-						sprintf(temp,"guild: %s had an member that didnt exist anymore, removed\n",guilds[guildnumber].name);
-						LogWarning(temp);
+						LogWarning("guild: %s had an member that didnt exist anymore, removed\n",guilds[guildnumber].name);
 						guilds[guildnumber].member[members]=0;
 						guilds[guildnumber].members--;
 					}
@@ -1824,40 +1817,6 @@ void cGuilds::CheckConsistancy(void )
 		}
 		if (!ok) error=1;
 	}
-	//////////////// now check all characters for still being in a deleted guild
-/*	for (a=0; a<charcount; a++)
-	{
-		ok=1;
-		pc_a=MAKE_CHARREF_LOGGED(a,err);
-		if (err) return;
 
-		if (pc_a->npc==0)
-		{
-			if (pc_a->GetGuildNumber() <0 || pc_a->GetGuildNumber()>=MAXGUILDS) // invalid guildnumber ?
-			{
-				sprintf((char*)temp,"player %s has invalid guild info. cancled his/her guild membership",pc_a->getCurrentNameC());
-				LogWarning((char*)temp);
-				pc_a->SetGuildNumber(0);
-				pc_a->SetGuildFealty(0);
-				pc_a->SetGuildTitle( "" );
-				pc_a->ResetGuildTitleToggle();
-				ok=0;
-			}
-			if (ok)
-			{   //xan : inverted test order to avoid warnings during boundschecking :)
-				if (pc_a->GetGuildNumber()!=0 && guilds[pc_a->GetGuildNumber()].free)
-				{
-					sprintf(temp,"player %s belongs to a guild that is no more. cancled his/her guild membership", pc_a->getCurrentNameC());
-					LogWarning((char*)temp);
-					pc_a->SetGuildNumber(0);
-					pc_a->SetGuildFealty(0);
-					pc_a->SetGuildTitle( "" );
-					pc_a->ResetGuildTitleToggle();
-					ok=0;
-				}
-			}
-		}
-		if (!ok) error=1;
-	}*/
 	if (error) ConOut("[DONE] - errors found, check logs\n"); else ConOut("[ OK ]\n");
 }

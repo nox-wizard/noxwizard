@@ -224,7 +224,7 @@ bool checkenvoke(char eid1, char eid2)
 \param id1 the id for envoked/statics triggers
 \param id2 the id for envoked/statics triggers
 */
-void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, char id1, char id2)
+void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, UI16 id)
 {
 	m_nNumber = number;
 	m_iter = 0;
@@ -250,7 +250,7 @@ void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, char id1, cha
 		break;
 	case TRIGMODE_ENVOKED:
 	case TRIGMODE_NPCENVOKE:
-        sprintf(sect, "x%x%x", id1, id2);
+        	sprintf(sect, "x%x", id);
 		m_iter = Scripts::Envoke->getNewIteratorInStr(sect);
 		break;
 	case TRIGMODE_NPC:
@@ -279,22 +279,23 @@ void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, char id1, cha
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigtype)
 {
 	if (trigtype==TRIGMODE_ENVOKED) {
-		init(number, s, trigtype, itm->id1, itm->id2);
+		init(number, s, trigtype, itm->id());
 		m_pi = itm;
 	} else if (trigtype==TRIGMODE_STATIC) {
-		init(number, s, trigtype, buffer[s][0x11], buffer[s][0x12]);
+		init(number, s, trigtype, ShortFromCharPtr(buffer[s] +17) );
 		m_pi = 0;
 	} else {
 		init(number, s, trigtype);
 		m_pi = itm;
 	}
 	if ((trigtype==TRIGMODE_ENVOKED)||(trigtype==TRIGMODE_STATIC)) {
-		int evti = calcItemFromSer(m_pcCurrChar->envokeitem);
-		if (evti < 0) { //panic
+		P_ITEM pi = pointers::findItemBySerial(m_pcCurrChar->envokeitem);
+		if (ISVALIDPI(pi)) {
+			m_piEnvoked = pi;
+		} else  { //panic
 			m_pcCurrChar->sysmsg(TRANSLATE("That didn't seem to work."));
 			safedelete(m_iter); //<- this way trigger is disabled!
 		}
-		m_piEnvoked = MAKE_ITEMREF_LR(evti);
 	}
 }
 
@@ -308,15 +309,16 @@ cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_ITEM itm, int trigt
 */
 cTriggerContext::cTriggerContext(int number, NXWSOCKET  s, P_CHAR pc, int trigtype)
 {
-	init(number, s, trigtype, (pc->GetBodyType()<<8), (pc->GetBodyType()%256));
+	init(number, s, trigtype, pc->GetBodyType());
 	m_pcNpc = pc;
 	if (trigtype==TRIGMODE_NPCENVOKE) {
-		int evti = calcItemFromSer(m_pcCurrChar->envokeitem);
-		if (evti < 0) { //panic
+		P_ITEM pi = pointers::findItemBySerial(m_pcCurrChar->envokeitem);
+		if (ISVALIDPI(pi)) {
+			m_piEnvoked = pi;
+		} else { //panic
 			sysmessage(s, TRANSLATE("That didn't seem to work."));
 			safedelete(m_iter); //<- this way trigger is disabled!
 		}
-		m_piEnvoked = MAKE_ITEMREF_LR(evti);
 	}
 }
 

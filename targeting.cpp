@@ -559,77 +559,67 @@ void cTargets::IDtarget(NXWSOCKET s)
 //public !!
 void cTargets::XTeleport(NXWSOCKET s, int x)
 {
-
 	P_CHAR pc=MAKE_CHAR_REF( currchar[s] );
 	if ( !ISVALIDPC( pc ) )
     		return;
 
 	P_CHAR pc_i;
-	int i = INVALID, serial = INVALID;
+	P_ITEM pi;
+	int i = INVALID;
+	SERIAL serial = INVALID;
 
 	switch (x)
 	{
 		case 0:
 			serial = LongFromCharPtr( buffer[s] + 7 );
-			i = calcCharFromSer(serial);
-			pc_i = MAKE_CHAR_REF( i );
 			break;
+
 		case 2:
 			i = strtonum( 1 );
 			if (perm[i])
-			{
-				i = currchar[i];
-				pc_i = MAKE_CHAR_REF( i );
-			}
+				serial = currchar[i];
 			else
 				return;
 			break;
+
 		case 3:
-			i = currchar[pc->making];
-						pc_i = MAKE_CHAR_REF( i );
-						VALIDATEPC( pc_i );
-			pc_i->MoveTo( pc->getPosition() );
-			pc_i->teleport();
-			return;
+			serial = currchar[pc->making];
+			break;
+
 		case 5:
 			serial = calcserial(strtonum(1), strtonum(2), strtonum(3), strtonum(4));
-			i = calcCharFromSer(serial);
-			pc_i = MAKE_CHAR_REF(i);
 			break;
 	}
 
-	if ( ISVALIDPC( pc_i ) )
+	if (serial == INVALID ) return;
+
+	pc_i = pointers::findCharBySerial( serial );
+	if( ISVALIDPC( pc_i ) )
 	{
 		pc_i->MoveTo( pc->getPosition() );
 		pc_i->teleport();
-		return;// Zippy
 	}
 
-	if (serial == INVALID ) return; //xan
-
-	P_ITEM pi = MAKE_ITEM_REF( calcItemFromSer(serial) );
-	VALIDATEPI( pi );
-	pi->MoveTo( pc->getPosition() );
-	pi->Refresh();
+	pi = pointers::findItemBySerial( serial );
+	if( ISVALIDPI( pi ) ) {
+		pi->MoveTo( pc->getPosition() );
+		pi->Refresh();
+	}
 }
 
 void XgoTarget(NXWSOCKET s)
 {
-	
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-	P_CHAR pc=MAKE_CHAR_REF(i);
+	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
 
-    if (i!=-1)
-    {
-        pc->MoveTo( addx[s],addy[s],addz[s] );
-	pc->teleport();
-    }
+	if(ISVALIDPC(pc)) {
+	        pc->MoveTo( addx[s],addy[s],addz[s] );
+		pc->teleport();
+    	}
 }
 
 static void PrivTarget(NXWSOCKET s, P_CHAR pc)
 {
-    VALIDATEPC(pc);
+	VALIDATEPC(pc);
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(curr);
 	

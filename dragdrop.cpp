@@ -206,14 +206,12 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 		}
 		else  // its an item
 		{
-			
 			//Endymion Bugfix:
 			//before check the container.. but if this cont is a subcont?
 			//so get the outmostcont and check it else:
 			//can loot without lose karma in subcont
 			//can steal in trade ecc
 			//not very good :P
-			//container = MAKE_ITEM_REF( calcItemFromSer( pi->getContSerial() ) );
 			container = pi->getOutMostCont();
 			if( isCharSerial( container->getContSerial() ) )
 				owner=pointers::findCharBySerial( container->getContSerial() );

@@ -737,7 +737,7 @@ NATIVE(_getCurrentSocket)
 */
 NATIVE(_getCharTarget)
 {
-    P_CHAR pc = MAKE_CHAR_REF(calcCharFromPtr(buffer[g_nCurrentSocket]+7));
+    P_CHAR pc = pointers::findCharBySerPtr( buffer[g_nCurrentSocket] +7);
     VALIDATEPCR(pc, INVALID);
     return pc->getSerial32();
 }
@@ -750,7 +750,7 @@ NATIVE(_getCharTarget)
 */
 NATIVE(_getItemTarget)
 {
-    P_ITEM pi = MAKE_ITEM_REF(calcItemFromPtr(buffer[g_nCurrentSocket]+7));
+    P_ITEM pi = pointers::findItemBySerPtr( buffer[g_nCurrentSocket] +7);
     VALIDATEPIR(pi, INVALID);
     return pi->getSerial32();
 }
