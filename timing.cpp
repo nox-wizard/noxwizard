@@ -208,24 +208,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		}
 		lighttime=uiCurrentTime+secondsperuominute*5*MY_CLOCKS_PER_SEC;
 	}
-	//
-	// Do Eclipse stuff.. /blackwind
-	//
-	if ( TIMEOUT( SrvParms->eclipsetimer ) && SrvParms->eclipsetimer > 0 )
-	{
-		SrvParms->eclipsetimer = (TIMERVAL)((R64) uiCurrentTime +(ECLIPSETIMER*MY_CLOCKS_PER_SEC));
-		if (SrvParms->eclipsemode)
-			worldfixedlevel--;
-		else
-			worldfixedlevel++;
-		worldcurlevel = worldfixedlevel;
-		lightChanged = true;
-		if ((worldfixedlevel>20) ||(worldfixedlevel < 1))
-		{
-			SrvParms->eclipsetimer = 0;
-			server_data.eclipsemode=!server_data.eclipsemode;
-		}
-	}// end eclipse / blackwind..
+
 	//
 	//	Housedecay and stabling
 	//

@@ -30,11 +30,7 @@ namespace PartySystem
 	#define NET_LOOTMODE  6
 
 
-
-	#define PARTYSYSTARGET 192
-
-
-	void targetParty( NXWCLIENT ps );
+	void target_party( NXWCLIENT ps, P_TARGET t );
 	void processInputPacket( NXWCLIENT ps );
 	void askPartyPermission( NXWCLIENT ps );
 

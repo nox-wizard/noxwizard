@@ -307,7 +307,6 @@ namespace Scripts {
 	cScpScript* HtmlStrm = NULL; //cScpScript("htmlstrm.scp");
 	cScpScript* Items = NULL; //cScpScript("items.scp");
 	cScpScript* Location = NULL; //cScpScript("location.scp");
-	cScpScript* MenuPriv = NULL; //cScpScript("menupriv.scp");
 	cScpScript* Menus = NULL; //cScpScript("menus.scp");
 	cScpScript* MetaGM = NULL; //cScpScript("metagm.scp");
 	cScpScript* Misc = NULL; //cScpScript("misc.scp");
@@ -353,7 +352,6 @@ void newScriptsInit()
 	Scripts::HtmlStrm = new cScpScript("scripts/html.xss");
 	Scripts::Items = new cScpScript("scripts/items.xss");
 	Scripts::Location = new cScpScript("scripts/location.xss");
-//	Scripts::MenuPriv = new cScpScript("menupriv.scp");
 	Scripts::Menus = new cScpScript("scripts/menus.xss");
 	Scripts::MetaGM = new cScpScript("scripts/metagm.xss");
 	Scripts::Misc = new cScpScript("scripts/misc.xss");
@@ -401,7 +399,6 @@ void deleteNewScripts()
 	safedelete(Scripts::HtmlStrm );//= new cScpScript("htmlstrm.scp");
 	safedelete(Scripts::Items );//= new cScpScript("items.scp");
 	safedelete(Scripts::Location );//= new cScpScript("location.scp");
-	safedelete(Scripts::MenuPriv );//= new cScpScript("menupriv.scp");
 	safedelete(Scripts::Menus );//= new cScpScript("scripts/menus.xss");
 	safedelete(Scripts::MetaGM );//= new cScpScript("metagm.scp");
 	safedelete(Scripts::Misc );//= new cScpScript("misc.scp");

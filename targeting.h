@@ -16,6 +16,7 @@
 #define _TARGETING_INCLUDED
 
 #include "typedefs.h"
+#include "target.h"
 
 /*!
 \brief Struct for package 0x6c
@@ -87,8 +88,6 @@ private:
 	void StaminaTarget(NXWSOCKET s);
 	void ManaTarget(NXWSOCKET s);
 	void MakeShopTarget(NXWSOCKET s);
-	void AttackTarget(NXWSOCKET s);
-	void FollowTarget(NXWSOCKET s);
 	void TransferTarget(NXWSOCKET s);
 	void BuyShopTarget(NXWSOCKET s);
 	void permHideTarget(NXWSOCKET s);
@@ -139,7 +138,6 @@ public:
 	void JailTarget(NXWSOCKET s, int c);
 	void ReleaseTarget(NXWSOCKET s, int c);
 	int AddMenuTarget(NXWSOCKET s, int x, int addmitem);
-	void XTeleport(NXWSOCKET s, int x);
 	int BuyShop(NXWSOCKET s, CHARACTER c);
 };
 
@@ -164,7 +162,7 @@ public:
 	//!creates a target loc from an item
 	TargetLocation(P_ITEM pi) { init(pi); }
 	//!creates a target loc from a target net packet
-	TargetLocation(PKGx6C* pp);
+	TargetLocation( P_TARGET pp );
 	//!creates a target loc from a xyz position in the map
 	TargetLocation(int x, int y, int z) { init(x,y,z); }
 
@@ -205,6 +203,22 @@ class cPacketTargeting
 
 
 extern cTargets* Targ;
+
+
+
+
+
+
+void target_follow( NXWCLIENT ps, P_TARGET t );
+void target_attack( NXWCLIENT ps, P_TARGET t );
+void target_playerVendorBuy( NXWCLIENT ps, P_TARGET t );
+void target_envoke( NXWCLIENT ps, P_TARGET t );
+void target_key( NXWCLIENT ps, P_TARGET t );
+void target_axe( NXWCLIENT ps, P_TARGET t );
+void target_sword( NXWCLIENT ps, P_TARGET t );
+
+
+
 
 
 #endif	// _TARGETING_INCLUDED

@@ -15,88 +15,80 @@
 #ifndef __TARGET_H__
 #define __TARGET_H__
 
+#include "packets.h"
 
-/*
-0x6C Packet
+typedef class cTarget* P_TARGET;
+typedef void ( *processTarget )			( NXWCLIENT, P_TARGET );
 
-Targeting Cursor Commands (19 bytes) 
+class cTarget {
 
-	BYTE cmd 
-    BYTE type 
-		0x00 = Select Object
-		0x01 = Select X, Y, Z 
+public:
 
-	BYTE[4] cursorID 
-	BYTE Cursor Type 
-		Always 0 now  
+	cPacketTargetingCursor pkg;
+	SERIAL buffer[4];
+	std::string buffer_str[4];
+	AmxFunction* amx_callback;
+	processTarget code_callback;
+
+	cTarget( bool selectLocation=true );
+	~cTarget();
+
+	void send( NXWCLIENT ps );
+	virtual bool isValid();
+	virtual void error( NXWCLIENT ps );
+
+	Location getLocation();
+	SERIAL getClicked();
+	UI16 getModel();
+
+};
+
+
+class cObjectTarget : public cTarget {
+
+public:
+
+	cObjectTarget();
+	~cObjectTarget();
+
+	virtual bool isValid();
+	virtual void error( NXWCLIENT ps );
+};
+
+class cCharTarget : public cObjectTarget {
+
+public:
+
+	cCharTarget();
+	~cCharTarget();
+
+	virtual bool isValid();
+	virtual void error( NXWCLIENT ps );
+};
+
+class cItemTarget : public cObjectTarget {
 	
-	The following are always sent but are only valid if sent by client 
+public:
 
-	BYTE[4] Clicked On ID 
-	BYTE[2] click xLoc 
-	BYTE[2] click yLoc 
-	BYTE unknown (0x00) 
-	BYTE click zLoc 
-	BYTE[2] model # (if a static tile, 0 if a map/landscape tile)
-		Note: the model # shouldn’t be trusted.
+	cItemTarget();
+	~cItemTarget();
 
-*/
+	virtual bool isValid();
+	virtual void error( NXWCLIENT ps );
+};
 
-class cTargeT {
+class cLocationTarget : public cTarget {
 
 public:
 
-	cTargeT( );
-	void Error( NXWCLIENT ps, char* txt );
-	virtual void Do( NXWCLIENT ps );
+	cLocationTarget();
+	~cLocationTarget();
+
+	virtual bool isValid();
+	virtual void error( NXWCLIENT ps );
 };
 
-typedef cTargeT* P_TARGET;
 
-typedef void ( *processSerialTarget)	(NXWCLIENT, SERIAL);
-typedef void ( *processCharTarget)		(NXWCLIENT, P_CHAR);
-typedef void ( *processItemTarget)		(NXWCLIENT, P_ITEM);
-typedef void ( *processLocationTarget)	(NXWCLIENT, Location);
-
-class cTargetSerial : public cTargeT {
-protected:
-	processSerialTarget call;
-	bool isObjectTarget( NXWCLIENT ps );
-	SERIAL makeSerial( NXWCLIENT ps );
-public:
-	cTargetSerial( processSerialTarget callThis );
-	cTargetSerial( );
-	virtual void Do( NXWCLIENT ps );
-};
-
-class cTargetItem : public cTargetSerial {
-private:
-	processItemTarget call;
-	bool isItemTarget( NXWCLIENT ps );
-public:
-	cTargetItem( processItemTarget callThis );
-	void Do( NXWCLIENT ps );
-};
-
-class cTargetChar : public cTargetSerial {
-private:
-	processCharTarget call;
-	bool isCharTarget( NXWCLIENT ps );
-public:
-	cTargetChar( processCharTarget callThis );
-	void Do( NXWCLIENT ps );
-};
-
-class cTargetLocation : public cTargeT {
-private:
-	Location location;
-	processLocationTarget call;
-	bool isLocationTarget( NXWCLIENT ps );
-	Location makeLocation( NXWCLIENT ps );
-public:
-	cTargetLocation( processLocationTarget callThis );
-	void Do( NXWCLIENT ps );
-};
-
+void amxCallback( NXWCLIENT ps, P_TARGET t );
 
 #endif

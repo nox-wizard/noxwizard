@@ -1743,10 +1743,19 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					singleclick(s);
 					break;
 
-				case PACKET_TARGETING:
-					if(targetok[s]) 
-						Targ->MultiTarget(ps);
-					break;
+				case PACKET_TARGETING: {
+					P_TARGET target = clientInfo[s]->getTarget();
+					if( target==NULL )
+						return;
+
+					target->pkg.receive( ps );
+
+					if( !target->isValid() )
+						target->error( ps );
+					else
+						target->code_callback( ps, target );
+				}	
+				break;
 
 				case PACKET_WEARITEM:
 					wear_item(ps);

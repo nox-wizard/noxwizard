@@ -1320,9 +1320,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 		case NXW_CP_I_MEDITATING :			  			//dec value: 243;
 			pc->med = value;
 			break;
-		case NXW_CP_I_MENUPRIV :			  			//dec value: 244;
-			pc->menupriv = value;
-			break;
 		case NXW_CP_I_MULTISERIAL :						//dec value: 245;
 			pc->setMultiSerial( value );
 			break;
@@ -1521,9 +1518,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			break;
 		case NXW_CP_I_SWINGTARG :			  			//dec value: 297;
 			pc->swingtargserial = value;
-			break;
-		case NXW_CP_I_TAILITEM :			  			//dec value: 298;
-			pc->tailserial = value;
 			break;
 		case NXW_CP_I_TAMING :				  			//dec value: 299;
 			pc->taming = value;
@@ -1732,7 +1726,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 		CHECK(  NXW_CP_I_LOGOUT , pc->logout )  			//dec value: 241;
 		CHECK(  NXW_CP_I_MAKING , pc->making )  			//dec value: 242;
 		CHECK(  NXW_CP_I_MEDITATING , pc->med )  			//dec value: 243;
-		CHECK(  NXW_CP_I_MENUPRIV , pc->menupriv )  			//dec value: 244;
 		CHECK(  NXW_CP_I_MULTISERIAL , pc->getMultiSerial32() )  	//dec value: 245;
 		CHECK(  NXW_CP_I_MURDERERSER , pc->murdererSer )  		//dec value: 246;
 		CHECK(  NXW_CP_I_MURDERRATE , pc->murderrate )  		//dec value: 247;
@@ -1810,7 +1803,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 			}
 		CHECK(  NXW_CP_I_SUMMONTIMER , pc->summontimer )  		//dec value: 296;
 		CHECK(  NXW_CP_I_SWINGTARG , pc->swingtargserial )  			//dec value: 297;
-		CHECK(  NXW_CP_I_TAILITEM , pc->tailserial )  			//dec value: 298;
 		CHECK(  NXW_CP_I_TAMING , pc->taming )  			//dec value: 299;
 		CHECK(  NXW_CP_I_TARG , pc->targserial )  				//dec value: 300;
 		CHECK(  NXW_CP_I_TARGTRIG , pc->targtrig )  			//dec value: 301;

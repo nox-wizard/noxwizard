@@ -15,6 +15,8 @@
 #ifndef __SKILLS_H__
 #define __SKILLS_H__
 
+#include "target.h"
+
 /*!
 \brief Skill related stuff
 */
@@ -76,9 +78,8 @@ namespace Skills {
 	void Zero_Itemmake(NXWSOCKET s); // by Magius(CHE)
 	int GetSubIngotAmt(int p, char id1, char id2, char color1, char color2);
 	int DeleSubIngot(int p, int id1, int id2, int color1, int color2, int amount);
-	void RepairTarget(NXWSOCKET s); // Ripper
-//	void SmeltItemTarget(NXWSOCKET s); // Ripper
-	void Smith(NXWSOCKET s);
+	void target_repair( NXWCLIENT ps, P_TARGET t );
+	void target_smith( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	//@{
@@ -95,8 +96,8 @@ namespace Skills {
 	*/
 	void CreatePotion(CHARACTER s, char type, char sub, int mortar);
 	void DoPotion(NXWSOCKET s, SI32 type, SI32 sub, P_ITEM mortar);
-	void AlchemyTarget(NXWSOCKET s);
-	void BottleTarget(NXWSOCKET s);
+	void target_alchemy( NXWCLIENT ps, P_TARGET t );
+	void target_bottle( NXWCLIENT ps, P_TARGET t );
 	void PotionToBottle(P_CHAR pc, P_ITEM mortar);
 	//@}
 
@@ -104,40 +105,38 @@ namespace Skills {
 	/*!
 	\name Tinkering stuff
 	*/
-	void TinkerAxel(NXWSOCKET s);
-	void TinkerAwg(NXWSOCKET s);
-	void TinkerClock(NXWSOCKET s);
+	void target_tinkerAxel( NXWCLIENT ps, P_TARGET t );
+	void target_tinkerAwg( NXWCLIENT ps, P_TARGET t );
+	void target_tinkerClock( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	//@{
 	/*!
 	\name Cooking stuff
 	*/
-	void CookOnFire(NXWSOCKET s, short id, char* matname);
-	void MakeDough(NXWSOCKET s);
-	void MakePizza(NXWSOCKET s);
+	void target_cookOnFire( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	//@{
 	/*!
 	\name Tailoring stuff
 	*/
-	void Tailoring(NXWSOCKET s);
-	void Wheel(NXWSOCKET s, int mat);
-	void Loom(NXWSOCKET s);
+	void target_tailoring( NXWCLIENT ps, P_TARGET t );
+	void target_wheel( NXWCLIENT ps, P_TARGET t );
+	void target_loom( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	//@{
 	/*!
 	\name Bowcrafting stuff
 	*/
-	void Fletching(NXWSOCKET s);
+	void target_fletching( NXWCLIENT ps, P_TARGET t );
 	void BowCraft(NXWSOCKET s);
 	//@}
 
 	void RemoveTraps(NXWSOCKET s);
 	
-	void Carpentry(NXWSOCKET s);
+	void target_carpentry( NXWCLIENT ps, P_TARGET t );
 
 	P_ITEM MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount = INVALID);
 	void MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second = NULL );
@@ -146,11 +145,11 @@ namespace Skills {
 	/*!
 	\name Mining stuff
 	*/
-	void Mine(NXWSOCKET s);
+	void target_mine( NXWCLIENT ps, P_TARGET t );
 	void GraveDig(NXWSOCKET s);
 	//@}
 
-	void SmeltOre(NXWSOCKET s);
+	void target_smeltOre( NXWCLIENT ps, P_TARGET t );
 	void TreeTarget(NXWSOCKET s);
 
 	void DetectHidden(NXWSOCKET s);
@@ -159,7 +158,7 @@ namespace Skills {
 	/*!
 	\name Healing stuff
 	*/
-	void HealingSkillTarget(NXWSOCKET s);
+	void target_healingSkill( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	void SpiritSpeak(NXWSOCKET s);
@@ -179,7 +178,7 @@ namespace Skills {
 	void RandomSteal(NXWCLIENT ps);
 	void StealingTarget(NXWCLIENT ps);
 	void PickPocketTarget(NXWCLIENT ps);
-	void LockPick(NXWCLIENT ps);
+	void target_lockpick( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	void BeggingTarget(NXWSOCKET s);
@@ -196,7 +195,7 @@ namespace Skills {
 	
 	void TDummy(NXWSOCKET s);
 	
-	void Tinkering(NXWSOCKET s);
+	void target_tinkering( NXWCLIENT ps, P_TARGET t );
 	
 	void AButte(NXWSOCKET s1, P_ITEM pButte);
 

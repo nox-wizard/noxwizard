@@ -383,7 +383,6 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'M':
 		case 'm':
 			if (!(strcmp("MAGICSPHERE",script1)))	{pc->magicsphere = str2num(script2);  }
-			else if (!strcmp(script1, "MENUPRIV"))			{ pc->menupriv=str2num(script2);} //LB's menupriv system
 			else if (!strcmp(script1, "MANA"))			{ pc->mn=str2num(script2);}
 			else if ( !strcmp( script1, "MOVESPEED" ) ) { pc->npcMoveSpeed = (float)atof( script2 ); }
 			else if ( !strcmp(script1, "MURDERRATE") )	{ pc->murderrate= str2num(script2);  }
@@ -608,9 +607,6 @@ void CWorldMain::loadChar() // Load a character from WSC
 				if (pc->account==ADMIN_ACCOUNT) pc->priv3[u]=0xffffffff;
 			}
 		}
-
-		if ( pc->account==ADMIN_ACCOUNT)
-			pc->menupriv=INVALID;
 
 	}
 	else {
@@ -1652,9 +1648,6 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				fprintf(cWsc, "GUILDFEALTY %i\n", pc->GetGuildFealty());
 				fprintf(cWsc, "MURDERRATE %i\n",pc->murderrate);
 			}
-			if (pc->menupriv!=dummy.menupriv)
-				fprintf(cWsc, "MENUPRIV %i\n", pc->menupriv);
-
 			if (pc->getRegenRate( STAT_HP, VAR_REAL ) != dummy.getRegenRate( STAT_HP, VAR_REAL ) )
 				fprintf(cWsc, "REGEN_HP %i\n", pc->getRegenRate( STAT_HP, VAR_REAL ));
 			if (pc->getRegenRate( STAT_STAMINA, VAR_REAL ) != dummy.getRegenRate( STAT_STAMINA, VAR_REAL ) )

@@ -11,148 +11,129 @@
 #include "target.h"
 #include "client.h"
 #include "inlines.h"
+#include "network.h"
 
-/*
-0x6C Packet
+cTarget::cTarget( bool selectLocation )
+{
+	pkg.type = selectLocation;
+}
 
-Targeting Cursor Commands (19 bytes) 
+cTarget::~cTarget()
+{
+}
 
-	BYTE cmd 
-    BYTE type 
-		0x00 = Select Object
-		0x01 = Select X, Y, Z 
+void cTarget::send( NXWCLIENT ps )
+{
+	pkg.send( ps );
+}
 
-	BYTE[4] cursorID 
-	BYTE Cursor Type 
-		Always 0 now  
+bool cTarget::isValid()
+{
+	if( pkg.type=1 && ( ( pkg.x.get()==INVALID ) || ( pkg.y.get()==INVALID ) ) )
+		return false;
+	if( pkg.type=0 && ( ( pkg.clicked.get()==0 ) && ( pkg.model.get()== 0 ) ) )
+		return false;
+	return true;
+}
+
+void cTarget::error( NXWCLIENT ps )
+{
+}
+
+
+cObjectTarget::cObjectTarget() : cTarget( false )
+{
+}
+
+cObjectTarget::~cObjectTarget()
+{
+}
+
+bool cObjectTarget::isValid()
+{
+	return ( pkg.type==0 );
+}
+
+void cObjectTarget::error( NXWCLIENT ps )
+{
+	ps->sysmsg( "Invalid object" );
+}
+
+cCharTarget::cCharTarget() : cObjectTarget()
+{
+}
+
+cCharTarget::~cCharTarget()
+{
+}
+
+bool cCharTarget::isValid()
+{
+	return ( pkg.type==0 ) && ( isCharSerial( pkg.clicked.get() ) && ( MAKE_CHAR_REF( pkg.clicked.get() )!=NULL ) );
+}
+
+void cCharTarget::error( NXWCLIENT ps )
+{
+	ps->sysmsg( "Invalid character" );
+}
+
+cItemTarget::cItemTarget() : cObjectTarget()
+{
+}
+
+cItemTarget::~cItemTarget()
+{
+}
+
+bool cItemTarget::isValid()
+{
+	return ( pkg.type==0 ) && ( isItemSerial( pkg.clicked.get() ) && MAKE_ITEM_REF( pkg.clicked.get() )!=NULL );
+}
+
+void cItemTarget::error( NXWCLIENT ps )
+{
+	ps->sysmsg( "Invalid item" );
+}
+
+cLocationTarget::cLocationTarget() : cTarget( true )
+{
+}
+
+cLocationTarget::~cLocationTarget()
+{
+}
+
+bool cLocationTarget::isValid()
+{
+	return ( pkg.type==1 ) && ( ( pkg.x.get()!=INVALID ) && ( pkg.y.get()!=INVALID ) );
+}
+
+void cLocationTarget::error( NXWCLIENT ps )
+{
+	ps->sysmsg( "Invalid location" );
+}
+
+
+
+void amxCallbackOld( NXWCLIENT ps, P_TARGET t )
+{
+	if( t->amx_callback==NULL) 
+		return;
 	
-	The following are always sent but are only valid if sent by client 
+	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
+	if( ISVALIDPC(pc) ) {
+        t->amx_callback->Call( ps->toInt(), pc->getSerial32(), INVALID, INVALID, INVALID, INVALID );
+        return;
+    }
 
-	BYTE[4] Clicked On ID
-	BYTE[2] click xLoc 
-	BYTE[2] click yLoc 
-	BYTE unknown (0x00) 
-	BYTE click zLoc 
-	BYTE[2] model # (if a static tile, 0 if a map/landscape tile)
-		Note: the model # shouldn’t be trusted.
+    P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
+    if( ISVALIDPI(pi) ) {
+		t->amx_callback->Call( ps->toInt(), INVALID, pi->getSerial32(), INVALID, INVALID, INVALID );
+        return;
+    }
 
-*/
-
-cTargeT::cTargeT(  ) 
-{
+    Location loc = t->getLocation();
+	t->amx_callback->Call( ps->toInt(), INVALID, INVALID, loc.x, loc.y, loc.z );
 }
 
-void cTargeT::Error( NXWCLIENT ps, char* txt )
-{
-	if( ps!=NULL )
-		ps->sysmsg( txt );
-}
-
-void cTargeT::Do( NXWCLIENT ps )
-{
-}
-
-cTargetSerial::cTargetSerial( ) : cTargeT(  ) 
-{
-	this->call=NULL;
-}
-
-cTargetSerial::cTargetSerial( processSerialTarget callThis ) : cTargeT(  ) 
-{
-	this->call=callThis;
-}
-
-bool cTargetSerial::isObjectTarget( NXWCLIENT ps )
-{
-	return ( ps!=NULL && ( buffer[ps->toInt()][1]==0 ) );
-}
-
-SERIAL cTargetSerial::makeSerial( NXWCLIENT ps ) 
-{
-	return LongFromCharPtr( buffer[ps->toInt()]+7 );
-}
-
-void cTargetSerial::Do( NXWCLIENT ps )
-{
-	if( this->isObjectTarget( ps ) ) {
-		this->call( ps, makeSerial( ps ) );
-	}
-	else
-		this->Error( ps, "Invalid Object selected" );
-
-}
-
-cTargetItem::cTargetItem( processItemTarget callThis ) : cTargetSerial( ) 
-{
-	this->call=callThis;
-};
-
-bool cTargetItem::isItemTarget( NXWCLIENT ps )
-{
-	if( this->isObjectTarget( ps ) ) {
-		return isItemSerial( makeSerial( ps ) );
-	}
-	else
-		return false;
-}
-
-void cTargetItem::Do( NXWCLIENT ps )
-{
-	if( this->isItemTarget( ps ) ) {
-		this->call( ps, pointers::findItemBySerial( makeSerial( ps ) ) );
-	}
-	else
-		this->Error( ps, "Invalid Item selected" );
-}
-
-
-cTargetChar::cTargetChar( processCharTarget callThis ) : cTargetSerial( ) 
-{
-	this->call=callThis;
-}
-
-bool cTargetChar::isCharTarget( NXWCLIENT ps )
-{
-	if( this->isObjectTarget( ps ) ) {
-		return isCharSerial( makeSerial( ps ) );
-	}
-	else
-		return false;
-}
-
-void cTargetChar::Do( NXWCLIENT ps )
-{
-	if( this->isCharTarget( ps ) )
-		this->call( ps, pointers::findCharBySerial( makeSerial( ps ) ) );
-	else
-		this->Error( ps, "Invalid Char selected" );
-}
-
-
-bool cTargetLocation::isLocationTarget( NXWCLIENT ps )
-{
-	return ( ps!=NULL && ( buffer[ps->toInt()][1]==1 ) );
-}
-
-cTargetLocation::cTargetLocation( processLocationTarget callThis ) : cTargeT( ) 
-{
-	this->call=callThis;
-}
-
-Location cTargetLocation::makeLocation( NXWCLIENT ps ) 
-{
-	Location location;
-	location.x=DBYTE2WORD( buffer[ps->toInt()][11], buffer[ps->toInt()][12] );
-	location.y=DBYTE2WORD( buffer[ps->toInt()][13], buffer[ps->toInt()][14] );
-	location.z=DBYTE2WORD( buffer[ps->toInt()][15], buffer[ps->toInt()][16] );
-	return location;
-}
-
-void cTargetLocation::Do( NXWCLIENT ps )
-{
-	if( this->isLocationTarget( ps ) )
-		this->call( ps, makeLocation( ps ) );
-	else
-		this->Error( ps, "Invalid Location selected" );
-}
 

@@ -32,8 +32,6 @@ void saveserverscript();
 
 #define FISHINGTIMEBASE 10              // it takes at least FISHINGTIMEBASE sec to fish
 #define FISHINGTIMER 5
-#define DEFAULTJAILTIME 86400	// blackwind
-#define ECLIPSETIMER .5
 
 #define DECAYTIMER 300  // 5 minute decay rate
 #define INVISTIMER 60 // invisibility spell lasts 1 minute
@@ -51,7 +49,6 @@ void saveserverscript();
 struct server_st
 {
  unsigned int eclipsemode;
- unsigned int eclipsetimer;
  unsigned int checkcharage ;
  unsigned int poisontimer;
  //unsigned int repairworldtimer; // Ripper

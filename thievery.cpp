@@ -474,16 +474,15 @@ void Skills::RandomSteal(NXWCLIENT ps)
 \since 0.53
 \param ps the client
 */
-void Skills::LockPick(NXWCLIENT ps)
+void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 {
 
-	if ( ps == NULL ) return;
 	NXWSOCKET s = ps->toInt();
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
-	const P_ITEM chest=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM chest=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(chest);
-	P_ITEM pick=MAKE_ITEM_REF( addmitem[s] );
+	P_ITEM pick=MAKE_ITEM_REF( t->buffer[0] );
 	VALIDATEPI(pick);
 
 	AMXEXECSV(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);

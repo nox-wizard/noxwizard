@@ -213,12 +213,23 @@ NATIVE(_cfgServerOption)
 */
 NATIVE(_getTarget)
 {
+	
+	NXWCLIENT ps = getClientFromSocket( params[2] );
+	if( ps==NULL ) return 0;
+	
 	cell *cstr;
 	amx_GetAddr(amx,params[3],&cstr);
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 	g_nAmxPrintPtr=0;
-	return amxTarget(params[1], params[2], g_cAmxPrintBuffer);
+
+	P_TARGET targ = clientInfo[ps->toInt()]->newTarget( new cTarget() );
+	targ->amx_callback = new AmxFunction( params[2] );
+	targ->code_callback = amxCallback;
+	targ->send( ps );
+	ps->sysmsg( g_cAmxPrintBuffer );
+
+	return 0;
 }
 
 /*
@@ -1818,7 +1829,7 @@ NATIVE(_chr_fish)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    Fishing->Fish (DEREF_P_CHAR(pc));
+	Fishing::Fish (DEREF_P_CHAR(pc));
     return 0;
 }
 
@@ -2387,30 +2398,6 @@ NATIVE (_send_movingfx)
 	return 0;
 }
 
-
-/*
-\brief send an hardcoded target to given socket
-\author Xanathar
-\since 0.53
-\param 1: socket
-\param 2: a1
-\param 3: a2
-\param 4: a3
-\param 5: a4
-\param 6: format
-\return 0 or INVALID if not valid socket
-*/
-NATIVE (_nativeTarget)
-{
-	cell *cstr;
-	amx_GetAddr(amx,params[6],&cstr);
-    printstring(amx,cstr,params+7,(int)(params[0]/sizeof(cell))-1);
-    g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-    g_nAmxPrintPtr=0;
-
-	target(params[1], params[2], params[3], params[4], params[5], g_cAmxPrintBuffer);
-	return 0;
-}
 
 /*
 \brief send a stat update to given character
@@ -5793,7 +5780,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "broadcast", _sysbroadcast },
  { "getIntFromDefine", _getIntFromDefine },
 // Direct-access functions :
- { "direct_target", _nativeTarget },
  { "direct_castSpell", _direct_castSpell },
  { "direct_setSpellType", _direct_setSpellType },
 // Charachter functions :

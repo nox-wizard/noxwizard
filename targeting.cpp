@@ -56,124 +56,6 @@ extern void targetParty(NXWSOCKET  s);
 #define INVALID_SERIAL -1
 
 /*!
-\brief base class for all Target classes
-
-encapsulates the basic functions of target processing
-\note intendet to become a member of the 'transaction' class in the future
-\note the cTargets::multitarget shall become the ctarget::factory (Duke, 07/16/00)
-\note Changed my mind. These classes are now considered 'experimental' (Duke, 07/11/00)
- */
-class cTarget
-{
-protected:
-    NXWSOCKET s,serial,inx;
-    P_ITEM pi;
-    P_CHAR pc;
-    NXWCLIENT ps;
-    void makeSerial()       {serial=LongFromCharPtr(buffer[s]+7);}
-    void makeCharIndex()    {inx=calcCharFromSer(serial);}
-    void makeItemIndex()    {inx=calcItemFromSer(serial);}
-public:
-    cTarget(NXWCLIENT pCli)  { s=serial=inx=INVALID; if (pCli!=NULL) { s=pCli->toInt(); ps = pCli; makeSerial(); } }
-    virtual void process() = 0;
-};
-
-class cCharTarget : public cTarget
-{
-public:
-    cCharTarget(NXWCLIENT pCli) : cTarget(pCli) {}
-    virtual void CharSpecific() = 0;
-    virtual void process()
-    {
-        if( buffer[s][1]!=0 ) {
-			sysmessage(s,TRANSLATE("That is not a character."));
-			return;
-		}
-        makeSerial();
-        makeCharIndex();
-        if(inx > -1)
-        {
-            pc = MAKE_CHAR_REF(inx);
-			VALIDATEPC(pc);
-            CharSpecific();
-        }
-        else
-            sysmessage(s,TRANSLATE("That is not a character."));
-    }
-};
-
-class cItemTarget : public cTarget
-{
-public:
-    cItemTarget(NXWCLIENT pCli) : cTarget(pCli) {}
-    virtual void ItemSpecific() = 0;
-    virtual void process()
-    {
-
-        if( buffer[s][1]!=0 ) {
-            sysmessage(s,TRANSLATE("That is not an item."));
-			return;
-		}
-
-        makeSerial();
-        makeItemIndex();
-        if(inx > -1)
-        {
-            pi = MAKE_ITEM_REF(inx);
-			VALIDATEPI(pi);
-			if (addid1[s] == 0)
-	    		pi->setDecay(false);
-            ItemSpecific();
-        }
-        else
-            sysmessage(s,TRANSLATE("That is not an item."));
-
-	};
-
-};
-
-class cWpObjTarget : public cTarget
-{
-	public:
-		cWpObjTarget(NXWCLIENT pCli) : cTarget(pCli) {}
-		virtual void CharSpecific() = 0;
-		virtual void ItemSpecific() = 0;
-		virtual void process()
-		{
-
-			if( buffer[s][1]==0 )
-			{ //selected an object
-				if(buffer[s][7]>=0x40) // an item's serial ?
-				{
-					makeItemIndex();
-					if(inx > -1)
-					{
-						pi = MAKE_ITEM_REF(inx);
-						VALIDATEPI(pi);
-						ItemSpecific();
-					}
-					else
-						sysmessage(s,TRANSLATE("That is not a valid item."));
-				}
-				else
-				{
-					makeCharIndex();
-					if(inx > -1)
-					{
-						pc = MAKE_CHAR_REF(inx);
-						VALIDATEPC(pc);
-						CharSpecific();
-					}
-					else
-						sysmessage(s,TRANSLATE("That is not a valid character."));
-				}
-			}
-			else
-				sysmessage(s,TRANSLATE("That is not a valid object."));
-		}
-};
-
-/*!
 \author Luxor
 \param s socket to attack
 \brief Manages all attack command
@@ -199,55 +81,6 @@ void cTargets::AllAttackTarget(NXWSOCKET s)
 
 }
 
-
-
-void cTargets::PlVBuy(NXWSOCKET s)//PlayerVendors
-{
-    if (s==-1) return;
-    int v=addx[s];
-    P_CHAR pc = MAKE_CHAR_REF(v);
-	VALIDATEPC(pc);
-    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc_currchar);
-
-    P_ITEM pBackpack= pc_currchar->getBackpack();
-    if (!pBackpack) {sysmessage(s,TRANSLATE("Time to buy a backpack")); return; } //LB
-
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    P_ITEM pi=pointers::findItemBySerial(serial);     // the item
-    if (pi==NULL) return;
-    if (pi->isInWorld()) return;
-    int price=pi->value;
-
-
-	P_ITEM thepack=(P_ITEM)pi->getContainer();
-	VALIDATEPI(thepack);
-	P_CHAR pNpc= thepack->getPackOwner();               // the vendor
-
-    if(DEREF_P_CHAR(pNpc)!=v || pc->npcaitype!=NPCAI_PLAYERVENDOR) return;
-
-    if (pc_currchar->isOwnerOf(pc))
-    {
-        pc->talk(s, TRANSLATE("I work for you, you need not buy things from me!"),0);
-        return;
-    }
-
-    int gleft=pc_currchar->CountGold();
-    if (gleft<pi->value)
-    {
-        pc->talk(s, TRANSLATE("You cannot afford that."),0);
-        return;
-    }
-    pBackpack->DeleteAmount(price,0x0EED);  // take gold from player
-
-    pc->talk(s, TRANSLATE("Thank you."),0);
-    pc->holdg+=pi->value; // putting the gold to the vendor's "pocket"
-
-    // sends item to the proud new owner's pack
-    pi->setContSerial( pBackpack->getSerial32() );
-    pi->Refresh();
-
-}
 
 /*!
 \author Magius
@@ -326,434 +159,33 @@ static void CodedNpcRectangle(NXWSOCKET s, PKGx6C *pp)
 	clickx[s] = clicky[s]= -1;
 }
 
-/*!
-\brief Adds an item when using 'add # #
-*/
-static void AddTarget(NXWSOCKET s, PKGx6C *pp)
+
+
+
+
+void target_xTeleport( NXWCLIENT ps, P_TARGET t )
 {
-    if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-
-    if (addid1[s]>=0x40) // LB 25-dec-199, changed == to >= for chest multis, probably not really necassairy
-    {
-        switch (addid2[s])
-        {
-        case 100:
-        case 102:
-        case 104:
-        case 106:
-        case 108:
-        case 110:
-        case 112:
-        case 114:
-        case 116:
-        case 118:
-        case 120:
-        case 122:
-        case 124:
-        case 126:
-        case 140:
-            buildhouse(s,addid3[s]);//If its a valid house, send it to buildhouse!
-            return; // Morrolan, here we WANT fall-thru, don't mess with this switch
-        }
-    }
-    int pileable=0;
-    short id=(addid1[s]<<8)+addid2[s];
-    tile_st tile;
-    data::seekTile(id, tile);
-    if (tile.flags&TILEFLAG_STACKABLE) pileable=1;
-
-    P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
-    VALIDATEPI(pi);
-    pi->setId( id );
-    pi->pileable = pileable;
-    pi->setDecay( false );
-    pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc+tileHeight(pp->model));
-    pi->Refresh();
-    addid1[s]=0;
-    addid2[s]=0;
-
-}
-
-/*
-class cRenameTarget : public cWpObjTarget
-{
-public:
-    cRenameTarget(NXWCLIENT pCli) : cWpObjTarget(pCli) {}
-    void CharSpecific()
-    {
-        //strcpy(pc->name,xtext[s]);
-		pc->setCurrentName( xtext[s] );
-    }
-    void ItemSpecific()
-    {
-        if(addx[s]==1) //rename2 //New -- Zippy
-            pi->setSecondaryName(xtext[s]);
-        else
-            pi->setCurrentName(xtext[s]);
-    }
-};
-*/
-
-//we don't need this anymore - AntiChrist (9/99)
-// hehe, yes we do
-// what about the /tele command ???
-// modified for command only purpose and uncommented by LB...
-
-// Changed to have a gmmove effect at origin and at target point
-// Aldur
-//
-static void TeleTarget(NXWSOCKET s, PKGx6C *pp)
-{
-	if( (pp->TxLoc==-1) || (pp->TyLoc==-1) ) return;
-
-	int cc= currchar[s];
-	P_CHAR pc=MAKE_CHAR_REF(cc);
-	int x= pp->TxLoc;
-	int y= pp->TyLoc;
-	signed char z=pp->TzLoc;
-	Location charpos= pc->getPosition();
-
-	if ((line_of_sight( s, charpos.x, charpos.y, charpos.z, x, y, z,WALLS_CHIMNEYS+DOORS+FLOORS_FLAT_ROOFING)||
-		(pc->IsGM())))
-	{
-		pc->doGmEffect();
-		pc->MoveTo( x,y,z+tileHeight(pp->model) );
-		pc->teleport();
-		pc->doGmEffect();
-	}
-
-}
-
-class cRemoveTarget : public cWpObjTarget
-{
-public:
-    cRemoveTarget(NXWCLIENT pCli) : cWpObjTarget(pCli) {}
-    void CharSpecific()
-    {
-    	if (!ISVALIDPC(pc)) return;
-
-	if (pc->amxevents[EVENT_CHR_ONDISPEL]) {
-		pc->amxevents[EVENT_CHR_ONDISPEL]->Call(pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
-	}
-
-	//pc->runAmxEvent( EVENT_CHR_ONDISPEL, pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
-
-        if (pc->account>-1 && !pc->npc) // player check added by LB
-        {
-            sysmessage(s,TRANSLATE("You cant delete players"));
-            return;
-        }
-        sysmessage(s, TRANSLATE("Removing character."));
-	pc->Delete();
-    }
-    void ItemSpecific()
-    {
-		if (!ISVALIDPI(pi)) return;
-
-		sysmessage(s, TRANSLATE("Removing item."));
-        if (pi->amxevents[EVENT_IONDECAY])
-           pi->amxevents[EVENT_IONDECAY]->Call(pi->getSerial32(), DELTYPE_GMREMOVE);
-		//pi->runAmxEvent( EVENT_IONDECAY, pi->getSerial32(), DELTYPE_GMREMOVE );
-        pi->Delete();
-    }
-};
-
-void DyeTarget(NXWSOCKET s)
-{
-	SERIAL target_serial = LongFromCharPtr(buffer[s] +7);
-	UI16 color, body;
-
-	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(Me);
-
-    if ((addid1[s]==255)&&(addid2[s]==255))
-    {
-        P_ITEM pi=pointers::findItemBySerial(target_serial);
-        if (ISVALIDPI(pi))
-        {
-            SndDyevat(s,pi->getSerial32(), pi->id());
-//            pi->Refresh();
-        }
-
-        P_CHAR pc=pointers::findCharBySerial(target_serial);
-        if(ISVALIDPC(pc))
-	{
-            SndDyevat(s,pc->getSerial32(),0x2106);
-        }
-    }
-    else // See Commands::DyeItem(s)
-    {
-	color = (addid1[s]<<8)|(addid2[s]%256);
-
-        P_ITEM pi=pointers::findItemBySerial(target_serial);
-        if (ISVALIDPI(pi))
-	{
-		if(!(dyeall[s]))
-		{
-			if (( color<0x0002) || (color>0x03E9))
-			{
-				color = 0x03E9;
-			}
-		}
-
-
-		if (! ((color & 0x4000) || (color & 0x8000)) )
-		{
-			pi->setColor(color);
-		}
-
-		if (color == 0x4631)
-		{
-			pi->setColor(color);
-		}
-
-		pi->Refresh();
-		return;
-	}
-
-        P_CHAR pc=pointers::findCharBySerial(target_serial);
-        if (ISVALIDPC(pc))
-	{
-		if( !Me->IsGM() ) return; // Only gms dye characters
-
-		body = pc->GetBodyType();
-
-		if(  color < 0x8000  && body >= BODY_MALE && body <= BODY_DEADFEMALE ) color |= 0x8000; // why 0x8000 ?! ^^;
-
-		if ((color & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) color = 0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
-
-		if (color != 0x8000)
-		{
-			pc->setSkinColor(color);
-			pc->setOldSkinColor(color);
-			pc->teleport( TELEFLAG_NONE );
-
-		}
-	}
-    }
-}
-
-class cNewzTarget : public cWpObjTarget
-{
-public:
-    cNewzTarget(NXWCLIENT pCli) : cWpObjTarget(pCli) {}
-    void CharSpecific()
-    {
-	if (!ISVALIDPC(pc)) return; //Luxor
-		pc->setPosition("z", addx[s]);
-        pc->setPosition("dz", addx[s]);
-		P_CHAR pc_s=MAKE_CHAR_REF(inx);
-	if (!ISVALIDPC(pc_s)) return; //Luxor
-        pc_s->teleport();
-    }
-    void ItemSpecific()
-    {
-	if (!ISVALIDPI(pi)) return; //Luxor
-        pi->setPosition("z", addx[s]);
-		P_ITEM pi_c= MAKE_ITEM_REF(inx);
-	if (!ISVALIDPI(pi_c)) return; //Luxor
-        pi_c->Refresh();
-    }
-};
-
-//public !!
-void cTargets::IDtarget(NXWSOCKET s)
-{
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcItemFromSer(serial);
-    if (i!=-1)
-    {
-		P_ITEM pi=MAKE_ITEM_REF(i);
-		VALIDATEPI(pi);
-        pi->id1=addx[s];
-        pi->id2=addy[s];
-        pi->Refresh();
-        return;
-    }
-    i=calcCharFromSer(serial);
-    if (i!=-1)
-    {
-		P_CHAR pc = MAKE_CHAR_REF(i);
-		VALIDATEPC(pc);
-		pc->SetBodyType((addx[s]<<8)|(addy[s]%256));
-		pc->SetOldBodyType((addx[s]<<8)|(addy[s]%256));
-		pc->teleport();
-    }
-}
-
-//public !!
-void cTargets::XTeleport(NXWSOCKET s, int x)
-{
-	P_CHAR pc=MAKE_CHAR_REF( currchar[s] );
-	if ( !ISVALIDPC( pc ) )
-    		return;
-
-	P_CHAR pc_i;
-	P_ITEM pi;
-	int i = INVALID;
-	SERIAL serial = INVALID;
-
-	switch (x)
-	{
-		case 0:
-			serial = LongFromCharPtr( buffer[s] + 7 );
-			break;
-
-		case 2:
-			i = strtonum( 1 );
-			if (perm[i])
-				serial = currchar[i];
-			else
-				return;
-			break;
-
-		case 3:
-			serial = currchar[pc->making];
-			break;
-
-		case 5:
-			serial = calcserial(strtonum(1), strtonum(2), strtonum(3), strtonum(4));
-			break;
-	}
-
-	if (serial == INVALID ) return;
-
-	pc_i = pointers::findCharBySerial( serial );
-	if( ISVALIDPC( pc_i ) )
-	{
-		pc_i->MoveTo( pc->getPosition() );
-		pc_i->teleport();
-	}
-
-	pi = pointers::findItemBySerial( serial );
-	if( ISVALIDPI( pi ) ) {
-		pi->MoveTo( pc->getPosition() );
-		pi->Refresh();
-	}
-}
-
-void XgoTarget(NXWSOCKET s)
-{
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
-
-	if(ISVALIDPC(pc)) {
-	        pc->MoveTo( addx[s],addy[s],addz[s] );
-		pc->teleport();
-    	}
-}
-
-static void PrivTarget(NXWSOCKET s, P_CHAR pc)
-{
-	VALIDATEPC(pc);
-	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(curr);
-
-	if (SrvParms->gm_log)   //Logging
-		WriteGMLog(curr, "%s as given %s Priv [%x][%x]\n", curr->getCurrentNameC(), pc->getCurrentNameC(), addid1[s], addid2[s]);
-
-    pc->SetPriv(addid1[s]);
-    pc->priv2=addid2[s];
-}
-//
-// Sparhawk:	NICETOHAVE	sound effects
-//
-
-static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
-{
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	if (ISVALIDPI(pi))
-    {
-        if ((pi->more1==0)&&(pi->more2==0)&&
-            (pi->more3==0)&&(pi->more4==0))
-        {
-            if ( pi->type==ITYPE_KEY && (item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2) || (!pi->isInWorld()) ) )
-            {
-                if (!pc->checkSkill(TINKERING, 400, 1000))
-                {
-                    sysmessage(s,TRANSLATE("You fail and destroy the key blank."));
-                    // soundeffect3( pi, <whatever> );
-                    pi->Delete();
-                }
-                else
-                {
-                    pi->more1=addid1[s];
-                    pi->more2=addid2[s];
-                    pi->more3=addid3[s];
-                    pi->more4=addid4[s];
-                    // soundeffect3( pi, <whatever> );
-                    sysmessage(s, TRANSLATE("You copy the key.")); //Morrolan can copy keys
-                }
-            }
-            return;
-        }//if
-        else if (((pi->more1==addid1[s])&&(pi->more2==addid2[s])&&
-            (pi->more3==addid3[s])&&(pi->more4==addid4[s]))||
-            (addid1[s]==(unsigned char) 0xFF))
-        {
-            if (((pi->type==ITYPE_CONTAINER)||(pi->type==ITYPE_UNLOCKED_CONTAINER))&&(item_inRange(pc,pi,2)))
-            {
-                if(pi->type==ITYPE_CONTAINER) pi->type=ITYPE_LOCKED_ITEM_SPAWNER;
-                if(pi->type==ITYPE_UNLOCKED_CONTAINER) pi->type=ITYPE_LOCKED_CONTAINER;
-                // soundeffect3( pi, <whatever> );
-                sysmessage(s, TRANSLATE("You lock the container."));
-                return;
-            }
-            else if ((pi->type==ITYPE_KEY)&&(item_inRange(pc,pi,2)))
-            {
-                pc->keyserial=pi->getSerial32();
-                sysmessage(s,TRANSLATE("Enter new name for key."));//morrolan rename keys
-                return;
-            }
-            else if ((pi->type==ITYPE_LOCKED_ITEM_SPAWNER)||(pi->type==ITYPE_LOCKED_CONTAINER)&&(item_inRange(pc,pi,2)))
-            {
-                if(pi->type==ITYPE_LOCKED_ITEM_SPAWNER) pi->type=ITYPE_CONTAINER;
-                if(pi->type==ITYPE_LOCKED_CONTAINER) pi->type=ITYPE_UNLOCKED_CONTAINER;
-                // soundeffect3( pi, <whatever> );
-                sysmessage(s, TRANSLATE("You unlock the container."));
-                return;
-            }
-            else if ((pi->type==ITYPE_DOOR)&&(item_inRange(pc,pi,2)))
-            {
-                pi->type=ITYPE_LOCKED_DOOR;
-                // soundeffect3( pi, <whatever> );
-                sysmessage(s, TRANSLATE("You lock the door."));
-                return;
-            }
-            else if ((pi->type==ITYPE_LOCKED_DOOR)&&(item_inRange(pc,pi,2)))
-            {
-                pi->type=ITYPE_DOOR;
-                // soundeffect3( pi, <whatever> );
-                sysmessage(s, TRANSLATE("You unlock the door."));
-                return;
-            }
-            else if (pi->id()==0x0BD2)
-            {
-                sysmessage(s, TRANSLATE("What do you wish the sign to say?"));
-                pc->keyserial=pi->getSerial32(); //Morrolan sign kludge
-                return;
-            }
+	SERIAL serial = t->getClicked();
+	if( isCharSerial( serial ) ) {
+		P_CHAR pc_i = pointers::findCharBySerial( serial );
+		if( ISVALIDPC( pc_i ) )
+		{
+			pc_i->MoveTo( pc->getPosition() );
+			pc_i->teleport();
+		}
+	}
+	else if( isItemSerial( serial ) ) {
+		P_ITEM pi = pointers::findItemBySerial( serial );
+		if( ISVALIDPI( pi ) ) {
+			pi->MoveTo( pc->getPosition() );
+			pi->Refresh();
+		}
+	}
+}
 
-            //Boats ->
-            else if(pi->type==ITYPE_BOATS && pi->type2==3)
-            {
-                Boats->OpenPlank(pi);
-                pi->Refresh();
-            }
-            //End Boats --^
-        }//else if
-        else
-        {
-            if (pi->type==ITYPE_KEY) sysmessage (s, TRANSLATE("That key is not blank!"));
-            else if (pi->more1==0x00) sysmessage(s, TRANSLATE("That does not have a lock."));
-            else sysmessage(s, TRANSLATE("The key does not fit into that lock."));
-            return;
-        }//else
-        return;
-    }//if
-}//keytarget()
 
 void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
 {
@@ -864,9 +296,7 @@ static void GMTarget(NXWCLIENT ps, P_CHAR pc)
     for (i = 0; i < 7; i++) // this overwrites all previous settings !
     {
         pc->priv3[i]=metagm[0][i]; // gm defaults
-        pc->menupriv=1;
         if (pc->account==0) pc->priv3[i]=0xffffffff;
-        pc->menupriv=-1; // LB, disabling menupriv stuff for gms per default
     }
 
     for (i = 0; i < TRUESKILLS; i++)
@@ -923,7 +353,6 @@ static void CnsTarget(NXWCLIENT ps, P_CHAR pc)
     for (int u=0;u<7;u++) // this overwrites all previous settigns !!!
     {
         pc->priv3[u]=metagm[1][u]; // counselor defaults
-        pc->menupriv=4;
         if (pc->account==0) pc->priv3[u]=0xffffffff;
     }
     MoveBelongingsToBp(pc,pc);
@@ -954,6 +383,8 @@ void cTargets::GhostTarget(NXWSOCKET s)
             sysmessage(s,TRANSLATE("That player is already dead."));
     }
 }
+
+#ifdef PDDAFARE
 
 class cBoltTarget : public cCharTarget
 {
@@ -993,6 +424,8 @@ public:
         pi->Refresh();
     }
 };
+
+#endif
 
 void cTargets::CloseTarget(NXWSOCKET s)
 {
@@ -1134,50 +567,6 @@ static void OwnerTarget(NXWCLIENT ps, P_ITEM pi)
     }
 }
 
-void cTargets::DvatTarget(NXWSOCKET s)
-{
-	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(Me);
-
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s] +7);
-
-	if (pi && pi->dye==1)//if dyeable
-	{
-		P_CHAR pc = pi->getPackOwner();
-
-		if( pc == Me  || pi->isInWorld())
-		{
-			pi->setColor( (addid1[s]<<8)|(addid2[s]%256) );
-			pi->Refresh();
-			Me->playSFX(0x023E); // plays the dye sound, LB
-		} else {
-			Me->sysmsg(TRANSLATE("That is not yours!!"));
-		}
-	} else {
-		Me->sysmsg(TRANSLATE("You can only dye clothes with this."));
-	}
-}
-
-static void AddNpcTarget(NXWSOCKET s, PKGx6C *pp)
-{
-	if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-	P_CHAR pc=archive::character::New();
-
-	pc->setCurrentName("Dummy");
-	pc->SetBodyType((addid1[s]<<8)|(addid2[s]%256));
-	pc->SetOldBodyType((addid1[s]<<8)|(addid2[s]%256));
-	pc->setSkinColor(0);
-	pc->setOldSkinColor(0);
-	pc->SetPriv(0x10);
-	/*
-    pc->x= pp->TxLoc;
-    pc->y= pp->TyLoc;
-    pc->dispz=pc->z= pp->TzLoc+Map->TileHeight(pp->model);
-	*/
-	pc->MoveTo( pp->TxLoc, pp->TyLoc, pp->TzLoc+tileHeight(pp->model) );
-	pc->npc=1;
-        pc->teleport();
-}
 
 void cTargets::AllSetTarget(NXWSOCKET s)
 {
@@ -1340,128 +729,6 @@ static void SetInvulFlag(NXWCLIENT ps, P_CHAR pc)
         pc->MakeVulnerable();
 }
 
-static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling calls this function - Crwth 01/11/1999
-{
-    if(pp->TxLoc==-1 || pp->TyLoc==-1) return;
-    if (clickx[s]==-1 && clicky[s]==-1)
-    {
-        clickx[s]=pp->TxLoc;
-        clicky[s]=pp->TyLoc;
-        target(s,0,1,0,198,TRANSLATE("Select second corner of bounding box."));
-        return;
-    }
-
-    int pileable=0;
-    tile_st tile;
-    int x1=clickx[s],x2=pp->TxLoc;
-    int y1=clicky[s],y2=pp->TyLoc;
-
-    clickx[s]=-1;clicky[s]=-1;
-
-    if (x1>x2) { int temp=x1;x1=x2;x2=temp;}
-    if (y1>y2) { int temp=y1;y1=y2;y2=temp;}
-
-    if (addid1[s]==0x40)
-    {
-        switch (addid2[s])
-        {
-        case 100:
-        case 102:
-        case 104:
-        case 106:
-        case 108:
-        case 110:
-        case 112:
-        case 114:
-        case 116:
-        case 118:
-        case 120:
-        case 122:
-        case 124:
-        case 126:
-        case 140:
-            AddTarget(s,pp);
-            return;
-        }
-    }
-
-    int x,y;
-
-    data::seekTile((addid1[s]<<8)+addid2[s], tile);
-    if (tile.flags&TILEFLAG_STACKABLE) pileable=1;
-    for (x=x1;x<=x2;x++)
-        for (y=y1;y<=y2;y++)
-        {
-            P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
-            VALIDATEPI(pi);
-            pi->setId( (addid1[s]<<8) | addid2[s] );
-            pi->pileable = pileable;
-            pi->setDecay( false );
-		pi->setPosition( x, y, pp->TzLoc+tileHeight(pp->model));
-            pi->Refresh();
-#ifdef SPAR_I_LOCATION_MAP
-		pointers::addToLocationMap( pi );
-#else
-            mapRegions->add(pi); // lord Binary, xan, God Rah
-#endif
-        }
-
-    addid1[s]=0;
-    addid2[s]=0;
-}
-
-/*
-void cTargets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this function - Crwth 01/11/1999
-{
-    if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF) return;
-
-    if (clickx[s]==-1 && clicky[s]==-1) {
-        clickx[s]=(buffer[s][11]<<8)+buffer[s][12];
-        clicky[s]=(buffer[s][13]<<8)+buffer[s][14];
-        if (addid1[s]) target(s,0,1,0,199,TRANSLATE("Select second corner of inverse wiping box."));
-        else target(s,0,1,0,199,TRANSLATE("Select second corner of wiping box."));
-        return;
-    }
-
-    int x1=clickx[s],x2=(buffer[s][11]<<8)+buffer[s][12];
-    int y1=clicky[s],y2=(buffer[s][13]<<8)+buffer[s][14];
-
-    clickx[s]=-1;clicky[s]=-1;
-
-    int c;
-    if (x1>x2) {c=x1;x1=x2;x2=c;}
-    if (y1>y2) {c=y1;y1=y2;y2=c;}
-    unsigned int i ;
-    if (addid1[s]==1)
-    { // addid1[s]==1 means to inverse wipe
-        for ( i=0;i<itemcount;i++)
-        {
-            P_ITEM pi=MAKE_ITEM_REF(i);
-			if(!ISVALIDPI(pi))
-				continue;
-            if (!((pi->getPosition().x >= x1) &&
-				(pi->getPosition().x <= x2) &&
-				(pi->getPosition().y >= y1) &&
-				(pi->getPosition().y <= y2)) && pi->isInWorld() && (pi->wipe==0))
-					pi->deleteItem();
-        }
-    }
-    else
-    {
-        for (i=0;i<itemcount;i++)
-        {
-            P_ITEM pi=MAKE_ITEM_REF(i);
-			if(!ISVALIDPI(pi))
-				continue;
-            if ((pi->getPosition().x >= x1) &&
-				(pi->getPosition().x <= x2) &&
-				(pi->getPosition().y >= y1) &&
-				(pi->getPosition().y <= y2) && pi->isInWorld() && pi->wipe==0)
-					pi->deleteItem();
-        }
-    }
-}
-*/
 
 static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and places it (unmovable) at that spot
 {
@@ -1488,56 +755,6 @@ static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and pla
         }
     }
     else pc->sysmsg(TRANSLATE("You cannot throw the potion there!"));
-}
-
-static void Priv3Target(NXWSOCKET  s, P_CHAR pc)
-{
-    VALIDATEPC(pc)
-
-    pc->priv3[0]=priv3a[s];
-    pc->priv3[1]=priv3b[s];
-    pc->priv3[2]=priv3c[s];
-    pc->priv3[3]=priv3d[s];
-    pc->priv3[4]=priv3e[s];
-    pc->priv3[5]=priv3f[s];
-    pc->priv3[6]=priv3g[s];
-}
-
-void cTargets::SquelchTarg(NXWSOCKET s)
-{
-	P_CHAR Me = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(Me);
-
-	P_CHAR pc =pointers::findCharBySerPtr(buffer[s]+7);
-	if (ISVALIDPC(pc))
-    {
-        if(pc->IsGM())
-        {
-            Me->sysmsg(TRANSLATE("You cannot squelch GMs."));
-            return;
-        }
-        if (pc->squelched)
-        {
-            pc->squelched=0;
-            Me->sysmsg(TRANSLATE("Un-squelching..."));
-            pc->sysmsg(TRANSLATE("You have been unsquelched!"));
-            pc->mutetime=0;
-        }
-        else
-        {
-            pc->mutetime=0;
-            pc->squelched=1;
-            Me->sysmsg(TRANSLATE("Squelching..."));
-            pc->sysmsg(TRANSLATE("You have been squelched!"));
-
-            if (addid1[s]!=255 || addid1[s]!=0)
-            {
-                pc->mutetime=(unsigned int) (uiCurrentTime+(addid1[s]*MY_CLOCKS_PER_SEC));
-                addid1[s]=255;
-                pc->squelched=2;
-            }
-        }
-    }
 }
 
 /*!
@@ -2024,57 +1241,6 @@ static void CorpseTarget(const NXWCLIENT pC)
     if (!n) sysmessage(s, TRANSLATE("That is too far away."));
 }
 
-void cTargets::SwordTarget(const NXWCLIENT pC)
-{
-	if (pC == NULL) return;
-	NXWSOCKET  s = pC->toInt();
-        P_CHAR pc = pC->currChar();
-	VALIDATEPC(pc);
-
-	if (LongFromCharPtr(buffer[s] +11) == INVALID) return;
-
-	short id = ShortFromCharPtr(buffer[s] +17);
-	if (itemById::IsTree2(id))
-	{
-		int px,py,cx,cy;
-		Location pcpos= pc->getPosition();
-   	//<Luxor>
-		px= ShortFromCharPtr(buffer[s] +11);
-		py= ShortFromCharPtr(buffer[s] +13);
-		cx= abs((int)pcpos.x - px);
-		cy= abs((int)pcpos.y - py);
-		if(!((cx<=5)&&(cy<=5)))
-		{
-			pc->sysmsg(TRANSLATE("You are to far away to reach that"));
-			return;
-		}
-	//</Luxor>
-
-		pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
-		pc->playSFX(0x013E);
-
-		const P_ITEM pi=item::CreateFromScript( "$item_kindling" );
-		VALIDATEPI(pi);
-
-		pi->setPosition( pcpos );
-#ifdef SPAR_I_LOCATION_MAP
-		pointers::addToLocationMap(pi);
-#else
-		mapRegions->add(pi);
-#endif
-		pi->Refresh();
-		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
-	}
-	else if(itemById::IsLog(id)) // vagrant
-	{
-		Skills::BowCraft(s);
-	} else if(itemById::IsCorpse(id))
-	{
-		CorpseTarget(pC);
-	} else
-		pc->sysmsg(TRANSLATE("You can't think of a way to use your blade on that."));
-}
-
 void cTargets::NpcTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s] +7);
@@ -2273,95 +1439,6 @@ void cTargets::MakeShopTarget(NXWSOCKET s)
         return;
     }
     sysmessage(s, TRANSLATE("Target character not found..."));
-}
-
-void cTargets::JailTarget(NXWSOCKET s, int c)
-{
-
-    P_CHAR pc = NULL;
-	if (c==INVALID)
-		pc = pointers::findCharBySerPtr( buffer[s] + 7 );
-    else
-        pc = pointers::findCharBySerial(c);
-
-	P_CHAR jai = MAKE_CHAR_REF( currchar[s] );
-
-	//note Additem array used for jail time here..
-	prison::jail( jai, pc, addmitem[s] );
-    addmitem[s] = 0; // clear it
-
-	/*    if (pc==NULL)
-        return; // lb
-
-    if (pc->cell>0)
-    {
-        sysmessage(s, "That player is already in jail!");
-        return;
-    }
-
-    for (i = 1; i < 11; i++)
-    {
-        if (jails[i].occupied == 0)
-        {
-			P_CHAR character = MAKE_CHARREF_LR(i);
-			*//*
-			Location pcpos= pc->getPosition();
-            pc->oldx = pcpos.x;
-            pc->oldy = pcpos.y;
-            pc->oldz = pcpos.z;
-			*//*
-			pc->setPosition( pc->getOldPosition() );
-            //Char_MoveTo(tmpnum, jails[i].x, jails[i].y, jails[i].z);
-			character->MoveTo( jails[i].x, jails[i].y, jails[i].z );
-            pc->cell = i;
-            pc->priv2 = 2; // freeze them  Ripper
-
-
-            // blackwinds jail
-            pc->jailsecs = addmitem[s]; // Additem array used for jail time here..
-            addmitem[s] = 0; // clear it
-            pc->jailtimer = uiCurrentTime +(MY_CLOCKS_PER_SEC*pc->jailsecs);
-            pc->teleport();
-            NXWSOCKET  prisoner = calcSocketFromChar(tmpnum);
-            jails[i].occupied = 1;
-            sysmessage(prisoner, TRANSLATE("You are jailed !"));
-            sysmessage(prisoner, TRANSLATE("You notice you just got something new at your backpack.."));
-            sysmessage(s, "Player %s has been jailed in cell %i.", pc->getCurrentNameC(), i);
-            item::SpawnItemBackpack2(prisoner, 50040, 0); // spawn crystall ball of justice to prisoner.
-            // end blackwinds jail
-
-            x++;
-            break;
-        }
-    }
-    if (x == 0)
-        sysmessage(s, "All jails are currently full!");
-*/
-}
-
-void cTargets::AttackTarget(NXWSOCKET s)
-{
-
-
-    P_CHAR pc_t1=pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
-    VALIDATEPC(pc_t1);
-	P_CHAR pc_t2=pointers::findCharBySerPtr(buffer[s] +7);
-	VALIDATEPC(pc_t2);
-
-    AttackStuff(s,pc_t2); //xan : flag them all!
-    npcattacktarget(pc_t1, pc_t2);
-}
-
-void cTargets::FollowTarget(NXWSOCKET s)
-{
-
-    P_CHAR pc = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
-    VALIDATEPC(pc);
-	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
-	VALIDATEPC(pc2);
-
-    pc->ftargserial=pc2->getSerial32();
-    pc->npcWander=WANDER_FOLLOW;
 }
 
 void cTargets::TransferTarget(NXWSOCKET s)
@@ -2660,20 +1737,6 @@ void cTargets::SetSplitChanceTarget(NXWSOCKET s)
     }
 }
 
-static void AxeTarget(NXWCLIENT pC, PKGx6C *pp)
-{
-	if (pC == NULL) return;
-    NXWSOCKET  s = pC->toInt();
-
-    short id=pp->model;
-    if (itemById::IsTree(id))
-		Skills::TreeTarget(s);
-    else if (itemById::IsCorpse(id))
-        CorpseTarget(pC);
-    else if (itemById::IsLog(id)) //Luxor bug fix
-		Skills::BowCraft(s);
-}
-
 void cTargets::SetDirTarget(NXWSOCKET s)
 {
 	SERIAL serial=LongFromCharPtr(buffer[s]+7);
@@ -2837,58 +1900,6 @@ void cTargets::IncZTarget(NXWSOCKET s)
 }
 */
 
-void cTargets::Priv3XTarget( NXWSOCKET socket )
-//Set Priv3 to target
-{
-	SERIAL serial=LongFromCharPtr(buffer[socket]+7);
-	int i=calcCharFromSer(serial);
-	P_CHAR pc = MAKE_CHAR_REF(i);
-	VALIDATEPC(pc);
-	int grantcmd=1;
-	int revokecmd;
-	//
-	//	Sparhawk:	Very very dirty trick to get setpriv3 cmd working again
-	//
-	P_COMMAND cmd = (P_COMMAND) addx[ socket ];
-
-	if( addy[ socket ] )
-	{
-		pc->priv3[ cmd->cmd_priv_m ] |= ( grantcmd << cmd->cmd_priv_b );
-		sysmessage( socket, "%s has been granted access to the %s command.", pc->getCurrentNameC(), cmd->cmd_name );
-	}
-	else
-	{
-		revokecmd = 0xFFFFFFFF - ( grantcmd << cmd->cmd_priv_b );
-		pc->priv3[ cmd->cmd_priv_m ] &= revokecmd;
-		sysmessage( socket, "%s has been revoked access to the %s command.", pc->getCurrentNameC(), cmd->cmd_name );
-	}
-/*
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
-    int grantcmd=1; //it was 0-0xFFFFFFFF, Ummon
-    int revokecmd;
-    if (i!=-1)
-    {
-        ConOut("setpriv3target: %s\n", pc->getCurrentNameC());
-        struct cmdtable_s *pct=&command_table[addx[s]];
-        if(addy[s])
-        {
-            pc->priv3[pct->cmd_priv_m] |= (grantcmd<<pct->cmd_priv_b); //Ummon
-//          pc->priv3[pct->cmd_priv_m] |= (0-0xFFFFFFFF<<pct->cmd_priv_b);
-            sysmessage(s, "%s has been granted access to the %s command.",pc->getCurrentNameC(), pct->cmd_name);
-
-        }
-        else
-        {
-            revokecmd=0xFFFFFFFF-(grantcmd<<pct->cmd_priv_b); //Ummon
-            pc->priv3[pct->cmd_priv_m] &= revokecmd;
-//          pc->priv3[pct->cmd_priv_m] -= (0-0xFFFFFFFF<<pct->cmd_priv_b);
-            sysmessage(s, "%s has been revoked access to the %s command.",pc->getCurrentNameC(), pct->cmd_name);
-        }
-    }
-*/
-}
 
 /*
 void cTargets::ShowPriv3Target(NXWSOCKET s) // crackerjack, jul 25/99
@@ -2920,525 +1931,6 @@ void cTargets::ShowPriv3Target(NXWSOCKET s) // crackerjack, jul 25/99
         sysmessage(s, "You cannot retrieve privilige information on that.");
 }
 */
-
-void cTargets::HouseOwnerTarget(NXWSOCKET s) // crackerjack 8/10/99 - change house owner
-{
-	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(curr);
-
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc);
-
-	P_ITEM pSign=pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
-	VALIDATEPI(pSign);
-
-	P_ITEM pHouse=pointers::findItemBySerial(calcserial(pSign->more1, pSign->more2, pSign->more3, pSign->more4));
-	VALIDATEPI(pHouse);
-
-
-	if(pc->getSerial32() == curr->getSerial32())
-	{
-		sysmessage(s, "you already own this house!");
-		return;
-	}
-
-	pSign->setOwnerSerial32(pc->getSerial32());
-
-	pHouse->setOwnerSerial32(pc->getSerial32());
-
-	killkeys( pHouse->getSerial32() );
-
-
-	NXWCLIENT osc=pc->getClient();
-	NXWSOCKET os= (osc!=NULL)? osc->toInt() : INVALID;
-
-	P_ITEM pi3=item::CreateFromScript( "$item_gold_key" ); //gold key for everything else
-	VALIDATEPI(pi3);
-	pi3->setCurrentName( "a house key" );
-	if(os!=INVALID)
-	{
-		pi3->setCont( pc->getBackpack() );
-	}
-	else
-	{
-		pi3->MoveTo( pc->getPosition() );
-	}
-	pi3->Refresh();
-	pi3->more1= pHouse->getSerial().ser1;
-	pi3->more2= pHouse->getSerial().ser2;
-	pi3->more3= pHouse->getSerial().ser3;
-	pi3->more4= pHouse->getSerial().ser4;
-	pi3->type=7;
-
-	sysmessage(s, "You have transferred your house to %s.", pc->getCurrentNameC());
-	char temp[520];
-	sprintf(temp, "%s has transferred a house to %s.", curr->getCurrentNameC(), pc->getCurrentNameC());
-
-	NxwSocketWrapper sw;
-	sw.fillOnline( pc, false );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWSOCKET k=sw.getSocket();
-		if(k!=INVALID)
-			sysmessage(k, temp);
-	}
-}
-
-
-void cTargets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someone out of house
-{
-    int c, h;
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    if(serial==-1) return;
-    c=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHAR_REF(c);
-	VALIDATEPC(pc);
-	Location pcpos= pc->getPosition();
-    serial=calcserial(addid1[s],addid2[s],addid3[s],addid4[s]);
-
-    if(serial==-1) return;
-
-    h=calcItemFromSer(serial);
-
-	P_ITEM pi_h=MAKE_ITEM_REF(h);
-
-    if((c!=-1)&&(h!=-1)) {
-        UI32 sx, sy, ex, ey;
-        getMultiCorners(pi_h, sx,sy,ex,ey);
-        if((pcpos.x>=(UI32)sx) && (pcpos.y>=(UI32)sy) && (pcpos.x<=(UI32)ex) && (pcpos.y<=(UI32)ey))
-        {
-            //Char_MoveTo(c, ex, ey, pcpos.z);
-			pc->MoveTo( ex, ey, pcpos.z );
-            pc->teleport();
-            sysmessage(s, TRANSLATE("Player ejected."));
-        } else {
-            sysmessage(s, TRANSLATE("That is not inside the house."));
-        }
-    }
-}
-
-void cTargets::HouseBanTarget(NXWSOCKET s) // crackerjack 8/12/99 - ban someobdy from the house
-{
-	Targ->HouseEjectTarget(s);	// first, eject the player
-
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc);
-
-	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(curr);
-
-	P_ITEM pi=pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
-	if(ISVALIDPI(pi))
-	{
-		if(pc->getSerial32() == curr->getSerial32())
-			return;
-		int r=add_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi), H_BAN);
-		if(r==1)
-		{
-			sysmessage(s, "%s has been banned from this house.", pc->getCurrentNameC());
-		}
-		else if(r==2)
-		{
-			sysmessage(s, "That player is already on a house register.");
-		}
-		else
-			sysmessage(s, "That player is not on the property.");
-	}
-}
-
-void cTargets::HouseFriendTarget(NXWSOCKET s) // crackerjack 8/12/99 - add somebody to friends list
-{
-	P_CHAR Friend = pointers::findCharBySerPtr(buffer[s]+7);
-
-	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(curr);
-
-	P_ITEM pi=pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
-
-	if(ISVALIDPC(Friend) && ISVALIDPI(pi))
-	{
-		if(Friend->getSerial32() == curr->getSerial32())
-		{
-			sysmessage(s,"You cant do that!");
-			return;
-		}
-		int r=add_hlist(DEREF_P_CHAR(Friend), DEREF_P_ITEM(pi), H_FRIEND);
-		if(r==1)
-		{
-			sysmessage(s, "%s has been made a friend of the house.", Friend->getCurrentNameC());
-		}
-		else if(r==2)
-		{
-			sysmessage(s, "That player is already on a house register.");
-		}
-		else
-			sysmessage(s, "That player is not on the property.");
-	}
-}
-
-void cTargets::HouseUnlistTarget(NXWSOCKET s) // crackerjack 8/12/99 - remove somebody from a list
-{
-	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-    P_ITEM pi= pointers::findItemBySerial(calcserial(addid1[s],addid2[s],addid3[s],addid4[s]));
-    if(ISVALIDPC(pc) && ISVALIDPI(pi))
-    {
-        int r=del_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi));
-        if(r>0)
-        {
-            sysmessage(s, TRANSLATE("%s has been removed from the house registry."), pc->getCurrentNameC());
-        }
-        else
-            sysmessage(s, TRANSLATE("That player is not on the house registry."));
-    }
-}
-void cTargets::HouseLockdown( NXWSOCKET  s ) // Abaddon
-// PRE:     S is the socket of a valid owner/coowner and is in a valid house
-// POST:    either locks down the item, or puts a message to the owner saying he's a moron
-// CODER:   Abaddon
-// DATE:    17th December, 1999
-{
-
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-    if(ISVALIDPI(pi))
-    {
-
-        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
-        house = calcItemFromSer(houseSer);*/
-
-        // not needed anymore, cause called from house_sped that already checks that ...
-
-        // time to lock it down!
-
-        if( pi->isFieldSpellItem() )
-        {
-            sysmessage(s,TRANSLATE("you cannot lock this down!"));
-            return;
-        }
-        if (pi->type==12 || pi->type==13 || pi->type==203)
-        {
-            sysmessage(s, TRANSLATE("You cant lockdown doors or signs!"));
-            return;
-        }
-        if ( pi->IsAnvil() )
-        {
-            sysmessage(s, TRANSLATE("You cant lockdown anvils!"));
-            return;
-        }
-        if ( pi->IsForge() )
-        {
-            sysmessage(s, TRANSLATE("You cant lockdown forges!"));
-            return;
-        }
-
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi))
-        {
-            if(pi->magic==4)
-            {
-                sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
-                return;
-            }
-            pi->magic = 4;  // LOCKED DOWN!
-            DRAGGED[s]=0;
-            pi->setOwnerSerial32Only(pc->getSerial32());
-            pi->Refresh();
-            return;
-        }
-        else
-        {
-            // not in a multi!
-            sysmessage( s, TRANSLATE("That item is not in your house!" ));
-            return;
-        }
-    }
-    else
-    {
-        sysmessage( s, TRANSLATE("Invalid item!" ));
-        return;
-    }
-}
-
-void cTargets::HouseSecureDown( NXWSOCKET  s ) // Ripper
-// For locked down and secure chests
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-    if(ISVALIDPI(pi))
-    {
-        // time to lock it down!
-
-        if( pi->isFieldSpellItem() )
-        {
-            sysmessage(s,TRANSLATE("you cannot lock this down!"));
-            return;
-        }
-        if (pi->type==12 || pi->type==13 || pi->type==203)
-        {
-            sysmessage(s, TRANSLATE("You cant lockdown doors or signs!"));
-            return;
-        }
-        if(pi->magic==4)
-        {
-            sysmessage(s,TRANSLATE("That item is already locked down, release it first!"));
-            return;
-        }
-
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi) && pi->type==1)
-        {
-            pi->magic = 4;  // LOCKED DOWN!
-            pi->secureIt = 1;
-            DRAGGED[s]=0;
-            pi->setOwnerSerial32Only(pc->getSerial32());
-            pi->Refresh();
-            return;
-        }
-        if(pi->type!=1)
-        {
-            sysmessage(s,TRANSLATE("You can only secure chests!"));
-            return;
-        }
-        else
-        {
-            // not in a multi!
-            sysmessage( s, TRANSLATE("That item is not in your house!" ));
-            return;
-        }
-    }
-    else
-    {
-        sysmessage( s, TRANSLATE("Invalid item!" ));
-        return;
-    }
-}
-
-void cTargets::HouseRelease( NXWSOCKET  s ) // Abaddon & Ripper
-// PRE:     S is the socket of a valid owner/coowner and is in a valid house, the item is locked down
-// POST:    either releases the item from lockdown, or puts a message to the owner saying he's a moron
-// CODER:   Abaddon
-// DATE:    17th December, 1999
-// update: 5-8-00
-{
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
-
-    P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-    if(ISVALIDPI(pi))
-    {
-        if(pi->getOwnerSerial32() != pc->getSerial32())
-        {
-            sysmessage(s,TRANSLATE("This is not your item!"));
-            return;
-        }
-        if( pi->isFieldSpellItem() )
-        {
-            sysmessage(s,TRANSLATE("you cannot release this!"));
-            return;
-        }
-        if (pi->type==12 || pi->type==13 || pi->type==203)
-        {
-            sysmessage(s, TRANSLATE("You cant release doors or signs!"));
-            return;
-        }
-        /*houseSer = calcserial( addid1[s], addid2[s], addid3[s], addid4[s] );  // let's find our house
-        house = calcItemFromSer(houseSer);*/
-        // time to lock it down!
-        P_ITEM multi = findmulti( pi->getPosition() );
-        if( ISVALIDPI(multi) && pi->magic==4 || pi->type==1)
-        {
-            pi->magic = 1;  // Default as stored by the client, perhaps we should keep a backup?
-            pi->secureIt = 0;
-            pi->Refresh();
-            return;
-        }
-        else if( !ISVALIDPI(multi) )
-        {
-            // not in a multi!
-            sysmessage( s, TRANSLATE("That item is not in your house!" ));
-            return;
-        }
-    }
-    else
-    {
-        sysmessage( s, TRANSLATE("Invalid item!" ));
-        return;
-    }
-}
-
-void cTargets::SetMurderCount( NXWSOCKET s )
-{
-    P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc);
-
-	pc->kills = addmitem[s];
-    setcharflag(pc);
-
-}
-
-/*void cTargets::GlowTarget(NXWSOCKET s) // LB 4/9/99, makes items glow
-{
-    int c,i;
-
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    if(serial==-1) return;
-    i=calcItemFromSer(serial);
-    P_ITEM pi1=MAKE_ITEMREF_LR(i);
-    if (i==-1)
-    {
-        sysmessage(s,TRANSLATE("Item not found."));
-        return;
-    }
-
-    int cc=currchar[s];
-	Location charpos= chars[cc].getPosition();
-
-    if (!pi1->isInWorld())
-    {
-		P_CHAR pc;
-
-		P_ITEM pj= (P_ITEM)pi1->getContainer(); // in bp ?
-		P_CHAR pl= (P_CHAR)pi1->getContainer(); // equipped ?
-
-        if ( !ISVALIDPC(pl) )
-			pc= pj->getPackOwner();
-		else
-			pc= pl;
-
-        if ( !(ISVALIDPC(pc) && pc->getSerial32()==chars[cc].getSerial32()))  // creation only allowed in the creators pack/char otherwise things could go wrong
-        {
-            sysmessage(s,TRANSLATE("you can't create glowing items in other perons packs or hands"));
-            return;
-        }
-    }
-
-    if (pi1->glow!=0)
-    {
-        sysmessage(s,TRANSLATE("that object already glows!\n"));
-        return;
-    }
-
-    c=0x99;
-    pi1->glow_c1=pi1->color1; // backup old colors
-    pi1->glow_c2=pi1->color2;
-
-    pi1->color1=c<<8; // set new color to yellow
-    pi1->color2=c%256;
-
-    c=item::SpawnItem(s,1,"glower",0,0x16,0x47,0,0,0,1); // new client 1.26.2 glower object
-    P_ITEM pi2=MAKE_ITEMREF_LR(c);
-
-    if(c==-1) return;
-    pi2->dir=29; // set light radius maximal
-    pi2->visible=0;
-
-    pi2->magic=3;
-
-    mapRegions->RemoveItem(c); // remove if add in spawnitem
-    pi2->layer=pi1->layer;
-    if (pi2->layer==0) // if not equipped -> coords of the light-object = coords of the
-    {
-		pi2->setPosition( pi1->getPosition() );
-    } else // if equipped -> place lightsource at player ( height= approx hand level )
-    {
-        pi2->setPosition("x", charpos.x);
-        pi2->setPosition("y", charpos.y);
-        pi2->setPosition("z", charpos.z + 4);
-    }
-
-    //mapRegions->AddItem(c);
-    pi2->priv=0; // doesnt decay
-
-    pi1->glow= pi2->getSerial32(); // set glow-identifier
-
-
-    pi1->Refresh();
-    pi2->Refresh();
-    //setptr(&glowsp[chars[cc].serial%HASHMAX],i);
-
-    impowncreate(s,cc,0); // if equipped send new color too
-}
-
-void cTargets::UnglowTaget(NXWSOCKET s) // LB 4/9/99, removes the glow-effect from items
-{
-    int c,i;
-
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    if(serial==-1) return;
-    i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
-    if (i==-1)
-    {
-        sysmessage(s,TRANSLATE("no item found"));
-        return;
-    }
-
-    if (!pi->isInWorld())
-    {
-		P_CHAR pc;
-        P_ITEM pj= (P_ITEM)pi->getContainer(); // in bp ?
-        P_CHAR pl= (P_CHAR)pi->getContainer(); // equipped ?
-
-        if ( !ISVALIDPC(pl) )
-			pc= pj->getPackOwner();
-		else
-			pc= pl;
-
-        if (pc->getSerial32()!=chars[currchar[s]].getSerial32()) // creation only allowed in the creators pack/char otherwise things could go wrong
-        {
-            sysmessage(s,TRANSLATE("you can't unglow items in other perons packs or hands"));
-            return;
-        }
-    }
-
-    c=pi->glow;
-    if(c==-1) return;
-    int j=calcItemFromSer(c);
-
-    if (pi->glow==0 || j==-1 )
-    {
-        sysmessage(s,TRANSLATE("that object doesnt glow!\n"));
-        return;
-    }
-
-    pi->color1=pi->glow_c1;
-    pi->color2=pi->glow_c2; // restore old color
-
-    item_mem::DeleItem(j); // delete glowing object
-
-    pi->glow=0; // remove glow-identifier
-    pi->Refresh();
-
-    impowncreate(s,currchar[s],0); // if equipped send new old color too
-
-    chars[currchar[s]].removeHalo(pi);
-//  removefromptr(&glowsp[chars[currchar[s]].serial%HASHMAX],i);
-
-    //sysmessage(s,"unglow under cosntruction");
-}*/
-
-void cTargets::MenuPrivTarg(NXWSOCKET s)//LB's menu privs
-{
-    char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-
-    P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
-	VALIDATEPC(pc);
-
-	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(curr);
-
-	int i=addid1[s];
-	sprintf(temp,"Setting Menupriv number %i",i);
-    sysmessage(s,temp);
-	sprintf(temp,"Menupriv %i set by %s", i, curr->getCurrentNameC());
-	pc->sysmsg(temp);
-	pc->menupriv=i;
-
-}
 
 void cTargets::ShowSkillTarget(NXWSOCKET s) // LB's showskills
 {
@@ -3593,132 +2085,6 @@ void cTargets::SetFood(NXWSOCKET s)
     }
 }
 
-static void ItemTarget(NXWCLIENT ps, PKGx6C *pt)
-{
-	if (ps == NULL) return;
-    NXWSOCKET  s=ps->toInt();
-    P_ITEM pi=pointers::findItemBySerial(pt->Tserial);
-    if (pi==NULL) return;
-    switch(pt->Tnum)
-    {
-    case 10://MoreTarget
-        pi->more1=addid1[s];
-        pi->more2=addid2[s];
-        pi->more3=addid3[s];
-        pi->more4=addid4[s];
-        pi->Refresh();
-        break;
-    case  28://MovableTarget
-    case 111://yes, it's duplicate
-        pi->magic=addx[s];
-        pi->Refresh();
-        break;
-    case 31://ColorsTarget
-        if (pi->id()==0x0FAB ||                     //dye vat
-            pi->id()==0x0EFF || pi->id()==0x0E27 )  //hair dye
-            SndDyevat(s,pi->getSerial32(), pi->id());
-        else
-            sysmessage(s, TRANSLATE("You can only use this item on a dye vat."));
-        break;
-    case 63://MoreXTarget
-        pi->morex=addx[s];
-        break;
-    case 64://MoreYTarget
-        pi->morey=addx[s];
-        break;
-    case 65://MoreZTarget
-        pi->morez=addx[s];
-        break;
-    case 66://MoreXYZTarget
-        pi->morex=addx[s];
-        pi->morey=addy[s];
-        pi->morez=addz[s];
-        break;
-    case 89://ObjPrivTarget
-    	switch( addid1[s] )
-	{
-        	case 0	:
-			//pi->priv=pi->priv&0xFE; // lb ...
-			pi->setDecay( false );
-			pi->setNewbie();
-			pi->setDispellable();
-			break;
-        	case 1	:
-			pi->setDecay();
-			break;
-        	case 3	:
-			pi->priv = addid2[s];
-			break;
-	}
-        break;
-    case 122://SetValueTarget
-        pi->value=addx[s];
-        break;
-    case 123://SetRestockTarget
-        pi->restock=addx[s];
-        break;
-    case 129://SetAmount2Target
-        if (addx[s] > 64000) //Ripper..to fix a client bug for over 64k.
-        {
-            sysmessage(s, TRANSLATE("No amounts over 64k in a pile!"));
-            return;
-        }
-        pi->amount2=addx[s];
-        pi->Refresh();
-        break;
-    case 133://SetWipeTarget
-        pi->wipe=addid1[s];
-        pi->Refresh();
-        break;
-    }
-}
-
-void cTargets::LoadCannon(NXWSOCKET s)
-{
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEM_REF(i);
-	VALIDATEPI(pi);
-    if (i!=-1)
-    {
-        //if((items[i].id1==0x0E && items[i].id2==0x91) && items[i].morez==0)
-        if (((pi->more1==addid1[s])&&(pi->more2==addid2[s])&&
-            (pi->more3==addid3[s])&&(pi->more4==addid4[s]))||
-            (addid1[s]==(unsigned char)'\xFF'))
-        {
-            if ((pi->morez==0)&&(item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2)))
-            {
-                if(pi->morez==0)
-                pi->type=15;
-                pi->morex=8;
-                pi->morey=10;
-                pi->morez=1;
-                sysmessage(s, TRANSLATE("You load the cannon."));
-            }
-            else
-            {
-                if (pi->more1=='\x00') sysmessage(s, TRANSLATE("That doesn't work in cannon."));
-                else sysmessage(s, TRANSLATE("That object doesn't fit into cannon."));
-            }
-        }
-    }
-}
-
-void cTargets::DupeTarget(NXWSOCKET s)
-{
-    if (addid1[s]>=1)
-    {
-        P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
-        if (ISVALIDPI(pi))
-        {
-            for (int j=0;j<addid1[s];j++)
-            {
-                Commands::DupeItem(s, DEREF_P_ITEM(pi), pi->amount);
-                sysmessage(s,"DupeItem done.");//AntiChrist
-            }
-        }
-    }
-}
 
 void cTargets::MoveToBagTarget(NXWSOCKET s)
 {
@@ -3750,6 +2116,15 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 	P_CHAR curr=ps->currChar();
 	VALIDATEPC(curr);
 
+
+	P_TARGET target = clientInfo[s]->getTarget();
+	if( target==NULL )
+		return;
+
+	target->execute( ps );
+
+	return;
+#ifdef PDDAFARE
 
 	targetok[s]=0;
 
@@ -3796,92 +2171,55 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 
         switch(pt->Tnum)
         {
-        case 0: if (Lready) AddTarget(s,pt); break;
-        case 1: /* { cRenameTarget     T(ps);      T.process();} */ break;
-        case 2: if (Lready) TeleTarget(s,pt); break; // LB, bugfix, we need it for the /tele command
-        case 3: { cRemoveTarget     T(ps);      T.process();} break;
-        case 4: DyeTarget(s); break;
-        case 5: { cNewzTarget       T(ps);      T.process();} break;
-        case 6: if (Iready) pi->type=addid1[s]; break; //Typetarget
+        //case 0: if (Lready) AddTarget(s,pt); break;
+        //case 1: /* { cRenameTarget     T(ps);      T.process();} */ break;
+        //case 2: if (Lready) TeleTarget(s,pt); break; // LB, bugfix, we need it for the /tele command
+        //case 3: { cRemoveTarget     T(ps);      T.process();} break;
+        //case 4: DyeTarget(s); break;
+        //case 5: { cNewzTarget       T(ps);      T.process();} break;
+        //case 6: if (Iready) pi->type=addid1[s]; break; //Typetarget
         case 7: Targ->IDtarget(s); break;
-        case 8: XgoTarget(s); break;
+//        case 8: target_xgo XgoTarget(s); break;
         case 9: if (Cready) PrivTarget(s,pc); break;
-        case 10: ItemTarget(ps,pt); break;//MoreTarget
-        case 11: if (Iready) KeyTarget(s,pi); break;
-        case 14: if (Cready) GMTarget(ps,pc); break;
-        case 15: if (Cready) CnsTarget(ps,pc); break;
-        case 16: if (Cready) KillTarget(pc, 0x0b); break;
-        case 17: if (Cready) KillTarget(pc, 0x10); break;
-        case 18: if (Cready) KillTarget(pc, 0x15); break;
+//        case 10: ItemTarget(ps,pt); break;//MoreTarget
+//        case 11: if (Iready) KeyTarget(s,pi); break;
+        case 14: target_makegm if (Cready) GMTarget(ps,pc); break;
+        case 15: target_makecns if (Cready) CnsTarget(ps,pc); break;
+        case 16: target_killhair if (Cready) KillTarget(pc, 0x0b); break;
+        case 17: target_killbeard if (Cready) KillTarget(pc, 0x10); break;
+//        case 18: if (Cready) KillTarget(pc, 0x15); break;
         case 19: if (Cready) pc->fonttype=addid1[s]; break;
-        case 20: if (Cready) Targ->GhostTarget(s); break;
-        case 21: if (Cready) Targ->ResurrectionTarget(s); break; // needed for /resurrect command
-        case 22: { cBoltTarget      T(ps);  T.process();} break;
-        case 23: { cSetAmountTarget T(ps);  T.process();} break;
-        case 24:
-            {
-                SERIAL serial=LongFromCharPtr(buffer[s]+7);
-                int i=calcItemFromSer(serial);
-                if(i>=0)
-                {
-                    P_ITEM pi = MAKE_ITEM_REF(i);
-					VALIDATEPI(pi);
-                    triggerItem(s,pi, TRIGTYPE_ENVOKED);
-                    curr->envokeid1=0x00;
-                    curr->envokeid2=0x00;
-                    return;
-                }
-                // Checking if target is an NPC --- By Magius(CHE) º
-                i=calcCharFromSer(serial);
-                if(i>=0)
-                {
-                    ConOut("Envoke triggered on npc :]\n");
-                    pc = MAKE_CHAR_REF(i);
-					VALIDATEPC(pc);
-                    triggerNpc(s, pc, TRIGTYPE_NPCENVOKED);
-                    curr->envokeid1=0x00;
-                    curr->envokeid2=0x00;
-                    return;
-                }
-                // End Addons by Magius(CHE) º
-                triggerTile(s);
-                ConOut("Envoke triggered in the void :]\n");
-                curr->envokeid1=0x00;
-                curr->envokeid2=0x00;
-                return;
-            }
-        case 25: Targ->CloseTarget(s); break;
+        case 20: target_kill if (Cready) Targ->GhostTarget(s); break;
+        case 21: target_resurrect if (Cready) Targ->ResurrectionTarget(s); break; // needed for /resurrect command
+        case 22: target_bolt { cBoltTarget      T(ps);  T.process();} break;
+        case 23: target_setamount { cSetAmountTarget T(ps);  T.process();} break;
+//       case 24:
+//            {
+//            }
+        case 25: target_kick Targ->CloseTarget(s); break;
         case 26: Targ->AddMenuTarget(s, 1, addmitem[s]); break;
         case 27: Targ->NpcMenuTarget(s); break;
-        case 28: ItemTarget(ps,pt); break;//MovableTarget
+//        case 28: ItemTarget(ps,pt); break;//MovableTarget
         case 29: Skills::ArmsLoreTarget(s); break;
         case 30: if (Cready)
 				    OwnerTarget(ps,pc);
 				 else if (Iready)
 				 	OwnerTarget(ps,pi);
 				 break;
-        case 31: ItemTarget(ps,pt); break;//ColorsTarget
+//        case 31: ItemTarget(ps,pt); break;//ColorsTarget
         case 32: Targ->DvatTarget(s); break;
         case 33: if (Lready) AddNpcTarget(s,pt); break;
-        case 34: if (Cready) { pc->priv2|=2; pc->teleport(); } break;
-        case 35: if (Cready) { pc->priv2&=0xfd; pc->teleport(); } break; // unfreeze, AntiChris used LB bugfix
-								 /*if (Cready)
-								 {
-								  Targ->CloseTarget(s);
-								 	pc->priv2&=0xfd;
-									Targ->XTeleport(s,0);
-									pc->priv2&=0xfd;
-								 }
-								 break;*/
+        case 34: target_freeze if (Cready) { pc->priv2|=2; pc->teleport(); } break;
+        case 35: target_unfreeze if (Cready) { pc->priv2&=0xfd; pc->teleport(); } break; // unfreeze, AntiChris used LB bugfix
         case 36: Targ->AllSetTarget(s); break;
         case 37: Skills::AnatomyTarget(s); break;
-        case 38: /*Magic->Recall(s); break;*/
-        case 39: /*Magic->Mark(s); break;*/
+//        case 38: target_recall /*Magic->Recall(s); break;*/
+//        case 39: target_mark /*Magic->Mark(s); break;*/
         case 40: Skills::ItemIdTarget(s); break;
         case 41: Skills::Evaluate_int_Target(s); break;
         case 42: Skills::TameTarget(s); break;
-        case 43: /*Magic->Gate(s); break;*/
-        case 44:	//Luxor
+//        case 43: /*Magic->Gate(s); break;*/
+        case 44: target_heal	//Luxor
 		{
         	P_CHAR pc_toheal = pointers::findCharBySerial(LongFromCharPtr(buffer[s]+7));
         	VALIDATEPC(pc_toheal);
@@ -3889,17 +2227,17 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         	pc_toheal->updateStats(STAT_HP);
         }
         break;
-        case 45: Fishing->FishTarget(ps); break;
-        case 46: InfoTarget(s,pt); break;
+//        case 45: Fishing->FishTarget(ps); break;
+        case 46: target_tiledata InfoTarget(s,pt); break;
         case 47: /* if (Cready) strcpy(pc->title,xtext[s]); */ break;//TitleTarget
         case 48: break; //XAN : THIS *IS* FREE
-        case 49: Skills::CookOnFire(s,0x097B,"fish steaks"); break;
-        case 50: Skills::Smith(s); break;
-        case 51: Skills::Mine(s); break;
-        case 52: Skills::SmeltOre(s); break;
-        case 53: npcact(s); break;
-        case 54: Skills::CookOnFire(s,0x09B7,"bird"); break;
-        case 55: Skills::CookOnFire(s,0x160A,"lamb"); break;
+//        case 49: Skills::CookOnFire(s,0x097B,"fish steaks"); break;
+//        case 50: Skills::Smith(s); break;
+//        case 51: Skills::Mine(s); break;
+//        case 52: Skills::SmeltOre(s); break;
+        case 53: target_npcaction npcact(s); break;
+//        case 54: Skills::CookOnFire(s,0x09B7,"bird"); break;
+ //       case 55: Skills::CookOnFire(s,0x160A,"lamb"); break;
         case 56: Targ->NpcTarget(s); break;
         case 57: Targ->NpcTarget2(s); break;
         case 58: VALIDATEPC(curr); curr->resurrect(); break;
@@ -3907,18 +2245,18 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 60: Targ->NpcWanderTarget(s); break;
         case 61: Targ->VisibleTarget(s); break;
         case 62: /* Targ->TweakTarget(s); */ break;
-        case 63: //MoreXTarget
-        case 64: //MoreYTarget
-        case 65: //MoreZTarget
-        case 66: ItemTarget(ps,pt); break;//MoreXYZTarget
+//mo        case 63: target_morex //MoreXTarget
+//mo        case 64: target_morey//MoreYTarget
+//no        case 65: target_morez //MoreZTarget
+//no        case 66: ItemTarget(ps,pt); break;//MoreXYZTarget
         case 67: Targ->NpcRectTarget(s); break;
-        case 68: Skills::CookOnFire(s,0x09F2,"ribs"); break;
-        case 69: Skills::CookOnFire(s,0x1608,"chicken legs"); break;
+//        case 68: Skills::CookOnFire(s,0x09F2,"ribs"); break;
+//        case 69: Skills::CookOnFire(s,0x1608,"chicken legs"); break;
         case 70: Skills::TasteIDTarget(s); break;
         case 71: if (Iready) ContainerEmptyTarget1(ps,pi); break;
         case 72: if (Iready) ContainerEmptyTarget2(ps,pi); break;
         case 73: CodedNpcRectangle(s,pt); break;
-        case 76: AxeTarget(ps,pt); break;
+//        case 76: AxeTarget(ps,pt); break;
         case 77: Skills::DetectHidden(s); break;
 
         case 79: Skills::ProvocationTarget1(s); break;
@@ -3926,47 +2264,47 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 81: Skills::EnticementTarget1(s); break;
         case 82: Skills::EnticementTarget2(s); break;
 
-        case 86: Targ->SwordTarget(ps); break;
+//        case 86: Targ->SwordTarget(ps); break;
         case 87: /*Magic->SbOpenContainer(s);*/ break;
         case 88: Targ->SetDirTarget(s); break;
-        case 89: ItemTarget(ps,pt); break;//ObjPrivTarget
+//        case 89: ItemTarget(ps,pt); break;//ObjPrivTarget
 
         case 100: /*Magic->NewCastSpell( s );*/ break;  // we now have this as our new spell targeting location
 
-        case 105: Targ->xSpecialBankTarget(s); break;//AntiChrist
-        case 106: Targ->NpcAITarget(s); break;
-        case 107: Targ->xBankTarget(s); break;
-        case 108: Skills::AlchemyTarget(s); break;
-        case 109: Skills::BottleTarget(s); break;
+        case 105: target_xsbank Targ->xSpecialBankTarget(s); break;//AntiChrist
+        case 106: target_setnpcai Targ->NpcAITarget(s); break;
+        case 107: target_xbank Targ->xBankTarget(s); break;
+//        case 108: Skills::AlchemyTarget(s); break;
+//        case 109: Skills::BottleTarget(s); break;
         case 110: Targ->DupeTarget(s); break;
-        case 111: ItemTarget(ps,pt); break;//MovableTarget
+//        case 111: target_movetobag ItemTarget(ps,pt); break;//MovableTarget
         case 112: Targ->SellStuffTarget(s); break;
-        case 113: Targ->ManaTarget(s); break;
-        case 114: Targ->StaminaTarget(s); break;
+        case 113: target_mana Targ->ManaTarget(s); break;
+        case 114: target_stamina Targ->StaminaTarget(s); break;
         case 115: Targ->GmOpenTarget(s); break;
         case 116: Targ->MakeShopTarget(s); break;
-        case 117: Targ->FollowTarget(s); break;
-        case 118: Targ->AttackTarget(s); break;
+//        case 117: Targ->FollowTarget(s); break;
+//        case 118: Targ->AttackTarget(s); break;
         case 119: Targ->TransferTarget(s); break;
         case 120: Targ->GuardTarget( s ); break;
         case 121: Targ->BuyShopTarget(s); break;
         case 122: ItemTarget(ps,pt); break;//SetValueTarget
-        case 123: ItemTarget(ps,pt); break;//SetRestockTarget
+//        case 123: ItemTarget(ps,pt); break;//SetRestockTarget
         case 124: Targ->FetchTarget(s); break;
 
-        case 126: Targ->JailTarget(s,-1); break;
-        case 127: Targ->ReleaseTarget(s,-1); break;
-        case 129: ItemTarget(ps,pt); break;//SetAmount2Target
-        case 130: Skills::HealingSkillTarget(s); break;
-        case 131: VALIDATEPC(curr); if (curr->IsGM()) Targ->permHideTarget(s); break; /* not used */
-        case 132: VALIDATEPC(curr); if (curr->IsGM()) Targ->unHideTarget(s); break; /* not used */
+//        case 126: target_jail Targ->JailTarget(s,-1); break;
+        case 127: target_release Targ->ReleaseTarget(s,-1); break;
+//        case 129: ItemTarget(ps,pt); break;//SetAmount2Target
+//        case 130: Skills::HealingSkillTarget(s); break;
+        case 131: target_hide VALIDATEPC(curr); if (curr->IsGM()) Targ->permHideTarget(s); break; /* not used */
+        case 132: target_unhide VALIDATEPC(curr); if (curr->IsGM()) Targ->unHideTarget(s); break; /* not used */
         case 133: ItemTarget(ps,pt); break;//SetWipeTarget
-        case 134: Skills::Carpentry(s); break;
+//        case 134: Skills::Carpentry(s); break;
         case 135: Targ->SetSpeechTarget(s); break;
-        case 136: Targ->XTeleport(s,0); break;
+//        case 136: Targ->XTeleport(s,0); break;
 
         case 150: SetSpAttackTarget(s); break;
-        case 151: Targ->FullStatsTarget(s); break;
+        case 151: target_fullstats Targ->FullStatsTarget(s); break;
         case 152: Skills::BeggingTarget(s); break;
         case 153: Skills::AnimalLoreTarget(s); break;
         case 154: Skills::ForensicsTarget(s); break;
@@ -3980,39 +2318,39 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 
         case 160: Skills::Inscribe(s); break;
 
-        case 162: Skills::LockPick(ps); break;
+//        case 162: Skills::LockPick(ps); break;
 
-        case 164: Skills::Wheel(s, YARN); break;
-        case 165: Skills::Loom(s); break;
-        case 166: Skills::Wheel(s, THREAD); break;
-        case 167: Skills::Tailoring(s); break;
+//        case 164: Skills::Wheel(s, YARN); break;
+//        case 165: Skills::Loom(s); break;
+//        case 166: Skills::Wheel(s, THREAD); break;
+//        case 167: Skills::Tailoring(s); break;
 
-        case 170: Targ->LoadCannon(s); break;
-        case 171: /*Magic->BuildCannon(s);*/ break;
-        case 172: Skills::Fletching(s); break;
-        case 173: Skills::MakeDough(s); break;
-        case 174: Skills::MakePizza(s); break;
+//        case 170: Targ->LoadCannon(s); break;
+//        case 171: /*Magic->BuildCannon(s);*/ break;
+//        case 172: Skills::Fletching(s); break;
+//        case 173: Skills::MakeDough(s); break;
+//        case 174: Skills::MakePizza(s); break;
         case 175: Targ->SetPoisonTarget(s); break;
         case 176: Targ->SetPoisonedTarget(s); break;
         case 177: Targ->SetSpaDelayTarget(s); break;
         case 178: Targ->SetAdvObjTarget(s); break;
         case 179: if (Cready) SetInvulFlag(ps,pc); break;
-        case 180: Skills::Tinkering(s); break;
+//        case 180: Skills::Tinkering(s); break;
         case 181: Skills::PoisoningTarget(ps); break;
 
-        case 183: Skills::TinkerAxel(s); break;
-        case 184: Skills::TinkerAwg(s); break;
-        case 185: Skills::TinkerClock(s); break;
+//        case 183: Skills::TinkerAxel(s); break;
+//        case 184: Skills::TinkerAwg(s); break;
+//        case 185: Skills::TinkerClock(s); break;
         //case 186: Necro::vialtarget(s); break;
         case 187: Skills::RemoveTraps(s); break;
         /* -- BEGIN Custom NoX-Wizard targets */
-        case 191:
+/*        case 191:
         { //<Luxor>: AMX Target Callback
             TargetLocation TL(pt);
             targetCallback(s, TL);
             break;
-        } //</Luxor>
-        case 192: PartySystem::targetParty(ps); break;   // Xan Party System
+        } //</Luxor>*/
+//        case 192: PartySystem::targetParty(ps); break;   // Xan Party System
         case 193: Targ->AllAttackTarget(s); break;      // Luxor All Attack
 		case 194:
 		{
@@ -4022,45 +2360,45 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         }
         /* -- END Custom NoX-Wizard targets */
 
-        case 198: Tiling(s,pt); break;
+//        case 198: Tiling(s,pt); break;
         case 199: /* Targ->Wiping(s); */ break;
-        case 200: Commands::SetItemTrigger(s); break;
-        case 201: Commands::SetNPCTrigger(s); break;
-        case 202: Commands::SetTriggerType(s); break;
-        case 203: Commands::SetTriggerWord(s); break;
+//no        case 200: Commands::SetItemTrigger(s); break;
+//no        case 201: Commands::SetNPCTrigger(s); break;
+//no		case 202: Commands::SetTriggerType(s); break;
+//no        case 203: Commands::SetTriggerWord(s); break;
         case 204: triggertarget(s); break; // Fixed by Magius(CHE)
         case 205: Skills::StealingTarget(ps); break;
         case 206: Targ->CanTrainTarget(s); break;
         case 207: ExpPotionTarget(s,pt); break;
         case 209: Targ->SetSplitTarget(s); break;
         case 210: Targ->SetSplitChanceTarget(s); break;
-        case 212: Commands::Possess(s); break;
+        case 212: target_possess Commands::Possess(s); break;
         case 213: Skills::PickPocketTarget(ps); break;
 
-        case 220: Guilds->Recruit(s); break;
-        case 221: Guilds->TargetWar(s); break;
-        case 222: TeleStuff(s,pt); break;
-        case 223: Targ->SquelchTarg(s); break;//Squelch
-        case 224: Targ->PlVBuy(s); break;//PlayerVendors
-        case 225: Targ->Priv3XTarget(s); break; // SETPRIV3 +/- target
+//        case 220: Guilds->Recruit(s); break;
+//        case 221: Guilds->TargetWar(s); break;
+        case 222: target_telestuff TeleStuff(s,pt); break;
+//        case 223: Targ->SquelchTarg(s); break;//Squelch
+//        case 224: Targ->PlVBuy(s); break;//PlayerVendors
+//        case 225: Targ->Priv3XTarget(s); break; // SETPRIV3 +/- target
         case 226: /* Targ->ShowPriv3Target(s); */ break; // SHOWPRIV3
-        case 227: Targ->HouseOwnerTarget(s); break; // cj aug11/99
-        case 228: Targ->HouseEjectTarget(s); break; // cj aug11/99
-        case 229: Targ->HouseBanTarget(s); break; // cj aug12/99
-        case 230: Targ->HouseFriendTarget(s); break; // cj aug 12/99
-        case 231: Targ->HouseUnlistTarget(s); break; // cj aug 12/99
-        case 232: Targ->HouseLockdown( s ); break; // Abaddon 17th December 1999
-        case 233: Targ->HouseRelease( s ); break; // Abaddon 17th December 1999
-        case 234: Targ->HouseSecureDown( s ); break; // Ripper
-        case 235: Targ->BanTarg(s); break;
-        case 236: Skills::RepairTarget(s); break; //Ripper..Repairing item
+//        case 227: Targ->HouseOwnerTarget(s); break; // cj aug11/99
+//        case 228: Targ->HouseEjectTarget(s); break; // cj aug11/99
+//        case 229: Targ->HouseBanTarget(s); break; // cj aug12/99
+//        case 230: Targ->HouseFriendTarget(s); break; // cj aug 12/99
+//        case 231: Targ->HouseUnlistTarget(s); break; // cj aug 12/99
+//        case 232: Targ->HouseLockdown( s ); break; // Abaddon 17th December 1999
+//        case 233: Targ->HouseRelease( s ); break; // Abaddon 17th December 1999
+//        case 234: Targ->HouseSecureDown( s ); break; // Ripper
+//        case 235: target_ban Targ->BanTarg(s); break;
+//        case 236: Skills::RepairTarget(s); break; //Ripper..Repairing item
         //case 237: Skills->SmeltItemTarget(s); break; Ripper..Smelting item
         //taken from 6904t2(5/10/99) - AntiChrist
         case 240: Targ->SetMurderCount( s ); break; // Abaddon 13 Sept 1999
 
         case 245: buildhouse(s,addid3[s]);   break;
 
-        case 247: {
+        case 247: target_spy {
 			if( Cready && ( pc->getSerial32()!=curr->getSerial32() ) ) {
 				NXWCLIENT victim = pc->getClient();
 				if( victim!=NULL ) {
@@ -4074,9 +2412,9 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 			}
 			}
 			break; //showskill target
-        case 248: Targ->MenuPrivTarg(s);break; // menupriv target
+//        case 248: Targ->MenuPrivTarg(s);break; // menupriv target
         //case 249: Targ->UnglowTaget(s);break; // unglow
-        case 250: if ((Cready)&&(ISVALIDPC(pc))) Priv3Target(s,pc); break; // meta gm target
+//        case 250: if ((Cready)&&(ISVALIDPC(pc))) Priv3Target(s,pc); break; // meta gm target
         case 251: Targ->NewXTarget(s); break; // NEWX
         case 252: Targ->NewYTarget(s); break; // NEWY
         case 253: Targ->IncXTarget(s); break; // INCX
@@ -4097,7 +2435,7 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
             LogError("Fallout of switch statement, multitarget(), value=(%i)",pt->Tnum);
         }
     }
-
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -4213,24 +2551,25 @@ void TargetLocation::extendItemTarget()
 // Function name     : TargetLocation::TargetLocation
 // Author            : Xanathar
 // Changes           : none yet
-TargetLocation::TargetLocation(PKGx6C* pp)
+TargetLocation::TargetLocation( P_TARGET pp )
 {
-	if( pp->type==0 ) {
+	if( pp->pkg.type==0 ) {
 
-		P_CHAR pc= pointers::findCharBySerial(pp->Tserial);
+		P_CHAR pc= pointers::findCharBySerial( pp->getClicked() );
 		if(ISVALIDPC(pc)) {
 			init(pc);
 			return;
 		}
 
-		P_ITEM pi= pointers::findItemBySerial(pp->Tserial);
+		P_ITEM pi= pointers::findItemBySerial( pp->getClicked() );
 		if (ISVALIDPI(pi))  {
 			init(pi);
 			return;
 		}
 	}
-	else if( pp->type==1 ) {
-		init(pp->TxLoc,pp->TyLoc,pp->TzLoc);
+	else if( pp->pkg.type==1 ) {
+		Location loc = pp->getLocation();
+		init( loc.x, loc.y, loc.z );
 		return;
 	}
 
@@ -4296,5 +2635,266 @@ SI16 cPacketTargeting::getModel( NXWSOCKET socket )
 SI08 cPacketTargeting::getUnknown( NXWSOCKET socket )
 {
 	return (buffer[socket][15]);
+}
+
+
+void target_playerVendorBuy( NXWCLIENT ps, P_TARGET t )
+{
+    P_CHAR pc = MAKE_CHAR_REF(t->buffer[0]);
+	VALIDATEPC(pc);
+    P_CHAR pc_currchar = ps->currChar();
+	VALIDATEPC(pc_currchar);
+
+	NXWSOCKET s = ps->toInt();
+
+    P_ITEM pBackpack= pc_currchar->getBackpack();
+    if (!pBackpack) {sysmessage(s,TRANSLATE("Time to buy a backpack")); return; } //LB
+
+    SERIAL serial=LongFromCharPtr(buffer[s]+7);
+    P_ITEM pi=pointers::findItemBySerial(serial);     // the item
+    if (pi==NULL) return;
+    if (pi->isInWorld()) return;
+    int price=pi->value;
+
+
+	P_ITEM thepack=(P_ITEM)pi->getContainer();
+	VALIDATEPI(thepack);
+	P_CHAR pNpc= thepack->getPackOwner();               // the vendor
+
+    if(DEREF_P_CHAR(pNpc)!=pc->getSerial32() || pc->npcaitype!=NPCAI_PLAYERVENDOR) return;
+
+    if (pc_currchar->isOwnerOf(pc))
+    {
+        pc->talk(s, TRANSLATE("I work for you, you need not buy things from me!"),0);
+        return;
+    }
+
+    int gleft=pc_currchar->CountGold();
+    if (gleft<pi->value)
+    {
+        pc->talk(s, TRANSLATE("You cannot afford that."),0);
+        return;
+    }
+    pBackpack->DeleteAmount(price,0x0EED);  // take gold from player
+
+    pc->talk(s, TRANSLATE("Thank you."),0);
+    pc->holdg+=pi->value; // putting the gold to the vendor's "pocket"
+
+    // sends item to the proud new owner's pack
+    pi->setContSerial( pBackpack->getSerial32() );
+    pi->Refresh();
+
+}
+
+
+void target_envoke( NXWCLIENT ps, P_TARGET t )
+{
+	
+	P_CHAR curr=ps->currChar();
+	
+	SERIAL serial=t->getClicked();
+	if( isItemSerial( serial ) )
+	{
+        P_ITEM pi = MAKE_ITEM_REF(serial);
+		VALIDATEPI( pi );
+        triggerItem( ps->toInt(),pi, TRIGTYPE_ENVOKED );
+        curr->envokeid1=0x00;
+        curr->envokeid2=0x00;
+    }
+	else if( isCharSerial( serial ) )
+	{
+        P_CHAR pc = MAKE_CHAR_REF(serial);
+		VALIDATEPC(pc);
+        triggerNpc( ps->toInt(), pc, TRIGTYPE_NPCENVOKED );
+        curr->envokeid1=0x00;
+        curr->envokeid2=0x00;
+    }
+	else {
+        triggerTile( ps->toInt() );
+        curr->envokeid1=0x00;
+        curr->envokeid2=0x00;
+	}
+}
+
+
+void target_key( NXWCLIENT ps, P_TARGET t )
+{
+
+	P_CHAR pc=ps->currChar();
+	VALIDATEPC(pc);
+
+	P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
+	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
+
+    if ((pi->more1==0)&&(pi->more2==0)&&
+            (pi->more3==0)&&(pi->more4==0))
+        {
+            if ( pi->type==ITYPE_KEY && (item_inRange(MAKE_CHAR_REF(currchar[s]),pi,2) || (!pi->isInWorld()) ) )
+            {
+                if (!pc->checkSkill(TINKERING, 400, 1000))
+                {
+                    sysmessage(s,TRANSLATE("You fail and destroy the key blank."));
+                    // soundeffect3( pi, <whatever> );
+                    pi->Delete();
+                }
+                else
+                {
+                    pi->more1=t->buffer[0];
+                    pi->more2=t->buffer[1];
+                    pi->more3=t->buffer[2];
+                    pi->more4=t->buffer[3];
+                    // soundeffect3( pi, <whatever> );
+                    sysmessage(s, TRANSLATE("You copy the key.")); //Morrolan can copy keys
+                }
+            }
+            return;
+        }//if
+        else if (((pi->more1==t->buffer[0])&&(pi->more2==t->buffer[1])&&
+            (pi->more3==t->buffer[2])&&(pi->more4==t->buffer[3]))||
+            (t->buffer[0]==(unsigned char) 0xFF))
+        {
+            if (((pi->type==ITYPE_CONTAINER)||(pi->type==ITYPE_UNLOCKED_CONTAINER))&&(item_inRange(pc,pi,2)))
+            {
+                if(pi->type==ITYPE_CONTAINER) pi->type=ITYPE_LOCKED_ITEM_SPAWNER;
+                if(pi->type==ITYPE_UNLOCKED_CONTAINER) pi->type=ITYPE_LOCKED_CONTAINER;
+                // soundeffect3( pi, <whatever> );
+                sysmessage(s, TRANSLATE("You lock the container."));
+                return;
+            }
+            else if ((pi->type==ITYPE_KEY)&&(item_inRange(pc,pi,2)))
+            {
+                pc->keyserial=pi->getSerial32();
+                sysmessage(s,TRANSLATE("Enter new name for key."));//morrolan rename keys
+                return;
+            }
+            else if ((pi->type==ITYPE_LOCKED_ITEM_SPAWNER)||(pi->type==ITYPE_LOCKED_CONTAINER)&&(item_inRange(pc,pi,2)))
+            {
+                if(pi->type==ITYPE_LOCKED_ITEM_SPAWNER) pi->type=ITYPE_CONTAINER;
+                if(pi->type==ITYPE_LOCKED_CONTAINER) pi->type=ITYPE_UNLOCKED_CONTAINER;
+                // soundeffect3( pi, <whatever> );
+                sysmessage(s, TRANSLATE("You unlock the container."));
+                return;
+            }
+            else if ((pi->type==ITYPE_DOOR)&&(item_inRange(pc,pi,2)))
+            {
+                pi->type=ITYPE_LOCKED_DOOR;
+                // soundeffect3( pi, <whatever> );
+                sysmessage(s, TRANSLATE("You lock the door."));
+                return;
+            }
+            else if ((pi->type==ITYPE_LOCKED_DOOR)&&(item_inRange(pc,pi,2)))
+            {
+                pi->type=ITYPE_DOOR;
+                // soundeffect3( pi, <whatever> );
+                sysmessage(s, TRANSLATE("You unlock the door."));
+                return;
+            }
+            else if (pi->id()==0x0BD2)
+            {
+                sysmessage(s, TRANSLATE("What do you wish the sign to say?"));
+                pc->keyserial=pi->getSerial32(); //Morrolan sign kludge
+                return;
+            }
+
+            //Boats ->
+            else if(pi->type==ITYPE_BOATS && pi->type2==3)
+            {
+                Boats->OpenPlank(pi);
+                pi->Refresh();
+            }
+            //End Boats --^
+        }//else if
+        else
+        {
+            if (pi->type==ITYPE_KEY) sysmessage (s, TRANSLATE("That key is not blank!"));
+            else if (pi->more1==0x00) sysmessage(s, TRANSLATE("That does not have a lock."));
+            else sysmessage(s, TRANSLATE("The key does not fit into that lock."));
+            return;
+        }//else
+}
+
+void target_attack( NXWCLIENT ps, P_TARGET t ) 
+{
+
+    P_CHAR pc_t1= pointers::findCharBySerial( t->buffer[0] );
+    VALIDATEPC(pc_t1);
+	P_CHAR pc_t2=pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc_t2);
+
+	NXWSOCKET s = ps->toInt();
+
+    AttackStuff(s,pc_t2); //xan : flag them all!
+    npcattacktarget(pc_t1, pc_t2);
+}
+
+void target_follow( NXWCLIENT ps, P_TARGET t ) 
+{
+
+    P_CHAR pc = pointers::findCharBySerial( t->buffer[0] );
+    VALIDATEPC(pc);
+
+	P_CHAR pc2 = pointers::findCharBySerial( t->getClicked() );
+	VALIDATEPC(pc2);
+
+    pc->ftargserial=pc2->getSerial32();
+    pc->npcWander=WANDER_FOLLOW;
+}
+
+void target_axe( NXWCLIENT ps, P_TARGET t )
+{
+    NXWSOCKET  s = ps->toInt();
+
+    UI16 id=t->getModel();
+    if (itemById::IsTree(id))
+		Skills::TreeTarget(s);
+    else if (itemById::IsCorpse(id))
+        CorpseTarget(ps);
+    else if (itemById::IsLog(id)) //Luxor bug fix
+		Skills::BowCraft(s);
+}
+
+
+void target_sword( NXWCLIENT ps, P_TARGET t )
+{
+	NXWSOCKET  s = ps->toInt();
+    P_CHAR pc = ps->currChar();
+	VALIDATEPC(pc);
+
+	UI16 id = t->getModel();
+	if (itemById::IsTree2(id))
+	{
+		Location pcpos= pc->getPosition();
+		Location location = t->getLocation();
+
+		if( dist( location, pcpos )>5 )
+		{
+			pc->sysmsg(TRANSLATE("You are to far away to reach that"));
+			return;
+		}
+
+		pc->playAction( pc->isMounting() ? 0x0D : 0x01D );
+		pc->playSFX(0x013E);
+
+		P_ITEM pi=item::CreateFromScript( "$item_kindling" );
+		VALIDATEPI(pi);
+
+		pi->setPosition( pcpos );
+		mapRegions->add(pi);
+
+		pi->Refresh();
+		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
+	}
+	else if(itemById::IsLog(id)) // vagrant
+	{
+		Skills::BowCraft(s);
+	} 
+	else if(itemById::IsCorpse(id))
+	{
+		CorpseTarget(ps);
+	} 
+	else
+		pc->sysmsg(TRANSLATE("You can't think of a way to use your blade on that."));
 }
 

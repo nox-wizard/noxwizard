@@ -433,24 +433,24 @@ void Skills::CreatePotion(CHARACTER s, char type, char sub, int mortar)
 pour in the potion from the mortar
 \param s socket of the crafter
 */
-void Skills::BottleTarget(NXWSOCKET s)
+void Skills::target_bottle( NXWCLIENT ps, P_TARGET t )
 {
-	if ( s < 0 || s >= now ) //Luxor
-		return;
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
+
+	NXWSOCKET s = ps->toInt();
     
-	if (!ISVALIDPI(pi) || pi->magic==4) 
+	if(pi->magic==4) 
 		return;    // Ripper
 
 	if (pi->id()==0x0F0E)   // an empty potion bottle ?
 	{
 		pi->ReduceAmount(1);
 		
-		P_ITEM pi_mortar=pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
+		P_ITEM pi_mortar=pointers::findItemBySerial( t->buffer[0] );
 		VALIDATEPI(pi_mortar);
 
 		if (pi_mortar->type==17)
