@@ -432,10 +432,7 @@ void doubleclick(NXWCLIENT ps)
 				pc->sysmsg(TRANSLATE("If you wish to open a spellbook, it must be equipped or in your main backpack."));
 			return;
 	case ITYPE_MAP: 
-		map1[1] = pi->getSerial().ser1;
-		map1[2] = pi->getSerial().ser2;
-		map1[3] = pi->getSerial().ser3;
-		map1[4] = pi->getSerial().ser4;
+		LongToCharPtr(pi->getSerial32(), map1 +1);
 		map2[1] = map1[1];
 		map2[2] = map1[2];
 		map2[3] = map1[3];
@@ -455,14 +452,14 @@ void doubleclick(NXWCLIENT ps)
 		int width, height;		// Tempoary storage for w and h;
 		width = 134 + (134 * pi->morez);	// Calculate new w and h
 		height = 134 + (134 * pi->morez);
-		map1[15] = width>>8;
-		map1[16] = width%256;
-		map1[17] = height>>8;
-		map1[18] = height%256;
+		ShortToCharPtr(width, map1 +15);
+		ShortToCharPtr(height, map1 +17);
 //		END OF: By Polygon
 
 		Xsend(s, map1, 19);
+//AoS/		Network->FlushBuffer(s);
 		Xsend(s, map2, 11);
+//AoS/		Network->FlushBuffer(s);
 		return;
 	case ITYPE_BOOK:
 		Books::DoubleClickBook(s, pi);
@@ -698,28 +695,27 @@ void doubleclick(NXWCLIENT ps)
 			map1[12] = pi->moreb2;
 			map1[13] = pi->moreb3;	// Assign lowright y
 			map1[14] = pi->moreb4;
-			map1[15] = 0x01;			// Let width and height be 256
-			map1[16] = 0x00;
-			map1[17] = 0x01;
-			map1[18] = 0x00;
+			ShortToCharPtr(0x0100, map1 +15);			// Let width and height be 256
+			ShortToCharPtr(0x0100, map1 +17);
 			Xsend(s, map1, 19);
+//AoS/			Network->FlushBuffer(s);
 
 			Xsend(s, map2, 11);
+//AoS/			Network->FlushBuffer(s);
 
 			// Generate message to add a map point
-			int posx, posy;			// tempoary storage for map point
-			int tlx, tly, lrx, lry;	// tempoary storage for map extends
-			tlx = (pi->more1 << 8) + pi->more2;
-			tly = (pi->more3 << 8) + pi->more4;
-			lrx = (pi->moreb1 << 8) + pi->moreb2;
-			lry = (pi->moreb3 << 8) + pi->moreb4;
-			posx = (256 * (pi->morex - tlx)) / (lrx - tlx);	// Generate location for point
+			SI16 posx, posy;					// tempoary storage for map point
+			SI16 tlx, tly, lrx, lry;				// tempoary storage for map extends
+			tlx = (pi->more1 << 8) | pi->more2;
+			tly = (pi->more3 << 8) | pi->more4;
+			lrx = (pi->moreb1 << 8) | pi->moreb2;
+			lry = (pi->moreb3 << 8) | pi->moreb4;
+			posx = (256 * (pi->morex - tlx)) / (lrx - tlx);		// Generate location for point
 			posy = (256 * (pi->morey - tly)) / (lry - tly);
-			map3[7] = posx>>8;	// Store the point position
-			map3[8] = posx%256;
-			map3[9] = posy>>8;
-			map3[10] = posy%256;
-			Xsend(s, map3, 11);	// Fire data to client :D
+			ShortToCharPtr(posx, map3 +7);				// Store the point position
+			ShortToCharPtr(posy, map3 +9);
+			Xsend(s, map3, 11);					// Fire data to client :D
+//AoS/			Network->FlushBuffer(s);
 			return;
 		default:
 			break;
@@ -863,7 +859,7 @@ void doubleclick(NXWCLIENT ps)
 					target(s, 0, 1, 0, 186, TRANSLATE("What do you want to fill the vial with?"));
 				}
 				else
-					sysmessage(s, TRANSLATE("The vial is not in your pack"));
+					pc->sysmsg(TRANSLATE("The vial is not in your pack"));
 				return;
 		case 0x0DF9:
 			pc->tailserial = pi->getSerial32();
@@ -924,8 +920,8 @@ void doubleclick(NXWCLIENT ps)
   					//if(!((cx<=5)&&(cy<=5)))
   					if ( !item_inRange( pc, pi, 3 ) )
   					{
-       				sysmessage(s,TRANSLATE("You are to far away to reach that"));
-      					return;
+						pc->sysmsg(TRANSLATE("You are to far away to reach that"));
+						return;
   					}
   					//</Luxor>
 			if (pc->checkSkill(  CAMPING, 0, 500)) // Morrolan TODO: insert logout code for campfires here
@@ -947,7 +943,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				sysmessage(s, TRANSLATE("You fail to light a fire."));
+				pc->sysmsg(TRANSLATE("You fail to light a fire."));
 			}
 			return; // camping
 		case 0x1508: // magic statue?
@@ -959,7 +955,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				sysmessage(s, TRANSLATE("You failed to use this statue."));
+				pc->sysmsg(TRANSLATE("You failed to use this statue."));
 			}
 			return;
 		case 0x1509:
@@ -971,7 +967,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				sysmessage(s, TRANSLATE("You failed to use this statue."));
+				pc->sysmsg(TRANSLATE("You failed to use this statue."));
 			}
 			return;
 		case 0x1230:
@@ -984,7 +980,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				sysmessage(s, TRANSLATE("You failed to use this."));
+				pc->sysmsg(TRANSLATE("You failed to use this."));
 			}
 			return;
 		case 0x1245: // Guillotine stop animation
@@ -996,7 +992,7 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				sysmessage(s, TRANSLATE("You failed to use this."));
+				pc->sysmsg(TRANSLATE("You failed to use this."));
 			}
 			return;
 		case 0x0DBF:
@@ -1013,7 +1009,7 @@ void doubleclick(NXWCLIENT ps)
 			return;
 		case 0x0E9B: // Mortar for Alchemy
 			pc->objectdelay = ((SrvParms->objectdelay * MY_CLOCKS_PER_SEC)*3) + uiCurrentTime;
-			if (pi->type == 17)
+			if (pi->type == ITYPE_MANAREQ_WAND)
 			{
 				addid1[s] = pi->getSerial().ser1;
 				addid2[s] = pi->getSerial().ser2;
@@ -1041,8 +1037,7 @@ void doubleclick(NXWCLIENT ps)
 		case 0x1057:
 		case 0x1058: // sextants
 			getSextantCoords(charpos.x, charpos.y, (charpos.x >= 5121), temp2);
-			sprintf( temp, TRANSLATE("You are at: %s"), temp2);
-			sysmessage(s, temp);
+			pc->sysmsg(TRANSLATE("You are at: %s"), temp2);
 			return;
 		case 0x0E27:
 		case 0x0EFF:   // Hair Dye
@@ -1086,11 +1081,10 @@ void doubleclick(NXWCLIENT ps)
 			else
 				pc->playAction(0x1D);
 			soundeffect(s, 0x01, 0x3E);
-			itm = item::SpawnItem(-1, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
+			itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
 			if (ISVALIDPI(itm)) {
-				//setserial(DEREF_P_ITEM(itm),DEREF_P_ITEM( pc->getBackpack()), 1);
 				itm->setCont(pc->getBackpack());	//Luxor
-				sysmessage(s, TRANSLATE("You reach down and pick some cotton."));
+				pc->sysmsg(TRANSLATE("You reach down and pick some cotton."));
 			}
 			return; // cotton
 		case 0x105B:
@@ -1131,32 +1125,31 @@ void doubleclick(NXWCLIENT ps)
 		case 0x105A:// tinker sextant
 			if (pc->checkSkill(  TINKERING, 500, 1000))
 			{
-				sysmessage(s, TRANSLATE("You create the sextant."));
+				pc->sysmsg(TRANSLATE("You create the sextant."));
 				P_ITEM pi_c = item::SpawnItem(s, DEREF_P_CHAR( pc ), 1, "a sextant", 0, 0x1057, 0, 1, 1);
 				if (ISVALIDPI(pi_c))
 					pi_c->setDecay();
 				pi->ReduceAmount(1);
 			}
 			else
-				sysmessage(s, TRANSLATE("you fail to create the sextant."));
+				pc->sysmsg(TRANSLATE("you fail to create the sextant."));
 			return;
 		case 0x1070:
 		case 0x1074: // training dummies
 			if (item_inRange(pc, pi, 1))
 			{
-			    //Araknesh se è hiddato diventa visibile
 				if (pc->hidden==HIDDEN_BYSKILL) 
 					pc->unHide();
 				Skills::TDummy(s);
 			}
 			else
-				sysmessage(s, TRANSLATE("You need to be closer to use that."));
+				pc->sysmsg(TRANSLATE("You need to be closer to use that."));
 				return;
 		case 0x1071:
 		case 0x1073:
 		case 0x1075:
 		case 0x1077:// swinging training dummy
-			sysmessage(s, TRANSLATE("You must wait for it to stop swinging !"));
+			pc->sysmsg(TRANSLATE("You must wait for it to stop swinging !"));
 			return;
 		//case 0x1EA8:
 		//	slotmachine(s, DEREF_P_ITEM(pi));
@@ -1170,7 +1163,6 @@ void doubleclick(NXWCLIENT ps)
 	}
 
 	pc->sysmsg( TRANSLATE("You can't think of a way to use that item."));
-
 }
 /*!
 \brief Single click
@@ -1181,7 +1173,7 @@ void singleclick(NXWSOCKET  s)
 {
 	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
 	VALIDATEPC( pc_currchar );
-	pc_currchar->doSingleClick( calcserial(buffer[s][1], buffer[s][2], buffer[s][3], buffer[s][4]) );
+	pc_currchar->doSingleClick( LongFromCharPtr(buffer[s] +1));
 }
 
 
@@ -1230,7 +1222,7 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 						if (ISVALIDPI(pack) )
 						{
 							pc->showContainer(pack);
-							sysmessage(s, TRANSLATE("You successfully snoop the pack animal.") );
+							pc->sysmsg(TRANSLATE("You successfully snoop the pack animal.") );
 							SetTimerSec( &(pc->objectdelay), SrvParms->objectdelay+SrvParms->snoopdelay );
 						}
 						else
@@ -1266,17 +1258,17 @@ void dbl_click_character(NXWCLIENT ps, P_CHAR target)
 				if ( (!keyboard) && ( pc->unmountHorse() == 0 ) ) return; //on horse
 				//if not on horse, treat ourselves as any other char
 			}//self
-			unsigned char pdoll[256]="\x88\x00\x05\xA8\x90\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-			pdoll[1]= target->getSerial().ser1;
-			pdoll[2]= target->getSerial().ser2;
-			pdoll[3]= target->getSerial().ser3;
-			pdoll[4]= target->getSerial().ser4;
+
+			UI08 pdoll[66] = { 0x88, 0x00, 0x05, 0xA8, 0x90, 0x00, };
+
+			LongToCharPtr(target->getSerial32(), pdoll +1);
 
 			completetitle = complete_title(target);
 			if ( strlen(completetitle) >= 60 )
 				completetitle[60]=0;
 			strcpy((char*)&pdoll[5], completetitle);
 			Xsend(s, pdoll, 66);
+//AoS/			Network->FlushBuffer(s);
 			return;
 		//
 		// Handle others

@@ -92,20 +92,18 @@ void cCustomMenu::SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& 
 	}
 
 	int n = rand()%0x7FFFFFFF;
-	unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
+	UI08 gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
 	gump1[3] = n&(0xFF);
 	gump1[4] = (n>>8)&(0xFF);
 	gump1[5] = (n>>16)&(0xFF);
 	gump1[6] = (n>>24)&(0xFF);
 	m_nSeed = n;
-	gump1[1] = length>>8;
-	gump1[2] = length%256;
+	ShortToCharPtr(length, gump1 +1);
 	gump1[7] = 0;
 	gump1[8] = 0;
 	gump1[9] = 0;
 	gump1[10] = type; // Gump Number
-	gump1[19] = length2>>8;
-	gump1[20] = length2%256;
+	ShortToCharPtr(length2, gump1 +19);
 	Xsend( sock, gump1, 21 );
 
 	for( line = 0; line < linecount; line++ )
@@ -114,19 +112,16 @@ void cCustomMenu::SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& 
 		Xsend( sock, sect, strlen( sect ) );
 	}
 
-	unsigned char gump2[4]="\x00\x00\x00";
-	gump2[1] = textlines>>8;
-	gump2[2] = textlines%256;
-
+	UI08 gump2[3]={ 0x00, };
+	ShortToCharPtr(textlines, gump2 +1);
 	Xsend( sock, gump2, 3 );
 
-	unsigned char gump3[3]="\x00\x00";
+	UI08 gump3[2]={ 0x00, };
 	for( line = 0; line < linecount1; line++ )
 	{
 		if( two[line]->length() == 0 )
 			break;
-		gump3[0] = ( two[line]->length() )>>8;
-		gump3[1] = ( two[line]->length() )%256;
+		ShortToCharPtr(two[line]->length(), gump3);
 		Xsend( sock, gump3, 2 );
 		gump3[0]=0;
 		for ( i = 0; i < two[line]->length(); i++ )
@@ -135,6 +130,7 @@ void cCustomMenu::SendVecsAsGump( NXWSOCKET  sock, stringList& one, stringList& 
 			Xsend( sock, gump3, 2 );
 		}
 	}
+//AoS/ Network->FlushBuffer(sock);
 }
 
 static inline char hex2byte (char *str)
@@ -169,14 +165,13 @@ void cCustomMenu::sendIconMenu (NXWSOCKET  s)
 void cCustomMenu::sendIconList (NXWSOCKET  s)
 {
 	int total, i;
-	int lentext = strlen(m_strTitle);
+	UI08 lentext = strlen(m_strTitle);
 	total = 9+1+lentext+1;
 
 	for (i=0;i<m_nMaxItemn;i++) total+=strlen(m_strLabels[i]);
 
-	unsigned char gmprefix[10]="\x7C\x00\x00\x01\x02\x03\x04\x00\x64";
-	gmprefix[1]=total>>8;
-	gmprefix[2]=total%256;
+	UI08 gmprefix[10]={ 0x7C, 0x00, };
+	ShortToCharPtr(total, gmprefix +1);
 
 	int n = rand()%0x7FFFFFFF;
 	gmprefix[3] = n&(0xFF);
@@ -185,15 +180,15 @@ void cCustomMenu::sendIconList (NXWSOCKET  s)
 	gmprefix[6] = (n>>24)&(0xFF);
 	m_nSeed = n;
 
-	gmprefix[7]=16384>>8; //custmenuidx = 16384
-	gmprefix[8]=16384%256;
+	ShortToCharPtr(0x4000, gmprefix +7); //custmenuidx = 16384 = 0x4000
 
 	Xsend(s, gmprefix, 9);
-	Xsend(s, &lentext, 1);   //XAN :=> THIS IS LITTLE-ENDIAN ONLY!!!!, should be fixed :[
+	Xsend(s, &lentext, 1);
 	Xsend(s, m_strTitle, lentext);
 	lentext=m_nMaxItemn;
-	Xsend(s, &lentext, 1);   //XAN :=> THIS IS LITTLE-ENDIAN ONLY!!!!, should be fixed :[
-	unsigned char gmmiddle[5]="\x00\x00\x00\x00";
+	Xsend(s, &lentext, 1);
+
+	UI08 gmmiddle[4]= { 0x00, };
 	for (i=0;i<m_nMaxItemn;i++)
 	{
 		gmmiddle[0]=hex2byte(m_strLabels[i]);
@@ -203,6 +198,7 @@ void cCustomMenu::sendIconList (NXWSOCKET  s)
 		Xsend(s, &lentext, 1);
 		Xsend(s, m_strLabels[i]+5, lentext);
 	}
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -511,17 +507,4 @@ void cCustomMenu::buildIconList ()
 void cCustomMenu::buildIconMenu()
 {
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
