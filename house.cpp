@@ -269,7 +269,7 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-			mapRegions->add(pHouse);
+			regions::add(pHouse);
 		}
 		if (!hitem[0] && !boat)
 		{
@@ -455,7 +455,7 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-						mapRegions->add(pi_l);
+						regions::add(pi_l);
 					}
 				safedelete(iter);
 			}
@@ -697,7 +697,7 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-		mapRegions->add(pi); //Add to mapRegions
+		regions::add(pi); //Add to mapRegions
 	}
 
 	Map->SeekTile(pi->id(), &tile);
@@ -780,11 +780,11 @@ int on_hlist(int h, unsigned char s1, unsigned char s2, unsigned char s3, unsign
 	int cl=-1;
 	int ci=-1;
 
-	cc=mapRegions->GetCell(items[h].x,items[h].y);
+	cc=regions::GetCell(items[h].x,items[h].y);
 	do {
-		cl=mapRegions->GetNextItem(cc, cl);
+		cl=regions::GetNextItem(cc, cl);
 		if(cl==-1) break;
-		ci=mapRegions->GetItem(cc, cl);
+		ci=regions::GetItem(cc, cl);
 		if(ci<1000000) {
 			if((items[ci].contserial==items[h].serial)&&
 				(items[ci].more1==s1)&&(items[ci].more2==s2)&&
@@ -846,7 +846,7 @@ int add_hlist(int c, int h, int t)
 
 		pi->setPosition( pi_h->getPosition() );
 
-		mapRegions->add(pi);
+		regions::add(pi);
 		return 1;
 	}
 	return 3;
@@ -873,7 +873,7 @@ int del_hlist(int c, int h)
 	if(hl) {
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
-			mapRegions->remove(pli);
+			regions::remove(pli);
 			pli->deleteItem();
 		}
 	}

@@ -768,10 +768,10 @@ static int loadnxwoptions (char *script1, char *script2)
 	else if(!(strcmp(script1,"SHOWPOISONRESISTANCEINTITLE"))) ServerScp::g_nShowPoisonResistanceInTitle=str2num(script2);
 	else if(!(strcmp(script1,"SHOWFIRERESISTANCEINTITLE"))) ServerScp::g_nShowFireResistanceInTitle=str2num(script2);
 	else if(!(strcmp(script1,"IGNOREWETBIT"))) ServerScp::g_nWalkIgnoreWetBit=str2num(script2);
-	else if(!(strcmp(script1,"PARTYSHAREKARMA"))) PartySystem::g_nPartyShareKarma=str2num(script2);
-	else if(!(strcmp(script1,"PARTYSHAREFAME"))) PartySystem::g_nPartyShareFame=str2num(script2);
-	else if(!(strcmp(script1,"ENABLEPRIVATEMSG"))) PartySystem::g_nPartyCanPMsg=str2num(script2);
-	else if(!(strcmp(script1,"ENABLEPUBLICMSG"))) PartySystem::g_nPartyCanBroadcast=str2num(script2);
+	else if(!(strcmp(script1,"PARTYSHAREKARMA"))) partySystem::g_nPartyShareKarma=str2num(script2);
+	else if(!(strcmp(script1,"PARTYSHAREFAME"))) partySystem::g_nPartyShareFame=str2num(script2);
+	else if(!(strcmp(script1,"ENABLEPRIVATEMSG"))) partySystem::g_nPartyCanPMsg=str2num(script2);
+	else if(!(strcmp(script1,"ENABLEPUBLICMSG"))) partySystem::g_nPartyCanBroadcast=str2num(script2);
 	else if(!(strcmp(script1,"CONSOLEONFILE"))) ServerScp::g_nRedirectOutput=str2num(script2);
 	else if(!(strcmp(script1,"STDOUTFILE"))) strcpy(ServerScp::g_szOutput,script2);
 	else if(!(strcmp(script1,"NEWNPCMAGIC"))) ServerScp::g_nUseNewNpcMagic=str2num(script2);
@@ -1431,13 +1431,13 @@ void saveserverscript()
 	fprintf(file, "SECTION PARTYSYSTEM\n");
 	fprintf(file, "{\n");
 	fprintf(file, "// Set to 1 to enable party members share karma gains and losses  \n");
-	fprintf(file, "PARTYSHAREKARMA %i\n",PartySystem::g_nPartyShareKarma  );
+	fprintf(file, "PARTYSHAREKARMA %i\n",partySystem::g_nPartyShareKarma  );
 	fprintf(file, "// Set to 1 to enable party members share fame gains and losses  \n");
-	fprintf(file, "PARTYSHAREFAME %i\n",PartySystem::g_nPartyShareFame  );
+	fprintf(file, "PARTYSHAREFAME %i\n",partySystem::g_nPartyShareFame  );
 	fprintf(file, "// Set to 1 to enable private party messages \n");
-	fprintf(file, "ENABLEPRIVATEMSG %i\n",PartySystem::g_nPartyCanPMsg );
+	fprintf(file, "ENABLEPRIVATEMSG %i\n",partySystem::g_nPartyCanPMsg );
 	fprintf(file, "// Set to 1 to enable party members to send a message to all his friends.\n");
-	fprintf(file, "ENABLEPUBLICMSG %i\n",PartySystem::g_nPartyCanBroadcast );
+	fprintf(file, "ENABLEPUBLICMSG %i\n",partySystem::g_nPartyCanBroadcast );
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION REGENERATE\n");

@@ -1200,9 +1200,9 @@ void cChar::MoveTo(Location newloc)
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
 
-	mapRegions->remove(this);
+	regions::remove(this);
 	setPosition( newloc );
-	mapRegions->add(this);
+	regions::add(this);
 }
 
 UI32 cChar::getSkillSum()

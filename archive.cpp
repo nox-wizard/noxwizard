@@ -95,12 +95,12 @@ void DeleItem( P_ITEM pi )
 
 	if (pi->spawnregion!=INVALID )
 	{
-		Spawns->removeObject( pi->spawnregion, pi );
+		spawns::removeObject( pi->spawnregion, pi );
 	}
 
 	if( pi->isSpawner() || pi->spawnserial!=INVALID )
 	{
-		Spawns->removeSpawnDynamic( pi );
+		spawns::removeSpawnDynamic( pi );
 	}
 
 	NxwSocketWrapper sw;
@@ -119,7 +119,7 @@ void DeleItem( P_ITEM pi )
 	// - remove from mapRegions if a world item
 	if (pi->isInWorld())
 	{
-	   	mapRegions->remove(pi); // da==1 not added !!
+	   	regions::remove(pi); // da==1 not added !!
 	}
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
@@ -159,12 +159,12 @@ void DeleteChar( P_CHAR pc )
 
 	if( pc->spawnregion!=INVALID )
 	{
-		Spawns->removeObject( pc->spawnregion, pc );
+		spawns::removeObject( pc->spawnregion, pc );
 	}
 
 	if( pc->spawnserial!=INVALID ) 
 	{
-		Spawns->removeSpawnDynamic( pc );
+		spawns::removeSpawnDynamic( pc );
 	}
 
 	pointers::delChar(pc);	//Luxor

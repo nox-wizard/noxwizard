@@ -1428,7 +1428,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
             pi->setDecay( false );
 		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
             pi->Refresh();
-            mapRegions->add(pi); // lord Binary, xan, God Rah
+            regions::add(pi); // lord Binary, xan, God Rah
         }
 
     addid1[s]=0;
@@ -1632,12 +1632,12 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
 	VALIDATEPI(pi2);
 
-	mapRegions->remove(pi1);
+	regions::remove(pi1);
 
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
 
-	mapRegions->add(pi1); // lord Binary
+	regions::add(pi1); // lord Binary
 
 	pi1->setDecayTime();
 	pi1->Refresh();
@@ -1712,10 +1712,10 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	VALIDATEPI(pi2);
 	P_ITEM pi3=MAKE_ITEMREF_LR(i);
 	VALIDATEPI(pi3);
-	mapRegions->remove(pi1);
+	regions::remove(pi1);
 	pi1->setPosition( pi2->getPosition() );
 	pi1->magic=2;//AntiChrist - makes the item unmovable
-	mapRegions->add(pi1); // lord Binary
+	regions::add(pi1); // lord Binary
 
 	pi1->setDecayTime();
 
@@ -2076,7 +2076,7 @@ void targets::SwordTarget(const NXWCLIENT pC)
 		VALIDATEPI(pi);
 
 		pi->setPosition( pcpos );
-		mapRegions->add(pi);
+		regions::add(pi);
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You hack at the tree and produce some kindling."));
 	}
@@ -3320,7 +3320,7 @@ void targets::SetMurderCount( NXWSOCKET s )
 
     pi2->magic=3;
 
-    mapRegions->RemoveItem(c); // remove if add in spawnitem
+    regions::RemoveItem(c); // remove if add in spawnitem
     pi2->layer=pi1->layer;
     if (pi2->layer==0) // if not equipped -> coords of the light-object = coords of the
     {
@@ -3332,7 +3332,7 @@ void targets::SetMurderCount( NXWSOCKET s )
         pi2->setPosition("z", charpos.z + 4);
     }
 
-    //mapRegions->AddItem(c);
+    //regions::AddItem(c);
     pi2->priv=0; // doesnt decay
 
     pi1->glow= pi2->getSerial32(); // set glow-identifier
@@ -3991,7 +3991,7 @@ void targets::MultiTarget(NXWCLIENT ps) // If player clicks on something with th
             targetCallback(s, TL);
             break;
         } //</Luxor>
-        case 192: PartySystem::targetParty(ps); break;   // Xan Party System
+        case 192: partySystem::targetParty(ps); break;   // Xan Party System
         case 193: targets::AllAttackTarget(s); break;      // Luxor All Attack
 		case 194:
 		{

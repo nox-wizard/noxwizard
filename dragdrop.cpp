@@ -392,7 +392,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 			} // end if corpse
 
-			mapRegions->remove( pi );
+			regions::remove( pi );
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
 		}
@@ -1488,7 +1488,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 			{
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
-					mapRegions->remove(pItem);
+					regions::remove(pItem);
 
 				pItem->setContSerial( pCont->getContSerial() );
 

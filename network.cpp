@@ -369,7 +369,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket )
 		if( pc->murderrate>uiCurrentTime ) //save murder decay
 			pc->murdersave= (pc->murderrate -uiCurrentTime) / MY_CLOCKS_PER_SEC;
 
-		Partys->removeMember( pc );
+		partySystem::removeMember( pc );
 	}
 
 	currchar[ socket ] = INVALID;
@@ -2078,7 +2078,7 @@ void cNetwork::GetMsg(int s)
 						case 5: break; // unknown, sent once on login
 
 				   		case 6:
-							PartySystem::processInputPacket(ps);
+							partySystem::processInputPacket(ps);
 							break;
 
 						case 9:	//Luxor: Wrestling Disarm Macro support

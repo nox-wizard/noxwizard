@@ -11,47 +11,12 @@
 #define __PARTY_H__
 #include "nxwcommn.h"
 
-namespace PartySystem
+namespace partySystem
 {
-
-	extern int g_nPartyShareKarma;
-	extern int g_nPartyShareFame;
-	extern int g_nPartyCanPMsg;
-	extern int g_nPartyCanBroadcast;
-
-
-	#define NET_ADDMEMBER 1
-	#define NET_DELMEMBER 2
-	#define NET_MESSAGE   3
-	#define NET_BROADCAST 4
-	#define NET_LOOTMODE  6
-
-
-
-	#define PARTYSYSTARGET 192
-
-
-	void targetParty( NXWCLIENT ps );
-	void processInputPacket( NXWCLIENT ps );
-	void askPartyPermission( NXWCLIENT ps );
-
-
-}
-
-
-	class cPartyMenu : public cCustomMenu {
-	public:
-		cPartyMenu();
-		void buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed );
-	};
-
-
-	typedef std::vector< SERIAL > MEMBER_LIST;
-
 	class cParty
 	{
 		protected:
-			MEMBER_LIST members;
+			SERIAL_VECTOR members;
 		public:
 			cParty( SERIAL ser );
 
@@ -73,31 +38,47 @@ namespace PartySystem
 			void sendEmptyList( NXWCLIENT ps );
 	};
 
+	class cPartyMenu : public cCustomMenu {
+	public:
+		void buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed );
+	};
 
 	typedef std::map< SERIAL, cParty> PARTY_LIST;
 
-	class cPartys {
-		private:
-			PARTY_LIST partylist;	//!< All party
-			UI32 nextparty;	//!< next party free
+	extern int g_nPartyShareKarma;
+	extern int g_nPartyShareFame;
+	extern int g_nPartyCanPMsg;
+	extern int g_nPartyCanBroadcast;
+	extern PARTY_LIST partylist;	//!< All party
+	extern UI32 nextparty;		//!< next party free
 
-		public:
-			cPartys();
+	#define NET_ADDMEMBER 1
+	#define NET_DELMEMBER 2
+	#define NET_MESSAGE   3
+	#define NET_BROADCAST 4
+	#define NET_LOOTMODE  6
 
-			SERIAL newParty();
+	#define PARTYSYSTARGET 192
 
-			bool addMember( SERIAL party, P_CHAR pc );
-			void removeMember( P_CHAR pc );
-			void kickMember( P_CHAR pc );
+	void targetParty( NXWCLIENT ps );
+	void processInputPacket( NXWCLIENT ps );
+	void askPartyPermission( NXWCLIENT ps );
 
-			bool isMember( SERIAL party, P_CHAR pc );
-			bool isLeader( SERIAL party, P_CHAR pc );
+	SERIAL newParty();
 
-			P_CHAR getLeader( SERIAL party );
+	bool addMember( SERIAL party, P_CHAR pc );
+	void removeMember( P_CHAR pc );
+	void kickMember( P_CHAR pc );
 
-			void talkToOthers( P_CHAR pc, std::string s );
-			UI32 membersNumber( P_CHAR pc );
+	bool isMember( SERIAL party, P_CHAR pc );
+	bool isLeader( SERIAL party, P_CHAR pc );
 
-	};
+	P_CHAR getLeader( SERIAL party );
+
+	void talkToOthers( P_CHAR pc, std::string s );
+	UI32 membersNumber( P_CHAR pc );
+
+}
 
 #endif //__PARTY_H__
+

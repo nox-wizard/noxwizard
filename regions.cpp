@@ -10,128 +10,128 @@
 #include "nxwcommn.h"
 #include "debug.h"
 
-cRegion::cRegion()
+namespace regions
 {
-	for( int x=0; x<REGION_X_CELLS; x++ )
-		for ( int y=0; y<REGION_Y_CELLS; y++ ) {
-			regions[x][y].charsInRegions.clear();
-			regions[x][y].itemsInRegions.clear();
+	WHERE_IS_NOW_MAP item_where_is_now;
+	WHERE_IS_NOW_MAP char_where_is_now;
+	region_db_st regions[REGION_X_CELLS][REGION_Y_CELLS];
+
+	void initialize()
+	{
+		for( int x=0; x<REGION_X_CELLS; x++ )
+			for ( int y=0; y<REGION_Y_CELLS; y++ ) {
+				regions[x][y].charsInRegions.clear();
+				regions[x][y].itemsInRegions.clear();
+			}
+
+	}
+
+	void add( P_CHAR pc )
+	{
+		if(!ISVALIDPC(pc) )
+			return;
+		if(!isValidCoord( pc->getPosition() )) {
+			//move to safe location? boh
+			return;
 		}
 
-}
-
-cRegion::~cRegion()
-{
-
-
-}
-
-bool cRegion::isValidCoord( UI16 x, UI16 y )
-{
-	return ( x<MAP_WIDTH && y<MAP_HEIGHT );
-
-}
-
-
-void cRegion::add( P_CHAR pc )
-{
-
-	if(!ISVALIDPC(pc) )
-		return;
-	if(!isValidCoord( pc->getPosition().x, pc->getPosition().y )) {
-		//move to safe location? boh
-		return;
+		removeNow( pc );
+		addNow( pc );
 	}
 
-	removeNow( pc );
-	addNow( pc );
+	void add( P_ITEM pi )
+	{
+		VALIDATEPI(pi);
+		if( !ISVALIDPI(pi) || !pi->isInWorld() )
+			return;
+		if(!isValidCoord( pi->getPosition() )) {
+			//move to safe location? boh
+			return;
+		}
 
-}
-
-void cRegion::add( P_ITEM pi )
-{
-
-	VALIDATEPI(pi);
-	if( !ISVALIDPI(pi) || !pi->isInWorld() )
-		return;
-	if(!isValidCoord( pi->getPosition().x, pi->getPosition().y )) {
-		//move to safe location? boh
-		return;
+		removeNow( pi );
+		addNow( pi );
 	}
 
-	removeNow( pi );
-	addNow( pi );
-}
+	void remove( P_CHAR pc )
+	{
 
-void cRegion::remove( P_CHAR pc )
-{
+		VALIDATEPC(pc);
 
-	VALIDATEPC(pc);
+		if(!isValidCoord( pc->getPosition() ) )
+			return;
 
-	if(!isValidCoord( pc->getPosition().x, pc->getPosition().y ) )
-		return;
+		removeNow( pc );
 
-	removeNow( pc );
-
-}
-
-void cRegion::remove( P_ITEM pi )
-{
-
-	VALIDATEPI(pi);
-
-	if(!isValidCoord( pi->getPosition().x, pi->getPosition().y ) )
-		return;
-
-	removeNow( pi );
-}
-
-void cRegion::removeNow( P_CHAR pc )
-{
-
-	WHERE_IS_NOW_MAP::iterator iternow( char_where_is_now.find( pc->getSerial32() ) );
-	if( iternow!=char_where_is_now.end() ) {
-		RegCoordPoint* p = &iternow->second;
-	
-		SERIAL_SET* iter = &regions[p->a][p->b].charsInRegions;
-		SERIAL_SET::iterator i( iter->find(pc->getSerial32()) );
-		if( i!=iter->end() )
-			iter->erase( i );
 	}
-}
 
-void cRegion::removeNow( P_ITEM pi )
-{
+	void remove( P_ITEM pi )
+	{
 
-	WHERE_IS_NOW_MAP::iterator iternow( item_where_is_now.find( pi->getSerial32() ) );
-	if( iternow!=item_where_is_now.end() ) {
-		RegCoordPoint* p = &iternow->second;
-	
-		SERIAL_SET* iter = &regions[p->a][p->b].itemsInRegions;
-		SERIAL_SET::iterator i( iter->find(pi->getSerial32()) );
-		if( i!=iter->end() )
-			iter->erase( i );
+		VALIDATEPI(pi);
+
+		if(!isValidCoord( pi->getPosition() ) )
+			return;
+
+		removeNow( pi );
 	}
-}
 
-void cRegion::addNow( P_CHAR pc )
-{
-	RegCoordPoint p( pc->getPosition() ); 
-	char_where_is_now.insert( make_pair( pc->getSerial32(), p ) );
-	regions[p.a][p.b].charsInRegions.insert( pc->getSerial32() );
-}
+	void removeNow( P_CHAR pc )
+	{
 
-void cRegion::addNow( P_ITEM pi )
-{
-	RegCoordPoint p( pi->getPosition() ); 
-	item_where_is_now.insert( make_pair( pi->getSerial32(), p ) );
-	regions[p.a][p.b].itemsInRegions.insert( pi->getSerial32() );
-}
+		WHERE_IS_NOW_MAP::iterator iternow( char_where_is_now.find( pc->getSerial32() ) );
+		if( iternow!=char_where_is_now.end() ) {
+			RegCoordPoint* p = &iternow->second;
+		
+			SERIAL_SET* iter = &regions[p->a][p->b].charsInRegions;
+			SERIAL_SET::iterator i( iter->find(pc->getSerial32()) );
+			if( i!=iter->end() )
+				iter->erase( i );
+		}
+	}
 
-RegCoordPoint::RegCoordPoint( Location location )
-{
-	 a=location.x/REGION_GRIDSIZE;
-	 b=location.y/REGION_COLSIZE;
-}
+	void removeNow( P_ITEM pi )
+	{
+		WHERE_IS_NOW_MAP::iterator iternow( item_where_is_now.find( pi->getSerial32() ) );
+		if( iternow!=item_where_is_now.end() ) {
+			RegCoordPoint* p = &iternow->second;
+		
+			SERIAL_SET* iter = &regions[p->a][p->b].itemsInRegions;
+			SERIAL_SET::iterator i( iter->find(pi->getSerial32()) );
+			if( i!=iter->end() )
+				iter->erase( i );
+		}
+	}
 
+	bool isValidCoord( Location l )
+	{
+		return l.x < (MapTileWidth*8) && l.y < (MapTileHeight*8);
+	}
+
+	bool isValidCoord( UI16 x, UI16 y )
+	{
+		return x < (MapTileWidth*8) && y < (MapTileHeight*8);
+	}
+
+	void addNow( P_CHAR pc )
+	{
+		RegCoordPoint p( pc->getPosition() ); 
+		char_where_is_now.insert( make_pair( pc->getSerial32(), p ) );
+		regions[p.a][p.b].charsInRegions.insert( pc->getSerial32() );
+	}
+
+	void addNow( P_ITEM pi )
+	{
+		RegCoordPoint p( pi->getPosition() ); 
+		item_where_is_now.insert( make_pair( pi->getSerial32(), p ) );
+		regions[p.a][p.b].itemsInRegions.insert( pi->getSerial32() );
+	}
+
+	RegCoordPoint::RegCoordPoint( Location location )
+	{
+		 a=location.x/REGION_GRIDSIZE;
+		 b=location.y/REGION_COLSIZE;
+	}
+
+} // namespace
 

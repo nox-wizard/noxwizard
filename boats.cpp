@@ -229,7 +229,7 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 					}
 				}
 
-           		mapRegions->remove(pc);
+           		regions::remove(pc);
 
 				pc->setMultiSerial(INVALID);
 
@@ -249,7 +249,7 @@ void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
 				pc->setPosition( where );
 
-				mapRegions->add(pc);
+				regions::add(pc);
 
 				pc->sysmsg(TRANSLATE("You left the boat."));
 				pc->teleport();//Show them they moved.
@@ -273,7 +273,7 @@ void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 	int dx= itmpos.x - bpos.x;//get their distance x
 	int dy= itmpos.y - bpos.y;//and distance Y
 
-	mapRegions->remove(pi);
+	regions::remove(pi);
 	
 	itmpos.x = bpos.x;
 	itmpos.x = bpos.y;
@@ -288,7 +288,7 @@ void boats::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 	}
 
 	pi->setPosition( itmpos );
-	mapRegions->add(pi);
+	regions::add(pi);
 	pi->Refresh();
 }
 
@@ -305,7 +305,7 @@ void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 	int dx= charpos.x - bpos.x;
 	int dy= charpos.y - bpos.y;
 
-	mapRegions->remove(pc);
+	regions::remove(pc);
 
 	charpos.x= bpos.x;
 	charpos.y= bpos.y;
@@ -322,7 +322,7 @@ void boats::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 	}
 	pc->setPosition( charpos );
 	//Set then in their new cell
-	mapRegions->add(pc);
+	regions::add(pc);
 	
 	pc->teleport();
 
@@ -437,96 +437,96 @@ void boats::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	{
 	case 0x00:
 	case 0x04:
-        	mapRegions->remove( p1 );
+        	regions::remove( p1 );
 		itmpos= p1->getPosition();
 		itmpos.x+= iSmallShipOffsets[dir][PORT_PLANK][X];
 		itmpos.y+= iSmallShipOffsets[dir][PORT_PLANK][Y];
 		p1->setPosition( itmpos );
-		mapRegions->add( p1 );
+		regions::add( p1 );
 
-		mapRegions->remove( p2 );
+		regions::remove( p2 );
 		itmpos= p2->getPosition();
 		itmpos.x+= iSmallShipOffsets[dir][STARB_PLANK][X];
 		itmpos.y+= iSmallShipOffsets[dir][STARB_PLANK][Y];
 		p2->setPosition( itmpos );
-		mapRegions->add( p2 );
+		regions::add( p2 );
 
-		mapRegions->remove( tiller );
+		regions::remove( tiller );
 		itmpos= tiller->getPosition();
 		itmpos.x+= iSmallShipOffsets[dir][TILLER][X];
 		itmpos.y+= iSmallShipOffsets[dir][TILLER][Y];
 		tiller->setPosition( itmpos );
-		mapRegions->add( tiller );
+		regions::add( tiller );
 
-		mapRegions->remove( hold );
+		regions::remove( hold );
 		itmpos= hold->getPosition();
 		itmpos.x+= iSmallShipOffsets[dir][HOLD][X];
 		itmpos.y+= iSmallShipOffsets[dir][HOLD][Y];
 		hold->setPosition( itmpos );
-		mapRegions->add( hold );
+		regions::add( hold );
 		break;
 
 	case 0x08:
 	case 0x0C:
-		mapRegions->remove( p1 );
+		regions::remove( p1 );
 		itmpos= p1->getPosition();
 		itmpos.x+= iMediumShipOffsets[dir][PORT_PLANK][X];
 		itmpos.y+= iMediumShipOffsets[dir][PORT_PLANK][Y];
 		p1->setPosition( itmpos );
-		mapRegions->add( p1 );
+		regions::add( p1 );
 
-		mapRegions->remove( p2 );
+		regions::remove( p2 );
 		itmpos= p2->getPosition();
 		itmpos.x+= iMediumShipOffsets[dir][STARB_PLANK][X];
 		itmpos.y+= iMediumShipOffsets[dir][STARB_PLANK][Y];
 		p2->setPosition( itmpos );
-		mapRegions->add( p2 );
+		regions::add( p2 );
 
-		mapRegions->remove( tiller );
+		regions::remove( tiller );
 		itmpos= tiller->getPosition();
 		itmpos.x+= iMediumShipOffsets[dir][TILLER][X];
 		itmpos.y+= iMediumShipOffsets[dir][TILLER][Y];
 		tiller->setPosition( itmpos );
-		mapRegions->add( tiller );
+		regions::add( tiller );
 
-		mapRegions->remove( hold );
+		regions::remove( hold );
 		itmpos= hold->getPosition();
 		itmpos.x+= iMediumShipOffsets[dir][HOLD][X];
 		itmpos.y+= iMediumShipOffsets[dir][HOLD][Y];
 		hold->setPosition( itmpos );
-		mapRegions->add( hold );
+		regions::add( hold );
 
 		break;
 	case 0x10:
 	case 0x14:
 
-		mapRegions->remove( p1 );
+		regions::remove( p1 );
 		itmpos= p1->getPosition();
 		itmpos.x+= iLargeShipOffsets[dir][PORT_PLANK][X];
 		itmpos.y+= iLargeShipOffsets[dir][PORT_PLANK][Y];
 		p1->setPosition( itmpos );
-		mapRegions->add( p1 );
+		regions::add( p1 );
 
-		mapRegions->remove( p2 );
+		regions::remove( p2 );
 		itmpos= p2->getPosition();
 		itmpos.x+= iLargeShipOffsets[dir][STARB_PLANK][X];
 		itmpos.y+= iLargeShipOffsets[dir][STARB_PLANK][Y];
 		p2->setPosition( itmpos );
-		mapRegions->add( p2 );
+		regions::add( p2 );
 
-		mapRegions->remove( tiller );
+		regions::remove( tiller );
 		itmpos= tiller->getPosition();
 		itmpos.x+= iLargeShipOffsets[dir][TILLER][X];
 		itmpos.y+= iLargeShipOffsets[dir][TILLER][Y];
 		tiller->setPosition( itmpos );
-		mapRegions->add( tiller );
+		regions::add( tiller );
 
-		mapRegions->remove( hold );
+		regions::remove( hold );
 		itmpos= hold->getPosition();
 		itmpos.x+= iLargeShipOffsets[dir][HOLD][X];
 		itmpos.y+= iLargeShipOffsets[dir][HOLD][Y];
 		hold->setPosition( itmpos );
-		mapRegions->add( hold );
+		regions::add( hold );
 
 		break;
 
@@ -977,11 +977,11 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pPlankR->setPosition( lpr );
 	pHold->setPosition( lh );
 
-	mapRegions->add(pTiller);//Make sure everything is in da regions!
-	mapRegions->add(pPlankL);
-	mapRegions->add(pPlankR);
-	mapRegions->add(pHold);
-	mapRegions->add(pBoat);
+	regions::add(pTiller);//Make sure everything is in da regions!
+	regions::add(pPlankL);
+	regions::add(pPlankR);
+	regions::add(pHold);
+	regions::add(pBoat);
 
 	//their x pos is set by BuildHouse(), so just fix their Z...
 	boatpos.z+=3;
@@ -1318,13 +1318,13 @@ void boats::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 			P_ITEM pi= MAKE_ITEMREF_LOGGED(c,err);
 			if(!err)
 			{
-				mapRegions->remove(pi);
+				regions::remove(pi);
 				Location itmpos= pi->getPosition();
 				itmpos.x+= tx;
 				itmpos.y+= ty;
 				pi->setPosition( itmpos );
 				pi->Refresh();
-				mapRegions->add(pi);
+				regions::add(pi);
 			}
 		}
 	}
@@ -1338,12 +1338,12 @@ void boats::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 		   if (!err)
 		   {
 			   Location charpos= pc_c->getPosition();
-			   mapRegions->remove(pc_c);
+			   regions::remove(pc_c);
 			   charpos.x+= tx;
 			   charpos.y+= ty;
 			   pc_c->MoveTo(charpos);
 			   pc_c->teleport();
-			   mapRegions->add(pc_c);
+			   regions::add(pc_c);
 		   }
 		}
 	}

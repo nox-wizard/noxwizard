@@ -609,20 +609,20 @@ void NxwCharWrapper::fillOwnedNpcs( P_CHAR pc, bool bIncludeStabled, bool bOnlyF
 void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
 
-	if(!mapRegions->isValidCoord( x, y ))
+	if(!regions::isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+				if( iy>=0 && regions::isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+					if( regions::regions[nowx][nowy].charsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].charsInRegions.begin() );
+					for( ; iter!=regions::regions[nowx][nowy].charsInRegions.end(); iter++ ) {
 						P_CHAR pc=pointers::findCharBySerial( *iter );
 						if( !ISVALIDPC( pc ) )
 							continue;
@@ -667,20 +667,20 @@ void NxwCharWrapper::fillCharsNearXYZ ( Location location, int nDistance, bool b
 */
 void NxwCharWrapper::fillNpcsNearXY( UI16 x, UI16 y, int nDistance )
 {
-	if(!mapRegions->isValidCoord( x, y ))
+	if(!regions::isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+				if( iy>=0 && regions::isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( mapRegions->regions[nowx][nowy].charsInRegions.empty() )
+					if( regions::regions[nowx][nowy].charsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].charsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].charsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].charsInRegions.begin() );
+					for( ; iter!=regions::regions[nowx][nowy].charsInRegions.end(); iter++ ) {
 						P_CHAR pc=pointers::findCharBySerial( *iter );
 						if( !ISVALIDPC( pc ) || !pc->npc )
 							continue;
@@ -859,16 +859,16 @@ void NxwItemWrapper::fillItemsInContainer( P_ITEM pi, bool bIncludeSubContained,
 void NxwItemWrapper::fillItemsAtXY( UI16 x, UI16 y, UI32 type, SI32 id )
 {
 	
-	if(!mapRegions->isValidCoord( x, y ))
+	if(!regions::isValidCoord( x, y ))
 		return;
 
 	UI16 nowx = x/REGION_GRIDSIZE, nowy= x/REGION_COLSIZE;
 
-	if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
+	if( regions::regions[nowx][nowy].itemsInRegions.empty() )
 		return;
 
-	SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
-	for( ; iter!= mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
+	SERIAL_SET::iterator iter( regions::regions[nowx][nowy].itemsInRegions.begin() );
+	for( ; iter!= regions::regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
 		P_ITEM pi=pointers::findItemBySerial( *iter );
 		if( ISVALIDPI( pi ) && pi->isInWorld() )
 		{
@@ -903,20 +903,20 @@ void NxwItemWrapper::fillItemsAtXY( Location location, UI32 type, SI32 id )
 */
 void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems )
 {
-	if(!mapRegions->isValidCoord( x, y ))
+	if(!regions::isValidCoord( x, y ))
 		return;
 
 	for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 		if( ix>=0 ) {
 			for( SI32 iy=y-REGION_COLSIZE; iy<=y+REGION_COLSIZE; iy+=REGION_COLSIZE ) {
-				if( iy>=0 && mapRegions->isValidCoord( x, y ) ) {
+				if( iy>=0 && regions::isValidCoord( x, y ) ) {
 					UI16 nowx = ix/REGION_GRIDSIZE, nowy= iy/REGION_COLSIZE;
 
-					if( mapRegions->regions[nowx][nowy].itemsInRegions.empty() )
+					if( regions::regions[nowx][nowy].itemsInRegions.empty() )
 						continue;
 					
-					SERIAL_SET::iterator iter( mapRegions->regions[nowx][nowy].itemsInRegions.begin() );
-					for( ; iter!=mapRegions->regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
+					SERIAL_SET::iterator iter( regions::regions[nowx][nowy].itemsInRegions.begin() );
+					for( ; iter!=regions::regions[nowx][nowy].itemsInRegions.end(); iter++ ) {
 						P_ITEM pi=pointers::findItemBySerial( *iter );
 						if(ISVALIDPI(pi) && pi->isInWorld() ) {
 

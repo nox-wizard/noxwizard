@@ -197,7 +197,7 @@ struct unitile_st
 struct st_multiidx
 {
  SI32 start;
- SI32 length;
+ UI32 length;
  SI32 unknown;
 } PACK_NEEDED;
 

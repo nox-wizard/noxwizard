@@ -256,9 +256,9 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Spawns
 	//
-	if( TIMEOUT( Spawns->check ) )
+	if( TIMEOUT( spawns::check ) )
 	{
-		Spawns->doSpawn();
+		spawns::doSpawn();
 	}
 	//
 	// Shoprestock

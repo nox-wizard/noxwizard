@@ -3045,7 +3045,7 @@ void command_regspawnall(NXWSOCKET  s)
 {
 	sysbroadcast(TRANSLATE("ALL Regions Spawning to MAX, this will cause some lag."));
 
-	Spawns->doSpawnAll();
+	spawns::doSpawnAll();
 	
 	sysmessage(s, "[DONE] All NPCs/items spawned in regions");
 }

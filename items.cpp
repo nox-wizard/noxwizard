@@ -598,9 +598,9 @@ void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
 */
 void cItem::MoveTo(Location newloc)
 {
-	mapRegions->remove(this);
+	regions::remove(this);
 	setPosition( newloc );
-	mapRegions->add(this);
+	regions::add(this);
 }
 
 /*!

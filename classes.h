@@ -145,8 +145,8 @@ public:
 	UI32 GetLength() const { return length; }
 };
 
-extern UI32 MapTileWidth;//  = 768;
-extern UI32 MapTileHeight;// = 512;
+extern UI32 MapTileWidth;
+extern UI32 MapTileHeight;
 
 #define MAXMAPTILEWIDTH 768
 #define MAXMAPTILEHEIGHT 512

@@ -141,7 +141,7 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-					mapRegions->add(p_pet);
+					regions::add(p_pet);
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
 					LogMessage("Stabled animal got freed because stablemaster died");
@@ -1041,7 +1041,7 @@ void angelMode();
 
 
 		ConOut("Loading spawn regions...");
-		Spawns->loadFromScript();
+		spawns::loadFromScript();
 		ConOut("[DONE]\n");
 
 		ConOut("Loading regions...");
@@ -1316,7 +1316,7 @@ void angelMode();
 
 	InfoOut("Server started\n");
 
-	Spawns->doSpawnAll();
+	spawns::doSpawnAll();
 
 	//OnStart
 	AMXEXEC(AMXT_SPECIALS,0,0,AMX_AFTER);
@@ -3050,14 +3050,13 @@ void StartClasses()
 
 	// Classes nulled now, lets get them set up :)
 	cwmWorldState=new CWorldMain;
-	mapRegions=new cRegion;
 	Guilds=new cGuilds;
 	Map=new cMapStuff;
 	Network=new cNetwork;
-	Partys=new cPartys;
-	Spawns=new cSpawns;
 
+	spawns::initialize();
 	restocks::initialize();
+	regions::initialize();
 
 	ConOut(" [ OK ]\n");
 }
@@ -3065,12 +3064,9 @@ void StartClasses()
 void DeleteClasses()
 {
 	delete cwmWorldState;
-	delete mapRegions;
 	delete Guilds;
 	delete Map;
 	delete Network;
-	delete Partys;
-	delete Spawns;
 	if( tiledata::tiledata )	delete tiledata::tiledata;
 
 	accounts::finalize();

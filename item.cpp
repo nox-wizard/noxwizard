@@ -468,13 +468,14 @@ namespace item
 			}
 			else
 				if (pi->isInWorld())
-					mapRegions->add(pi);
+					regions::add(pi);
 		}
 
 		return pi;
 
 	}
 
+#if 0
 	/*
 	\author Duke
 	\brief Create an item for a socket
@@ -544,7 +545,8 @@ namespace item
 		}
 		return pi;
 	}*/
-
+#endif
+	
 	SI32 getname(int i, char* itemname)
 	{
 		tile_st tile;

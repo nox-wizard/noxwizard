@@ -565,7 +565,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 	pc->region=static_cast<unsigned char>(calcRegionFromXY( pc->getPosition() )); //LB bugfix
 
  // lord binarys body/skin autocorrection code
-	mapRegions->add(pc);
+	regions::add(pc);
  // begin of meta gm stuff
 
 	if (!pc->npc)
@@ -592,10 +592,9 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 	}
 
-	const UI16 max_x = MapTileWidth  * 8, max_y = MapTileHeight * 8;
 	Location pcpos= pc->getPosition();
 
-	if( ((pcpos.x<100) && (pcpos.y<100)) || ((pcpos.x>max_x) || (pcpos.y>max_y)) )
+	if( ((pcpos.x<100) && (pcpos.y<100)) || !regions::isValidCoord(pcpos) )
 	{
 		if( !pc->npc )
 			pc->MoveTo( 900,300,30 ); //player in an invalid location
@@ -1023,16 +1022,14 @@ void loaditem()
 
 	if (pi->isInWorld())
 	{
-		UI32 max_x = MapTileWidth  * 8;
-		UI32 max_y = MapTileHeight * 8;
-		mapRegions->add(pi);
+		regions::add(pi);
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{
 			insert_boat(pi);
 		}
 
-		if ((pi->getPosition().x>max_x) || (pi->getPosition().y>max_y))	// lord bianry
+		if ( !regions::isValidCoord(pi->getPosition()) )	// lord bianry
 			pi->deleteItem();
 	}
 
@@ -1125,7 +1122,7 @@ void CWorldMain::loadNewWorld()
 
 
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	spawns::clearDynamic();
 	cAllObjectsIter objs;
 	P_CHAR pc = NULL;
 	P_ITEM pi = NULL;
@@ -1136,7 +1133,7 @@ void CWorldMain::loadNewWorld()
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 			if ( pi->isSpawner() )
-				Spawns->loadFromItem(pi);
+				spawns::loadFromItem(pi);
 		}
 	}
 	return;
@@ -2100,7 +2097,7 @@ void CWorldMain::loadPrison()
 void CWorldMain::realworldsave ()
 {
 	//Luxor: reload dynamic spawners here.
-	Spawns->clearDynamic();
+	spawns::clearDynamic();
 	cAllObjectsIter objs;
 	chr_curr=0;
 	itm_curr=0;
@@ -2112,7 +2109,7 @@ void CWorldMain::realworldsave ()
 		else {
 			pi = static_cast<P_ITEM>(objs.getObject());
 			if ( pi->isSpawner() )
-				Spawns->loadFromItem(pi);
+				spawns::loadFromItem(pi);
 			SaveItem( pi );
 		}
 	}
