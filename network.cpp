@@ -536,23 +536,18 @@ void cNetwork::Login2(int s)
 		ServerLog.Write( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 
 	tlen = 6 + (servcount*40);
-	newlist1[1]=static_cast<unsigned char>(tlen>>8);
-	newlist1[2]=static_cast<unsigned char>(tlen%256);
-	newlist1[4]=servcount>>8;
-	newlist1[5]=servcount%256;
+	ShorToCharPtr(tlen, newlist1 +1);
+	ShorToCharPtr(servcount, newlist1 +4);
 	Xsend(s, newlist1, 6);
 
 	for( i = 0; i < servcount; ++i )
 	{
-		newlist2[0]=static_cast<unsigned char>((i+1)>>8);
-		newlist2[1]=static_cast<unsigned char>((i+1)%256);
+		ShortToCharPtr(i+1, newlist2);
 
 		strcpy((char*)&newlist2[2], serv[i][0]);
-		ip=inet_addr(serv[i][1]);
-		newlist2[39]=(unsigned char) (ip>>24);
-		newlist2[38]=(unsigned char) (ip>>16);
-		newlist2[37]=(unsigned char) (ip>>8);
-		newlist2[36]=(unsigned char) (ip%256);
+		ip=inet_addr(serv[i][1]); 	  // Host-Order
+		ip = htonl(ip);			  // swap if needs
+		LongToCharPtr(ip, newlist2 +36);  //Network order ...
 		Xsend(s, newlist2, 40);
 	}
 }
@@ -598,12 +593,9 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 
 //	unsigned char login03[12]="\x8C\x00\x00\x00\x00\x13\x88\x7B\x7B\x7B\x01";
 	UI08 login03[11]={ 0x8C, 0x00, };
-	login03[4]=(unsigned char) (ip>>24);
-	login03[3]=(unsigned char) (ip>>16);
-	login03[2]=(unsigned char) (ip>>8);
-	login03[1]=(unsigned char) (ip%256);
-	login03[5]=port>>8;
-	login03[6]=port%256;
+	ip = htonl(ip);			// host order -> network order !!!!
+	LongToCharPtr(ip, login03 +1);
+	ShortToCharPtr(port, login03 +5);
 	srand(ip+acctno[s]+now+uiCurrentTime); // Perform randomize
 	login03[7]='a';			// New Server Key!
 	login03[8]='K';
