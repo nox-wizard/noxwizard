@@ -35,8 +35,8 @@ eUI16& eUI16::operator=( eUI16 v )
 
 UI16 eUI16::get(  )
 {
-	//return ntohs( this->a );
-	return this->a;
+	return ntohs( this->a );
+	//return this->a;
 }
 
 

@@ -1987,23 +1987,27 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					
 					cPacketCharProfileReq p;
 					p.receive( ps );
+					P_CHAR who=pointers::findCharBySerial( p.chr.get() );
+					if( !ISVALIDPC( who ) ) break;
 					if( p.update ) { //update profile
-						
+						if( ( who->getSerial32()!=pc_currchar->getSerial32() ) && !pc_currchar->IsGMorCounselor() ) 
+							break; //lamer fix
+						if( who->getProfile()==NULL ) 
+							who->setProfile( new cUnicodeString( p.profile ) );
+						else 
+							who->getProfile()->copy( &p.profile );
 					}
 					else { //only send
-						P_CHAR who=pointers::findCharBySerial( p.chr.get() );
-						if( ISVALIDPC( who ) ) {
-							cPacketCharProfile resp;
-							resp.title= new std::string;
-							resp.chr=p.chr;
-							(*resp.title)+= who->getCurrentName();
-							resp.staticProfile = new cUnicodeString();
-							resp.profile = who->getProfile();
-							resp.send( ps );
+						cPacketCharProfile resp;
+						resp.title= new std::string;
+						resp.chr=p.chr;
+						(*resp.title)+= who->getCurrentName();
+						resp.staticProfile = new cUnicodeString();
+						resp.profile = who->getProfile();
+						resp.send( ps );
 
-							delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
-							delete resp.staticProfile;
-						}
+						delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
+						delete resp.staticProfile;
 					}
 					
 					}
