@@ -1094,7 +1094,6 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 				pc->playSFX(0x013E);
 				P_ITEM itm = item::CreateFromScript( "$item_bales_of_cotton", pc->getBackpack() );
 				if (ISVALIDPI(itm)) {
-					itm->setCont(pc->getBackpack());	//Luxor
 					pc->sysmsg(TRANSLATE("You reach down and pick some cotton."));
 				}
 			}
