@@ -1829,7 +1829,7 @@ public:
 private:
 	eUI16 cmd_length; //!< command section length
 public:
-	std::string commands; //!< commands ( zero terminated )
+	std::vector<std::string>* commands; //!< commands ( zero terminated )
 
 private:
 	 eUI16 numTextLines; //!<text lines number
@@ -1838,7 +1838,7 @@ public:
 
 //	for everty vector item
 	eUI16 len; //!< text lenth for every unicode string	
-	std::vector< cUnicodeString > texts; //!< text 
+	std::vector< cUnicodeString >* texts; //!< text 
 //end
 
 	cPacketMenu();

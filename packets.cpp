@@ -395,7 +395,7 @@ SEND( WebBrowser ) {
 CREATE( Menu, PKG_MENU, 0x15 )
 SEND( Menu ) {
 	if( ps == NULL ) return; 
-	this->size=this->headerSize + (commands.size()+1 );
+	/*this->size=this->headerSize + (commands->size()+1 );
 	this->cmd_length=this->commands.size();
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->commands.c_str(), commands.size()+1 );
@@ -405,7 +405,7 @@ SEND( Menu ) {
 	for( ; iter!=end; iter++ ) {
 		len=iter->length();
 		Xsend( ps->toInt(), (char*)&len, sizeof( eUI16) );
-	}
+	}*/
 
 }
 
