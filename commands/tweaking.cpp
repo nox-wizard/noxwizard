@@ -108,7 +108,7 @@ void cTweaking::TITLE_Apply(NXWCLIENT client) {
 	string text= client->getParamsAsString();
 	P_CHAR pc= target->getChar();
 	if(ISVALIDPC(pc)) {
-		strcpy(pc->title, text.c_str());
+		pc->title = text;
 	} else
 		client->sysmsg("Please select a character.");
 }

@@ -760,7 +760,7 @@ public:
 		SI32			fleeat;
 		SI32			reattackat;
 		SI32			trigger; //Trigger number that character activates
-		TEXT			trigword[31]; //Word that character triggers on.
+		std::string	trigword; //Word that character triggers on.
 		char			envokeid1; //ID1 of item user envoked
 		char			envokeid2; //ID2 of item user envoked
 		SI32			envokeitem;
