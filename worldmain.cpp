@@ -328,7 +328,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 					Accounts->AddCharToAccount( str2num(script2), pc );
 			}
 			else if (!strcmp(script1, "ALLMOVE"))
-				pc->SetPriv2(str2num(script2))
+				pc->SetPriv2(str2num(script2));
 			else if (!strcmp(script1, "ATT"))
 				pc->att=str2num(script2);
 			else if (!strcmp(script1, "ADVOBJ"))
