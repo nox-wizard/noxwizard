@@ -11,7 +11,7 @@ cResourceMap::cResourceMap(LOGICAL keepInMemory)
 	this->keepInMemory=keepInMemory;
 	if ( !keepInMemory )
 	{
-		this->filename=resourcemapSerial + ".resourcemap.nxw.bin";
+		this->filename=resourcemapSerial ;
 	}
 }
 
@@ -59,6 +59,7 @@ void cResourceMap::load()
     struct _finddata_t c_file;
     long hFile;
 	std::string currentFile=SrvParms->savePath+"*.res.nxw.bin";
+	std::string mapName;
     /* Find first ..res.nxw.bin file in current directory */
     if( (hFile = _findfirst( currentFile.c_str(), &c_file )) != -1L )
 	{
@@ -66,6 +67,8 @@ void cResourceMap::load()
 		{
 			currentFile=SrvParms->savePath;
 			currentFile+=c_file.name;
+			mapName=c_file.name;
+			mapName=mapName.substr(0, mapName.find(".res.nxw.bin"));
 			ifstream datafile(currentFile.c_str(), ios::in|ios::binary);
 			if ( datafile.is_open() )
 			{
@@ -76,17 +79,18 @@ void cResourceMap::load()
 				cResourceMap *map;
 				if ( tempType == RESOURCEMAP_LOCATION )
 				{
-					cResourceLocationMap *newmap = new cResourceLocationMap(currentFile, 1);
+					cResourceLocationMap *newmap = new cResourceLocationMap(mapName, 1);
 					map=newmap;
 				}
 				else if ( tempType == RESOURCEMAP_STRING )
 				{
-					cResourceStringMap *newmap = new cResourceStringMap(currentFile, 1);
+					cResourceStringMap *newmap = new cResourceStringMap(mapName, 1);
 					map=newmap;
 				}
 				map->setType(tempType);
 				map->setInMemory(inMemory);
 				map->deserialize(&datafile);
+				addMap(map);
 			}
 		}
 		while( _findnext( hFile, &c_file ) == 0 );
@@ -111,8 +115,17 @@ UI32 cResourceMap::addMap(cResourceMap *newMap)
 	std::map<UI32, cResourceMap *>::iterator iter = resourceMaps.begin();
 	for ( ; iter !=  resourceMaps.end();iter++)
 	{
+		cResourceMap *map = iter->second;
 		if (iter->second ==newMap )
-			return 0;
+		{
+			delete newMap;
+			return iter->first;
+		}
+		if ( map->getFile() == newMap->getFile() )
+		{
+			delete newMap;
+			return iter->first;
+		}
 	}
 	resourceMaps.insert(make_pair(++resourcemapSerial, newMap));
 	return resourcemapSerial;
@@ -122,7 +135,16 @@ void cResourceMap::deleteMap(UI32 index)
 {
 	std::map<UI32, cResourceMap *>::iterator iter = resourceMaps.find(index);
 	if ( iter != resourceMaps.end())
+	{
+		cResourceMap *map = iter->second;
+		if ( map->getFile() != "" )
+		{
+			std::string saveFilename=SrvParms->savePath+map->getFile()+".res.nxw.bin";
+			remove (saveFilename.c_str());
+		}
+		delete iter->second;
 		resourceMaps.erase(iter);
+	}
 }
 
 void cResourceMap::serialize(ofstream *myStream)
@@ -178,7 +200,7 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
-		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
 		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
@@ -220,7 +242,7 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 				// i suppose it is faster to copy the file up to the current position to a backup file
 				// then insert the new key and append the rest of the file
 				
-				std::string backupFilename=resourceFilename+".new";
+				std::string backupFilename=SrvParms->savePath+resourceFilename+".new";
 				ofstream backupFile(backupFilename.c_str(), ios::out);
 				datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
 				UI32 currOffset=datafile.tellg();
@@ -274,7 +296,7 @@ SI32 cResourceStringMap::getValue(std::string key)
 		SI32 value;
 		// since we have a sorted file get Operations should be much faster using a binary sort
 		// but we have to find the correct offset first
-		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
 		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
@@ -364,7 +386,7 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 	}
 	if ( !isInMemory() && getFile() != "" )
 	{
-		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
 		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
@@ -444,7 +466,7 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 				}
 			}
 			// now we are at the correct position
-			std::string backupFilename=resourceFilename+".new";
+			std::string backupFilename=SrvParms->savePath+resourceFilename+".new";
 			ofstream backupFile(backupFilename.c_str(), ios::out);
 			UI32 currOffset=datafile.tellg();
 			datafile.seekg(0, ios::beg);
@@ -494,7 +516,7 @@ SI32 cResourceLocationMap::getValue(cCoord key)
 {
 	if ( !isInMemory() && getFile() != "" )
 	{
-		std::string resourceFilename=getFile() + ".res.nxw.bin";
+		std::string resourceFilename=SrvParms->savePath+getFile() + ".res.nxw.bin";
 		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
 		if (!datafile.is_open()) 
 		{ 
