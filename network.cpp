@@ -1049,7 +1049,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	// Sparhawk	Race system support
 	//		When the race system is active and users doesn't belong to a valid race start enlistment procedure
 	//
-	if ( Race::isRaceSystemActive() )
+	/*if ( Race::isRaceSystemActive() )
 		if ( pc->getRace() <= 0 )
 		{
 			pc->setRace(0);
@@ -1060,7 +1060,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 				race_enlist->Call( pc->getSerial32() );
 			else
 				LogError("Race system enabled but failed to call amx override for race enlist!") ;
-		}
+		}*/
 		//else
 		//	validate pc race and decide what to do if race is invalid or has been deactivated
 
