@@ -18,7 +18,6 @@
 #include "npcai.h"
 #include "network.h"
 #include "commands.h"
-#include "unicode.h"
 #include "packets.h"
 
 #define MAXBUFFER_REAL MAXBUFFER

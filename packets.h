@@ -22,7 +22,6 @@
 #include "constants.h"
 #include "typedefs.h"
 #include <string>
-#include "unicode.h"
 #include "abstraction/endian.h"
 
 using namespace std;

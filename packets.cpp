@@ -457,7 +457,7 @@ SEND( Menu ) {
 	for( ; itu!=endu; itu++ ) {
 		len=itu->length();
 		Xsend( s, (char*)&len, sizeof( len ) );
-		Xsend( s, itu, false ); //not send null terminator
+		Xsend( s, *itu, false ); //not send null terminator
 	}
 
 }

@@ -22,7 +22,6 @@
 #include "msgboard.h"
 #include "target.h"
 #include "constants.h"
-#include "unicode.h"
 
 //@{
 /*!
