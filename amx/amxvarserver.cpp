@@ -142,10 +142,12 @@ SI32 amxStringVariable::getSize()
 /*
 \brief
 \author Endymion
+\todo write it
 */
 amxScriptIdVariable::amxScriptIdVariable( char* initialValue )
 {
-	amxScriptIdVariable( xss::getIntFromDefine( initialValue ) );
+// Akron: this line doesn't compile under serious c++ compilers...
+//	amxScriptIdVariable( xss::getIntFromDefine( initialValue ) );
 }
 
 /*
