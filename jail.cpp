@@ -73,14 +73,25 @@ void archive()
 	std::string archiveFileName( SrvParms->archivePath + SrvParms->jailWorldfile + timeNow + SrvParms->worldfileExtension );
 
 
-	if( rename( saveFileName.c_str(), archiveFileName.c_str() ) != 0 )
+	char tempBuf[60000]; // copy files in 60k chunks
+	ifstream oldSave;
+	ofstream archiveSave;
+	oldSave.open(saveFileName.c_str(), ios::binary );
+	archiveSave.open(archiveFileName.c_str(), ios::binary);
+	if ( ! archiveSave.is_open() || ! oldSave.is_open() )
 	{
-		LogWarning("Could not rename/move file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		LogWarning("Could not copy file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		return;
 	}
-	else
+	while ( ! oldSave.eof() )
 	{
-		InfoOut("Renamed/moved file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		int byteCount;
+		oldSave.read(&tempBuf[0], sizeof(tempBuf)); 
+		byteCount = oldSave.gcount();
+		archiveSave.write(&tempBuf[0], byteCount);
 	}
+	
+	InfoOut("Copied file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
 }
 
 }

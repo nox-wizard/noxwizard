@@ -32,6 +32,7 @@ cGuild::cGuild( SERIAL guildstone )
 {
 	serial	= guildstone;
 	type = (GUILD_TYPE) 0;
+	
 }
 
 /*!
@@ -73,6 +74,8 @@ void cGuild::load( cStringFile& file )
 					this->abbreviation = r;
 				else if ( l=="ALIGN" )
 					this->type = (GUILD_TYPE) str2num(r);
+				else if ( l=="ALLY" )
+					this->addAlly((SERIAL) str2num(r));
 				break;
 			case 'C':
 			case 'c':
@@ -89,6 +92,8 @@ void cGuild::load( cStringFile& file )
 					{
 						P_GUILD_MEMBER member = addMember( pChar );
 						member->load( file );
+						if ( member->getRank() == RANK_GUILDMASTER )
+							this->guildMaster=member->getSerial();
 					}
 					else
 					{
@@ -101,6 +106,11 @@ void cGuild::load( cStringFile& file )
 			case 'n':
 				if ( l=="NAME" )
 					this->name = r;
+				break;
+			case 'P':
+			case 'p':
+				if ( l=="PEACE" )
+					this->addPeace((SERIAL) str2num(r));
 				break;
 			case 'R':
 			case 'r':
@@ -125,7 +135,9 @@ void cGuild::load( cStringFile& file )
 				break;
 			case 'W':
 			case 'w':
-				if ( l=="WEBPAGE" )
+				if ( l=="WAR" )
+					this->addWar((SERIAL) str2num(r));
+				else if ( l=="WEBPAGE" )
 					this->webpage = r;
 				break;
 		}
@@ -153,6 +165,21 @@ void cGuild::save( FILE* file )
 	for( ; recruit!=recruit_end; ++recruit )
 	{
 		recruit->second->save( file );
+	}
+	std::vector<SERIAL>::iterator wars (this->getGuildsInWar()->begin()), wars_end(this->getGuildsInWar()->end());
+	for( ; wars!=wars_end; ++wars)
+	{
+		fprintf( file, "WAR %d\n", *wars);
+	}
+	std::vector<SERIAL>::iterator peace (this->getGuildsInPeace()->begin()), peace_end(this->getGuildsInPeace()->end());
+	for( ; peace!=peace_end; ++peace)
+	{
+		fprintf( file, "PEACE %d\n", *peace);
+	}
+	std::vector<SERIAL>::iterator allies (this->getGuildsAllied()->begin()), allies_end(this->getGuildsAllied()->end());
+	for( ; allies!=allies_end; ++allies)
+	{
+		fprintf( file, "ALLY %d\n", *allies);
 	}
 	fprintf( file, "}\n\n");
 }
@@ -463,44 +490,99 @@ bool cGuild::hasAllianceWith(SERIAL guild)
 
 }
 
+/*!
+\brief Return array of guild wars
+\author Wintermute
+\return pointer to std::vector of serials of the guilds this guild is warring with
+*/
 
-std::vector<SERIAL>::iterator cGuild::getGuildsInWar()
+
+std::vector<SERIAL> *cGuild::getGuildsInWar()
 {
-	return guildWar.begin();
+	return &guildWar;
 }
 
-std::vector<SERIAL>::iterator cGuild::getGuildsInPeace()
+/*!
+\brief Return array of guild peace offers
+\author Wintermute
+\return pointer to std::vector of serials of the guilds this guild has made a peace offer to
+*/
+
+
+std::vector<SERIAL> *cGuild::getGuildsInPeace()
 {
-	return guildPeace.begin();
+	return &guildPeace;
 
 }
 
-std::vector<SERIAL>::iterator cGuild::getGuildsAllied()
+/*!
+\brief Return array of guild allies
+\author Wintermute
+\return pointer to std::vector of serials of the guilds this guild is allied with
+*/
+
+
+std::vector<SERIAL> *cGuild::getGuildsAllied()
 {
-	return guildAllies.begin();
+	return &guildAllies;
 
 }
+
+/*!
+\brief Add a guild to declare war on
+\author Wintermute
+\param guild, the guild to declare war on
+*/
+
 
 void cGuild::addWar(SERIAL guild)
 {
-	if ( Guildz.getGuild(guild) != NULL && ! hasWarWith(guild))
-		guildWar.push_back(guild);
+	guildWar.push_back(guild);
 }
+
+/*!
+\brief Add a guild to make a peace offer to
+\author Wintermute
+\param guild, the guild to make an peace offer to
+*/
+
 
 void cGuild::addPeace(SERIAL guild)
 {
-	if ( Guildz.getGuild(guild) != NULL && ! hasPeaceWith(guild))
+	P_GUILD otherGuild=Guildz.getGuild(guild);
+	if ( otherGuild != NULL && otherGuild->hasPeaceWith(this->getSerial()))
+	{
+		makePeace(guild);
+		otherGuild->makePeace(this->getSerial());
+	}
+	else
 		guildPeace.push_back(guild);
-
 }
+
+/*!
+\brief Add a guild as an ally to your guild
+\author Wintermute
+\param guild, the guild to make an alliance with
+*/
 
 void cGuild::addAlly(SERIAL guild)
 {
-	if ( Guildz.getGuild(guild) != NULL && ! hasAllianceWith(guild))
-		guildAllies.push_back(guild);
+	guildAllies.push_back(guild);
 }
 
-
+/*!
+\brief Remove all war entries from the current guild
+\author Wintermute
+\param guild, the guild to make peace with
+*/
+void cGuild::makePeace(SERIAL guild)
+{
+	vector<int>::iterator itRemove = guildPeace.begin();
+	for ( ; itRemove < guildPeace.end(); itRemove++)
+		if ( *itRemove == guild ) guildPeace.erase(itRemove);
+	itRemove = guildWar.begin();
+	for ( ; itRemove < guildWar.end(); itRemove++) guildWar.erase(itRemove);
+}
 /*!
 \brief Get the given guild recruit
 \author Endymion
@@ -661,7 +743,7 @@ std::string cGuildz::getFullAdress()
 }
 
 
-bool cGuildz::archive()
+void cGuildz::archive()
 {
 	std::string saveFileName( getFullAdress() );
 	std::string timeNow( getNoXDate() );
@@ -674,18 +756,31 @@ bool cGuildz::archive()
 				timeNow[i]= '-';
 		}
 	std::string archiveFileName( SrvParms->archivePath + SrvParms->guildWorldfile + timeNow + SrvParms->worldfileExtension );
-
-
-	if( rename( saveFileName.c_str(), archiveFileName.c_str() ) != 0 )
+	char tempBuf[60000]; // copy files in 60k chunks
+	ifstream oldSave;
+	ofstream archiveSave;
+	oldSave.open(saveFileName.c_str(), ios::binary );
+	if ( ! oldSave.is_open() )
 	{
-		LogWarning("Could not rename/move file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
-		return false;
+		InfoOut("No books available for saving\n");
+		return;
 	}
-	else
+	archiveSave.open(archiveFileName.c_str(), ios::binary);
+	if ( ! archiveSave.is_open() )
 	{
-		InfoOut("Renamed/moved file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
-		return true;
+		LogWarning("Could not copy file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		return ;
 	}
+	while ( ! oldSave.eof() )
+	{
+		int byteCount;
+		oldSave.read(&tempBuf[0], sizeof(tempBuf)); 
+		byteCount = oldSave.gcount();
+		archiveSave.write(&tempBuf[0], byteCount);
+	}
+	
+	InfoOut("Copied file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+
 }
 
 void cGuildz::safeoldsave()
@@ -825,7 +920,7 @@ int cGuildz::compareGuilds(P_GUILD guild1,P_GUILD guild2)
 
 	if (guild1 == NULL || guild2 == NULL ) return 0;
 
-	if ((guild1 == NULL)&&(guild2 == NULL))
+	if ((guild1 != NULL)&&(guild2 != NULL))
 	{
 		if (guild1==guild2)
 			return 1;

@@ -99,11 +99,25 @@ namespace Books
 			}
 		std::string archiveFileName( SrvParms->archivePath + SrvParms->bookWorldfile + timeNow + SrvParms->worldfileExtension );
 
-		if( rename( saveFileName.c_str(), archiveFileName.c_str() ) ) {
-			LogWarning("Could not rename/move file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
-		} else {
-			InfoOut("Renamed/moved file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
-		}
+	char tempBuf[60000]; // copy files in 60k chunks
+	ifstream oldSave;
+	ofstream archiveSave;
+	oldSave.open(saveFileName.c_str(), ios::binary );
+	archiveSave.open(archiveFileName.c_str(), ios::binary);
+	if ( ! archiveSave.is_open() || ! oldSave.is_open() )
+	{
+		LogWarning("Could not copy file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
+		return;
+	}
+	while ( ! oldSave.eof() )
+	{
+		int byteCount;
+		oldSave.read(&tempBuf[0], sizeof(tempBuf)); 
+		byteCount = oldSave.gcount();
+		archiveSave.write(&tempBuf[0], byteCount);
+	}
+	
+	InfoOut("Copied file '%s' to '%s'\n", saveFileName.c_str(), archiveFileName.c_str() );
 
 	}
 

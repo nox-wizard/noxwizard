@@ -3032,7 +3032,7 @@ NATIVE( _set_addGuildRecruit )
 */
 NATIVE( _set_addGuilds )
 {
-	amxSet::addGuilds( params[1], params[2] );
+	amxSet::addGuilds( params[1], params[2], params[3] );
 	return 0;
 }
 
@@ -3065,22 +3065,6 @@ NATIVE( _set_getRaceStuff )
 {
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
 \brief Resurrect a character
@@ -4700,6 +4684,73 @@ NATIVE(_guild_refuseRecruit)
 	return true;
 }
 
+/*!
+\brief returns if the two guilds are at war
+\author Wintermute
+\since 0.82
+\fn guild_hasWarWith( const guild, const otherguild )
+\param 1 the guild
+\param 2 the other guild
+*/
+NATIVE(_guild_hasWarWith)
+{
+
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return false;
+
+	P_GUILD guild2 = Guildz.getGuild( params[2] );
+	if ( guild2==NULL )	return false;
+
+	if ( guild->hasWarWith(guild2->getSerial()) )
+		return true;
+	return false;
+}
+
+/*!
+\brief returns if the first guild has offered peace to another warring guild
+\author Wintermute
+\since 0.82
+\fn guild_hasPeaceWith( const guild, const otherguild )
+\param 1 the guild
+\param 2 the other guild
+*/
+NATIVE(_guild_hasPeaceWith)
+{
+
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return false;
+
+	P_GUILD guild2 = Guildz.getGuild( params[2] );
+	if ( guild2==NULL )	return false;
+
+	if ( guild->hasPeaceWith(guild2->getSerial()) )
+		return true;
+	return false;
+}
+
+/*!
+\brief returns if the first guild has an alliance with another guild
+\author Wintermute
+\since 0.82
+\fn guild_hasAllianceWith( const guild, const otherguild )
+\param 1 the guild
+\param 2 the other guild
+*/
+NATIVE(_guild_hasAllianceWith)
+{
+
+	P_GUILD guild = Guildz.getGuild( params[1] );
+	if ( guild==NULL )	return false;
+
+	P_GUILD guild2 = Guildz.getGuild( params[2] );
+	if ( guild2==NULL )	return false;
+
+	if ( guild->hasAllianceWith(guild2->getSerial()) )
+		return true;
+	return false;
+}
+
+
 
 
 
@@ -6273,6 +6324,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "guild_getRecrAtIdx", _guild_recruitAtIndex },
  { "guild_addRecruit", _guild_addRecruit },
  { "guild_refuseRecruit", _guild_refuseRecruit },
+ { "guild_hasWarWith", _guild_hasWarWith },
+ { "guild_hasPeaceWith", _guild_hasPeaceWith },
+ { "guild_hasAllianceWith", _guild_hasAllianceWith },
 // Guild member function and properties - Endymion
  { "gmember_setProperty", _guildMember_setProperty },
  { "gmember_getProperty", _guildMember_getProperty },

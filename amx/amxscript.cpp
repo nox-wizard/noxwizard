@@ -975,7 +975,7 @@ void check_Natives ()
 
 	for (str = nxw_API[0].name; str!=NULL; str = nxw_API[++i].name)
 	{
-		if (strlen(str)>19) {
+		if (strlen(str)>sEXPMAX) {
 			if (!bFailed) ConOut("[FAIL]\n");
 			bFailed = true;
 			ConOut("\n%s() -> exceed 19 chars name len!", str);

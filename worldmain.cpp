@@ -89,10 +89,24 @@ void cStringFile::read( std::string& line )
 {
 	char linebuffer[255];
 	line="";
+	int byteCount;
+	do
+	{
+		inStream->getline(linebuffer, 255); 
+        byteCount = inStream->gcount();
+        if (inStream->eof())
+		{
+			inStream->close();
+			break;
+		}
+		else if (inStream->fail()) 
+		{
+           inStream->clear(inStream->rdstate() & ~ios::failbit);
+		}
+		line+=linebuffer;
+	}
+	while (byteCount >= 254 );  // reepat until line complete
 
-	if ( ! inStream->eof() )
-		inStream->getline(linebuffer, 255);
-	line=linebuffer;
 	if( ( line.size()>1 ) && ( line[0]=='/' && line[1]=='/' ) ) //commented
 		line="";
 }
@@ -119,7 +133,7 @@ void cStringFile::read( std::string& first, std::string& second, std::string& th
 
 bool cStringFile::eof()
 {
-	return (inStream!=NULL )? inStream->eof() : true;
+	return (inStream!=NULL )? inStream->eof() || ! inStream->is_open() : true;
 }
 
 
@@ -184,16 +198,17 @@ wstring HexVector2UnicodeString( char* s )
 	std::wstring w;
 
 	int i=0;
-	char temp[6] = { '0','x', };
+	char temp[7] = { '0','x', '0','0','0','0','\0'};
+	char *dummy;
+	int stringLength=strlen(s);
 	wchar_t baffer=0;
 	do {
 		memcpy( &temp[2], &s[i], 4 );
-		char* dummy;
 		baffer = static_cast<wchar_t>( strtol( temp, &dummy, 0 ) );
 		if( baffer!=0 )
 			w += baffer;
 		i+=4;
-	} while ( baffer!=0 );
+	} while ( baffer!=0 && i < stringLength);
 	return w;
 }
 

@@ -80,7 +80,8 @@ class cGuildMember
 
 
 #define GUILD_POLITICS_WAR 0
-#define	GUILD_POLITICS_ALLIED 1
+#define	GUILD_POLITICS_PEACE 1
+#define	GUILD_POLITICS_ALLIED 2
 
 /*!
 \brief this color are used into draw char packet
@@ -144,9 +145,9 @@ private:
 	private:
 		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
 		std::string	abbreviation;	//!< abbreviation ( es KCS )
-		std::vector <SERIAL> guildWar;
-		std::vector <SERIAL> guildPeace;
-		std::vector <SERIAL> guildAllies;
+		SERIAL_VECTOR guildWar;
+		SERIAL_VECTOR guildPeace;
+		SERIAL_VECTOR guildAllies;
 
 		SERIAL guildMaster;
 	typedef enum  {
@@ -184,7 +185,6 @@ private:
 	public:
 		inline std::map< SERIAL, P_GUILD_MEMBER >getMembers()
 		{ return members; }
-		
 		P_GUILD_MEMBER addMember( P_CHAR pc );
 		void resignMember( P_CHAR pc );
 		inline void removeMember(SERIAL member)
@@ -194,16 +194,16 @@ private:
 		SERIAL getMemberByIndex(int index);
 		int getRecruitIndex(SERIAL member);
 		SERIAL getRecruitByIndex(int index);
-		std::vector<SERIAL>::iterator getGuildsInWar();
-		std::vector<SERIAL>::iterator getGuildsInPeace();
-		std::vector<SERIAL>::iterator getGuildsAllied();
+		std::vector<SERIAL> *getGuildsInWar();
+		std::vector<SERIAL> *getGuildsInPeace();
+		std::vector<SERIAL> *getGuildsAllied();
 		void addWar(SERIAL guild);
 		void addPeace(SERIAL guild);
 		void addAlly(SERIAL guild);
 		bool hasWarWith(SERIAL guild);
 		bool hasPeaceWith(SERIAL guild);
 		bool hasAllianceWith(SERIAL guild);
-
+		void cGuild::makePeace(SERIAL guild);
 	public:
 
 		std::map< SERIAL, P_GUILD_RECRUIT > recruits;	//!< all who want become member of this guild
@@ -229,7 +229,7 @@ class cGuildz
 
 	public:
 		
-		bool archive();
+		void archive();
 		bool load();
 		bool save();
 

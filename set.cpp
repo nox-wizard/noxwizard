@@ -317,7 +317,7 @@ void addGuildRecruits( SERIAL iSet, SERIAL guild )
 	}
 }
 
-void addGuilds( SERIAL iSet, SERIAL guild )
+void addGuilds( SERIAL iSet, SERIAL guild , int options )
 {
  
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
@@ -1073,31 +1073,37 @@ void NxwItemWrapper::fillItemWeared( P_CHAR pc, bool bIncludeLikeHair, bool bInc
 \param options 
 \warning this function ADD new char to current list
 */
-void NxwItemWrapper::fillGuilds( SERIAL guild )
+void NxwItemWrapper::fillGuilds( SERIAL guild, int options )
 {
 	if( guild == INVALID ) { //all guilds
 		std::map< SERIAL, P_GUILD >::iterator iter( Guildz.guilds.begin() ), end( Guildz.guilds.end() );
 		for( ; iter!=end; ++iter ) {
 			insertSerial( iter->first );
 		}
-	}/*
+	}
 	else {
 
 		P_GUILD pGuild = Guildz.getGuild( guild );
 		if( pGuild != 0 )
-			if( options == GUILD_WAR ) {
-				std::vector<SERIAL>::iterator iter( pGuild->war.begin() ), end( pGuild->war.end() );
-				for( ; iter!=end; ++iter ) {
+			if( options == GUILD_POLITICS_WAR ) {
+				std::vector<SERIAL>::iterator iter=pGuild->getGuildsInWar()->begin();
+				for( ; iter!=pGuild->getGuildsInWar()->end(); ++iter ) {
 					insertSerial( *iter );
 				}
 			}
-			else if( options == GUILD_ALLIED ) {
-				std::vector<SERIAL>::iterator iter( pGuild->allied.begin() ), end( pGuild->allied.end() );
-				for( ; iter!=end; ++iter ) {
+			else if( options == GUILD_POLITICS_PEACE ) {
+				std::vector<SERIAL>::iterator iter = pGuild->getGuildsInPeace()->begin();
+				for( ; iter!=pGuild->getGuildsInPeace()->end(); ++iter ) {
 					insertSerial( *iter );
 				}
 			}
-	}*/
+			else if( options == GUILD_POLITICS_ALLIED ) {
+				std::vector<SERIAL>::iterator iter = pGuild->getGuildsAllied()->begin();
+				for( ; iter!=pGuild->getGuildsAllied()->end(); ++iter ) {
+					insertSerial( *iter );
+				}
+			}
+	}
 
 }
 

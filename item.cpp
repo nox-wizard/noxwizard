@@ -317,12 +317,12 @@ namespace item
 					else if ( lha == "ITEMLIST" )
 					{
 						pi->Delete();
-						pi=item::CreateScriptRandomItem( const_cast<char*>(rha.c_str()), cont);
-						/*
+						std::string str_scriptid="", str_amount="";
+						splitLine( rha.c_str(), str_scriptid, str_amount );
+						pi=item::CreateScriptRandomItem( const_cast<char*>(str_scriptid.c_str()), cont);
 						if( ISVALIDPI(pi) )
-							if( strcmp( script3, "") ) //ndEndy defined amount, 1 by default
-								pi->amount=str2num( script3 );
-						*/
+							if( strcmp( str_amount.c_str(), "") ) //ndEndy defined amount, 1 by default
+								pi->amount=str2num( str_amount);
 
 					}
 					else if ( lha == "INT" )

@@ -103,7 +103,7 @@ public:
 	void fillItemsAtXY( Location location, SI32 type = INVALID, SI32 id = INVALID );
 	void fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
 	void fillItemsNearXYZ ( Location location, int nDistance = VISRANGE, bool bExcludeNotMovableItems = true);
-	void fillGuilds( SERIAL guild );
+	void fillGuilds( SERIAL guild, int options=0 );
 
 };
 
@@ -163,7 +163,7 @@ namespace amxSet {
 
 	void addGuildMembers( SERIAL iSet, SERIAL guild );
 	void addGuildRecruits( SERIAL iSet, SERIAL guild );
-	void addGuilds( SERIAL iSet, SERIAL guild );
+	void addGuilds( SERIAL iSet, SERIAL guild , int options = INVALID);
 
 }
 

@@ -2081,6 +2081,39 @@ NATIVE2(_guild_setProperty)
 
 		switch( params[2] )
 		{
+			case NXW_GP_I_WAR:
+			{
+				SERIAL guild2 = p;
+				if ( ! pGuild->hasWarWith( guild2 ) )
+				{
+					P_GUILD pGuild2 = Guildz.getGuild( guild2 );
+					if ( pGuild2 != NULL )
+						pGuild->addWar(guild2);
+				}
+				break;
+			}
+			case NXW_GP_I_PEACE:	
+			{
+				SERIAL guild2 = p;
+				if ( pGuild->hasWarWith( guild2 ) )
+				{
+					P_GUILD pGuild2 = Guildz.getGuild( guild2 );
+					if ( pGuild2 != NULL )
+						pGuild->addPeace(guild2);
+				}
+				break;
+			}
+			case NXW_GP_I_ALLIES:
+			{
+				SERIAL guild2 = p;
+				if ( ! pGuild->hasWarWith( guild2 ) && ! pGuild->hasAllianceWith(guild2) )
+				{
+					P_GUILD pGuild2 = Guildz.getGuild( guild2 );
+					if ( pGuild2 != NULL )
+						pGuild->addAlly(guild2);
+				}
+				break;
+			}
 			case INVALID:
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
@@ -2204,7 +2237,7 @@ NATIVE2(_guild_getProperty)
 	P_GUILD pGuild = Guildz.getGuild( guild );
 	if( pGuild==NULL )
 	{
-		LogError( "guild_setProperty called with invalid guild %d", guild );
+		LogError( "guild_getProperty called with invalid guild %d", guild );
 		return INVALID;
 	}
 
