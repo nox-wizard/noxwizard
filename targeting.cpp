@@ -1644,48 +1644,43 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 
 	if(feat>0)
 	{
-		P_ITEM pi=item::CreateFromScript( "$item_feathers", pc->getBackpack() );
+		P_ITEM pi=item::CreateFromScript( "$item_feathers", pc->getBackpack(), feat );
 		VALIDATEPI(pi);
-		pi->setAmount( feat );
 		pi->Refresh();
 		sysmessage(s,TRANSLATE("You pluck the bird and get some feathers."));
 	}
 	if(ribs>0)
 	{
-		P_ITEM pi=item::CreateFromScript( "$item_cuts_of_raw_ribs", pc->getBackpack() );
+		P_ITEM pi=item::CreateFromScript( "$item_cuts_of_raw_ribs", pc->getBackpack(), ribs );
 		VALIDATEPI(pi);
-		pi->setAmount( ribs );
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You carve away some meat."));
 	}
 
 	if(hides>0)
 	{
-		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack() );
+		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack(), hides );
 		VALIDATEPI(pi);
-		pi->setAmount( hides );
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get the hides."));
 	}
 	if(fur>0)
 	{
-		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack() );
+		P_ITEM pi=item::CreateFromScript( "$item_hide", pc->getBackpack(), fur );
 		VALIDATEPI(pi);
-		pi->setAmount( fur );
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get the hides."));
 	}
 	if(wool>0)
 	{
-		P_ITEM pi=item::CreateFromScript( "$item_piles_of_wool", pc->getBackpack() );
+		P_ITEM pi=item::CreateFromScript( "$item_piles_of_wool", pc->getBackpack(), wool );
 		VALIDATEPI(pi);
-		pi->setAmount( wool );
 		pi->Refresh();
 		pc->sysmsg(TRANSLATE("You skin the corpse and get some unspun wool."));
 	}
 	if(bird>0)
 	{
-		P_ITEM pi = item::CreateFromScript( "$item_hardcoded", pc->getBackpack() );
+		P_ITEM pi = item::CreateFromScript( "$item_hardcoded", pc->getBackpack(), bird );
 		VALIDATEPI(pi);
 		pi->setId( 0x09B9 );
 		pi->setCurrentName( "raw bird" );
@@ -1845,12 +1840,12 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 				{
 					std::string itemnum, amount;
 					splitLine( script2, itemnum, amount );
-					P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pi3 );
+					int amt=str2num( amount );
+					if( amt=0 )
+						amt=INVALID;
+					P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pi3, amt );
 					if( ISVALIDPI(pi) ) {
 						pi->layer=0;
-						pi->SetRandPosInCont( pi3 );
-						if( amount != ""  ) //ndEndy defined amount
-							pi->amount=str2num( amount );
 						pi->Refresh();//let's finally refresh the item
 					}
                 }

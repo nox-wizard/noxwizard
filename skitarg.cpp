@@ -1025,10 +1025,9 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                     }
                     else
                     {
-                        P_ITEM pi=item::CreateFromScript( "$item_raw_fish" );
+                        P_ITEM pi=item::CreateFromScript( "$item_raw_fish", pc->getBackpack(), piRaw->amount );
                         VALIDATEPI(pi);
 
-                        pi->setAmount( piRaw->amount );
                         pi->setCurrentName( "#" );
                         pi->setId( id );
                         pi->type=ITYPE_FOOD;

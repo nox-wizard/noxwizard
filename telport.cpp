@@ -341,7 +341,12 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					}
 					if (!(strcmp("ITEM",script1)))
 					{
-						P_ITEM pi= item::CreateFromScript( script2 );
+						char itmnum[1024], amount[1024];
+						splitLine( script2, itmnum, amount );
+						int amt=str2num( amount );
+						if( amt=0 )
+							amt=INVALID;
+						P_ITEM pi= item::CreateFromScript( itmnum, NULL, amt );
 						packnum= pc->getBackpack();
 
 						if (ISVALIDPI(pi))
@@ -354,9 +359,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							else
 							{
 								if(ISVALIDPI(packnum)) 
-									pi->setContSerial(packnum->getSerial32());
-								if( strcmp( script3, "" ) )
-									pi->amount=str2num( script3 );
+									packnum->AddItem( pi );
 							}
 							pi->Refresh();//AntiChrist
 							pc->teleport();
