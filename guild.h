@@ -123,10 +123,10 @@ class cGuild
 		std::string	getAbbreviation();
 
 	private:
-		std::string	charter;	//!< Guild Charter
+		std::wstring	charter;	//!< Guild Charter
 	public:
-		void setCharter( const std::string& newCharter );
-		std::string	getCharter();
+		void setCharter( const std::wstring& newCharter );
+		std::wstring	getCharter();
 
 	private:
 		GUILD_TYPE type;	//!< guild type
@@ -202,8 +202,7 @@ class cGuildz
 
 extern cGuildz Guildz;
 
-//Changed by Sparhawk
-#define ISVALIDGUILD(guild) ( (guild>INVALID) && (guildes.find(guild) != guildes.end()) )
+#define ISVALIDGUILD(guild) ( (guild>INVALID) && ( Guildz.getGuild(guild) != NULL ) )
 
 #endif
 

@@ -56,20 +56,19 @@ void cGuild::safeoldsave()
 cGuild::cGuild( P_ITEM pGuildStone, P_CHAR pChar )
 {
 	serial	= pGuildStone->getSerial32();
-	name = "unnamed guild";
+/*	name = "unnamed guild";
 	abbreviation = "UNK";
 	charter = DEFAULTCHARTER;
 	type = GUILD_NORMAL;
 	webpage		= DEFAULTWEBPAGE;
-	if( pChar )
-	{
-		addMember( pChar );
-		setGuildMaster( pChar );
-		if ( pChar->GetBodyType() == BODY_FEMALE )
-			members[pChar->getSerial32()].setTitle("Guildmistress");
-		else
-			members[pChar->getSerial32()].setTitle("Guildmaster");
-	}
+*/
+	addMember( pChar );
+	setGuildMaster( pChar );
+/*	if ( pChar->GetBodyType() == BODY_FEMALE )
+		members[pChar->getSerial32()].setTitle("Guildmistress");
+	else
+		members[pChar->getSerial32()].setTitle("Guildmaster");
+*/
 }
 
 /*!
@@ -91,8 +90,11 @@ cGuild::cGuild( SERIAL serial )
 				break;
 			case 'C':
 			case 'c':
-				if (!strcmp(script1, "CHARTER"))
-					setCharter( script2 );
+				if (!strcmp(script1, "CHARTER")) {
+					wstring baffer;
+					string2wstring( std::string( script2 ), baffer );
+					setCharter( baffer );
+				}
 				break;
 			case 'M':
 			case 'm':
@@ -268,7 +270,7 @@ std::string cGuild::getAbbreviation()
 \author Endymion
 \param newCharter the new guild charter
 */
-void cGuild::setCharter( const std::string &newCharter )
+void cGuild::setCharter( const std::wstring &newCharter )
 {
 	charter = newCharter;
 }
@@ -278,7 +280,7 @@ void cGuild::setCharter( const std::string &newCharter )
 \author Endymion
 \return the guild charter
 */
-std::string cGuild::getCharter()
+std::wstring cGuild::getCharter()
 {
 	return charter;
 }
@@ -371,9 +373,7 @@ void cGuild::resignMember( P_CHAR pc )
 void cGuild::setGuildMaster( P_CHAR pc )
 {
 	VALIDATEPC(pc);
-	if( pc->getGuild() == this->serial ) { 
-		this->guildmaster = pc->getSerial32();
-	}
+	guildmaster = pc->getSerial32();
 }
 
 /*!
@@ -383,7 +383,7 @@ void cGuild::setGuildMaster( P_CHAR pc )
 */
 SERIAL cGuild::getGuildMaster()
 {
-	return this->guildmaster;
+	return guildmaster;
 }
 
 /*!
