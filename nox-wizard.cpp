@@ -937,8 +937,6 @@ void angelMode();
 #endif //win32
 
 
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	int i;
 	unsigned long tempSecs;
