@@ -213,7 +213,7 @@ void cPartyMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg )
 		
 	SERIAL button;
 	
-	if( button = 1 ) {
+	if( button == 1 ) {
 		
 		P_CHAR req=pointers::findCharBySerial( pc->reqPartySerial );
 
