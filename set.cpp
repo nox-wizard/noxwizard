@@ -129,6 +129,30 @@ void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 	sc->rewind();
 }
 
+void addNpcsNearObj( SERIAL iSet, P_CHAR pc, int nDistance )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillNpcsNear( pc, nDistance );
+	sc->rewind();
+}
+
+void addNpcsNearObj( SERIAL iSet, P_ITEM pi, int nDistance )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillNpcsNear( pi, nDistance );
+	sc->rewind();
+}
+
 void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis )
 {
 

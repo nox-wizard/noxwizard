@@ -2869,7 +2869,7 @@ NATIVE( _set_addOwnedNpcs )
 }
 
 /*!
-\brief Add to given set the character near location
+\brief Add to given set the npcs near location
 \author Endymion
 \since 0.82
 \param 1 the set
@@ -2881,6 +2881,26 @@ NATIVE( _set_addOwnedNpcs )
 NATIVE( _set_addNpcsNearXY ) 
 {
 	amxSet::addNpcsNearXY( params[1], params[2], params[3], params[4] );
+	return 0;
+}
+
+/*!
+\brief Add to given set the npcs near object
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 the object
+\param 4 distance
+\return 0
+*/
+NATIVE( _set_addNpcsNearObj ) 
+{
+	if( isCharSerial( params[2] ) ) {
+		amxSet::addNpcsNear( params[1], pointers::findCharBySerial(params[2]), params[3] );
+	}
+	else {
+		amxSet::addNpcsNear( params[1], pointers::findItemBySerial(params[2]), params[3] );
+	}
 	return 0;
 }
 
@@ -5635,8 +5655,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_add", _set_add },
  
  { "set_addOwnedNpcs", _set_addOwnedNpcs },
- { "set_addNpcsNearXY", _set_addNpcsNearXY },
  { "set_addPartyFriend", _set_addPartyFriend },
+ { "set_addNpcsNearXY", _set_addNpcsNearXY },
+ { "set_addNpcsNearObj", _set_addNpcsNearObj },
  { "set_addItemsInCont", _set_addItemsInCont },
  { "set_addItemWeared", _set_addItemWeared },
  { "set_addItemsAtXY", _set_addItemsAtXY },

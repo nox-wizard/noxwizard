@@ -135,8 +135,10 @@ namespace amxSet {
 	void add( SERIAL iSet, SERIAL nVal );
 
 	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
- 	void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
  	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
+ 	void addNpcsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
+	void addNpcsNearObj( SERIAL iSet, P_CHAR pc, int nDistance );
+	void addNpcsNearObj( SERIAL iSet, P_ITEM pi, int nDistance );
  	void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont );
  	void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer );
  	void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type );
