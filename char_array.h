@@ -24,7 +24,7 @@
 #define LOG_INVALID_C_REF(err,meSSage) if(err=CharArray::GetError()) { strcpy(schei___, meSSage); strcat(schei___," errorcode:%i\n"); LogCritical(schei___ _ err); } // strcpy stuff to prevent const string crashes
 #define GET_C_ERROR(err) err=CharArray::GetError()
 
-#define MAKE_CHARREF_LOGGED(i,err)  CharArray::MakeCharref(i); if (CharArray::GetError()) { BREAKPOINT; LogCritical("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); }
+#define MAKE_CHARREF_LOGGED(i,err)  CharArray::MakeCharref(i); if (err = CharArray::GetError()) { BREAKPOINT; LogCritical("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); }
 #define MAKE_CHARREF_C(i)	CharArray::MakeCharref(i); if (CharArray::GetError()) { continue;}
 #define MAKE_CHARREF_LR(i)	CharArray::MakeCharref(i); {if (CharArray::GetError()) { BREAKPOINT; LogCritical("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); return;} }
 #define MAKE_CHARREF_LRV(i,retval)	CharArray::MakeCharref(i); {if (CharArray::GetError()) { BREAKPOINT; LogCritical("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); return retval;} }
