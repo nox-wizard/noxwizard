@@ -4154,8 +4154,11 @@ NATIVE(_weblaunch)
 	//modified by SlasHeR
 	//replaced socket with char
 	cell *cstr;
+
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
+
         VALIDATEPCR(pc, INVALID);
+
 	int s = pc->getSocket();
 	// end by SlasHeR
 	if (s<0) return 0;
@@ -7621,7 +7624,7 @@ NATIVE (_getResourceStringValue )
 	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
 	{
 		cell *cstr=NULL;
-		amx_GetAddr(amx, params[5], &cstr);
+		amx_GetAddr(amx, params[3], &cstr);
 		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
  		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 		g_nAmxPrintPtr=0;	
@@ -7642,7 +7645,7 @@ NATIVE (_setResourceStringValue )
  		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
 		g_nAmxPrintPtr=0;	
 		std::string key = g_cAmxPrintBuffer;
-		myMap->setValue(key, params[5]);
+		myMap->setValue(key, params[2]);
 	}
 	return 0;
 }
