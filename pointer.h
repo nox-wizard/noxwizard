@@ -79,14 +79,17 @@ namespace pointers {
 	typedef std::vector< P_ITEM > pItemVector;
 	typedef pItemVector::iterator pItemVectorIt;
 
-	enum eCharWorldMap
+	enum
 	{
-		NONE	=  0,
-		ONLINE	=  1,
-		OFFLINE =  2,
-		NPC	=  4
+		NONE		=  0,
+		ONLINE		=  1,
+		OFFLINE 	=  2,
+		NPC		=  4,
+		SELF		=  8,
+		GHOST		= 16
 	};
 
+	void showCharLocationMap();
 	void addCharToLocationMap( const P_CHAR who );
 	void delCharFromLocationMap( const P_CHAR who );
 	pCharVector getCharFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );

@@ -37,19 +37,13 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 
 	if ( (timecheck && !(nextfieldeffecttime<=currenttime)) ) //changed by Luxor
 		return;
-#ifdef SPAR_NEW_WR_SYSTEM
-	pItemVectorIt itemIt( pc->nearbyItems->begin() ), itemEnd( pc->nearbyItems->end() );
 
-	for( ; itemIt != itemEnd; ++itemIt ) {
-
-		P_ITEM pi= (*itemIt);
-#else
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( pc->getPosition(), 2, false );
-	for( si.rewind(); !si.isEmpty(); si++ ) 
+	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi=si.getItem();
-#endif
+
 		if(ISVALIDPI(pi) ) {
 
 			if ( pi->getPosition().x == pc->getPosition().x && pi->getPosition().y == pc->getPosition().y )
@@ -113,8 +107,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Accounts
 	//
-	if (SrvParms->auto_a_reload > 0 && TIMEOUT( accounts::lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
-		accounts::CheckAccountFile();
+	if (SrvParms->auto_a_reload > 0 && TIMEOUT( Accounts->lasttimecheck + (SrvParms->auto_a_reload*60*MY_CLOCKS_PER_SEC) ) )
+		Accounts->CheckAccountFile();
 	//
 	// Weather (change is handled by crontab)
 	//
@@ -267,15 +261,15 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Spawns
 	//
-	if( TIMEOUT( spawns::check ) )
+	if( TIMEOUT( Spawns->check ) )
 	{
-		spawns::doSpawn();
+		Spawns->doSpawn();
 	}
 
 	//
 	// Shoprestock
 	//
-	restocks::doRestock();
+	Restocks->doRestock();
 
 	//
 	// Prison release
@@ -311,22 +305,12 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 
 		if( TIMEOUT( checknpcs ) || TIMEOUT( checktamednpcs ) || TIMEOUT( checknpcfollow ) )
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			nearbyChars	= pointers::getCharFromWorldMap( pc->getPosition().x, pc->getPosition().y, 2*VISRANGE );
-			nearbyCharsIt	= nearbyChars.begin();
-			nearbyCharsEnd	= nearbyChars.end();
-			for( ; nearbyCharsIt != nearbyCharsEnd; ++nearbyCharsIt )
-			{
-				P_CHAR npc = (*nearbyCharsIt);
-#else
 			NxwCharWrapper sc;
 			//sc.fillCharsNearXYZ( pc->getPosition(), 2*VISRANGE, true, false );
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
-			for( sc.rewind(); !sc.isEmpty(); sc++ ) 
+			for( sc.rewind(); !sc.isEmpty(); sc++ )
 			{
 				P_CHAR npc=sc.getChar();
-#endif
-
 
 				if(!ISVALIDPC(npc) || !npc->npc )
 					continue;
@@ -336,42 +320,20 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				    (TIMEOUT( checktamednpcs ) && npc->tamed) ||
 				    (TIMEOUT( checknpcfollow ) && npc->npcWander == 1 ) ) )
 				{
-					//npc->nearbyChars = &nearbyChars;
-					//npc->nearbyItems = &nearbyItems;
-#ifdef SPAR_NEW_WR_SYSTEM
-                                        npcNearbyChars = pointers::getCharFromWorldMap( npc->getPosition().x, npc->getPosition().y, 2*VISRANGE );
-                                        npcNearbyItems = pointers::getItemFromWorldMap( npc->getPosition().x, npc->getPosition().y, 2*VISRANGE );
-                                        npc->nearbyChars = &npcNearbyChars;
-                                        npc->nearbyItems = &npcNearbyItems;
-#endif
 					npc->heartbeat();
 					npc->lastNpcCheck = uiCurrentTime;
 				}
-#ifdef SPAR_NEW_WR_SYSTEM
-				npc->nearbyChars = 0;
-				npc->nearbyItems = 0;
-#endif
 			}
 		}
 
 		if( TIMEOUT( checkitemstime ) )
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			nearbyItems = pointers::getItemFromWorldMap( pc->getPosition().x, pc->getPosition().y, 2*VISRANGE );
-			pc->nearbyItems = &nearbyItems;
-			nearbyItemsIt	= nearbyItems.begin();
-			nearbyItemsEnd	= nearbyItems.end();
-
-			for( ; nearbyItemsIt != nearbyItemsEnd; ++nearbyItemsIt )
-			{
-				P_ITEM pi = (*nearbyItemsIt);
-#else
 			NxwItemWrapper si;
 			si.fillItemsNearXYZ( pc->getPosition(), 2*VISRANGE, false );
-			for( si.rewind(); !si.isEmpty(); si++ ) 
+			for( si.rewind(); !si.isEmpty(); si++ )
 			{
 				P_ITEM pi=si.getItem();
-#endif
+
 				if( !ISVALIDPI( pi ) )
 					continue;
 
@@ -405,12 +367,12 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 							if( TIMEOUT( pi->gatetime ) )
 							{
 								if (pi->type2==1)
-									boats::Move(ps->toInt(),pi->dir,pi);
+									Boats->Move(ps->toInt(),pi->dir,pi);
 								else
 								{
 									int dir=pi->dir+4;
 									dir%=8;
-									boats::Move(ps->toInt(),dir,pi);
+									Boats->Move(ps->toInt(),dir,pi);
 								}
 								pi->gatetime=(TIMERVAL)(uiCurrentTime + (R64)(SrvParms->boatspeed*MY_CLOCKS_PER_SEC));
 							}
@@ -418,13 +380,6 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 				}
 			}
 		}
-#ifdef SPAR_NEW_WR_SYSTEM
-		pc->nearbyChars = 0;
-		pc->nearbyItems = 0;
-		nearbyChars.clear();
-		nearbyItems.clear();
-#endif
-
 	}//for i<now
 	
 

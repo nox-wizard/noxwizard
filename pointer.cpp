@@ -236,8 +236,8 @@ void setserial(int nChild, int nParent, int nType)
 */
 void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& it)
 {
-    SERIAL serial = sr;
-    UI16 loop = 0;
+    int serial = sr;
+    int loop = 0;
     it = ch = INVALID;
 
 	P_CHAR pc=NULL;
@@ -260,19 +260,23 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
     }
 
     if (ISVALIDPC(pc)) {
-        px = pc->getPosition().x;
-        py = pc->getPosition().y;
-        pz = pc->getPosition().z;
+		Location charpos= pc->getPosition();
+        px = charpos.x;
+        py = charpos.y;
+        pz = charpos.z;
     } else if ( ISVALIDPI(pi) && (pi->getContSerial()==INVALID)) {
-        px = pi->getPosition().x;
-        py = pi->getPosition().y;
-        pz = pi->getPosition().z;
+        px = pi->getPosition("x");
+        py = pi->getPosition("y");
+        pz = pi->getPosition("z");
     } else {
         px = 0;
         py = 0;
         pz = 0;
     }
 }
+
+
+
 
 namespace pointers {
 
@@ -288,45 +292,71 @@ namespace pointers {
 	std::map<SERIAL, vector <P_ITEM> > pMultiItemMap;
 
 
-	std::map< UI32, vector < P_CHAR > > pCharWorldMap;
+	typedef std::multimap< UI32, P_CHAR >	PCHARLOCATIONMAP;
+	typedef PCHARLOCATIONMAP::iterator	PCHARLOCATIONMAPIT;
+
+	PCHARLOCATIONMAP	pCharLocationMap;
+
 	std::map< UI32, vector < P_ITEM > > pItemWorldMap;
 
 	void addCharToLocationMap( const P_CHAR who )
 	{
-
 		VALIDATEPC(who);
-		//ConOut("addCharToWorldMap %d^n", who->getSerial32() );
-		UI32 key  = who->getPosition().x;
-		key	<<= 16;
-		key	 += who->getPosition().y;
-
-		pCharWorldMap[key].push_back( who );
+		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
+		ConOut("addCharToWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
+		pCharLocationMap.insert( pair< UI32, P_CHAR >( key, who ) );
 	}
 
 	void delCharFromLocationMap( const P_CHAR who )
 	{
 		VALIDATEPC(who);
-		//ConOut("delCharFromWorldMap %d^n", who->getSerial32() );
-		UI32 key  = who->getPosition().x;
-		key	<<= 16;
-		key	 += who->getPosition().y;
+		UI32 key  = (who->getPosition().x << 16) +  who->getPosition().y;
 
-		std::map< UI32, vector < P_CHAR > >::iterator locIt( pCharWorldMap.find( key ) );
-		if( locIt != pCharWorldMap.end() )
-		{
-			vector< P_CHAR >::iterator charIt( locIt->second.begin() ), charEnd( locIt->second.end() );
-			LOGICAL found = false;
-			while( charIt != charEnd && !found )
+		ConOut("delCharFromWorldMap serial=%d name=%s key=%i\n", who->getSerial32(), who->getCurrentNameC(), key );
+
+		pair< PCHARLOCATIONMAPIT, PCHARLOCATIONMAPIT > it = pCharLocationMap.equal_range( key );
+
+		for( ; it.first != it.second; ++it.first )
+			if( it.first->second->getSerial32() == who->getSerial32() )
 			{
-				if( (*charIt)->getSerial32() == who->getSerial32() )
-				{
-					found = true;
-					locIt->second.erase( charIt );
-				}
-				else
-					++charIt;
+				pCharLocationMap.erase( it.first );
+				break;
 			}
+		if( it.first == it.second )
+			WarnOut("delCharFromWorldMap: could not delete char %i at x %i y %i from location map\n", who->getSerial32(), who->getPosition().x, who->getPosition().y );
+	}
+
+	void showCharLocationMap()
+	{
+		PCHARLOCATIONMAPIT it( pCharLocationMap.begin() ), end( pCharLocationMap.end() );
+
+		ConOut( "--------------------------------\n" );
+		ConOut( "|      CHAR LOCATION MAP       |\n" );
+		ConOut( "--------------------------------\n" );
+		ConOut( "|   Key   | X  | Y  |  SERIAL  |\n" );
+		ConOut( "--------------------------------\n" );
+
+		UI32 	invalidCount	=  0;
+		SI32 	x	  	=  0;
+		SI32 	y		=  0;
+		SERIAL	serial		= -1;
+		for( ; it != end; ++it )
+		{
+			x = it->first >> 16;
+			y = it->first & 0x0000FFFF;
+			if( ISVALIDPC( it->second ) )
+				serial = it->second->getSerial32();
+			else
+			{
+				++invalidCount;
+				serial = INVALID;
+			}
+			ConOut( "|%10i|%4i|%4i|%10i|\n", it->first, x, y, serial );
 		}
+		ConOut( "--------------------------------\n" );
+		ConOut( "| entries in map : %10i  |\n", pCharLocationMap.size());
+		ConOut( "| invalid entries: %10i  |\n", invalidCount );
+		ConOut( "--------------------------------\n" );
 	}
 
 	pCharVector getCharFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags )
@@ -364,49 +394,37 @@ namespace pointers {
 			else
 				lowerRight.y = y + range;
 
+			//ConOut( "getCharFromLocationMap: x=%i, y=%i range=%i upperLeft.x=%i upperLeft.y=%i lowerRight.x=%i lowerRight.y=%i\n",
+			//	x, y, range, upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
 
-			UI32 numberOfRows = lowerRight.x - upperLeft.x;
-			UI32 lowerBoundKey;
-			UI32 upperBoundKey;
-			LOGICAL finished = false;
-			std::map< UI32, pCharVector >::iterator mapIt;
-			const std::map< UI32, pCharVector >::iterator mapEnd( pCharWorldMap.end() );
+			PCHARLOCATIONMAPIT it(  pCharLocationMap.lower_bound( ( upperLeft.x << 16 ) + upperLeft.y ) ),
+					   end( pCharLocationMap.upper_bound( ( lowerRight.x << 16 ) + lowerRight.y ));
 
-			for( UI32 rowIndex = 0; rowIndex < numberOfRows; ++rowIndex )
+			for( ; it != end; ++it )
 			{
-				lowerBoundKey = ( (upperLeft.x + rowIndex) << 16 ) + upperLeft.y;
-				upperBoundKey = ( (upperLeft.x + rowIndex) << 16 ) + lowerRight.y;
-
-				for( mapIt = pCharWorldMap.lower_bound( lowerBoundKey ); mapIt != mapEnd && !finished; ++mapIt )
+				if( ISVALIDPC( it->second ) )
 				{
-					if( mapIt->first >= lowerBoundKey && mapIt->first <= upperBoundKey )
+					if( flags )
 					{
-						pCharVectorIt charIt( mapIt->second.begin() ), charEnd( mapIt->second.end() );
-
-						for( ; charIt != charEnd; charIt++ )
-						{
-							P_CHAR pc = (*charIt);
-
-							if( flags )
-							{
-								if (pc->npc)
-								{ //Pc is an npc
-									if ( !(flags & NPC) )
-										continue;
-								} else
-								{        //Pc is a player
-									if ( (flags & ONLINE) && !pc->IsOnline() )
-										continue;
-									if ( (flags & OFFLINE) && pc->IsOnline() )
-										continue;
-									//if ( (flags & DEAD) && !pc->dead ) continue;
-								}
-							}
-							vCharsInRange.push_back( pc );
+						if ( it->second->npc )
+						{ //Pc is an npc
+							if ( !(flags & NPC) )
+								continue;
+						}
+						else
+						{  //Pc is a player
+							if ( (flags & ONLINE) && !it->second->IsOnline() )
+								continue;
+							if ( (flags & OFFLINE) && it->second->IsOnline() )
+								continue;
+							//if ( (flags & DEAD) && !pc->dead ) continue;
 						}
 					}
-					else
-						finished = true;
+					vCharsInRange.push_back( it->second );
+				}
+				else	// cleanup
+				{
+					WarnOut( "getCharFromLocationMap removed invalid entry\n" );
 				}
 			}
 		}
@@ -452,7 +470,7 @@ namespace pointers {
 	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags )
 	{
 		pItemVector vItemsInRange;
-
+		/*
 		if( x > 0 && x < 6145 && y > 0 && y < 4097 && range > -1 )
 		{
 			struct XY
@@ -515,6 +533,7 @@ namespace pointers {
 				}
 			}
 		}
+		*/
 		return vItemsInRange;
 	}
 
@@ -531,8 +550,6 @@ namespace pointers {
 		pMounted.clear();
 		pOwnCharMap.clear();
 		pOwnItemMap.clear();
-		pCharWorldMap.clear();
-		pItemWorldMap.clear();
 		//Chars and Stablers
 		P_CHAR pc = NULL;
 
@@ -570,6 +587,38 @@ namespace pointers {
 			pc = pointers::findCharBySerial(iter->first);
 			if(ISVALIDPC(pc)) 
 				pc->setOnHorse();
+		}
+	}
+
+	/*!
+	\brief updates containers map
+	\author Luxor
+	\param pi the item which the function will update in the containers map
+	*/
+	void updContMap(P_ITEM pi)
+	{
+		VALIDATEPI(pi);
+		vector<P_ITEM>::iterator contIter;
+		SI32 ser;
+
+		ser= pi->getContSerial(true);
+		if( ser > INVALID ) 
+		{
+			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
+
+			if ( !pContMap[ser].empty() && (contIter!=pContMap[ser].end()) )
+				pContMap[ser].erase(contIter);
+		}
+
+		ser= pi->getContSerial();
+		if( ser > INVALID) 
+		{
+			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
+
+			if (!pContMap[ser].empty() && contIter != pContMap[ser].end())
+				pContMap[ser].erase(contIter);
+
+			pContMap[ser].push_back(pi);
 		}
 	}
 
@@ -763,36 +812,7 @@ namespace pointers {
 
 	}
 
-	/*!
-	\brief updates containers map
-	\author Luxor
-	\param pi the item which the function will update in the containers map
-	*/
-	void updContMap(P_ITEM pi)
-	{
-		VALIDATEPI(pi);
-		vector<P_ITEM>::iterator contIter;
-		SI32 ser = pi->getContSerial(true);
 
-		if( ser > INVALID )
-		{
-			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
-
-			if ( !pContMap[ser].empty() && (contIter!=pContMap[ser].end()) )
-				pContMap[ser].erase(contIter);
-		}
-
-		ser = pi->getContSerial();
-		if( ser > INVALID)
-		{
-			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
-
-			if (!pContMap[ser].empty() && contIter != pContMap[ser].end())
-				pContMap[ser].erase(contIter);
-
-			pContMap[ser].push_back(pi);
-		}
-	}
 
 
 
