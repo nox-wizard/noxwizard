@@ -29,7 +29,7 @@ void loadmounts()
 	{
 		safedelete(iter);
 		iter = Scripts::Mountable->getNewIterator("SECTION MOUNT %i", mount++);
-		if( iter==NULL ) continue;
+		if( iter == 0 ) continue;
 
 		id=INVALID;
 		anim=INVALID;
@@ -37,18 +37,19 @@ void loadmounts()
 		do
 		{
 			iter->parseLine(script1, script2);
-			if ( script1 == "ANIM" )
-				anim = str2num(script2);
-			if ( script1 == "ID" )
+			if	( script1 == "ANIM" )	anim = str2num(script2);
+			else if ( script1 == "ID" )
+			{
 				id = str2num(script2);
+				ConOut("Mount %d", id );
+			}
 		}
 		while ( script1[0] != '}' );
 
 		if((id!=INVALID) && (anim!=INVALID))
 			mountinfo[anim]=id;
-
 	}
-	while ( script1 != "EOF" );
+	while ( iter != 0 );
 
 	safedelete(iter);
 
