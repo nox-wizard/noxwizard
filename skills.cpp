@@ -1148,69 +1148,66 @@ void Skills::BottleTarget(NXWSOCKET s)
 		sysmessage(s,TRANSLATE("This is not an appropriate container for a potion."));
 }
 
+#define CREATEINBACKPACK( ITEM ) pi = item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( ITEM ), pc->getBackpack() );
+
 /*!
-\author Duke
+\author Endymion
 \brief This really creates the potion
-\param s crafter character
-\param mortar serial of the mortar
+\param s the crafter
+\param mortar the mortar
 */
-void Skills::PotionToBottle(CHARACTER s, int mortar)
+void Skills::PotionToBottle( SERIAL s, SERIAL mortar)
 {
 	P_CHAR pc=MAKE_CHAR_REF(s);
 	VALIDATEPC(pc);
 
+	NXWCLIENT ps=pc->getClient();
+	if( ps==NULL ) return;
+
 	P_ITEM pi_mortar=MAKE_ITEM_REF(mortar);
 	VALIDATEPI(pi_mortar);
 
-    short id1,id2;
-    char pn[50];
+    P_ITEM pi=NULL;
 
-    switch((10*pi_mortar->more1)+pi_mortar->more2)
-    {
-    case 11: id1=0x0F;id2=0x08;strcpy(pn, TRANSLATE("an agility"));                break;
-    case 12: id1=0x0F;id2=0x08;strcpy(pn, TRANSLATE("a greater agility"));             break;
-    case 21: id1=0x0F;id2=0x07;strcpy(pn, TRANSLATE("a lesser cure"));             break;
-    case 22: id1=0x0F;id2=0x07;strcpy(pn, TRANSLATE("a cure"));                    break;
-    case 23: id1=0x0F;id2=0x07;strcpy(pn, TRANSLATE("a greater cure"));            break;
-    case 31: id1=0x0F;id2=0x0D;strcpy(pn, TRANSLATE("a lesser explosion"));        break;
-    case 32: id1=0x0F;id2=0x0D;strcpy(pn, TRANSLATE("an explosion"));              break;
-    case 33: id1=0x0F;id2=0x0D;strcpy(pn, TRANSLATE("a greater explosion"));       break;
-    case 41: id1=0x0F;id2=0x0C;strcpy(pn, TRANSLATE("a lesser heal"));             break;
-    case 42: id1=0x0F;id2=0x0C;strcpy(pn, TRANSLATE("a heal"));                    break;
-    case 43: id1=0x0F;id2=0x0C;strcpy(pn, TRANSLATE("a greater heal"));            break;
-    case 51: id1=0x0F;id2=0x06;strcpy(pn, TRANSLATE("a night sight"));             break;
-    case 61: id1=0x0F;id2=0x0A;strcpy(pn, TRANSLATE("a lesser poison"));               break;
-    case 62: id1=0x0F;id2=0x0A;strcpy(pn, TRANSLATE("a poison"));                      break;
-    case 63: id1=0x0F;id2=0x0A;strcpy(pn, TRANSLATE("a greater poison"));              break;
-    case 64: id1=0x0F;id2=0x0A;strcpy(pn, TRANSLATE("a deadly poison"));               break;
-    case 71: id1=0x0F;id2=0x0B;strcpy(pn, TRANSLATE("a refresh"));                     break;
-    case 72: id1=0x0F;id2=0x0B;strcpy(pn, TRANSLATE("a total refreshment"));       break;
-    case 81: id1=0x0F;id2=0x09;strcpy(pn, TRANSLATE("a strength"));                break;
-    case 82: id1=0x0F;id2=0x09;strcpy(pn, TRANSLATE("a greater strength"));        break;
+	item::CreateFromScript( ps->toInt(), xss::getIntFromDefine( "" ), pc->getBackpack() );
+
+    int potionType= (10*pi_mortar->more1)+pi_mortar->more2;
+	switch( potionType )    {
+    
+	case 11: CREATEINBACKPACK( "$item_agility_potion" )	break;
+    case 12: CREATEINBACKPACK( "$item_greater_agility_potion" )	break;
+    case 21: CREATEINBACKPACK( "$item_lesser_cure_potion" )	break;
+    case 22: CREATEINBACKPACK( "$item_cure_potion" )	break;
+    case 23: CREATEINBACKPACK( "$item_greater_cure_potion" )	break;
+    case 31: CREATEINBACKPACK( "$item_lesser_explosion_potion" )	break;
+    case 32: CREATEINBACKPACK( "$item_explosion_potion" )	break;
+    case 33: CREATEINBACKPACK( "$item_greater_explosion_potion" )	break;
+    case 41: CREATEINBACKPACK( "$item_lesser_heal_potion" )	break;
+    case 42: CREATEINBACKPACK( "$item_heal_potion" )	break;
+    case 43: CREATEINBACKPACK( "$item_greater_heal_potion" )	break;
+    case 51: CREATEINBACKPACK( "$item_night_sight_potion" )	break;
+    case 61: CREATEINBACKPACK( "$item_lesser_poison_potion" )	break;
+    case 62: CREATEINBACKPACK( "$item_poison_potion" )	break;
+    case 63: CREATEINBACKPACK( "$item_greater_poison_potion" )	break;
+    case 64: CREATEINBACKPACK( "$item_deadly_poison_potion" )	break;
+    case 71: CREATEINBACKPACK( "$item_energy_potion" )	break;
+    case 72: CREATEINBACKPACK( "$item_greater_energy_potion" )	break;
+    case 81: CREATEINBACKPACK( "$item_night_sight_potion" )	break;
+    case 82: CREATEINBACKPACK( "$item_greater_strength_potion" )	break;
     default:
-        LogError("switch reached default");
+        LogError("switch reached default into PotionToBottle");
         return;
     }
 
-    P_ITEM pi=item::SpawnItem(calcSocketFromChar(s),1,"#",0, (id1<<8)+id2,0,1,0);
 	VALIDATEPI(pi);
-	
-    pi->setCurrentName("%s potion",pn);
-    pi->type=19;
-    pi->morex=pi_mortar->morex;
-    pi->morey=pi_mortar->more1;
-    pi->morez=pi_mortar->more2;
 
-    // the remainder of this function NOT (yet) revamped by Duke !
-
-    // Addon for Storing creator NAME and SKILLUSED by Magius(CHE) §
     if(!pc->IsGM())
     {
-        pi->creator = pc->getCurrentName(); // Magius(CHE) - Memorize Name of the creator
+        pi->creator = pc->getCurrentName();
         if (pc->skill[ALCHEMY]>950) 
-			pi->madewith=ALCHEMY+1; // Memorize Skill used - Magius(CHE)
+			pi->madewith=ALCHEMY+1;
         else 
-			pi->madewith=0-ALCHEMY-1; // Memorize Skill used - Magius(CHE)
+			pi->madewith=0-ALCHEMY-1;
     } 
 	else 
 	{
