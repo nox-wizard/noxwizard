@@ -13,6 +13,7 @@
 #include "race.h"
 #include "commands.h"
 #include "packets.h"
+#include "basics.h"
 
 //#define USE_MTHREAD_SEND
 
@@ -536,8 +537,8 @@ void cNetwork::Login2(int s)
 		ServerLog.Write( (char*)msgLogin, inet_ntoa(client_addr.sin_addr), &buffer[s][1] );
 
 	tlen = 6 + (servcount*40);
-	ShorToCharPtr(tlen, newlist1 +1);
-	ShorToCharPtr(servcount, newlist1 +4);
+	ShortToCharPtr(tlen, newlist1 +1);
+	ShortToCharPtr(servcount, newlist1 +4);
 	Xsend(s, newlist1, 6);
 
 	for( i = 0; i < servcount; ++i )
