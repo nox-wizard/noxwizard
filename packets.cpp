@@ -328,3 +328,6 @@ SEND( UnicodeSpeech ) {
 	Xsend( ps->toInt(), this->msg->s.begin(), this->msg->s.end() );
 	//f.close();
 };
+
+CREATE( Map, PKG_MAP, 0x0B )
+CREATE( MapMessage, PKG_MAP_MESSAGE, 0x13 )
