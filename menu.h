@@ -40,7 +40,7 @@ class cMenu
 
 	private:
 		std::vector< std::string >	commands; //!< all commands
-		std::vector< cUnicodeString >	strings; //!< all strings
+		std::vector< cUnicodeString >	texts; //!< all strings
 		UI08	options; //!< menu options
 		UI32	gumpId; //!< gump id
 		UI32	serial; //!< serial

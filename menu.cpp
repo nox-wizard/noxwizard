@@ -169,8 +169,8 @@ void cMenu::addCommand( char const *formatStr, ... )
 
 UI32 cMenu::addString( cUnicodeString& u )
 {
-	strings.push_back( u );
-	return strings.size()-1;
+	texts.push_back( u );
+	return texts.size()-1;
 }
 
 UI32 cMenu::addString( const char* c )
@@ -344,137 +344,21 @@ void cMenu::setY( const UI32 arg )
 
 void cMenu::show( P_CHAR pc )
 {
-	
 	VALIDATEPC( pc );
-
 
 	NXWCLIENT ps=pc->getClient();
 	if( ps==NULL ) return;
 
-	NXWSOCKET socket = ps->toInt();
-
 	cPacketMenu	packet; //!< menu packet with new packet system
 
 
-/*	const int generalHeaderLength = 19;
-	const int commandHeaderLength =  2;
-	const int commandFooterLength	=  1;
-	const int textHeaderLength		=  2;
-	const int stringHeaderLength	=  2;
-	const int unicodeModifier			=  2;
-
-	int commandLength = commands.size() + commandFooterLength;
-	int textLines			= strings.count();
-	int textLength		= strings.size() * unicodeModifier + textLines * stringHeaderLength;
-	int packetLength 	= generalHeaderLength + commandHeaderLength + commandLength + textHeaderLength + textLength;
-	packet = new BYTE[ packetLength ];
-	// packet id
-	packet[ 0] = 0xB0;
-	// packet length
-	packet[ 1] = packetLength >> 8;
-	packet[ 2] = packetLength % 256;
-	// serial
-	packet[ 3] = serial >> 24;
-	packet[ 4] = serial >> 16;
-	packet[ 5] = serial >>  8;
-	packet[ 6] = serial % 256;
-	// gump id
-	packet[ 7] = gumpId >> 24;
-	packet[ 8] = gumpId >> 16;
-	packet[ 9] = gumpId >>  8;
-	packet[10] = gumpId % 256;
-	// x offset
-	packet[11] = x >> 24;
-	packet[12] = x >> 16;
-	packet[13] = x >>  8;
-	packet[14] = x % 256;
-	// y offset
-	packet[15] = y >> 24;
-	packet[16] = y >> 16;
-	packet[17] = y >>  8;
-	packet[18] = y % 256;
-	// command length
-	packet[19] = commandLength >> 8;
-	packet[20] = commandLength % 256;
-	// commands
-	int index = 21;
-	UI32NXWSTRINGMAP::iterator it( commands.begin() ), end( commands.end() );
-	for(; it != end; ++it)
-	{
-		memcpy( packet + index, it->second.getValue().c_str(), it->second.size() );
-		index += it->second.size();
-	}
-	// command section end
-	packet[index] = 0;
-	// text length
-	packet[++index] = textLines >> 8;
-	packet[++index] = textLines % 256;
-
-	// texts in unicode format
-
-	int ssize = 0;
-	it = strings.begin();
-	end = strings.end();
-	for(; it != end; ++it)
-	{
-		ssize = it->second.size();
-		packet[++index] = ssize >> 8;
-		packet[++index] = ssize % 256;
-		for( int strIndex = 0; strIndex < ssize; ++strIndex )
-		{
-			packet[++index] = 0;
-			packet[++index] = it->second.getValue()[strIndex];
-		}
-	}*/
-
 	packet.id=serial;
-	// gump id
 	packet.gump=gumpId;
-	// x offset
 	packet.x = x;
-	// y offset
 	packet.y = y;
-	// commands
-	//int index = 21;
-	/*std::vector<std::string>::iterator it( commands.begin() ), end( commands.end() );
-	for(; it != end; ++it)
-	{
-		packet.commands+=(*it);
-	}*/
-	// command section end
 
-	//packet.texts.
+	packet.commands = &commands;
+	packet.texts = &texts;
 	
-	/*packet[index] = 0;
-	// text length
-	packet[++index] = textLines >> 8;
-	packet[++index] = textLines % 256;
-
-	// texts in unicode format
-
-	int ssize = 0;
-	it = strings.begin();
-	end = strings.end();
-	for(; it != end; ++it)
-	{
-		ssize = it->second.size();
-		packet[++index] = ssize >> 8;
-		packet[++index] = ssize % 256;
-		for( int strIndex = 0; strIndex < ssize; ++strIndex )
-		{
-			packet[++index] = 0;
-			packet[++index] = it->second.getValue()[strIndex];
-		}
-	}*/
-
-
-	/*SI32 packetLength = ((packet[1] << 8) + packet[2]);
-	UI32 packetIndex	= 0;
-	while( packetLength > 0 )
-	{		
-		Xsend( socket, (packet + packetIndex), packetLength > MAXBUFFER ? MAXBUFFER : packetLength );
-		packetLength -= MAXBUFFER;
-		packetIndex += MAXBUFFER;
-	}
-	//Xsend( calcSocketFromChar( DEREF_P_CHAR( pc ) ), packet, ((packet[1] << 8) + packet[2]) );*/
+	packet.send( ps );
 }
