@@ -2065,7 +2065,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			continue;
 
 		NXWSOCKET a_socket = ps->toInt();
-		pc->speechCurrent = speechUni;
+		
 
 		if( a_pc->unicode )			// language
 		{
@@ -2082,20 +2082,22 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 				speechGhostUni=new cUnicodeString();
 				makeGhost( pc->speechCurrent, speechGhostUni );
 			}
-			talk.msg=speechGhostUni;
+			pc->speechCurrent = speechGhostUni;
 			ghost=true;
 		}
 		else
-			talk.msg=pc->speechCurrent;
+			pc->speechCurrent = speechUni;
 
 		if (a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]) {
 			a_pc->amxevents[EVENT_CHR_ONHEARPLAYER]->Call( a_pc->getSerial32(), pc->getSerial32(), ghost );
 		}		
 
+		talk.msg=pc->speechCurrent;
 		talk.send( ps );
 	}
 
 
+	delete speechUni;
 	pc->speechCurrent=NULL;
 	if( speechGhostUni!=NULL )
 		delete speechGhostUni;
