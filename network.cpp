@@ -277,23 +277,22 @@ void cNetwork::xSend(NXWSOCKET socket, wstring& p, bool alsoTermination )
 
 	SI32 size = sizeof( UI16 );
 	SI32 length = p.length() * size;
-        if ( alsoTermination ) length += size;
+    if ( alsoTermination ) length += size;
 
-        if ( boutlength[ socket ] + length > MAXBUFFER )
-                FlushBuffer( socket );
+    if ( boutlength[ socket ] + length > MAXBUFFER )
+		FlushBuffer( socket );
 
-        wstring::iterator point( p.begin() ), end( p.end() );
-        UI16* b = (UI16*)&outbuffer[ socket ][ boutlength[ socket ] ];
+	wstring::iterator point( p.begin() ), end( p.end() );
+	UI16* b = (UI16*)&outbuffer[ socket ][ boutlength[ socket ] ];
 
-        SI32 i = 0;
-        for( ; point!=end; point++, ++i )
+	SI32 i = 0;
+	for( ; point!=end; point++, ++i )
 		b[i] = htons(*point);
 
-        if( alsoTermination )
-		for( UI32 n = 0; n < size; n++ )
-                	b[ i+n ] = 0;
+	if( alsoTermination )
+		b[ i ] = 0x0000;
 
-        boutlength[ socket ] += length;
+	boutlength[ socket ] += length;
 }
 
 
