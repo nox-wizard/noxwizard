@@ -1301,12 +1301,13 @@ void angelMode();
 				else
 					checkPlayers.Call( pc->getSerial32() );
 			}
-			if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( ( pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
+			else if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( ( pi=static_cast<P_ITEM>(objs.getObject())) ) ) {
 				checkItems.Call( pi->getSerial32() );
 			}
 		}
 
 		ConOut("[DONE]\n");
+		ServerScp::g_nCheckBySmall = false;
 
 		cwmWorldState->saveNewWorld();
 

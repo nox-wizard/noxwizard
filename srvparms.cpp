@@ -750,7 +750,7 @@ static int loadnxwoptions (char *script1, char *script2)
 /*#ifndef _WINDOWS
 	else if(!(strcmp(script1,"DEBUGAMX"))) ServerScp::g_nLoadDebugger=str2num(script2);
 #endif*/
-	else if(!(strcmp(script1,"CHECKBYSMALL"))) ServerScp::g_nCheckBySmall=(str2num(script2)!=0);
+	else if(!(strcmp(script1,"CHECKBYSMALL"))) ServerScp::g_nCheckBySmall|=(str2num(script2)!=0); // |= becuase can be also activated by arg -check
 	else if(!(strcmp(script1,"USEINTERNALCOMPILER"))) ServerScp::g_bEnableInternalCompiler=(str2num(script2)!=0);
 	else if(!(strcmp(script1,"MAPHEIGHT"))) ServerScp::g_nMapHeight=str2num(script2);
 	else if(!(strcmp(script1,"MAPWIDTH"))) ServerScp::g_nMapWidth=str2num(script2);
