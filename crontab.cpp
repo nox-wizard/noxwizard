@@ -629,22 +629,16 @@ static void exec_broadcast(char *txt)
 	int tl;
 
 	tl=44+strlen(txt)+1;
-	unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-	talk[1]=tl>>8;
-	talk[2]=tl%256;
-	talk[3]=1;
-	talk[4]=1;
-	talk[5]=1;
-	talk[6]=1;
-	talk[7]=1;
-	talk[8]=1;
-	talk[9]=1;
-	talk[10]=0x00;
-	talk[11]=0x40;
-	talk[12]=0;
-	talk[13]=3;
+	UI08 talk[14]={ 0x1C, 0x00, };
 
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(0x01010101, talk +3); // ???? why 1's ???
+	ShortToCharPtr(0x0101, talk +7);
+	talk[9]=1; // Type
+	ShortToCharPtr(0x0040, talk +10);  // Color
+	ShortToCharPtr(0x0003, talk +12);  // Font ...
+
+	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -654,9 +648,10 @@ static void exec_broadcast(char *txt)
 			Xsend(s, talk, 14);
 			Xsend(s, sysname, 30);
 			Xsend(s, txt, strlen(txt)+1);
+//AoS/			Network->FlushBuffer(s);
 		}
 	}
-	Network->ClearBuffers();
+	Network->ClearBuffers(); // uhm ..... 
 }
 
 static void exec_gy(char *txt)
@@ -665,20 +660,14 @@ static void exec_gy(char *txt)
 	int tl;
 
 	tl=44+strlen(txt)+1;
-	unsigned char talk[15]="\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
-	talk[1]=tl>>8;
-	talk[2]=tl%256;
-	talk[3]=1;
-	talk[4]=1;
-	talk[5]=1;
-	talk[6]=1;
-	talk[7]=1;
-	talk[8]=1;
-	talk[9]=1;
-	talk[10]=0x00;
-	talk[11]=0x40;
-	talk[12]=0;
-	talk[13]=3;
+	UI08 talk[14]={ 0x1C, 0x00, };
+
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(0x01010101, talk +3); // .... see above -_-;
+	ShortToCharPtr(0x0101, talk +7);
+	talk[9]=1; // Type
+	ShortToCharPtr(0x0040, talk +10);  // Color
+	ShortToCharPtr(0x0003, talk +12);  // Font ...
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -692,6 +681,7 @@ static void exec_gy(char *txt)
 			Xsend(ps->toInt(), talk, 14);
 			Xsend(ps->toInt(), const_cast<char*>("[CronTab Service - GM Only]"), 30);
 			Xsend(ps->toInt(), txt, strlen(txt)+1);   
+//AoS/			Network->FlushBuffer(ps->toInt());
 		}
 	}
 

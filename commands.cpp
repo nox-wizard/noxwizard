@@ -14,6 +14,7 @@
 #include "sregions.h"
 #include "sndpkg.h"
 #include "commands.h"
+#include "layer.h"
 
 static inline void _do_target(NXWSOCKET s, TARGET_S *ts) {
 	target(s, ts->a1, ts->a2, ts->a3, ts->a4, ts->txt);
@@ -55,7 +56,7 @@ namespace Commands
 		client->sysmsg("Unrecognized command: %s", comm);
 			return;
 		}
-	if(cmd->notValid(pc_currchar)) {
+		if(cmd->notValid(pc_currchar)) {
 			client->sysmsg("Access denied.");
 			return;
 		}
@@ -76,7 +77,7 @@ namespace Commands
 					addx[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes one number as an argument.");
+					client->sysmsg("This command takes one number as an argument.");
 				}
 				break;
 			case CMD_TARGETXY:
@@ -85,7 +86,7 @@ namespace Commands
 					addy[s]=strtonum(2);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes two numbers as arguments.");
+					client->sysmsg("This command takes two numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETXYZ:
@@ -103,7 +104,7 @@ namespace Commands
 					addx[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes one hex number as an argument.");
+					client->sysmsg("This command takes one hex number as an argument.");
 				}
 				break;
 			case CMD_TARGETHXY:
@@ -112,7 +113,7 @@ namespace Commands
 					addy[s]=strtonum(2);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes two hex numbers as arguments.");
+					client->sysmsg("This command takes two hex numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETHXYZ:
@@ -122,7 +123,7 @@ namespace Commands
 					addz[s]=strtonum(3);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes three hex numbers as arguments.");
+					client->sysmsg("This command takes three hex numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETID1:
@@ -130,7 +131,7 @@ namespace Commands
 					addid1[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes one number as an argument.");
+					client->sysmsg("This command takes one number as an argument.");
 				}
 				break;
 			case CMD_TARGETID2:
@@ -139,7 +140,7 @@ namespace Commands
 					addid2[s]=strtonum(2);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes two numbers as arguments.");
+					client->sysmsg("This command takes two numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETID3:
@@ -149,7 +150,7 @@ namespace Commands
 					addid3[s]=strtonum(3);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes three numbers as arguments.");
+					client->sysmsg("This command takes three numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETID4:
@@ -161,7 +162,7 @@ namespace Commands
 					//ConOut("1: %i 2: %i 3: %i 4: %i\n",addid1[s],addid2[s],addid2[s],addid3[s],addid4[s]);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes four numbers as arguments.");
+					client->sysmsg("This command takes four numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETHID1:
@@ -169,7 +170,7 @@ namespace Commands
 					addid1[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes one hex number as an argument.");
+					client->sysmsg("This command takes one hex number as an argument.");
 				}
 				break;
 			case CMD_TARGETHID2:
@@ -178,7 +179,7 @@ namespace Commands
 					addid2[s]=strtonum(2);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes two hex numbers as arguments.");
+					client->sysmsg("This command takes two hex numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETHID3:
@@ -188,7 +189,7 @@ namespace Commands
 					addid3[s]=strtonum(3);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes three hex numbers as arguments.");
+					client->sysmsg("This command takes three hex numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETHID4:
@@ -199,7 +200,7 @@ namespace Commands
 					addid4[s]=strtonum(4);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes four hex numbers as arguments.");
+					client->sysmsg("This command takes four hex numbers as arguments.");
 				}
 				break;
 			case CMD_TARGETTMP:
@@ -207,7 +208,7 @@ namespace Commands
 					tempint[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes a number as an argument.");
+					client->sysmsg("This command takes a number as an argument.");
 				}
 				break;
 			case CMD_TARGETHTMP:
@@ -215,14 +216,14 @@ namespace Commands
 					tempint[s]=strtonum(1);
 					_do_target(s, (TARGET_S *)cmd->cmd_extra);
 				} else {
-					sysmessage(s, "This command takes a hex number as an argument.");
+					client->sysmsg("This command takes a hex number as an argument.");
 				}
 				break;
 			case CMD_MANAGEDCMD:
 			client->startCommand(cmd, speech);
 			break;
 			default:
-				sysmessage(s, "INTERNAL ERROR: Command has a bad command type set!");
+				client->sysmsg("INTERNAL ERROR: Command has a bad command type set!");
 				break;
 		}
 
@@ -233,40 +234,41 @@ namespace Commands
 	{
 		P_CHAR pc = MAKE_CHAR_REF( c );
 		VALIDATEPC( pc );
+
 		pc->shopkeeper = true;
 
 		P_ITEM pi;	
-		if (pc->GetItemOnLayer(0x1A) == NULL)
+		if (pc->GetItemOnLayer(LAYER_TRADE_RESTOCK) == NULL)
 		{
-			pi = item::SpawnItem(-1,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
 			if( ISVALIDPI( pi ) )//AntiChrist - to preview crashes
 			{
 				pi->setContSerial(pc->getSerial32());
-				pi->layer=0x1A;
+				pi->layer=LAYER_TRADE_RESTOCK;
 				pi->type=ITYPE_CONTAINER;
 				pi->setNewbie();
 			}
 		}
 
-		if (pc->GetItemOnLayer(0x1B) == NULL)
+		if (pc->GetItemOnLayer(LAYER_TRADE_NORESTOCK) == NULL)
 		{
-			pi = item::SpawnItem(-1,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
 			if( ISVALIDPI( pi ) )
 			{
 				pi->setContSerial(pc->getSerial32());
-				pi->layer=0x1B;
+				pi->layer=LAYER_TRADE_NORESTOCK;
 				pi->type=ITYPE_CONTAINER;
 				pi->setNewbie();
 			}
 		}
 
-		if (pc->GetItemOnLayer(0x1C) == NULL)
+		if (pc->GetItemOnLayer(LAYER_TRADE_BOUGHT) == NULL)
 		{
-			pi = item::SpawnItem(-1,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
 			if( ISVALIDPI( pi ) )
 			{
 				pi->setContSerial(pc->getSerial32());
-				pi->layer=0x1C;
+				pi->layer=LAYER_TRADE_BOUGHT;
 				pi->type=ITYPE_CONTAINER;
 				pi->setNewbie();
 			}
@@ -279,91 +281,72 @@ namespace Commands
 
 	int i;
 	int x=0;
-		char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 
-	if(pc_currchar->callnum!=0)
-	{
-	donewithcall(s, type);
-	}
-	if(type==1) //Player is a GM
-	{
-	for(i=1;i<MAXPAGES;i++)
-	{
-	if(gmpages[i].handled==0)
-	{
-		//serial=calcserial(gmpages[i].ser1,gmpages[1].ser2,gmpages[i].ser3,gmpages[i].ser4);
-			P_CHAR pj=pointers::findCharBySerial( gmpages[i].serial.serial32 );
-			if(ISVALIDPC(pj))
+		if(pc_currchar->callnum!=0)
+		{
+			donewithcall(s, type);
+		}
+
+		if(type==1) //Player is a GM
+		{
+			for(i=1;i<MAXPAGES;i++)
 			{
-				Location dest= pj->getPosition();
+				if(gmpages[i].handled==0)
+				{
+					P_CHAR pj=pointers::findCharBySerial( gmpages[i].serial.serial32 );
+					if(ISVALIDPC(pj))
+					{
+						Location dest= pj->getPosition();
 
-		sysmessage(s,"");
-		sprintf(temp,"Transporting to next call: %s", gmpages[i].name);
-		sysmessage(s,temp);
-		sprintf(temp,"Problem: %s.", gmpages[i].reason);
-		sysmessage(s,temp);
-				/*
-		sprintf((char*)temp,"Serial number %x %x %x %x", gmpages[i].ser1,
-								gmpages[i].ser2, gmpages[i].ser3, gmpages[i].ser4);
-				*/
-				sprintf(temp, "Serial number: %x", gmpages[i].serial.serial32);
-		sysmessage(s,temp);
-		sprintf(temp,"Paged at %s.", gmpages[i].timeofcall);
-		sysmessage(s,temp);
-		gmpages[i].handled=1;
-		pc_currchar->MoveTo( dest );
-		pc_currchar->callnum=i;
-		pc_currchar->teleport();
-		x++;
-		}// if
-		//} for
-		if(x>0)break;
-	}// if
-	}// for
-	if(x==0) sysmessage(s,"The GM queue is currently empty");
-	} //end first IF
-	else //Player is only a counselor
-	{
-	x=0;
-	for(i=1;i<MAXPAGES;i++)
-	{
-	if(counspages[i].handled==0)
-	{
-
-			P_CHAR pj=pointers::findCharBySerial( counspages[i].serial.serial32 );
-			if(ISVALIDPC(pj))
+						pc_currchar->sysmsg("");
+						pc_currchar->sysmsg("Transporting to next call: %s", gmpages[i].name);
+						pc_currchar->sysmsg("Problem: %s.", gmpages[i].reason);
+						pc_currchar->sysmsg("Serial number: %x", gmpages[i].serial.serial32);
+						pc_currchar->sysmsg("Paged at %s.", gmpages[i].timeofcall);
+						gmpages[i].handled=1;
+						pc_currchar->MoveTo( dest );
+						pc_currchar->callnum=i;
+						pc_currchar->teleport();
+						x++;
+					}// if
+					if(x>0)break;
+				}// if
+			}// for
+			if(x==0) pc_currchar->sysmsg("The GM queue is currently empty");
+		} //end first IF
+		else //Player is only a counselor
+		{
+			x=0;
+			for(i=1;i<MAXPAGES;i++)
 			{
-				Location dest= pj->getPosition();
+				if(counspages[i].handled==0)
+				{
+					P_CHAR pj=pointers::findCharBySerial( counspages[i].serial.serial32 );
+					if(ISVALIDPC(pj))
+					{
+						Location dest= pj->getPosition();
 
-		sysmessage(s,"");
-		sprintf(temp,"Transporting to next call: %s", counspages[i].name);
-		sysmessage(s,temp);
-		sprintf(temp,"Problem: %s.", counspages[i].reason);
-		sysmessage(s,temp);
-				/*
-		sprintf((char*)temp,"Serial number %x %x %x %x", counspages[i].ser1,
-								counspages[i].ser2, counspages[i].ser3, counspages[i].ser4);
-				*/
-				sprintf(temp, "Serial number %x", counspages[i].serial.serial32);
-		sysmessage(s,temp);
-		sprintf(temp,"Paged at %s.", counspages[i].timeofcall);
-		sysmessage(s,temp);
-		gmpages[i].handled=1;
-		pc_currchar->MoveTo( dest );
-		pc_currchar->callnum=i;
-		pc_currchar->teleport();
-		x++;
-		break;
-		}// if
-		}// else
-		if(x>0)break;
-	}//for
-	//}
-	if(x==0) sysmessage(s,"The Counselor queue is currently empty");
-	}//if
+						pc_currchar->sysmsg("");
+						pc_currchar->sysmsg("Transporting to next call: %s", counspages[i].name);
+						pc_currchar->sysmsg("Problem: %s.", counspages[i].reason);
+						pc_currchar->sysmsg("Serial number: %x", counspages[i].serial.serial32);
+						pc_currchar->sysmsg("Paged at %s.", counspages[i].timeofcall);
+						counspages[i].handled=1;
+						pc_currchar->MoveTo( dest );
+						pc_currchar->callnum=i;
+						pc_currchar->teleport();
+						x++;
+						break;
+					}// if
+				}// else
+				if(x>0)break;
+			}//for
+			if(x==0) pc_currchar->sysmsg("The Counselor queue is currently empty");
+		}//if
 	}
+
 	void KillSpawn(NXWSOCKET s, int r)  //courtesy of Revana
 	{
 		/*unsigned int i;
@@ -413,20 +396,16 @@ namespace Commands
 
 	void RegSpawnMax (NXWSOCKET s, int r ) // rewrite LB
 	{
+		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(pc);
+
 	//	unsigned int currenttime=uiCurrentTime;
-		char *temps;
 
-		temps = new char[100];
-
-		sprintf(temps, TRANSLATE("Spawn %d is spawning all items/NPCs, this will cause some lag."), r);
-		sysbroadcast(temps);
+		sysbroadcast(TRANSLATE("Spawn %d is spawning all items/NPCs, this will cause some lag."), r);
 
 		Spawns->doSpawnAll( r );
 
-		sprintf(temps, "[DONE] All NPCs/items spawned in spawn %d.", r );
-		sysmessage(s, temps);
-
-		if (temps!=NULL) delete [] temps;
+		pc->sysmsg("[DONE] All NPCs/items spawned in spawn %d.", r );
 	}
 
 	void RegSpawnNum (NXWSOCKET s, int r, int n) // rewrite by LB
@@ -497,17 +476,15 @@ namespace Commands
 	//o---------------------------------------------------------------------------o
 	void CPage(NXWSOCKET s, std::string reason) // Help button (Calls Counselor Call Menus up)
 	{
-		int i, a1, a2, a3, a4;
+		int i;
+		SERIAL a;
 		int x2=0;
 		char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 		VALIDATEPC( pc_currchar );
 
-		a1= pc_currchar->getSerial().ser1;
-		a2= pc_currchar->getSerial().ser2;
-		a3= pc_currchar->getSerial().ser3;
-		a4= pc_currchar->getSerial().ser4;
+		a = pc_currchar->getSerial32();
 
 		for(i=1;i<MAXPAGES;i++)
 		{
@@ -516,14 +493,11 @@ namespace Commands
 				counspages[i].handled=0;
 				strcpy(counspages[i].name,pc_currchar->getCurrentNameC());
 				strcpy(counspages[i].reason,reason.c_str());
-				counspages[i].serial.ser1=a1;
-				counspages[i].serial.ser2=a2;
-				counspages[i].serial.ser3=a3;
-				counspages[i].serial.ser4=a4;
+				counspages[i].serial.serial32 = a;
 				time_t current_time = time(0);
 				struct tm *local = localtime(&current_time);
 				sprintf(counspages[i].timeofcall, "%02d:%02d:%02d", local->tm_hour, local->tm_min, local->tm_sec);
-				sprintf(temp,"%s [%d][%d][%d][%d] called at %s, %s",counspages[i].name,a1,a2,a3,a4,counspages[i].timeofcall,counspages[i].reason);
+				sprintf(temp,"%s [ %08x ] called at %s, %s",counspages[i].name,a,counspages[i].timeofcall,counspages[i].reason);
 				pc_currchar->playercallnum=i;
 				pc_currchar->pagegm=2;
 				x2++;
@@ -532,16 +506,16 @@ namespace Commands
 		}
 		if(x2==0)
 		{
-			sysmessage(s,TRANSLATE("The Counselor Queue is currently full. Contact the shard operator"));
-			sysmessage(s,TRANSLATE("and ask them to increase the size of the queue."));
+			pc_currchar->sysmsg(TRANSLATE("The Counselor Queue is currently full. Contact the shard operator"));
+			pc_currchar->sysmsg(TRANSLATE("and ask them to increase the size of the queue."));
 		}
 		else
 		{
 			if(reason == "OTHER")
 			{
 				pc_currchar->pagegm=0;
-				sprintf(temp, "Counselor Page from %s [%x %x %x %x]: %s",
-				pc_currchar->getCurrentNameC(), a1, a2, a3, a4, reason.c_str());
+				sprintf(temp, "Counselor Page from %s [ %08x ]: %s",
+				pc_currchar->getCurrentNameC(), a, reason.c_str());
 				bool found=false;
 
 				NxwSocketWrapper sw;
@@ -560,11 +534,11 @@ namespace Commands
 
 				}
 				if (found)
-					sysmessage(s, TRANSLATE("Available Counselors have been notified of your request."));
+					pc_currchar->sysmsg(TRANSLATE("Available Counselors have been notified of your request."));
 				else 
-					sysmessage(s, TRANSLATE("There was no Counselor available to take your call."));
+					pc_currchar->sysmsg(TRANSLATE("There was no Counselor available to take your call."));
 			}
-			else sysmessage(s,TRANSLATE("Please enter the reason for your Counselor request"));
+			else pc_currchar->sysmsg(TRANSLATE("Please enter the reason for your Counselor request"));
 		}
 	}
 
@@ -577,16 +551,14 @@ namespace Commands
 	//o---------------------------------------------------------------------------o
 	void GMPage(NXWSOCKET s, std::string reason)
 	{
-		int i, a1, a2, a3, a4;
+		int i;
+		SERIAL a;
 		int x2=0;
 		char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 
-		a1= pc_currchar->getSerial().ser1;
-		a2= pc_currchar->getSerial().ser2;
-		a3= pc_currchar->getSerial().ser3;
-		a4= pc_currchar->getSerial().ser4;
+		a = pc_currchar->getSerial32();
 
 		for(i=1;i<MAXPAGES;i++)
 		{
@@ -595,14 +567,11 @@ namespace Commands
 				gmpages[i].handled=0;
 				strcpy(gmpages[i].name, pc_currchar->getCurrentNameC());
 				strcpy(gmpages[i].reason,reason.c_str());
-				gmpages[i].serial.ser1= a1;
-				gmpages[i].serial.ser2= a2;
-				gmpages[i].serial.ser3= a3;
-				gmpages[i].serial.ser4= a4;
+				gmpages[i].serial.serial32 = a;
 				time_t current_time = time(0);
 				struct tm *local = localtime(&current_time);
 				sprintf(gmpages[i].timeofcall, "%02d:%02d:%02d", local->tm_hour, local->tm_min, local->tm_sec);
-				sprintf(temp,"%s [%d][%d][%d][%d] called at %s, %s",gmpages[i].name,a1,a2,a3,a4,gmpages[i].timeofcall,gmpages[i].reason);
+				sprintf(temp,"%s [ %08x ] called at %s, %s",gmpages[i].name,a,gmpages[i].timeofcall,gmpages[i].reason);
 				pc_currchar->playercallnum=i;
 				pc_currchar->pagegm=1;
 				x2++;
@@ -611,16 +580,16 @@ namespace Commands
 		}
 		if (x2==0)
 		{
-			sysmessage(s,TRANSLATE("The GM Queue is currently full. Contact the shard operator"));
-			sysmessage(s,TRANSLATE("and ask them to increase the size of the queue."));
+			pc_currchar->sysmsg(TRANSLATE("The GM Queue is currently full. Contact the shard operator"));
+			pc_currchar->sysmsg(TRANSLATE("and ask them to increase the size of the queue."));
 		}
 		else
 		{
 			if(reason == "OTHER")
 			{
 				pc_currchar->pagegm=0;
-				sprintf(temp, "Page from %s [%x %x %x %x]: %s",
-				pc_currchar->getCurrentNameC(), a1, a2, a3, a4, reason.c_str());
+				sprintf(temp, "Page from %s [ %08x ]: %s",
+				pc_currchar->getCurrentNameC(), a, reason.c_str());
 				bool found=false;
 
 				NxwSocketWrapper sw;
@@ -638,81 +607,73 @@ namespace Commands
 					}
 				}
 				if (found)
-					sysmessage(s, TRANSLATE("Available Game Masters have been notified of your request."));
+					pc_currchar->sysmsg(TRANSLATE("Available Game Masters have been notified of your request."));
 				else 
-					sysmessage(s, TRANSLATE("There was no Game Master available to take your call."));
+					pc_currchar->sysmsg(TRANSLATE("There was no Game Master available to take your call."));
 			}
-			else sysmessage(s,TRANSLATE("Please enter the reason for your GM request"));
+			else pc_currchar->sysmsg(TRANSLATE("Please enter the reason for your GM request"));
 		}
 	}
 
 	void DyeItem(NXWSOCKET s) // Rehue an item
 	{
-		int body,c1,c2,b,k;
-		int serial=calcserial(buffer[s][1],buffer[s][2],buffer[s][3],buffer[s][4]);
-		int i = calcItemFromSer( serial );
-		P_ITEM pi= MAKE_ITEM_REF(i);
+		int body,b,k;
+		SI16 color;
+		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +1);
 
 		if(ISVALIDPI(pi))
 		{
-				c1=buffer[s][7];
-				c2=buffer[s][8];
+			color = ShortFromCharPtr(buffer[7] +7);
 
 
-				if(!(dyeall[s]))
-		{
-					if ((((c1<<8)+c2)<0x0002) ||
-						(((c1<<8)+c2)>0x03E9))
-					{
-						c1=0x03;
-						c2=0xE9;
-					}
-				}
-
-			b=((((c1<<8)+c2)&0x4000)>>14)+((((c1<<8)+c2)&0x8000)>>15);
-				if (!b)
-		{
-		pi->color1=c1;
-				pi->color2=c2;
-				}
-
-				if (((c1<<8)+c2)==17969)
+			if(!(dyeall[s]))
+			{
+				if (( color<0x0002) || (color>0x03E9))
 				{
-					pi->color1=c1;
-					pi->color2=c2;
+					color = 0x03E9;
 				}
-				pi->Refresh();//AntiChrist
+			}
 
-				soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
-				return;
+			b=(( color & 0x4000) >>14) | (( color & 0x8000) >>15);
+
+			if (!b)
+			{
+				pi->color1 = color >> 8;
+				pi->color2 = color % 256;
+			}
+
+			if (color == 0x4631)
+			{
+				pi->color1 = color >> 8;
+				pi->color2 = color % 256;
+			}
+
+			pi->Refresh();//AntiChrist
+
+			soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
+			return;
 		}
 
-		serial=calcserial(buffer[s][7],buffer[s][8],buffer[s][9],buffer[s][10]);
-		i = calcCharFromSer( serial );
-		P_CHAR pc=MAKE_CHAR_REF(i);
+		P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +7);
 		if(ISVALIDPC(pc))
 		{
 			P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 			if( !(pc_currchar->IsGM() ) ) return; // Only gms dye characters
-			k=(buffer[s][7]<<8)+buffer[s][8];
+			k = ShortFromCharPtr(buffer[s] +7);
 
+			body = pc->GetBodyType();
 
-			body=(pc->id1<<8)+pc->id2;
-		b=k&0x4000;
+			if( ( ( k>>8 ) < 0x80 ) && body >= BODY_MALE && body <= BODY_DEADFEMALE ) k|= 0x8000;
 
-			if( ( ( k>>8 ) < 0x80 ) && body >= 0x0190 && body <= 0x0193 ) k+= 0x8000;
+			if ((k & 0x4000) && (body >= BODY_MALE && body<= 0x03E1)) k=0xF000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
 
-			if (b==16384 && (body >=0x0190 && body<=0x03e1)) k=0xf000; // but assigning the only "transparent" value that works, namly semi-trasnparency.
-
-		if (k!=0x8000)
+			if (k!=0x8000)
 			{
 
-				pc->skin1=k>>8;
-				pc->skin2=k%256;
-				pc->xskin1=k>>8;
-				pc->xskin2=k%256;
+				pc->setSkinColor(k);
+				pc->setOldSkinColor(k);
 				pc->teleport();
-		}
+			}
 		}
 		soundeffect( s, 0x02, 0x3e ); // plays the dye sound, LB
 	}
@@ -720,41 +681,39 @@ namespace Commands
 
 	void SetItemTrigger(NXWSOCKET s)
 	{
-		int i,serial;
+		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(pc);
 
-
-	serial=calcserial(buffer[s][7],buffer[s][8],buffer[s][9],buffer[s][10]);
-	i = calcItemFromSer( serial );
-	P_ITEM pi=MAKE_ITEM_REF(i);
-	if (ISVALIDPI(pi))
-	{
-			sysmessage(s,"Item triggered");
+		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] + 7);
+		if (ISVALIDPI(pi))
+		{
+			pc->sysmsg("Item triggered");
 			pi->trigger=addx[s];
-	}
+		}
 	}
 
 	void SetTriggerType(NXWSOCKET s)
 	{
-		int i,serial;
+		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(pc);
 
-
-	serial=calcserial(buffer[s][7],buffer[s][8],buffer[s][9],buffer[s][10]);
-	i = calcItemFromSer( serial );
-	P_ITEM pi=MAKE_ITEM_REF(i);
-	if (ISVALIDPI(pi))
-	{
-			sysmessage(s,"Trigger type set");
+		P_ITEM pi = pointers::findItemBySerPtr(buffer[s] + 7);
+		if (ISVALIDPI(pi))
+		{
+			pc->sysmsg("Trigger type set");
 			pi->trigtype=addx[s];
-	}
+		}
 	}
 
 	void SetTriggerWord(NXWSOCKET s)
 	{
+		P_CHAR Me=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(Me);
 
 		P_CHAR pc=pointers::findCharBySerPtr(buffer[s]+7);
 		VALIDATEPC(pc);
 
-		sysmessage(s,"Trigger word set");
+		Me->sysmsg("Trigger word set");
 		strcpy(pc->trigword,xtext[s]);
 	}
 
@@ -763,10 +722,10 @@ namespace Commands
 		LOGICAL pileable=false;
 		tile_st tile;
 
-		Map->SeekTile((addid1[s]<<8)+addid2[s], &tile);
+		Map->SeekTile((addid1[s]<<8)|addid2[s], &tile);
 		if (tile.flag2&0x08) pileable=true;
 
-		P_ITEM pi=item::SpawnItem(-1,s, 1, "#", pileable, (addid1[s]<<8)+addid2[s], 0, 0, 0);
+		P_ITEM pi=item::SpawnItem(-1,s, 1, "#", pileable, (addid1[s]<<8)|addid2[s], 0, 0, 0);
 
 		if(ISVALIDPI(pi))//AntiChrist - to preview crashes
 		{
@@ -788,11 +747,13 @@ namespace Commands
 
 	void SetNPCTrigger(NXWSOCKET s)
 	{
+		P_CHAR Me=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(Me);
 
 		P_CHAR pc=pointers::findCharBySerPtr(buffer[s]+7);
 		if( ISVALIDPC(pc))
 		{
-			sysmessage(s,"NPC triggered");
+			Me->sysmsg("NPC triggered");
 			pc->trigger=addx[s];
 		}
 	}
@@ -884,16 +845,14 @@ namespace Commands
 			textlines++;
 		}
 
-		unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
+		UI08 gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
 
-		gump1[1]=length>>8;
-		gump1[2]=length%256;
+		ShortToCharPtr(length, gump1 +1);
 		gump1[7]=0;
 		gump1[8]=0;
 		gump1[9]=0;
 		gump1[10]=type; // Gump Number
-		gump1[19]=length2>>8;
-		gump1[20]=length2%256;
+		ShortToCharPtr(length2, gump1 +19);
 		Xsend(s, gump1, 21);
 
 		for(line=0;line<linecount;line++)
@@ -902,20 +861,18 @@ namespace Commands
 			Xsend(s, sect, strlen(sect));
 		}
 
-		unsigned char gump2[4]="\x00\x00\x00";
-		gump2[1]=textlines>>8;
-		gump2[2]=textlines%256;
+		UI08 gump2[3]={ 0x00, };
+		ShortToCharPtr(textlines, gump2 +1);
 
 		Xsend(s, gump2, 3);
 
-		unsigned char gump3[3]="\x00\x00";
+		UI08 gump3[2]= { 0x00, 0x00 };
 		for(line=0;line<linecount1;line++)
 		{
 			if (strlen(menuarray1[line])==0)
 				break;
 
-			gump3[0]=strlen(menuarray1[line])>>8;
-			gump3[1]=strlen(menuarray1[line])%256;
+			ShortToCharPtr(strlen(menuarray1[line]), gump3);
 			Xsend(s, gump3, 2);
 			gump3[0]=0;
 			for (i=0;i<strlen(menuarray1[line]);i++)
@@ -924,6 +881,8 @@ namespace Commands
 				Xsend(s, gump3, 2);
 			}
 		}
+
+//AoS/		Network->FlushBuffer(s);
 	}
 
 
@@ -963,9 +922,10 @@ namespace Commands
 
 	void ShowGMQue(NXWSOCKET s, int type) // Shows next unhandled call in the GM queue
 	{
+		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC(pc);
 
 		// Type is 0 if it is a Counselor doing the command (or a GM doing /cq) and 1 if it is a GM
-		char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 		int i;
 		int x=0;
@@ -978,27 +938,21 @@ namespace Commands
 				{
 					if(x==0)
 					{
-						sysmessage(s,"");
-						sprintf(temp,"Next unhandled page from %s", gmpages[i].name);
-						sysmessage(s,temp);
-						sprintf(temp,"Problem: %s.", gmpages[i].reason);
-						sysmessage(s,temp);
-						//sprintf((char*)temp,"Serial number %x %x %x %x", gmpages[i].ser1, gmpages[i].ser2, gmpages[i].ser3, gmpages[i].ser4);
-						sprintf(temp, "Serial number %x", gmpages[i].serial.serial32);
-						sysmessage(s,temp);
-						sprintf(temp,"Paged at %s.", gmpages[i].timeofcall);
-						sysmessage(s,temp);
+						pc->sysmsg("");
+						pc->sysmsg("Next unhandled page from %s", gmpages[i].name);
+						pc->sysmsg("Problem: %s.", gmpages[i].reason);
+						pc->sysmsg("Serial number %x", gmpages[i].serial.serial32);
+						pc->sysmsg("Paged at %s.", gmpages[i].timeofcall);
 					}
 					x++;
 				}
 			}
 			if (x>0)
 			{
-				sprintf(temp,"Total pages in queue: %i",x);
-				sysmessage(s,"");
-				sysmessage(s,temp);
+				pc->sysmsg("");
+				pc->sysmsg("Total pages in queue: %i",x);
 			}
-			else sysmessage(s,"The GM queue is currently empty");
+			else pc->sysmsg("The GM queue is currently empty");
 		} //end of first if
 		else //Player is a counselor so show counselor queue
 		{
@@ -1008,27 +962,21 @@ namespace Commands
 				{
 					if(x==0)
 					{
-						sysmessage(s,"");
-						sprintf(temp,"Next unhandled page from %s", counspages[i].name);
-						sysmessage(s,temp);
-						sprintf(temp,"Problem: %s.", counspages[i].reason);
-						sysmessage(s,temp);
-						//sprintf((char*)temp,"Serial number %x %x %x %x", counspages[i].ser1, counspages[i].ser2, counspages[i].ser3, counspages[i].ser4);
-						sprintf(temp, "Serial number %x", counspages[i].serial.serial32);
-						sysmessage(s,temp);
-						sprintf(temp,"Paged at %s.", counspages[i].timeofcall);
-						sysmessage(s,temp);
+						pc->sysmsg("");
+						pc->sysmsg("Next unhandled page from %s", counspages[i].name);
+						pc->sysmsg("Problem: %s.", counspages[i].reason);
+						pc->sysmsg("Serial number %x", counspages[i].serial.serial32);
+						pc->sysmsg("Paged at %s.", counspages[i].timeofcall);
 					}
 					x++;
 				}
 			}
 			if (x>0)
 			{
-				sprintf(temp,"Total pages in queue: %i",x);
-				sysmessage(s,"");
-				sysmessage(s,temp);
+				pc->sysmsg("");
+				pc->sysmsg("Total pages in queue: %i",x);
 			}
-			else sysmessage(s,"The Counselor queue is currently empty");
+			else pc->sysmsg("The Counselor queue is currently empty");
 		}
 	}
 	// new wipe function, basically it prints output on the console when someone wipes so that
