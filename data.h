@@ -115,8 +115,8 @@ struct multiIdx_st {
 
 struct multi_st {
 	SI16 block;
-	UI16 x;
-	UI16 y;
+	SI16 x;
+	SI16 y;
 	SI16 height;
 	UI32 flags;
 } PACK_NEEDED;
