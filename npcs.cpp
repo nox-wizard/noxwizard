@@ -881,14 +881,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					strcpy(script1, "DUMMY");
 				}
 				else if ( !strcmp( "NOTRAIN", script1 ) )		pc->cantrain=false;
-				else if ( !strcmp( "NPCAI",script1 ) )			{
-					if( script2[0]>='0' && script2[0]<='9' ) //is a number, so normal npcai
-						pc->npcaitype=hex2num(script2);
-					else {
-						pc->npcaitype=NPCAI_SMALL;
-						pc->npcai_func = new AmxFunction( script2 );
-					}
-				}
+				else if ( !strcmp( "NPCAI",script1 ) )			pc->npcaitype=str2num(script2);
 				else if ( !strcmp( "NPCWANDER",script1) )		pc->npcWander=str2num(script2);
 				else if ( !strcmp( "NXWFLAG0", script1 ) )		pc->nxwflags[0] = str2num(script2);
 				else if ( !strcmp( "NXWFLAG1", script1 ) )		pc->nxwflags[1] = str2num(script2);
