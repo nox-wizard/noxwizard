@@ -819,6 +819,10 @@ void cNetwork::enterchar(int s)
 	if (MapTileHeight<300) world[5]=0x02;
 	Xsend(s, world, 6);
 
+	cPacketFeatures features;
+	features.feature= FEATURE_T2A | FEATURE_LBR;
+	features.send( pc->getClient() );
+
 	perm[s]=1;
 	targetok[s]=0;
 
