@@ -34,12 +34,12 @@ void tempeffectson()
 		po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 	        
@@ -64,12 +64,12 @@ void tempeffectsoff()
                 po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 
@@ -93,12 +93,12 @@ void checktempeffects()
                 po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
-			tempfxCheck.erase( it );
+			it = tempfxCheck.erase( it );
 			continue;
 	        }
 	        
