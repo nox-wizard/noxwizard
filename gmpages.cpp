@@ -29,10 +29,12 @@ cGmpage::cGmpage(SERIAL serialg, std::string reasong) {
 	prev_page=NULL;
 	
 	
+	char* str= "";
 	time_t current_time = time(0);
 	struct tm *local = localtime(&current_time);
-	sprintf( (char *)timeofcall.c_str(), "%02d/%02d/%04d at %02d:%02d:%02d", local->tm_mday, local->tm_mon, local->tm_year, local->tm_hour, local->tm_min, local->tm_sec);
-	
+	sprintf( str, "%02d/%02d/%04d at %02d:%02d:%02d", local->tm_mday, local->tm_mon, local->tm_year, local->tm_hour, local->tm_min, local->tm_sec);
+	timeofcall=str;
+
 }
 
 

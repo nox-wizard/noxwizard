@@ -5929,20 +5929,16 @@ NATIVE ( _getGmPageList )
 */
 NATIVE ( _chr_getGmPage )
 {
-/*	extern cGmpagesMap* pages;
+	extern cGmpagesMap* pages;
 
-	char* page_reason, timeofcall;
-
+	
 	P_GMPAGE page=pages->findPage(params[1], params[2]);
 
 	if( pages==NULL )
 		return false;
 	
-	page_reason = (char*)(page->getReason()).c_str();
-	timeofcall = (char*)(page->getTime()).c_str();
-	
-	//strcpy(params[3], page_reason);
-	//strcpy(params[4], timeofcall);*/
+	strcpy((char*)params[3], (page->getReason()).c_str());
+	strcpy((char*)params[4], (page->getTime()).c_str());
 
 	return true;
 
