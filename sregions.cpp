@@ -85,7 +85,7 @@ void loadregions()//New -- Zippy spawn regions
 						WarnOut("region %i has more than 10 'GUARDNUM', The ones after 10 will not be used\n",i);
 					}
 				}
-				if (!(strcmp("NAME",script1)))
+				else if (!(strcmp("NAME",script1)))
 				{
 					strcpy(regionRef.name,script2);
 					actgood=INVALID; // Magius(CHE)
@@ -103,76 +103,74 @@ void loadregions()//New -- Zippy spawn regions
 						//ConOut( "NoX-Wizard: loadregions() %i regions loaded so far\n", escortRegions );
 					}
 				} // End - Dupois
-				if (!(strcmp("GUARDOWNER",script1)))	strcpy(regionRef.guardowner,script2);
-				if (!(strcmp("MIDILIST",script1)))		regionRef.midilist=str2num(script2);
-				if (!(strcmp("GUARDED",script1)))
+				else if (!(strcmp("GUARDOWNER",script1)))	strcpy(regionRef.guardowner,script2);
+				else if (!(strcmp("MIDILIST",script1)))		regionRef.midilist=str2num(script2);
+				else if (!(strcmp("GUARDED",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x01;
 				}
-				if (!(strcmp("MAGICDAMAGE",script1)))
+				else if (!(strcmp("MAGICDAMAGE",script1)))
 				{
 					if ((str2num(script2))) regionRef.priv|=0x40; // bugfix LB 12-march-
 					// changes from 0=magicdamge,1=no magic damage
 					// to			1=			 0=
 				}
-				if (!(strcmp("NOMAGIC",script1)))
+				else if (!(strcmp("NOMAGIC",script1)))
 				{
 					if ((str2num(script2))) regionRef.priv|=0x80;
 				}
-				if (!(strcmp("MARK",script1)))
+				else if (!(strcmp("MARK",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x02;
 				}
-				if (!(strcmp("GATE",script1)))
+				else if (!(strcmp("GATE",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x04;
 				}
-				if (!(strcmp("RECALL",script1)))
+				else if (!(strcmp("RECALL",script1)))
 				{
 					if (str2num(script2)) regionRef.priv|=0x08;
 				}
-				if (!(strcmp("SNOWCHANCE", script1)))
+				else if (!(strcmp("SNOWCHANCE", script1)))
 				{
 					regionRef.snowchance=str2num(script2);
 				}
-				if (!(strcmp("RAINCHANCE", script1)))
+				else if (!(strcmp("RAINCHANCE", script1)))
 				{
 					regionRef.rainchance=str2num(script2);
 				}
 				//xan : quick&dirty weather system :)
-				if (!(strcmp("DRYCHANCE", script1)))
+				else if (!(strcmp("DRYCHANCE", script1)))
 				{
 					regionRef.drychance=str2num(script2);
 				}
-				if (!(strcmp("KEEPCHANCE", script1)))
+				else if (!(strcmp("KEEPCHANCE", script1)))
 				{
 					regionRef.keepchance=str2num(script2);
 				}
-				if (!(strcmp("FORCESEASON", script1)))
+				else if (!(strcmp("FORCESEASON", script1)))
 				{
 					regionRef.forcedseason =str2num(script2);
 				}
-
-				if (!(strcmp("IGNOREMONTHMULTIPLIERS", script1)))
+				else if (!(strcmp("IGNOREMONTHMULTIPLIERS", script1)))
 				{
 					regionRef.ignoreseason =true;
 				}
-
-				if (!(strcmp("GOOD", script1))) // Magius(CHE)
+				else if (!(strcmp("GOOD", script1))) // Magius(CHE)
 				{
 					actgood=str2num(script2);
 				}
-				if (!(strcmp("BUYABLE", script1))) // Magius(CHE)
+				else if (!(strcmp("BUYABLE", script1))) // Magius(CHE)
 				{
 					if (actgood>INVALID) regionRef.goodbuy[actgood]=str2num(script2);
 					else ErrOut("error in regions.xss. You must write BUYABLE after GOOD <num>!\n");
 				}
-				if (!(strcmp("SELLABLE", script1))) // Magius(CHE)
+				else if (!(strcmp("SELLABLE", script1))) // Magius(CHE)
 				{
 					if (actgood>INVALID) regionRef.goodsell[actgood]=str2num(script2);
 					else ErrOut("error in regions.xss. You must write SELLABLE after GOOD <num>!\n");
 				}
-				if (!(strcmp("RANDOMVALUE", script1))) // Magius(CHE) (2)
+				else if (!(strcmp("RANDOMVALUE", script1))) // Magius(CHE) (2)
 				{
 					if (actgood>INVALID) {
 						gettokennum(script2, 0);
@@ -187,19 +185,19 @@ void loadregions()//New -- Zippy spawn regions
 					}
 					else ErrOut("error in regions.xss. You must write RANDOMVALUE after GOOD <num>!\n");
 				}
-				if (!(strcmp("X1", script1)))
+				else if (!(strcmp("X1", script1)))
 				{
 					location[l].x1=str2num(script2);
 				}
-				if (!(strcmp("X2", script1)))
+				else if (!(strcmp("X2", script1)))
 				{
 					location[l].x2=str2num(script2);
 				}
-				if (!(strcmp("Y1", script1)))
+				else if (!(strcmp("Y1", script1)))
 				{
 					location[l].y1=str2num(script2);
 				}
-				if (!(strcmp("Y2", script1)))
+				else if (!(strcmp("Y2", script1)))
 				{
 					location[l].y2=str2num(script2);
 					location[l].region=i;
