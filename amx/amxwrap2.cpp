@@ -1988,7 +1988,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 {
 	switch( property )
 	{
-		CHECK(  NXW_CP_STR_DISABLEDMSG , (pc->disabledmsg!=NULL)? (char*)pc->disabledmsg->c_str() : "" )  		//dec value: 450;
+		CHECK(  NXW_CP_STR_DISABLEDMSG , (pc->disabledmsg!=NULL)? const_cast<char*>(pc->disabledmsg->c_str()) : const_cast<char*>(emptyString) )  		//dec value: 450;
 		CHECK(  NXW_CP_STR_GUILDTITLE , pc->GetGuildTitle() )  		//dec value: 451;
 		CHECK(  NXW_CP_STR_LASTON , "<obsolete>" )  			//dec value: 452;
 		CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;

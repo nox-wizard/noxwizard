@@ -296,37 +296,37 @@ char *complete_title(P_CHAR pc) // generates the ENTIRE title plus criminal stuf
 
 	if (pc->account==0 && pc->IsGM()) // Ripper..special titles for admins :)
 	{
-		sprintf(tempstr, "%s %s", pc->getCurrentNameC(), pc->title);
+		sprintf(tempstr, "%s %s", pc->getCurrentNameC(), pc->title.c_str());
 	}
 	else
 	if (pc->IsGM() && pc->account!=0)
 	{//GM.
-		sprintf(tempstr, "%s %s", pc->getCurrentNameC(), pc->title);
+		sprintf(tempstr, "%s %s", pc->getCurrentNameC(), pc->title.c_str());
 	}
 	// ripper ..rep stuff
 	else if ((pc->IsCriminal()) && (!(pc->dead) && (pc->kills<4)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[0].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[0].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=5) && (!(pc->dead) && (pc->kills<10)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[1].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[1].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=10) && (!(pc->dead) && (pc->kills<20)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[2].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[2].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=20) && (!(pc->dead) && (pc->kills<50)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[3].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[3].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=50) && (!(pc->dead) && (pc->kills<100)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[4].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[4].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	}
 	else if ((pc->kills>=100) && (!(pc->dead)))
 	{
-		sprintf(tempstr, "%s %s, %s%s %s", title[5].other, pc->getCurrentNameC(), pc->title, title1(pc), title2(pc));
+		sprintf(tempstr, "%s %s, %s%s %s", title[5].other, pc->getCurrentNameC(), pc->title.c_str(), title1(pc), title2(pc));
 	} // end of rep stuff
 	else
 	{//Player.
