@@ -80,6 +80,9 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 		UI32		fieldOffset;
 		UI32		fieldLength;
 		UI32		fieldId;
+
+		responseMap.clear();
+
 		if( hasRadio )
 		{
 			radioButton = static_cast<int>(data[22]); // probably data[19]...data[22]
@@ -162,7 +165,7 @@ LOGICAL nxwGump::selectResponse( UI32 fieldId, std::string &value )
 
 LOGICAL	nxwGump::addResponse( UI32 fieldId, std::string value )
 {
-	if( responseMap.find( fieldId ) != responseMap.end() )
+	if(  responseMap.find( fieldId ) != responseMap.end() )
 		return false;
 	else
 	{
