@@ -32,7 +32,7 @@ cUnicodeString::cUnicodeString( char* c )
 		}
 		else {
 			t+=c[i]<<8;
-			this->operator +=( c[i] );
+			append( t );
 		}
 		++i;
 	} while( !( (i%2) && t==0 ) );	
@@ -78,9 +78,14 @@ void cUnicodeString::copy( std::string& s )
 
 cUnicodeString& cUnicodeString::operator+=( wchar_t c )
 {
+	append( c );
+	return (*this);
+}
+
+void cUnicodeString::append( wchar_t c )
+{
 	this->s.insert( before_term, c >> 8   );
 	this->s.insert( before_term, c & 0xFF );
-	return (*this);
 }
 
 

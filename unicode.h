@@ -33,6 +33,7 @@ public:
 	UI32 length();
 
 	void copy( std::string& s );
+	void append( wchar_t c );
 	cUnicodeString& operator+=( wchar_t c );
 
 	void clear();
