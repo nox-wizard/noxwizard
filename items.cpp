@@ -974,28 +974,31 @@ cItem::cItem( SERIAL ser )
 
 LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 {
+
+#define CASEITEMEVENT( NAME, ID ) 	else if (!(strcmp(NAME,script1))) pi->amxevents[ID] = newAmxEvent(script2);
 	
-	if (!(strcmp("@ONDAMAGE",script1))) pi->amxevents[EVENT_IONDAMAGE] = newAmxEvent(script2);
-	else if (!(strcmp("@ONEQUIP",script1))) pi->amxevents[EVENT_IONEQUIP] = newAmxEvent(script2);
-	else if (!(strcmp("@ONUNEQUIP",script1))) pi->amxevents[EVENT_IONUNEQUIP] = newAmxEvent(script2);
-	else if (!(strcmp("@ONCLICK",script1))) pi->amxevents[EVENT_IONCLICK] = newAmxEvent(script2);
-	else if (!(strcmp("@ONDBLCLICK",script1))) pi->amxevents[EVENT_IONDBLCLICK] = newAmxEvent(script2);
-	else if (!(strcmp("@ONCHECKCANUSE",script1))) pi->amxevents[EVENT_IONCHECKCANUSE] = newAmxEvent(script2);
-	else if (!(strcmp("@ONPUTINBACKPACK",script1))) pi->amxevents[EVENT_IPUTINBACKPACK] = newAmxEvent(script2);
-	else if (!(strcmp("@ONDROPINLAND",script1))) pi->amxevents[EVENT_IDROPINLAND] = newAmxEvent(script2);
-	else if (!(strcmp("@ONTRANSFER",script1))) pi->amxevents[EVENT_IONTRANSFER] = newAmxEvent(script2);
-	else if (!(strcmp("@ONSTOLEN",script1))) pi->amxevents[EVENT_IONSTOLEN] = newAmxEvent(script2);
-	else if (!(strcmp("@ONPOISONED",script1))) pi->amxevents[EVENT_IONPOISONED] = newAmxEvent(script2);
-	else if (!(strcmp("@ONDECAY",script1))) pi->amxevents[EVENT_IONDECAY] = newAmxEvent(script2);
-	else if (!(strcmp("@ONREMOVETRAP",script1))) pi->amxevents[EVENT_IONREMOVETRAP] = newAmxEvent(script2);
-	else if (!(strcmp("@ONLOCKPICK",script1))) pi->amxevents[EVENT_IONLOCKPICK] = newAmxEvent(script2);
-	else if (!(strcmp("@ONWALKOVER",script1))) pi->amxevents[EVENT_IONWALKOVER] = newAmxEvent(script2);
-	else if (!(strcmp("@ONPUTITEM",script1))) pi->amxevents[EVENT_IONPUTITEM] = newAmxEvent(script2);
-        else if (!(strcmp("@ONTAKEFROMCONTAINER",script1))) pi->amxevents[EVENT_ITAKEFROMCONTAINER] = newAmxEvent(script2);
+	if (!strcmp("@ONSTART",script1))	{	
+		pi->amxevents[EVENT_IONSTART] = newAmxEvent(script2);
+		newAmxEvent(script2)->Call(pi->getSerial32(), -1);
+	}
+	CASEITEMEVENT("@ONDAMAGE", EVENT_IONDAMAGE)
+	CASEITEMEVENT("@ONEQUIP", EVENT_IONEQUIP)
+	CASEITEMEVENT("@ONUNEQUIP", EVENT_IONUNEQUIP)
+	CASEITEMEVENT("@ONCLICK", EVENT_IONCLICK)
+	CASEITEMEVENT("@ONDBLCLICK", EVENT_IONDBLCLICK)
+	CASEITEMEVENT("@ONCHECKCANUSE", EVENT_IONCHECKCANUSE)
+	CASEITEMEVENT("@ONPUTINBACKPACK", EVENT_IPUTINBACKPACK)
+	CASEITEMEVENT("@ONDROPINLAND", EVENT_IDROPINLAND)
+	CASEITEMEVENT("@ONTRANSFER", EVENT_IONTRANSFER)
+	CASEITEMEVENT("@ONSTOLEN", EVENT_IONSTOLEN)
+	CASEITEMEVENT("@ONPOISONED", EVENT_IONPOISONED)
+	CASEITEMEVENT("@ONDECAY", EVENT_IONDECAY)
+	CASEITEMEVENT("@ONREMOVETRAP", EVENT_IONREMOVETRAP)
+	CASEITEMEVENT("@ONLOCKPICK", EVENT_IONLOCKPICK)
+	CASEITEMEVENT("@ONWALKOVER", EVENT_IONWALKOVER)
+	CASEITEMEVENT("@ONPUTITEM", EVENT_IONPUTITEM)
+    CASEITEMEVENT("@ONTAKEFROMCONTAINER", EVENT_ITAKEFROMCONTAINER)
 	else if (!(strcmp("@ONCREATION",script1))) newAmxEvent(script2)->Call(pi->getSerial32(),-1);
-	else if (!strcmp("@ONSTART",script1))	{	pi->amxevents[EVENT_IONSTART] = newAmxEvent(script2);
-							newAmxEvent(script2)->Call(pi->getSerial32(), -1);
-						}
 	else return false;
 	return true;
 	/*

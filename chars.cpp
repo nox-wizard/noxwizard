@@ -355,45 +355,49 @@ add onstart event to character programmatically
 void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 {
 	
-	if	(!strcmp("@ONDEATH",script1)) 		amxevents[EVENT_CHR_ONDEATH] = newAmxEvent(script2);
-	else if (!strcmp("@ONKILL",script1))		amxevents[EVENT_CHR_ONKILL] = newAmxEvent(script2);
-	else if (!strcmp("@ONWOUNDED",script1)) 	amxevents[EVENT_CHR_ONWOUNDED] = newAmxEvent(script2);
-	else if (!strcmp("@ONHIT",script1))		amxevents[EVENT_CHR_ONHIT] = newAmxEvent(script2);
-	else if (!strcmp("@ONHITMISS",script1)) 	amxevents[EVENT_CHR_ONHITMISS] = newAmxEvent(script2);
-	else if (!strcmp("@ONGETHIT",script1))		amxevents[EVENT_CHR_ONGETHIT] = newAmxEvent(script2);
-	else if (!strcmp("@ONWALK",script1))		amxevents[EVENT_CHR_ONWALK] = newAmxEvent(script2);
-	else if (!strcmp("@ONBLOCK",script1))		amxevents[EVENT_CHR_ONBLOCK] = newAmxEvent(script2);
-	else if (!strcmp("@ONSTART",script1))	{	amxevents[EVENT_CHR_ONSTART] = newAmxEvent(script2);
-							newAmxEvent(script2)->Call(getSerial32(), INVALID);
-						}
-	else if (!strcmp("@ONHEARTBEAT",script1)) 	amxevents[EVENT_CHR_ONHEARTBEAT] = newAmxEvent(script2);
-	else if (!strcmp("@ONDISPEL",script1)) 		amxevents[EVENT_CHR_ONDISPEL] = newAmxEvent(script2);
-	else if (!strcmp("@ONRESURRECT",script1)) 	amxevents[EVENT_CHR_ONRESURRECT] = newAmxEvent(script2);
-	else if (!strcmp("@ONFLAGCHANGE",script1)) 	amxevents[EVENT_CHR_ONFLAGCHG] = newAmxEvent(script2);
-	else if (!strcmp("@ONADVANCESKILL",script1)) 	amxevents[EVENT_CHR_ONADVANCESKILL] = newAmxEvent(script2);
-	else if (!strcmp("@ONGETSKILLCAP",script1)) 	amxevents[EVENT_CHR_ONGETSKILLCAP] = newAmxEvent(script2);
-	else if (!strcmp("@ONGETSTATCAP",script1)) 	amxevents[EVENT_CHR_ONGETSTATCAP] = newAmxEvent(script2);
-	else if (!strcmp("@ONADVANCESTAT",script1)) 	amxevents[EVENT_CHR_ONADVANCESTAT] = newAmxEvent(script2);
-	else if (!strcmp("@ONBEGINATTACK",script1)) 	amxevents[EVENT_CHR_ONBEGINATTACK] = newAmxEvent(script2);
-	else if (!strcmp("@ONBEGINDEFENSE",script1)) 	amxevents[EVENT_CHR_ONBEGINDEFENSE] = newAmxEvent(script2);
-	else if (!strcmp("@ONTRANSFER",script1)) 	amxevents[EVENT_CHR_ONTRANSFER] = newAmxEvent(script2);
-	else if (!strcmp("@ONMULTIENTER",script1)) 	amxevents[EVENT_CHR_ONMULTIENTER] = newAmxEvent(script2);
-	else if (!strcmp("@ONMULTILEAVE",script1)) 	amxevents[EVENT_CHR_ONMULTILEAVE] = newAmxEvent(script2);
-	else if (!strcmp("@ONSNOOPED",script1)) 	amxevents[EVENT_CHR_ONSNOOPED] = newAmxEvent(script2);
-	else if (!strcmp("@ONSTOLEN",script1)) 		amxevents[EVENT_CHR_ONSTOLEN] = newAmxEvent(script2);
-	else if (!strcmp("@ONPOISONED",script1)) 	amxevents[EVENT_CHR_ONPOISONED] = newAmxEvent(script2);
-	else if (!strcmp("@ONREGIONCHANGE",script1)) 	amxevents[EVENT_CHR_ONREGIONCHANGE] = newAmxEvent(script2);
-	else if (!strcmp("@ONCASTSPELL",script1)) 	amxevents[EVENT_CHR_ONCASTSPELL] = newAmxEvent(script2);
-	else if (!strcmp("@ONREPUTATIONCHANGE",script1))amxevents[EVENT_CHR_ONREPUTATIONCHG] = newAmxEvent(script2);
-	else if (!strcmp("@ONBREAKMEDITATION",script1)) amxevents[EVENT_CHR_ONBREAKMEDITATION] = newAmxEvent(script2);
-	else if (!strcmp("@ONCLICK",script1)) 		amxevents[EVENT_CHR_ONCLICK] = newAmxEvent(script2);
-	else if (!strcmp("@ONMOUNT",script1)) 		amxevents[EVENT_CHR_ONMOUNT] = newAmxEvent(script2);
-	else if (!strcmp("@ONDISMOUNT",script1)) 	amxevents[EVENT_CHR_ONDISMOUNT] = newAmxEvent(script2);
-	else if (!strcmp("@ONHEARPLAYER",script1)) 	amxevents[EVENT_CHR_ONHEARPLAYER] = newAmxEvent(script2);
-	else if (!strcmp("@ONDOCOMBAT",script1)) 	amxevents[EVENT_CHR_ONDOCOMBAT] = newAmxEvent(script2);
-	else if (!strcmp("@ONCOMBATHIT",script1)) 	amxevents[EVENT_CHR_ONCOMBATHIT] = newAmxEvent(script2);
-	else if (!strcmp("@ONSPEECH",script1))		amxevents[EVENT_CHR_ONSPEECH] = newAmxEvent(script2);
+#define CASECHAREVENT( NAME, ID ) 	else if (!strcmp( NAME,script1))	amxevents[ID] = newAmxEvent(script2);
 
+	
+	if (!strcmp("@ONSTART",script1))	{	
+		amxevents[EVENT_CHR_ONSTART] = newAmxEvent(script2);
+		newAmxEvent(script2)->Call(getSerial32(), INVALID);
+	}
+	CASECHAREVENT("@ONDEATH",EVENT_CHR_ONDEATH)
+	CASECHAREVENT("@ONKILL",EVENT_CHR_ONKILL)
+	CASECHAREVENT("@ONWOUNDED",EVENT_CHR_ONWOUNDED)
+	CASECHAREVENT("@ONHIT",EVENT_CHR_ONHIT)
+	CASECHAREVENT("@ONHITMISS",EVENT_CHR_ONHITMISS)
+	CASECHAREVENT("@ONGETHIT",EVENT_CHR_ONGETHIT)
+	CASECHAREVENT("@ONWALK",EVENT_CHR_ONWALK)
+	CASECHAREVENT("@ONBLOCK",EVENT_CHR_ONBLOCK)
+	CASECHAREVENT("@ONHEARTBEAT",EVENT_CHR_ONHEARTBEAT)
+	CASECHAREVENT("@ONDISPEL",EVENT_CHR_ONDISPEL)
+	CASECHAREVENT("@ONRESURRECT",EVENT_CHR_ONRESURRECT)
+	CASECHAREVENT("@ONFLAGCHANGE",EVENT_CHR_ONFLAGCHG)
+	CASECHAREVENT("@ONADVANCESKILL",EVENT_CHR_ONADVANCESKILL)
+	CASECHAREVENT("@ONGETSKILLCAP",EVENT_CHR_ONGETSKILLCAP)
+	CASECHAREVENT("@ONGETSTATCAP",EVENT_CHR_ONGETSTATCAP)
+	CASECHAREVENT("@ONADVANCESTAT",EVENT_CHR_ONADVANCESTAT)
+	CASECHAREVENT("@ONBEGINATTACK",EVENT_CHR_ONBEGINATTACK)
+	CASECHAREVENT("@ONBEGINDEFENSE",EVENT_CHR_ONBEGINDEFENSE)
+	CASECHAREVENT("@ONTRANSFER",EVENT_CHR_ONTRANSFER)
+	CASECHAREVENT("@ONMULTIENTER",EVENT_CHR_ONMULTIENTER)
+	CASECHAREVENT("@ONMULTILEAVE",EVENT_CHR_ONMULTILEAVE)
+	CASECHAREVENT("@ONSNOOPED",EVENT_CHR_ONSNOOPED)
+	CASECHAREVENT("@ONSTOLEN",EVENT_CHR_ONSTOLEN)
+	CASECHAREVENT("@ONPOISONED",EVENT_CHR_ONPOISONED)
+	CASECHAREVENT("@ONREGIONCHANGE",EVENT_CHR_ONREGIONCHANGE)
+	CASECHAREVENT("@ONCASTSPELL",EVENT_CHR_ONCASTSPELL)
+	CASECHAREVENT("@ONREPUTATIONCHANGE",EVENT_CHR_ONREPUTATIONCHG)
+	CASECHAREVENT("@ONBREAKMEDITATION",EVENT_CHR_ONBREAKMEDITATION)
+	CASECHAREVENT("@ONCLICK",EVENT_CHR_ONCLICK)
+	CASECHAREVENT("@ONMOUNT",EVENT_CHR_ONMOUNT)
+	CASECHAREVENT("@ONDISMOUNT",EVENT_CHR_ONDISMOUNT)
+	CASECHAREVENT("@ONHEARPLAYER",EVENT_CHR_ONHEARPLAYER)
+	CASECHAREVENT("@ONDOCOMBAT",EVENT_CHR_ONDOCOMBAT)
+	CASECHAREVENT("@ONCOMBATHIT",EVENT_CHR_ONCOMBATHIT)
+	CASECHAREVENT("@ONSPEECH",EVENT_CHR_ONSPEECH)
+	CASECHAREVENT("@ONCHECKNPCAI",EVENT_CHR_ONCHECKNPCAI)
 	else if (!strcmp("@ONCREATION",script1)) 	newAmxEvent(script2)->Call(getSerial32(), INVALID);
 	/*
 	if	(!strcmp("@ONDEATH",script1)) 		setAmxEvent( EVENT_CHR_ONDEATH, script2 );
