@@ -51,6 +51,10 @@ SI32 amxIntegerVariable::getSize()
 	return sizeof( value );
 }
 
+SI32 amxIntegerVariable::getSize( const SI32 index )
+{
+	return 0;
+}
 //
 // amxIntegerVector
 //
@@ -122,6 +126,10 @@ void	amxStringVariable::setValue( const std::string& newValue )
 }
 
 SI32 amxStringVariable::getSize()
+{
+	return value.size();
+}
+SI32 amxIntegerVariable::getSize( const SI32 index )
 {
 	return value.size();
 }
