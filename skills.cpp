@@ -1153,18 +1153,16 @@ void Skills::BottleTarget(NXWSOCKET s)
 /*!
 \author Endymion
 \brief This really creates the potion
-\param s the crafter
-\param mortar the mortar
+\param pc pointer to the crafter's character
+\param pi_mortar pointer to the mortar's item
 */
 void Skills::PotionToBottle( P_CHAR pc, P_ITEM pi_mortar )
 {
-//	P_CHAR pc=MAKE_CHAR_REF(s);
 	VALIDATEPC(pc);
 
 	NXWCLIENT ps=pc->getClient();
 	if( ps==NULL ) return;
 
-//	P_ITEM pi_mortar=MAKE_ITEM_REF(mortar);
 	VALIDATEPI(pi_mortar);
 
 	P_ITEM pi=NULL;

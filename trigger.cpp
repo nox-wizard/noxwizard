@@ -221,8 +221,7 @@ bool checkenvoke(char eid1, char eid2)
 \param number the number of the trigger, if known
 \param s the socket
 \param trigtype the trigger type
-\param id1 the id for envoked/statics triggers
-\param id2 the id for envoked/statics triggers
+\param id the id for envoked/statics triggers
 */
 void cTriggerContext::init(int number, NXWSOCKET  s, int trigtype, UI16 id)
 {
