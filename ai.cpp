@@ -249,11 +249,10 @@ cPath::cPath( Location startPos, Location finalPos )
 				heuristic = OBLIQUE_COST;
 
 			if ( heuristic < abs( SI16(nextNode->cost - currNode->parentNode->cost) ) )
-					bOk = true;
+				bOk = true;
                         if ( parent.z != next.z ) {
-				UI32 zAdd;
 				next.z = parent.z;
-				if ( (zAdd = isWalkable( next )) == illegal_z ) // nextNode is not walkable by parentNode
+				if ( isWalkable( next ) == illegal_z ) // nextNode is not walkable by parentNode
 					bOk = false;
 			}
                         if ( bOk )
@@ -275,9 +274,9 @@ cPath::cPath( Location startPos, Location finalPos )
 \author Luxor
 \brief Looks for every tile reachable walking by pos, and adds them to the open list
 */
-UI32 cPath::addReachableNodes( path_node* node )
+UI08 cPath::addReachableNodes( path_node* node )
 {       
-	UI32 num = 0;
+	UI08 num = 0;
 	SI08 zAdd = 0;
 	Location loc;
 	Location pos = node->pos;

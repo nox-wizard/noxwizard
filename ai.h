@@ -50,7 +50,7 @@ private:
 	UI32 getLocDist( Location loc1, Location loc2, LOGICAL zEnable = false );
 	path_node* create_node( Location pos, path_node* parentNode, UI32 cost );
         queue<path_node> nodes_vector;
-	UI32 addReachableNodes( path_node* node );
+	UI08 addReachableNodes( path_node* node );
 	void dropToClosedList( path_node* node );
 	void addToOpenList( Location pos, path_node* parentNode, UI32 cost = 10 );
 	void addToOpenList( path_node* node );
