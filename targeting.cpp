@@ -1705,7 +1705,6 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 static void newCarveTarget(NXWSOCKET  s, ITEM i)
 {
 	bool deletecorpse=false;
-	NXWSOCKET storeval;
 	char sect[512];
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
@@ -1844,14 +1843,14 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 			{
 				if (!(strcmp("ADDITEM",script1)))
 				{
-					storeval=str2num(script2);
-					P_ITEM pi=item::CreateScriptItem(s,storeval,0);
-					if(ISVALIDPI(pi)) {
+					std::string itemnum, amount;
+					splitLine( script2, itemnum, amount );
+					P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pi3 );
+					if( ISVALIDPI(pi) ) {
 						pi->layer=0;
-						pi->setCont(pi3);
 						pi->SetRandPosInCont( pi3 );
-						if( strcmp( script3, "" ) ) //ndEndy defined amount
-							pi->amount=str2num( script3 );
+						if( amount != ""  ) //ndEndy defined amount
+							pi->amount=str2num( amount );
 						pi->Refresh();//let's finally refresh the item
 					}
                 }

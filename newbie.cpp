@@ -92,19 +92,21 @@ void newbieitems(P_CHAR pc)
 			{
 				if (!(strcmp("PACKITEM", script1)))
 				{
-					storeval = str2num(script2);
-					P_ITEM pi_n = item::SpawnItemBackpack2(s, storeval, 0); // Tauriel 11-24-98
+					std::string itemnum, amount;
+					splitLine( script2, itemnum, amount );
+					P_ITEM pi_n = item::SpawnItemBackpack2(s, str2num( itemnum ), 0); // Tauriel 11-24-98
 					if (ISVALIDPI(pi_n)) {
 						pi_n->priv |= 0x02; // Mark as a newbie item
-						if( strcmp( script3, "" ) ) //ndEndy defined amount
-							pi_n->amount=str2num( script3 );
+						if( amount != "" ) //ndEndy defined amount
+							pi_n->amount=str2num( amount );
 					}
 					strcpy(script1, "DUMMY");
 				}
 				else if (!strcmp("BANKITEM", script1))
 				{
-					storeval = str2num(script2);
-					P_ITEM pi = item::SpawnItemBank(DEREF_P_CHAR(pc), storeval); // Tauriel 11-24-98
+					std::string itemnum, amount;
+					splitLine( script2, itemnum, amount );
+					P_ITEM pi = item::SpawnItemBank( DEREF_P_CHAR(pc), str2num( itemnum ) ); // Tauriel 11-24-98
 					if (ISVALIDPI(pi)) {
 						pi->priv |= 0x02; // Mark as a newbie item
 						if( strcmp( script3, "" ) ) //ndEndy defined amount
