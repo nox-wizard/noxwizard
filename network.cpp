@@ -204,7 +204,7 @@ int MTsend( NXWSOCKET socket, char* xoutbuffer, int len, int boh )
 				LogError("Error selecting socket %i (%s)", errno, strerror( errno ) );
 		}
 		else
-			break;
+			loopexit = 0;
 	}
 	return sent;
 }
