@@ -203,7 +203,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	checkSkillSparrCheck(TACTICS, 0, 1000, pc_def);
 	if (pc_def->GetOldBodyType()==BODY_FEMALE) pc_def->playSFX(0x014B);
 	if (pc_def->GetOldBodyType()==BODY_MALE) pc_def->playSFX(0x0156);
-	pc_def->playMonsterSound(SND_DEFEND);
+	pc_def->playMonsterSound( SND_DEFEND );
 
 	checkPoisoning(pc_def);	// attacker poisons defender
 
@@ -218,31 +218,31 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if ( wresmove == WRESDISARM ) {
 			chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
 			chanceToHit += int( str1/10.0 - str2/10.0 );
-			if ( pc_def->getStrength() >= 150 || pc_def->dx >= 150 ) {
-				wresmove = 0;
-				sysmsg( TRANSLATE("You cannot disarm a creature so skilled!") );
-			} else if ( chance( chanceToHit ) ) {
+			if ( !(pc_def->getStrength() >= 150 || pc_def->dx >= 150) && chance(chanceToHit) ) {
 				P_ITEM dWeapon=pc_def->getWeapon();
 				if (dWeapon!=NULL) {
 					Location charpos = pc_def->getPosition();
-					
+
 					wresmove = 0;
 					dWeapon->setContSerial( INVALID );
 					dWeapon->MoveTo( charpos );
 					dWeapon->Refresh();
 				}
+			} else {
+				wresmove = 0;
+				sysmsg( TRANSLATE("You failed to disarm your opponent!") );	
 			}
-		}
+		}                 
 
 		if ( wresmove == WRESSTUNPUNCH ) {
 			chanceToHit += int( skill[TACTICS]/100.0 - pc_def->skill[TACTICS]/100.0 );
 			chanceToHit += int( str1/10.0 - str2/10.0 );
-			if ( pc_def->getStrength() >= 150 ) {
-				wresmove = 0;
-				sysmsg( TRANSLATE("You cannot stun a creature so strong!") );
-			} else if ( chance( chanceToHit ) ) {
+			if ( !(pc_def->getStrength() >= 150) && chance(chanceToHit) ) {
 				wresmove = 0;
 				tempfx::add(this, pc_def, tempfx::SPELL_PARALYZE, 0, 0, 0, 7); //paralyze for 7 secs
+			} else if ( chance( chanceToHit ) ) {
+				wresmove = 0;
+				sysmsg( TRANSLATE("You failed to stun your opponent!") );
 			}
 		}
 		//Luxor <End>
