@@ -69,6 +69,7 @@ cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback)
 
 //Implementation of cCallCommand Class
 
+SERIAL cCallCommand::current_serial = 0;
 
 cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<string>* param )
 {
@@ -78,9 +79,8 @@ cCallCommand::cCallCommand( SERIAL cmd_serial, std::string params, std::vector<s
 }
 
 
-cCallCommand::~cCallCommand() {
-
-	
+cCallCommand::~cCallCommand() 
+{
 }
 
 
@@ -104,14 +104,17 @@ P_COMMAND cCommandMap::addGmCommand(std::string name, SI08 priv, AmxFunction* ca
 
 
 
-bool cCommandMap::Check(string& speech) {
+bool cCommandMap::Check(string& speech) 
+{
 
-std::map<std::string, P_COMMAND>::iterator iter( command_map.find( speech ) );
+	std::map<std::string, P_COMMAND>::iterator iter( command_map.find( speech ) );
 
-if ( iter != command_map.end() )	//command exists
-    return TRUE;
-else
-    return FALSE;					//command doesnt exist
+	if ( iter == command_map.end() )	//command not exists
+		return false;
+
+	//other checks..
+
+	return true;
 }
 
 
