@@ -102,232 +102,6 @@ int getDirFromXY( P_CHAR pc, UI32 targetX, UI32 targetY )
 	return direction;
 }
 
-bool IsSeenFirstTime( P_CHAR pc, cObject* po )
-{
-
-	VALIDATEPCR(pc,true);
-	if(po==NULL)
-		return false;
-	
-	Location pcpos=pc->getPosition();
-
-	UI16 start_x, scan_y, scan_x;
-	switch (pc->dir)
-	{
-		
-		case NORTHWEST: // NW
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if ((po->getPosition("x")==scan_x) || (po->getPosition("x")==scan_x+1))
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-			break;
-
-		case SOUTHEAST: // SE
-			start_x= pcpos.x - 2;
-			scan_y= pcpos.y + 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x || po->getPosition("x")==scan_x+1)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-			break;
-
-		case SOUTHWEST: // SW
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-			break;
-
-
-		case NORTHEAST: // NE
-			start_x= pcpos.x + 2;
-			scan_y= pcpos.y - 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y || po->getPosition("y")==scan_y+1)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-
-			break;
-
-		case SOUTH: //S
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-
-			start_x= pcpos.x - 2;
-			scan_y= pcpos.y + 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-
-			break;
-
-		case NORTH: // N
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-
-			start_x= pcpos.x + 2;
-			scan_y= pcpos.y - 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-
-			break;
-
-		case EAST: // E
-			start_x= pcpos.x + 2;
-			scan_y= pcpos.y - 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-
-			start_x= pcpos.x - 2;
-			scan_y= pcpos.y + 14;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-			break;
-
-		case WEST:
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y++;
-			}
-
-			start_x= pcpos.x - 14;
-			scan_y= pcpos.y + 2;
-
-			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
-			{
-				if (po->getPosition("x")==scan_x)
-				{
-					if (po->getPosition("y")==scan_y)
-					{
-						return true;
-					}
-				}
-				scan_y--;
-			}
-
-			break;
-
-		default: // if dir is screwed for some resason send away the items for all directins
-			double di= dist(pc->getPosition(), po->getPosition() );
-
-			if (di==11 || di==12 || di==VISRANGE)
-			{
-				return true;
-			}
-		}
-	return false;
-
-}
-
 
 /*!
 \brief Checks if the Char is allowed to move at all (not frozen, overloaded...)
@@ -955,124 +729,102 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	return true;
 }
 
-///////////////
-// Name:	WalkSendToPlayers
-// history:	cut from walking() by Duke, 27.10.2000
-// Purpose:	checks if the Char is allowed to move at all i.e. not frozwn, overloaded...
-//
-bool WalkSendToPlayers(P_CHAR pc, int dir, int oldx, int oldy, int newx, int newy)
+/*!
+\author Luxor
+*/
+LOGICAL WalkSendToPlayers( P_CHAR pc, SI08 dir, Location oldpos, Location pos )
 {
+	VALIDATEPCR( pc, false );
 
-	VALIDATEPCR(pc,false);
-
-
-	Location pcpos= pc->getPosition();
-
+	NXWCLIENT ps = NULL;
 	NxwSocketWrapper sw;
-	sw.fillOnline( pc, true );
-	for( sw.rewind(); !sw.isEmpty(); sw++ )
-	{
-		NXWCLIENT ps_i=sw.getClient();
-		if( ps_i==NULL ) continue;
-
-		P_CHAR pc_i=ps_i->currChar();
-		if(!ISVALIDPC(pc_i))
+	sw.fillOnline( pc );
+	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+                ps = sw.getClient();
+		if( ps == NULL )
 			continue;
 
-		{
-			if ( IsSeenFirstTime(pc, pc_i ) )
-			{
-				impowncreate(ps_i->toInt(), pc, 1);
-			}
-			else
-			{
-				int sendit = 1;
-				if ((pc->IsHidden() || (pc->dead && !pc->war &&	!pc_i->dead)) && !pc_i->IsGM() )
-					sendit = 0;
+		P_CHAR pc_curr = ps->currChar();
+		if( !ISVALIDPC(pc_curr) )
+			continue;
 
+		if ( pc_curr->seeForFirstTime( P_OBJECT( pc ) ) ) { // It's seen for the first time, send a draw packet
+			impowncreate( ps->toInt(), pc, 1 );
+			return true;
+		}
 
-				if (sendit)
-				{
-					NXWSOCKET s = ps_i->toInt();
-					UI08 flag, hi_color;	
+                if ( !pc_curr->IsGM() ) { // Players only
+			if ( pc->IsHidden() ) // Hidden chars cannot be seen by Players
+				return false;
+			if ( pc->dead && !pc->war && !pc_curr->dead ) // Non-persecuting ghosts can be seen only by other ghosts
+				return false;
+		}
 
-					// running stuff
-					if (pc->npc && pc->war) // Skyfire
-					{
-						dir |= 0x80;
-					}
-					if (pc->npc && pc->ftargserial!=INVALID)
-					{
-						dir |= 0x80;
-					}
+		NXWSOCKET socket = ps->toInt();
+		UI08 flag, hi_color;	
 
-					//** Lb's flying creatures stuff ***/
+		// If it's an npc, and it's fighting or following something let's show it running
+		if ( pc->npc && ( pc->war || pc->ftargserial != INVALID ) ) {
+			dir |= 0x80;
+		}
 
-					if (pc->npc)
-					{
-						int d;
-						UI16 skid = pc->GetBodyType();
-						if (skid>2047) skid = 0;
-						if ((creatures[skid].who_am_i)&0x1) // can it fly ?
-						{
-							if (pc->fly_steps>0)
-							{
-								pc->fly_steps--;
-								dir |= 0x80; // run mode = fly for that ones that can fly
-							}
-							else
-							{
-								if (fly_p != 0)
-									d = rand()%fly_p;
-								else
-									d = 0;
-								if (d == 0)
-								{
-									if (fly_steps_max != 0)
-										pc->fly_steps = (rand()%fly_steps_max) + 2;
-									else
-										pc->fly_steps += 2;
-								}
-							}
-						}
-					}
-
-					if (pc->war)
-						flag = 0x40;
+		// <LB> Flying stuff for npcs
+		if ( pc->npc && !(dir&0x80) ) { // If npc and it isn't already running
+			SI32 d;
+			UI16 skid = pc->GetBodyType();
+			if ( skid > 2047 ) skid = 0;
+			if ( (creatures[skid].who_am_i) & 0x1 ) { // If true, the npc can fly
+				if ( pc->fly_steps > 0 ) {
+					pc->fly_steps--;
+					dir |= 0x80; // run mode = fly for that ones that can fly
+				} else {
+					if ( fly_p != 0 )
+						d = rand() % fly_p;
 					else
-						flag = 0x00;
-					if (pc->IsHidden())
-						flag |= 0x80;
-					if (pc->dead && !pc->war)
-						flag |= 0x80; // Ripper
-					if (pc->poisoned)
-						flag |= 0x04; // AntiChrist -- thnx to SpaceDog
-
-
-					int guild = Guilds->Compare(pc, pc_i);
-
-					if (guild == 1)					// Same guild (Green)
-						hi_color = 2;
-					else if (guild == 2) 				// Enemy guild.. set to orange
-						hi_color = 5;
-					else if (pc->IsGrey())
-						hi_color = 3;
-					else if (pc->IsMurderer())
-						hi_color = 6;				// If a bad, show as red.
-					else if (pc->IsInnocent())
-						hi_color = 1;				// If a good, show as blue.
-					else if (pc->flag == 0x08)
-						hi_color = 2;				// green (guilds)
-					else if (pc->flag == 0x10) 
-						hi_color = 5;				// orange (guilds)
-					else
-						hi_color = 3;				// grey
-
-					SendUpdatePlayerPkt(s, pc->getSerial32(), pc->GetBodyType(), pcpos, dir, pc->getSkinColor(), flag, hi_color);
-				} // end of it sendit
+						d = 0;
+					if ( d == 0 ) {
+						if ( fly_steps_max != 0 )
+							pc->fly_steps = ( rand() % fly_steps_max ) + 2;
+						else
+							pc->fly_steps += 2;
+					}
+				}
 			}
 		}
+		// </LB>
+
+		if ( pc->war )
+			flag = 0x40;
+		else
+			flag = 0x00;
+		if ( pc->IsHidden() )
+			flag |= 0x80;
+		if ( pc->dead && !pc->war )
+			flag |= 0x80; // Ripper
+		if ( pc->poisoned )
+			flag |= 0x04; // AntiChrist -- thnx to SpaceDog
+
+		SI32 guild = Guilds->Compare( pc, pc_curr );
+		if ( guild == 1 )		// Same guild (Green)
+			hi_color = 2;
+		else if ( guild == 2 )		// Enemy guild.. set to orange
+			hi_color = 5;
+		else if ( pc->IsGrey() )
+			hi_color = 3;           // grey
+		else if ( pc->IsMurderer() )
+			hi_color = 6;		// If a bad, show as red.
+		else if ( pc->IsInnocent() )
+			hi_color = 1;		// If a good, show as blue.
+		else if ( pc->flag == 0x08 )
+			hi_color = 2;		// green (guilds)
+		else if ( pc->flag == 0x10 ) 
+			hi_color = 5;		// orange (guilds)
+		else
+			hi_color = 3;		// grey
+
+		SendUpdatePlayerPkt( ps->toInt(), pc->getSerial32(), pc->GetBodyType(), pos, dir, pc->getSkinColor(), flag, hi_color );
 	}
+
 	return true;
 }
 
@@ -1094,16 +846,22 @@ bool WalkHandleCharsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 
 	NxwCharWrapper si;
 	//si.fillCharsNearXYZ( pc->getPosition(), VISRANGE +5, !pc->IsGM(), false );
-	si.fillCharsNearXYZ( pc->getPosition(), VISRANGE, !pc->IsGM(), false );
+	si.fillCharsNearXYZ( pc->getPosition(), VISRANGE + 1, !pc->IsGM(), false );
 
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_CHAR pc_i=si.getChar();
 		if(ISVALIDPC(pc_i)) 
 		{
-			if( IsSeenFirstTime( pc, pc_i ) ) {
-				impowncreate( pc->getSocket(), pc_i, 1);
+			if ( pc->distFrom( pc_i ) > VISRANGE ) { // Luxor: The pc has just walked over the vis circle
+				if ( pc->getClient() != NULL )
+					pc->getClient()->sendRemoveObject( P_OBJECT(pc_i) );
+                                if ( pc_i->getClient() != NULL )
+					pc_i->getClient()->sendRemoveObject( P_OBJECT(pc) );
+				continue;
 			}
+                        if ( pc->seeForFirstTime( P_OBJECT(pc_i) ) ) //Luxor
+				impowncreate( pc->getSocket(), pc_i, 1);
 
 			if(pc_i->getPosition()==pcpos)
 			
@@ -1186,9 +944,10 @@ bool WalkHandleItemsAtNewPos(P_CHAR pc, int oldx, int oldy, int newx, int newy)
 				}
 
 			}
-			else 
-				if( IsSeenFirstTime(pc, pi ))
-					senditem(ps->toInt(),pi);
+			else if ( pc->seeForFirstTime( P_OBJECT(pi) ) ) // Luxor
+				senditem( ps->toInt(), pi );
+				/*if( IsSeenFirstTime(pc, pi ))
+					senditem(ps->toInt(),pi);*/
 	}
 	return true;
 }
@@ -1290,7 +1049,7 @@ void walking(P_CHAR pc, int dir, int sequence)
 	newx= pc->getPosition().x;
 	newy= pc->getPosition().y;
 
-	WalkSendToPlayers(pc,dir, oldx, oldy, newx, newy);
+	WalkSendToPlayers( pc, dir, pc->getOldPosition(), pc->getPosition() );
 
 	if (dir>INVALID && (dir&0x0F)<8)
 		pc->dir=(dir&0x0F);
@@ -1583,7 +1342,7 @@ void cChar::walkNextStep()
         SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
         dir = dirXY & 0x0F;
 	MoveTo( pos );
-        WalkSendToPlayers( this, dirXY, oldpos.x, oldpos.y, pos.x, pos.y );
+        WalkSendToPlayers( this, dirXY, oldpos, pos );
 	setNpcMoveTime();
 }
 
