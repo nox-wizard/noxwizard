@@ -84,41 +84,6 @@ void cOldMenu::addMenuItem( int page, int idx, std::wstring& desc )
 }
 
 /*!
-\brief build the menu
-\author Endymion
-\since 0.82
-\attention this function is pure virtual.
-*/
-void cOldMenu::buildOldMenu()
-{
-	switch( style&0x7F )
-	{
-		case MENUSTYLE_STONE:
-		case MENUSTYLE_SCROLL:
-		case MENUSTYLE_PAPER:
-		case MENUSTYLE_BLACKBOARD:
-		case MENUSTYLE_TRASPARENCY:
-			//error
-			return;
-		case MENUSTYLE_ICONLIST:
-			//error
-			return;
-		default:
-			style = MENUSTYLE_STONE;
-			//error
-	}
-
-}
-
-void cOldMenu::showMenu( NXWSOCKET s )
-{
-    NXWCLIENT ps= getClientFromSocket( s );
-	if( ps==NULL ) return;
-	this->buildOldMenu();
-	this->show( ps->currChar() );
-}
-
-/*!
 \brief Set title
 \author Endymion
 \since 0.82
@@ -313,6 +278,11 @@ void cOldMenuClassic::buttonSelected( NXWSOCKET s, unsigned short int buttonPres
 {
 }
 
+void cOldMenuClassic::show( P_CHAR pc )
+{
+	buildOldMenu();
+	cMenu::show( pc );
+}
 
 
 cOldMenuIconList::cOldMenuIconList()
@@ -322,24 +292,6 @@ cOldMenuIconList::cOldMenuIconList()
 cOldMenuIconList::~cOldMenuIconList()
 {
 }
-
-void cOldMenuIconList::addMenuItem( int page, int idx, std::wstring& desc )
-{
-	
-	string s;
-	wstring2string( desc, s );
-	
-	pkg_icon_list_menu_st icon;
-
-	icon.color=0x0000;	
-	char num[5] = { 0x00, };
-	memcpy( num, s.c_str(), 4 );
-	icon.model=hex2num( num );
-	icon.response += (s.c_str() +5);
-	icons.push_back( icon );
-	
-}
-
 
 /*!
 \brief Show an icon list menu
@@ -357,7 +309,30 @@ void cOldMenuIconList::show( P_CHAR pc )
 	p.id= id;
 	wstring2string( title, p.question );
 
-	p.icons = &this->icons;
+	std::vector< pkg_icon_list_menu_st > icons;
+	std::map< UI32, std::map< UI32, std::wstring >  >::iterator iter( allPages.begin() ), end( allPages.end() );
+	if( iter!=end ) { //not support multiple pages
+		
+		std::map< UI32, std::wstring >& pagina = iter->second;
+
+		std::map< UI32, std::wstring >::iterator itp( pagina.begin() ), endp( pagina.end() );
+		for( ; itp!=endp; ++itp ) {
+
+			string s;
+			wstring2string( itp->second, s );
+	
+			pkg_icon_list_menu_st icon;
+
+			icon.color=0x0000;	
+			char num[5] = { 0x00, };
+			memcpy( num, s.c_str(), 4 );
+			icon.model=hex2num( num );
+			icon.response += (s.c_str() +5);
+			icons.push_back( icon );
+
+		}
+	}
+	p.icons = &icons;
 	
 	p.send( pc->getClient() );
 }

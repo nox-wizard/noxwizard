@@ -34,15 +34,12 @@ protected:
 
 	std::map< UI32, std::map< UI32, std::wstring >  > allPages; //!< all pages
 
-	virtual void buildOldMenu();
-
 public:
 	cOldMenu();
 	virtual ~cOldMenu();
 
 	void setParameters( int numPerPage, int numpages );
 	virtual void addMenuItem( int page, int idx, std::wstring& desc );
-	void showMenu( NXWSOCKET s );
 	void setTitle( wstring& str );
 	void setWidth( int width );
 	void setStyle( int style, int color = 0 );
@@ -59,7 +56,6 @@ class cOldMenuClassic : public cMenu, public cOldMenu
 {
 
 private:
-
 	void buildOldMenu();
 
 public:
@@ -67,6 +63,8 @@ public:
 	virtual ~cOldMenuClassic();
 
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
+	virtual void show( P_CHAR pc );
+
 
 };
 
@@ -76,15 +74,10 @@ public:
 class cOldMenuIconList : public cBasicMenu, public cOldMenu
 {
 
-private:
-
-	std::vector<pkg_icon_list_menu_st> icons;
-
 public:
 	cOldMenuIconList();
 	virtual ~cOldMenuIconList();
 
-	virtual void addMenuItem( int page, int idx, std::wstring& desc );
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
 	virtual void show( P_CHAR pc );
 
