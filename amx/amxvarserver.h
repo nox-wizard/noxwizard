@@ -17,6 +17,7 @@
 #define __AMXVARSERVER_H__
 
 #include "nxwcommn.h"
+using namespace std;
 
 typedef enum
 {
@@ -56,6 +57,7 @@ class amxIntegerVariable : public amxVariable
 		SI32				getValue();
 		void				setValue( const SI32 newValue );
 		SI32				getSize();
+		SI32                            getSize( const SI32 index = -1 );
 };
 
 class amxIntegerVector : public amxVariable
@@ -82,6 +84,7 @@ class amxStringVariable : public amxVariable
 		std::string			getValue();
 		void				setValue( const std::string& newValue = "");
 		SI32				getSize();
+		SI32				getSize( const SI32 index = -1 );
 };
 
 class amxScriptIdVariable : public amxVariable
@@ -99,6 +102,7 @@ class amxScriptIdVariable : public amxVariable
 		void setValue( char* newValue );
 		void setValue( SERIAL initialValue = INVALID );
 		SI32 getSize();
+		SI32 getSize( const SI32 index = -1 );
 };
 
 typedef pair< SI32, amxVariable* >		amxVariablePair;

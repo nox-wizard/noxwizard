@@ -121,11 +121,11 @@ private:
 	void NewGameCrypt::BuildMDS(void);
 	void NewGameCrypt::ReverseRoundSubkeys(keyInstance *key,BYTE newDir);
 #if defined(__BORLANDC__)   /* do it inline */
-	NewGameCrypt::Xor32(dst,src,i) { ((DWORD *)dst)[i] = ((DWORD *)src)[i] ^ tmpX; };
-	NewGameCrypt::Xor256(dst,src,b)               \
+	NewGameCrypt::Xor32(void *dst,void *src,BYTE i) { register DWORD tmpX=0x01010101u * i; ((DWORD *)dst)[i] = ((DWORD *)src)[i] ^ tmpX; };
+	NewGameCrypt::Xor256(void *dst,void *src,BYTE b)               \
     {                                   \
     register DWORD tmpX=0x01010101u * b;\
-    for (i=0;i<64;i+=4)                 \
+    for (int i=0;i<64;i+=4)                 \
         { Xor32(dst,src,i  ); Xor32(dst,src,i+1); Xor32(dst,src,i+2); Xor32(dst,src,i+3); } \
     };
 #else                       /* do it as a function call */

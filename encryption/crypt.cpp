@@ -1382,7 +1382,7 @@ void NewGameCrypt::ReverseRoundSubkeys(keyInstance *key,BYTE newDir)
 
     key->direction=newDir;
     }
-
+#ifndef (__BORLANDC__)
 /*
 +*****************************************************************************
 *
@@ -1416,7 +1416,7 @@ void NewGameCrypt::Xor256(void *dst,void *src,BYTE b)
     s+=32;
     X_32(0 ); X_32( 8); X_32(16); X_32(24); /* all inline */
     }
-
+#endif
 /*
 +*****************************************************************************
 *

@@ -2204,7 +2204,7 @@ NATIVE2(_guild_getProperty)
 
 	case T_INT: {
 
-		int p;
+		int p=0;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2218,7 +2218,7 @@ NATIVE2(_guild_getProperty)
 
 	case T_BOOL: {
 
-		bool p;
+		bool p = false;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2232,7 +2232,7 @@ NATIVE2(_guild_getProperty)
 
 	case T_SHORT: {
 
-		short p;
+		short p=0;
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2246,7 +2246,7 @@ NATIVE2(_guild_getProperty)
 
 	case T_CHAR: {
 
-		char p;
+		char p='\0';
 		switch(params[2]) {
 			case INVALID:
 			default:
@@ -2310,6 +2310,7 @@ NATIVE2(_guild_getProperty)
 	default:
 		return INVALID;
 	}
+	return INVALID;
 }
 
 ////////////////////////////////////////////////////////////////////////////

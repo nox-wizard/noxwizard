@@ -126,30 +126,6 @@ void log_flush();
 void trace_printf(const char * format, ...) GCC_PRINTF(1,2);
 void trace_dump(unsigned char * buf, int length);
 
-class Logger
-{
-protected:
-    FILE * m_fp;
-    bool m_verbose, m_flush;
-
-public:
-    // Constructor/Destructor
-    Logger();
-    ~Logger();
-
-public:
-    // dump functions
-    void dump(bool verbose, unsigned char * buf, int length);
-    void printf(bool verbose, const char * format, ...) GCC_PRINTF(3,4);
-    void vprintf(bool verbose, const char * format, va_list ap);
-    void flush();
-    bool get_flush() const { return m_flush; }
-    void set_flush(bool flush) { m_flush = flush; }
-    bool get_verbose() const { return m_verbose; }
-    void set_verbose(bool verbose) { m_verbose = verbose; }
-};
-
-extern Logger * g_logger;
 
 ////////////////////////////////////////////////////////////////////////////////
 
