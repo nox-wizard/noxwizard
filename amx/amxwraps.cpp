@@ -7482,17 +7482,21 @@ NATIVE (_createResourceMap)
 {
 	ResourceMapType type=(ResourceMapType)params[1];
 	cResourceMap *map;	
-		
-
+	cell *cstr;
+	amx_GetAddr(amx, params[3], &cstr);
+	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;	
+	std::string filename = g_cAmxPrintBuffer;
 	if ( type == RESOURCEMAP_STRING )
 	{
-		cResourceStringMap *newMap=new cResourceStringMap();
+		cResourceStringMap *newMap=new cResourceStringMap(filename, params[2]);
 		newMap->setType(RESOURCEMAP_STRING);
 		map=newMap;
 	}
 	else if ( type == RESOURCEMAP_LOCATION )
 	{
-		cResourceLocationMap *newMap=new cResourceLocationMap();
+		cResourceLocationMap *newMap=new cResourceLocationMap(filename, params[2]);
 		newMap->setType(RESOURCEMAP_LOCATION);
 		map=newMap;
 	}

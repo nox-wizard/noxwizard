@@ -47,8 +47,9 @@ void cResourceMap::save()
 		{
 
 			std::string filename=SrvParms->savePath + map->getFile() + ".res.nxw.bin";
-			ofstream datafile(filename.c_str());
+			ofstream datafile(filename.c_str(), ios::binary);
 			map->serialize(&datafile);
+			datafile.close();
 		}
 	}
 }
@@ -63,22 +64,30 @@ void cResourceMap::load()
 	{
 		do
 		{
-			currentFile=c_file.name;
-			ifstream datafile(c_file.name);
-			ResourceMapType tempType=(ResourceMapType)datafile.peek();
-			cResourceMap *map;
-			if ( tempType == RESOURCEMAP_LOCATION )
+			currentFile=SrvParms->savePath;
+			currentFile+=c_file.name;
+			ifstream datafile(currentFile.c_str(), ios::in|ios::binary);
+			if ( datafile.is_open() )
 			{
-				cResourceLocationMap *newmap = new cResourceLocationMap();
-				map=newmap;
+				ResourceMapType tempType;
+				LOGICAL inMemory;
+				datafile.read((char *)&tempType,sizeof(tempType));
+				datafile.read((char *)&inMemory,sizeof(inMemory));
+				cResourceMap *map;
+				if ( tempType == RESOURCEMAP_LOCATION )
+				{
+					cResourceLocationMap *newmap = new cResourceLocationMap(currentFile, 1);
+					map=newmap;
+				}
+				else if ( tempType == RESOURCEMAP_STRING )
+				{
+					cResourceStringMap *newmap = new cResourceStringMap(currentFile, 1);
+					map=newmap;
+				}
+				map->setType(tempType);
+				map->setInMemory(inMemory);
+				map->deserialize(&datafile);
 			}
-			else
-			{
-				cResourceStringMap *newmap = new cResourceStringMap();
-				map=newmap;
-			}
-			map->setType(tempType);
-			map->deserialize(&datafile);
 		}
 		while( _findnext( hFile, &c_file ) == 0 );
 
@@ -126,16 +135,15 @@ void cResourceMap::deserialize(ifstream *myStream)
 
 // now for the real maps
 
+cResourceStringMap::cResourceStringMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
+{
+}
+
+
 void cResourceStringMap::deserialize(ifstream *myStream)
 {
 	std::string tempKey;
 	UI32 value;
-	ResourceMapType tempType;
-	LOGICAL tempKeepInMemory;
-	tempType=(ResourceMapType )myStream->get();
-	tempKeepInMemory=(LOGICAL)myStream->get();
-	this->setType(tempType);
-	this->setInMemory(tempKeepInMemory);
 	while (! myStream->eof() )
 	{
 		*myStream >> tempKey;
@@ -149,8 +157,11 @@ void cResourceStringMap::deserialize(ifstream *myStream)
 void cResourceStringMap::serialize(ofstream *myStream)
 {
 	std::map<std::string, SI32>::iterator iter = resourceMap.begin();
-	*myStream << getType();
-	*myStream << isInMemory();
+	ResourceMapType tempType=getType();
+	LOGICAL tempInMemory=isInMemory();
+	myStream->write((char *)&tempType, sizeof(tempType)) ;
+	myStream->write((char *)&tempInMemory, sizeof(tempInMemory));
+
 	for ( ; iter !=  resourceMap.end();iter++)
 	{
 		*myStream << iter->first << ends;
@@ -172,17 +183,22 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
-			datafile << getType();
-			datafile << isInMemory();
-			datafile << key << ends << value << endl;
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
+			datafile.write((char *)&tempType, sizeof(tempType)) ;
+			datafile.write((char *)&tempInMemory, sizeof(tempInMemory));
+			datafile << key << ends;
+			datafile.write((char *)&value, sizeof(value));
 		}
 		else
 		{
 // now the complicated part begins
 // search for the key linear
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
 			std::string tempKey;
 			// read over the first two header bytes
-			datafile.ignore(2);
+			datafile.ignore(sizeof(tempType)+sizeof(tempInMemory));
 			do
 			{
 				datafile >> tempKey;
@@ -192,8 +208,8 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 				{
 					// the value has been previously used and needs to be updated now
 					datafile.seekp(-(SI32)(tempKey.size()), ios::cur);
-					datafile << tempKey << ends;
-					datafile << value << endl;
+					datafile << key << ends;
+					datafile.write((char *)&value, sizeof(value));
 					break;
 				}
 			}
@@ -229,8 +245,8 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 					backupFile.write(buffer, offset);
 				}
 				// now we can finally write the new key
-				datafile << tempKey << ends;
-				datafile << value << endl;
+				datafile << key << ends;
+				datafile.write((char *)&value, sizeof(value));
 				// and now the rest of the datafile
 				while ( !datafile.eof() )
 				{
@@ -266,14 +282,16 @@ SI32 cResourceStringMap::getValue(std::string key)
 			datafile.close();
 			return -1;
 		}
+		ResourceMapType tempType=getType();
+		LOGICAL tempInMemory=isInMemory();
 		std::string tempKey;
-		datafile.ignore(2);
+		// read over the first two header bytes
+		datafile.ignore(sizeof(tempType)+sizeof(tempInMemory));
 		do
 		{
 			datafile >> tempKey;
-			datafile >> value;
+			datafile.read((char *)&value, sizeof(value));
 			// ignore data and end line sign
-			datafile.ignore(1);
 			if ( tempKey == key )
 			{
 				datafile.close();
@@ -299,37 +317,38 @@ void cResourceLocationMap::deserialize(ifstream *myStream)
 	UI16 x,y;
 	SI08 z;
 	UI32 value;
-	ResourceMapType tempType;
-	LOGICAL tempKeepInMemory;
-	tempType=(ResourceMapType )myStream->get();
-	tempKeepInMemory=(LOGICAL)myStream->get();
-	this->setType(tempType);
-	this->setInMemory(tempKeepInMemory);
-	while (! myStream->eof() )
+	while (! myStream->eof() && !myStream->fail())
 	{
-		*myStream >> x;
-		*myStream >> y;
-		*myStream >> z;
-		*myStream >> value;
-		myStream->ignore(1);
+		myStream->read((char *)&x,sizeof(x));
+		myStream->read((char *)&y,sizeof(y));
+		myStream->read((char *)&z,sizeof(z));
+		myStream->read((char *)&value,sizeof(value));
+		// myStream->ignore(1);
 		cCoord tempKey(x,y,z);
 		this->setValue(tempKey, value);
 	}
 	return ;
 }
 
+cResourceLocationMap::cResourceLocationMap(std::string filename, LOGICAL keepInMemory) : cResourceMap(filename, keepInMemory)
+{
+}
+
+
 void cResourceLocationMap::serialize(ofstream *myStream)
 {
 	std::map<cCoord, SI32>::iterator iter = resourceMap.begin();
-	*myStream << getType();
-	*myStream << isInMemory();
+	ResourceMapType tempType=getType();
+	LOGICAL tempInMemory=isInMemory();
+	myStream->write((char *)&tempType, sizeof(tempType)) ;
+	myStream->write((char *)&tempInMemory, sizeof(tempInMemory));
 
 	for ( ; iter !=  resourceMap.end();iter++)
 	{
-		*myStream << iter->first.x;
-		*myStream << iter->first.y;
-		*myStream << iter->first.z;
-		*myStream << iter->second << endl;
+		myStream->write((char *)&iter->first.x, sizeof(iter->first.x)) ;
+		myStream->write((char *)&iter->first.y, sizeof(iter->first.y)) ;
+		myStream->write((char *)&iter->first.z, sizeof(iter->first.z)) ;
+		myStream->write((char *)&iter->second, sizeof(iter->second)) ;
 	}
 	return ;
 }
@@ -350,10 +369,10 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
-			datafile << key.x; 
-			datafile << key.y;
-			datafile << key.z;
-			datafile << value << endl;
+			datafile.write((char *)&key.x, sizeof(key.x)) ;
+			datafile.write((char *)&key.y, sizeof(key.y)) ;
+			datafile.write((char *)&key.z, sizeof(key.z)) ;
+			datafile.write((char *)&value, sizeof(value)) ;
 		}
 		else
 		{
@@ -379,19 +398,20 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 			while (!datafile.eof())
 			{
 				datafile.seekg(numberOfRecordsToSeek*recordSize*direction, ios::cur);	
-				datafile >> x;
-				datafile >> y;
-				datafile >> z;
+				datafile.read((char *)&x,sizeof(x));
+				datafile.read((char *)&y,sizeof(y));
+				datafile.read((char *)&z,sizeof(z));
+				datafile.read((char *)&value,sizeof(value));
 				cCoord tempKey(x,y,z);
 				datafile.ignore(sizeof(value)+1);
 				if ( tempKey == key ) 
 				{
 					// the value has been previously used and needs to be updated now
 					datafile.seekp(-(SI32)recordSize, ios::cur);
-					datafile << tempKey.x; 
-					datafile << tempKey.y;
-					datafile << tempKey.z;
-					datafile << value << endl;
+					datafile.write((char *)&key.x, sizeof(key.x)) ;
+					datafile.write((char *)&key.y, sizeof(key.y)) ;
+					datafile.write((char *)&key.z, sizeof(key.z)) ;
+					datafile.write((char *)&value, sizeof(value)) ;
 					return;
 				}
 				// we have to go forward in file
@@ -448,10 +468,10 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 				backupFile.write(buffer, offset);
 			}
 			// now we can finally write the new key
-			datafile << key.x; 
-			datafile << key.y;
-			datafile << key.z;
-			datafile << value << endl;
+			datafile.write((char *)&key.x, sizeof(key.x)) ;
+			datafile.write((char *)&key.y, sizeof(key.y)) ;
+			datafile.write((char *)&key.z, sizeof(key.z)) ;
+			datafile.write((char *)&value, sizeof(value)) ;
 			// and now the rest of the datafile
 			while ( !datafile.eof() )
 			{
@@ -472,7 +492,7 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 
 SI32 cResourceLocationMap::getValue(cCoord key)
 {
-	if ( getFile() != "" )
+	if ( !isInMemory() && getFile() != "" )
 	{
 		std::string resourceFilename=getFile() + ".res.nxw.bin";
 		fstream datafile(resourceFilename.c_str(), ios::in|ios::out );
@@ -499,10 +519,10 @@ SI32 cResourceLocationMap::getValue(cCoord key)
 		while (!datafile.eof())
 		{
 			datafile.seekg(numberOfRecordsToSeek*recordSize*direction, ios::cur);	
-			datafile >> x;
-			datafile >> y;
-			datafile >> z;
-			datafile >> value;
+			datafile.read((char *)&x,sizeof(x));
+			datafile.read((char *)&y,sizeof(y));
+			datafile.read((char *)&z,sizeof(z));
+			datafile.read((char *)&value,sizeof(value));
 			cCoord tempKey(x,y,z);
 			datafile.ignore(sizeof(value)+1);
 			if ( tempKey == key ) 

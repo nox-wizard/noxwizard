@@ -52,6 +52,7 @@ class cResourceStringMap : public cResourceMap
 	std::map<std::string, SI32> resourceMap;
 
 	public:
+	cResourceStringMap(std::string filename, LOGICAL keepInMemory=true);
 	void deserialize(ifstream *myStream);
 	void serialize(ofstream *myStream);
 	void setValue(std::string key, SI32 value);
@@ -67,6 +68,7 @@ class cResourceLocationMap : public cResourceMap
 	std::map<cCoord, SI32> resourceMap;
 
 	public:
+	cResourceLocationMap(std::string filename, LOGICAL keepInMemory=true);
 	void deserialize(ifstream *myStream);
 	void serialize(ofstream *myStream);
 	void setValue(cCoord key, SI32 value);
