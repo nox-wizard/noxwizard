@@ -1446,7 +1446,9 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				}
 			}
 		}
+		pCont->AddItem( pItem );
 		ps->sendSpellBook(pCont);
+		return;
 	}
 
 	if (pCont->type == ITYPE_CONTAINER) {
