@@ -392,16 +392,17 @@ LOGICAL cItem::doDecay()
 			if ( getMultiSerial32() == INVALID )
 			{
 				P_HOUSE house=cHouses::findHouse(getPosition());
-				if ( house == NULL )
-					return false;
-				P_ITEM pi_multi = pointers::findItemBySerial (house->getSerial());
-				if ( ISVALIDPI(pi_multi) )
+				if ( house != NULL )
 				{
-					if ( pi_multi->more4 == 0 )
+					P_ITEM pi_multi = pointers::findItemBySerial (house->getSerial());
+					if ( ISVALIDPI(pi_multi) )
 					{
-						setDecayTime();
-						SetMultiSerial(pi_multi->getSerial32());
-						return false;
+						if ( pi_multi->more4 == 0 )
+						{
+							setDecayTime();
+							SetMultiSerial(pi_multi->getSerial32());
+							return false;
+						}
 					}
 				}
 			}
