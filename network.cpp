@@ -620,7 +620,7 @@ void cNetwork::ActivateFeatures(NXWSOCKET s)
 			features |= T2A;
 			break;
 		case 2: // LBR plus previous vers.
-			features |= LBR | T2A;
+			features |= (LBR | T2A);
 			break;
 		default:  // I don't know, what you want :P
 			return;
@@ -629,7 +629,7 @@ void cNetwork::ActivateFeatures(NXWSOCKET s)
 
 	ShortToCharPtr(features, feat+1);
 	Xsend(s, feat, 3);
-	FlushBuffer(s);
+//	FlushBuffer(s);
 }
 
 void cNetwork::GoodAuth(int s)
@@ -692,7 +692,7 @@ void cNetwork::GoodAuth(int s)
 	if(server_data.feature == 2) 	// LBR: NPC Popup Menu   (not currently impl.)
 		tail[3] = 0x08;
 	Xsend(s, tail, 4);
-	FlushBuffer(s);
+//	FlushBuffer(s);
 }
 
 void cNetwork::CharList(int s) // Gameserver login and character listing
