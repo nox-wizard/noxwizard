@@ -1541,7 +1541,7 @@ LOGICAL const cChar::IsOnline() const
 \param txt the speech
 \param antispam use or not antispam
 */
-void cChar::talkAll(TEXT *txt, LOGICAL antispam)
+void cChar::talkAll(TEXT *txt, LOGICAL antispam, UI16 color)
 {
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
@@ -1549,7 +1549,7 @@ void cChar::talkAll(TEXT *txt, LOGICAL antispam)
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWCLIENT ps=sw.getClient();
 		if( ps!=NULL )
-			talk(ps->toInt(), txt,antispam);
+			talk(ps->toInt(), txt,antispam, color);
 	}
 
 }
@@ -1561,7 +1561,7 @@ void cChar::talkAll(TEXT *txt, LOGICAL antispam)
 \param txt the speech
 \param antispam use or not antispam
 */
-void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
+void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam, UI16 color)
 {
 	if( s < 0 || s >= now )
 		return;
@@ -1592,6 +1592,8 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 			saycolor=0x005B;
 		}
 
+		if(color!=1310) saycolor=color;
+		
 		SendSpeechMessagePkt(s, getSerial32(), getId(), 0, saycolor, fonttype, name, txt);
 	}
 }

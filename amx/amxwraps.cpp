@@ -3479,8 +3479,8 @@ NATIVE(_chr_speech)
 	{
 		case NXW_SPEECH_TALK : 
 				
-				if(!flag_all) pc->talk( pc2->getSocket(), g_cAmxPrintBuffer, (char) params[5]);
-				pc->talkAll( g_cAmxPrintBuffer, (char) params[6]);
+				if(!flag_all) pc->talk( pc2->getSocket(), g_cAmxPrintBuffer, (char) params[5], params[4]);
+				pc->talkAll( g_cAmxPrintBuffer, (char) params[6], params[4]);
 			
 				break;
 		

@@ -1236,8 +1236,8 @@ public:
 		UI16			saycolor;		//!< Color for say messages
 		LOGICAL			unicode;		//!< This is set to 1 if the player uses unicode speech, 0 if not
 
-		void			talkAll(TEXT *txt, LOGICAL antispam = 1);
-		void			talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam = 1);
+		void			talkAll(TEXT *txt, LOGICAL antispam = 1, UI16 color =1310);
+		void			talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam = 1, UI16 color =1310);
 		void			emote(NXWSOCKET s,TEXT *txt, LOGICAL antispam, ...);
 		void			emoteall(char *txt, LOGICAL antispam, ...);
 		void			talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam = 1);
