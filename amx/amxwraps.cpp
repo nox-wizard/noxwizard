@@ -7055,6 +7055,27 @@ NATIVE ( _house_deleteKeys )
 	return true;
 }
 
+/*!
+\brief remove the house and all item within the house limits
+\author Wintermute
+\since 0.82
+\fn house_delete
+\param house, the house serial
+*/
+
+NATIVE ( _house_delete )
+{
+	//(const house);
+	P_HOUSE house = cHouses::findHouse(params[1]);
+	if ( house == NULL )
+	{
+		LogWarning("Illegal house serial %d used in house_getProperty\n", params[1]);
+		return false;
+	}
+	house->remove();
+	return true;
+}
+
 
 /*!
 \brief perform a worldsave
@@ -7570,6 +7591,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "house_changeLocks",  _house_changeLocks },
  { "house_makeKeys",  _house_makeKeys },
  { "house_deleteKeys",  _house_deleteKeys },
+ { "house_delete",  _house_delete },
  
 // misc APIs need to be renamed
  { "world_save", _world_save },

@@ -322,6 +322,15 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 		if((!ISVALIDPI(pi_multi))&&(pc->getMultiSerial32() != INVALID))
 		{
+			pi_multi=pointers::findItemBySerial (pc->getMultiSerial32());
+			if ( pi_multi->amxevents[EVENT_CHR_ONMULTILEAVE] ) 
+			{
+				g_bByPass = false;
+				pi_multi->amxevents[EVENT_CHR_ONMULTILEAVE]->Call( house->getSerial(), pc->getSerial32(), dir, sequence );
+				if ( g_bByPass==true )
+					return true;
+			}
+
 			pc->setMultiSerial(INVALID); // Elcabesa bug-fix  we MUST use setmultiserial  NOT pc->multis = -1;
 			//xan : probably the plr has exited the boat walking!
 			//pc->multi1 = pc->multi2 = pc->multi3 = pc->multi4 = 0xFF;
@@ -355,8 +364,16 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			if ( ISVALIDPI(pi_multi) && (pi_multi->IsHouse()) )
 			{
 				SI32 sx, sy, ex, ey;
-				P_HOUSE house=cHouses::findHouse(pc->getPosition());
-				if(house->isBanned(pc))
+				if ( house->isInsideHouse(pc->getPosition()) )
+				{
+					if ( pc->amxevents[EVENT_CHR_ONMULTIENTER] ) {
+						g_bByPass = false;
+						pc->amxevents[EVENT_CHR_ONMULTIENTER]->Call( house->getSerial(), pc->getSerial32(), dir, sequence );
+						if ( g_bByPass==true )
+							return true;
+					}
+				}
+				if(house->isBanned(pc) && house->isInsideHouse(pc))
 				{
 					getMultiCorners(pi_multi,sx,sy,ex,ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));
@@ -367,7 +384,6 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					pc->teleport();
 					return false;
 				}
-
 				// house refreshment code moved to dooruse()
 
 			} // end of is_house

@@ -314,6 +314,12 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
+				if (script1[0] == '@' )
+				{
+					if	( !LoadItemEventsFromScript( multiItem, script1, script2) )
+						WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, multiNumber);
+
+				}
 				if (!(strcmp(script1,"ID")))
 				{
 					multiItem->setId((unsigned short)hex2num(script2));
@@ -1539,27 +1545,6 @@ void cHouses::target_houseFriend( NXWCLIENT ps, P_TARGET t )
 		}
 	}
 }
-
-// bugffer[0] the hose
-/*
-void cHouses::target_houseUnlist( NXWCLIENT ps, P_TARGET t )
-{
-	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
-    P_ITEM pi= pointers::findItemBySerial( t->buffer[0] );
-	NXWSOCKET s = ps->toInt();
-    if(ISVALIDPC(pc) && ISVALIDPI(pi))
-    {
-        int r=del_hlist(DEREF_P_CHAR(pc), DEREF_P_ITEM(pi));
-        if(r>0)
-        {
-            sysmessage(s, TRANSLATE("%s has been removed from the house registry."), pc->getCurrentNameC());
-        }
-        else
-            sysmessage(s, TRANSLATE("That player is not on the house registry."));
-    }
-}
-
-*/
 
 void cHouses::target_houseLockdown( NXWCLIENT ps, P_TARGET t )
 // PRE:     S is the socket of a valid owner/coowner and is in a valid house
