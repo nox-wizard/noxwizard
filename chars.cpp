@@ -2801,10 +2801,16 @@ void cChar::morph ( SI32 npcNumber, LOGICAL bBackup)
 		setColor( npcCopy->getColor());
 		phair = npcCopy->getHairItem();
 		pbeard = npcCopy->getBeardItem();
-		phair->setContSerial(INVALID);
-		pbeard->setContSerial(INVALID);
-		this->Equip(phair, false);
-		this->Equip(pbeard, false);
+		if ( phair != NULL )
+		{
+			phair->setContSerial(INVALID);
+			this->Equip(phair, false);
+		}
+		if ( pbeard != NULL )
+		{
+			pbeard->setContSerial(INVALID);
+			this->Equip(pbeard, false);
+		}
 	}
 /*
 	if (newname!=NULL)

@@ -1,3 +1,363 @@
+2004-06-13	ai_wintermute
+	* magic.cpp 1.53:
+	* set.cpp 1.56:
+	* set.h 1.28:
+	* skills.cpp 1.55:
+	* target.cpp 1.20:
+		fixed a bug in targetting where a targetted item or char was not submitted correctly by the client, now checks if there is a object serial available
+		also fixed a bug in casting mark on gates that would prevent the gate from actually being marked
+
+	* chars.cpp 1.212:
+	* commands.cpp 1.38:
+	* dbl_single_click.cpp 1.70:
+	* dragdrop.cpp 1.69:
+	* extractionskills.cpp 1.21:
+	* house.cpp 1.58:
+	* jail.cpp 1.14:
+	* magic.cpp 1.54:
+	* mount.cpp 1.33:
+	* network.cpp 1.94:
+	* skitarg.cpp 1.57:
+	* speech.cpp 1.82:
+	* target.cpp 1.21:
+	* utils.cpp 1.45:
+		added translation tags for sysmessage calls
+
+	* amx/amxwraps.cpp 1.160:
+	* extractionskills.cpp 1.20:
+	* skitarg.cpp 1.56:
+		fixed a bug for mining and lumberjacking where the callback was still passing the socket instead of the char serial
+		added experimental function for recompiling small functions
+
+2004-06-13	stonedz
+	* amx/amxwraps.cpp 1.161:
+		added reload_scripts() api as requested on mantis #0000091, the 
+		api reloads the xss scripts like the "X" command in console .
+
+2004-06-12	ai_wintermute
+	* amx/amxwraps.cpp 1.157:
+	* house.cpp 1.57:
+	* house.h 1.14:
+	* set.cpp 1.55:
+	* set.h 1.27:
+		set functions for getting Items/chars inside/outside house
+
+	* chars.cpp 1.211:
+	* chars.h 1.123:
+	* npcai.cpp 1.29:
+	* worldmain.cpp 1.107:
+		put in a delay for npcs speaking to players
+		removed the last occurences of commandlevel
+
+2004-06-12	frodosf
+	* amx/amxwraps.cpp 1.159:
+	* amx/amxwraps.h 1.34:
+		speech function improvements
+
+2004-06-12	stonedz
+	* amx/amxwraps.cpp 1.158:
+		added reload_accounts() API as requested on bug #0000091
+
+2004-06-11	ai_wintermute
+	* accounts.cpp 1.25:
+	* html.cpp 1.15:
+	* network.cpp 1.93:
+		fixed bug in saving last ip in accounts.adm
+		added IP to html creation
+
+2004-06-10	ai_wintermute
+	* chars.cpp 1.209:
+	* chars.h 1.121:
+	* race.cpp 1.20:
+	* race.h 1.9:
+	* worldmain.cpp 1.106:
+		added political system for races to combat system and character 
+		status
+
+	* makefile 1.5:
+		changed optimization to O2 instead of O3
+
+	* accounts.cpp 1.24:
+	* accounts.h 1.14:
+	* chars.cpp 1.210:
+	* chars.h 1.122:
+	* client.cpp 1.28:
+	* client.h 1.14:
+	* encryption/clientcrypt.cpp 1.3:
+	* encryption/clientcrypt.h 1.4:
+	* encryption/crypt.cpp 1.8:
+	* globals.cpp 1.28:
+	* network.cpp 1.92:
+	* network.h 1.15:
+		changed the way encryption is stored, now a part of clientinfo, 
+		making memory use more efficient
+
+2004-06-09	ai_wintermute
+	* chars.cpp 1.208:
+	* chars.h 1.120:
+	* encryption/clientcrypt.h 1.2:
+	* encryption/clientcrypt.h 1.3:
+	* encryption/crypt.cpp 1.7:
+	* encryption/crypt.h 1.4:
+	* encryption/crypt.h 1.5:
+	* makefile.inc 1.22:
+	* network.cpp 1.91:
+	* network.h 1.14:
+		activated encryption to be used always
+		added crypt keys fro encrypted cleitns from 1.26 up to 4.02
+
+2004-06-08	ai_wintermute
+	* inlines.h 1.18:
+		declared a new inline function for borland users ceilf
+
+2004-06-07	ai_wintermute
+	* amx/amxwraps.cpp 1.156:
+	* chars.cpp 1.207:
+	* chars.h 1.119:
+	* tmpeff.cpp 1.36:
+		changed chr_morph from amx to take only two params
+		chr_morph(npcNumber, backup)
+
+2004-06-07	stonedz
+	* amx/amxwraps.cpp 1.155:
+	* msgboard.cpp 1.16:
+		fixes for chr_setPostType() api
+
+2004-06-06	ai_wintermute
+	* dragdrop.cpp 1.68:
+		changed cChar::equip method to be called only once when dropping 
+		an item on the paperdoll
+
+	* chars.cpp 1.205:
+	* combat.cpp 1.58:
+	* coord.cpp 1.5:
+	* magic.cpp 1.52:
+	* set.cpp 1.54:
+	* spawn.cpp 1.30:
+		fixed bug in combat system, npcs didn't make damage most of the time
+		fixed bug in combat system, killed npcs were deleted too early
+		fixed bug in line of sight system when items were near
+		moongates can now be travelled by pets but not by normal npcs
+		fixed bug in spawns that on reload of worldsave the actual count of npcs was not taken into account
+
+	* amx/amxwrap2.cpp 1.96:
+		fixed bug with sub sub properties passed from small
+
+	* nox-wizard.cpp 1.101:
+	* worldmain.cpp 1.105:
+		fixed the remaining linux compile error
+
+2004-06-06	frodosf
+	* amx/amxwraps.cpp 1.153:
+	* amx/amxwraps.cpp 1.154:
+	* chars.cpp 1.206:
+	* chars.h 1.118:
+	* cmds.cpp 1.61:
+		command system speech functions
+
+2004-06-05	ai_wintermute
+	* amx/amxwraps.cpp 1.151:
+	* archive.cpp 1.26:
+	* chars.cpp 1.203:
+	* dbl_single_click.cpp 1.68:
+	* items.cpp 1.64:
+	* worldmain.cpp 1.102:
+		items are now deleted on chr_remove
+		fixed warning from tmpeff add in charlogin
+		fixed scriptid not written in worldsave
+		ingame created spawns are now initialized correct on doubleclick, still missing initialization on worldsave
+
+	* amx/amxcback.cpp 1.16:
+	* amx/amxwrap2.cpp 1.95:
+	* amx/amxwraps.cpp 1.152:
+	* basics.cpp 1.6:
+	* basics.h 1.11:
+	* boats.cpp 1.48:
+	* books.cpp 1.15:
+	* chars.cpp 1.204:
+	* cmdtable.cpp 1.58:
+	* combat.cpp 1.57:
+	* common_libs.h 1.19:
+	* compiler/sc1.c 1.12:
+	* coord.cpp 1.4:
+	* dbl_single_click.cpp 1.69:
+	* dragdrop.cpp 1.67:
+	* encryption.cpp 1.4:
+	* encryption/common.h 1.4:
+	* encryption/crypt.cpp 1.6:
+	* fishing.cpp 1.27:
+	* gamedate.cpp 1.10:
+	* gmpages.cpp 1.10:
+	* house.cpp 1.56:
+	* html.cpp 1.14:
+	* item.cpp 1.53:
+	* items.cpp 1.65:
+	* jail.cpp 1.13:
+	* jail.h 1.9:
+	* magic.cpp 1.51:
+	* magic.h 1.12:
+	* map.cpp 1.25:
+	* menu.cpp 1.56:
+	* mount.cpp 1.32:
+	* msgboard.cpp 1.15:
+	* network.cpp 1.90:
+	* nox-wizard.cpp 1.100:
+	* nox-wizard.cpp 1.99:
+	* npcs.cpp 1.76:
+	* npcs.h 1.11:
+	* nxwgui.cpp 1.5:
+	* object.cpp 1.59:
+	* packets.cpp 1.56:
+	* pointer.cpp 1.30:
+	* pointer.h 1.15:
+	* regions.cpp 1.9:
+	* skills.cpp 1.54:
+	* skitarg.cpp 1.55:
+	* sndpkg.cpp 1.66:
+	* spawn.cpp 1.29:
+	* speech.cpp 1.81:
+	* sregions.cpp 1.22:
+	* target.cpp 1.19:
+	* target.h 1.9:
+	* targeting.cpp 1.83:
+	* tmpeff.cpp 1.35:
+	* trade.cpp 1.31:
+	* trigger.cpp 1.45:
+	* walking.cpp 1.73:
+	* worldmain.cpp 1.104:
+		fixed a lot more of the warnings occuring on high warn levels
+		changed all occurences from Location or other positional references to UI16, UI16, SI08 as they should be
+
+	* constants.h 1.27:
+	* magic.cpp 1.50:
+		moongates can now be marked by gms, so they can set their 
+		current position as the gate target position
+
+	* worldmain.cpp 1.103:
+		ingame created spawns are now initialized correct on worldsave
+
+2004-06-03	ai_wintermute
+	* amx/amxwrap2.cpp 1.94:
+	* amx/amxwraps.cpp 1.150:
+	* chars.cpp 1.202:
+		added chr_kill(chr)
+
+2004-06-02	ai_wintermute
+	* cmdtable.cpp 1.57:
+	* nox-wizard.cpp 1.98:
+		fixed bug with missing chars when reloading accounts
+
+	* coord.cpp 1.3:
+	* skills.cpp 1.53:
+		fixed crash bug when multis where near char
+		fixed stat gain so it really uses the values for statgain as defined in skills.xss
+
+2004-06-01	ai_wintermute
+	* dbl_single_click.cpp 1.67:
+		bugfix for crash when doubleclicking an uninitialized spawner
+
+	* chars.cpp 1.201:
+	* dragdrop.cpp 1.66:
+	* items.cpp 1.63:
+	* spawn.cpp 1.28:
+	* spawn.h 1.13:
+	* worldmain.cpp 1.101:
+		fixed a small bug with amount going negative when reaching 32768
+		spawned chars are now removed from spawn on delete
+		spawn now correctly calculates the remaining amount to spawn
+		dynamic spawns will be triggered 5 seconds after a worldsave
+
+2004-06-01	stonedz
+	* chars.cpp 1.200:
+		fix a warning as requested on bug #0000152
+
+	* items.h 1.39:
+	* speech.cpp 1.80:
+	* worldmain.cpp 1.100:
+		warning fixes for gcc as requested on bug #0000152
+
+2004-05-31	ai_wintermute
+	* network.cpp 1.88:
+	* network.cpp 1.89:
+		fixed an undeclared value error
+
+	* dbl_single_click.cpp 1.66:
+		fixed bug in amx double click for characters where accidentally 
+		an item reference was used instead of a character ref
+
+	* chars.cpp 1.199:
+	* globals.cpp 1.27:
+	* globals.h 1.32:
+	* html.cpp 1.13:
+	* item.cpp 1.52:
+	* items.cpp 1.62:
+	* network.cpp 1.87:
+	* sndpkg.cpp 1.65:
+	* worldmain.cpp 1.99:
+		added ACCOUNT, P, PRIVLEVEL and REGION as Keywords for the 
+		WHOLIST command, fixed npcCount, charCount, itemCount
+
+2004-05-30	ai_wintermute
+	* chars.cpp 1.198:
+	* chars.h 1.117:
+	* dbl_single_click.cpp 1.65:
+	* worldmain.cpp 1.98:
+		added ondblclick event to characters
+		callback signature
+		ondblclick(char serial whoclicked, char serial clickedchar)
+
+	* amx/amxwraps.cpp 1.149:
+	* dbl_single_click.cpp 1.64:
+	* house.cpp 1.55:
+	* spawn.cpp 1.27:
+	* spawn.h 1.12:
+	* worldmain.cpp 1.97:
+		fixed house delete
+		fixed small bug in restoring houses in old saves
+		added resetting of spawns on doubleclick
+
+2004-05-29	ai_wintermute
+	* amx/amxwrap2.cpp 1.93:
+	* archive.cpp 1.25:
+	* chars.cpp 1.197:
+	* chars.h 1.116:
+	* dbl_single_click.cpp 1.63:
+	* magic.cpp 1.49:
+	* spawn.cpp 1.26:
+	* worldmain.cpp 1.96:
+		fixed a bug in command params setting
+		added reset of dynamic spawn items (type 61 and 62) on doubleclick
+		gms don't need reagents on cast
+
+	* coord.cpp 1.2:
+	* crontab.cpp 1.16:
+	* house.cpp 1.54:
+	* house.h 1.13:
+		fixed compile error on linux
+		added backup of houses to cronjob
+		house_isInsideHouse is now really testing inside
+
+	* amx/amxscript.cpp 1.37:
+	* amx/amxwrap2.cpp 1.92:
+		fixed bug in unicode getProperty calls that string was not 
+		terminated with null character
+
+2004-05-28	frodosf
+	* nox-wizard.cpp 1.97:
+		Doubled Gold Amount Bug Fix
+
+2004-05-26	ai_wintermute
+	* amx/amxwraps.cpp 1.148:
+	* house.cpp 1.53:
+	* walking.cpp 1.72:
+		house api extended by house_delete, enabled multi enter und 
+		multileave, enabled amx events for houses in house,xss
+
+	* spawn.cpp 1.25:
+		moreb1 + moreb2 << 8 now minimum amount
+		moreb3 + moreb4 << 8 now max amount
+		to spawn at spawn time
+
 2004-05-23	ai_wintermute
 	* NoxWizard.dsp 1.21:
 	* makefile.inc 1.21:
