@@ -7,8 +7,10 @@
     || For any question post to NoX-Wizard forums.                             ||
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-#ifndef __Srv_Params
-#define __Srv_Params
+#ifndef __SRVPARAMS_H_
+#define __SRVPARAMS_H_
+
+#include "typedefs.h"
 
 void loadserverdefaults();
 void loadserverscript();

@@ -35,6 +35,7 @@ extern bool g_bDebuggingTriggers;
 
 namespace ServerScp {
 extern int g_nLoadDebugger;
+extern int g_nCheckBySmall;
 }
 
 #define MNUDEBUG 5
