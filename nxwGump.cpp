@@ -114,7 +114,23 @@ LOGICAL nxwGump::handleGump( const P_CHAR pc, const UI08 *data )
 			--fieldCount;
 		}
                 if ( gump < 1000 ) { // Luxor: NoX-Wizard small gumps
-			newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
+			switch( gump )
+			{
+				case   1	:	// character properties
+				case   2	:	// item properties
+				case  20	:	// region choice list
+				case  21	:	// region properties
+				case  50	:	// guild stone menu
+				case  51	:	// guild members
+				case  52	:	// guild recruits
+				case  53	:	// guild properties
+				case 999	:
+					newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
+					break;
+				default:
+					return false;
+					break;
+			}
 		} else { // Luxor: user defined small gumps
                         map< UI32, std::string >::iterator it( responseMap.find( gump ) );
                         if ( it == responseMap.end() )

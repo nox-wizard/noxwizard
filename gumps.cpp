@@ -95,7 +95,8 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 		//
 		// Luxor: new gump API activated also for users
 		//
-		nxwGump::handleGump( pc, buffer[s] );
+		if ( nxwGump::handleGump( pc, buffer[s] ) )
+			return;
 	}
 
 	switch (type)
