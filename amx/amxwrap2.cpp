@@ -39,6 +39,7 @@
 #include "accounts.h"
 #include "weight.h"
 #include "house.h"
+#include "skills.h"
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
@@ -961,6 +962,7 @@ void setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubp
 	{
 		case  NXW_CP_S_BASESKILL :				  		//dec value: 400;
 			pc->baseskill[subproperty] = value;
+			Skills::updateSkillLevel(pc, subproperty);
 			break;
 		case NXW_CP_S_SKILL :				  			//dec value: 401;
 			pc->skill[subproperty] = value;
