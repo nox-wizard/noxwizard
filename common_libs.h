@@ -70,6 +70,7 @@ warnings/errors/issues.
 	#pragma warning(disable: 4786)	//Gets rid of BAD stl warnings
 	#pragma warning(disable: 4800)	//needed couse now we can see the real warning
 	#pragma warning(disable: 4127)	//needed couse now we can see the real warning
+	#pragma warning(disable: 4100) // don't warn anymore about unreferenced params
 #endif
 #ifdef __BORLANDC__
 	#pragma warn -pck	//Gets rid of BAD stl warnings

@@ -442,7 +442,6 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 
 LOGICAL  checkWearable(P_CHAR pc, P_ITEM pi)
 {
-	bool wearable = false;
 	NXWSOCKET s = pc->getSocket();
 	if (s < 0)
 		return false;

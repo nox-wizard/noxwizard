@@ -3965,29 +3965,6 @@ NATIVE(_ItemBounceToPack)
 
 
 /*
-\brief Print a translated message to a given socket
-\author Luxor
-\since 0.82
-\param 1: socket
-\param 2: text
-\return 0
-*/
-NATIVE(_ntprintf)
-{
-    cell *cstr;
-	int i = params[1];
-    if (i<0) return 0;
-    NXWCLIENT s = getClientFromSocket(params[1]);
-	if (s == NULL) return 0;
-	amx_GetAddr(amx,params[2],&cstr);
-	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	s->sysmsg(TRANSLATE(g_cAmxPrintBuffer));
-	g_nAmxPrintPtr=0;
-	return 0;
-}
-
-/*
 \brief Launchs the web browser
 \author Luxor
 \since 0.82

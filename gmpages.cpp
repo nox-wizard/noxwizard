@@ -116,7 +116,7 @@ P_GMPAGE cGmpagesMap::addPage(P_GMPAGE page){
 			if (page1->getPageNumber() < 4) // allows a maximum of 3 pages for a single player (first page_number is 1)
 				{
 					page->setPrevPage(page1);
-					page->setPageNumber(page1->getPageNumber() + 1);
+					page->setPageNumber((UI08)(page1->getPageNumber() + 1));
 					page1->setNextPage(page);
 					return page;
 				}
@@ -211,7 +211,6 @@ SERIAL_VECTOR cGmpagesMap::getAllPagers(){
 	
 
 	iter = gmpages_map.begin();
-	int i = 0;
 	
 	while(iter != gmpages_map.end())
 		{
@@ -232,7 +231,7 @@ bool cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages index
 	do{
 		if( tmp_page->getNextPage()->getPageNumber() != (tmp_page->getPageNumber() + 1))
 			{
-				tmp_page->getNextPage()->setPageNumber(tmp_page->getPageNumber() + 1);
+				tmp_page->getNextPage()->setPageNumber((UI08)(tmp_page->getPageNumber() + 1));
 			}
 		
 		tmp_page = tmp_page->getNextPage();

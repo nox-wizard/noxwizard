@@ -760,7 +760,7 @@ void spellFailFX(P_CHAR pc)
 // Argument 		 : int spellnum -> spell number
 // Argument 		 : P_CHAR pcaster -> caster (can be NULL)
 // Changes			 : none yet
-void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
+void castAreaAttackSpell (UI16 x, UI16 y, SpellId spellnum, P_CHAR pcaster)
 {
 	NxwCharWrapper sc;
 	UI32 range = VISRANGE -2;
@@ -986,7 +986,8 @@ bool checkRequiredTargetType(SpellId spellnum, TargetLocation& t)
 {
 			// 0:none,1:xyz,2:item,3:char,4:container or door,6:rune,5:container
 	P_ITEM pi = t.getItem();
-	int x,y,z;
+	UI16 x,y;
+	SI08 z;
 	t.getXYZ(x,y,z);
 
 	switch(spellTargetType(spellnum)) {
@@ -1214,7 +1215,7 @@ void castFieldSpell( P_CHAR pc, int x, int y, int z, int spellnumber)
 			return;
 	}
 
-	int R;
+	int R=-1;
 	if (pc!=NULL) R = pc->region;
 
 	if ((R<=INVALID)||(R>255)) R = 255;
@@ -1260,7 +1261,8 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 
 	P_CHAR pd = dest.getChar();
 	P_ITEM pi = dest.getItem();
-	int x,y,z;
+	UI16 x,y;
+	SI08 z;
 	dest.getXYZ(x,y,z);
 
         Location srcpos= src->getPosition();

@@ -207,7 +207,7 @@ void Fishing::Fish(CHARACTER i)
 
 	int ii;
 	int idnum;
-	SI16 color;
+	SI16 color=-1;
 
 	P_CHAR pc = MAKE_CHAR_REF(i);
 	VALIDATEPC(pc);
@@ -359,7 +359,7 @@ void Fishing::Fish(CHARACTER i)
 			VALIDATEPI(fish);
 		
 			fish->setColor(color);
-			fish->setId( fish->getId() | idnum );
+			fish->setId( (UI16)(fish->getId() | idnum ));
 		
 			if (ISVALIDPI(pc_bp))
 				pc_bp->AddItem( fish );

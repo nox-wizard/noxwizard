@@ -132,8 +132,8 @@ void cRegion::addNow( P_ITEM pi )
 
 RegCoordPoint::RegCoordPoint( Location location )
 {
-	 this->a=location.x/REGION_GRIDSIZE;
-	 this->b=location.y/REGION_COLSIZE;
+	 this->a=(UI16)(location.x/REGION_GRIDSIZE);
+	 this->b=(UI16)(location.y/REGION_COLSIZE);
 }
 
 

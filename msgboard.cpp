@@ -449,7 +449,7 @@ void MsgBoardList( int s )
 						for ( x=0; x<=2; x++ )
 						{
 							// Get the size of this segment and store it in the message
-							msg[msgBytes] = fgetc( file );
+							msg[msgBytes] = (UI08)fgetc( file );
 
 							// Put the size into a variable
 							segmentSize = msg[msgBytes];
@@ -737,8 +737,8 @@ int MsgBoardGetMaxMsgSN( int msgType, int autoPost=0 )
 	time( &now );
 	timeOfPost = *localtime( &now );
 
-	msgbbiSegment[7]  = (timeOfPost.tm_yday+1)/256;
-	msgbbiSegment[8]  = (timeOfPost.tm_yday+1)%256;
+	msgbbiSegment[7]  = (UI08)((timeOfPost.tm_yday+1)/256);
+	msgbbiSegment[8]  = (UI08)((timeOfPost.tm_yday+1)%256);
 
 	// If this is an autoPost then set the CHAR or ITEM serial number in order to mark it for deletion
 	// after the quest is done.
@@ -1040,7 +1040,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		if(ISVALIDPC(pc_cur))
 			strncpy( &msgAuthor[1], pc_cur->getCurrentNameC(), (sizeof(msgAuthor)-1) );
 	}
-	msgAuthor[0] = strlen(&msgAuthor[1]) + 1;  // get the length of the name + 1 for null
+	msgAuthor[0] = (SI08)(strlen(&msgAuthor[1]) + 1);  // get the length of the name + 1 for null
 
 	newMsgSize += (msgAuthor[0]+1);   // Update the new total length of the message
 	// + 1 is for the byte giving the size of Author segment
@@ -1056,7 +1056,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 		timeOfPost.tm_min );
 
 	// get the length of the date + 1 for null
-	msgDate[0] = strlen(&msgDate[1]) + 1;
+	msgDate[0] = (SI08)(strlen(&msgDate[1]) + 1);
 
 	// Update the new total length of the message (+ 1 is for the byte giving the size of Date segment)
 	newMsgSize += (msgDate[0]+1);
@@ -1065,7 +1065,7 @@ int MsgBoardPost( int s, int msgType, int autoPost )
 	// msgHeader + sizeof(msgAuthor) + msgAuthor
 
 	// Write out the msgHeader
-	ShortToCharPtr(newMsgSize, msgHeader +1);
+	ShortToCharPtr((UI16)newMsgSize, msgHeader +1);
 	fwrite( msgHeader, sizeof(char), (sizeof(msgHeader)-1), pFile );
 
 	// Write out the msgAuthor
@@ -1210,7 +1210,7 @@ void MsgBoardOpenPost( int s )
 		//                                0       1     2      3      4   5   6      7   8    9    10   11   12   13   14   15
 		// Read In the first 12 bytes |PacketID|Size1|Size2|MsgType|bSn1|bSn2|bSn3|bSn4|mSn1|mSn2|mSn3|mSn4|pmSN|pmSN|pmSN|pmSN|
 		for ( x=0; x<12; x++)
-			msg[x] = fgetc( file );
+			msg[x] = (UI08)fgetc( file );
 
 		// If we have reached the EOF then stop searching
 		if ( feof(file) )
@@ -1235,7 +1235,7 @@ void MsgBoardOpenPost( int s )
 			msgBytes = x;
 
 			// Get size of Author segment
-			msg[msgBytes] = fgetc( file );
+			msg[msgBytes] = (UI08)fgetc( file );
 			if ( feof(file) ) return;
 			msgBytes++;
 
@@ -1245,12 +1245,12 @@ void MsgBoardOpenPost( int s )
 			// Fill in msg[] with Author data
 			for ( x=0; x<authorBytes; x++)
 			{
-				msg[msgBytes+x] = fgetc( file );
+				msg[msgBytes+x] = (UI08)fgetc( file );
 				if ( feof(file) ) return;
 			}
 			msgBytes += x;
 			// Get size of Subject segment
-			msg[msgBytes] = fgetc( file );
+			msg[msgBytes] = (UI08)fgetc( file );
 			if ( feof(file) ) return;
 			msgBytes++;
 
@@ -1260,13 +1260,13 @@ void MsgBoardOpenPost( int s )
 			// Fill in msg[] with Subject data
 			for ( x=0; x<subjectBytes; x++)
 			{
-				msg[msgBytes+x] = fgetc( file );
+				msg[msgBytes+x] = (UI08)fgetc( file );
 				if ( feof(file) ) return;
 			}
 			msgBytes += x;
 
 			// Get size of Date segment
-			msg[msgBytes] = fgetc( file );
+			msg[msgBytes] = (UI08)fgetc( file );
 			if ( feof(file) ) return;
 			msgBytes++;
 
@@ -1276,7 +1276,7 @@ void MsgBoardOpenPost( int s )
 			// Fill in msg[] with Date data
 			for ( x=0; x<dateBytes; x++)
 			{
-				msg[msgBytes+x] = fgetc( file );
+				msg[msgBytes+x] = (UI08)fgetc( file );
 				if ( feof(file) ) return;
 			}
 			msgBytes += x;
@@ -1297,7 +1297,7 @@ void MsgBoardOpenPost( int s )
 
 			// Get the messages body info (body section, body size, body data)
 			z = fgetc( file );     // Total number of NULL's in Body of message
-			msg[msgBytes] = z;
+			msg[msgBytes] = (UI08)z;
 			msgBytes++;
 
 			loopexit2=0;
@@ -1310,13 +1310,13 @@ void MsgBoardOpenPost( int s )
 					break;
 				}
 
-				msg[msgBytes] = y;
+				msg[msgBytes] =(UI08) y;
 				msgBytes++;
 
 				// Get Body segment into msg[] ( continue until 0x00 reached )
 				for ( x=0; x<y; x++ )
 				{
-					msg[msgBytes+x] = fgetc( file );
+					msg[msgBytes+x] = (UI08)fgetc( file );
 				}
 
 				msgBytes += x;
@@ -1325,7 +1325,7 @@ void MsgBoardOpenPost( int s )
 				z--;
 			}
 
-			ShortToCharPtr(msgBytes, msg +1);
+			ShortToCharPtr((UI16)msgBytes, msg +1);
 			msg[3] = 2;              // Set packet 0x71 message type to 0x02 (send full message)
    }
    else // If this isn't the message were looking for, jump ahead to next message
@@ -1890,7 +1890,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 	}
 
 	// Set the SizeOfSubject field in the buffer and copy the subject string to the buffer
-	msg2Post[12] = strlen(subject) + 1;
+	msg2Post[12] = (UI08)(strlen(subject) + 1);
 	strncpy( (char*)&msg2Post[13], subject, msg2Post[12] );
 
 	// Set the offset to one past linesInBody count value of the buffer
@@ -1997,7 +1997,7 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 		// after being modified with any extra info due to flags (plus one for the terminating NULL)
 		lineLength = ( strlen(temp) + 1 );
 
-		msg2Post[offset] = lineLength;
+		msg2Post[offset] = (UI08)lineLength;
 		offset++;
 
 		// Append the string in the msg2Post buffer
@@ -2010,8 +2010,8 @@ int MsgBoardPostQuest( int serial, QuestType questType )
 
 	safedelete(iter);
 
-	ShortToCharPtr(offset, msg2Post +1);
-	msg2Post[numLinesOffset] = linesInBody;
+	ShortToCharPtr((UI16)offset, msg2Post +1);
+	msg2Post[numLinesOffset] = (UI08)linesInBody;
 
 	// If the message is posted to the message board successfully
 	// RETURN 1 otherwise RETURN 0 to indicate a failure of some sort

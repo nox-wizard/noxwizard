@@ -1343,12 +1343,17 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 				cSpawnDinamic *dynSpawner=Spawns->getDynamicSpawn(pc->getSpawnSerial());
 				if ( dynSpawner != NULL )
 					dynSpawner->addSpawned(pc);
+				else
+					pc->setSpawnSerial(INVALID);
 			}
 			else if ( pc->getSpawnRegion() != INVALID )
 			{
 				// add the item to the static spawn region
 				cSpawnScripted *staticSpawner=Spawns->getScriptedSpawn(pc->getSpawnRegion());
-				staticSpawner->addSpawned(pc);
+				if ( staticSpawner != NULL )
+					staticSpawner->addSpawned(pc);
+				else
+					pc->setSpawnRegion(INVALID);
 			}
 		}
 		if ( isItemSerial( objs.getSerial() ) && ISVALIDPI( (pi=static_cast<P_ITEM>(objs.getObject())) ) ) 

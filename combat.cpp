@@ -628,7 +628,7 @@ void cChar::doCombat()
 				else   //new ammo system
 				{
 					(getBackpack())->DeleteAmountByID(1, pWeapon->ammo);
-					movingeffect3( getSerial32(), targserial, (pWeapon->ammoFx>>8)&0xFF, pWeapon->ammoFx & 0xFF, 0x08, 0x00, 0x00,0,0,0,0);
+					movingeffect3( getSerial32(), targserial, (UI08)((pWeapon->ammoFx>>8)&0xFF), (UI08)(pWeapon->ammoFx & 0xFF), (UI08)0x08, (UI08)0x00, (UI08)0x00,(UI08)0,(UI08)0,(UI08)0,(UI08)0);
 				}
 
 			if ( dist < 2 || fightskill == ARCHERY )

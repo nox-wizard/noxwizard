@@ -1059,7 +1059,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		{
 		if (m_pcAdded!=0)
 		{
-			m_pcAdded->speech = str2num(par);
+			m_pcAdded->speech = (SI08)str2num(par);
 		}
 		}
 		break;
@@ -1207,7 +1207,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		{
 			int array[2];
 					fillIntArray(par, array, 2, 0, 16);
-					m_pcCurrChar->playSFX( DBYTE2WORD( array[0], array[1] ));
+					m_pcCurrChar->playSFX( (SI16)DBYTE2WORD( array[0], array[1] ));
 		}
 		//////////////////////////////////////////////////////////////////////////
 			// SETTRG
@@ -1227,7 +1227,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 		{
 			if (m_pcNpc!=0)
 			{
-			m_pcNpc->speech = str2num(par);
+			m_pcNpc->speech = (SI08)str2num(par);
 			}
 		}
 		// End NPC Triggers
@@ -1240,14 +1240,14 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			fillIntArray(par, array, 2, 0, 16);
 
 			if ((ISNPC(m_nTriggerType))&&(m_pcNpc!=0)) {
-			m_pcNpc->setId( DBYTE2WORD( array[0], array[1] ) );
-			m_pcNpc->setOldId( DBYTE2WORD( array[0], array[1] ) );
+			m_pcNpc->setId( (UI16)DBYTE2WORD( array[0], array[1] ) );
+			m_pcNpc->setOldId( (UI16)DBYTE2WORD( array[0], array[1] ) );
 			for (int j = 0; j < now; j++)
 				if (clientInfo[j]->ingame && char_inVisRange(m_pcNpc,MAKE_CHAR_REF(currchar[j])))
 				m_pcNpc->teleport();
 			}
 			if ((ISNOTNPC(m_nTriggerType))&&(m_pi!=0)) {
-				m_pi->setId( DBYTE2WORD( array[0], array[1] ) );
+				m_pi->setId( (UI16)DBYTE2WORD( array[0], array[1] ) );
 				m_pi->Refresh();
 			}
 		}
@@ -1257,7 +1257,7 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			fillIntArray(par, array, 2, 0, 16);
 			if (m_piEnvoked != 0)
 			{
-				m_piEnvoked->setId( DBYTE2WORD( array[0], array[1] ) );
+				m_piEnvoked->setId( (UI16)DBYTE2WORD( array[0], array[1] ) );
 				m_piEnvoked->Refresh();
 			}
 		}

@@ -15,7 +15,7 @@
 #ifndef __POINTERS_H__
 #define __POINTERS_H__
 
-void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& it);
+void getWorldCoordsFromSerial (int sr, UI16& px, UI16& py, SI08& pz, int& ch, int& it);
 
 
 /*!

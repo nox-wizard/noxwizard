@@ -1798,7 +1798,7 @@ int NewGameCrypt::blockEncrypt(cipherInstance *cipher, keyInstance *key,CONST BY
             {
             blockEncrypt(cipher,key,cipher->IV,BLOCK_SIZE,(BYTE *)x);
             bit0  = (unsigned char)(0x80 >> (n & 7));/* which bit position in byte */
-            ctBit = (unsigned char)(input[n/8] & bit0) ^ (unsigned char)((((BYTE *) x)[0] & 0x80) >> (n&7));
+            ctBit = (unsigned char)((unsigned char)(input[n/8] & bit0) ^ (unsigned char)((((BYTE *) x)[0] & 0x80) >> (n&7)));
             outBuffer[n/8] = (unsigned char)((outBuffer[n/8] & ~ bit0) | ctBit);
             carry = (unsigned char)(ctBit >> (7 - (n&7)));
             for (i=BLOCK_SIZE/8-1;i>=0;i--)

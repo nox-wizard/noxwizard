@@ -552,7 +552,7 @@ namespace Books
 			bytes += 4; // 4 bytes for each page
 			UI16 j = 0;
 			for( std::vector<std::string>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++, j++ )
-				bytes += (unsigned short)((*it2).size() + 1);
+				bytes += (UI16)((*it2).size() + 1);
 			while ( j++ < 8 )
 				bytes += 2;
 		}

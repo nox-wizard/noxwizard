@@ -339,7 +339,7 @@ void sellaction(NXWSOCKET s)
 
 				join->amount+=amt;
 				join->restock-=amt;
-				pSell->ReduceAmount(amt);
+				pSell->ReduceAmount((SI16)amt);
 			}
 			else
 			{

@@ -324,7 +324,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pc->setId( BODY_MALE );
 	}
 
-	pc->setColor(ShortFromCharPtr(buffer[s] + 0x50) | 0x8000);
+	pc->setColor((UI16)(ShortFromCharPtr(buffer[s] + 0x50) | 0x8000));
 
 	if ( (pc->getColor()<0x83EA) || (pc->getColor()>0x8422) )
 	{
@@ -337,9 +337,9 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	pc->SetPriv2(defaultpriv2);
 
 	Location charpos;
-	charpos.x= str2num(start[buffer[s][0x5B]][2]);
-	charpos.y= str2num(start[buffer[s][0x5B]][3]);
-	charpos.dispz= charpos.z= str2num(start[buffer[s][0x5B]][4]);
+	charpos.x= (UI16)str2num(start[buffer[s][0x5B]][2]);
+	charpos.y= (UI16)str2num(start[buffer[s][0x5B]][3]);
+	charpos.dispz= charpos.z= (SI08)str2num(start[buffer[s][0x5B]][4]);
 	pc->MoveTo( charpos );
 
 	pc->dir=4;
@@ -615,7 +615,7 @@ void checkkey ()
 		}
 	#if !defined __BORLANDC__ && !defined __unix__
 		else {
-			c = toupper(getch());
+			c = (SI08)toupper(getch());
 		}
 	#endif
 

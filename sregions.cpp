@@ -139,24 +139,24 @@ void loadregions()//New -- Zippy spawn regions
 				}
 				else if (!(strcmp("SNOWCHANCE", script1)))
 				{
-					regionRef.snowchance=str2num(script2);
+					regionRef.snowchance=(UI08)str2num(script2);
 				}
 				else if (!(strcmp("RAINCHANCE", script1)))
 				{
-					regionRef.rainchance=str2num(script2);
+					regionRef.rainchance=(UI08)str2num(script2);
 				}
 				//xan : quick&dirty weather system :)
 				else if (!(strcmp("DRYCHANCE", script1)))
 				{
-					regionRef.drychance=str2num(script2);
+					regionRef.drychance=(UI08)str2num(script2);
 				}
 				else if (!(strcmp("KEEPCHANCE", script1)))
 				{
-					regionRef.keepchance=str2num(script2);
+					regionRef.keepchance=(UI08)str2num(script2);
 				}
 				else if (!(strcmp("FORCESEASON", script1)))
 				{
-					regionRef.forcedseason =str2num(script2);
+					regionRef.forcedseason =(UI08)str2num(script2);
 				}
 				else if (!(strcmp("IGNOREMONTHMULTIPLIERS", script1)))
 				{

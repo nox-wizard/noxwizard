@@ -346,23 +346,23 @@ void cObject::setPosition( const char *what, SI32 value)
 	{
 	case 'x':
 	case 'X':
-		position.x= value;
+		position.x= (UI16)value;
 		break;
 
 	case 'y':
 	case 'Y':
-		position.y= value;
+		position.y= (UI16)value;
 		break;
 
 	case 'z':
 	case 'Z':
-		position.z= value;
+		position.z= (SI08)value;
 		break;
 
 	case 'd':
 	case 'D':
 		if( (what[1] == 'z') || (what[1] == 'Z') )
-			position.dispz= value;
+			position.dispz= (SI08) value;
 		break;
 	}
 }
@@ -394,17 +394,17 @@ void cObject::setOldPosition( const char *what, SI32 value)
 	{
 	case 'x':
 	case 'X':
-		old_position.x= value;
+		old_position.x= (UI16)value;
 		break;
 
 	case 'y':
 	case 'Y':
-		old_position.y= value;
+		old_position.y= (UI16)value;
 		break;
 
 	case 'z':
 	case 'Z':
-		old_position.z= value;
+		old_position.z= (SI08)value;
 		break;
 	}
 }

@@ -378,8 +378,8 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 					getMultiCorners(pi_multi,sx,sy,ex,ey);
 					pc->sysmsg(TRANSLATE("You are banned from that location."));
 					Location pcpos= pc->getPosition();
-					pcpos.x= ex;
-					pcpos.y= ey+1;
+					pcpos.x= (UI16)ex;
+					pcpos.y= (UI16)(ey+1);
 					pc->setPosition( pcpos );
 					pc->teleport();
 					return false;
@@ -393,8 +393,8 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 	if ( z == illegal_z )
 	{
 		Location pcpos= pc->getPosition();
-		pcpos.x= oldx;
-		pcpos.y= oldy;
+		pcpos.x= (UI16)oldx;
+		pcpos.y= (UI16)oldy;
 		pc->setPosition( pcpos );
 		NXWSOCKET socket = pc->getSocket();
 		if ( socket != INVALID )

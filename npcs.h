@@ -42,7 +42,7 @@ namespace npcs
 
 	P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1);
 	P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, Location where);	// added by Anthalir
-	P_CHAR addNpc(int npcNum, int x, int y, int z);
+	P_CHAR addNpc(int npcNum, UI16 x, UI16 y, SI08 z);
 
 	P_CHAR AddRespawnNPC(P_ITEM pi, int npcNum);
 	P_CHAR AddRespawnNPC(P_CHAR pc, int npcNum);

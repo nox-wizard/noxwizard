@@ -740,7 +740,7 @@ int cItem::DeleteAmount(int amount, short id, short color)
 		if(ISVALIDPI(pi) && (rest > 0) )
 		{
 			if (pi->getId()==id && (color==INVALID || (pi->getColor()==color)))
-				rest=(short)pi->ReduceAmount(rest);
+				rest=(short)pi->ReduceAmount((SI16)rest);
 		}
 	}
 	return rest;
@@ -765,7 +765,7 @@ int cItem::DeleteAmountByID(int amount, unsigned int scriptID)
 			rest= pi->DeleteAmountByID(amount, scriptID);
 
 		if (pi->getScriptID() == scriptID)
-			rest= (short)pi->ReduceAmount(rest);
+			rest= (short)pi->ReduceAmount((SI16)rest);
 
 		if (rest<= 0)
 			break;
@@ -1346,7 +1346,7 @@ UI32 cContainerItem::removeItems(UI32 scriptID, UI32 amount/*= 1*/)
 		VALIDATEPIR(pi, 0);
 
 		if( pi->getScriptID()==scriptID )
-			rest= pi->ReduceAmount(rest);
+			rest= pi->ReduceAmount((SI16)rest);
 
 		if (rest<= 0)
 			break;

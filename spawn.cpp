@@ -38,8 +38,8 @@ bool cSpawnArea::findValidLocation( Location& location )
 	int a=0;
 	do {
 
-		location.x = RandomNum( where->second.x1, where->second.x2 );
-		location.y = RandomNum( where->second.y1, where->second.y2 );
+		location.x = (UI16)RandomNum( where->second.x1, where->second.x2 );
+		location.y = (UI16)RandomNum( where->second.y1, where->second.y2 );
 		location.z = mapElevation( location.x, location.y );
 
 		if( canNpcWalkHere( location ) )
@@ -599,11 +599,11 @@ void cSpawnDinamic::doSpawn()
 	if( spawn->type == ITYPE_ITEM_SPAWNER ) {
 		if ( spawn->morex == 0 )
 			return;
-		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
-		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
-		UI16 maxSpawn=RandomNum(min,max);
+		UI16 min=(UI16)(spawn->moreb1+(spawn->moreb2<<8));
+		UI16 max=(UI16)(spawn->moreb3+(spawn->moreb4<<8));
+		UI16 maxSpawn=(UI16)RandomNum(min,max);
 		if ( (SI16)(spawn->amount - this->current - maxSpawn) < 0 )
-			maxSpawn=spawn->amount - this->current;
+			maxSpawn=(UI16)(spawn->amount - this->current);
 		for ( int i = 0; i < maxSpawn;++i)
 		{
 			P_ITEM pi=item::CreateFromScript( spawn->morex );
@@ -626,13 +626,13 @@ void cSpawnDinamic::doSpawn()
 	else if( spawn->type == ITYPE_NPC_SPAWNER ) {
 		if ( spawn->morex == 0 )
 			return;
-		UI16 min=spawn->moreb1+(spawn->moreb2<<8);
-		UI16 max=spawn->moreb3+(spawn->moreb4<<8);
-		UI16 maxSpawn=RandomNum(min,max);
+		UI16 min=(UI16)(spawn->moreb1+(spawn->moreb2<<8));
+		UI16 max=(UI16)(spawn->moreb3+(spawn->moreb4<<8));
+		UI16 maxSpawn=(UI16)RandomNum(min,max);
 		if ( maxSpawn == 0 )
 			maxSpawn = 1;
 		if ( (SI16)(spawn->amount - this->current - maxSpawn) < 0 )
-			maxSpawn=spawn->amount - this->current;
+			maxSpawn=(UI16)(spawn->amount - this->current);
 		for ( int i = 0; i < maxSpawn;++i)
 		{
 			P_CHAR npc=npcs::addNpc( spawn->morex, spawn->getPosition().x, spawn->getPosition().y, spawn->getPosition().z );
@@ -682,7 +682,7 @@ void cSpawnDinamic::remove( SERIAL serial )
 			P_ITEM spawnerItem=pointers::findItemBySerial(this->item);
 			if ( ISVALIDPI(spawnerItem))
 			{
-				spawnerItem->amount2=current;
+				spawnerItem->amount2=(UI16)current;
 			}
 
 		}
@@ -696,7 +696,7 @@ void cSpawnDinamic::remove( SERIAL serial )
 			P_ITEM spawnerItem=pointers::findItemBySerial(this->item);
 			if ( ISVALIDPI(spawnerItem))
 			{
-				spawnerItem->amount2=current;
+				spawnerItem->amount2=(UI16)current;
 			}
 		}
 	}

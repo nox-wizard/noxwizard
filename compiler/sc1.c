@@ -1297,7 +1297,7 @@ static int declloc(int fstatic)
      * of a global variable or to that of a local variable at a lower
      * level might indicate a bug.
      */
-    if ((sym=findloc(name)) && (sym->compound!=nestlevel || findglb(name)))
+    if ((sym=findloc(name))!=NULL && (sym->compound!=nestlevel || findglb(name)))
       error(219,name);                  /* variable shadows another symbol */
     while (matchtoken('[')){
       ident=iARRAY;

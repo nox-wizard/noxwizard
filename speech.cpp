@@ -501,7 +501,7 @@ int response(NXWSOCKET  s)
 									sprintf(temp2,"%s, ", strlwr(skillname[j]));
 									strupr(skillname[j]); // I found out strlwr changes the actual  string permanently, so this undoes that
 									if(!y)
-										temp2[0]=toupper(temp2[0]); // If it's the first skill,  capitalize it.
+										temp2[0]=(SI08)toupper(temp2[0]); // If it's the first skill,  capitalize it.
 									strcat(temp,temp2);
 									y++;
 								}
@@ -523,7 +523,7 @@ int response(NXWSOCKET  s)
 					{
 						if( pc_map->baseskill[skill] > 10 )
 						{
-							x=skill;
+							x=(UI16)skill;
 							sprintf(temp,TRANSLATE("Thou wishest to learn of  %s?"),strlwr(skillname[x]));
 							strupr(skillname[x]); // I found out strlwr changes the actual string permanently, so this undoes that
 							if(pc->baseskill[x] >= 250 )
@@ -980,7 +980,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 	for (i=7; i < MB; i++)
 		{
 			tbuffer[i]=buffer1[i];
-			buffer1[i]=toupper(buffer[s][i]);
+			buffer1[i]=(SI08)toupper(buffer[s][i]);
 		}
 	}
 	else
@@ -988,7 +988,7 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 	for (i=0; i < MB-8; i++)
 		{
 			tbuffer[i+8]=buffer1[i+8];
-			buffer1[i+8]=toupper(nonuni[i]);
+			buffer1[i+8]=(SI08)toupper(nonuni[i]);
 		}
 	}
 	/// end of that hurts
@@ -2065,8 +2065,8 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 	talk.obj=pc->getSerial32();
 	talk.model=pc->getId();
 	talk.type= buffer[socket][3];
-	talk.color= DBYTE2WORD( buffer[socket][4], buffer[socket][5] );
-	talk.font= DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
+	talk.color=(UI16) DBYTE2WORD( buffer[socket][4], buffer[socket][5] );
+	talk.font= (UI16)DBYTE2WORD( buffer[socket][6], buffer[socket][7] );
 	talk.name+=pc->getCurrentName();
 
 	wstring speechUni;

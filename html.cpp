@@ -128,7 +128,6 @@ void updatehtml()//HTML
 		}
 		else if( script1 == "WHOLIST" )
 		{
-			if (script2.find(" X") > 0 )
 			a=0;
 			for (n=0;n<now;n++)
 			{

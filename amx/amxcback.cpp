@@ -88,7 +88,7 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 				return false;
 			}
 		}
-		if ( (pi->getGender() != INVALID || pi->getGender() != GENDER_NEUTRAL ) && pi->getGender() != pc->getGender() )
+		if ( (pi->getGender() != INVALID && pi->getGender() != GENDER_NEUTRAL ) && pi->getGender() != pc->getGender() )
 		{
 			if ( pi->getGender() == 1 ) // it's a man item
 				pc->sysmsg(TRANSLATE("Only males of your species may use that !"));

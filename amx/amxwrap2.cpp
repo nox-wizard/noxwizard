@@ -751,7 +751,6 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 2: return pi->more2;
 				case 3: return pi->more3;
 				case 4: return pi->more4;
-				default: return ((pi->more1&0xFF) << 24) + ((pi->more2&0xFF) << 16) + ((pi->more3&0xFF) << 8) + (pi->more4&0xFF);
 			}
 		case NXW_IP_C_MOREB:
 			switch(prop2) {
@@ -759,7 +758,6 @@ char getItemCharProperty( P_ITEM pi, int property, int prop2)
 				case 2: return pi->moreb2;
 				case 3: return pi->moreb3;
 				case 4: return pi->moreb4;
-				default: return ((pi->moreb1&0xFF) << 24) + ((pi->moreb2&0xFF) << 16) + ((pi->moreb3&0xFF) << 8) + (pi->moreb4&0xFF);
 			}
 		CHECK(NXW_IP_C_DAMAGETYPE, (char) pi->damagetype)				//dec value :  121;
 		CHECK(NXW_IP_C_AUXDAMAGETYPE, (char) pi->auxdamagetype)			//dec value :  122;
@@ -1232,13 +1230,13 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->foodloc.x = value;
+					pc->foodloc.x = (UI16) value;
 					break;
 				case NXW_CP2_Y :
-					pc->foodloc.y = value;
+					pc->foodloc.y = (UI16) value;
 					break;
 				case NXW_CP2_Z :
-					pc->foodloc.z = value;
+					pc->foodloc.z = (SI08) value;
 					break;
 			}
 			break;
@@ -1246,10 +1244,10 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->fx1 = value;
+					pc->fx1 = (UI16) value;
 					break;
 				case NXW_CP2_Y :
-					pc->fy1 = value;
+					pc->fy1 = (UI16) value;
 					break;
 				case NXW_CP2_Z :
 					pc->fz1 = (signed char) value;
@@ -1260,10 +1258,10 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->fx2 = value;
+					pc->fx2 = (UI16) value;
 					break;
 				case NXW_CP2_Y :
-					pc->fy2 = value;
+					pc->fy2 = (UI16) value;
 				case NXW_CP2_Z :
 					break;
 			}
@@ -1300,13 +1298,13 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->homeloc.x = value;
+					pc->homeloc.x = (UI16) value;
 					break;
 				case NXW_CP2_Y :
-					pc->homeloc.y = value;
+					pc->homeloc.y = (UI16) value;
 					break;
 				case NXW_CP2_Z :
-					pc->homeloc.z = value;
+					pc->homeloc.z = (SI08) value;
 					break;
 			}
 			break;
@@ -1584,13 +1582,13 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 			switch( subproperty )
 			{
 				case NXW_CP2_X :
-					pc->workloc.x = value;
+					pc->workloc.x = (UI16) value;
 					break;
 				case NXW_CP2_Y :
-					pc->workloc.y = value;
+					pc->workloc.y = (UI16) value;
 					break;
 				case NXW_CP2_Z :
-					pc->workloc.z = value;
+					pc->workloc.z = (SI08) value;
 					break;
 			}
 			break;
@@ -4164,7 +4162,6 @@ int	house_getIntProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 
 bool house_getBoolProperty( P_HOUSE house, UI32 property, UI32 subProperty)
 {
-	bool retVal=false;
 	switch( property )
 	{
 		case NXW_HP_PUBLICHOUSE:

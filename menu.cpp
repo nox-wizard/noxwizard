@@ -559,19 +559,19 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 
 			switch( t ) {
 				case T_CHAR : {
-					char value = str2num( data );
+					char value = (SI08)str2num( data );
 					if( value!=getCharCharProperty( pc, prop, subProp ) )
 						setCharCharProperty( pc, prop, subProp, subProp2, value );
 					}
 					break;
 				case T_INT: {
-					int value = str2num( data );
+					int value = (SI16)str2num( data );
 					if( value!=getCharIntProperty( pc, prop, subProp ) )
 						setCharIntProperty( pc, prop, subProp, subProp2, value );
 					}
 					break;
 				case T_SHORT: {
-					short value = str2num( data );
+					short value = (SI16)str2num( data );
 					if( value!=getCharShortProperty( pc, prop, subProp ) )
 						setCharShortProperty( pc, prop, subProp, subProp2, value );
 					}
@@ -597,19 +597,19 @@ void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subPr
 
 			switch( t ) {
 				case T_CHAR : {
-					char value = str2num( data );
+					char value = (SI08)str2num( data );
 					if( value!=getItemCharProperty( pi, prop, subProp ) )
 						setItemCharProperty( pi, prop, subProp, value );
 					}
 					break;
 				case T_INT: {
-					int value = str2num( data );
+					int value = (SI16)str2num( data );
 					if( value!=getItemIntProperty( pi, prop, subProp ) )
 						setItemIntProperty( pi, prop, subProp, value );
 					}
 					break;
 				case T_SHORT: {
-					short value = str2num( data );
+					short value = (SI16)str2num( data );
 					if( value!=getItemShortProperty( pi, prop, subProp ) )
 						setItemShortProperty( pi, prop, subProp, value );
 					}
@@ -827,7 +827,7 @@ cServerPacket* cIconListMenu::createPacket()
 	cPacketIconListMenu* p = new cPacketIconListMenu;
 	
 	p->serial = serial;
-	p->id = id;
+	p->id = (UI16)id;
 
 	p->question = question;
 	p->icons = &icons;

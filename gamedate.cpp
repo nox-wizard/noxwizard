@@ -76,17 +76,17 @@ void	cGameDate::setDefaultDate()
 
 void	cGameDate::setDefaultYear()
 {
-	year 	= Calendar::g_nYear;
+	year 	= (UI16)Calendar::g_nYear;
 }
 
 void	cGameDate::setDefaultMonth()
 {
-	month	= Calendar::g_nMonth;
+	month	= (UI08) Calendar::g_nMonth;
 }
 
 void	cGameDate::setDefaultDay()
 {
-	day	= Calendar::g_nDay;
+	day	= (UI08)Calendar::g_nDay;
 }
 
 void	cGameDate::setDefaultTime()
@@ -97,12 +97,12 @@ void	cGameDate::setDefaultTime()
 
 void	cGameDate::setDefaultHour()
 {
-	hour	= Calendar::g_nHour;
+	hour	= (UI08)Calendar::g_nHour;
 }
 
 void	cGameDate::setDefaultMinute()
 {
-	minute	= Calendar::g_nMinute;
+	minute	= (UI08)Calendar::g_nMinute;
 }
 
 UI16 cGameDate::getYear()

@@ -833,8 +833,6 @@ void target_expPotion( NXWCLIENT ps, P_TARGET t )
 
     Location loc=t->getLocation();
 
-	NXWSOCKET s=ps->toInt();
-
     if(line_of_sight(pc->getPosition(), loc, WALLS_CHIMNEYS + DOORS + ROOFING_SLANTED))
     {
         P_ITEM pi=pointers::findItemBySerial( t->buffer[0] );

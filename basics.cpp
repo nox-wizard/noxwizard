@@ -161,7 +161,7 @@ char *RealTime(char *time_str)
 \param z Z-Coordinate
 \param dispz displayed z value
 */
-Location Loc(UI32 x, UI32 y, SI32 z, SI32 dispz)
+Location Loc(UI16 x, UI16 y, SI08 z, SI08 dispz)
 {
 	Location l= {x, y, z, 0};
 	if(dispz==0)

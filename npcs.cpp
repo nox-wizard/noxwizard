@@ -130,7 +130,7 @@ P_CHAR AddNPCxyz(NXWSOCKET s, int npcNum, Location where)
 P_CHAR AddNPCxyz(NXWSOCKET s, int npcNum, int x1, int y1, signed char z1) //Morrolan - replacement for old npcs::AddNPCxyz(), fixes a LOT of problems.
 {
 
-	return AddNPC(s, NULL, npcNum, x1,y1,z1);
+	return AddNPC(s, NULL, npcNum, (UI16)x1,(UI16)y1,(SI08)z1);
 
 }
 
@@ -279,11 +279,11 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								break;
 							case 'A':
 								if	( "ALCHEMY" == script1 )
-									pc->baseskill[ALCHEMY] = getRangedValue(script2);
+									pc->baseskill[ALCHEMY] = (UI16)getRangedValue(script2);
 								else if ( "AMOUNT" == script1 )
 								{
 									if( ISVALIDPI( pi_n ) )
-										pi_n->amount = str2num( script2 );
+										pi_n->amount = (UI16)str2num( script2 );
 								}
 								//
 								// Old style user variables
@@ -364,13 +364,13 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									amxVS.insertVariable( pc->getSerial32(), str2num( rha1 ), rha2 );
 								}
 								else if ( "ANATOMY" == script1 )
-									pc->baseskill[ANATOMY] = getRangedValue(script2);
+									pc->baseskill[ANATOMY] = (UI16)getRangedValue(script2);
 								else if ( "ANIMALLORE" == script1 )
-									pc->baseskill[ANIMALLORE] = getRangedValue(script2);
+									pc->baseskill[ANIMALLORE] = (UI16)getRangedValue(script2);
 								else if ( "ARCHERY" == script1 )
-									pc->baseskill[ARCHERY] = getRangedValue(script2);
+									pc->baseskill[ARCHERY] = (UI16)getRangedValue(script2);
 								else if ( "ARMSLORE" == script1 )
-									pc->baseskill[ARMSLORE] = getRangedValue(script2);
+									pc->baseskill[ARMSLORE] = (UI16)getRangedValue(script2);
 								break;
 							case 'B':
 								if	( "BACKPACK" == script1 )
@@ -391,35 +391,35 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}
 								}
 								else if ( "BEGGING" == script1 )
-									pc->baseskill[BEGGING] = getRangedValue(script2);
+									pc->baseskill[BEGGING] = (UI16)getRangedValue(script2);
 								else if ( "BLACKSMITHING" == script1 )
-									pc->baseskill[BLACKSMITHING] = getRangedValue(script2);
+									pc->baseskill[BLACKSMITHING] = (UI16)getRangedValue(script2);
 								else if ( "BOWCRAFT" == script1 )
-									pc->baseskill[BOWCRAFT] = getRangedValue(script2);
+									pc->baseskill[BOWCRAFT] = (UI16)getRangedValue(script2);
 								break;
 							case 'C':
 								if	( "COLOR" == script1 )
 								{
 									if( ISVALIDPI(pi_n) )
 									{
-										pi_n->setColor( hex2num(script2) );
+										pi_n->setColor( (UI16)hex2num(script2) );
 									}
 								}
 								else if ( "CAMPING" == script1 )
-									pc->baseskill[CAMPING] = getRangedValue(script2);
+									pc->baseskill[CAMPING] = (UI16)getRangedValue(script2);
 								else if ( "CANTRAIN" == script1 )
 									pc->cantrain=true;
 								else if ( "CARVE" == script1 )
 									pc->carve=str2num(script2);
 								else if ( "CARPENTRY" == script1 )
-									pc->baseskill[CARPENTRY] = getRangedValue(script2);
+									pc->baseskill[CARPENTRY] = (UI16)getRangedValue(script2);
 								else if ( "CARTOGRAPHY" == script1 )
-									pc->baseskill[CARTOGRAPHY] = getRangedValue(script2);
+									pc->baseskill[CARTOGRAPHY] = (UI16)getRangedValue(script2);
 								else if ( "COLORMATCHHAIR" == script1 )
 								{
 									if (ISVALIDPI(pi_n) && haircolor != INVALID )
 									{
-										pi_n->setColor( haircolor );
+										pi_n->setColor( (UI16)haircolor );
 									}
 								}
 								else if ( "COLORLIST" == script1 )
@@ -427,12 +427,12 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									if (ISVALIDPI(pi_n))
 									{
 										std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2)  );
-										pi_n->setColor( hex2num( value ) );
+										pi_n->setColor( (UI16)hex2num( value ) );
 									}
 									script1 = "DUMMY";
 								}
 								else if ( "COOKING" == script1 )
-									pc->baseskill[COOKING] = getRangedValue(script2);
+									pc->baseskill[COOKING] = (UI16)getRangedValue(script2);
 								break;
 							case 'D':
 								if	("DAMAGE" == script1 || "ATT" == script1 )
@@ -451,7 +451,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								else if ( "DEF" == script1 )
 									pc->def = getRangedValue(script2);
 								else if ( "DETECTINGHIDDEN" == script1 )
-									pc->baseskill[DETECTINGHIDDEN] = getRangedValue(script2);
+									pc->baseskill[DETECTINGHIDDEN] = (UI16)getRangedValue(script2);
 								else if ( "DEX" == script1 || "DEXTERITY" == script1 )
 								{
 									pc->dx  = getRangedValue(script2);
@@ -484,26 +484,26 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 							case 'E':
 								if	( "EMOTECOLOR" == script1 )
 								{
-									pc->emotecolor = hex2num(script2);
+									pc->emotecolor = (UI16)hex2num(script2);
 								}
 								else if ( "ENTICEMENT" == script1 )
-									pc->baseskill[ENTICEMENT] = getRangedValue(script2);
+									pc->baseskill[ENTICEMENT] = (UI16)getRangedValue(script2);
 								else if ( "EVALUATINGINTEL" == script1 )
-									pc->baseskill[EVALUATINGINTEL] = getRangedValue(script2);
+									pc->baseskill[EVALUATINGINTEL] = (UI16)getRangedValue(script2);
 								break;
 							case 'F':
 								if	( "FAME" == script1 )
 									pc->SetFame(str2num(script2));
 								else if ( "FENCING" == script1 )
-									pc->baseskill[FENCING] = getRangedValue(script2);
+									pc->baseskill[FENCING] = (UI16)getRangedValue(script2);
 								else if ( "FISHING" == script1 )
-									pc->baseskill[FISHING] = getRangedValue(script2);
+									pc->baseskill[FISHING] = (UI16)getRangedValue(script2);
 								else if ( "FLEEAT" == script1 )
 									pc->fleeat=str2num(script2);
 								else if ( "FOLLOWSPEED" == script1)
 									pc->npcFollowSpeed = (float) atof( script2.c_str() );
 								else if ( "FORENSICS" == script1 )
-									pc->baseskill[FORENSICS] = getRangedValue(script2);
+									pc->baseskill[FORENSICS] = (UI16)getRangedValue(script2);
 								else if ( "FX1" == script1 )
 									fx1=str2num(script2);
 								else if ( "FX2" == script1 )
@@ -547,19 +547,19 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										haircolor = hex2num( value );
 										if (haircolor!=-1)
 										{
-											pi_n->setColor( haircolor );
+											pi_n->setColor((UI16) haircolor );
 										}
 									}
 									script1 = "DUMMY";
 								}
 								else if	( "HEALING" == script1 )
-									pc->baseskill[HEALING] = getRangedValue(script2);
+									pc->baseskill[HEALING] = (UI16)getRangedValue(script2);
 								else if ( "HERDING" == script1 )
-									pc->baseskill[HERDING] = getRangedValue(script2);
+									pc->baseskill[HERDING] = (UI16)getRangedValue(script2);
 								else if ( "HIDAMAGE" == script1 )
 									pc->hidamage=str2num(script2);
 								else if ( "HIDING" == script1 )
-									pc->baseskill[HIDING] = getRangedValue(script2);
+									pc->baseskill[HIDING] = (UI16)getRangedValue(script2);
 								else if ( "HIRE" == script1 )
 									pc->setHireFee(str2num(script2));
 								else if ( "HOLYDAMAGED" == script1 )
@@ -569,14 +569,14 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								if	( "ID" == script1 )
 								{
 									tmp=hex2num(script2);
-									pc->setId(tmp);
-									pc->setOldId(tmp);
+									pc->setId((UI16)tmp);
+									pc->setOldId((UI16)tmp);
 								}
 								else if ( "INSCRIPTION" == script1 )
-									pc->baseskill[INSCRIPTION] = getRangedValue(script2);
+									pc->baseskill[INSCRIPTION] = (UI16)getRangedValue(script2);
 								else if ( "INT" == script1 || "INTELLIGENCE" == script1 )
 								{
-									pc->in  = getRangedValue(script2);
+									pc->in  = (UI16)getRangedValue(script2);
 									pc->in2 = pc->in;
 									pc->in3 = pc->in;
 									pc->mn  = pc->in;
@@ -596,7 +596,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									script1 = "DUMMY";
 								}
 								else if ( "ITEMID" == script1 )
-									pc->baseskill[ITEMID] = getRangedValue(script2);
+									pc->baseskill[ITEMID] = (UI16)getRangedValue(script2);
 								break;
 							case 'K':
 								if	( "KARMA" == script1 )
@@ -606,7 +606,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								if	( "LIGHTDAMAGED" == script1 )
 									pc->lightdamaged = true;
 								else if ( "LOCKPICKING" == script1 )
-									pc->baseskill[LOCKPICKING] = getRangedValue(script2);
+									pc->baseskill[LOCKPICKING] =(UI16) getRangedValue(script2);
 								else if ( "LODAMAGE" == script1 )
 									pc->lodamage=str2num(script2);
 								else if ( "LOOT" == script1 )
@@ -670,15 +670,15 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 
 								}
 								else if ( "LUMBERJACKING" == script1 )
-									pc->baseskill[LUMBERJACKING] = getRangedValue(script2);
+									pc->baseskill[LUMBERJACKING] = (UI16)getRangedValue(script2);
 								break;
 							case 'M':
 								if	( "MACEFIGHTING" == script1 )
-									pc->baseskill[MACEFIGHTING] = getRangedValue(script2);
+									pc->baseskill[MACEFIGHTING] = (UI16)getRangedValue(script2);
 								else if ( "MAGERY" == script1 )
-									pc->baseskill[MAGERY] = getRangedValue(script2);
+									pc->baseskill[MAGERY] = (UI16)getRangedValue(script2);
 								else if ( "MAGICRESISTANCE" == script1 )
-									pc->baseskill[MAGICRESISTANCE] = getRangedValue(script2);
+									pc->baseskill[MAGICRESISTANCE] = (UI16)getRangedValue(script2);
 								else if	( "MAGICSPHERE" == script1 )
 									pc->magicsphere = str2num(script2);
 								else if ( "MAGICLEVEL" == script1 )
@@ -687,13 +687,13 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										pc->spattack=str2num(script2);
 								}
 								else if ( "MEDITATION" == script1 )
-									pc->baseskill[MEDITATION] = getRangedValue(script2);
+									pc->baseskill[MEDITATION] = (UI16)getRangedValue(script2);
 								else if ( "MINING" == script1 )
-									pc->baseskill[MINING] = getRangedValue(script2);
+									pc->baseskill[MINING] = (UI16)getRangedValue(script2);
 								else if ( "MOVESPEED" == script1)
 									pc->npcMoveSpeed = (float) atof( script2.c_str() );
 								else if ( "MUSICIANSHIP" == script1 )
-									pc->baseskill[MUSICIANSHIP] = getRangedValue(script2);
+									pc->baseskill[MUSICIANSHIP] = (UI16)getRangedValue(script2);
 								break;
 							case 'N':
 								if	( "NAME" == script1 )
@@ -712,15 +712,15 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								else if ( "NPCAI" == script1 )
 									pc->npcaitype=str2num(script2);
 								else if ( "NPCWANDER" == script1 )
-									pc->npcWander=str2num(script2);
+									pc->npcWander=(SI08)str2num(script2);
 								else if ( "NXWFLAG0" == script1 )
-									pc->nxwflags[0] = str2num(script2);
+									pc->nxwflags[0] = (SI08)str2num(script2);
 								else if ( "NXWFLAG1" == script1 )
-									pc->nxwflags[1] = str2num(script2);
+									pc->nxwflags[1] = (SI08)str2num(script2);
 								else if ( "NXWFLAG2" == script1 )
-									pc->nxwflags[2] = str2num(script2);
+									pc->nxwflags[2] = (SI08)str2num(script2);
 								else if ( "NXWFLAG3" == script1 )
-									pc->nxwflags[3] = str2num(script2);
+									pc->nxwflags[3] = (SI08)str2num(script2);
 								break;
 							case 'O':
 								if	( "ONHORSE" == script1 )
@@ -739,19 +739,19 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										WarnOut("Bad NPC Script %d with problem no backpack for packitem.\n", npcNum);
 								}
 								else if ( "PARRYING" == script1)
-									pc->baseskill[PARRYING] = getRangedValue(script2);
+									pc->baseskill[PARRYING] = (UI16)getRangedValue(script2);
 								else if ( "PEACEMAKING" == script1 )
-									pc->baseskill[PEACEMAKING] = getRangedValue(script2);
+									pc->baseskill[PEACEMAKING] = (UI16)getRangedValue(script2);
 								else if ( "POISON" == script1)
 									pc->poison=str2num(script2);
 								else if ( "POISONING" == script1 )
-									pc->baseskill[POISONING] = getRangedValue(script2);
+									pc->baseskill[POISONING] = (UI16)getRangedValue(script2);
 								else if ( "PRIV1" == script1 )
 									pc->SetPriv(str2num(script2));
 								else if ( "PRIV2" == script1 )
-									pc->SetPriv2(str2num(script2));
+									pc->SetPriv2((SI08)str2num(script2));
 								else if ( "PROVOCATION" == script1 )
-									pc->baseskill[PROVOCATION] = getRangedValue(script2);
+									pc->baseskill[PROVOCATION] = (UI16)getRangedValue(script2);
 								break;
 							case 'R':
 								if	( "RACE" == script1 )
@@ -777,7 +777,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									pc->setRegenRate( STAT_MANA, v, VAR_EFF );
 								}
 								else if ( "REMOVETRAPS" == script1 )
-									pc->baseskill[REMOVETRAPS] = getRangedValue(script2);
+									pc->baseskill[REMOVETRAPS] = (UI16)getRangedValue(script2);
 								else if ( "RESISTS" == script1 )
 								{
 									int params[2];
@@ -822,7 +822,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 							case 'S':
 								if	( "SAYCOLOR" == script1 )
 								{
-									pc->saycolor = hex2num(script2);
+									pc->saycolor = (UI16)hex2num(script2);
 								}
 								else if ( "SELLITEM" == script1 )
 								{
@@ -879,24 +879,24 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									gettokennum(script2, 0);
 									z=str2num(gettokenstr);
 									gettokennum(script2, 1);
-									pc->baseskill[z]=str2num(gettokenstr);
+									pc->baseskill[z]=(UI16)str2num(gettokenstr);
 								}
 								else if ( "SKIN" == script1 )
 								{
 									tmp=hex2num(script2);
-									pc->setColor(tmp);
-									pc->setOldColor(tmp);
+									pc->setColor((UI16)tmp);
+									pc->setOldColor((UI16)tmp);
 								}
 								else if ( "SKINLIST" == script1 )
 								{
 									std::string value( cObject::getRandomScriptValue("RANDOMCOLOR", script2 ) );
-									pc->setColor( hex2num( value ) );
+									pc->setColor( (UI16)hex2num( value ) );
 									pc->setOldColor( pc->getColor() );
 									script1 = "DUMMY";
 								}
 								else if ( "SNOOPING" == script1 )
 								{
-									pc->baseskill[SNOOPING] = getRangedValue(script2);
+									pc->baseskill[SNOOPING] = (UI16)getRangedValue(script2);
 								}
 								else if ( "SPADELAY" == script1 )
 									pc->spadelay=str2num(script2);
@@ -906,10 +906,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										pc->spattack=str2num(script2);
 								}
 								else if ( "SPEECH" == script1 )
-									pc->speech=str2num(script2);
+									pc->speech=(SI08)str2num(script2);
 								else if ( "SPIRITSPEAK" == script1 )
 								{
-									pc->baseskill[SPIRITSPEAK] = getRangedValue(script2);
+									pc->baseskill[SPIRITSPEAK] = (UI16)getRangedValue(script2);
 								}
 								else if ( "SPLIT" == script1 )
 									pc->split=str2num(script2);
@@ -919,11 +919,11 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									pc->npc_type=1;
 								else if ( "STEALING" == script1 )
 								{
-									pc->baseskill[STEALING] = getRangedValue(script2);
+									pc->baseskill[STEALING] = (UI16)getRangedValue(script2);
 								}
 								else if ( "STEALTH" == script1 )
 								{
-									pc->baseskill[STEALTH] = getRangedValue(script2);
+									pc->baseskill[STEALTH] = (UI16)getRangedValue(script2);
 								}
 								else if ( "STR" == script1 || "STRENGTH" == script1 )
 								{
@@ -934,26 +934,26 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "SWORDSMANSHIP" == script1 )
 								{
-									pc->baseskill[SWORDSMANSHIP] = getRangedValue(script2);
+									pc->baseskill[SWORDSMANSHIP] = (UI16)getRangedValue(script2);
 								}
 								break;
 							case 'T':
 								if	( "TACTICS" == script1 )
-									pc->baseskill[TACTICS] = getRangedValue(script2);
+									pc->baseskill[TACTICS] = (UI16)getRangedValue(script2);
 								else if ( "TAILORING" == script1 )
-									pc->baseskill[TAILORING] = getRangedValue(script2);
+									pc->baseskill[TAILORING] = (UI16)getRangedValue(script2);
 								else if ( "TAMING" == script1 )
-									pc->baseskill[TAMING] = getRangedValue(script2);
+									pc->baseskill[TAMING] = (UI16)getRangedValue(script2);
 								else if ( "TASTEID" == script1 )
-									pc->baseskill[TASTEID] = getRangedValue(script2);
+									pc->baseskill[TASTEID] = (UI16)getRangedValue(script2);
 								else if ( "TINKERING" == script1 )
-									pc->baseskill[TINKERING] = getRangedValue(script2);
+									pc->baseskill[TINKERING] = (UI16)getRangedValue(script2);
 								else if ( "TITLE" == script1 )
 									pc->title = script2;
 								else if ( "TOTAME" == script1 || "TAMING" == script1 )
 									pc->taming=str2num(script2);
 								else if ( "TRACKING" == script1 )
-									pc->baseskill[TRACKING] = getRangedValue(script2);
+									pc->baseskill[TRACKING] = (UI16)getRangedValue(script2);
 								else if ( "TRIGGER" == script1 )
 									pc->trigger=str2num(script2);
 								else if ( "TRIGWORD" == script1 )
@@ -966,7 +966,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 										pi_n->value=(str2num(script2));
 								}
 								else if ( "VETERINARY" == script1 )
-									pc->baseskill[VETERINARY] = getRangedValue(script2);
+									pc->baseskill[VETERINARY] = (UI16)getRangedValue(script2);
 								else if ( "VULNERABLE" == script1 )
 									pc->MakeVulnerable();
 								break;
@@ -974,7 +974,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								if	( "WATERWALK" == script1 )
 									pc->nxwflags[0] |= cChar::flagWaterWalk;
 								else if ( "WRESTLING" == script1 )
-									pc->baseskill[WRESTLING] = getRangedValue(script2);
+									pc->baseskill[WRESTLING] = (UI16)getRangedValue(script2);
 								break;
 							default:
 								ErrOut("Switch fallout in npcs.cpp AddNPC( %d ), invalid script param [ %s ]\n", npcNum, script1.c_str());
@@ -1104,7 +1104,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 							pc->fx2=fx2;
 							pc->fy1=fy1;
 							pc->fy2=fy2;
-							pc->fz1=fz1;
+							pc->fz1=(SI08)fz1;
 							break;
 						}
 
@@ -1149,7 +1149,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 
 }
 
-P_CHAR addNpc(int npcNum, int x, int y, int z) {
+P_CHAR addNpc(int npcNum, UI16 x, UI16 y, SI08 z) {
 	return AddNPC(INVALID, NULL, npcNum, x, y, z);
 }
 

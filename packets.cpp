@@ -278,7 +278,7 @@ CREATE( CharInfo, PKG_CHAR_INFO, 0x25 )
 CREATE( Speech, PKG_SPEECH, 0x0E )
 SEND( Speech ) {
 	if( ps == NULL ) return; //after error here
-	this->size=this->headerSize +30 +msg->length()+1;
+	this->size=(UI16)(this->headerSize +30 +msg->length()+1);
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
@@ -326,7 +326,7 @@ CREATE( PlayerStatus, PKG_PLAYER_STATUS, 0x0A )
 CREATE( Buy, PKG_BUY, 0x08 )
 SEND( Buy ) {
 	if( ps == NULL ) return; //after error here
-	this->size=this->headerSize +list.size()*sizeof( buyitem_st );
+	this->size=(UI16)(this->headerSize +list.size()*sizeof( buyitem_st ));
 	if( list.size() == 0 )
 		this->flag=0x00;
 	else
@@ -343,8 +343,8 @@ SENDC( Buy ) {
 CREATE( Container, PKG_CONTAINER, 0x05 )
 SEND( Container ) {
 	if( ps == NULL ) return; //after error here
-	this->size=this->headerSize +list.size()*sizeof( itemincont_st );
-	this->n=list.size();
+	this->size=(UI16)(this->headerSize +list.size()*sizeof( itemincont_st ));
+	this->n=(UI16)list.size();
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	for( vector<itemincont_st>::iterator iter = list.begin(); iter!=list.end(); iter++ )
 		Xsend( ps->toInt(), (char *)&(*iter), sizeof( itemincont_st ) );
@@ -436,7 +436,7 @@ CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
 	if( ps == NULL || msg == NULL ) return;
 	SI32 nSize = sizeof( UI16 );
-	this->size=this->headerSize +30 + msg->size()*nSize+nSize;
+	this->size=(UI16)(this->headerSize +30 + msg->size()*nSize+nSize);
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
@@ -473,7 +473,7 @@ SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	if( profile==NULL ) profile=&emptyUnicodeString;
 	if( staticProfile==NULL ) staticProfile=&emptyUnicodeString;
-	this->size=this->headerSize +(title.size()+1) + profile->size()*2+2 + staticProfile->size()*2+2;
+	this->size=(UI16)(this->headerSize +(title.size()+1) + profile->size()*2+2 + staticProfile->size()*2+2);
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->title.c_str(), title.size()+1 );
 	Xsend( ps->toInt(), *staticProfile, true );
@@ -489,7 +489,7 @@ CREATE( Features, PKG_FEATURES, 0x03 )
 CREATE( WebBrowser, PKG_WEB_BROWSER, 0x03 )
 SEND( WebBrowser ) {
 	if( ps == NULL ) return; 
-	this->size=this->headerSize + (link.size()+1 );
+	this->size=(UI16)(this->headerSize + (link.size()+1 ));
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->link.c_str(), link.size()+1 );
 }
@@ -514,7 +514,7 @@ SEND( Menu ) {
 		size_of_commands += its->length();
 	}
 	++size_of_commands; // terminator of command string
-	this->cmd_length=size_of_commands;
+	this->cmd_length=(UI16)size_of_commands;
 
 	temp+=size_of_commands;
 	temp+=sizeof( numTextLines );
@@ -524,9 +524,9 @@ SEND( Menu ) {
 		temp += itu->size()*2 +sizeof( len );
 	}
 	
-	this->size=temp;
+	this->size=(UI16)temp;
 	
-	this->numTextLines=texts->size();
+	this->numTextLines=(UI16)(texts->size());
 
 	//send of header
 	Xsend( s, this->getBeginValid(), this->headerSize );
@@ -540,12 +540,12 @@ SEND( Menu ) {
 
 
 	//send of text
-	numTextLines=texts->size();
+	numTextLines=(UI16)texts->size();
 	Xsend( s, (char*)&numTextLines, sizeof( numTextLines ) );
 
 	itu = texts->begin();
 	for( ; itu!=endu; itu++ ) {
-		len=itu->length();
+		len=(UI16)itu->length();
 		Xsend( s, (char*)&len, sizeof( len ) );
 		Xsend( s, *itu, false ); //not send null terminator
 	}
@@ -610,7 +610,7 @@ SEND( IconListMenu ) {
 		temp += sizeof( eUI08 ) + iter->response.size();
 	}
 	
-	this->size=temp;
+	this->size=(UI16)temp;
 	
 	//send of header
 	Xsend( s, this->getBeginValid(), this->headerSize );
@@ -690,7 +690,7 @@ void csPacketAddPartyMembers::send( NXWCLIENT ps )
 	NXWSOCKET s = ps->toInt();
 
 	count = members->size();
-	size = headerSize + count*sizeof(eSERIAL);
+	size = (UI16)(headerSize + count*sizeof(eSERIAL));
 	Xsend( s, getBeginValid(), headerSize );
 
 	std::vector<P_PARTY_MEMBER>::iterator iter( members->begin() ), end( members->end () );
@@ -732,7 +732,7 @@ void csPacketRemovePartyMembers::send( NXWCLIENT ps )
 	NXWSOCKET s = ps->toInt();
 
 	count = members->size();
-	size = headerSize + count*sizeof(eSERIAL);
+	size = (UI16)(headerSize + count*sizeof(eSERIAL));
 	Xsend( s, getBeginValid(), headerSize );
 
 	std::vector<P_PARTY_MEMBER>::iterator iter( members->begin() ), end( members->end () );
@@ -775,7 +775,7 @@ void csPacketPartyTellMessage::send( NXWCLIENT ps )
 	if( ps==NULL ) return;
 	NXWSOCKET s = ps->toInt();
 
-	size = headerSize + message->size()*sizeof(UI16)+sizeof(UI16);
+	size = (UI16)(headerSize + message->size()*sizeof(UI16)+sizeof(UI16));
 	Xsend( s, getBeginValid(), headerSize );
 
 	Xsend( s, *message, true );
@@ -797,7 +797,7 @@ void csPacketPartyTellAllMessage::send( NXWCLIENT ps )
 	if( ps==NULL ) return;
 	NXWSOCKET s = ps->toInt();
 
-	size = headerSize + message->size()*sizeof(UI16)+sizeof(UI16);
+	size = (UI16)(headerSize + message->size()*sizeof(UI16)+sizeof(UI16));
 	Xsend( s, getBeginValid(), headerSize );
 
 	Xsend( s, *message, true );
@@ -848,7 +848,7 @@ void csPacketPartyInvite::send( NXWCLIENT ps )
 	if( ps==NULL )
 		return;
 
-	size=headerSize;
+	size=(UI16)headerSize;
 	Xsend( ps->toInt(), getBeginValid(), headerSize );
 }
 

@@ -69,7 +69,7 @@ SI08 cLine::calcZAtX( UI32 x )
 Location cLine::getPosAtX( UI32 x )
 {
 	Location pos = Loc( x, 0, 0 );
-	pos.y = UI32( ( R32( ( SI32(x - x1) * m_yDist ) + ( SI32(y1) * m_xDist) ) / R32( m_xDist ) ) + 0.5);
+	pos.y = UI16( ( R32( ( SI32(x - x1) * m_yDist ) + ( SI32(y1) * m_xDist) ) / R32( m_xDist ) ) + 0.5);
 	pos.z = calcZAtX( pos.x );
 	return pos;
 }
@@ -80,7 +80,7 @@ Location cLine::getPosAtX( UI32 x )
 Location cLine::getPosAtY( UI32 y )
 {
 	Location pos = Loc( 0, y, 0 );
-	pos.x = UI32( ( R32( ( SI32(y - y1) * m_xDist ) + ( SI32(x1) * m_yDist) ) / R32( m_yDist ) ) + 0.5);
+	pos.x = UI16( ( R32( ( SI32(y - y1) * m_xDist ) + ( SI32(x1) * m_yDist) ) / R32( m_yDist ) ) + 0.5);
 	pos.z = calcZAtX( pos.x );
 	return pos;
 }
@@ -125,7 +125,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 				if ( (pi->getPosition().z + height) <= (pos.z + 3) ) 
 				{ // We can walk on it
 					if ( (pi->getPosition().z + height) > zRes )
-						zRes = pi->getPosition().z + height;
+						zRes = (SI08)(pi->getPosition().z + height);
 				} 
 				else// if ( pi->type != 12 ) // Doors can be opened or avoided by passing under them
 					return illegal_z;
@@ -199,7 +199,7 @@ SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 
 				if ( (s[i].z + height) <= (pos.z + 3) ) { // We can walk on it
 					if ( (s[i].z + tile.height) > zRes )
-						zRes = s[i].z + tile.height;
+						zRes = (SI08)(s[i].z + tile.height);
 				} else
 					return illegal_z;
 			}
@@ -279,7 +279,7 @@ SI08 staticTop( Location pos )
 	staticVector s;
 	data::collectStatics( pos.x, pos.y, s );
 	for( UI32 i = 0; i < s.size(); i++ ) {
-		temp_z = s[i].z + tileHeight( s[i].id );
+		temp_z = (SI08)( s[i].z + tileHeight( s[i].id ));
 		if ( temp_z < ( MaxZstep + pos.z ) && temp_z > max_z )
 			max_z = temp_z;
 	}
@@ -355,7 +355,7 @@ SI08 dynamicElevation( Location pos )
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pi = si.getItem();
 
-		temp_z = pi->getPosition().z + tileHeight( pi->getId() );
+		temp_z = (SI08)(pi->getPosition().z + tileHeight( pi->getId() ));
 		if ( temp_z < ( pos.z + MaxZstep ) && temp_z > max_z )
 			max_z = temp_z;
 	}
@@ -369,7 +369,7 @@ SI08 dynamicElevation( Location pos )
 SI08 getHeight( Location pos )
 {
 	SI08 final_z = illegal_z, item_z = illegal_z, temp_z, base_z;
-	UI32 item_flags;
+	UI32 item_flags=0;
 	tile_st tile;
 
 	NxwItemWrapper si;
@@ -379,8 +379,8 @@ SI08 getHeight( Location pos )
 
 		data::seekTile( pi->getId(), tile );
 
-		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? pi->getPosition().z : pi->getPosition().z + tile.height;
-		temp_z = pi->getPosition().z + tile.height;
+		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? pi->getPosition().z : (SI08)(pi->getPosition().z + tile.height);
+		temp_z = (SI08)(pi->getPosition().z + tile.height);
 
 		// Check if the tile is reachable.
 		if ( base_z <= pos.z + MAX_Z_CLIMB && temp_z >= pos.z - MAX_Z_FALL ) {
@@ -419,8 +419,8 @@ SI08 getHeight( Location pos )
 		if( !data::seekTile( s[i].id, tile ) )
 			continue;
 
-		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? s[i].z : s[i].z + tile.height;
-		temp_z = s[i].z + tile.height;
+		base_z = ( tile.flags & TILEFLAG_BRIDGE /*|| !(tile.flags & TILEFLAG_IMPASSABLE)*/ ) ? s[i].z : (SI08)(s[i].z + tile.height);
+		temp_z = (SI08)(s[i].z + tile.height);
 
 		// Check if the tile is reachable.
 		if ( base_z <= pos.z + MAX_Z_CLIMB && temp_z >= pos.z - MAX_Z_FALL ) {
@@ -476,7 +476,7 @@ void getMultiCorners( P_ITEM pi, SI32 &x1, SI32 &y1, SI32 &x2, SI32 &y2 )
 	VALIDATEPI( pi );
 	x1=y1=x2=y2=0;
 	multiVector m;
-	data::seekMulti( pi->getId() - 0x4000, m );
+	data::seekMulti( (UI16)(pi->getId() - 0x4000), m );
 	for( UI32 i = 0; i < m.size(); i++ ) {
 		x1 = qmin( x1, m[i].x );
 		x2 = qmax( x2, m[i].x );

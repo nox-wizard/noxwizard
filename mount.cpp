@@ -113,7 +113,7 @@ void cChar::mounthorse( P_CHAR mount )
 		P_ITEM pi = item::CreateFromScript( "$item_mount", this );
 		VALIDATEPI(pi);
 
-		pi->setId( iter->second );
+		pi->setId((UI16) iter->second );
 		pi->setColor( mount->getColor() );
 		pi->setCurrentName( mount->getCurrentName() );
 

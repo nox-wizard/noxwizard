@@ -1596,7 +1596,7 @@ void command_midi( NXWCLIENT ps )
 
 	NXWSOCKET s = ps->toInt();
 
-			if (tnum==3) playmidi(s, strtonum(1), strtonum(2));
+			if (tnum==3) playmidi(s, (SI08)strtonum(1), (SI08)strtonum(2));
 			return;
 
 }
@@ -2431,7 +2431,7 @@ void target_newz( NXWCLIENT ps, P_TARGET t )
 		VALIDATEPC(pc);
 
 		Location location = pc->getPosition();
-		location.z = location.dispz = t->buffer[0];
+		location.z = location.dispz = (SI08)t->buffer[0];
 		pc->setPosition( location );
 		pc->teleport();
 	}
@@ -2440,7 +2440,7 @@ void target_newz( NXWCLIENT ps, P_TARGET t )
 		VALIDATEPI(pi);
 
 		Location location = pi->getPosition();
-		location.z = t->buffer[0];
+		location.z = (SI08)t->buffer[0];
 		pi->setPosition( location );
 		pi->Refresh();
 	}
@@ -2567,7 +2567,7 @@ void target_hide( NXWCLIENT ps, P_TARGET t )
 	}
 	else {
 		pc->setPermaHidden(true);
-		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
+		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, (SI08)0x09, (SI08)0x19,(SI08) 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_HIDING, 1, 0, 0);
 	}
@@ -2590,7 +2590,7 @@ void target_unhide( NXWCLIENT ps, P_TARGET t )
 	}
 	else {
 		pc->setPermaHidden(false);
-		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, 0x09, 0x19, 0);
+		staticeffect3( pcpos.x+1, pcpos.y+1, pcpos.z+10, 0x37, 0x09, (SI08)0x09, (SI08)0x19,(SI08) 0);
 		pc->playSFX(0x0208);
 		tempfx::add(pc, pc, tempfx::GM_UNHIDING, 1, 0, 0);
 	}

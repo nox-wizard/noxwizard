@@ -368,7 +368,7 @@ void doubleclick(NXWCLIENT ps)
 	P_TARGET targ = NULL;
 	if ( pi->getSound() > 0 )
 	{
-		pc->playSFX(pi->getSound());
+		pc->playSFX((UI16)pi->getSound());
 	}
 
 	switch (pi->type)

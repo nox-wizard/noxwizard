@@ -43,50 +43,6 @@ typedef unsigned short uint16;
 typedef unsigned long uint32;
 typedef signed long sint32;
 
-// Given a buffer of 4 bytes, extract a big endian 32 bit unsigned integer
-inline uint32 unpack_big_uint32(uint8 * buf)
-{
-    return (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-}
-
-// Given a buffer of 4 bytes, extract a big endian 32 bit signed integer
-inline sint32 unpack_big_sint32(uint8 * buf)
-{
-    return (buf[0] << 24) | (buf[1] << 16) | (buf[2] << 8) | buf[3];
-}
-
-// Given a buffer of 2 bytes, extract a big endian 16 bit unsigned integer
-inline uint16 unpack_big_uint16(uint8 * buf)
-{
-    return (unsigned short)((buf[0] << 8) | buf[1]);
-}
-
-// Given a buffer of 2 bytes, extract a little endian 16 bit unsigned integer
-inline uint16 unpack_little_uint16(uint8 * buf)
-{
-    return *reinterpret_cast<uint16 *>(buf);
-}
-
-inline void pack_big_uint32(uint8 * buf, uint32 x)
-{
-    buf[0] = uint8(x >> 24);
-    buf[1] = uint8((x >> 16) & 0xff);
-    buf[2] = uint8((x >> 8) & 0xff);
-    buf[3] = uint8(x & 0xff);
-}
-
-inline void pack_big_uint16(uint8 * buf, uint16 x)
-{
-    buf[0] = (unsigned char)(x >> 8);
-    buf[1] = (unsigned char)(x & 0xff);
-}
-
-inline void pack_little_uint16(uint8 * buf, uint16 x)
-{
-    buf[0] = (unsigned char)(x & 0xff);
-    buf[1] = (unsigned char)(x >> 8);
-}
-
 // GCC_NORETURN means the function never returns
 // GCC_PRINTF means the function has printf-style arguments
 #ifdef __GNUC__

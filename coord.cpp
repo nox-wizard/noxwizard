@@ -110,12 +110,12 @@ bool cCoord::operator!= (const cCoord& src) const
 
 cCoord cCoord::operator+ (const cCoord& src) const
 {
-	return cCoord(this->x + src.x, this->y + src.y, this->z + src.z, this->map );
+	return cCoord((UI16)(this->x + src.x), (UI16)(this->y + src.y), (SI08)(this->z + src.z), this->map );
 }
 
 cCoord cCoord::operator- (const cCoord& src) const
 {
-	return cCoord(this->x - src.x, this->y - src.y, this->z - src.z, this->map );
+	return cCoord((UI16)(this->x - src.x), (UI16)(this->y - src.y), (SI08)(this->z - src.z), this->map );
 }
 
 /*
@@ -144,8 +144,8 @@ unsigned char cCoord::direction( const cCoord &dest ) const
 	unsigned char dir;
 	short xdif, ydif;
 
-	xdif = dest.x - x;
-	ydif = dest.y - y;
+	xdif = (UI16)(dest.x - x);
+	ydif = (UI16)(dest.y - y);
 
 	if ((xdif==0)&&(ydif<0)) dir=0;
 	else if ((xdif>0)&&(ydif<0)) dir=1;
@@ -242,9 +242,9 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 		return true;		// if source and target are on the same position
 
 	SI32 n = ( target.x - x ), m = ( target.y - y ), i = 0;
-	SI08 sgn_x = ( x <= target.x ) ? 1 : (-1); // signum for x
-	SI08 sgn_y = ( y <= target.y ) ? 1 : (-1); // signum for y
-	SI08 sgn_z = ( z <= target.z ) ? 1 : (-1); // signum for z
+	SI08 sgn_x = ( x <= target.x ) ? (SI08)1 : (SI08)(-1); // signum for x
+	SI08 sgn_y = ( y <= target.y ) ? (SI08)1 : (SI08)(-1); // signum for y
+	SI08 sgn_z = ( z <= target.z ) ? (SI08)1 : (SI08)(-1); // signum for z
 	if( x == target.x )
 		sgn_x = 0;
 	if( y == target.y )
@@ -262,12 +262,12 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 	else if( sgn_x == 0 ) // if we are on the same x-level, just push every x/y coordinate in y-direction from src to trg into the array
 		for( i = 0; i <= (sgn_y * m); ++i )
 		{
-			collisions.push_back( cCoord( x, y + (sgn_y * i), 0, map ) );
+			collisions.push_back( cCoord( x, (UI16)(y + (sgn_y * i)), 0, map ) );
 		}
 	else if ( sgn_y == 0 ) // if we are on the same y-level, just push every x/y coordinate in x-direction from src to trg into the array
 		for( i = 0; i <= (sgn_x * n); ++i )
 		{
-			collisions.push_back( cCoord( x + (sgn_x * i), y, 0, map ) );
+			collisions.push_back( cCoord( (UI16)(x + (sgn_x * i)), y, 0, map ) );
 		}
 	else
 	{
@@ -284,7 +284,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 			{
 				if( exaktpos )
 				{
-					collisions.push_back( cCoord( gridx, oldpos-sgn_y, 0, map ) );
+					collisions.push_back( cCoord( (UI16)gridx, (UI16)(oldpos-sgn_y), 0, map ) );
 					//Console::instance()->send( QString( "add exaktpos coordinate %1,%2\n" ).arg( gridx ).arg( oldpos-sgn_y ) );
 					exaktpos = false;
 				}
@@ -300,16 +300,16 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				
 				if( ((sgn_y>0) && (t<oldpos+0.5)) || ((sgn_y<0) && (t>oldpos-0.5)) || (oldpos==target.y) )
 				{
-					collisions.push_back( cCoord( gridx, oldpos, 0, map ) );
+					collisions.push_back( cCoord( (UI16)gridx, (UI16)oldpos, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( gridx ).arg( oldpos ) );
 				}
 				// but if not, we have to take BOTH coordinates, which the calculated collision is between!
 				else
 				{ 
-					collisions.push_back( cCoord( gridx, oldpos, 0, map ) );
+					collisions.push_back( cCoord( (UI16)gridx, (UI16)oldpos, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( gridx ).arg( oldpos ) );
 					oldpos += sgn_y;
-					collisions.push_back( cCoord( gridx, oldpos, 0, map ) );
+					collisions.push_back( cCoord( (UI16)gridx, (UI16)oldpos, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( gridx ).arg( oldpos ) );
 				}
 			}
@@ -328,7 +328,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 			{
 				if( exaktpos )
 				{
-					collisions.push_back( cCoord( oldpos-sgn_x, gridy, 0, map ) );
+					collisions.push_back( cCoord( (UI16)(oldpos-sgn_x), (UI16)gridy, 0, map ) );
 					//Console::instance()->send( QString( "add exaktpos coordinate %1,%2\n" ).arg( oldpos-sgn_x ).arg( gridy ) );
 					exaktpos = false;
 				}
@@ -343,17 +343,17 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 
 				if( ((sgn_x>0) && (t<oldpos+0.5)) || ((sgn_x<0) && (t>oldpos-0.5)) || (oldpos==target.x) )
 				{
-					collisions.push_back( cCoord( oldpos, gridy, 0, map ) );
+					collisions.push_back( cCoord((UI16) oldpos,(UI16) gridy, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( oldpos ).arg( gridy ) );
 
 				}
 				// but if not, we have to take BOTH coordinates, which the calculated collision is between!
 				else
 				{ 
-					collisions.push_back( cCoord( oldpos, gridy, 0, map ) );
+					collisions.push_back( cCoord( (UI16)oldpos, (UI16)gridy, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( oldpos ).arg( gridy ) );
 					oldpos += sgn_x;;
-					collisions.push_back( cCoord( oldpos, gridy, 0, map ) );
+					collisions.push_back( cCoord((UI16) oldpos, (UI16)gridy, 0, map ) );
 					//Console::instance()->send( QString( "add coordinate %1,%2\n" ).arg( oldpos ).arg( gridy ) );
 				}
 			}
@@ -363,7 +363,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 	// the next will search for multis in the region 
 	std::vector < P_ITEM > multis;
 	NxwItemWrapper si;
-	si.fillItemsAtXY(this->x, this->y);
+	si.fillItemsNearXYZ(this->x, this->y, VISRANGE, false);
 	for( si.rewind(); !si.isEmpty(); si++ )
 	{
 		P_ITEM pi = si.getItem();
@@ -442,13 +442,13 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				{
 					if( dz > 0 )
 					{
-						zmin = z+1;
-						zmax = i;
+						zmin = (SI08)(z+1);
+						zmax = (SI08)i;
 					}
 					else
 					{
-						zmin = i+1;
-						zmax = z;
+						zmin = (SI08)(i+1);
+						zmax = (SI08)z;
 					}
 				}
 				else if( sgn_x == 0 )
@@ -456,8 +456,6 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					//gradient only in y-direction
 					z1 = (double)i - dz*( fabs( (double)target.y - (double)((*pit).y) ) -0.5 ); 
 					z2 = (double)i - dz*( fabs( (double)target.y - (double)((*pit).y) ) +0.5 );
-					//Console::instance()->send( QString( "i:%1,ty:%2,cy:%3\n" ).arg( i ).arg( target.y ).arg( (*pit).y ) );
-					//Console::instance()->send( QString( "z1:%1,z2:%2\n" ).arg( z1 ).arg( z2 ) );
 
 					if( z1 > z2 )
 					{
@@ -470,45 +468,15 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 						zmax = (SI08)ceilf( (float)z2 );
 					}
 
-					/*another try, but i think its needed for all positions, not only start and end...
-					//target 
-					if( (*pit).y == target.y )
-					{
-						if( dz > 0 )
-						{
-							zmax = qmin( zmax, i );
-							//Console::instance()->send( QString( "TargetY, zmax:%1, i:%2\n" ).arg( zmax ).arg( i ) );
-						}
-						else
-						{
-							zmin = qmax( zmin, i+1 );
-							//Console::instance()->send( QString( "TargetY, zmin:%1, i:%2\n" ).arg( zmin ).arg( i ) );
-						}
-					}
-
-					//source
-					if( (*pit).y == y )
-					{
-						if( dz > 0 )
-						{
-							zmin = qmax( zmin, z );
-							//Console::instance()->send( QString( "SourceY, zmin:%1, i:%2\n" ).arg( zmax ).arg( i ) );
-						}
-						else
-						{
-							zmax = qmin( zmax, z );
-							//Console::instance()->send( QString( "SourceY, zmax:%1, i:%2\n" ).arg( zmax ).arg( i ) );
-						}
-					}*/
 					if( dz > 0 )
 					{
-						zmax = qmin( zmax, i );
-						zmin = qmax( zmin, z );
+						zmax = (SI08)qmin( zmax, i );
+						zmin = (SI08)qmax( zmin, z );
 					}
 					else
 					{
-						zmin = qmax( zmin, i+1 );
-						zmax = qmin( zmax, z );
+						zmin = (SI08)qmax( zmin, i+1 );
+						zmax = (SI08)qmin( zmax, z );
 					}
 
 				}
@@ -533,13 +501,13 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					
 					if( dz > 0 )
 					{
-						zmax = qmin( zmax, i );
-						zmin = qmax( zmin, z );
+						zmax = (SI08)qmin( zmax, i );
+						zmin = (SI08)qmax( zmin, z );
 					}
 					else
 					{
-						zmin = qmax( zmin, i+1 );
-						zmax = qmin( zmax, z );
+						zmin = (SI08)qmax( zmin, i+1 );
+						zmax = (SI08)qmin( zmax, z );
 					}
 
 				}
@@ -643,20 +611,6 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					//Console::instance()->send( QString( "zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );
 				}
 
-				/*SI08 zmin = (SI08)floor( i - dz*sqrt( ((double)target.x - (double)(*pit).x)*((double)target.x - (double)(*pit).x) + ((double)target.y - (double)(*pit).y)*((double)target.y - (double)(*pit).y) ) );
-				SI08 zmax;
-				//Console::instance()->send( QString( "zmin:%1,dz:%2\n" ).arg( zmin ).arg( dz ) );
-				if( dz > 0 )
-				{
-					zmin = qmax( (SI08)floor( zmin - dz/2 ), z+1 );
-					zmax = qmin( zmin + dz + 1, target.z+targetheight+1 );	//to prevent floor-mistakes
-				}
-				else
-				{
-					zmin = qmin( (SI08)floor( zmin + dz/2 ), target.z+1 );
-					zmax = qmax( zmin - dz + 1, z );	//to prevent floor-mistakes
-				}*/
-	
 				// Texture mapping  
 				data::seekMap( (*pit).x, (*pit).y, map1 );
 				data::seekMap( (*pit).x + sgn_x, (*pit).y + sgn_y,  map2 );
@@ -754,13 +708,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				//Console::instance()->send( QString( "after items\n" ) );
 				// Multis
 				long multiIndex=0;
-				si.clear();
-				si.fillItemsAtXY(this->x, this->y);
-				P_ITEM pi_m = si.getItem();
-				while( ( multiIndex < multis.size() && pi_m == multis[multiIndex++] ) )
+				while ( multiIndex < multis.size() )
 				{
+					P_ITEM pi_m = multis[multiIndex++];
 					multiVector multiVec;
-					data::seekMulti( pi_m->getId() - 0x4000, multiVec );
+					data::seekMulti( (UI16)(pi_m->getId() - 0x4000), multiVec );
 					if ( multiVec.size() == 0 )
 						continue;
 					for( j = 0; j < multiVec.size(); ++j )
@@ -850,20 +802,20 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 			{
 				if( dz_up > 0 )
 				{
-					zmin = z+1;
-					zmax = target.z;
+					zmin = (SI08)(z+1);
+					zmax = (SI08)target.z;
 				}
 				else
 				{
-					zmin = target.z+1;
-					zmax = z;
+					zmin = (SI08)(target.z+1);
+					zmax = (SI08)z;
 				}
 				targetpos = true;
 				if( (dz_up >= 0) && (dz_down >= 0) )
 				{
 					if( zmin < target.z )
 					{
-						zmax = target.z -1;
+						zmax = (SI08)(target.z -1);
 					}
 					else
 					{
@@ -876,7 +828,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 				{
 					if( zmax > target.z + targetheight+1 )
 					{
-						zmin = target.z + targetheight + 2;
+						zmin = (SI08)(target.z + targetheight + 2);
 					}
 					else
 					{
@@ -890,11 +842,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					//but i think we can throw away the test from down in this case
 					if( zmax > target.z + targetheight+1 )
 					{
-						zmin = target.z + targetheight + 2;
+						zmin =(SI08)(target.z + targetheight + 2);
 					}
 					else if( zmin < target.z )
 					{
-						zmax = target.z -1;
+						zmax = (SI08)(target.z -1);
 					}
 					else
 					{
@@ -921,22 +873,22 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 
 				if( dz_up > 0 )
 				{
-					zmax = qmin( zmax, target.z+targetheight );
+					zmax = (SI08)qmin( zmax, target.z+targetheight );
 				}
 				else
 				{
-					zmax = qmin( zmax, z );
+					zmax = (SI08)qmin( zmax, z );
 				}
 
 				//Console::instance()->send( QString( "y2:zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );
 
 				if( dz_down > 0 )
 				{
-					zmin = qmax( zmin, z-14 );
+					zmin = (SI08)qmax( zmin, z-14 );
 				}
 				else
 				{
-					zmin = qmax( zmin, target.z+1 );
+					zmin = (SI08)qmax( zmin, target.z+1 );
 				}
 
 				//Console::instance()->send( QString( "y3:zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );
@@ -948,7 +900,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					{
 						if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -961,7 +913,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					{
 						if( zmax > target.z + targetheight+1 )
 						{
-							zmin = target.z + targetheight + 2;
+							zmin = (SI08)(target.z + targetheight + 2);
 						}
 						else
 						{
@@ -975,11 +927,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 						//but i think we can throw away the test from down in this case
 						if( zmax > target.z + targetheight+1 )
 						{
-							zmin = target.z + targetheight + 2;
+							zmin = (SI08)(target.z + targetheight + 2);
 						}
 						else if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -1029,7 +981,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					{
 						if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -1042,7 +994,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					{
 						if( zmax > target.z + targetheight+1 )
 						{
-							zmin = target.z + targetheight + 2;
+							zmin = (SI08)(target.z + targetheight + 2);
 						}
 						else
 						{
@@ -1056,11 +1008,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 						//but i think we can throw away the test from down in this case
 						if( zmax > target.z + targetheight+1 )
 						{
-							zmin = target.z + targetheight + 2;
+							zmin = (SI08)(target.z + targetheight + 2);
 						}
 						else if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -1175,11 +1127,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 
 				if( dz_down > 0 )
 				{
-					zmin = qmax( zmin, z-14 );
+					zmin = (SI08)qmax( zmin, z-14 );
 				}
 				else
 				{
-					zmin = qmax( zmin, target.z+1 );
+					zmin = (SI08)qmax( zmin, target.z+1 );
 				}
 
 				//Console::instance()->send( QString( "zmin:%1,zmax:%2\n" ).arg( zmin ).arg( zmax ) );
@@ -1191,7 +1143,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 					{
 						if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -1218,11 +1170,11 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 						//but i think we can throw away the test from down in this case
 						if( zmax > target.z + targetheight+1 )
 						{
-							zmin = target.z + targetheight + 2;
+							zmin = (SI08)(target.z + targetheight + 2);
 						}
 						else if( zmin < target.z )
 						{
-							zmax = target.z -1;
+							zmax = (SI08)(target.z -1);
 						}
 						else
 						{
@@ -1340,7 +1292,7 @@ bool cCoord::lineOfSight( const cCoord &target, UI16 targetheight, bool touch )
 			while( ( pi_m == multis[multiIndex++] ) )
 			{
 				multiVector multiVec;
-				data::seekMulti( pi_m->getId() - 0x4000, multiVec );
+				data::seekMulti( (UI16)(pi_m->getId() - 0x4000), multiVec );
 				if ( multiVec.size() == 0 )
 				{
 					continue;

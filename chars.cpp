@@ -990,7 +990,7 @@ void cChar::unHide()
 						(poisoned ? (unsigned char)0x04 : (unsigned char)0x00), 
 						my_pos, 
 						(unsigned char)0x0000, 
-						(UI08)dir|0x80);
+						(UI08)(dir|0x80));
 				}
 			}
 		}
@@ -2539,7 +2539,7 @@ void cChar::hideBySkill()
 void cChar::hideBySpell(SI32 timer)
 {
 	if (timer == INVALID) timer = SrvParms->invisibiliytimer;
-	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, 0,0,(short)0, timer);
+	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, (UI08)0,(UI08)0,(short)0, timer);
 }
 
 /*!
@@ -3258,7 +3258,7 @@ void cChar::Kill()
 	//--------------------- corpse & ghost stuff
 
 	bool hadHumanBody=HasHumanBody();
-	SI16 corpseid = (getId() == BODY_FEMALE)? BODY_DEADFEMALE : BODY_DEADMALE;
+	SI16 corpseid = (getId() == BODY_FEMALE)? (SI16)BODY_DEADFEMALE : (SI16)BODY_DEADMALE;
 
 	if( ps!=NULL )
 		morph( corpseid, 0, 0, 0, 0, 0, NULL, true);
@@ -5159,7 +5159,7 @@ void cChar::modifyFame( SI32 value )
 */
 const LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
 {
-	return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd);
+	return Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),(UI16) sk, low, high, pcd);
 }
 
 void cChar::showPaperdoll(P_CHAR viewer)

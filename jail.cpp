@@ -243,7 +243,7 @@ void prison::freePrisonCell( SERIAL cell )
 }
 
 
-void prison::addCell( SERIAL serial, UI32 x, UI32 y, UI32 z )
+void prison::addCell( SERIAL serial, UI16 x, UI16 y, SI08 z )
 {
 	for( PRISONCELLVECTOR::iterator j = prison::cells.begin(); j!=prison::cells.end(); j++ )
 		if( (*j).serial == serial )

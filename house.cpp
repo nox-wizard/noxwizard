@@ -205,8 +205,8 @@ void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
 		for (SI32 l=-newMulti->getUpperYRange();l<newMulti->getLowerYRange();l++)
 		{
 			Location loc;
-			loc.x=x+k;
-			loc.y=y+l;
+			loc.x=(UI16)(x+k);
+			loc.y=(UI16)(y+l);
 			loc.z=z;
 
 			Location newpos = Loc( x+k, y+l, z );
@@ -272,9 +272,9 @@ void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t )
 	{
 		int newx, newy, newz;
 		newMulti->getCharPos(newx, newy, newz);
-		charpos.x= x+newx; //move char inside house
-		charpos.y= y+newy;
-		charpos.dispz= charpos.z= z+newz;
+		charpos.x= (UI16)(x+newx); //move char inside house
+		charpos.y= (UI16)(y+newy);
+		charpos.dispz= charpos.z= (SI08)(z+newz);
 
 		pc->setPosition( charpos );
 		//ConOut("Z: %i Offset: %i Char: %i Total: %i\n",z,cz,chars[currchar[s]].z,z+cz);
@@ -624,8 +624,8 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 		for (SI32 l=-pHouse->getUpperYRange();l<pHouse->getLowerYRange();l++)
 		{
 			Location loc;
-			loc.x=x+k;
-			loc.y=y+l;
+			loc.x=(UI16)(x+k);
+			loc.y=(UI16)(y+l);
 			loc.z=z;
 
 			Location newpos = Loc( x+k, y+l, z );
@@ -695,9 +695,9 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	{
 		int newx, newy, newz;
 		pHouse->getCharPos(newx, newy, newz);
-		charpos.x= x+newx; //move char inside house
-		charpos.y= y+newy;
-		charpos.dispz= charpos.z= z+newz;
+		charpos.x= (UI16)(x+newx); //move char inside house
+		charpos.y= (UI16)(y+newy);
+		charpos.dispz= charpos.z= (SI08)(z+newz);
 
 		pc->setPosition( charpos );
 		//ConOut("Z: %i Offset: %i Char: %i Total: %i\n",z,cz,chars[currchar[s]].z,z+cz);
@@ -1235,9 +1235,9 @@ SI32 cHouse::getCurrentZPosition(P_CHAR pc)
 	P_ITEM iHouse = pointers::findItemBySerial(serial);
 
 	Location pos;
-	pos.x=(SI32)(iHouse->getPosition().x - pc->getPosition().x);
-	pos.y=(SI32)(iHouse->getPosition().y - pc->getPosition().y);
-	pos.z=(SI32)(iHouse->getPosition().z - pc->getPosition().z);
+	pos.x=(UI16)(iHouse->getPosition().x - pc->getPosition().x);
+	pos.y=(UI16)(iHouse->getPosition().y - pc->getPosition().y);
+	pos.z=(SI08)(iHouse->getPosition().z - pc->getPosition().z);
 	multiVector m;
 	int itemCount =data::seekMulti( (short) (iHouse->getId()-0x4000), m );
 	if ( itemCount < 0 )

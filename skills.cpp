@@ -752,11 +752,11 @@ static int AdvanceOneStat(UI32 sk, int i, char stat, bool *update, int type, P_C
 	int loopexit=0, limit=1000;
 	int j=0;
 	*update = false;
-	SI32 tmp;
+	SI32 tmp=-1;
 
-	int stat2update1, stat2update2;
-	int stat2update;
-	int stat_id;
+	int stat2update1=-1, stat2update2=-1;
+	int stat2update=-1;
+	int stat_id=-1;
 	switch( stat )
 	{
 		case 'S':
@@ -912,7 +912,6 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
     bool atCap = (pc->st3 + pc->dx3 + pc->in3) > statcap;
 
     int	i = skillinfo[sk].advance_index;
-    int mod	= SrvParms->statsadvancemodifier;
 //  int	*pi; // ptr to stat to be decreased
 	bool 	update 	= false;
 

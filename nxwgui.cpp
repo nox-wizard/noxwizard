@@ -411,8 +411,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    if ((Major>4)||(Minor>71)) g_bUseFlatToolbar = true;
    else g_bUseFlatToolbar = false;
 
-   bool bWts = false;
-   
+
    if (IsTerminalServicesEnabled()) {
 	int btn = MessageBox(NULL, "You're running NoX-Wizard on a Windows NT 4.0 Server Terminal Server Edition on any console/terminal, or on a Windows 2000 Server or Windows XP Server with Terminal Services enabled and on a remote terminal.\n\nIt's not reccomended to run NoX-Wizard GUI on a terminal based system due to performances reasons. You should use the Console/Service version of NoX-Wizard.\n\nDo you want to continue anyway ?", 
 		"Error - Terminal Session Detected",MB_YESNO|MB_ICONSTOP);
@@ -1122,17 +1121,17 @@ void display(HDC hDC, LPRECT lpRect)
 					if (screen[ry][0]=='\x80') 
 					{
 						SetTextColor(hDC, INPUTCOLOR);
-						int ln = DrawText(hDC, txt+1, strlen(txt)-1, lpRect, DT_EXPANDTABS);
+						DrawText(hDC, txt+1, strlen(txt)-1, lpRect, DT_EXPANDTABS);
 						SetTextColor(hDC, TEXTCOLOR);
 					} 
 					else if (screen[ry][0]=='\x81') {
 						SetTextColor(hDC, INPUTCOLOR);
-						int ln = DrawText(hDC, txt+1, strlen(txt)-1, lpRect, DT_EXPANDTABS);
+						DrawText(hDC, txt+1, strlen(txt)-1, lpRect, DT_EXPANDTABS);
 						SetTextColor(hDC, TEXTCOLOR);
 					} 
 					else 
 					{
-						int ln = DrawText(hDC, txt, strlen(txt), lpRect, DT_EXPANDTABS);
+						DrawText(hDC, txt, strlen(txt), lpRect, DT_EXPANDTABS);
 					}
 
 					SetBkColor(hDC, BACKCOLOR);
@@ -1148,19 +1147,19 @@ void display(HDC hDC, LPRECT lpRect)
 					{
 						SetTextColor(hDC, DEBUGCOLOR);
 						if (screen[ry][1]=='=') { SetBkColor(hDC, CURIPCOLOR);SetTextColor(hDC, CURIPTEXT); }
-						int ln = DrawText(hDC, screen[ry]+1, strlen(screen[ry])-1, lpRect, DT_EXPANDTABS);
+						DrawText(hDC, screen[ry]+1, strlen(screen[ry])-1, lpRect, DT_EXPANDTABS);
 						if (screen[ry][1]=='=') SetBkColor(hDC, BACKCOLOR);
 						SetTextColor(hDC, TEXTCOLOR);
 					} 
 					else if (screen[ry][0]=='\x81') 
 					{
 						SetTextColor(hDC, TRACECOLOR);
-						int ln = DrawText(hDC, screen[ry]+1, strlen(screen[ry])-1, lpRect, DT_EXPANDTABS);
+						DrawText(hDC, screen[ry]+1, strlen(screen[ry])-1, lpRect, DT_EXPANDTABS);
 						SetTextColor(hDC, TEXTCOLOR);
 					} 
 					else 
 					{
-						int ln = DrawText(hDC, screen[ry], strlen(screen[ry]), lpRect, DT_EXPANDTABS);
+						DrawText(hDC, screen[ry], strlen(screen[ry]), lpRect, DT_EXPANDTABS);
 					}
 
 					lpRect->top += h;

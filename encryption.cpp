@@ -39,7 +39,7 @@ static void asciipack (char *packing)
 {
 	char buf[20] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 	int i;
-	for(i=0;i<9; i++) buf[i]=(UI08)packing[i]-32; //7-bit ASCII
+	for(i=0;i<9; i++) buf[i]=(UI08)(packing[i]-32); //7-bit ASCII
 	
 	for (i=0; i<=7; i++)
 		buf[i]|= (buf[8]&(1<<i)) << (7-i);
@@ -342,7 +342,7 @@ void setkey(char *key)
 		m = l & 07;		/* find bit		 */
 		pc1m[j]=(key[l>>3] &	/* find which key byte l is in */
 			bytebit[m])	/* and which bit of that byte */
-			? 1 : 0;	/* and store 1-bit result */
+			? (UI08)1 : (UI08)0;	/* and store 1-bit result */
 	}
 	for (i=0; i<16; i++) {		/* key chunk for each iteration */
 		for (j=0; j<56; j++)	/* rotate pc1 the right amount */

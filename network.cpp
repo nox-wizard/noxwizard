@@ -1372,7 +1372,9 @@ void cNetwork::sockInit()
 	// Ok, we need to set this socket (or listening one as non blocking).  The reason is we d a
 	// select, and then do an accept.  However, if the client has terminated the connection between the small
 	// time from the select and accept, we would block (accept is blocking).  So, set it non blocking
+#if defined(_CONSOLE) || defined(__unix__)
 	unsigned long nonzero = 1;
+#endif
 #if defined(__unix__)
 	ioctl(a_socket,FIONBIO,&nonzero) ;
 #endif
@@ -1787,7 +1789,6 @@ void cNetwork::GetMsg(int s) // Receive message from client
 				if ( packet == PACKET_LOGINREQUEST && clientCrypter[s] != NULL )
 				{
 					crypter->decrypt(&buffer[s][0]+cryptBufferOffset, &buffer[s][0]+cryptBufferOffset, 4);
-					unsigned int loginseed= buffer[s][4] + ( buffer[s][3] << 8) + (buffer[s][2] << 16) + ( buffer[s][1] << 24);
 					// clientCrypter[s]->setCryptSeed(&buffer[s][1]);
 					cryptBufferOffset+=4;
 				}

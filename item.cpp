@@ -92,7 +92,7 @@ namespace item
 					break;
 				case 'A':
 					if	( lha == "AMOUNT" )
-						pi->amount = str2num(rha);
+						pi->amount = (UI16)str2num(rha);
 					else if ( lha == "ATT" )
 						pi->att = getRangedValue(const_cast<char*>(rha.c_str()));
 					//
@@ -132,7 +132,7 @@ namespace item
 						amxVS.insertVariable( pi->getSerial32(), str2num( rha1 ), rha2 );
 					}
 					else if ( lha == "ANIMID" )
-						pi->animSetId(hex2num(rha));
+						pi->animSetId((SI16)hex2num(rha));
 					else if ( lha == "AUXDAMAGE" )
 						pi->auxdamage = str2num(rha);
 					else if ( lha == "AUXDAMAGETYPE" )
@@ -147,7 +147,7 @@ namespace item
 					if	( lha == "COLOR" )
 					{
 						tmp = hex2num(rha);
-						pi->setColor(tmp);
+						pi->setColor((UI16)tmp);
 					}
 					else if ( lha == "CONTAINS" )
 					{
@@ -247,7 +247,7 @@ namespace item
 								{
 									if ( amount <= 0 )
 										amount=1;
-									pitem->amount=amount;
+									pitem->amount=(UI16)amount;
 								}
 								else
 									WarnOut( "CreateFromScript: invalid attribute %s %s", lha.c_str(), rha.c_str() );
@@ -262,7 +262,7 @@ namespace item
 					else if ( lha == "COLORLIST" )
 					{
 						std::string value(cObject::getRandomScriptValue("RANDOMCOLOR", rha ));
-						pi->setColor( hex2num(value) );
+						pi->setColor( (UI16)hex2num(value) );
 					}
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
@@ -286,7 +286,7 @@ namespace item
 					else if ( lha == "DECAY" )
 						pi->setDecay();
 					else if ( lha == "DIR" )
-						pi->dir = str2num(rha);
+						pi->dir = (SI16)str2num(rha);
 					else if ( lha == "DYE" )
 						pi->dye = str2num(rha);
 					else if ( lha == "DEXADD" )
@@ -318,7 +318,7 @@ namespace item
 					if ( lha == "ID" )
 					{
 						tmp = hex2num(rha);
-						pi->setId( tmp );
+						pi->setId((UI16) tmp );
 					}
 					else if ( lha == "ITEMLIST" )
 					{
@@ -328,7 +328,7 @@ namespace item
 						pi=item::CreateScriptRandomItem( const_cast<char*>(str_scriptid.c_str()), cont);
 						if( ISVALIDPI(pi) )
 							if( strcmp( str_amount.c_str(), "") ) //ndEndy defined amount, 1 by default
-								pi->amount=str2num( str_amount);
+								pi->amount=(UI16)str2num( str_amount);
 
 					}
 					else if ( lha == "INT" )
@@ -341,7 +341,7 @@ namespace item
 					break;
 				case 'L':
 					if ( lha == "LAYER" )
-						pi->layer = pi->scriptlayer = str2num(rha);	//Luxor
+						pi->layer = pi->scriptlayer =(SI08) str2num(rha);	//Luxor
 					else if ( lha == "LODAMAGE" )
 						pi->lodamage = str2num(rha);
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
@@ -354,10 +354,10 @@ namespace item
 							tmp=hex2num(rha);
 						else
 							tmp = str2num(rha);
-						pi->more1 = tmp >> 24;
-						pi->more2 = tmp >> 16;
-						pi->more3 = tmp >> 8;
-						pi->more4 = tmp%256;
+						pi->more1 = (UI08)(tmp >> 24);
+						pi->more2 = (UI08)(tmp >> 16);
+						pi->more3 = (UI08)(tmp >> 8);
+						pi->more4 = (UI08)(tmp%256);
 					}
 					// MORE2 may not be useful ?
 					else if ( lha == "MORE2" )
@@ -366,13 +366,13 @@ namespace item
 							tmp=hex2num(rha);
 						else
 							tmp = str2num(rha);
-						pi->moreb1 = tmp >> 24;
-						pi->moreb2 = tmp >> 16;
-						pi->moreb3 = tmp >> 8;
-						pi->moreb4 = tmp%256;
+						pi->moreb1 = (SI08)(tmp >> 24);
+						pi->moreb2 = (SI08)(tmp >> 16);
+						pi->moreb3 = (SI08)(tmp >> 8);
+						pi->moreb4 = (SI08)(tmp%256);
 					}
 					else if ( lha == "MOVABLE" )
-						pi->magic = str2num(rha);
+						pi->magic = (SI08)str2num(rha);
 					else if ( lha == "MAXHP" )
 						pi->maxhp = str2num(rha); // by Magius(CHE)
 					else if ( lha == "MOREX" )
@@ -394,7 +394,7 @@ namespace item
 					break;
 				case 'O':
 					if ( lha == "OFFSPELL" )
-						pi->offspell = str2num(rha);
+						pi->offspell = (SI08)str2num(rha);
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'P':
@@ -407,7 +407,7 @@ namespace item
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
 					break;
 				case 'R':
-					if	( "RACE" == script1 )
+					if	( "RACE" == lha )
 						pi->setRace((SI32)str2num(script2));
 					else if ( lha == "RANK" )
 					{
@@ -461,7 +461,7 @@ namespace item
 					break;
 				case 'V':
 					if ( lha == "VISIBLE" )
-						pi->visible = str2num(rha);
+						pi->visible = (SI08)str2num(rha);
 					else if ( lha == "VALUE" )
 						pi->value = str2num(rha);
 					else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", lha.c_str(), itemnum);
@@ -495,7 +495,7 @@ namespace item
 		pi->setScriptID(itemnum);
 
 		if( amount!=INVALID )
-			pi->amount=amount;
+			pi->amount=(UI16)amount;
 
 		//Luxor: put it in the container
 		if ( ISVALIDPO( cont ) )
@@ -599,7 +599,7 @@ namespace item
 			short xx,yy,zz;
 			xx=(buffer[s][11]<<8)+buffer[s][12];
 			yy=(buffer[s][13]<<8)+buffer[s][14];
-			zz=buffer[s][16]+tileHeight((buffer[s][17]<<8)+buffer[s][18]);
+			zz=(UI16)(buffer[s][16]+tileHeight((buffer[s][17]<<8)+buffer[s][18]));
 			pi->MoveTo(xx,yy,(SI08)zz);
 		}
 		else
@@ -846,7 +846,7 @@ namespace item
 					{
 					case 'A':
 					case 'a':
-						if (script1=="AMOUNT") pi->amount=str2num(script2); // -Fraz- moved from Case C
+						if (script1=="AMOUNT") pi->amount=(UI16)str2num(script2); // -Fraz- moved from Case C
 						else if (script1=="ANIMID") pi->animSetId(hex2num(script2));
 						break;
 					case 'C':
@@ -855,7 +855,7 @@ namespace item
 						else if (script1=="COLOR")
 						{
 							tmp=hex2num(script2);
-							pi->setColor( tmp );
+							pi->setColor((UI16) tmp );
 						}
 
 					break;
@@ -896,14 +896,14 @@ namespace item
 						if ( script1=="INT") pi->in=str2num(script2);
 						else if ( script1=="INTADD") pi->in2=str2num(script2);
 						else if (script1=="ITEMHAND") pi->itmhand=str2num(script2);
-						else if (script1=="LAYER") pi->layer=str2num(script2);
+						else if (script1=="LAYER") pi->layer=(SI08)str2num(script2);
 						else if ( script1=="LODAMAGE") pi->lodamage=str2num(script2);
 					break;
 
 					case 'M':
 					case 'm':
 						if ( script1=="MAXHP") pi->maxhp=str2num(script2); // by Magius(CHE)
-						else if (script1=="MOVABLE") pi->magic=str2num(script2);
+						else if (script1=="MOVABLE") pi->magic=(SI08)str2num(script2);
 						else if ( script1=="MORE")
 						{
 							tmp=str2num(script2);
@@ -916,10 +916,10 @@ namespace item
 						else if ( script1=="MORE2")
 						{
 							tmp=str2num(script2);
-							pi->moreb1=tmp>>24;
-							pi->moreb2=tmp>>16;
-							pi->moreb3=tmp>>8;
-							pi->moreb4=tmp%256;
+							pi->moreb1=(SI08)(tmp>>24);
+							pi->moreb2=(SI08)(tmp>>16);
+							pi->moreb3=(SI08)(tmp>>8);
+							pi->moreb4=(SI08)(tmp%256);
 						}
 						else if (script1=="MOREX") pi->morex=str2num(script2);
 						else if (script1=="MOREY") pi->morey=str2num(script2);
@@ -971,7 +971,7 @@ namespace item
 					break;
 
 					default:
-						if (script1=="VISIBLE") pi->visible=str2num(script2);
+						if (script1=="VISIBLE") pi->visible=(SI08)str2num(script2);
 						else if (script1=="VALUE") pi->value=str2num(script2);
 
 						else if (script1=="WEIGHT")

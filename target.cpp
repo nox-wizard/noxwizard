@@ -265,7 +265,7 @@ void TargetLocation::init(P_ITEM pi)
 // Function name     : TargetLocation::init
 // Author            : Xanathar
 // Changes           : none yet
-void TargetLocation::init(int x, int y, int z)
+void TargetLocation::init(UI16 x, UI16 y, SI08 z)
 {
 	m_x = x;
 	m_y = y;

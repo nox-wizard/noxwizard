@@ -460,16 +460,17 @@ void cTempfx::start()
 			break;
 
 		case SPELL_INCOGNITO:
+		{
 			//Luxor's incognito code :)
 			if (dest->morphed)
 				dest->morph();	//if the char is morphed, unmorph him
 			dest->incognito = true;
-			UI16 body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, x;
+			UI16 body=0, skincolor=0, hairstyle=0, haircolor=0, beardstyle=0, beardcolor=0, x=0;
 
 			//--Sex--
 			(chance(50) == true)? body = BODY_MALE : body = BODY_FEMALE;
 			//--Skin color--
-			x=rand()%6;
+			x=(SI16)(rand()%6);
 			switch(x)
 			{
 				case 0:	skincolor = 0x83EA; break;
@@ -481,7 +482,7 @@ void cTempfx::start()
 				default: skincolor = 0x83FB;break;
 			}
 			//--Hair Style--
-			x=rand()%10;
+			x=(SI16)(rand()%10);
 			switch(x)
 			{
 				case 0:	hairstyle = 0x203B; break;
@@ -499,7 +500,7 @@ void cTempfx::start()
 			//--Beard Style--
 			if (body == BODY_MALE)
 			{
-				x=rand()%7;
+				x=(SI16)(rand()%7);
 				switch(x)
 				{
 					case 0:	beardstyle = 0x203E; break;
@@ -513,7 +514,7 @@ void cTempfx::start()
 				}
 			}
 			//--Hair color--
-			x=rand()%6;
+			x=(SI16)(rand()%6);
 			switch(x)
 			{
 				case 0:	haircolor = 0x83EA; break;
@@ -525,7 +526,7 @@ void cTempfx::start()
 				default: haircolor = 0x83FB;break;
 			}
 			//--Beard color--
-			x=rand()%6;
+			x=(SI16)(rand()%6);
 			switch(x)
 			{
 				case 0:	beardcolor = 0x83EA; break;
@@ -548,6 +549,7 @@ void cTempfx::start()
 				newname = new std::string( cObject::getRandomScriptValue( std::string("RANDOMNAME"), value ) );
 			}
 			dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname->c_str(), true);
+		}
 			break;
 
 		case HALLUCINATE:
@@ -745,7 +747,7 @@ void cTempfx::executeExpireCode()
 		case ALCHEMY_END:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);
-			Skills::CreatePotion(DEREF_P_CHAR(src), m_nMore1, m_nMore2, DEREF_P_ITEM(pi_dest));
+			Skills::CreatePotion(DEREF_P_CHAR(src),(SI08) m_nMore1,(SI08) m_nMore2, DEREF_P_ITEM(pi_dest));
 			break;
 
 		case AUTODOOR:

@@ -641,7 +641,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
                     case 11: iID=0x1C; break;
                 }
                 pBone = item::CreateFromScript( "$item_bone", pc->getBackpack() );
-                pBone->setId( 0x1B00 + iID );
+                pBone->setId((UI16)( 0x1B00 + iID ));
                 pc->sysmsg(TRANSLATE("You have unearthed some old bones and placed them in your pack."));
                 break;
             default: // found an empty grave
@@ -721,13 +721,13 @@ void Skills::target_wheel( NXWCLIENT ps, P_TARGET t )	//Spinning wheel
             {
                 pti->setCurrentName("#");
                 pti->setId( 0x0E1D );
-                pti->amount=pti->amount*3;
+                pti->amount=(UI16)(pti->amount*3);
             }
             else if (mat==THREAD)
             {
                 pti->setCurrentName("#");
                 pti->setId( 0x0FA0 );
-                pti->amount=pti->amount*3;
+                pti->amount=(UI16)(pti->amount*3);
             }
 
             pti->priv |= ITMPRIV_DECAY;
@@ -782,7 +782,7 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 						pti->setCurrentName("#");
 						pti->setId( 0x175D );
 						pti->priv |= ITMPRIV_DECAY;
-						pti->amount=(pti->amount-1)*10;
+						pti->amount=(UI16)((pti->amount-1)*10);
 						break;
 					case 0x0FA0: // Thread
 					case 0x0FA1:

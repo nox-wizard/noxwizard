@@ -217,13 +217,13 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir)//Turn an item that was o
 	Location bpos	= p_b->getPosition();
 	Location itmpos = { bpos.x, bpos.y, pi->getPosition().z, pi->getPosition().dispz };
 
-	dx= pi->getPosition().x - bpos.x;//get their distance x
-	dy= pi->getPosition().y - bpos.y;//and distance Y
+	dx= (UI16)(pi->getPosition().x - bpos.x);//get their distance x
+	dy= (UI16)(pi->getPosition().y - bpos.y);//and distance Y
 
 	if(dir)//turning right
 	{
-		itmpos.x +=dy*-1;
-		itmpos.y +=dx;
+		itmpos.x +=(UI16)(dy*-1);
+		itmpos.y +=(UI16)dx;
 	}
 	else //turning left
 	{
@@ -250,8 +250,8 @@ void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir)//Turn an item that was o
 	UI16 dx, dy;
 	Location bpos= p_b->getPosition();
 	Location charpos= pc->getPosition();
-	dx= charpos.x - bpos.x;
-	dy= charpos.y - bpos.y;
+	dx= (UI16)(charpos.x - bpos.x);
+	dy= (UI16)(charpos.y - bpos.y);
 	charpos.x= bpos.x;
 	charpos.y= bpos.y;
 
@@ -1472,7 +1472,7 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 			charPos.y+= ty;
 			if ( charPos.z - boatpos.z <= 3 )
 			{
-				charPos.z=boatpos.z+3;
+				charPos.z=(SI08)(boatpos.z+3);
 				charPos.dispz=charPos.z;
 			}
 			pc->setPosition( charPos );

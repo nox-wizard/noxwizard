@@ -77,7 +77,7 @@ namespace prison {
 	void release( P_CHAR releaser, P_CHAR pc );
 	void checkForFree();
 	void freePrisonCell( SERIAL cell );
-	void addCell( SERIAL serial, UI32 x, UI32 y, UI32 z );
+	void addCell( SERIAL serial, UI16 x, UI16 y, SI08 z );
 	void standardJailxyz (int jailnum, int& x, int& y, int& z);
 
 };

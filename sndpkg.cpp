@@ -57,7 +57,7 @@ void gmyell(char *txt)
 		NXWSOCKET s = ps_i->toInt();
 		if( ISVALIDPC(pc) && pc->IsGM())
 		{
-			SendUnicodeSpeechMessagePkt(s, 0x01010101, 0x0101, 1, 0x0040, 0x0003, lang, sysname, unicodetext,  ucl);
+			SendUnicodeSpeechMessagePkt(s, 0x01010101,(UI16) 0x0101, 1, 0x0040, 0x0003, lang, sysname, unicodetext, (UI16) ucl);
 		}
 	}
 
@@ -89,7 +89,7 @@ void SndUpdscroll(NXWSOCKET  s, short txtlen, const char* txt)
 {
 	UI08 updscroll[10]={ 0xA6, };
 
-	ShortToCharPtr(txtlen+10, updscroll +1);
+	ShortToCharPtr((UI16)(txtlen+10), updscroll +1);
 	updscroll[3]=2;				// type: 0x00 tips window, 0x01 ignored, 0x02 updates
 	LongToCharPtr(0 , updscroll +4);	// Tip numb.
 	ShortToCharPtr(txtlen, updscroll +8);
@@ -376,7 +376,7 @@ void sysbroadcast(char *txt, ...) // System broadcast in bold text
 		NXWSOCKET sock=sw.getSocket();
 		if( sock!=INVALID )
 		{
-			SendUnicodeSpeechMessagePkt(sock, 0x01010101, 0x0101, 6, 0x084D /*0x0040*/, 0x0000, lang, sysname, unicodetext,  ucl);
+			SendUnicodeSpeechMessagePkt(sock, 0x01010101, (UI16)0x0101, 6, 0x084D /*0x0040*/, 0x0000, lang, sysname, unicodetext, (UI16) ucl);
 		}
 	}
 }
@@ -436,7 +436,7 @@ void sysmessage(NXWSOCKET  s, short color, const char *txt, ...) // System messa
 	//vsnprintf( msg, sizeof(msg)-1, txt, argptr );
         vsprintf( msg, txt, argptr );
 	va_end( argptr );
-	UI16 ucl = ( strlen ( msg ) * 2 ) + 2 ;
+	UI16 ucl = (UI16)(( strlen ( msg ) * 2 ) + 2 );
 
 	char2wchar(msg);
 	memcpy(unicodetext, Unicode::temp, ucl);
@@ -455,7 +455,7 @@ void itemmessage(NXWSOCKET  s, char *txt, int serial, short color)
 //Modified by N6 to use UNICODE packets
 
 	UI08 unicodetext[512];
-	UI16 ucl = ( strlen ( txt ) * 2 ) + 2 ;
+	UI16 ucl = (UI16)(( strlen ( txt ) * 2 ) + 2 );
 
 	P_ITEM pi=pointers::findItemBySerial(serial);
 	VALIDATEPI(pi);
@@ -514,7 +514,7 @@ void backpack2(NXWSOCKET s, SERIAL serial) // Send corpse stuff
 		}
 	}
 	count2=(count*5)+7 + 1 ; // 5 bytes per object, 7 for this header and 1 for terminator
-	ShortToCharPtr(count2, display1+1);
+	ShortToCharPtr((UI16)count2, display1+1);
 	LongToCharPtr(serial, display1+3);
 	Xsend(s, display1, 7);
 
@@ -532,9 +532,9 @@ void backpack2(NXWSOCKET s, SERIAL serial) // Send corpse stuff
 	Xsend(s, &nul, 1);	// Terminate with a 0
 //AoS/	Network->FlushBuffer(s);
 
-	ShortToCharPtr(count, bpopen2+3);
+	ShortToCharPtr((UI16)count, bpopen2+3);
 	count2=(count*19)+5;
-	ShortToCharPtr(count2, bpopen2+1);
+	ShortToCharPtr((UI16)count2, bpopen2+1);
 	Xsend(s, bpopen2, 5);
 
 	UI08 bpitem[20]={ 0x00, };
@@ -628,10 +628,10 @@ void MakeGraphicalEffectPkt_(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_
 	pkt[27]=explode;
 }
 
-void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop)
+void tileeffect(UI16 x, UI16 y, SI08 z, char eff1, char eff2, char speed, char loop)
 {//AntiChrist
 
-	UI16 eff = (eff1<<8)|(eff2%256);
+	UI16 eff = (UI16)((eff1<<8)|(eff2%256));
 	UI08 effect[28]={ 0x70, 0x00, };
 
 Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
@@ -711,8 +711,8 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 			ShortToCharPtr(pi->animid(), itmput +7); // elcabesa animation tryyy
 		}
 		ShortToCharPtr(pi->amount, itmput +9);
-		ShortToCharPtr(pos.x, itmput +11);
-		ShortToCharPtr(pos.y | 0xC000, itmput +13);
+		ShortToCharPtr((UI16)pos.x, itmput +11);
+		ShortToCharPtr((UI16)(pos.y | 0xC000), itmput +13);
 		itmput[15]= pos.z;
 
 		if(pc->IsGM() && pi->getId()==0x1647)
@@ -809,7 +809,7 @@ void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, s
 		ShortToCharPtr(pi->getId(), itmput +7);
 		ShortToCharPtr(pi->amount, itmput +9);
 		ShortToCharPtr(pos.x, itmput +11);
-		ShortToCharPtr(pos.y | 0xC000, itmput +13);
+		ShortToCharPtr((UI16)(pos.y | 0xC000), itmput +13);
 		itmput[15]=z;
 		ShortToCharPtr(color, itmput +16);
 		itmput[18]=0;
@@ -991,7 +991,7 @@ void skillwindow(NXWSOCKET s) // Opens the skills list, updated for client 1.26.
 	for (int i=0;i<TRUESKILLS;i++)
 	{
 		Skills::updateSkillLevel(pc,i);
-		ShortToCharPtr(i+1, skillmid +0);
+		ShortToCharPtr((UI16)(i+1), skillmid +0);
 		ShortToCharPtr(pc->skill[i], skillmid +2);
 		ShortToCharPtr(pc->baseskill[i], skillmid +4);
 
