@@ -43,8 +43,6 @@ void newbieitems(P_CHAR pc)
 	if(ps==NULL)
 		return;
 
-	NXWSOCKET s=ps->toInt();
-	
 	int first, second, third, storeval, itemaddperskill, loopexit = 0;
 	char sect[512];
 	char whichsect[105];
@@ -133,7 +131,7 @@ void newbieitems(P_CHAR pc)
 	// Give the character some gold
 	if ( goldamount > 0 )
 	{
-		P_ITEM pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
+		item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
 	}
 
 
