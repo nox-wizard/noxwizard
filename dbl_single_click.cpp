@@ -816,9 +816,10 @@ void target_dyevat( NXWCLIENT ps, P_TARGET t )
 
 	if( pi->dye )//if dyeable
 	{
+
 		P_CHAR pc = pi->getPackOwner();
 
-		if( pc->getSerial32()==curr->getSerial32() || pi->isInWorld())
+		if( !ISVALIDPC(pc) || ( pc->getSerial32()==curr->getSerial32() ) ) //in world or owned
 		{
 			pi->setColor( t->buffer[0] );
 			pi->Refresh();
