@@ -54,13 +54,41 @@ public:
 	cell CallFn (int fn);
 	cell CallFn (int fn, int param);
 	cell CallFn (int fn, int param1, int param2);
-	cell CallFn (int fn, int param1, int param2, int param3, int param4 = -1);
+	cell CallFn (int fn, int param1, int param2, int param3 );
+	cell CallFn (int fn, int param1, int param2, int param3, int param4 );
 	cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5); //Luxor
     cell CallFn (int fn, int param1, int param2, int param3, int param4, int param5, int param6); //Luxor
 	int getFnOrdinal (char *fn);
 	explicit AmxProgram (const char *filename) { Load(filename); };
 	AmxProgram () { m_ptrCode = NULL; }
 	~AmxProgram () { if (m_ptrCode!= NULL) delete static_cast<char*>(m_ptrCode); }
+};
+
+
+/*
+\brief Simple function API to small
+\author Endymion
+*/
+class AmxFunction {
+private:
+	std::string funcName;
+	int function;
+public:
+
+	AmxFunction( char* funName );
+	AmxFunction( int funIdx );
+
+
+	char* getFuncName();
+
+	cell Call( int param);
+	cell Call( int param1, int param2 );
+	cell Call( int param1, int param2, int param3 );
+	cell Call( int param1, int param2, int param3, int param4 );
+	cell Call( int param1, int param2, int param3, int param4, int param5 );
+    cell Call( int param1, int param2, int param3, int param4, int param5, int param6 );
+
+
 };
 
 

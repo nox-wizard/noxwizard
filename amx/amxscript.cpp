@@ -374,6 +374,38 @@ cell AmxProgram::CallFn (int idx, int param1, int param2, int param3, int param4
 	}
 }
 
+/*!
+\brief calls an amx function with 3 integer parameters
+\author Endymion
+\return cell
+\param idx function index (as returned by funcidx())
+\param param1 parameter 1
+\param param2 parameter 2
+\param param3 parameter 3
+*/
+cell AmxProgram::CallFn (int idx, int param1, int param2, int param3 )
+{
+	CHECKAMX;
+	try {
+	  cell ret = 0;
+	  cell par1 = param1;
+	  cell par2 = param2;
+	  cell par3 = param3;
+	  int err;
+
+	  if (m_nSize==0) return -2;
+
+	  err = amx_Exec(m_AMX, &ret, idx, 4, par1, par2, par3 );
+  	  while (err == AMX_ERR_SLEEP) err = amx_Exec(m_AMX, &ret, AMX_EXEC_CONT, 4, par1, par2, par3 );
+
+	  return ret;
+
+	} catch(...) {
+		ConOut("Exception Handled during AMX Script Execution : skipping script\n");
+		return -1;
+	}
+}
+
 
 
 /*!
