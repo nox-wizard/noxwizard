@@ -309,8 +309,8 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 			{
-				if ( !pi->disabledmsg.empty() )
-					pc->sysmsg("%s", pi->disabledmsg.c_str());
+				if ( pi->disabledmsg!=NULL )
+					pc->sysmsg("%s", pi->disabledmsg->c_str());
 				else
 					pc->sysmsg(TRANSLATE("That doesnt seem to work right now."));
 				return;

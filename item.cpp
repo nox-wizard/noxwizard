@@ -165,8 +165,12 @@ namespace item
 							pi->dx = str2num(script2);
 						else if (!strcmp("DISABLED", script1))
 							pi->disabled = uiCurrentTime + (str2num(script2)*MY_CLOCKS_PER_SEC);// AntiChrist
-						else if (!strcmp("DISABLEMSG", script1))
-							pi->disabledmsg = script2;
+						else if (!strcmp("DISABLEMSG", script1)) {
+							if( pi->disabledmsg!=NULL )
+								(*pi->disabledmsg) = script2;
+							else
+								pi->disabledmsg= new std::string( script2 );
+						}
 						else if (!strcmp("DISPELLABLE", script1))
 							pi->setDispellable();
 						else if (!strcmp("DECAY", script1))
@@ -757,7 +761,12 @@ namespace item
 						else if (!(strcmp("DIR",script1))) pi->dir=str2num(script2);
 						else if (!(strcmp("DECAY",script1))) pi->setDecay();
 						else if (!(strcmp("DISPELLABLE",script1))) pi->setDispellable();
-						else if (!(strcmp("DISABLEMSG",script1))) pi->disabledmsg = script2;  // Added by Magius(CHE) §
+						else if (!(strcmp("DISABLEMSG",script1))) {
+							if( pi->disabledmsg!=NULL )
+								(*pi->disabledmsg) = script2;
+							else
+								pi->disabledmsg = new std::string( script2 );
+						}
 						else if (!(strcmp("DISABLED",script1))) pi->disabled=uiCurrentTime+(str2num(script2)*MY_CLOCKS_PER_SEC);//AntiChrist
 					break;
 
