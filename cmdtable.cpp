@@ -2555,7 +2555,7 @@ void target_unhide( NXWCLIENT ps, P_TARGET t )
 
 	Location pcpos= pc->getPosition();
 
-	if( pc->IsHidden() )
+	if( !pc->IsHidden() )
 	{
 		if( pc->getSerial32()==ps->currCharIdx() )
 			ps->sysmsg( TRANSLATE("You are not hiding."));
