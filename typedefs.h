@@ -17,6 +17,9 @@
 #define __TYPEDEFS_H__
 #include <set>
 
+#if (__GNUC__ == 2)
+typedef basic_string <wchar_t> wstring;
+#endif
 
 typedef double				R64;	//< 64 bits floating point
 typedef float				R32;	//< 32 bits floating point
