@@ -156,8 +156,9 @@ bool checkGateCollision( P_CHAR pc )
         Location charpos = pc->getPosition();
 	
 	NxwItemWrapper si;
-	si.fillItemsNearXYZ( charpos, 1, false );
-        for ( si.rewind(); !si.isEmpty(); si++ ) {
+	// WIntermute: Only check items beneath the feet or neighbouring items may be triggered first
+	si.fillItemsNearXYZ( charpos, 0, false );
+	for ( si.rewind(); !si.isEmpty(); si++ ) {
 		pgate = si.getItem();
 		if ( !ISVALIDPI( pgate ) )
 			return false;
