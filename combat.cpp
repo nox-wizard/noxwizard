@@ -124,7 +124,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	checkSkillSparrCheck(fightskill, 0, 1000, pc_def);
 	swingtargserial = INVALID;
-	if ( running )
+	if ( fightskill == ARCHERY && running )
 		hit = false;
 
 	if (!hit) {
