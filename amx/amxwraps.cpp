@@ -4928,6 +4928,37 @@ NATIVE( _chr_doCombatAction )
 	return 1;
 }
 
+/*!
+\brief Stable the caracter
+\author Endymion
+\since 0.82
+\param 1 the npc to stable
+\param 2 the stablemaster
+*/
+NATIVE( _chr_stable )
+{
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, 0);
+	if( !pc->npc ) return 0;
+	P_CHAR stablemaster = pointers::findCharBySerial(params[2]);
+	VALIDATEPCR( stablemaster, 0 );
+	pc->stable( stablemaster );
+	return 1;
+}
+
+/*!
+\brief Unstable the character
+\author Endymion
+\since 0.82
+\param 1 the npc to unstable
+*/
+NATIVE( _chr_unStable )
+{
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, 0);
+	pc->unStable( );
+	return 1;
+}
 
 
 
@@ -5039,6 +5070,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_isOnline", _chr_isOnline },
  { "chr_isFrozen", _chr_isFrozen },
  { "chr_doCombatAction", _chr_doCombatAction },
+ { "chr_stable", _chr_stable },
+ { "chr_unStable", _chr_unStable },
 //
 // Sparhawk: 	Guild related functions to be ported to new guild system
 //		To maintain backward compatability these will be implemented as stock functions that map to the new guild functions
