@@ -666,6 +666,7 @@ public:
 		SERIAL	stablemaster_serial; //!< the stablemaster serial
 	public:
 		bool isStabled();
+		SERIAL getStablemaster();
 		void stable( P_CHAR stablemaster );
 		void unStable();
 	

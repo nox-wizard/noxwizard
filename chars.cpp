@@ -4937,7 +4937,7 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 */
 bool cChar::isStabled()
 {
-	return (stablemaster_serial!=INVALID);
+	return (getStablemaster()!=INVALID);
 }
 
 /*
@@ -4962,4 +4962,14 @@ void cChar::unStable()
 	if( !isStabled() ) return;
 	pointers::delFromStableMap( this );
 	this->stablemaster_serial=INVALID;
+}
+
+/*
+\brief Get the character's stablemaster
+\author Endymion
+\return the stable master
+*/
+SERIAL cChar::getStablemaster()
+{
+	return stablemaster_serial;
 }
