@@ -529,7 +529,7 @@ void cItem::setAmount(const short amt)
 	Refresh();
 }
 
-/*
+#if 0
 // This method does not change the pointer arrays !!
 // should only be used in VERY specific situations like initItem... Duke, 6.4.2001
 void cItem::setContSerialOnly(SI32 contser)
@@ -549,9 +549,7 @@ void cItem::setContSerial(SI32 contser)
 	setContSerial(contser, false, false);
 	pointers::updContMap(this);	//Luxor
 }
-*/
 
-/*
 void cItem::setOwnSerialOnly(SI32 ownser)
 {
 	ownserial=ownser;
@@ -572,7 +570,7 @@ void cItem::SetOwnSerial(SI32 ownser)
 		setptr(&ownsp[ownserial%HASHMAX], DEREF_P_ITEM(this));
 
 }
-*/
+#endif
 
 
 void cItem::SetMultiSerial(SI32 mulser)
