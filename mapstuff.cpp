@@ -487,15 +487,29 @@ char cMapStuff::o_Type(int x, int y, int oldz)
 //int cMapStuff::MapElevation(int x, int y)
 signed char cMapStuff::MapElevation(UI32 x, UI32 y)
 {
+	signed char z;
 	map_st map = SeekMap0( x, y );
 	// make sure nothing can move into black areas
-	if (430 == map.id || 475 == map.id || 580 == map.id || 610 == map.id ||
-		611 == map.id || 612 == map.id || 613 == map.id)
-		return illegal_z;
+	switch( map.id )
+	{
+		case	430:
+		case	475:
+		case	580:
+		case	610:
+		case	611:
+		case	612:
+		case	613:
+			z = illegal_z;
+			break;
+		default:
+			z = map.z;
+			break;
+	}
+
 	// more partial black areas
 	//if ((map.id >= 586 && map.id <= 601) || (map.id >= 610 && map.id <= 613))
 	//	return illegal_z;
-	return map.z;
+	return z;
 
 }
 
