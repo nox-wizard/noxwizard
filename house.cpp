@@ -137,7 +137,6 @@ void cMulti::buildmulti( P_CHAR builder, P_ITEM deed)
 	pMulti->setOwnerSerial32(builder->getSerial32());
 	pMulti->setPosition (0,0,0);
 
-	mtarget(builder->getSocket(), 0, 1, 0, 0, 0, 0, TRANSLATE("Select location for building."));
 	targ = clientInfo[builder->getSocket()]->newTarget( new cLocationTarget() );
 	targ->code_callback=cMulti::target_buildmulti;
 	targ->buffer[0]=pMulti->getSerial32();
