@@ -619,7 +619,7 @@ LOGICAL cItem::AddItem(P_ITEM pItem, short xx, short yy)
 	}
 	else		// no pos given
 	{
-		if (!ContainerPileItem(pItem))	// try to pile
+		if (ContainerPileItem(pItem)==INVALID)	// try to pile
 			pItem->SetRandPosInCont(this);		// not piled, random pos
 		else return true; //Luxor: we cannot do a refresh because item was piled
 	}
@@ -675,6 +675,7 @@ SERIAL cItem::ContainerPileItem( P_ITEM pItem)
 			SERIAL piledInto = pi->PileItem(pItem);
 			if( piledInto!=INVALID )
 				return piledInto;
+		}
 	}
 	return INVALID;
 

@@ -659,11 +659,13 @@ namespace item
 		{
 			if (ISVALIDPI(pPack))
 			{
-				if (!pPack->ContainerPileItem(pi)) { //is true is added amount to other AND DELETED pi
+				SERIAL piled = pPack->ContainerPileItem(pi);
+				if( piled==INVALID ) { 
 					pi->setContSerial( pPack->getSerial32() );
 					pi->SetRandPosInCont( pPack );
 				}
-				
+				else 
+					return pointers::findItemBySerial( piled );				
 			}
 			else
 			{// LB place it at players feet if he hasnt got backpack
@@ -671,12 +673,10 @@ namespace item
 			}
 		}
 
-		if( ISVALIDPI(pi) ) {
-			//ConOut("Adding Harditems settings in items.cpp:spawnitem\n");
-			item::GetScriptItemSetting(pi); // Added by Magius(CHE) (2)
-			pc->making=DEREF_P_ITEM(pi);
-			pi->Refresh();
-		}
+		//ConOut("Adding Harditems settings in items.cpp:spawnitem\n");
+		item::GetScriptItemSetting(pi); // Added by Magius(CHE) (2)
+		pc->making=DEREF_P_ITEM(pi);
+		pi->Refresh();
 		return pi;
 
 	}
