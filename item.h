@@ -35,25 +35,8 @@ namespace item
 	SI32		getname(SI32 i, char* itemname);
 
 	P_ITEM		CreateScriptItem(NXWSOCKET s, SI32 itemnum, LOGICAL nSpawned, cObject* cont=NULL );
-/*	P_ITEM		SpawnItem(NXWSOCKET  nSocket,
-						SI32 nAmount, char* cName, LOGICAL nStackable,
-						SI16 cItemId, SI16 cColorId,
-						LOGICAL nPack, LOGICAL nSend);
-
-	P_ITEM		SpawnItem(NXWSOCKET  nSocket, CHARACTER ch,
-						SI32 nAmount, char* cName, LOGICAL nStackable,
-						SI16 cItemId, SI16 cColorId,
-						LOGICAL nPack, LOGICAL nSend);
-
-	P_ITEM		SpawnItem(CHARACTER ch,
-						SI32 nAmount, char* cName, LOGICAL pileable,
-						SI16 id, SI16 color, LOGICAL nPack);*/
-
-	P_ITEM		SpawnItemBank(CHARACTER ch, int nItem, int amount=INVALID);
-	P_ITEM		SpawnItemBackpack2(NXWSOCKET  s, int nItem, int nDigging);
 
 	void		AddRespawnItem(int s, int x, int y);
-	P_ITEM		add (int itemid, int x=INVALID, int y = INVALID, int z = INVALID);
 	P_ITEM		addByID(int id, UI32 nAmount, const char *cName, int color, Location where);	// added by Anthalir
 	P_ITEM		addByID(int id, UI32 nAmount = 1, const char* cName = NULL, int color = 0x0000, int x=INVALID, int y = INVALID, int z = INVALID);
 	P_ITEM		SpawnRandomItem(NXWSOCKET s, char* cList, char* cItemID);

@@ -545,32 +545,6 @@ namespace item
 		return pi;
 	}*/
 
-	P_ITEM SpawnItemBank(CHARACTER ch, int nItem, int amount)
-	{
-
-		if (ch < 0)
-			return NULL;
-
-		P_CHAR pc=MAKE_CHAR_REF(ch);
-		VALIDATEPCR(pc,NULL);
-
-		P_ITEM bankbox = NULL;
-		bankbox = pc->GetBankBox();
-
-		if (bankbox == NULL)
-		{
-			LogWarning("Bank box not found in SpawnItemBank()");
-			return NULL;
-		}
-
-		NXWSOCKET  s = pc->getSocket();
-		P_ITEM pi = item::CreateFromScript( nItem, bankbox, amount );
-		VALIDATEPIR(pi,NULL);
-		item::GetScriptItemSetting(pi);
-		statwindow(pc,pc);
-		return pi;
-	}
-
 	SI32 getname(int i, char* itemname)
 	{
 		tile_st tile;
@@ -862,40 +836,6 @@ namespace item
 		safedelete(iter);
 	}
 
-	P_ITEM SpawnItemBackpack2(NXWSOCKET  s, int nItem, int nDigging) // Added by Genesis 11-5-98
-	{
-
-		P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
-		P_ITEM backpack = pc->getBackpack();
-		if (backpack == NULL)
-			return NULL;
-
-		P_ITEM pi= item::CreateFromScript( nItem );
-		VALIDATEPIR(pi, NULL);
-
-		if(nDigging)
-		{
-			if (pi->value!=0) pi->value=1+(rand()%(pi->value));
-			if (pi->hp!=0) pi->hp=1+(rand()%(pi->hp));
-			// blackwinds fix
-			if (pi->maxhp != 0)
-			{
-				pi->maxhp=1+(rand()%pi->maxhp);
-				pi->hp=1+(rand()%pi->maxhp);
-			}
-		}
-
-		item::GetScriptItemSetting(pi);
-
-		backpack->AddItem(pi);
-		pi->Refresh();
-
-		statwindow(pc,pc);
-		return pi;
-
-	}
-
-
 	/*
 	//NEW RESPAWNITEM FUNCTION STARTS HERE -- AntiChrist merging codes -- (24/6/99)
 
@@ -1057,7 +997,7 @@ namespace item
 	}
 	*/
 
-	P_ITEM add (int itemid, int x, int y, int z)
+	/*P_ITEM add (int itemid, int x, int y, int z)
 	{
 		P_ITEM pi= item::CreateFromScript( itemid);
 		if ((pi!=NULL)&&(x!=INVALID)) {
@@ -1066,7 +1006,7 @@ namespace item
 			pi->Refresh();
 		}
 		return pi;
-	}
+	}*/
 
 	/*!
 	\author Anthalir
@@ -1090,6 +1030,10 @@ namespace item
 
 	P_ITEM SpawnRandomItem(NXWSOCKET s, char* cList, char* cItemID)
 	{
+		
+		P_CHAR pc=MAKE_CHAR_REF( currchar[s] );
+		VALIDATEPCR( pc, NULL );
+
 		char sect[512];
 		char script1[1024];
 		cScpIterator* iter = NULL;
@@ -1118,8 +1062,9 @@ namespace item
 		if(i>0)
 		{
 			i=rand()%(i);
-			if(item[i]!=INVALID)
-			return item::SpawnItemBackpack2(s,item[i],1);;
+			if(item[i]!=INVALID) {
+				return item::CreateFromScript( item[i], pc->getBackpack());
+			}
 		}
 		return NULL;
 
