@@ -13,9 +13,7 @@
 //Work in progress...
 
 
-//#include "amxscript.h"
-//#include "amxwraps.h"
-//#include "amxcback.h"
+
 #include "nxwcommn.h"
 #include "network.h"
 #include "cmds.h"
@@ -70,7 +68,6 @@ cCommand::cCommand(std::string& name, SI08 number ,AmxFunction* callback) {
 SI08 cCommand::getCommandLevel(P_COMMAND cmd) {
 	return cmd->cmd_level;
 }
-
 
 
 //Implementation of cCallCommand Class
@@ -239,6 +236,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a command like 'ADD
 
 		SERIAL cmd_serial=called->addCallCommand(called);
 
+		
 		
 		// Frodo:
 		// NOW CALL AMX FUNCTION specified in cCommand.cmd_callback giving pc_currchar and 
