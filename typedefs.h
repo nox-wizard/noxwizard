@@ -415,10 +415,11 @@ struct title_st
 \brief Represent a point on the map
 \author Anthalir
 \since 0.82a
+\todo change x and y to UI16, they are not longs
 */
 struct Location{
 	UI32			x, y;
-	signed char		z, dispz;		// dispz is used for the char location
+	SI08		z, dispz;		// dispz is used for the char location
 };
 
 

@@ -60,7 +60,7 @@ P_ITEM search_boat_by_plank(P_ITEM pl);
 
 namespace boats
 {
-	LOGICAL boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2);
+	LOGICAL boat_collision(P_ITEM pBoat1,UI32 x1, UI32 y1,int dir,P_ITEM pBoat2);
 	LOGICAL collision(P_ITEM pi, Location where,int dir);
 	LOGICAL good_position(P_ITEM pBoat, Location where, int dir);
 	LOGICAL tile_check(st_multi multi,P_ITEM pBoat,map_st map,int x, int y ,int dir);

@@ -1024,8 +1024,8 @@ void loaditem()
 
 	if (pi->isInWorld())
 	{
-		int max_x = MapTileWidth  * 8;
-		int max_y = MapTileHeight * 8;
+		UI32 max_x = MapTileWidth  * 8;
+		UI32 max_y = MapTileHeight * 8;
 		mapRegions->add(pi);
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
@@ -1033,7 +1033,7 @@ void loaditem()
 			insert_boat(pi);
 		}
 
-		if ((pi->getPosition().x<0) || (pi->getPosition().y<0) || (pi->getPosition().x>max_x) || (pi->getPosition().y>max_y))	// lord bianry
+		if ((pi->getPosition().x>max_x) || (pi->getPosition().y>max_y))	// lord bianry
 			pi->deleteItem();
 	}
 

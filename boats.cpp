@@ -1027,20 +1027,20 @@ LOGICAL boats::collision(P_ITEM pi,Location where,int dir)
 	return false;
 }
 
-
-///////////////////////////////////////////////////////////////////
-// Function name     : boat_collision
-// Description       : check if 2 boat are put upon // sovrapposte?
-// Return type       : bool true: collision     false: no collision
-// Author            : Elcabesa
-// Changes           : none yet
-LOGICAL boats::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2)
+/*!
+ \brief Check if 2 boats are put upon
+ \author Elcabesa
+ \return true if collision, else false
+ \param pBoat1 first boat
+ \param pBoat2 second boat
+ */
+LOGICAL boats::boat_collision(P_ITEM pBoat1,UI32 x1, UI32 y1,int dir,P_ITEM pBoat2)
 {
 	char temp[TEMP_STR_SIZE];
 
 	int i,j;
 
-	int x,y;
+	UI32 x,y;
 	SI32 length1,length2;			// signed long int on Intel
 	st_multi multi1,multi2;
 	MULFile *mfile1,*mfile2;
@@ -1150,8 +1150,8 @@ P_ITEM boats::GetBoat(Location pos)
 		P_ITEM pBoat=boat.p_serial;
 		if(!ISVALIDPI(pBoat))
 			continue;
-		int xx= abs((int)pos.x - boat.p_serial->getPosition().x);
-		int yy= abs((int)pos.y - boat.p_serial->getPosition().y);
+		UI32 xx= ( pos.x < boat.p_serial->getPosition().x ? pos.x - boat.p_serial->getPosition().x : boat.p_serial->getPosition().x - pos.x );
+		UI32 yy= ( pos.y < boat.p_serial->getPosition().y ? pos.y - boat.p_serial->getPosition().y : boat.p_serial->getPosition().y - pos.y );
 		double dist=hypot(xx, yy);
 		if(dist<10)
 		{

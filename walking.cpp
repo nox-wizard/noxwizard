@@ -122,7 +122,7 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if ((opos.x==scan_x) || (opos.x==scan_x+1))
+				if ((opos.x==scan_x) || (opos.x==scan_x+1u))
 				{
 					if (opos.y==scan_y)
 					{
@@ -139,7 +139,7 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 
 			for (scan_x=start_x;scan_x<=start_x+15;scan_x++) // find all items that have to be resend
 			{
-				if((opos.x==scan_x) || (opos.x==scan_x+1))
+				if((opos.x==scan_x) || (opos.x==scan_x+1u))
 				{
 					if(opos.y==scan_y)
 					{
@@ -158,7 +158,7 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 			{
 				if(opos.x==scan_x)
 				{
-					if((opos.y==scan_y) || (opos.y==scan_y+1))
+					if((opos.y==scan_y) || (opos.y==scan_y+1u))
 					{
 						return true;
 					}
@@ -176,7 +176,7 @@ bool IsSeenFirstTime( P_CHAR pc, cObject* po )
 			{
 				if(opos.x==scan_x)
 				{
-					if((opos.y==scan_y) || (opos.y==scan_y+1))
+					if((opos.y==scan_y) || (opos.y==scan_y+1u))
 					{
 						return true;
 					}
@@ -550,8 +550,8 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		}
 		else	// Multi Tile
 		{
-			if ( (abs(pi->getPosition().x - (int)pc->getPosition().x)<=BUILDRANGE) &&
-				 (abs(pi->getPosition().y - (int)pc->getPosition().y)<=BUILDRANGE) )
+			if ( (abs((SI32)pi->getPosition().x - (SI32)pc->getPosition().x) <=BUILDRANGE) &&
+				 (abs((SI32)pi->getPosition().y - (SI32)pc->getPosition().y)<=BUILDRANGE) )
 			{
 				MULFile *mfile = NULL;
 				SI32 length = 0;
