@@ -649,6 +649,7 @@ SERIAL cItem::PileItem(P_ITEM pItem)
 		pItem->amount=(amount+pItem->amount)-65535;
 		amount=65535;
 		pItem->Refresh();
+		return INVALID;
 	}
 	else
 	{
