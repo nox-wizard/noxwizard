@@ -882,7 +882,7 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			give=58981;
 		}
 		if (give) { //Luxor
-			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin_1", pc_currchar );
+			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin_1", pc_currchar->getBackpack() );
 			if ( ISVALIDPI( pGold ) )
 				pGold->setAmount( give );
 		}
