@@ -1,3 +1,55 @@
+2004-07-22	ai_wintermute
+	* nox-wizard.cpp 1.104:
+		fixed two naming bug sin char create
+
+	* dbl_single_click.cpp 1.71:
+	* magic.cpp 1.57:
+	* targeting.cpp 1.84:
+	* trade.cpp 1.32:
+		fixed further naming bugs
+
+2004-07-21	ai_wintermute
+	* items.cpp 1.67:
+		fixed a bug in decaying items
+
+2004-07-19	ai_wintermute
+	* coord.cpp 1.9:
+		fixed a bug for resource maps occuring when the z index was used 
+		as the distinguishing factor for the map selection
+
+	* resourcemap.cpp 1.14:
+		fixed a bug in resource string maps
+
+2004-07-16	ai_wintermute
+	* sndpkg.cpp 1.68:
+		changed showhsicon, so that all the icons in the world are 
+		displayed as gems
+
+2004-07-14	ai_wintermute
+	* amx/amxwraps.cpp 1.179:
+	* constants.h 1.31:
+	* resourcemap.cpp 1.13:
+	* resourcemap.h 1.7:
+		added string saving capability for resourcemaps in form of two 
+		new types RESOURCE_STRINGSTRING and RESOURCELOCATIONSTRING
+
+	* amx/amxwraps.cpp 1.180:
+	* set.cpp 1.57:
+	* set.h 1.29:
+		added set function to get all chars of an account and pdump, 
+		loaddefaults native functions
+
+2004-07-13	ai_wintermute
+	* tmpeff.cpp 1.40:
+		fixed a typo in temp effects execution that lead to a server 
+		crash if one of the targets was an item
+
+	* coord.cpp 1.8:
+	* resourcemap.cpp 1.12:
+	* resourcemap.h 1.6:
+		fixed a bug location resource maps occuring if the index key was 
+		the same in the first key
+
 2004-07-12	ai_wintermute
 	* amx/amxwrap2.cpp 1.98:
 	* amx/amxwraps.cpp 1.177:

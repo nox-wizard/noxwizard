@@ -970,9 +970,9 @@ void cNetwork::enterchar(int s)
 		pc->hidden=UNHIDDEN;
 
 	pc->wresmove=0;	//Luxor
-	pc->teleport();
 
 	Calendar::commitSeason(pc);
+	pc->teleport();
 
 }
 
