@@ -150,6 +150,7 @@ bool cGmpagesMap::deletePage(SERIAL serial,UI08 page_num){
 				page_del->getNextPage()->setPrevPage(page_del->getPrevPage());
 
 			delete page_del;
+			optimize_page_indexes(serial);
 			return true;
 		
 		}
@@ -219,10 +220,12 @@ SERIAL_VECTOR cGmpagesMap::getAllPagers(){
 	return vect;
 }
 
-void cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages indexes (page_number) not used for the moment
+bool cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages indexes (page_number) not used for the moment
 	
 	P_GMPAGE tmp_page = NULL;
-	tmp_page = findPage (serial);
+	
+	if ((tmp_page = findPage (serial))== NULL) //No need to rearrange pages id.
+			return false;
 
 	do{
 		if( tmp_page->getNextPage()->getPageNumber() != (tmp_page->getPageNumber() + 1))
@@ -233,9 +236,12 @@ void cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages index
 		tmp_page = tmp_page->getNextPage();
 
 	}while(tmp_page->getNextPage() != NULL);
+	return true;
 }
 
 
-   cGmpagesMap* pages = new cGmpagesMap(); // Creates the page map. 
+   
+
+cGmpagesMap* pages = new cGmpagesMap(); // Creates the page map. 
 
 
