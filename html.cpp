@@ -68,17 +68,20 @@ void updatehtml()//HTML
 	FILE *html;
 
 	cScpIterator* iter = NULL;
-    char script1[1024];
-    char script2[1024];
+	//char script1[1024];
+	//char script2[1024];
+	std::string script1;
+	std::string script2;
 
 	strcpy(sect,"SECTION ONLINE");
 
-    iter = Scripts::HtmlStrm->getNewIterator(sect);
-    if (iter==NULL) return;
-	strcpy(script1, iter->getEntry()->getFullLine().c_str()); //discard  {
+	iter = Scripts::HtmlStrm->getNewIterator(sect);
+	if (iter==NULL)
+		return;
+	script1 = iter->getEntry()->getFullLine(); //discard  {
 
-	strcpy(script1, iter->getEntry()->getFullLine().c_str());
-	strcpy(hfile, script1);
+	script1 = iter->getEntry()->getFullLine();
+	strcpy( hfile, script1.c_str() );
 
 	//html=fopen(hfile,"w+");
 	//a=remove(hfile);
@@ -96,15 +99,15 @@ void updatehtml()//HTML
 
 	do {
 		iter->parseLine(script1, script2);
-		if(!(strcmp(script1,"LINE"))) 
+		if( script1 == "LINE" )
 		{
-			fprintf(html,"%s\n",script2);
+			fprintf(html,"%s\n",script2.c_str() );
 		}
-		else if(!(strcmp(script1,"TIME"))) 
+		else if( script1 == "TIME" )
 		{
 			fprintf(html,"%s <BR>",RealTime(time_str));
 		}
-		else if(!(strcmp(script1,"NOW")))
+		else if( script1 == "NOW" )
 		{
 			P_CHAR pc= MAKE_CHAR_REF(currchar[n]);
 			//if(online(currchar[n])) //bugfix LB
@@ -114,7 +117,7 @@ void updatehtml()//HTML
 				n++;
 			}
 		}
-		else if(!(strcmp(script1,"WHOLIST")))
+		else if( script1 == "WHOLIST" )
 		{
 			a=0;
 			for (n=0;n<now;n++)
@@ -129,9 +132,11 @@ void updatehtml()//HTML
 				}
 			}
 		}
-		else if(!(strcmp(script1,"NOWNUM"))) fprintf(html,"%i",now);
-		else if(!(strcmp(script1,"ACCOUNTNUM"))) fprintf(html,"%i",Accounts->Count());
-		else if(!(strcmp(script1,"CHARCOUNT")))
+		else if( script1 == "NOWNUM")
+			fprintf(html,"%i",now);
+		else if( script1 == "ACCOUNTNUM" )
+			fprintf(html,"%i",Accounts->Count());
+		else if( script1 == "CHARCOUNT" )
 		{
 			if(ccount==0)
 			{
@@ -147,7 +152,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",ccount);
 		}
-		else if(!(strcmp(script1,"NPCS")))
+		else if( script1 == "NPCS" )
 		{
 			if(npccount==0)
 			{
@@ -163,11 +168,11 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",npccount);
 		}
-		else if(!(strcmp(script1,"ITEMCOUNT")))
+		else if( script1 == "ITEMCOUNT" )
 		{
 			//fprintf(html,"%i",itemcount);
 		}
-		else if(!(strcmp(script1,"UPTIME")))
+		else if( script1 == "UPTIME" )
 		{
 			total=(uiCurrentTime-starttime)/MY_CLOCKS_PER_SEC;
 			hr=total/3600;
@@ -184,12 +189,12 @@ void updatehtml()//HTML
 //			fprintf(html,"%s:%s:%s",sh,sm,ss);
 			fprintf(html,"%02d:%02d:%02d",hr,min,sec);
 		}
-		else if(!(strcmp(script1,"IP")))
+		else if( script1 == "IP" )
 		{
 			//ip=inet_addr(serv[str2num(script2)-1][1]);
 			fprintf(html,serv[str2num(script2)-1][1]);
 		}
-		else if(!(strcmp(script1,"GMNUM")))
+		else if( script1 == "GMNUM" )
 		{
 			if(gm==0)
 			{
@@ -204,7 +209,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",gm);
 		}
-		else if(!(strcmp(script1,"CNSNUM")))
+		else if( script1 == "CNSNUM" )
 		{
 			if(cns==0)
 			{
@@ -219,7 +224,7 @@ void updatehtml()//HTML
 			}
 			fprintf(html,"%i",cns);
 		}
-		else if(!(strcmp(script1,"PDUMP")))
+		else if( script1 == "PDUMP" )
 		{
 			fprintf(html,"Network code: %fmsec [%i samples] <BR>",(float)((float)networkTime/(float)networkTimeCount),  networkTimeCount);
 			fprintf(html,"Timer code: %fmsec [%i samples] <BR>" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
@@ -231,15 +236,15 @@ void updatehtml()//HTML
 			else fprintf(html,"Simulation Cylces: too fast to be measured <BR>");
 
 		}
-		else if(!(strcmp(script1,"SIMCYC"))) // bugfix LB
+		else if( script1 == "SIMCYC" )
 		{
 			if (!(loopTime <eps ||  loopTimeCount<eps))
 				fprintf(html,"%f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 			else fprintf(html,"too fast to be measured");
 		}
-		else if(!(strcmp(script1,"UDTIME")))	fprintf(html,"%f",(float)(SrvParms->html/60));
-
-			if(!(strcmp(script1,"VER"))) fprintf(html,"%s %s [%s]",VER, VERNUMB, OS);
+		else if( script1 == "UDTIME" )
+			fprintf(html,"%f",(float)(SrvParms->html/60));
+		else if( script1 == "VER" ) fprintf(html,"%s %s [%s]",VER, VERNUMB, OS);
 	} while( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 	fclose(html);
