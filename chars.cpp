@@ -290,7 +290,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetAmxEvents();
 	prevX = prevY = prevZ = 0;
 	ResetGuildTraitor();
-	SetGuildType( INVALID );
+	guildType = INVALID;
 	magicsphere = 0;
 	resetResists();
 	lightdamaged = false;
@@ -573,40 +573,16 @@ void cChar::resetLockSkills()
 
 
 /*!
-\brief return the guild type
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return short type of guild. INVALID = no guild 0 = standard guild 1 = order guild 2 = chaos guild
-*/
-short cChar::GetGuildType()
-{
-	return guildType;
-}
-
-/*!
 \brief set the guild type
 \author Sparhawk
 \date 31/08/2002
 \since 0.82
 \param newGuildType value must be between INVALID and MAX_GUILDTYPE
 */
-void cChar::SetGuildType(short newGuildType)
+void cChar::SetGuildType(SI08 newGuildType)
 {
 	if ( newGuildType >= INVALID && newGuildType <= MAX_GUILDTYPE )
 		guildType = newGuildType;
-}
-
-/*!
-\brief return guild traitor status
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return bool: true is traitor
-*/
-LOGICAL cChar::IsGuildTraitor()
-{
-	return guildTraitor;
 }
 
 /*!
@@ -632,18 +608,6 @@ void cChar::ResetGuildTraitor()
 }
 
 /*!
-\brief return guild title toggle status
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return true is show title
-*/
-LOGICAL	cChar::HasGuildTitleToggle()
-{
-	return guildToggle;
-}
-
-/*!
 \brief set guild title toggle
 \author Sparhawk
 \date 31/08/2002
@@ -666,18 +630,6 @@ void cChar::ResetGuildTitleToggle()
 }
 
 /*!
-\brief return the guild fealty
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return serial of guild fealty
-*/
-SERIAL cChar::GetGuildFealty()
-{
-	return guildFealty;
-}
-
-/*!
 \brief set the guild fealty
 \author Sparhawk
 \date 31/08/2002
@@ -690,18 +642,6 @@ void cChar::SetGuildFealty(SERIAL newGuildFealty)
 }
 
 /*!
-\brief return the guild number
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return guild number
-*/
-SI32 cChar::GetGuildNumber()
-{
-	return guildNumber;
-}
-
-/*!
 \brief set the guild number
 \author Sparhawk
 \date 31/08/2002
@@ -711,18 +651,6 @@ SI32 cChar::GetGuildNumber()
 void cChar::SetGuildNumber(SI32 newGuildNumber)
 {
 	guildNumber = newGuildNumber;
-}
-
-/*!
-\brief return the guild title
-\author Sparhawk
-\date 31/08/2002
-\since 0.82
-\return guild title
-*/
-TEXT* cChar::GetGuildTitle()
-{
-	return guildTitle;
 }
 
 /*!
@@ -741,11 +669,6 @@ void cChar::SetGuildTitle(TEXT* newGuildTitle)
 		strncpy( guildTitle, newGuildTitle, ( sizeof( guildTitle ) - 1 ) );
 		guildTitle[ sizeof( guildTitle ) - 1 ] = '\0';
 	}
-}
-
-SI32 cChar::getStrength()
-{
-	return str.value;
 }
 
 void cChar::setStrength(UI32 val, bool check/*= true*/)
@@ -768,20 +691,6 @@ void cChar::modifyStrength(SI32 mod, bool check)
 {
 	setStrength( str.value + mod, check );
 }
-
-
-
-/*!
-\brief return the day this was created
-\author punt
-\date 15/04/2001
-\return unsigned long: creation day in seconds since EPOCH time
-*/
-TIMERVAL cChar::GetCreationDay()
-{
-	return creationday;
-}
-
 
 /*!
 \brief set the day the char was created
@@ -1001,7 +910,7 @@ void cChar::SetGrey()
 
 Searches the character recursively, counting the items of the given ID and (if given) color
 */
-UI32 cChar::CountItems(short ID, short col)
+const UI32 cChar::CountItems(short ID, short col) 
 {
 	P_ITEM pi= getBackpack();
 	return (ISVALIDPI(pi))? pi->CountItems(ID, col) : 0 ;
@@ -1050,15 +959,6 @@ P_ITEM cChar::getShield()
 		return pi;
 	else
 		return NULL;
-}
-
-/*!
-\brief Show Backpack to player
-\author GHisha
-*/
-void cChar::showBackpack()
-{
-	showContainer( getBackpack() );
 }
 
 /*!
@@ -1124,15 +1024,12 @@ P_ITEM cChar::getBackpack()
 {
 	P_ITEM pi=pointers::findItemBySerial(packitemserial);
 	if (ISVALIDPI(pi))
-	{
 		if ( pi->getContSerial() == getSerial32() && pi->layer == LAYER_BACKPACK )
 			return pi;
-	}
 
 
 // - For some reason it's not defined, so go look for it and
 // record it for next time
-
 
 	pi=GetItemOnLayer(LAYER_BACKPACK);
 	if( ISVALIDPI(pi) )
@@ -1169,7 +1066,7 @@ void cChar::setMultiSerial(long mulser)
 		pointers::addToMultiMap(this);
 }
 
-/*
+#if 0
 bool cChar::incDecDex(short val)
 {
 	dx2 += val;
@@ -1186,15 +1083,7 @@ bool cChar::incDecDex(short val)
 		return false;
 	}
 }
-*/
-
-/*!
-\author Anthalir
-*/
-void cChar::MoveTo(SI32 x, SI32 y, SI08 z)
-{
-	MoveTo( Loc(x, y, z) );
-}
+#endif
 
 /*!
 \author Anthalir
@@ -1260,21 +1149,11 @@ void cChar::sysmsg(TEXT *txt, ...)
 }
 
 /*!
-\author Xanathar, rewritten by Luxor
-\brief get the client
-\return the client
-*/
-NXWCLIENT cChar::getClient() const
-{
-	return m_client;
-}
-
-/*!
 \author Luxor
 \brief gets the character current socket
 \return the socket
 */
-NXWSOCKET cChar::getSocket() const
+const NXWSOCKET cChar::getSocket() const
 {
         if ( npc )
 		return INVALID;
@@ -1551,11 +1430,6 @@ LOGICAL const cChar::IsOnline() const
 		return true;
 
 	return false;
-}
-
-LOGICAL const cChar::IsFrozen() const
-{
-	return ((priv2&CHRPRIV2_FROZEN)!=0);
 }
 
 /*!
@@ -2219,34 +2093,6 @@ SI32 cChar::delItems(short id, SI32 amount, short color)
 }
 
 /*!
-\author Luxor
-\brief Makes the char casting a spell
-\param spellnumber Spell identifier
-\param dest target location of the spell
-\todo Document parameters
-*/
-void cChar::castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags, SI32 param)
-{
-	magic::castSpell(spellnumber, dest, this, flags, param);
-}
-
-/*!
-\author Luxor
-\brief checks a skill for success (with sparring check)
-\return true if success
-\param sk skill
-\param low low bound
-\param high high bound
-\todo document pcd parameter
-*/
-LOGICAL cChar::checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
-{
-	return (0!=Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd));
-}
-
-
-
-/*!
 \brief Get the amount of the given id, color
 \author Luxor, modified by Endymion for color and pack check
 \return amount
@@ -2538,18 +2384,6 @@ void cChar::resurrect( NXWCLIENT healer )
 
 /*!
 \author Xanathar
-\brief Checks char weight
-\note this function modify the class variable, very bad...
-\return true if the char is over weight
-*/
-LOGICAL const cChar::IsOverWeight()
-{
-	if (IsGM()) return false;
-	return weights::CheckWeight2(this)!=0;
-}
-
-/*!
-\author Xanathar
 \brief Sets owner fields
 \param owner new owner
 */
@@ -2786,16 +2620,6 @@ void cChar::possess(P_CHAR pc)
 	
 	//Let's go! :)
 	Network->enterchar( socket );
-}
-
-/*!
-\brief Jails a char
-\author Xanathar
-\param seconds second to jail the character for
-*/
-void cChar::jail (SI32 seconds)
-{
-	prison::jail( NULL, this, seconds );
 }
 
 /*!
@@ -3372,84 +3196,14 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	return 0;
 }
 
-BODYTYPE cChar::GetBodyType() const
-{
-	return (BODYTYPE) id;
-}
-
 void cChar::SetBodyType(BODYTYPE newBody)
 {
 	id = newBody;
 }
 
-BODYTYPE cChar::GetOldBodyType() const
-{
-	return (BODYTYPE) xid;
-}
-
 void cChar::SetOldBodyType(BODYTYPE newBody)
 {
 	xid = newBody;
-}
-
-const LOGICAL cChar::HasHumanBody() const
-{
-	return ((id==BODY_MALE) || (id==BODY_FEMALE));
-}
-
-const LOGICAL cChar::IsTrueGM() const
-{
-	return (priv&CHRPRIV_GM);
-}
-
-const LOGICAL cChar::IsGM() const
-{
-	return (priv&CHRPRIV_GM && (!gmrestrict || (region==gmrestrict))) || (account == 0);
-}
-
-LOGICAL const cChar::IsCounselor() const
-{
-	return (priv&CHRPRIV_COUNSELOR);
-}
-
-const LOGICAL cChar::IsGMorCounselor() const
-{
-	return (priv&(CHRPRIV_COUNSELOR|CHRPRIV_GM));
-}
-
-const LOGICAL cChar::IsInvul() const
-{
-	return (priv&CHRPRIV_INVUL);
-}
-
-const LOGICAL cChar::CanSnoop() const
-{
-	return (priv&CHRPRIV_CANSNOOPALL);
-}
-
-const LOGICAL cChar::CanBroadcast() const
-{
-	return (priv&CHRPRIV_BROADCAST);
-}
-
-const LOGICAL cChar::CanSeeSerials() const
-{
-	return (priv&CHRPRIV_CANVIEWSERIALS);
-}
-
-const LOGICAL cChar::IsInnocent() const
-{
-	return (flag&CHRFLAG_INNOCENT);
-}
-
-const LOGICAL cChar::IsMurderer() const
-{
-	return (flag&CHRFLAG_MURDERER);
-}
-
-const LOGICAL cChar::IsCriminal() const
-{
-	return (flag&CHRFLAG_CRIMINAL);
 }
 
 const LOGICAL cChar::IsGrey() const
@@ -3461,16 +3215,6 @@ const LOGICAL cChar::IsGrey() const
 			return true;
 		else
 			return false;
-}
-
-const LOGICAL cChar::InGuardedArea() const
-{
-	return ::region[region].priv & RGNPRIV_GUARDED;
-}
-
-UI08 cChar::GetPriv() const
-{
-	return priv;
 }
 
 void cChar::SetPriv(UI08 p)
@@ -3486,11 +3230,6 @@ void cChar::MakeInvulnerable()
 void cChar::MakeVulnerable()
 {
 	priv &= ~CHRPRIV_INVUL;
-}
-
-SI08 cChar::GetPriv2() const
-{
-	return priv2;
 }
 
 void cChar::SetPriv2(SI08 p)
@@ -3534,44 +3273,14 @@ void cChar::SetPermaGrey()
 	nxwflags[0]|=NCF0_GREY+NCF0_PERMAGREY;
 }
 
-LOGICAL cChar::isBeingTrained()
-{
-	return (trainer != INVALID);
-}
-
-SERIAL	cChar::getTrainer()
-{
-	return trainer;
-}
-
-char cChar::getSkillTaught()
-{
-	return trainingplayerin;
-}
-
-LOGICAL cChar::canTrain()
-{
-	return cantrain;
-}
-
 void cChar::setCanTrain()
 {
 	cantrain = true;
 }
 
-LOGICAL	cChar::IsWearing(P_ITEM pi)
-{
-	return (getSerial32() == pi->getContSerial());
-}
-
 void cChar::resetCanTrain()
 {
 	cantrain = false;
-}
-
-LOGICAL cChar::HasAttackedFirst()
-{
-	return attackfirst;
 }
 
 void cChar::SetAttackFirst()
@@ -3582,26 +3291,6 @@ void cChar::SetAttackFirst()
 void cChar::ResetAttackFirst()
 {
 	attackfirst = false;
-}
-
-LOGICAL const cChar::IsHidden() const
-{
-	return (hidden != UNHIDDEN);
-}
-
-LOGICAL const cChar::IsHiddenBySpell() const
-{
-	return ( (hidden & HIDDEN_BYSPELL)!=0);
-}
-
-LOGICAL const cChar::IsHiddenBySkill() const
-{
-	return ((hidden & HIDDEN_BYSKILL)!=0);
-}
-
-UI32 cChar::CountGold()
-{
-	return CountItems(ITEMID_GOLD);
 }
 
 void cChar::doSingleClickOnCharacter( SERIAL serial )
@@ -4005,17 +3694,6 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 }
 
 /*!
-\brief return the karma of the char
-\author Anthalir
-\since 0.82a
-\return the karma of the char
-*/
-const SI32 cChar::GetKarma() const
-{
-	return karma;
-}
-
-/*!
 \brief set the karma of the char
 \author Anthalir
 \since 0.82a
@@ -4024,18 +3702,6 @@ const SI32 cChar::GetKarma() const
 void cChar::SetKarma(SI32 newkarma)
 {
 	karma= newkarma;
-}
-
-
-/*!
-\brief return the fame of the char
-\author Endymion
-\since 0.82a
-\return fame of the char
-*/
-const SI32 cChar::GetFame() const
-{
-	return fame;
 }
 
 /*!
@@ -4047,12 +3713,6 @@ const SI32 cChar::GetFame() const
 void cChar::SetFame(SI32 newfame)
 {
 	fame=newfame;
-}
-
-
-const LOGICAL cChar::isOwnerOf(const cObject *obj) const
-{
-	return (getSerial32() == obj->getOwnerSerial32());
 }
 
 /*!
@@ -4074,16 +3734,6 @@ void cChar::drink(P_ITEM pi)
 }
 
 /*!
-\brief check if guilded
-\author Endymion
-\return true if the char is guilded
-*/
-bool cChar::isGuilded()
-{
-	return ISVALIDGUILD( getGuild() );
-}
-
-/*!
 \brief set Guild
 \author Endymion
 \param newGuild the guild serial
@@ -4091,16 +3741,6 @@ bool cChar::isGuilded()
 void cChar::setGuild( SERIAL newGuild )
 {
 	guild = newGuild;
-}
-
-/*!
-\brief get Guild
-\author Endymion
-\return guild serial
-*/
-SERIAL cChar::getGuild()
-{
-	return guild;
 }
 
 /*!
@@ -4147,33 +3787,14 @@ void cChar::openSpecialBank(P_CHAR pc)
 }
 
 
-UI16 cChar::getSkinColor()
-{
-	return (UI16) skin;
-}
-
 void cChar::setSkinColor( UI16 newColor )
 {
 	skin = newColor;
 }
 
-UI16 cChar::getOldSkinColor()
-{
-	return (UI16) xskin;
-}
-
 void cChar::setOldSkinColor( UI16 newColor )
 {
 	xskin = newColor;
-}
-
-/*!
-\author Luxor
-\brief tells if a character is running
-*/
-LOGICAL cChar::isRunning()
-{
-	return ( (uiCurrentTime - lastRunning) <= 100 );
 }
 
 /*!
@@ -4762,7 +4383,7 @@ void cChar::checkPoisoning()
 	}
 }
 
-/*NOT USED NOW IS NOT GOOD FOR BIG SHARD
+#if 0
 void cChar::restock()
 {
 	if ( npc && shopkeeper && TIMEOUT( shoprestocktime ) && SrvParms->shoprestock == 1 )
@@ -4800,7 +4421,8 @@ void cChar::restock()
 		}
 	}
 }
-*/
+#endif
+
 void cChar::do_lsd()
 {
 	if (rand()%15==0)
@@ -4874,11 +4496,6 @@ void cChar::do_lsd()
 
 }
 
-bool cChar::isTargeting()
-{
-	return (current_target!=NULL);
-}
-
 void cChar::setTarget( P_TARGET newtarget )
 {
 	if( current_target!=NULL )
@@ -4894,11 +4511,6 @@ void cChar::doTarget()
 	}
 }
 
-wstring* cChar::getProfile()
-{
-	return profile;
-}
-
 void cChar::setProfile( wstring* newProfile )
 {
 	if( profile!=NULL )
@@ -4911,16 +4523,6 @@ void cChar::resetProfile()
 	profile=NULL;
 }
 	
-/*
-\brief Return current speech
-\author Endymion
-\return current speech
-*/
-wstring* cChar::getSpeechCurrent()
-{
-	return speechCurrent;
-}
-
 /*
 \brief Set current speech
 \author Endymion
@@ -4990,7 +4592,8 @@ void cChar::updateRegenTimer( StatType stat )
 	if( stat>=ALL_STATS ) return;
 	regens[stat].timer= uiCurrentTime+ regens[stat].rate_eff*MY_CLOCKS_PER_SEC;
 }
-/*
+
+#if 0
 LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 {
 	if( eventId < ALLCHAREVENTS )
@@ -4998,16 +4601,7 @@ LOGICAL cChar::isValidAmxEvent( UI32 eventId )
 	else
 		return false;
 }
-*/
-/*
-\brief Check if char is stabled
-\author Endymion
-\return true if stabled
-*/
-bool cChar::isStabled()
-{
-	return (getStablemaster()!=INVALID);
-}
+#endif
 
 /*
 \brief Stable the character
@@ -5033,12 +4627,3 @@ void cChar::unStable()
 	stablemaster_serial=INVALID;
 }
 
-/*
-\brief Get the character's stablemaster
-\author Endymion
-\return the stable master
-*/
-SERIAL cChar::getStablemaster()
-{
-	return stablemaster_serial;
-}

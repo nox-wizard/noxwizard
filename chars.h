@@ -23,6 +23,9 @@
 #include "msgboard.h"
 #include "target.h"
 #include "constants.h"
+#include "weight.h"
+#include "skills.h"
+#include "jail.h"
 
 //@{
 /*!
@@ -180,7 +183,7 @@ class cChar : public cObject
 		static void		safeoldsave();
 	public:
 		void			MoveTo(Location newloc);
-		void			MoveTo(SI32 x, SI32 y, SI08 z);
+		void			MoveTo(UI16 x, SI32 y, SI08 z) { MoveTo( Loc(x, y, z) ); }
 		void 			loadEventFromScript(TEXT *script1, TEXT *script2);
 //@{
 /*!
@@ -188,7 +191,7 @@ class cChar : public cObject
  \brief Guild related functions and attributes
 */
 	private:
-		short 			guildType;		//!< (0) Standard guild, (1) Chaos Guild, (2) Order guild
+		SI08 			guildType;		//!< (0) Standard guild, (1) Chaos Guild, (2) Order guild
 		LOGICAL			guildTraitor;		//!< (true) This character converted, (false) Neve converted, or not an order/chaos guild member
 		LOGICAL			guildToggle;		//!< Toggle for Guildtitle
 		SERIAL			guildFealty;		//!< Serial of player you are loyal to (default=yourself)
@@ -196,25 +199,25 @@ class cChar : public cObject
 		TEXT			guildTitle[21];		//!< Title Guildmaster granted player
 
 	public:
-		void			SetGuildType( short newGuildType );
-		short			GetGuildType();
+		void			SetGuildType( SI08 newGuildType );
+		const SI08		GetGuildType() const { return guildType; } //!< return the guild type
 
-		LOGICAL			IsGuildTraitor();
+		const LOGICAL		IsGuildTraitor() const { return guildTraitor; } //!< return guild traitor status
 		void			SetGuildTraitor();
 		void			ResetGuildTraitor();
 
-		LOGICAL			HasGuildTitleToggle();
+		const LOGICAL		HasGuildTitleToggle() const { return guildToggle; } //!< return guild title toggle status
 		void			SetGuildTitleToggle();
 		void			ResetGuildTitleToggle();
 
-		SERIAL			GetGuildFealty();
+		const SERIAL		GetGuildFealty() const { return guildFealty; } //!< return the guild fealty
 		void			SetGuildFealty( SERIAL newGuildFealty );
 
-		SI32			GetGuildNumber();
+		const SI32		GetGuildNumber() const { return guildNumber; } //!< return the guild number
 		void			SetGuildNumber( SI32 newGuildNumber );
 
 		void			SetGuildTitle( TEXT *newGuildTitle );
-		TEXT*			GetGuildTitle();
+		TEXT*			GetGuildTitle() { return guildTitle; } //!< return the guild title
 //@}
 
 //@{
@@ -235,7 +238,8 @@ class cChar : public cObject
 		TIMERVAL		creationday;			//!< Day since EPOCH this character was created on
 	public:
 		void			SetCreationDay(TIMERVAL day);	//!< Set the creation day of a character
-		TIMERVAL		GetCreationDay();		//!< Get the creation day of a character
+		const TIMERVAL		GetCreationDay() const { return creationday; }
+			//!< Get the creation day of a character
 //@}
 
 //@{
@@ -257,7 +261,7 @@ class cChar : public cObject
 		SI32			in3;				//!< Luxor: safe intelligence value
 		SI32			statGainedToday;		//!< xan :-> for stat-gain cap
 
-		SI32			getStrength();			//!< Get the strength-value
+		const SI32		getStrength() const { return str.value; } //!< Get the strength-value
 
 		void			setStrength(UI32 val, bool check= true);
 		void			modifyStrength(SI32 mod, bool check= true);
@@ -290,11 +294,11 @@ class cChar : public cObject
 		UI16			id;				//!< Character body type
 		UI16			xid;				//!< Backup of body type for ghosts
 	public:
-		BODYTYPE		GetBodyType() const;
+		const BODYTYPE		GetBodyType() const { return (BODYTYPE)id; }
 		void			SetBodyType(BODYTYPE newBody);
-		BODYTYPE		GetOldBodyType() const;
+		const BODYTYPE		GetOldBodyType() const { return (BODYTYPE) xid; }
 		void			SetOldBodyType(BODYTYPE newBody);
-		const LOGICAL		HasHumanBody() const;
+		const LOGICAL		HasHumanBody() const { return (id==BODY_MALE) || (id==BODY_FEMALE); }
 	//
 	//	Skin Color
 	//
@@ -302,9 +306,9 @@ class cChar : public cObject
 		UI16			skin;				//!< Skin color
 		UI16			xskin;				//!< Backup of skin color
 	public:
-		UI16			getSkinColor();
+		const UI16		getSkinColor() const { return skin; }
 		void			setSkinColor( UI16 newColor );
-		UI16			getOldSkinColor();
+		const UI16		getOldSkinColor() const { return xskin; }
 		void			setOldSkinColor( UI16 newColor );
 
 		void 			showLongName( P_CHAR showToWho, LOGICAL showSerials );
@@ -319,7 +323,7 @@ class cChar : public cObject
 		LOGICAL			attackfirst;		//!< 0 = defending, 1 = attacked first
 
 	public:
-		LOGICAL			HasAttackedFirst();
+		const LOGICAL		HasAttackedFirst() const { return attackfirst; }
 		void 			SetAttackFirst();
 		void 			ResetAttackFirst();
 
@@ -334,7 +338,17 @@ class cChar : public cObject
 	public:
 		void			checkPoisoning();
 		void 			fight(P_CHAR pOpponent);
-		void			castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags = 0, SI32 param = 0);
+
+		/*!
+		\author Luxor
+		\brief Makes the char casting a spell (truly use magic::castSpell)
+		\param spellnumber Spell identifier
+		\param dest target location of the spell
+		\todo Document parameters
+		*/
+		void			castSpell(magic::SpellId spellnumber, TargetLocation& dest, SI32 flags = 0, SI32 param = 0)
+		{ magic::castSpell(spellnumber, dest, this, flags, param); }
+		
 		void			combatHit( P_CHAR pc_def, SI32 nTimeOut = 0 );
 		void			doCombat();
 		void			combatOnHorse();
@@ -372,22 +386,22 @@ class cChar : public cObject
 		SI32 			priv3[7];           //!< needed for Lord binarys meta-gm stuff
 
 	public:
-		const LOGICAL		IsTrueGM() const;
-		const LOGICAL		IsGM() const;
-		const LOGICAL		IsCounselor() const;
-		const LOGICAL		IsGMorCounselor() const;
-		const LOGICAL		IsInvul() const;
-		const LOGICAL		CanSnoop() const;
-		const LOGICAL		CanBroadcast() const;
-		const LOGICAL		CanSeeSerials() const;
+		const LOGICAL		IsTrueGM() const { return priv&CHRPRIV_GM; }
+		const LOGICAL		IsGM() const { return (priv&CHRPRIV_GM && (!gmrestrict || (region==gmrestrict))) || (account == 0); }
+		const LOGICAL		IsCounselor() const { return priv&CHRPRIV_COUNSELOR; }
+		const LOGICAL		IsGMorCounselor() const { return priv&(CHRPRIV_COUNSELOR|CHRPRIV_GM); }
+		const LOGICAL		IsInvul() const { return priv&CHRPRIV_INVUL; }
+		const LOGICAL		CanSnoop() const { return priv&CHRPRIV_CANSNOOPALL; }
+		const LOGICAL		CanBroadcast() const { return priv&CHRPRIV_BROADCAST; }
+		const LOGICAL		CanSeeSerials() const { return priv&CHRPRIV_CANVIEWSERIALS; }
 
-		UI08 			GetPriv() const;
+		UI08 			GetPriv() const { return priv; }
 		void 			SetPriv(UI08 p);
 
 		void 			MakeInvulnerable();
 		void 			MakeVulnerable();
 
-		SI08			GetPriv2() const;	//!< Temporary workaround until priv vars are settled
+		SI08			GetPriv2() const { return priv2; }	//!< Temporary workaround until priv vars are settled
 		void 			SetPriv2(SI08 p);
 //@}
 
@@ -408,17 +422,17 @@ class cChar : public cObject
 		R32				fstm;				//!< Unavowed - stamina to remove the next step
 
 	public:
-		LOGICAL const		IsInnocent() const;
-		LOGICAL const		IsMurderer() const;
-		LOGICAL const		IsCriminal() const;
+		LOGICAL const		IsInnocent() const { return flag&CHRFLAG_INNOCENT; }
+		LOGICAL const		IsMurderer() const { return flag&CHRFLAG_MURDERER; }
+		LOGICAL const		IsCriminal() const { return flag&CHRFLAG_CRIMINAL; }
 		LOGICAL const		IsGrey() const;
-		LOGICAL const 		IsHidden() const;
-		LOGICAL const 		IsHiddenBySpell() const;
-		LOGICAL const 		IsHiddenBySkill() const;
-		LOGICAL const		IsOverWeight();
-		LOGICAL const		InGuardedArea() const;
+		LOGICAL const 		IsHidden() const { return hidden != UNHIDDEN; }
+		LOGICAL const 		IsHiddenBySpell() const { return (hidden & HIDDEN_BYSPELL); }
+		LOGICAL const 		IsHiddenBySkill() const { return (hidden & HIDDEN_BYSKILL); }
+		LOGICAL const		IsOverWeight() { return !IsGM() && weights::CheckWeight2(this); } //!< Checks char weight
+		LOGICAL const		InGuardedArea() const { return ::region[region].priv & RGNPRIV_GUARDED; }
 		LOGICAL const		IsOnline() const;
-		LOGICAL const		IsFrozen() const;
+		LOGICAL const		IsFrozen() const { return ((priv2&CHRPRIV2_FROZEN)!=0); }
 		LOGICAL const		CanDoGestures() const;
 
 		void 			SetMurderer();
@@ -428,11 +442,11 @@ class cChar : public cObject
 		void 			SetGrey();
 		void 			unHide();
 
-		const SI32		GetKarma() const;
+		const SI32		GetKarma() const { return karma; } //!< return the karma of the char
 		void			SetKarma(SI32 newkarma);
 		void			IncreaseKarma(SI32 value, P_CHAR killed=NULL);
 
-		const SI32		GetFame() const;
+		const SI32		GetFame() const { return fame; } //!< return the fame of the char
 		void			SetFame(SI32 newfame);
 		void			modifyFame( SI32 value );
 //@}
@@ -442,7 +456,7 @@ class cChar : public cObject
 \name Char Equipment
 */
 	public:
-		LOGICAL			IsWearing(P_ITEM pi);
+		const LOGICAL		IsWearing(P_ITEM pi) const { return getSerial32() == pi->getContSerial(); }
 		SI32			Equip(P_ITEM pi, LOGICAL drag = false);
 		SI32			UnEquip(P_ITEM pi, LOGICAL drag = false);
 		void			checkEquipement();
@@ -538,12 +552,12 @@ class cChar : public cObject
 		LOGICAL			cantrain;
 
 	public:
-		LOGICAL			isBeingTrained();
-		SERIAL			getTrainer();
+		const LOGICAL		isBeingTrained() const { return trainer != INVALID; }
+		const SERIAL		getTrainer() const { return trainer; }
 
-		char			getSkillTaught();
+		const UI08		getSkillTaught() const { return trainingplayerin; }
 
-		LOGICAL			canTrain();
+		const LOGICAL		canTrain() const { return cantrain; }
 		void			setCanTrain();
 		void			resetCanTrain();
 //@}
@@ -569,14 +583,15 @@ class cChar : public cObject
 //@{
 /*!
 \name Guilds
+\author Endymion
 */
 	private:
 		SERIAL			guild; //!< Serial of guild
 
 	public:
-		bool			isGuilded();
+		const LOGICAL		isGuilded() const { return ISVALIDGUILD( guild ); } //!< check if guilded
 		void			setGuild(SERIAL newGuild);
-		SERIAL			getGuild();
+		const SERIAL		getGuild() const { return guild; } //!< get guild
 //@}
 
 //@{
@@ -587,7 +602,7 @@ class cChar : public cObject
 		P_TARGET		current_target; //!< target
 
 	public:
-		bool			isTargeting();
+		const LOGICAL		isTargeting() const { return current_target; }
 		void			setTarget( P_TARGET newtarget );
 		void			doTarget();
 //@}
@@ -622,7 +637,7 @@ public:
 	/********************************/
 	public:
 		void 			setMultiSerial(long mulser);
-		const LOGICAL		isOwnerOf(const cObject *obj) const;
+		const LOGICAL		isOwnerOf(const cObject *obj) const { return getSerial32() == obj->getOwnerSerial32(); }
 
 	/********************************/
 
@@ -672,14 +687,14 @@ public:
 	private:
 		wstring* profile; //!< player profile
 	public:
-		wstring* getProfile();
+		wstring* getProfile() const { return profile; }
 		void setProfile( wstring* profile );
 		void resetProfile();
 
 	private:
 		wstring* speechCurrent;
 	public:
-		wstring* getSpeechCurrent();
+		wstring* getSpeechCurrent() const { return speechCurrent; } //!< Return current speech
 		void setSpeechCurrent( wstring* speech );
 		void resetSpeechCurrent();
 		void deleteSpeechCurrent();
@@ -687,8 +702,8 @@ public:
 	private:
 		SERIAL	stablemaster_serial; //!< the stablemaster serial
 	public:
-		bool isStabled();
-		SERIAL getStablemaster();
+		const LOGICAL isStabled() const { return stablemaster_serial!=INVALID; } //!< Check if char is stabled
+		const SERIAL getStablemaster() const { return stablemaster_serial; } //!< Get the character's stablemaster
 		void stable( P_CHAR stablemaster );
 		void unStable();
 
@@ -876,7 +891,7 @@ public:
 
 	public:
 
-		LOGICAL			isRunning();
+		const LOGICAL		isRunning() const { return (uiCurrentTime - lastRunning) <= 100; } //!< tells if a character is running
 		void			setRunning();
 		void 			updateStats(SI32 stat);
 
@@ -886,8 +901,8 @@ public:
 		void                    drink(P_ITEM pi);       //Luxor: delayed drinking
 		void 			hideBySkill();
 		void 			hideBySpell(SI32 timer = INVALID);
-		UI32  			CountItems(short ID, short col= INVALID);
-		UI32  			CountGold();
+		const UI32		CountItems(short ID, short col= INVALID);
+		const UI32		CountGold() { return CountItems(ITEMID_GOLD); }
 		P_ITEM 			GetItemOnLayer(UI08 layer);
 		P_ITEM 			GetBankBox( short type = BANK_GOLD);
 		void			openBankBox( P_CHAR pc );
@@ -900,7 +915,7 @@ public:
 		P_ITEM 			getShield();
 		void			showContainer( P_ITEM pCont );
 		P_ITEM 			getBackpack();
-		void			showBackpack();
+		void			showBackpack() { showContainer( getBackpack() ); } //!< Show Backpack to player
 		LOGICAL			isInBackpack( P_ITEM pi );
 
 
@@ -916,10 +931,10 @@ public:
 		SI32			getTeachingDelta(P_CHAR pPlayer, SI32 skill, SI32 sum);
 		void			removeItemBonus(cItem* pi);
 		LOGICAL			isSameAs(P_CHAR pc) {if (pc && (pc->getSerial32() == getSerial32())) return true; else return false;}
-		LOGICAL			resist(SI32 n)		 { return ((nxwflags[0]&n)!=0); }    // <-- what is this ?, xan
+		LOGICAL			resist(SI32 n) const { return ((nxwflags[0]&n)!=0); }    // <-- what is this ?, xan
 
-		NXWCLIENT		getClient() const;
-		NXWSOCKET		getSocket() const;
+		const NXWCLIENT		getClient() const { return m_client; }
+		const NXWSOCKET		getSocket() const;
 		void			sysmsg(TEXT *txt, ...);
 		void			attackStuff(P_CHAR pc);
 		void			helpStuff(P_CHAR pc_i);
@@ -958,9 +973,19 @@ public:
 
 		void			freeze();
 		LOGICAL			checkSkill(Skill sk, SI32 low, SI32 high, LOGICAL bRaise = true);
-		LOGICAL			checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd);
 		SI32			delItems(short id, SI32 amount = 1, short color = INVALID);
 
+		/*!
+		\author Luxor
+		\brief checks a skill for success (with sparring check) (call Skills::CheckSkillSparrCheck)
+		\return true if success
+		\param sk skill
+		\param low low bound
+		\param high high bound
+		\todo document pcd parameter
+		*/
+		LOGICAL			checkSkillSparrCheck(Skill sk, SI32 low, SI32 high, P_CHAR pcd)
+		{ return (Skills::CheckSkillSparrCheck(DEREF_P_CHAR(this),sk, low, high, pcd)); }
 
 
 		UI32			getAmount(short id, short col=INVALID, bool onlyPrimaryBackpack=false );
@@ -987,7 +1012,9 @@ public:
 		void			possess( P_CHAR pc );
 //@}
 
-		void			jail (SI32 seconds = INVALID);
+		void			jail (SI32 seconds = INVALID)
+		{ prison::jail( NULL, this, seconds ); } //!< Jails a char (see prison::jail)
+
 		void			Kill();
 		void			kick();
 		void			goPlace(SI32);

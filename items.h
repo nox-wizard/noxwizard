@@ -83,80 +83,82 @@ public:
 	SI32		maxhp;	//!< Max number of hit points an item can have.
 
 	void		Refresh();
-	SI32		getName(char* itemname);
 	const char*	getRealItemName();
+
+	SI32		getName(char* itemname);
+	
 //@}
 
 //@{
 /*!
 \name Look
 */
-	inline SI16 id()
+	inline SI16 id() const
 	{ return (SI16)((id1<<8)|id2); }
 
-	inline SI16 animid()
+	inline SI16 animid() const
 	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : id(); }
 
 	UI08	id1;			//!< Item visuals as stored in the client
 	UI08	id2;
 	void	setId(SI16 id);
-	SI08	isFieldSpellItem();
+	SI08	isFieldSpellItem() const;
 
-	LOGICAL IsCorpse();
-	LOGICAL IsSpellScroll();	//!< predefined spells
-	LOGICAL IsSpellScroll72();	//!< includes the scrolls with a variable name
-	LOGICAL IsTree();		//!< this is used in AxeTarget()
-	LOGICAL IsTree2();		//!< this is used in SwordTarget() to give kindling.
-	LOGICAL IsInstrument();
+	LOGICAL IsCorpse() const;
+	LOGICAL IsSpellScroll() const;	//!< predefined spells
+	LOGICAL IsSpellScroll72() const;//!< includes the scrolls with a variable name
+	LOGICAL IsTree() const;		//!< this is used in AxeTarget()
+	LOGICAL IsTree2() const;	//!< this is used in SwordTarget() to give kindling.
+	LOGICAL IsInstrument() const;
 
-	LOGICAL IsAxe();
-	LOGICAL IsSword();
-	LOGICAL IsSwordType();
-	LOGICAL IsMace1H();
-	LOGICAL IsMace2H();
-	LOGICAL IsMaceType();
-	LOGICAL IsFencing1H();
-	LOGICAL IsFencing2H();
-	LOGICAL IsFencingType();
-	LOGICAL IsBow();
-	LOGICAL IsCrossbow();
-	LOGICAL IsHeavyCrossbow();
-	LOGICAL IsBowType();
-	LOGICAL IsArrow();
-	LOGICAL IsBolt();
-	LOGICAL IsStave();
-	LOGICAL IsSpecialMace();
-	LOGICAL IsChaosOrOrderShield();
-	LOGICAL IsShield();
+	LOGICAL IsAxe() const;
+	LOGICAL IsSword() const;
+	LOGICAL IsSwordType() const;
+	LOGICAL IsMace1H() const;
+	LOGICAL IsMace2H() const;
+	LOGICAL IsMaceType() const;
+	LOGICAL IsFencing1H() const;
+	LOGICAL IsFencing2H() const;
+	LOGICAL IsFencingType() const;
+	LOGICAL IsBow() const;
+	LOGICAL IsCrossbow() const;
+	LOGICAL IsHeavyCrossbow() const;
+	LOGICAL IsBowType() const;
+	LOGICAL IsArrow() const;
+	LOGICAL IsBolt() const;
+	LOGICAL IsStave() const;
+	LOGICAL IsSpecialMace() const;
+	LOGICAL IsChaosOrOrderShield() const;
+	LOGICAL IsShield() const;
 
-	LOGICAL IsLog();
-	LOGICAL IsShaft();
-	LOGICAL IsBoard();
-	LOGICAL IsFeather();
-	LOGICAL IsCutLeather();
-	LOGICAL IsHide();
-	LOGICAL IsBoltOfCloth();
-	LOGICAL IsCutCloth();
-	LOGICAL IsCloth();
-	LOGICAL IsChest();
+	LOGICAL IsLog() const;
+	LOGICAL IsShaft() const;
+	LOGICAL IsBoard() const;
+	LOGICAL IsFeather() const;
+	LOGICAL IsCutLeather() const;
+	LOGICAL IsHide() const;
+	LOGICAL IsBoltOfCloth() const;
+	LOGICAL IsCutCloth() const;
+	LOGICAL IsCloth() const;
+	LOGICAL IsChest() const;
 
-	LOGICAL IsForge();
-	LOGICAL IsAnvil();
-	LOGICAL IsCookingPlace();
-	LOGICAL IsDagger();
+	LOGICAL IsForge() const;
+	LOGICAL IsAnvil() const;
+	LOGICAL IsCookingPlace() const;
+	LOGICAL IsDagger() const;
 
-	LOGICAL IsFish();
-	LOGICAL IsFishWater();
+	LOGICAL IsFish() const;
+	LOGICAL IsFishWater() const;
 
-	LOGICAL IsSign();
-	LOGICAL IsBrassSign();
-	LOGICAL IsWoodenSign();
-	LOGICAL IsGuildSign();
-	LOGICAL IsTradeSign();
-	LOGICAL IsBankSign();
-	LOGICAL IsTheatreSign();
-	LOGICAL IsHouse();
-	LOGICAL isSpawner();
+	LOGICAL IsSign() const;
+	LOGICAL IsBrassSign() const;
+	LOGICAL IsWoodenSign() const;
+	LOGICAL IsGuildSign() const;
+	LOGICAL IsTradeSign() const;
+	LOGICAL IsBankSign() const;
+	LOGICAL IsTheatreSign() const;
+	LOGICAL IsHouse() const;
+	LOGICAL isSpawner() const;
 
 	UI08		animid1;	//!< elcabesa animation
 	UI08		animid2;	//!< elcabesa animation
@@ -168,6 +170,7 @@ public:
 
 	inline SI16 color()
 	{ return (SI16)((color1<<8)|color2); }
+
 	void	setColor(UI16 color);
 
 	SI08		layer;		//!< Layer if equipped on paperdoll
@@ -188,29 +191,31 @@ private:
 	Serial		oldcontserial;
 
 public:
-	SI32		getContSerial(LOGICAL old= 0) const;
-	BYTE		getContSerialByte(UI32 nByte, LOGICAL old= false) const;
-	const cObject*	getContainer() const;
+	SERIAL		getContSerial(LOGICAL old= false) const;
+	UI08		getContSerialByte(UI08 nByte, LOGICAL old= false) const;
+	PC_OBJECT	getContainer() const;
 
 	void		setCont(P_OBJECT obj);
 	void		setContSerial(SI32 serial, LOGICAL old= false, LOGICAL update= true);
 	void		setContSerialByte(UI32 nByte, BYTE value, LOGICAL old= false);
-	LOGICAL		isContainer(); //Endymion
-	LOGICAL		isSecureContainer(); //Endymion
-	//SI16		GetContGumpType();
+	LOGICAL		isContainer() const { return type==1 || type==12 || type==63 || type==8 || type==13 || type==64; }
+		//!< check if item is a container
+	LOGICAL		isSecureContainer() const { return type==8 || type==13 || type==64; }
+		//!< check if item is a secure container
 	void		SetRandPosInCont(P_ITEM pCont);
-	bool		ContainerPileItem( P_ITEM pItem );	// try to find an item in the container to stack with
-	SI32		secureIt; // secured chests
-	LOGICAL		AddItem(P_ITEM pItem, short xx=-1, short yy=-1);	// Add Item to container
+	bool		ContainerPileItem( P_ITEM pItem ); //!< try to find an item in the container to stack with
+	SI32		secureIt; //!< secured chests
+	LOGICAL		AddItem(P_ITEM pItem, short xx=-1, short yy=-1);	//!< Add Item to container
 	SI32		DeleteAmountByID(int amount, unsigned int scriptID);
 	SI16		getContGump();
 	void		putInto( P_ITEM pi );
 //@}
 
-/********************************
-	Extra info
-********************************/
-	UI08		more1;		// For various stuff
+//@{
+/*!
+\name Extra Info (mores)
+*/
+	UI08		more1;
 	UI08		more2;
 	UI08		more3;
 	UI08		more4;
@@ -221,6 +226,7 @@ public:
 	UI32		morex;
 	UI32		morey;
 	UI32		morez;
+//@}
 
 //@{
 /*!
@@ -232,8 +238,12 @@ public:
 	SI32		IncreaseAmount(const short amount);
 	void		setAmount(const short amt);
 	SI32		DeleteAmount(int amount, short id, short color=-1);
-	SI32		CountItems(short ID=-1, short col= -1,LOGICAL bAddAmounts = true);
-	SI32		CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts);
+	
+	SI32		CountItems(SI16 ID=-1, SI16 col= -1,LOGICAL bAddAmounts = true)
+	{ return pointers::containerCountItems(getSerial32(), ID, col, bAddAmounts); }
+	
+	SI32		CountItemsByID(UI32 scriptID, LOGICAL bAddAmounts)
+	{ return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts); }
 //@}
 
 //@{
@@ -249,9 +259,9 @@ public:
 /*!
 \name Position
 */
-	LOGICAL		isInWorld();
+	LOGICAL		isInWorld() const { return contserial.serial32 == -1; } //!< is the item in world or in a container?
 	void		MoveTo(Location newloc);
-	void		MoveTo(SI32 x, SI32 y, SI08 z);
+	void		MoveTo(UI16 x, UI16 y, SI08 z) { MoveTo( Loc(x, y, z) ); }	//!< move the item
 //@}
 
 //@{
@@ -323,7 +333,6 @@ public:
 	*/
 	SI32		rank;
 
-	//char		creator[50];	//!< Store the name of the player made this item
 	std::string	creator;	//!< Store the name of the player made this item
 	SI32		good;		//!< Store type of GOODs to trade system! (Plz not set as UNSIGNED)
 	SI32		rndvaluerate;	//!< Store the value calculated base on RANDOMVALUE in region.scp.
@@ -346,7 +355,6 @@ public:
 	skilled!
 	*/
 	SI32		madewith;
-	//char		desc[100];	//!< vendor description
 	std::string	vendorDescription;
 //@}
 
@@ -389,9 +397,10 @@ public:
 	UI32		timeused_last;	//!< helper attribute for time_unused, doesnt get saved
 //@}
 
-/********************************
-	Effect related
-********************************/
+//@{
+/*!
+\name Effect related
+*/
 //	SI32		glow; // LB identifies glowing objects
 //	SI08		glow_c1; // for backup of old color
 //	SI08		glow_c2;
@@ -399,7 +408,7 @@ public:
 	SI08		doordir; // Reserved for doors
 	LOGICAL		dooropen;
 	void		explode(NXWSOCKET  s);
-
+//@}
 
 	LOGICAL		dye;		//!< Reserved: Can item be dyed by dye kit
 
@@ -410,19 +419,19 @@ private:
 
 public:
 	LOGICAL		doDecay();
-	LOGICAL		canDecay();
+	const LOGICAL	canDecay() const { return priv &0x01; }
 	void		setDecay( const LOGICAL on = true );
 
 	void		setDecayTime( const TIMERVAL delay = uiCurrentTime+(SrvParms->decaytimer*MY_CLOCKS_PER_SEC) );
-	TIMERVAL	getDecayTime();
+	const TIMERVAL	getDecayTime() const { return decaytime; }
 
-	LOGICAL		isNewbie();
+	const LOGICAL	isNewbie() const { return priv&0x02; }
 	void		setNewbie( const LOGICAL on = true );
 
-	LOGICAL		isDispellable();
+	const LOGICAL	isDispellable() const { return priv&0x04; }
 	void		setDispellable( const LOGICAL on = true );
 
-	LOGICAL		pileable; // Can item be piled
+	LOGICAL		pileable; //!< Can item be piled?
 	bool		PileItem( P_ITEM pItem );
 
 	P_ITEM		getOutMostCont( short rec=50 );
@@ -439,6 +448,7 @@ public:
 */
 } PACK_NEEDED;
 
+#if 0
 // will be fully implemented in 0.83
 // Anthalir
 /*
@@ -471,6 +481,7 @@ class cWeapon : public cItem
 public:
         cWeapon(SERIAL serial);
 } PACK_NEEDED;
+#endif
 
 extern LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2);
 

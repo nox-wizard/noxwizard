@@ -78,10 +78,11 @@ typedef class cNxwClientObj*		NXWCLIENT;
 typedef SI32				NXWSOCKET;	//!< socket connection
 typedef unsigned char			BYTE;
 typedef       class cChar*		P_CHAR;		//!< pointer to cChar
-typedef const class cChar*		PC_CHAR;	//!< const pointer to cChar
+typedef const class cChar*		PC_CHAR;	//!< pointer to const cChar
 typedef       class cItem*		P_ITEM;		//!< pointer to cItem
-typedef const class cItem*		PC_ITEM;	//!< const pointer to cItem
+typedef const class cItem*		PC_ITEM;	//!< pointer to const cItem
 typedef       class cObject*		P_OBJECT;	//!< pointer to cObject
+typedef const class cObject*		PC_OBJECT;	//!< pointer to const cObject
 typedef SI32				SERIAL;		//!< 32-bit serial number
 typedef UI32				TIMERVAL;
 typedef SI32				ACCOUNT;

@@ -26,12 +26,14 @@ otherwise, more memory will be allocated in the mainloop (Duke)
 */
 #define ITEM_RESERVE 3000
 
+#if 0
 /*!
 \brief Base constructor for cWeapon class
 */
 cWeapon::cWeapon(SERIAL serial) : cItem (serial)
 {
 }
+#endif
 
 /*!
 \author Luxor
@@ -292,7 +294,7 @@ void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)
 	}
 }
 
-BYTE cItem::getContSerialByte(UI32 nByte, LOGICAL old/*= false*/) const
+UI08 cItem::getContSerialByte(UI08 nByte, LOGICAL old) const
 {
 	const Serial *cont;
 	
@@ -313,7 +315,7 @@ BYTE cItem::getContSerialByte(UI32 nByte, LOGICAL old/*= false*/) const
 	return 0;
 }
 
-SI32 cItem::getContSerial(LOGICAL old/*= 0*/) const
+SERIAL cItem::getContSerial(LOGICAL old) const
 {
 	if(old)
 		return oldcontserial.serial32;
@@ -321,7 +323,7 @@ SI32 cItem::getContSerial(LOGICAL old/*= 0*/) const
 		return contserial.serial32;
 }
 
-const cObject* cItem::getContainer() const
+PC_OBJECT cItem::getContainer() const
 {
 	SI32 ser= contserial.serial32;
 
@@ -332,11 +334,6 @@ const cObject* cItem::getContainer() const
 		return pointers::findCharBySerial(ser);
 
 	return NULL;					// container serial is invalid
-}
-
-LOGICAL cItem::isInWorld()
-{
-	return (contserial.serial32==-1);
 }
 
 /*!
@@ -419,7 +416,6 @@ LOGICAL cItem::doDecay()
 	else
 		return false;
 }
-
 
 void cItem::explode(NXWSOCKET  s)
 {
@@ -522,7 +518,7 @@ void cItem::setAmount(const short amt)
 	Refresh();
 }
 
-/*
+#if 0
 // This method does not change the pointer arrays !!
 // should only be used in VERY specific situations like initItem... Duke, 6.4.2001
 void cItem::setContSerialOnly(SI32 contser)
@@ -542,9 +538,7 @@ void cItem::setContSerial(SI32 contser)
 	setContSerial(contser, false, false);
 	pointers::updContMap(this);	//Luxor
 }
-*/
 
-/*
 void cItem::setOwnSerialOnly(SI32 ownser)
 {
 	ownserial=ownser;
@@ -565,8 +559,7 @@ void cItem::SetOwnSerial(SI32 ownser)
 		setptr(&ownsp[ownserial%HASHMAX], DEREF_P_ITEM(this));
 
 }
-*/
-
+#endif
 
 void cItem::SetMultiSerial(SI32 mulser)
 {
@@ -578,14 +571,6 @@ void cItem::SetMultiSerial(SI32 mulser)
 	if (getMultiSerial32()!=INVALID)		// if there is multi, add it
 		pointers::addToMultiMap(this);
 
-}
-
-/*!
-\author Anthalir
-*/
-void cItem::MoveTo(SI32 x, SI32 y, SI08 z)
-{
-	MoveTo( Loc(x, y, z) );
 }
 
 /*!
@@ -711,20 +696,6 @@ bool cItem::ContainerPileItem( P_ITEM pItem)
 
 }
 
-
-int cItem::CountItems(short ID, short col, LOGICAL bAddAmounts)
-{
-	return pointers::containerCountItems(getSerial32(), ID, col, bAddAmounts);
-}
-
-/*!
-\author Anthalir
-*/
-int cItem::CountItemsByID(unsigned int scriptID, LOGICAL bAddAmounts)
-{
-	return pointers::containerCountItemsByID(getSerial32(), scriptID, bAddAmounts);
-}
-
 /*!
 \author Juliunus
 \brief delete a determined amount of an item with determined color
@@ -800,11 +771,6 @@ void cItem::animSetId(SI16 id)
 }
 
 
-int cItem::getName(char* itemname)
-{
-	return item::getname(DEREF_P_ITEM(this),itemname);
-}
-
 /*!
 \brief the weight of the single item
 \return the weigth
@@ -853,6 +819,7 @@ R32 cItem::getWeightActual()
 {
 	return (amount>1)? getWeight()*amount : getWeight();
 }
+
 cItem::cItem( SERIAL ser )
 {
 
@@ -1013,6 +980,11 @@ const char* cItem::getRealItemName()
     }
 }
 
+SI32 cItem::getName(char *itemname)
+{
+	return item::getname(DEREF_P_ITEM(this),itemname);
+}
+
 /*!
 \author Luxor
 \brief gets the combat skill of an item
@@ -1026,35 +998,6 @@ Skill cItem::getCombatSkill()
     else if (IsFencingType())	return FENCING;
     else if (IsBowType())		return ARCHERY;
 	return WRESTLING;
-}
-
-/*!
-\brief check if item is a container
-\author Endymion
-\return LOGICAL
-\todo remove after cContainerClass work
-*/
-LOGICAL cItem::isContainer()
-{
-	if(type==1 || type==12 || type==63 ||
-		type==8 || type==13 || type==64)
-        return true;
-	else 
-		return false;
-}
-
-/*!
-\brief check if item is a secure container
-\author Endymion
-\return LOGICAL
-\todo remove after cContainerClass work
-*/
-LOGICAL cItem::isSecureContainer()
-{
-	if(type==8 || type==13 || type==64)
-        return true;
-	else 
-		return false;
 }
 
 /*!
@@ -1190,6 +1133,7 @@ void cItem::Refresh()
 	}
 }
 
+#if 0
 cContainerItem::cContainerItem(LOGICAL ser/*= true*/) : cItem(ser)
 {
 	ItemList.empty();
@@ -1407,6 +1351,7 @@ void cContainerItem::dropItem(P_ITEM pi)
 	}
 	while( ++it!=ItemList.end() );
 }
+#endif
 
 /*!
 \brief Get the out most container
@@ -1506,11 +1451,6 @@ UI32 cItem::distFrom( P_ITEM pi )
 	}
 }
 
-LOGICAL cItem::canDecay()
-{
-	return priv&0x01;
-}
-
 void cItem::setDecay( const LOGICAL on )
 {
 	if( on )
@@ -1524,27 +1464,12 @@ void cItem::setDecayTime( const TIMERVAL delay )
 	decaytime = delay;
 }
 
-TIMERVAL cItem::getDecayTime()
-{
-	return decaytime;
-}
-
-LOGICAL cItem::isNewbie()
-{
-	return priv&0x02;
-}
-
 void cItem::setNewbie( const LOGICAL on )
 {
 	if( on )
 		priv |= 0x02;
 	else
 		priv &= ~0x02;
-}
-
-LOGICAL cItem::isDispellable()
-{
-	return priv&0x04;
 }
 
 void cItem::setDispellable( const LOGICAL on )

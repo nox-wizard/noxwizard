@@ -70,87 +70,87 @@ bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2, WEAPONTYPE type3
 	}
 }
 
-bool cItem::IsSword()
+LOGICAL cItem::IsSword() const
 {
 	return isWeaponLike( id(), SWORD1H );
 }
 
-bool cItem::IsAxe()
+LOGICAL cItem::IsAxe() const
 {
 	return isWeaponLike( id(), AXE1H);
 }
 
-bool cItem::IsSwordType()
+LOGICAL cItem::IsSwordType() const
 {
 	return isWeaponLike( id(), SWORD1H, AXE1H );
 }
 
-bool cItem::IsMace1H()
+LOGICAL cItem::IsMace1H() const
 {
 
 	return isWeaponLike( id(), MACE1H);
 
 }
 
-bool cItem::IsMace2H()
+LOGICAL cItem::IsMace2H() const
 {
 	return isWeaponLike( id(), MACE2H);
 
 }
 
-bool cItem::IsMaceType()
+LOGICAL cItem::IsMaceType() const
 {
 	return isWeaponLike( id(), MACE1H, MACE2H );
 }
 
-bool cItem::IsFencing1H()
+LOGICAL cItem::IsFencing1H() const
 {
 	return isWeaponLike( id(), FENCING1H);
 }
 
-bool cItem::IsFencing2H()
+LOGICAL cItem::IsFencing2H() const
 {
 	return isWeaponLike( id(), FENCING2H);
 }
 
-bool cItem::IsFencingType()
+LOGICAL cItem::IsFencingType() const
 {
 	return isWeaponLike( id(), FENCING1H, FENCING2H );
 }
 
-bool cItem::IsBow()
+LOGICAL cItem::IsBow() const
 {
 	return isWeaponLike( id(), BOW );
 }
-bool cItem::IsCrossbow()	
+LOGICAL cItem::IsCrossbow() const	
 {
 	return isWeaponLike( id(), CROSSBOW );
 
 }
 
-bool cItem::IsHeavyCrossbow()
+LOGICAL cItem::IsHeavyCrossbow() const
 {
 	return isWeaponLike( id(), HEAVYCROSSBOW );
 
 }
 
-bool cItem::IsBowType()
+LOGICAL cItem::IsBowType() const
 {
 	return isWeaponLike( id(), BOW, CROSSBOW, HEAVYCROSSBOW );
 }
 
-bool cItem::IsStave() // -Fraz- added
+LOGICAL cItem::IsStave() const // -Fraz- added
 {
 	return isWeaponLike( id(), STAVE1H, STAVE2H );
 
 }
 
-bool cItem::IsSpecialMace() // -Fraz- The OSI macing weapons that do stamina and armor damage 2handed only
+LOGICAL cItem::IsSpecialMace() const // -Fraz- The OSI macing weapons that do stamina and armor damage 2handed only
 {
 	return isWeaponLike( id(), STAVE1H, STAVE2H, MACE2H );
 }
 
-SI08 cItem::isFieldSpellItem() //LB
+SI08 cItem::isFieldSpellItem() const //LB
 {
 	int a= 0;
 
@@ -163,7 +163,7 @@ SI08 cItem::isFieldSpellItem() //LB
 }
 
 
-bool cItem::IsDagger()
+LOGICAL cItem::IsDagger() const
 {
     return ( id()==0x0F51 || id()==0x0F52 );
 }
@@ -173,11 +173,14 @@ bool itemById::IsCorpse( UI16 id )
 	return (id==0x2006);
 }
 
-bool cItem::IsCorpse() { return itemById::IsCorpse( id() ); }
+LOGICAL cItem::IsCorpse() const
+{
+	return itemById::IsCorpse( id() );
+}
 
 bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 {
-	if (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
+	return (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
 		id==0x0CD8 || id==0x0CDA || id==0x0CDD ||
 		id==0x0CE0 || id==0x0CE3 || id==0x0CE6 ||
 		(id>=0x0CCA && id<=0x0CCD) ||
@@ -185,58 +188,60 @@ bool itemById::IsTree( UI16 id )	// this is used in AxeTarget()
 		id==0x0D42 || id==0x0D43 || id==0x0D58 ||
 		id==0x0D59 || id==0x0D70 || id==0x0D85 ||
 		id==0x0D94 || id==0x0D95 || id==0x0D98 ||
-		id==0x0Da4 || id==0x0Da8 || id==0x0D58)
-		return true;
-	return false;
+		id==0x0Da4 || id==0x0Da8 || id==0x0D58);
 }
 
-bool cItem::IsTree() { return itemById::IsTree( id() ); }
+LOGICAL cItem::IsTree() const
+{
+	return itemById::IsTree( id() );
+}
 
 bool itemById::IsTree2( UI16 id )	// this is used in SwordTarget() to give kindling. Donno why it's different
 {
-	if (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
+	return (id==0x0CD0 || id==0x0CD3 || id==0x0CD6 ||
 		id==0x0CD8 || id==0x0CDA || id==0x0CDD ||
 		id==0x0CE0 || id==0x0CE3 || id==0x0CE6 ||
 		(id>=0x0CCA && id<=0x0CCD) ||
-		(id>=0x12B8 && id<=0x12BB) )
-		return true;
-	return false;
+		(id>=0x12B8 && id<=0x12BB) );
 }
 
-bool cItem::IsTree2() { return itemById::IsTree2( id() ); }
+LOGICAL cItem::IsTree2() const
+{
+	return itemById::IsTree2( id() );
+}
 
-bool cItem::IsSpellScroll()
+LOGICAL cItem::IsSpellScroll() const
 {
 	return (id()>0x1F2C && id()<0x1F6D);
 }
 
-bool cItem::IsSpellScroll72()
+LOGICAL cItem::IsSpellScroll72() const
 {
 	return (id() >= 0x1F2D && id() <= 0x1F72);
 }
 
-bool cItem::IsInstrument()
+LOGICAL cItem::IsInstrument() const
 {
 	return (id()==0x0E9C || id()==0x0E9D || id()==0x0E9E || id()==0x0EB1 || id()==0x0EB2 || id()==0x0EB3 || id()==0x0EB4);
 }
 
-bool cItem::IsArrow()
+LOGICAL cItem::IsArrow() const
 {
 	return ((id()==0x0F3F)||(id()==0x0F42));
 }
 
-bool cItem::IsBolt()
+LOGICAL cItem::IsBolt() const
 {
 	return ((id()==0x1BFB)||(id()==0x1BFE));
 }
 
 
-bool cItem::IsChaosOrOrderShield()
+LOGICAL cItem::IsChaosOrOrderShield() const
 {
 	return (id()>=0x1BC3 && id()<=0x1BC5);
 }
 
-bool cItem::IsShield()
+LOGICAL cItem::IsShield() const
 {
 	return ((id()>=0x1B72 && id()<=0x1B7B) || IsChaosOrOrderShield());
 }
@@ -246,17 +251,23 @@ bool itemById::IsLog( UI16 id )
 	return ( id>=0x1BDD && id<=0x1BE2 );
 }
 
-bool cItem::IsLog() { return itemById::IsLog( id()); }
+LOGICAL cItem::IsLog() const
+{
+	return itemById::IsLog( id() );
+}
 
 bool itemById::IsShaft( UI16 id )
 {
 	return ( id>=0x1BD4 && id<=0x1BD6 );
 }
 
-bool cItem::IsShaft() { return itemById::IsShaft( id() ); }
+LOGICAL cItem::IsShaft() const
+{
+	return itemById::IsShaft( id() );
+}
 
 
-bool cItem::IsBoard()
+LOGICAL cItem::IsBoard() const
 {
 	return ( id()>=0x1BD7 && id()<=0x1BDC );
 }
@@ -266,29 +277,32 @@ bool itemById::IsFeather( UI16 id )
 	return ( id>=0x1BD1 && id<=0x1BD3 );
 }
 
-bool cItem::IsFeather() { return itemById::IsFeather( id() ); }
+LOGICAL cItem::IsFeather() const
+{
+	return itemById::IsFeather( id() );
+}
 
-bool cItem::IsCutLeather()
+LOGICAL cItem::IsCutLeather() const
 {
 	return ( id()==0x1067 || id()==0x1068 || id()==0x1081 || id()==0x1082 );
 }
 
-bool cItem::IsHide()
+LOGICAL cItem::IsHide() const
 {
 	return ( id()==0x1078 || id()==0x1079 );
 }
 
-bool cItem::IsForge()
+LOGICAL cItem::IsForge() const
 {
 	return ( id()==0x0FB1 || ( id()>=0x197A && id()<=0x19A9 ) );
 }
 
-bool cItem::IsAnvil()
+LOGICAL cItem::IsAnvil() const
 {
 	return ( id()==0x0FAF || id()==0x0FB0 );
 }
 
-bool cItem::IsCookingPlace()
+LOGICAL cItem::IsCookingPlace() const
 {
 	return ((id()>=0x0DE3 && id()<=0x0DE9)||
 			(id()==0x0FAC || id()==0x0FB1)||
@@ -303,22 +317,22 @@ bool cItem::IsCookingPlace()
 			(id()>=0x0961 && id()<=0x096C) );
 }
 
-bool cItem::IsCutCloth()
+LOGICAL cItem::IsCutCloth() const
 {
 	return ( id()>=0x1766 && id()<=0x1768 );
 }
 
-bool cItem::IsCloth()
+LOGICAL cItem::IsCloth() const
 {
 	return ((id()>=0x175D && id()<=0x1765)|| IsCutCloth() );
 }
 
-bool cItem::IsBoltOfCloth()
+LOGICAL cItem::IsBoltOfCloth() const
 {
 	return ( id()>=0x0F95 && id()<=0x0F9C );
 }
 
-bool cItem::IsChest()
+LOGICAL cItem::IsChest() const
 {
 	return (( id()>=0x09A8 && id()<=0x09AB) ||
 		    ( id()>=0x0E40 && id()<=0x0E43) ||
@@ -326,7 +340,7 @@ bool cItem::IsChest()
 		    ( id()==0x0E80));
 }
 
-bool cItem::IsFishWater() // -Fraz- needed water tiles for fishing
+LOGICAL cItem::IsFishWater() const // -Fraz- needed water tiles for fishing
 {
 	return ((id()==0x1798) || (id()==0x179B) ||
 			(id()==0x179C) || (id()==0x1799) ||
@@ -343,44 +357,44 @@ bool cItem::IsFishWater() // -Fraz- needed water tiles for fishing
 			(id()>=0x34D1) && (id()<=0x34D5));
 }
 
-bool cItem::IsFish()
+LOGICAL cItem::IsFish() const
 {
 	return ( id()>=0x09CC && id()<=0x09CF );
 }
 
 
-bool cItem::IsSign() 
+LOGICAL cItem::IsSign() const 
 { 
 	return ((id()==0x0B95 || id()==0x0B96)|| (id()>=0x0BA3 && id()<=0x0C0E)|| (id()==0x0C43 || id()==0x0C44)); 
 } 
 
-bool cItem::IsWoodenSign() 
+LOGICAL cItem::IsWoodenSign() const 
 { 
 	return ((id()==0x0BCF || id()==0x0BD0)); 
 } 
 
-bool cItem::IsBrassSign() 
+LOGICAL cItem::IsBrassSign() const 
 { 
 	return ((id()==0x0BD1 || id()==0x0BD2)); 
 }
 
-bool cItem::IsGuildSign() 
+LOGICAL cItem::IsGuildSign() const 
 { 
 	return ((id() >= 0x0BD3 && id() <= 0x0C0A)); 
 } 
 
-bool cItem::IsTradeSign() 
+LOGICAL cItem::IsTradeSign() const 
 { 
 	return ((id()==0x0B95 || id()==0x0B96) || 
 			(id() >= 0x0BA3 && id() <= 0x0BCE)); 
 } 
 
-bool cItem::IsBankSign() 
+LOGICAL cItem::IsBankSign() const 
 { 
 	return ((id() >= 0x0C0B && id() <= 0x0C0C)); 
 } 
 
-bool cItem::IsTheatreSign() 
+LOGICAL cItem::IsTheatreSign() const 
 { 
 	return ((id() >= 0x0C0D && id() <= 0x0C0E)); 
 } 
@@ -414,7 +428,7 @@ bool itemById::IsHouse( UI16 id )
   return false;
 }
 
-bool cItem::IsHouse()
+LOGICAL cItem::IsHouse() const
 {
     return itemById::IsHouse( id() );
 }
@@ -423,21 +437,9 @@ bool cItem::IsHouse()
 \author Luxor
 \brief Tells if an item is a dynamic spawner
 */
-LOGICAL cItem::isSpawner()
+LOGICAL cItem::isSpawner() const
 {
-	switch(type)
-	{
-		case 61:
-		case 62:
-		case 63:
-		case 64:
-		case 65:
-		case 69:
-		case 125:
-			return true;
-		default:
-			return false;
-	}
+	return type == 61 || type == 62 || type == 63 || type == 64 || type == 65 || type == 69 || type == 125;
 }
 
 

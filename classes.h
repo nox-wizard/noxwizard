@@ -253,18 +253,6 @@ public:
 // use this value whereever you need to return an illegal z value
 const SI08 illegal_z = -128;	// reduced from -1280 to -128, to fit in with a valid SI08
 
-/*!
-\brief Weight related stuff
-*/
-namespace weights {
-
-	int	CheckWeight(P_CHAR pc);
-	float	RecursePacks(P_ITEM bp);
-	int	CheckWeight2(P_CHAR pc);
-	void	NewCalc(P_CHAR pc);
-	float	LockeddownWeight(P_ITEM pItem, int *total);
-}
-
 #include "targeting.h"
 
 /*
