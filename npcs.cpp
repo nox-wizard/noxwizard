@@ -1126,7 +1126,8 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 
 					//Char mapRegions
 					mapRegions->add(pc);
-					//	Sparhawk: The Need For Speed
+					pointers::delCharFromLocationMap( pc ); // Spahawk: it has allready been added by MoveTo
+										// critical statement
 					pointers::addCharToLocationMap( pc );
 					//
 					safedelete(iter);
