@@ -176,13 +176,16 @@ void npcCastSpell(P_CHAR pc_att, P_CHAR pc_def)
 
 
 	if (spherespells[sphere][spell]==0) return;
-
+	/*
 	if (pc_att->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		pc_att->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc_att->getSerial32(), spell, -1, sphere);
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	pc_att->runAmxEvent( EVENT_CHR_ONCASTSPELL, pc_att->getSerial32(), spell, -1, sphere );
+	if (g_bByPass==true)
+		return;
 
 	pc_att->playAction(6);
 

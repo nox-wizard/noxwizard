@@ -1711,8 +1711,8 @@ void CWorldMain::SaveChar( P_CHAR pc )
 				if ( pc->resists[JJ] != dummy.resists[JJ] )
 					fprintf(cWsc, "RESISTS %d %d\n", JJ, pc->resists[JJ]);
 
-      #define SAVECHAREVENT(A,B) if ((pc->amxevents[B])&&(pc->amxevents[B]->shouldBeSaved())) fprintf(cWsc, "%s %s\n", A, pc->amxevents[B]->getFuncName());
-
+//#define SAVECHAREVENT(A,B) if ((pc->amxevents[B])&&(pc->amxevents[B]->shouldBeSaved())) fprintf(cWsc, "%s %s\n", A, pc->amxevents[B]->getFuncName());
+#define SAVECHAREVENT(A,B) { AmxEvent *event = pc->getAmxEvent( B ); if ( event ) if( event->shouldBeSaved() ) fprintf(cWsc, "%s %s\n", A, event->getFuncName() ); }
 			SAVECHAREVENT("@ONADVANCESKILL", EVENT_CHR_ONADVANCESKILL);
 			SAVECHAREVENT("@ONADVANCESTAT", EVENT_CHR_ONADVANCESTAT);
 			SAVECHAREVENT("@ONBEGINATTACK", EVENT_CHR_ONBEGINATTACK);

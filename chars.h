@@ -643,7 +643,7 @@ public:
 		void		resetSkill();
 		void		resetTrackingTargets();
 		void		resetNxwFlags();
-		void		resetAmxEvents();
+		//void		resetAmxEvents();
 		void		resetResists();
 		void		resetLockSkills();
 
@@ -666,7 +666,7 @@ public:
 	public:
 
 		SI32			stat3crc; // xan : future use to keep safe stats
-		class			AmxEvent *amxevents[ALLCHAREVENTS];
+		//class			AmxEvent *amxevents[ALLCHAREVENTS];
 		SI32			hp;  // HitpoSI32s
 		SI32			stm; // Stamina
 		SI32			mn;  // Mana

@@ -140,6 +140,7 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 	if( attacker->getSerial32() == victim->getSerial32() )
 		return;
 
+	/*
 	if ( attacker->amxevents[EVENT_CHR_ONBEGINATTACK]) {
 		g_bByPass = false;
 		attacker->amxevents[EVENT_CHR_ONBEGINATTACK]->Call( attacker->getSerial32(), victim->getSerial32() );
@@ -151,7 +152,13 @@ void AttackStuff(NXWSOCKET  s, P_CHAR victim)
 		victim->amxevents[EVENT_CHR_ONBEGINDEFENSE]->Call( victim->getSerial32(), attacker->getSerial32() );
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	attacker->runAmxEvent( EVENT_CHR_ONBEGINATTACK, attacker->getSerial32(), victim->getSerial32() );
+	if (g_bByPass==true)
+		return;
+	victim->runAmxEvent( EVENT_CHR_ONBEGINDEFENSE, victim->getSerial32(), attacker->getSerial32() );
+	if (g_bByPass==true)
+		return;
 	attacker->targserial=victim->getSerial32();
 	attacker->unHide();
 	attacker->disturbMed();

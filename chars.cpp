@@ -293,7 +293,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	npcFollowSpeed = (float)NPCFOLLOWSPEED;
 	setNpcMoveTime();
 	resetNxwFlags();
-	resetAmxEvents();
+	//resetAmxEvents();
 	prevX = prevY = prevZ = 0;
 	ResetGuildTraitor();
 	SetGuildType( INVALID );
@@ -351,6 +351,7 @@ add onstart event to character programmatically
 */
 void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 {
+	/*
 	if	(!strcmp("@ONDEATH",script1)) 		amxevents[EVENT_CHR_ONDEATH] = newAmxEvent(script2);
 	else if (!strcmp("@ONKILL",script1))		amxevents[EVENT_CHR_ONKILL] = newAmxEvent(script2);
 	else if (!strcmp("@ONWOUNDED",script1)) 	amxevents[EVENT_CHR_ONWOUNDED] = newAmxEvent(script2);
@@ -389,6 +390,50 @@ void cChar::loadEventFromScript(TEXT *script1, TEXT *script2)
 	else if (!strcmp("@ONDOCOMBAT",script1)) 	amxevents[EVENT_CHR_ONDOCOMBAT] = newAmxEvent(script2);
 	else if (!strcmp("@ONCOMBATHIT",script1)) 	amxevents[EVENT_CHR_ONCOMBATHIT] = newAmxEvent(script2);
 	else if (!strcmp("@ONSPEECH",script1))		amxevents[EVENT_CHR_ONSPEECH] = newAmxEvent(script2);
+
+	else if (!strcmp("@ONCREATION",script1)) 	newAmxEvent(script2)->Call(getSerial32(), INVALID);
+	*/
+	if	(!strcmp("@ONDEATH",script1)) 		setAmxEvent( EVENT_CHR_ONDEATH, script2 );
+	else if (!strcmp("@ONKILL",script1))		setAmxEvent( EVENT_CHR_ONKILL, script2 );
+	else if (!strcmp("@ONWOUNDED",script1)) 	setAmxEvent( EVENT_CHR_ONWOUNDED, script2 );
+	else if (!strcmp("@ONHIT",script1))		setAmxEvent( EVENT_CHR_ONHIT, script2 );
+	else if (!strcmp("@ONHITMISS",script1)) 	setAmxEvent( EVENT_CHR_ONHITMISS, script2 );
+	else if (!strcmp("@ONGETHIT",script1))		setAmxEvent( EVENT_CHR_ONGETHIT, script2 );
+	else if (!strcmp("@ONWALK",script1))		setAmxEvent( EVENT_CHR_ONWALK, script2 );
+	else if (!strcmp("@ONBLOCK",script1))		setAmxEvent( EVENT_CHR_ONBLOCK, script2 );
+	else if (!strcmp("@ONSTART",script1))	
+	{	
+							AmxEvent *event = setAmxEvent( EVENT_CHR_ONSTART, script2 );
+							if( event )
+								event->Call(getSerial32(), INVALID);
+	}
+	else if (!strcmp("@ONHEARTBEAT",script1)) 	setAmxEvent( EVENT_CHR_ONHEARTBEAT, script2 );
+	else if (!strcmp("@ONDISPEL",script1)) 		setAmxEvent( EVENT_CHR_ONDISPEL, script2 );
+	else if (!strcmp("@ONRESURRECT",script1)) 	setAmxEvent( EVENT_CHR_ONRESURRECT, script2 );
+	else if (!strcmp("@ONFLAGCHANGE",script1)) 	setAmxEvent( EVENT_CHR_ONFLAGCHG, script2 );
+	else if (!strcmp("@ONADVANCESKILL",script1)) 	setAmxEvent( EVENT_CHR_ONADVANCESKILL, script2 );
+	else if (!strcmp("@ONGETSKILLCAP",script1)) 	setAmxEvent( EVENT_CHR_ONGETSKILLCAP, script2 );
+	else if (!strcmp("@ONGETSTATCAP",script1)) 	setAmxEvent( EVENT_CHR_ONGETSTATCAP, script2 );
+	else if (!strcmp("@ONADVANCESTAT",script1)) 	setAmxEvent( EVENT_CHR_ONADVANCESTAT, script2 );
+	else if (!strcmp("@ONBEGINATTACK",script1)) 	setAmxEvent( EVENT_CHR_ONBEGINATTACK, script2 );
+	else if (!strcmp("@ONBEGINDEFENSE",script1)) 	setAmxEvent( EVENT_CHR_ONBEGINDEFENSE, script2 );
+	else if (!strcmp("@ONTRANSFER",script1)) 	setAmxEvent( EVENT_CHR_ONTRANSFER, script2 );
+	else if (!strcmp("@ONMULTIENTER",script1)) 	setAmxEvent( EVENT_CHR_ONMULTIENTER, script2 );
+	else if (!strcmp("@ONMULTILEAVE",script1)) 	setAmxEvent( EVENT_CHR_ONMULTILEAVE, script2 );
+	else if (!strcmp("@ONSNOOPED",script1)) 	setAmxEvent( EVENT_CHR_ONSNOOPED, script2 );
+	else if (!strcmp("@ONSTOLEN",script1)) 		setAmxEvent( EVENT_CHR_ONSTOLEN, script2 );
+	else if (!strcmp("@ONPOISONED",script1)) 	setAmxEvent( EVENT_CHR_ONPOISONED, script2 );
+	else if (!strcmp("@ONREGIONCHANGE",script1)) 	setAmxEvent( EVENT_CHR_ONREGIONCHANGE, script2 );
+	else if (!strcmp("@ONCASTSPELL",script1)) 	setAmxEvent( EVENT_CHR_ONCASTSPELL, script2 );
+	else if (!strcmp("@ONREPUTATIONCHANGE",script1))setAmxEvent( EVENT_CHR_ONREPUTATIONCHG, script2 );
+	else if (!strcmp("@ONBREAKMEDITATION",script1)) setAmxEvent( EVENT_CHR_ONBREAKMEDITATION, script2 );
+	else if (!strcmp("@ONCLICK",script1)) 		setAmxEvent( EVENT_CHR_ONCLICK, script2 );
+	else if (!strcmp("@ONMOUNT",script1)) 		setAmxEvent( EVENT_CHR_ONMOUNT, script2 );
+	else if (!strcmp("@ONDISMOUNT",script1)) 	setAmxEvent( EVENT_CHR_ONDISMOUNT, script2 );
+	else if (!strcmp("@ONHEARPLAYER",script1)) 	setAmxEvent( EVENT_CHR_ONHEARPLAYER, script2 );
+	else if (!strcmp("@ONDOCOMBAT",script1)) 	setAmxEvent( EVENT_CHR_ONDOCOMBAT, script2 );
+	else if (!strcmp("@ONCOMBATHIT",script1)) 	setAmxEvent( EVENT_CHR_ONCOMBATHIT, script2 );
+	else if (!strcmp("@ONSPEECH",script1))		setAmxEvent( EVENT_CHR_ONSPEECH, script2 );
 
 	else if (!strcmp("@ONCREATION",script1)) 	newAmxEvent(script2)->Call(getSerial32(), INVALID);
 }
@@ -491,11 +536,13 @@ void cChar::resetNxwFlags()
 		nxwflags[i] = 0;
 }
 
+/*
 void cChar::resetAmxEvents()
 {
 	for (register SI32 i=0; i<ALLCHAREVENTS; i++)
 		amxevents[i] = 0;
 }
+*/
 
 void cChar::resetResists()
 {
@@ -824,17 +871,27 @@ P_ITEM cChar::GetBankBox( short banktype )
 void cChar::disturbMed()
 {
 	if (!med) return; // no reason to stay here :]
-
-  	if (amxevents[EVENT_CHR_ONBREAKMEDITATION]) {
-  		g_bByPass = false;
+	/*
+	if (amxevents[EVENT_CHR_ONBREAKMEDITATION]) {
+		g_bByPass = false;
 		//<Luxor>
 		NXWCLIENT cli = getClient();
 		if (cli != NULL)
   			amxevents[EVENT_CHR_ONBREAKMEDITATION]->Call(getSerial32(), cli->toInt(), INVALID);
-		//</Luxor>  		
+		//</Luxor>
 		if (g_bByPass==true) return;
   	}
-
+	*/
+	//<Luxor>
+	NXWCLIENT cli = getClient();
+	if (cli != NULL)
+	{
+		g_bByPass = false;
+		runAmxEvent( EVENT_CHR_ONBREAKMEDITATION, getSerial32(), cli->toInt(), INVALID );
+		if (g_bByPass==true)
+			return;
+	}
+	//</Luxor>
    	med=0;
    	sysmsg(TRANSLATE("You break your concentration."));
 }
@@ -1318,13 +1375,17 @@ void cChar::damage(SI32 amount, DamageType typeofdamage, StatType stattobedamage
 
 	P_CHAR pc_att=pointers::findCharBySerial(attackerserial);
 	SERIAL serial_att= ISVALIDPC(pc_att)? pc_att->getSerial32() : INVALID;
-
+	/*
 	if (amxevents[EVENT_CHR_ONWOUNDED]) {
 		g_bByPass = false;
 		amount = amxevents[EVENT_CHR_ONWOUNDED]->Call(getSerial32(), amount, serial_att);
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	g_bByPass = false;
+	amount = runAmxEvent( EVENT_CHR_ONWOUNDED, getSerial32(), amount, serial_att );
+	if (g_bByPass==true)
+		return;
 	unfreeze();
 
 	if (amount <= 0) return;
@@ -2371,11 +2432,17 @@ void cChar::resurrect( NXWCLIENT healer )
 		hp= getStrength();
 		stm= dx;
 		mn=in;
+		/*
 		if (amxevents[EVENT_CHR_ONRESURRECT]) {
 			g_bByPass = false;
 			amxevents[EVENT_CHR_ONRESURRECT]->Call(getSerial32(), (healer!=NULL)? healer->toInt() : INVALID );
 			if (g_bByPass==true) return;
 		}
+		*/
+		g_bByPass = false;
+		runAmxEvent( EVENT_CHR_ONRESURRECT, getSerial32(), (healer!=NULL)? healer->toInt() : INVALID );
+		if (g_bByPass==true)
+			return;
 		modifyFame(0);
 		playSFX( 0x0214);
 		id1=xid1;
@@ -2758,13 +2825,17 @@ void cChar::Kill()
 
 	char murderername[128];
 	murderername[0] = '\0';
-
+	/*
 	if (amxevents[EVENT_CHR_ONDEATH]) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONDEATH]->Call(getSerial32(), s);
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	g_bByPass = false;
+	runAmxEvent( EVENT_CHR_ONDEATH, getSerial32(), s );
+	if (g_bByPass==true)
+		return;
 	if ( ps != NULL ) 
 		unmountHorse();	//Luxor bug fix
 	if (morphed)
@@ -2875,8 +2946,11 @@ void cChar::Kill()
 					pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pk->getCurrentNameC());
      			}
 			}   // was innocent
+			/*
 			if (pk->amxevents[EVENT_CHR_ONKILL])
 				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+			*/
+			pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
 		} //PvP
 	}//if !npc
 	else
@@ -3371,22 +3445,32 @@ void cChar::SetPriv2(UI08 p)
 
 void cChar::SetMurderer()
 {
+	/*
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+	*/
+	runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
+
 	flag=CHRFLAG_MURDERER;
 }
 
 void cChar::SetInnocent()
 {
+	/*
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+	*/
+	runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_INNOCENT;
 }
 
 void cChar::SetCriminal()
 {
+	/*
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
 		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+	*/
+	runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_CRIMINAL;
 }
 
@@ -3629,6 +3713,7 @@ void cChar::doSingleClick( SERIAL serial )
 
 void cChar::onSingleClick( P_CHAR clickedBy )
 {
+	/*
 	if ( amxevents[EVENT_CHR_ONCLICK] != NULL )
 	{
 		g_bByPass = false;
@@ -3636,6 +3721,11 @@ void cChar::onSingleClick( P_CHAR clickedBy )
 		if ( g_bByPass==true )
 			return;
 	}
+	*/
+	g_bByPass = false;
+	runAmxEvent( EVENT_CHR_ONCLICK, getSerial32(), clickedBy->getSerial32() );
+	if ( g_bByPass==true )
+		return;
 	//<Luxor>
 	if (ServerScp::g_nShowPCNames || npc || getSerial32() == clickedBy->getSerial32()) {
 		showLongName( clickedBy, false );
@@ -4142,7 +4232,7 @@ void cChar::pc_heartbeat()
 	}
 	if( !IsOnline() )
 		return;
-
+	/*
 	if ( amxevents[EVENT_CHR_ONHEARTBEAT] )
 	{
 		g_bByPass = false;
@@ -4151,7 +4241,13 @@ void cChar::pc_heartbeat()
 		if( dead )	// Killed as result of script action
 			return;
 	}
-
+	*/
+	g_bByPass = false;
+	runAmxEvent( EVENT_CHR_ONHEARTBEAT, getSerial32(), uiCurrentTime );
+	if( g_bByPass == true )
+		return;
+	if( dead )	// Killed as result of script action
+		return;
 	generic_heartbeat();
 	if( dead )	// Killed as result of generic heartbeat action
 		return;
@@ -4355,7 +4451,7 @@ void cChar::npc_heartbeat()
 
 	if( mounted )
 		return;
-
+	/*
 	if ( amxevents[EVENT_CHR_ONHEARTBEAT] )
 	{
 		g_bByPass = false;
@@ -4365,6 +4461,13 @@ void cChar::npc_heartbeat()
 		if( dead )	// Killed as result of action in script
 			return;
 	}
+	*/
+	g_bByPass = false;
+	runAmxEvent( EVENT_CHR_ONHEARTBEAT, getSerial32(), uiCurrentTime );
+	if ( g_bByPass == true )
+		return;
+	if( dead )	// Killed as result of action in script
+		return;
 	//
 	//	Enable if possible
 	//
@@ -4390,13 +4493,17 @@ void cChar::npc_heartbeat()
 	//
 	if ( TIMEOUT( summontimer ) && summontimer > 0 )
 	{
+		/*
 		if ( amxevents[EVENT_CHR_ONDISPEL] )
 		{
 			g_bByPass = false;
 			amxevents[EVENT_CHR_ONDISPEL]->Call( getSerial32(), INVALID, DISPELTYPE_TIMEOUT );
 			if ( g_bByPass == true ) return;
 		}
-
+		*/
+		g_bByPass = false;
+		runAmxEvent( EVENT_CHR_ONDISPEL, getSerial32(), INVALID, DISPELTYPE_TIMEOUT );
+		if ( g_bByPass == true ) return;
 		// Dupois - Added Dec 20, 1999
 		// QUEST expire check - after an Escort quest is created a timer is set
 		// so that the NPC will be deleted and removed from the game if it hangs around

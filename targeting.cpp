@@ -405,10 +405,13 @@ public:
     cRemoveTarget(NXWCLIENT pCli) : cWpObjTarget(pCli) {}
     void CharSpecific()
     {
-    	if (!ISVALIDPC(pc)) return;    
-            if (pc->amxevents[EVENT_CHR_ONDISPEL]) {
-                pc->amxevents[EVENT_CHR_ONDISPEL]->Call(pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
-            }
+    	if (!ISVALIDPC(pc)) return;
+	/*
+	if (pc->amxevents[EVENT_CHR_ONDISPEL]) {
+		pc->amxevents[EVENT_CHR_ONDISPEL]->Call(pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
+	}
+	*/
+	pc->runAmxEvent( EVENT_CHR_ONDISPEL, pc->getSerial32(), -1, DISPELTYPE_GMREMOVE);
 
         if (pc->account>-1 && !pc->npc) // player check added by LB
         {
@@ -2403,13 +2406,17 @@ void cTargets::TransferTarget(NXWSOCKET s)
 	VALIDATEPC(pc2);
 
 	//Araknesh Call OnTransfer Event Passing Animal,NewOwner
+	/*
 	if (pc1->amxevents[EVENT_CHR_ONTRANSFER])
 	{
 		g_bByPass = false;
-	    pc1->amxevents[EVENT_CHR_ONTRANSFER]->Call(pc1->getSerial32(),pc2->getSerial32());
+		pc1->amxevents[EVENT_CHR_ONTRANSFER]->Call(pc1->getSerial32(),pc2->getSerial32());
 		if (g_bByPass==true) return ;
 	}
-
+	*/
+	pc1->runAmxEvent( EVENT_CHR_ONTRANSFER, pc1->getSerial32(),pc2->getSerial32());
+	if (g_bByPass==true)
+		return ;
     char t[120];
     sprintf(t,TRANSLATE("* %s will now take %s as his master *"), pc1->getCurrentNameC(), pc2->getCurrentNameC());
     pc1->talkAll(t,0);

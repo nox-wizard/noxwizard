@@ -275,8 +275,11 @@ void checkregion(int i)
 	calcreg=calcRegionFromXY( pc->getPosition() );
 	if (calcreg!= pc->region)
 	{
+		/*
 		if ( pc->amxevents[EVENT_CHR_ONREGIONCHANGE] )
 			pc->amxevents[EVENT_CHR_ONREGIONCHANGE]->Call( pc->getSerial32(), pc->region, calcreg);
+		*/
+		pc->runAmxEvent( EVENT_CHR_ONREGIONCHANGE, pc->getSerial32(), pc->region, calcreg);
 
 		s=calcSocketFromChar(i);
 		if (s!=INVALID)

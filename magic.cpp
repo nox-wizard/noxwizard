@@ -1746,12 +1746,16 @@ void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, int flags,
 		}
 	}
 	// do the event :]
+	/*
 	if (src->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		src->amxevents[EVENT_CHR_ONCASTSPELL]->Call(src->getSerial32(), spellnumber, src->spelltype, INVALID);
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	src->runAmxEvent( EVENT_CHR_ONCASTSPELL, src->getSerial32(), spellnumber, src->spelltype, INVALID );
+	if (g_bByPass==true)
+		return;
 	// check mana, don't bother the rest if no mana
 	if ((!(flags&SPELLFLAG_NOUSEMANA)) && (!checkMana(src, spellnumber))) return;
 
@@ -1832,13 +1836,16 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 		return false;
 	}
 
-
+	/*
 	if (pc->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
 		pc->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc->getSerial32(), num, type, s->toInt());
 		if (g_bByPass==true) return false;
 	}
-
+	*/
+	pc->runAmxEvent( EVENT_CHR_ONCASTSPELL, pc->getSerial32(), num, type, s->toInt() );
+	if (g_bByPass==true)
+		return false;
 	pc->unHide();
 	pc->disturbMed();
 

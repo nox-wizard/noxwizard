@@ -2569,7 +2569,8 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 	if( (nChange==0) )
 		return;
 
-	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]) 
+	/*
+	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
 		int n = nChange;
@@ -2577,8 +2578,10 @@ void cChar::IncreaseKarma( SI32 value, P_CHAR killed )
 		pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call(pc->getSerial32(), n, REPUTATION_KARMA);
 		if (g_bByPass==true) return;
 	}
-
-
+	*/
+	pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_KARMA);
+	if (g_bByPass==true)
+		return;
 	if(nChange<=25)
 	{
 		if(nEffect)
@@ -2672,7 +2675,8 @@ void cChar::modifyFame( SI32 value )
 	if( nChange==0 )
 		return;
 
-	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]) 
+	/*
+	if (pc->amxevents[EVENT_CHR_ONREPUTATIONCHG])
 	{
 		g_bByPass = false;
 		int n = nChange;
@@ -2680,7 +2684,10 @@ void cChar::modifyFame( SI32 value )
 		pc->amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call(pc->getSerial32(), n, REPUTATION_FAME);
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_FAME);
+	if (g_bByPass==true)
+		return;
 	if(nChange<=25)
 	{
 		if(nEffect)

@@ -2134,8 +2134,15 @@ NATIVE(_chr_getEventHandler)
 
 	char str[100];
 	cell *cptr;
+	/*
 	if( pc->amxevents[params[2]] != NULL )
 		strcpy(str, pc->amxevents[params[2]]->getFuncName() );
+	else
+			str[0] = '\0';
+	*/
+	AmxEvent* event = pc->getAmxEvent( params[2] );
+	if( event )
+		strcpy(str, event->getFuncName() );
 	else
 			str[0] = '\0';
 	amx_GetAddr(amx,params[3],&cptr);
@@ -2155,16 +2162,17 @@ NATIVE(_chr_getEventHandler)
 */
 NATIVE(_chr_setEventHandler)
 {
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
 
-    cell *cstr;
+	cell *cstr;
 
 	amx_GetAddr(amx,params[4],&cstr);
-    printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-    g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
-	pc->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
-    g_nAmxPrintPtr=0;
+	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	//pc->amxevents[params[2]] = newAmxEvent(g_cAmxPrintBuffer,params[3]!=0);
+	pc->setAmxEvent( params[2], g_cAmxPrintBuffer, params[3] !=0 );
+	g_nAmxPrintPtr=0;
 	return 0;
 }
 /*!
@@ -2237,11 +2245,12 @@ NATIVE(_itm_setEventHandler)
 */
 NATIVE(_chr_delEventHandler)
 {
-    //we don't clear the event in other ways since it's contained in amxcback hash
+	//we don't clear the event in other ways since it's contained in amxcback hash
 	//queues :)
-    P_CHAR pc = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc, INVALID);
-	pc->amxevents[params[2]] = NULL;
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc, INVALID);
+	//pc->amxevents[params[2]] = NULL;
+	pc->delAmxEvent( params[2] );
 	return 0;
 }
 

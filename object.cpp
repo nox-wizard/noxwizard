@@ -711,6 +711,8 @@ cell cObject::runAmxEvent( UI32 eventID, SI32 param1, SI32 param2 = INVALID, SI3
 {
 	AmxEvent* event = getAmxEvent( eventID );
 
+	g_bByPass = false;
+	
 	if( event != 0 )
 		return event->Call( param1, param2, param3, param4 );
 
@@ -724,9 +726,10 @@ void cObject::delAmxEvent( UI32 eventId )
 		AmxEventMap::iterator it = amxEvents->find( eventId );
 		if( it != amxEvents->end() )
 		{
-			delete it->second;
-			it->second = 0;
+			// we do not delete the actual AmxEvent instance as it's part of a vital hash queue in amxcback.cpp
 			amxEvents->erase( it );
 		}
+		if( amxEvents->empty() )
+			safedelete( amxEvents );
 	}
 }

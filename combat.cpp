@@ -46,7 +46,7 @@ static bool checkForCastingLoss(P_CHAR pc, int damage)
 void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 {
 	VALIDATEPC(pc_def);
-
+	/*
 	if ( amxevents[EVENT_CHR_ONCOMBATHIT] ) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONCOMBATHIT]->Call( getSerial32(), pc_def->getSerial32() );
@@ -55,7 +55,12 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		if( dead )	// Killed as result of script action
 			return;
 	}
-
+	*/
+	runAmxEvent( EVENT_CHR_ONCOMBATHIT, getSerial32(), pc_def->getSerial32() );
+	if( g_bByPass == true )
+		return;
+	if( dead )	// Killed as result of script action
+		return;
 	bool hit, los;
 	int dist, basedamage, damage, def, x;
 	Skill fightskill, def_fightskill;
@@ -99,12 +104,16 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 	swingtargserial = INVALID;
 
 	if (!hit) {
+		/*
 		if (amxevents[EVENT_CHR_ONHITMISS]) {
 			g_bByPass = false;
 			amxevents[EVENT_CHR_ONHITMISS]->Call(getSerial32(), pc_def->getSerial32());
 			if (g_bByPass==true) return;
 		}
-
+		*/
+		runAmxEvent( EVENT_CHR_ONHITMISS, getSerial32(), pc_def->getSerial32() );
+		if (g_bByPass==true) 
+			return;
 		if (!npc) {
 			( chance(30) ) ? doMissedSoundEffect() : pc_def->doCombatSoundEffect(def_fightskill, def_Weapon);
 		}
@@ -126,19 +135,26 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 		return;
 	}
-
+	/*
 	if (amxevents[EVENT_CHR_ONHIT]) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONHIT]->Call(getSerial32(), pc_def->getSerial32());
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	runAmxEvent( EVENT_CHR_ONHIT, getSerial32(), pc_def->getSerial32());
+	if (g_bByPass==true) 
+		return;
+	/*
 	if (pc_def->amxevents[EVENT_CHR_ONGETHIT]) {
 		g_bByPass = false;
 		pc_def->amxevents[EVENT_CHR_ONGETHIT]->Call(pc_def->getSerial32(), getSerial32());
 		if (g_bByPass==true) return;
 	}
-
+	*/
+	pc_def->runAmxEvent( EVENT_CHR_ONGETHIT, pc_def->getSerial32(), getSerial32() );
+	if (g_bByPass==true)
+		return;
 	if (ISVALIDPI(pWeapon)) {
 		if (chance(5) && pWeapon->type != ITYPE_SPELLBOOK) {
 			pWeapon->hp--;
@@ -243,7 +259,6 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	if (damage>0 && ISVALIDPI( pWeapon ) )
 	{
-		g_bByPass = false;
 		damage = pWeapon->runAmxEvent( EVENT_IONDAMAGE, pWeapon->getSerial32(), pc_def->getSerial32(), damage, getSerial32() );
 		if (g_bByPass==true)
 			return;
@@ -321,6 +336,7 @@ bool cChar::combatTimerOk()
 */
 void cChar::doCombat()
 {
+	/*
 	if ( amxevents[EVENT_CHR_ONDOCOMBAT] ) {
 		g_bByPass = false;
 		amxevents[EVENT_CHR_ONDOCOMBAT]->Call( getSerial32() );
@@ -329,7 +345,12 @@ void cChar::doCombat()
 		if( dead )	// Killed as result of script action
 			return;
 	}
-
+	*/
+	runAmxEvent( EVENT_CHR_ONDOCOMBAT, getSerial32() );
+	if( g_bByPass == true )
+		return;
+	if( dead )	// Killed as result of script action
+		return;
 	bool los;
 	int dist, fightskill, x = 0, j = 0, arrowsquant = 0;
 	char temp[TEMP_STR_SIZE];

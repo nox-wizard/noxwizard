@@ -42,13 +42,18 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 		else
 		{
 			if ((cont->getContSerial()>1) && (cont->getContSerial() != snooper->getSerial32()) )
-			{ 
+			{
+				/*
 				if ( owner->amxevents[EVENT_CHR_ONSNOOPED])
 				{
 					g_bByPass = false;
 					owner->amxevents[EVENT_CHR_ONSNOOPED]->Call( owner->getSerial32(), s);
 					if (g_bByPass==true) return;
 				}
+				*/
+				owner->runAmxEvent( EVENT_CHR_ONSNOOPED, owner->getSerial32(), s);
+				if (g_bByPass==true)
+					return;
 				snooper->objectdelay=SrvParms->snoopdelay * MY_CLOCKS_PER_SEC + uiCurrentTime;
 				if ( owner->IsGMorCounselor())
 				{
@@ -172,12 +177,10 @@ void Skills::StealingTarget(NXWCLIENT ps)
 			}
 			*/
 
-			g_bByPass = false;
 			pi->runAmxEvent( EVENT_IONSTOLEN, pi->getSerial32(), s, victim->getSerial32() );
 			if (g_bByPass==true)
 				return;
 
-			g_bByPass = false;
 			victim->runAmxEvent( EVENT_CHR_ONSTOLEN, victim->getSerial32(), s );
 			if (g_bByPass==true)
 				return;
@@ -377,6 +380,7 @@ void Skills::RandomSteal(NXWCLIENT ps)
 					thief->sysmsg(TRANSLATE("... and fail because it is too heavy."));
 				else
 				{
+					/*
 					if (victim->amxevents[EVENT_CHR_ONSTOLEN])
 					{
 						g_bByPass = false;
@@ -384,6 +388,10 @@ void Skills::RandomSteal(NXWCLIENT ps)
 						if (g_bByPass==true)
 							return;
 					}
+					*/
+					victim->runAmxEvent( EVENT_CHR_ONSTOLEN, victim->getSerial32(), s);
+					if (g_bByPass==true)
+						return;
 					P_ITEM thiefpack = thief->getBackpack();
 					VALIDATEPI(thiefpack);
 					pi->setContSerial( thiefpack->getSerial32() );
@@ -476,8 +484,7 @@ void Skills::LockPick(NXWCLIENT ps)
 			return;
 	}
 	*/
-	
-	g_bByPass = false;
+
 	chest->runAmxEvent( EVENT_IONLOCKPICK, chest->getSerial32(), s );
 	if (g_bByPass==true)
 		return;
