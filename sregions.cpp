@@ -21,13 +21,16 @@
 
 void loadregions()
 {
-	int i, noregion, l=0, a=0,loopexit=0;
-	char sect[512];
-	int actgood=INVALID; // Magius(CHE)
-	cScpIterator* iter = NULL;
-	char script1[1024];
-	char script2[1024];
-
+	int 		i,
+			noregion,
+			l=0,
+			a=0,
+			loopexit=0;
+	char 		sect[512];
+	int 		actgood=INVALID; // Magius(CHE)
+	cScpIterator*	iter = NULL;
+	std::string 	script1,
+			script2;
 	for (i=0;i<256;i++)
 	{
 		regions::region_st &regionRef = region[i];
@@ -48,22 +51,21 @@ void loadregions()
 		{
 			regionRef.guardnum[a]=RandomNum(1000,1001);
 		}
-		for (a=0;a<100;a++)		// added by Magius(CHE)
+		for (a=0;a<100;a++)
 		{
 			regionRef.goodsell[a]=0;
 			regionRef.goodbuy[a]=0;
 			regionRef.goodrnd1[a]=0;
 			regionRef.goodrnd2[a]=0;
 		}
-		a=0;		// end added by Magius(CHE)
+		a=0;
 
-		sprintf(sect, "SECTION REGION %i", i);
-		safedelete(iter); //as the name implies, this is safe :P, Xan
-		iter = Scripts::Regions->getNewIterator(sect);
+		safedelete(iter);
+		iter = Scripts::Regions->getNewIterator("SECTION REGION %i", i);
 
 		if (iter==NULL) {
 			noregion=1;
-			continue; //-> goes next loop!
+			continue;
 		}
 		regionRef.inUse = true;
 		
@@ -73,104 +75,106 @@ void loadregions()
 			iter->parseLine(script1, script2);
 			if ((script1[0]!='}')&&(script1[0]!='{'))
 			{
-				if (!(strcmp("GUARDNUM",script1)))
+				if ("GUARDNUM" == script1)
 				{
 					if (a<10)
 					{
 						regionRef.guardnum[a]=str2num(script2);
-						a++;
+						++a;
 					}
 					else
 					{
 						WarnOut("region %i has more than 10 'GUARDNUM', The ones after 10 will not be used\n",i);
 					}
 				}
-				else if (!(strcmp("NAME",script1)))
+				else if ("NAME" == script1)
 				{
-					strcpy(regionRef.name,script2);
-					actgood=INVALID; // Magius(CHE)
+					strcpy( regionRef.name, script2.c_str() );
+					actgood=INVALID;
 				}
-				// Dupois - Added April 5, 1999
-				// To identify whether this region is escortable or not.
-				else if (!(strcmp("ESCORTS",script1)))
+				else if ("ESCORTS" == script1)
 				{
-					// Load the region number in the global array of valid escortable regions
 					if ( str2num(script2) == 1 )
 					{
-						// Store the region index into the valid escort region array
 						validEscortRegion[escortRegions] = i;
-						escortRegions++;
-						//ConOut( "NoX-Wizard: loadregions() %i regions loaded so far\n", escortRegions );
+						++escortRegions;
 					}
-				} // End - Dupois
-				else if (!(strcmp("GUARDOWNER",script1)))	strcpy(regionRef.guardowner,script2);
-				else if (!(strcmp("MIDILIST",script1)))		regionRef.midilist=str2num(script2);
-				else if (!(strcmp("GUARDED",script1)))
+				}
+				else if ("GUARDOWNER" == script1)
+				{
+					strcpy( regionRef.guardowner, script2.c_str() );
+				}
+				else if ("MIDILIST" == script1)
+				{
+					regionRef.midilist=str2num(script2);
+				}
+				else if ("GUARDED" == script1)
 				{
 					if (str2num(script2)) regionRef.priv|=0x01;
 				}
-				else if (!(strcmp("MAGICDAMAGE",script1)))
+				else if ("MAGICDAMAGE" == script1)
 				{
-					if ((str2num(script2))) regionRef.priv|=0x40; // bugfix LB 12-march-
-					// changes from 0=magicdamge,1=no magic damage
-					// to			1=			 0=
+					if ((str2num(script2))) regionRef.priv|=0x40;
 				}
-				else if (!(strcmp("NOMAGIC",script1)))
+				else if ("NOMAGIC" == script1)
 				{
 					if ((str2num(script2))) regionRef.priv|=0x80;
 				}
-				else if (!(strcmp("MARK",script1)))
+				else if ("MARK" == script1)
 				{
 					if (str2num(script2)) regionRef.priv|=0x02;
 				}
-				else if (!(strcmp("GATE",script1)))
+				else if ("GATE" == script1)
 				{
 					if (str2num(script2)) regionRef.priv|=0x04;
 				}
-				else if (!(strcmp("RECALL",script1)))
+				else if ("RECALL" == script1)
 				{
 					if (str2num(script2)) regionRef.priv|=0x08;
 				}
-				else if (!(strcmp("SNOWCHANCE", script1)))
+				else if ("SNOWCHANCE" == script1)
 				{
 					regionRef.snowchance=str2num(script2);
 				}
-				else if (!(strcmp("RAINCHANCE", script1)))
+				else if ("RAINCHANCE" == script1)
 				{
 					regionRef.rainchance=str2num(script2);
 				}
-				//xan : quick&dirty weather system :)
-				else if (!(strcmp("DRYCHANCE", script1)))
+				else if ("DRYCHANCE" == script1)
 				{
 					regionRef.drychance=str2num(script2);
 				}
-				else if (!(strcmp("KEEPCHANCE", script1)))
+				else if ("KEEPCHANCE" == script1)
 				{
 					regionRef.keepchance=str2num(script2);
 				}
-				else if (!(strcmp("FORCESEASON", script1)))
+				else if ("FORCESEASON" == script1)
 				{
 					regionRef.forcedseason =str2num(script2);
 				}
-				else if (!(strcmp("IGNOREMONTHMULTIPLIERS", script1)))
+				else if ("IGNOREMONTHMULTIPLIERS" == script1)
 				{
 					regionRef.ignoreseason =true;
 				}
-				else if (!(strcmp("GOOD", script1))) // Magius(CHE)
+				else if ("GOOD" == script1)
 				{
 					actgood=str2num(script2);
 				}
-				else if (!(strcmp("BUYABLE", script1))) // Magius(CHE)
+				else if ("BUYABLE" == script1)
 				{
-					if (actgood>INVALID) regionRef.goodbuy[actgood]=str2num(script2);
-					else ErrOut("error in regions.xss. You must write BUYABLE after GOOD <num>!\n");
+					if (actgood>INVALID)
+						regionRef.goodbuy[actgood]=str2num(script2);
+					else
+						ErrOut("error in regions.xss. You must write BUYABLE after GOOD <num>!\n");
 				}
-				else if (!(strcmp("SELLABLE", script1))) // Magius(CHE)
+				else if ("SELLABLE" == script1) // Magius(CHE)
 				{
-					if (actgood>INVALID) regionRef.goodsell[actgood]=str2num(script2);
-					else ErrOut("error in regions.xss. You must write SELLABLE after GOOD <num>!\n");
+					if (actgood>INVALID)
+						regionRef.goodsell[actgood]=str2num(script2);
+					else
+						ErrOut("error in regions.xss. You must write SELLABLE after GOOD <num>!\n");
 				}
-				else if (!(strcmp("RANDOMVALUE", script1))) // Magius(CHE) (2)
+				else if ("RANDOMVALUE" == script1) // Magius(CHE) (2)
 				{
 					if (actgood>INVALID) {
 						gettokennum(script2, 0);
@@ -185,19 +189,19 @@ void loadregions()
 					}
 					else ErrOut("error in regions.xss. You must write RANDOMVALUE after GOOD <num>!\n");
 				}
-				else if (!(strcmp("X1", script1)))
+				else if ("X1" == script1)
 				{
 					location[l].x1=str2num(script2);
 				}
-				else if (!(strcmp("X2", script1)))
+				else if ("X2" == script1)
 				{
 					location[l].x2=str2num(script2);
 				}
-				else if (!(strcmp("Y1", script1)))
+				else if ("Y1" == script1)
 				{
 					location[l].y1=str2num(script2);
 				}
-				else if (!(strcmp("Y2", script1)))
+				else if ("Y2" == script1)
 				{
 					location[l].y2=str2num(script2);
 					location[l].region=i;
@@ -212,11 +216,8 @@ void loadregions()
 	locationcount=l;
 	logoutcount=0;
 	//Instalog
-
-	strcpy(sect, "SECTION INSTALOG");
-
-	safedelete(iter); //as the name implies, this is safe :P, Xan
-	iter = Scripts::Regions->getNewIterator(sect);
+	safedelete(iter);
+	iter = Scripts::Regions->getNewIterator("SECTION INSTALOG");
 
 	if (iter==NULL) return;
 
@@ -224,10 +225,13 @@ void loadregions()
 	do
 	{
 		iter->parseLine(script1, script2);
-		if(!(strcmp(script1,"X1"))) logout[logoutcount].x1=str2num(script2);
-		if(!(strcmp(script1,"Y1"))) logout[logoutcount].y1=str2num(script2);
-		if(!(strcmp(script1,"X2"))) logout[logoutcount].x2=str2num(script2);
-		if(!(strcmp(script1,"Y2")))
+		if	( script1 == "X1" )
+			logout[logoutcount].x1=str2num(script2);
+		else if	( script1 == "Y1" )
+			logout[logoutcount].y1=str2num(script2);
+		else if ( script1 == "X2" )
+			logout[logoutcount].x2=str2num(script2);
+		else if	( script1 == "Y2" )
 		{
 			logout[logoutcount].y2=str2num(script2);
 			logoutcount++;

@@ -247,25 +247,26 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 UI32 WalkCollectBlockers(P_CHAR pc)
 {
 	VALIDATEPCR(pc, 0);
-	UI32 blockers_count= 0;
+	UI32 		blockers_count = 0;
+	unitile_st*	pUnitile = xyblock + blockers_count;
+	SI32		pcX = pc->getPosition().x,
+			pcY = pc->getPosition().y,
+			mapid = 0;
+	SI08		mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
 
-
-	int mapid = 0;
-	SI08 mapz = Map->AverageMapElevation(pc->getPosition(), mapid);
 	if (mapz != illegal_z)
 	{
 		land_st land;
 		Map->SeekLand(mapid, &land);
-
-		xyblock[blockers_count].type=0;
-		xyblock[blockers_count].basez = mapz;
-		xyblock[blockers_count].id = mapid;
-		xyblock[blockers_count].flag1=land.flag1;
-		xyblock[blockers_count].flag2=land.flag2;
-		xyblock[blockers_count].flag3=land.flag3;
-		xyblock[blockers_count].flag4=land.flag4;
-		xyblock[blockers_count].height=0;
-		xyblock[blockers_count].weight=255;
+		pUnitile->type=0;
+		pUnitile->basez = mapz;
+		pUnitile->id = mapid;
+		pUnitile->flag1=land.flag1;
+		pUnitile->flag2=land.flag2;
+		pUnitile->flag3=land.flag3;
+		pUnitile->flag4=land.flag4;
+		pUnitile->height=0;
+		pUnitile->weight=255;
 		++blockers_count;
 	}
 
@@ -273,90 +274,93 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 	si.fillItemsNearXYZ( pc->getPosition() );
 	for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM pi=si.getItem();
-		if(!ISVALIDPI(pi))
-			continue;
-		if (pi->id1<0x40) // Not a Multi
+		if( ISVALIDPI(pi) )
 		{
-			if ((pi->getPosition().x== pc->getPosition().x) && (pi->getPosition().y==pc->getPosition().y))
+			SI32	piX = pi->getPosition().x,
+				piY = pi->getPosition().y;
+
+			if (pi->id1<0x40) // Not a Multi
 			{
-				if (pi->trigger!=0)
+				if ( piX == pcX && piY == pcY )
 				{
-					if ((pi->trigtype==1)&&(!pc->dead))
+					if (pi->trigger!=0)
 					{
-						if ( TIMEOUT( pi->disabled ) )//AntiChrist
+						if ((pi->trigtype==1)&&(!pc->dead))
 						{
-							triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
+							if ( TIMEOUT( pi->disabled ) )//AntiChrist
+							{
+								triggerItem(pc->getSocket(), pi, TRIGTYPE_WALKOVER);  //When player steps on a trigger
+							}
 						}
 					}
-				}
-				else
-				{
-					
-					if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
+					else
 					{
-						pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
-						g_bByPass = false; //ndEndy ?? what is this?
+						if (pi->amxevents[EVENT_IONWALKOVER] != NULL )
+						{
+							pi->amxevents[EVENT_IONWALKOVER]->Call( pi->getSerial32(), pc->getSocket() );
+							g_bByPass = false; //ndEndy ?? what is this?
+						}
+						/*
+						pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
+						g_bByPass = false;
+						*/
 					}
-					/*
-					pi->runAmxEvent( EVENT_IONWALKOVER, pi->getSerial32(), pc->getSocket() );
-					g_bByPass = false;
-					*/
+					tile_st tile;
+					Map->SeekTile(pi->id(), &tile);
+					pUnitile = xyblock + blockers_count;
+					pUnitile->type=1;
+					pUnitile->basez= pi->getPosition().z;
+					pUnitile->id=pi->id();
+					pUnitile->flag1=tile.flag1;
+					pUnitile->flag2=tile.flag2;
+					pUnitile->flag3=tile.flag3;
+					pUnitile->flag4=tile.flag4;
+					pUnitile->height=tile.height;
+					pUnitile->weight=tile.weight;
+					++blockers_count;
 				}
-				tile_st tile;
-				Map->SeekTile(pi->id(), &tile);
-				xyblock[blockers_count].type=1;
-				xyblock[blockers_count].basez= pi->getPosition().z;
-				xyblock[blockers_count].id=pi->id();
-				xyblock[blockers_count].flag1=tile.flag1;
-				xyblock[blockers_count].flag2=tile.flag2;
-				xyblock[blockers_count].flag3=tile.flag3;
-				xyblock[blockers_count].flag4=tile.flag4;
-				xyblock[blockers_count].height=tile.height;
-				xyblock[blockers_count].weight=tile.weight;
-				++blockers_count;
 			}
-		}
-		else	// Multi Tile
-		{
-			if ( (abs(pi->getPosition().x - (SI32)pc->getPosition().x)<=BUILDRANGE) &&
-				 (abs(pi->getPosition().y - (SI32)pc->getPosition().y)<=BUILDRANGE) )
+			else	// Multi Tile
 			{
-				MULFile *mfile = NULL;
-				SI32 length = 0;
+				if ( abs( piX - pcX ) <= BUILDRANGE && abs( piY - pcY ) <= BUILDRANGE )
+				{
+					MULFile *mfile = NULL;
+					SI32 length = 0;
 
-				Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
-				length=length/MultiRecordSize;
-				if ((length == INVALID) || (length>=17000000))//Too big... bug fix hopefully (Abaddon 13 Sept 1999)
-				{
-					//ConOut("walking() - Bad length in multi file. Avoiding stall.\n");
-					length = 0;
-				}
-				int j;
-				for (j = 0; j < length; ++j)
-				{
-					st_multi multi;
-					mfile->get_st_multi(&multi);
-					if (multi.visible && (pi->getPosition().x+multi.x == pc->getPosition().x) && (pi->getPosition().y+multi.y == pc->getPosition().y))
+					Map->SeekMulti(pi->id()-0x4000, &mfile, &length);
+					length=length/MultiRecordSize;
+					if ((length == INVALID) || (length>=17000000))//Too big... bug fix hopefully (Abaddon 13 Sept 1999)
 					{
-						tile_st tile;
-						Map->SeekTile(multi.tile, &tile);
-						xyblock[blockers_count].type=2;
-						xyblock[blockers_count].basez= multi.z+pi->getPosition().z;
-						xyblock[blockers_count].id= multi.tile;
-						xyblock[blockers_count].flag1= tile.flag1;
-						xyblock[blockers_count].flag2= tile.flag2;
-						xyblock[blockers_count].flag3= tile.flag3;
-						xyblock[blockers_count].flag4= tile.flag4;
-						xyblock[blockers_count].height= tile.height;
-						xyblock[blockers_count].weight= 255;
-						++blockers_count;
+						//ConOut("walking() - Bad length in multi file. Avoiding stall.\n");
+						length = 0;
+					}
+					for (int j = 0; j < length; ++j)
+					{
+						st_multi multi;
+						mfile->get_st_multi(&multi);
+						if (multi.visible && piX + multi.x == pcX && piY + multi.y == pcY )
+						{
+							tile_st tile;
+							Map->SeekTile(multi.tile, &tile);
+							pUnitile = xyblock + blockers_count;
+							pUnitile->type=2;
+							pUnitile->basez= multi.z+pi->getPosition().z;
+							pUnitile->id= multi.tile;
+							pUnitile->flag1= tile.flag1;
+							pUnitile->flag2= tile.flag2;
+							pUnitile->flag3= tile.flag3;
+							pUnitile->flag4= tile.flag4;
+							pUnitile->height= tile.height;
+							pUnitile->weight= 255;
+							++blockers_count;
+						}
 					}
 				}
 			}
 		}
 	}
 
-    MapStaticIterator msi( pc->getPosition().x, pc->getPosition().y );
+	MapStaticIterator msi( pcX, pcY );
 	staticrecord *stat;
 	int loopexit=0;
 	while ( ((stat = msi.Next())!=NULL)  && (++loopexit < MAXLOOPS))
@@ -364,20 +368,19 @@ UI32 WalkCollectBlockers(P_CHAR pc)
 		//ConOut("staticr[X] type=%d, id=%d\n", 2, stat->itemid);
 		tile_st tile;
 		msi.GetTile(&tile);
-		xyblock[blockers_count].type= 2;
-		xyblock[blockers_count].basez= stat->zoff;
-		xyblock[blockers_count].id= stat->itemid;
-		xyblock[blockers_count].flag1= tile.flag1;
-		xyblock[blockers_count].flag2= tile.flag2;
-		xyblock[blockers_count].flag3= tile.flag3;
-		xyblock[blockers_count].flag4= tile.flag4;
-		xyblock[blockers_count].height= tile.height;
-		xyblock[blockers_count].weight= 255;
+		pUnitile = xyblock + blockers_count;
+		pUnitile->type= 2;
+		pUnitile->basez= stat->zoff;
+		pUnitile->id= stat->itemid;
+		pUnitile->flag1= tile.flag1;
+		pUnitile->flag2= tile.flag2;
+		pUnitile->flag3= tile.flag3;
+		pUnitile->flag4= tile.flag4;
+		pUnitile->height= tile.height;
+		pUnitile->weight= 255;
 		++blockers_count;
 	}
 	return blockers_count;
-
-
 }
 
 /*!
