@@ -882,7 +882,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 			{
 				//xan : probably the plr has entered the boat walking!
 				pc->setMultiSerial32Only(INVALID);
-				P_ITEM boat = Boats->GetBoat(pc->getPosition());
+				P_ITEM boat = boats::GetBoat(pc->getPosition());
 				if (boat!=NULL) {
 					pc->setMultiSerial( boat->getSerial32() );
 					
@@ -1210,7 +1210,7 @@ void WalkingHandleRainSnow(P_CHAR pc)
 
 	// dynamics-check
 		int x=Map->DynamicElevation( pc->getPosition() );
-		if (x!=-127) if (Boats->GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
+		if (x!=-127) if (boats::GetBoat(pc->getPosition())!=NULL) x=-127; // check for dynamic buildings except boats
 		if (x==1 || x==0) x=-127; // 1 seems to be the multi-borders
 	// bugfix LB
 

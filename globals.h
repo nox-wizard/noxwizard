@@ -39,12 +39,10 @@ extern int dummy__; //used for default parameters of type int& and int*
 extern repsys_st repsys;
 extern resource_st resource;
 
-extern class cBoat		*Boats;
 extern class CWorldMain		*cwmWorldState;
 extern class cAccounts		*Accounts;
 extern class cGuilds		*Guilds;
 extern class cMapStuff		*Map;
-extern class cFishing		*Fishing;
 extern class cTargets		*Targ;
 extern class cPartys		*Partys;
 extern struct teffect_st	*teffects;

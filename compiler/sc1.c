@@ -5,7 +5,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: sc1.c,v 1.3 2003/07/13 16:59:06 dgp85 Exp $
+ *  Version: $Id: sc1.c,v 1.4 2003/07/13 23:26:58 dgp85 Exp $
  */
 #include <assert.h>
 #include <ctype.h>
@@ -3176,7 +3176,7 @@ static void test(int label,int parens,int invert)
     error(33,ptr);              /* array must be indexed */
   } /* if */
   if (lval.ident==iCONSTEXPR) { /* constant expression */
-    intest=(int)(long)popstk(); /* restore stack */
+    intest=popstk(); /* restore stack */
     stgdel(index,cidx);
     if (lval.constval) {        /* code always executed */
       error(206);               /* redundant test: always non-zero */

@@ -231,10 +231,8 @@ unsigned int hungerdamagetimer=0; // For hunger damage
 */
 CWorldMain	*cwmWorldState;
 cRegion		*mapRegions;
-cBoat		*Boats;
 cGuilds		*Guilds;
 cMapStuff	*Map;
-cFishing        *Fishing;
 cTargets	*Targ;
 cAccounts	*Accounts;
 cPartys		*Partys;

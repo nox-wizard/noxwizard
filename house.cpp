@@ -279,14 +279,14 @@ void buildhouse(int s, int i)
 
 		if(boat) //Boats
 		{
-			if(!Boats->Build(s,pHouse, id%256/*id2*/))
+			if(!boats::Build(s,pHouse, id%256/*id2*/))
 			{
 				pHouse->deleteItem();
 				return;
 			}
 		}
 
-		if (i)//Boats->.. Moved from up there ^
+		if (i)
 			archive::DeleItem(pc->fx1); // this will del the deed no matter where it is
 
 		pc->fx1=-1; //reset fx1 so it does not interfere

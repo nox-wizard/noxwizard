@@ -1898,7 +1898,7 @@ NATIVE(_chr_fish)
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-    Fishing->Fish (DEREF_P_CHAR(pc));
+    fishing::Fish (DEREF_P_CHAR(pc));
     return 0;
 }
 

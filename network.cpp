@@ -1714,7 +1714,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_TARGETING:
 					if(targetok[s]) 
-						Targ->MultiTarget(ps);
+						targets::MultiTarget(ps);
 					break;
 
 				case PACKET_WEARITEM:

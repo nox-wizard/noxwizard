@@ -365,7 +365,7 @@ void doubleclick(NXWCLIENT ps)
 		if (pi->type2 == 3)
 		{
 			if(pi->id2 == 0x84 || pi->id2 == 0xD5 || pi->id2 == 0xD4 || pi->id2 == 0x89)
-				Boats->PlankStuff(pc, pi);
+				boats::PlankStuff(pc, pi);
 			else
 				pc->sysmsg( TRANSLATE("That is locked."));
 			return;

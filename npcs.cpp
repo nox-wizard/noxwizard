@@ -398,7 +398,7 @@ int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
 		if (spawnpoint==-1)
 		{
 			addmitem[s]=k;
-			return Targ->NpcMenuTarget(s);
+			return targets::NpcMenuTarget(s);
 			//return -1;
 		}
 		else
