@@ -59,16 +59,19 @@
 #define T_INT 2
 #define T_BOOL 3
 #define T_SHORT 4
+#define T_UNICODE 5
 
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
+static cUnicodeString emptyUnicodeString;
 
 static bool  	getCharBoolProperty(P_CHAR pc, int property, int prop2);
 static int   	getCharIntProperty(P_CHAR pc, int property, int prop2);
 static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
 static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
 static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
+static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 );
 
 
 static bool  	getItemBoolProperty(P_ITEM pi, int property, int prop2);
@@ -88,7 +91,8 @@ static int getPropertyType(int property)
 	if (property < 200) return T_CHAR;
 	if (property < 400) return T_INT;
 	if (property < 450) return T_SHORT;
-	return T_STRING;
+	if (property < 500) return T_STRING;
+	return T_UNICODE;
 }
 
 /*
@@ -177,11 +181,9 @@ NATIVE2(_getCharProperty)
 			cell i = p;
 			return i;
 		}
-
+		if (tp==T_STRING )
+		{
 		//we're here so we should pass a string, params[4] is a str ptr
-
-		if( params[2]!= NXW_CP_STR_SPEECH_CURRENT ) { //temp fix
-
 	  		char str[100];	
   			cell *cptr;
 	  		strcpy(str, getCharStrProperty( pc, params[2], params[3]));
@@ -191,7 +193,8 @@ NATIVE2(_getCharProperty)
 
   			return strlen(str);
 		}
-		else {
+		if (tp==T_UNICODE )
+		{
 			if( pc->speechCurrent!=NULL ) {
 				cell *cptr;
 	  			amx_GetAddr(amx,params[4],&cptr);
@@ -199,6 +202,7 @@ NATIVE2(_getCharProperty)
 				return pc->speechCurrent->length();
 			}
 		}
+
   	}
   	return INVALID;
 }
@@ -909,49 +913,71 @@ NATIVE2(_setCharProperty)
 		}
 		return p;
 	}
-	//we're here so we should get a ConOut format string, params[4] is the str format
+	if (tp==T_STRING) {	
+		//we're here so we should get a ConOut format string, params[4] is the str format
 
-	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
-	if( params[2] == NXW_CP_STR_SPEECH_CURRENT ) { 
-		pc->speechCurrent= new cUnicodeString();
-		amx_GetStringUnicode( &pc->speechCurrent->s, cstr );
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
+		printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
+		g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
+		switch( params[2] )
+		{
+			case NXW_CP_STR_DISABLEDMSG :			  				//dec value: 450;
+				strcpy( pc->disabledmsg, g_cAmxPrintBuffer );
+				break;
+			case NXW_CP_STR_GUILDTITLE :							//dec value: 451;
+				pc->GetGuildTitle();
+				break;
+			case NXW_CP_STR_LASTON :		  					//dec value: 452;
+				break;
+			case NXW_CP_STR_NAME :								//dec value: 453;
+				pc->setCurrentName( g_cAmxPrintBuffer );
+				break;
+			case NXW_CP_STR_ORGNAME :		  					//dec value: 454;
+				break;
+			case NXW_CP_STR_TITLE :			  					//dec value: 455;
+				strcpy( pc->title, g_cAmxPrintBuffer );
+				break;
+			case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
+				strcpy( pc->trigword, g_cAmxPrintBuffer );
+				break;
+			case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
+				strcpy( script1, g_cAmxPrintBuffer );
+				break;
+			case NXW_CP_STR_SPEECH :			 				//dec value: 458;
+				strcpy( script2, g_cAmxPrintBuffer );
+				break;
+			default :
+				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+	  	g_nAmxPrintPtr=0;
+		return 0;
 	}
-	else {
+	if (tp==T_UNICODE) {	
+		cell *cstr;
+		amx_GetAddr(amx,params[4],&cstr);
 
-	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
-	g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-	switch( params[2] )
-	{
-		case NXW_CP_STR_DISABLEDMSG :			  				//dec value: 450;
-			strcpy( pc->disabledmsg, g_cAmxPrintBuffer );
-			break;
-		case NXW_CP_STR_GUILDTITLE :							//dec value: 451;
-			pc->GetGuildTitle();
-			break;
-		case NXW_CP_STR_LASTON :		  					//dec value: 452;
-			break;
-		case NXW_CP_STR_NAME :								//dec value: 453;
-			pc->setCurrentName( g_cAmxPrintBuffer );
-			break;
-		case NXW_CP_STR_ORGNAME :		  					//dec value: 454;
-			break;
-		case NXW_CP_STR_TITLE :			  					//dec value: 455;
-			strcpy( pc->title, g_cAmxPrintBuffer );
-			break;
-		case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
-			strcpy( pc->trigword, g_cAmxPrintBuffer );
-			break;
-		case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
-			strcpy( script1, g_cAmxPrintBuffer );
-			break;
-		case NXW_CP_STR_SPEECH :			 				//dec value: 458;
-			strcpy( script2, g_cAmxPrintBuffer );
-			break;
-		default :
-			ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
-			break;
-  	}
+		switch( params[2] )
+		{
+			case NXW_CP_UNI_SPEECH_CURRENT :		
+				pc->speechCurrent= new cUnicodeString();
+				amx_GetStringUnicode( &pc->speechCurrent->s, cstr );
+				break;
+			case NXW_CP_UNI_PROFILE :				
+				if( pc->profile==NULL )
+					pc->profile= new cUnicodeString();
+				else
+					pc->profile->clear();
+				amx_GetStringUnicode( &pc->profile->s, cstr );
+				break;
+			default :
+				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		g_nAmxPrintPtr=0;
+	  	return 0;
 
 	}
   	g_nAmxPrintPtr=0;
@@ -1962,6 +1988,16 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 	return const_cast<char*>(emptyString);
 }
 
+static cUnicodeString* getCharUniProperty( P_CHAR pc, int property, int prop2 )
+{
+	switch( property )
+	{
+		CHECK(  NXW_CP_UNI_SPEECH_CURRENT , (pc->speechCurrent!=NULL)? pc->speechCurrent : &emptyUnicodeString )
+		CHECK(  NXW_CP_UNI_PROFILE , (pc->profile!=NULL)? pc->profile : &emptyUnicodeString )
+	}
+	ErrOut("chr_getProperty called with invalid property %d!\n", property );
+	return &emptyUnicodeString;
+}
 
 
 /*
