@@ -1314,7 +1314,7 @@ void fprintVector( FILE* f, char* name, std::vector<UI08>* c )
 	std::vector<UI08>::iterator iter( c->begin() ), end( c->end() );
 	for( ; iter!=end; iter++ ) {
 		if( (*iter)!=0 )
-			fprintf( f, "%x", (*iter) );
+			fprintf( f, "%02x", (*iter) );
 		else
 			fprintf( f, "00" );
 	}
