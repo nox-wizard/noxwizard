@@ -337,9 +337,11 @@ cChar::cChar( SERIAL ser ) : cObject()
 cChar::~cChar()
 {
 	if( profile!=NULL )
-		delete profile;
+		safedelete( profile ); 
+	if( staticProfile!=NULL )
+		safedelete( staticProfile ); 
 	if( speechCurrent!=NULL )
-		delete speechCurrent;
+		safedelete( speechCurrent );
 }
 
 
