@@ -8,24 +8,6 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 
-/*!
-\file cmdtable.h
-\brief Declaration all ingame commands
-\author Crackerjack
-\remark This code is an attempt to clean up the messy "if/then/else" routines
-	currently in use for GM commands, as well as adding more functionality
-	and more potential for functionality.
-
-	Current features:
-	\li Actual table of commands to execute, what perms are required, dialog
-		messages for target commands, etc handled by a central system
-
-	\li /SETPRIV3 user-friendliness - /SETPRIV3 < command > works now instead of
-		all that cumbersome bitmask math (Eg; /SETPRIV3 SAVE and click on a
-		char and they get SAVE command perms, /SETPRIV3 !SAVE and click on a
-		char and their SAVE privs are removed)
- */
-
 #ifndef __CMDTABLE_H
 #define __CMDTABLE_H
 
@@ -73,67 +55,6 @@ enum
 			client->doTargeting(msg); \
 	}
 
-class cCommandStep; class cCommand;
-
-// Pointers to a command and to a command-step
-typedef cCommand* P_COMMAND;
-typedef cCommandStep* P_COMMANDSTEP;
-
-class cCommandStep {
-public:
-    cCommandStep(void cmd(NXWCLIENT));
-    void execute(NXWCLIENT client);
-	void (*command)(NXWCLIENT);
-	P_COMMANDSTEP nextStep;
-};
-
-class cCommand {
-public:
-    cCommand(char* name, int privm, int privb, int type, void command(), unsigned char targMask);
-    cCommand(char* name, int privm, int privb, cCommandStep* command, unsigned char targMask);
-    bool isValid(P_CHAR character);
-    bool notValid(P_CHAR character);
-
-    static P_COMMANDSTEP buildSteps(MANAGEDSTEP(command), ...);
-
-	char*	cmd_name;
-	unsigned int	cmd_priv_m;	/* PRIV3 byte# - 0-6, 255=no privs needed */
-	unsigned int	cmd_priv_b;	/* PRIV3 bit within byte - 0-31 */
-	unsigned int	cmd_type;	/* Type of command - see above */
-	void 		(*cmd_extra) ();	/* extra data - see above */
-	cCommandStep* exec;
-	unsigned char targetingMask;
-};
-
-typedef std::map< string, P_COMMAND> td_cmdmap;
-typedef td_cmdmap::iterator td_cmditer;
-
-class cCommandTable {
-public:
-    cCommandTable();
-    P_COMMAND addPlayerCommand(char* name, int privb, int type, void command());
-    P_COMMAND addGmCommand(char* name, int privm, int privb, int type, void command());
-    P_COMMAND addGmCommand(P_COMMAND cmd);
-    P_COMMAND findCommand(char* name);
-    td_cmditer getIteratorBegin();
-    td_cmditer getIteratorEnd();
-       
-private:
-    td_cmdmap command_map;
-};
-
-extern cCommandTable* commands;
-
-#define CMD_EXEC	void (*) ( NXWCLIENT )
-#define CMD_DEFINE	void (*)()
-
-typedef struct {
-	TARG_TYPE type;
-	processTarget func;
-	char msg[128];
-} target_st;
-
-
 /* All command_ functions take an int value of the player that triggered the command. */
 #define CMD_HANDLER(name) extern void name ( NXWCLIENT ps )
 
@@ -156,9 +77,6 @@ CMD_HANDLER(command_gmtransfer);
 CMD_HANDLER(command_stats);
 CMD_HANDLER(command_options);
 CMD_HANDLER(command_gotocur);
-CMD_HANDLER(command_showp);
-CMD_HANDLER(command_setpriv3);
-CMD_HANDLER(command_spreadpriv3);
 CMD_HANDLER(command_resend);
 CMD_HANDLER(command_teleport);
 CMD_HANDLER(command_where);

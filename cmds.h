@@ -27,7 +27,7 @@ enum PrivLevel
 	PRIVLEVEL_CNS	= 100,
 	PRIVLEVEL_PLAYER = 50,
 	PRIVLEVEL_GUEST = 0,
-}
+};
 
 
 typedef class cCommand* P_COMMAND;
@@ -60,16 +60,17 @@ class cCommand {
  it is destroyed when the command has finished
  All parameters given by the char who call the command goes in this obj.
 */
-class cCallCommand {
+class cCallCommand 
+{
 
 private:
 
-	static SERIAL current_serial=0;
+	//static SERIAL current_serial = 0;
 	std::map< SERIAL, cCallCommand* > callcommand_map;
 
 public:
 
-	cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param>;
+	cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param );
 	std::string all_params;
 	cCallCommand* findCallCommand(SERIAL cmd);
 	void delCommand(SERIAL cmd);

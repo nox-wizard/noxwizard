@@ -472,13 +472,6 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		memcpy(&buffer[j], &buffer[jj], MAXBUFFER); // probably not nec.
 		memcpy(&outbuffer[j], &outbuffer[jj], MAXBUFFER); // very important
 
-		priv3a[j]=priv3a[jj];
-		priv3b[j]=priv3b[jj];
-		priv3c[j]=priv3c[jj];
-		priv3d[j]=priv3d[jj];
-		priv3e[j]=priv3e[jj];
-		priv3f[j]=priv3f[jj];
-		priv3g[j]=priv3g[jj];
 #ifdef USE_MTHREAD_SEND
 		g_NT[j] = g_NT[jj];
 #endif
@@ -1437,10 +1430,6 @@ void cNetwork::CheckConn() // Check for connection requests
 				walksequence[now]=-1;
 
 				clientDimension[now]=2;
-
-				//priv3a[now]=0;priv3b[now]=0;priv3c[now]=0;
-				//priv3d[now]=0;priv3e[now]=0;priv3f[now]=0;
-				//priv3g[now]=0;
 
 				++global_lis; // not 100% correct, but only cosmetical stuff, hence ok not to be 100% correct :>
                           			// doesnt get correct status if kicked out due to worng pw etc.

@@ -57,7 +57,8 @@
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
+cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) 
+{
 
 	cmd_name=name;
 	cmd_number=number; 
@@ -69,8 +70,8 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
 //Implementation of cCallCommand Class
 
 
-cCallCommand::cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param>;
-
+cCallCommand::cCallCommand( SERIAL cmd_serial, std::string all_params, std::vector<string>* single_param )
+{
 	cmd_serial=++current_serial;
 	all_params=params;
 	single_param=param;

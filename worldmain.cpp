@@ -522,13 +522,6 @@ void CWorldMain::loadChar() // Load a character from WSC
 		case 'P':
 		case 'p':
 			if (!strcmp(script1, "PRIV"))				{ pc->SetPriv(str2num(script2));}
-			else if (!strcmp(script1, "PRIV3a"))			{ pc->priv3[0]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3b"))			{ pc->priv3[1]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3c"))			{ pc->priv3[2]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3d"))			{ pc->priv3[3]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3e"))			{ pc->priv3[4]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3f"))			{ pc->priv3[5]=str2num(script2); }
-			else if (!strcmp(script1, "PRIV3g"))			{ pc->priv3[6]=str2num(script2); }
 			else if (!strcmp(script1, "POISON"))			{ pc->poison=str2num(script2);}
 			else if (!strcmp(script1, "POISONED"))		{ pc->poisoned=(PoisonType)str2num(script2);}
 
@@ -700,21 +693,8 @@ void CWorldMain::loadChar() // Load a character from WSC
 
  // begin of meta gm stuff
 
-	if (!pc->npc)
+	if (pc->npc)
 	{
-		for (int u=0;u<7;u++)
-		{
-			if (pc->priv3[u]==0) // dont overwrite alreday saved settings
-			{
-				if (!pc->IsGMorCounselor()) pc->priv3[u]=metagm[2][u]; //normal player defaults
-				if (pc->IsCounselor()) pc->priv3[u]=metagm[1][u]; // couscelor defaults
-				if (pc->IsGM()) pc->priv3[u]=metagm[0][u]; // gm defaults
-				if (pc->account==ADMIN_ACCOUNT) pc->priv3[u]=0xffffffff;
-			}
-		}
-
-	}
-	else {
 		pc->war=0;
 		if(pc->mounted)
 			pointers::pMounted[pc->getOwnerSerial32()]=pc;
@@ -1539,23 +1519,6 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if (pc->GetPriv()!=dummy.GetPriv())
 				fprintf(cWsc, "PRIV %i\n", pc->GetPriv());
 
-
-           // beginn of meta-gm save
-			if (pc->priv3[0]!=dummy.priv3[0])
-				fprintf(cWsc, "PRIV3a %i\n", pc->priv3[0]);
-			if (pc->priv3[1]!=dummy.priv3[1])
-				fprintf(cWsc, "PRIV3b %i\n", pc->priv3[1]);
-	        if (pc->priv3[2]!=dummy.priv3[2])
-				fprintf(cWsc, "PRIV3c %i\n", pc->priv3[2]);
-			if (pc->priv3[3]!=dummy.priv3[3])
-				fprintf(cWsc, "PRIV3d %i\n", pc->priv3[3]);
-            if (pc->priv3[4]!=dummy.priv3[4])
-				fprintf(cWsc, "PRIV3e %i\n", pc->priv3[4]);
-			if (pc->priv3[5]!=dummy.priv3[5])
-				fprintf(cWsc, "PRIV3f %i\n", pc->priv3[5]);
-			if (pc->priv3[6]!=dummy.priv3[6])
-				fprintf(cWsc, "PRIV3g %i\n", pc->priv3[6]);
-		// end of meta-gm save
 
         	if (pc->damagetype!=DAMAGE_PURE) //Luxor
             	fprintf(cWsc, "DAMAGETYPE %i\n", pc->damagetype);

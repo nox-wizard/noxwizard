@@ -1412,9 +1412,6 @@ void setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubpro
 					break;
 			} 
 			break;
-		case NXW_CP_I_PRIV3 :				  			//dec value: 265;
-			pc->priv3[subproperty] = value;
-			break;
 		case NXW_CP_I_QUESTBOUNTYPOSTSERIAL :					  //dec value: 266;
 			pc->questBountyPostSerial = value;
 			break;
@@ -1762,7 +1759,6 @@ int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 				case NXW_CP2_Z: return pc->prevZ;
 				default : return pc->prevZ;
 			}
-		CHECK(  NXW_CP_I_PRIV3 , pc->priv3[prop2] )  			//dec value: 265;
 		CHECK(  NXW_CP_I_QUESTBOUNTYPOSTSERIAL , pc->questBountyPostSerial )  //dec value: 266;
 		CHECK(  NXW_CP_I_QUESTBOUNTYREWARD , pc->questBountyReward )  	//dec value: 267;
 		CHECK(  NXW_CP_I_QUESTDESTREGION , pc->questDestRegion )  	//dec value: 268;

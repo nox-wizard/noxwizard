@@ -144,7 +144,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	priv2=0;	// 1:Allmove, 2: Frozen, 4: View houses as icons, 8: permanently hidden
 	priv4=0;	// 1:Allshow
 	// 10: no need mana, 20: dispellable, 40: permanent magic reflect, 80: no need reagents
-	resetPriv3();
 	fonttype=3; // Speech font to use
 	saycolor=0x1700; // Color for say messages
 	emotecolor=0x0023; // Color for emote messages
@@ -2824,13 +2823,6 @@ void cChar::possess(P_CHAR pc)
 	commandLevel = pc->commandLevel;
 	pc->commandLevel = usTemp;
 
-	//PRIV3
-	for( i = 0; i < 7; i++ ) {
-		iTemp = priv3[ i ];
-		priv3[ i ] = pc->priv3[ i ];
-		pc->priv3[ i ] = iTemp;
-	}
-
 	//Serials
 	if ( bSwitchBack ) {
 		possessorSerial = INVALID;
@@ -3548,24 +3540,14 @@ const LOGICAL cChar::HasHumanBody()
 	return ((getId()==BODY_MALE) || (getId()==BODY_FEMALE));
 }
 
-const LOGICAL cChar::IsTrueGM() const
+const bool cChar::IsGM() const
 {
-	return (priv&CHRPRIV_GM);
+	return ( privLevel > PRIVLEVEL_GM );
 }
 
-const LOGICAL cChar::IsGM() const
+bool const cChar::IsCounselor() const
 {
-	return (priv&CHRPRIV_GM && (!gmrestrict || (region==gmrestrict))) || (account == 0);
-}
-
-LOGICAL const cChar::IsCounselor() const
-{
-	return (priv&CHRPRIV_COUNSELOR);
-}
-
-const LOGICAL cChar::IsGMorCounselor() const
-{
-	return (priv&(CHRPRIV_COUNSELOR|CHRPRIV_GM));
+	return ( privLevel > PRIVLEVEL_CNS );
 }
 
 const LOGICAL cChar::IsInvul() const

@@ -23,21 +23,7 @@ typedef std::vector< std::string > td_cmdparams;
 
 class cNxwClientObj {
 public:
-/*  -- not yet implemented ;) --
-    void doStreamCode();
-    void flushBuffer();
-    void sendAccessDenied(int reason);
-    void sendServerList();
-    void sendRelayPacket();
-    void sendStartInfos();
-    void secondLogin();
-    void charPlay();
-    void sendStartUpStuff();
-    bool logout();
-    int receive(int len, int ofs);
-	-- end of future stuff --  */
 	NXWSOCKET m_sck;
-	P_COMMANDSTEP currentCommand;
 public:
 	cNxwClientObj( NXWSOCKET s );
 	int toInt();
@@ -70,11 +56,6 @@ public:
 	void sysmsg(short color, char* szFormat, ...);
 	//@}
 
-	void startCommand(P_COMMAND cmd, char* params);
-	void continueCommand();
-	string getParamsAsString();
-
-	td_cmdparams cmdParams;
 };
 
 

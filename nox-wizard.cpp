@@ -336,23 +336,6 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	pc->SetPriv(defaultpriv1);
 	pc->priv2=defaultpriv2;
 
-	if (acctno[s]==0)
-	{
-		pc->SetPriv(0xE7);
-		pc->priv3[0]=0xFFFFFFFF; // lb, meta gm
-		pc->priv3[1]=0xFFFFFFFF;
-		pc->priv3[2]=0xFFFFFFFF;
-		pc->priv3[3]=0xFFFFFFFF;
-		pc->priv3[4]=0xFFFFFFFF;
-		pc->priv3[5]=0xFFFFFFFF;
-		pc->priv3[6]=0xFFFFFFFF;
-	}
-	else
-	{
-		for(i=0;i<7;i++) pc->priv3[i]=metagm[2][i]; //normal player defaults for all but account 0 chars, Ummon
-	}
-
-
 	Location charpos;
 	charpos.x= str2num(start[buffer[s][0x5B]][2]);
 	charpos.y= str2num(start[buffer[s][0x5B]][3]);
@@ -2098,110 +2081,6 @@ void StoreItemRandomValue(P_ITEM pi,int tmpreg)
 }
 
 
-
-/*!
-\brief Load metaGM permission
-
-Load metaGM permission from metagm.scp script and add them to metagm array used
-for makeGM, makeCNS and SetPriv3
-
-\author Lord Binary Ummon
-\remark  If two different command has same permission bit
-		\li in plus mode:
-			they are both added if at least one is listed
-		\li in minus mode:
-		they are both removed if at least one is listed
-*/
-void loadmetagm()
-{
-	char sect[512];
-
-	int i; //section counter
-	int n; //for skipping command search until after mode token has been found
-	int totalsection=0; //total number of sections less the first foundamental three (0,1,2)
-	int plus=1;
-	int plusmode;
-/*	int cmd_cnt;
-	int cmd_found;*/
-	P_COMMAND cmd;
-    cScpIterator* iter = NULL;
-    char script1[1024];
-    char script2[1024];
-
-	for (i=0;i<256;i++) //for each of 256 possible "command clearance" section
-	{
-		//for each of 7 section of priv3, each expressed as an integer (4 byte), so 32 bits per section.
-		for (int a=0;a<7;a++) metagm[i][a]=0;
-	}
-
-	i=INVALID;
-	totalsection=0;
-	do //look for every possible "command clearance" section
-	{
-		i++;
-		sprintf(sect, "SECTION COMMAND_CLEARANCE %i", i);
-		safedelete(iter);
-		iter = Scripts::MetaGM->getNewIterator(sect);
-
-		if (iter!=NULL)
-		{
-			totalsection++;
-			n=0;
-			plusmode=INVALID;
-			int loopexit=0;
-			do //look into section
-			{
-				iter->parseLine(script1, script2);
-				if ((script1[0]!='}')&&(script1[0]!='{'))
-				{
-					if (!(strcmp("MODE+",script1))) { n=1; plusmode=1;} // plus mode
-					if (!(strcmp("MODE-",script1))) { n=1; plusmode=0;}	// minus mode
-
-					if (plusmode>INVALID && n==0) // only check for command words AFTER the mode token
-					{
-						//cmd_cnt=0;
-						//cmd_found=INVALID;
-//						int loopexit=0; // unused variable
-
-						/*while((command_table[cmd_cnt].cmd_name) && (cmd_found == INVALID) && (++loopexit < MAXLOOPS) ) // search for the command
-						{
-							if(!(strcmp(command_table[cmd_cnt].cmd_name, script1))) cmd_found=cmd_cnt;
-							cmd_cnt++;
-						}*/
-
-						cmd= commands->findCommand(script1);
-
-						if (cmd==NULL) // not found ?
-						{
-							WarnOut("found unknown command %s in meta gm script\n",script1);
-						}
-						else // found it!
-						{
-							if (cmd->cmd_priv_m!=255)
-								metagm[i][cmd->cmd_priv_m]=(metagm[i][cmd->cmd_priv_m] | (plus << (cmd->cmd_priv_b)));
-						}
-					}
-					n=0; //if mode token was found then parse commands
-				}
-			} while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-			if (plusmode==INVALID) //mode token not found
-			{
-				error=1;
-				keeprun=false;
-				WarnOut("\n Meta-Gm script parsing error, mode keyword missing, section# %i - closing NoX-Wizard\n",i);
-			}
-
-			if (plusmode==0) //if minus mode, reverse every permission.
-				for (int aa=0; aa<7; aa++)
-					metagm[i][aa]=~metagm[i][aa];
-		}
-
-	} while (i<255);
-
-	safedelete(iter);
-//	ConOut("Meta Gm script loaded... %i priv3 shortcut/s\n",totalsection-3);
-}
 
 void StartMilliTimer(unsigned long &Seconds, unsigned long &Milliseconds)
 {

@@ -274,14 +274,6 @@ unsigned char clientDimension[MAXCLIENT];
  unsigned int metagm[256][7]; //!< for meta gm script
  int validEscortRegion[256];
 
-int priv3a[MAXCLIENT];
-int priv3b[MAXCLIENT];
-int priv3c[MAXCLIENT];
-int priv3d[MAXCLIENT];
-int priv3e[MAXCLIENT];
-int priv3f[MAXCLIENT];
-int priv3g[MAXCLIENT];
- 
 int npcshape[5]; //!< Stores the coords of the bouding shape for the NPC
 
 //jail_st jails[11];

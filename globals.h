@@ -144,14 +144,6 @@ extern char spellname[71][25];
 extern unsigned int metagm[256][7]; // for meta gm script
 extern int validEscortRegion[256];
 
-extern int priv3a[MAXCLIENT];
-extern int priv3b[MAXCLIENT];
-extern int priv3c[MAXCLIENT];
-extern int priv3d[MAXCLIENT];
-extern int priv3e[MAXCLIENT];
-extern int priv3f[MAXCLIENT];
-extern int priv3g[MAXCLIENT];
-
 extern int npcshape[5]; //Stores the coords of the bouding shape for the NPC
 
 //extern jail_st jails[11];

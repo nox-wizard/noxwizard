@@ -222,6 +222,10 @@ SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\cmds.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\cmdtable.cpp
 # End Source File
 # Begin Source File
@@ -651,6 +655,10 @@ SOURCE=.\classes.h
 # Begin Source File
 
 SOURCE=.\client.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\cmds.h
 # End Source File
 # Begin Source File
 

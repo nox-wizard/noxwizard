@@ -23,7 +23,6 @@
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 	this->m_sck=s;
-	currentCommand= NULL;
 }
 
 void cNxwClientObj::sysmsg(short color, char* txt, ...)
@@ -316,79 +315,6 @@ void cNxwClientObj::sendSFX(unsigned char a, unsigned char b, bool bIncludeNearb
 	}
 	else send(sfx,12); //Endy fix for double send
 }
-
-void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
-    if(cmd==NULL) {
-      	sysmsg("Command not found.");
-      	return;
-    }
-    if(cmd->exec!=NULL) {
-		currentCommand= cmd->exec;
-		char buffer[512]; // the same as in commands.cpp :(
-        strcpy(buffer, params);
-		cmdParams.clear();
-		char* token= strtok(buffer, " ");
-        token= strtok(NULL, " ");
-        char* warn= NULL;
-		bool needtargets= false;
-        while(token!=NULL) {
-			string param= token;
-            strupr(token);
-            if(strcmp(token, "LAST")==0) {
-                if(warn==NULL) {
-					if(cmd->targetingMask && TARG_LAST) {
-						/*if(!targets.empty()) {
-                            currentCommand= currentCommand->nextStep;
-							needtargets= true;
-						} else
-                            warn= "There's no last target available.";*/
-                    } else
-                        warn= "Last target not supported by the command: %s";
-                }
-			} else if(strcmp(token, "SELF")==0) {
-                if(warn==NULL) {
-					if(cmd->targetingMask && TARG_SELF) {
-//						P_CHAR self = MAKE_CHAR_REF( currchar[toInt()] );
-						if(!needtargets) {
-							needtargets= true;
-						}
-						//receiveTarget(*new TargetLocation(self));
-						currentCommand= currentCommand->nextStep;
-                    } else
-                        warn= "Target \"self\" not supported by the command: %s";
-                }
-			} else {
-				cmdParams.push_back( param );
-			}
-            token= strtok(NULL, " ");
-        }
-        if(warn)
-            sysmsg(warn, cmd->cmd_name);
-        continueCommand();
-    } else
-      	sysmsg("Command inconsistency error: please call a GM.");
-}
-
-void cNxwClientObj::continueCommand() {
-    P_COMMANDSTEP cmd= currentCommand;
-    if(cmd!=NULL) {
-        currentCommand= cmd->nextStep;
-        cmd->execute(this);
-    } else
-        ErrOut("No more steps in continue command.");
-}
-
-string cNxwClientObj::getParamsAsString() {
-	if(cmdParams.empty())
-		return string("");
-	string text(cmdParams[0]);
-	for(UI32 i=1; i<cmdParams.size(); i++) {
-		text+= ' ';
-		text+=cmdParams[i];
-	}
-	return text;
-}
-
 
 /*!
 \brief Sends to a client a remove object packet, for objects disappearing
