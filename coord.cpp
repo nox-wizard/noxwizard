@@ -120,8 +120,11 @@ cCoord cCoord::operator- (const cCoord& src) const
 
 bool cCoord::operator< (const cCoord& src) const
 {
-	cCoord ursprung(0,0,0,0);
-	if (( distance(ursprung) < src.distance(ursprung)) && ( distance(src) != 0 ) )
+	if ( y < src.y )
+		return true;
+	if (( y == src.y ) && ( x < src.x ) )
+		return true;
+	if (( y == src.y ) && ( x == src.x ) && z < src.z)
 		return true;
 	return false;
 }
