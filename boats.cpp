@@ -225,25 +225,11 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 					}
 				}
 
-				mapRegions->remove(pc);
-				pointers::delCharFromLocationMap(pc);
-
-				pc->setPosition("x", x);
-				pc->setPosition("y", y);
-
 				pc->setMultiSerial(INVALID);
 
-				if (typ)
-				{
-					pc->setPosition("z", sz);
-					pc->setPosition("dz", sz);
-				}
-				else
-				{
-					pc->setPosition("z", mz);
-					pc->setPosition("dz", mz);
-				}
-
+				mapRegions->remove(pc);
+				pointers::delCharFromLocationMap(pc);
+				pc->setPosition( Loc( x, y, typ ? sz : mz, typ ? sz : mz ) );
 				mapRegions->add(pc);
 				pointers::addCharToLocationMap(pc);
 
@@ -260,31 +246,30 @@ void cBoat::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open
 
 void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item that was on the boat when the boat was turned.
 {
+	VALIDATEPI(p_b);
+	VALIDATEPI(pi);
+
 	int dx, dy;
 
-	Location bpos= p_b->getPosition();
+	Location bpos	= p_b->getPosition();
+	Location itmpos = { bpos.x, bpos.y, pi->getPosition().z, pi->getPosition().dispz };
 
-	VALIDATEPI(pi);
-	dx= pi->getPosition("x") - bpos.x;//get their distance x
-	dy= pi->getPosition("y") - bpos.y;//and distance Y
-
-	mapRegions->remove(pi);
-	pointers::delItemFromLocationMap(pi);
-
-	pi->setPosition("x", bpos.x);
-	pi->setPosition("y", bpos.y);
-
-	Location itmpos= pi->getPosition();
+	dx= pi->getPosition().x - bpos.x;//get their distance x
+	dy= pi->getPosition().y - bpos.y;//and distance Y
 
 	if(dir)//turning right
 	{
 		itmpos.x +=dy*-1;
 		itmpos.y +=dx;
-	} else {//turning left
+	}
+	else //turning left
+	{
 		itmpos.x+=dy;
 		itmpos.y+=dx*-1;
 	}
 
+	mapRegions->remove(pi);
+	pointers::delItemFromLocationMap(pi);
 	pi->setPosition( itmpos );
 	mapRegions->add(pi);
 	pointers::addItemToLocationMap(pi);
@@ -293,21 +278,18 @@ void cBoat::TurnStuff_i(P_ITEM p_b, P_ITEM pi, int dir, int type)//Turn an item 
 
 
 void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item that was on the boat when the boat was turned.
-
 {
+	VALIDATEPI(p_b);
+	VALIDATEPC(pc);
 
 	int dx, dy;
 	Location bpos= p_b->getPosition();
-	VALIDATEPC(pc);
 	Location charpos= pc->getPosition();
 	dx= charpos.x - bpos.x;
 	dy= charpos.y - bpos.y;
-
-	mapRegions->remove(pc);
-	pointers::delCharFromLocationMap(pc);
-
 	charpos.x= bpos.x;
 	charpos.y= bpos.y;
+
 	if(dir)
 	{
 		charpos.x+= dy*-1;
@@ -318,17 +300,16 @@ void cBoat::TurnStuff_c(P_ITEM p_b, P_CHAR pc, int dir, int type)//Turn an item 
 		charpos.y+= dx*-1;
 
 	}
+	mapRegions->remove(pc);
+	pointers::delCharFromLocationMap(pc);
 	pc->setPosition( charpos );
-	//Set then in their new cell
 	mapRegions->add(pc);
 	pointers::addCharToLocationMap(pc);
 	pc->teleport();
-
 }
 
 void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the people/items on the boat to turnboatstuff()
 {
-
 	VALIDATEPI(pi);
 
 	NXWSOCKET 	Send[MAXCLIENT];
@@ -430,131 +411,6 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	hold->id2 = pShipItems[HOLDID];
 
 	TurnShip( pi->more1, dir, p1, p2, tiller, hold );
-
-	/*
-	Location itmpos;
-	signed short int *pShipOffsets;
-
-	switch(pi->more1)//Now set what size boat it is and move the specail items
-	{
-		case 0x00:
-		case 0x04:
-			pShipOffsets = iSmallShipOffsets[dir][PORT_PLANK];
-
-			mapRegions->remove( p1 );
-			itmpos= p1->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p1->setPosition( itmpos );
-			mapRegions->add( p1 );
-
-			pShipOffsets = iSmallShipOffsets[dir][STARB_PLANK];
-			mapRegions->remove( p2 );
-			itmpos= p2->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p2->setPosition( itmpos );
-			mapRegions->add( p2 );
-
-			pShipOffsets = iSmallShipOffsets[dir][TILLER];
-			mapRegions->remove( tiller );
-			itmpos= tiller->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			tiller->setPosition( itmpos );
-			mapRegions->add( tiller );
-
-			pShipOffsets = iSmallShipOffsets[dir][HOLD];
-			mapRegions->remove( hold );
-			itmpos= hold->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			hold->setPosition( itmpos );
-			mapRegions->add( hold );
-
-			break;
-
-		case 0x08:
-		case 0x0C:
-			pShipOffsets = iMediumShipOffsets[dir][PORT_PLANK];
-			mapRegions->remove( p1 );
-			itmpos= p1->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p1->setPosition( itmpos );
-			mapRegions->add( p1 );
-
-			pShipOffsets = iMediumShipOffsets[dir][STARB_PLANK];
-			mapRegions->remove( p2 );
-			itmpos= p2->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p2->setPosition( itmpos );
-			mapRegions->add( p2 );
-
-			pShipOffsets = iMediumShipOffsets[dir][TILLER];
-			mapRegions->remove( tiller );
-			itmpos= tiller->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			tiller->setPosition( itmpos );
-			mapRegions->add( tiller );
-
-			pShipOffsets = iMediumShipOffsets[dir][HOLD];
-			mapRegions->remove( hold );
-			itmpos= hold->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			hold->setPosition( itmpos );
-			mapRegions->add( hold );
-
-			break;
-		case 0x10:
-		case 0x14:
-
-			pShipOffsets = iLargeShipOffsets[dir][PORT_PLANK];
-			mapRegions->remove( p1 );
-			itmpos= p1->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p1->setPosition( itmpos );
-			mapRegions->add( p1 );
-
-			pShipOffsets = iLargeShipOffsets[dir][STARB_PLANK];
-			mapRegions->remove( p2 );
-			itmpos= p2->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			p2->setPosition( itmpos );
-			mapRegions->add( p2 );
-
-			pShipOffsets = iLargeShipOffsets[dir][TILLER];
-			mapRegions->remove( tiller );
-			itmpos= tiller->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			tiller->setPosition( itmpos );
-			mapRegions->add( tiller );
-
-			pShipOffsets = iLargeShipOffsets[dir][HOLD];
-			mapRegions->remove( hold );
-			itmpos= hold->getPosition();
-			itmpos.x+= pShipOffsets[X];
-			itmpos.y+= pShipOffsets[Y];
-			hold->setPosition( itmpos );
-			mapRegions->add( hold );
-
-			break;
-
-		default:
-			{
-			char temp[TEMP_STR_SIZE];
-			sprintf(temp,"Turnboatstuff() more1 error! more1 = %c not found!\n",pi->more1);
-			LogWarning(temp);
-			}
-			break;
-	}
-	*/
 
 	p1->Refresh();
 	p2->Refresh();
@@ -1393,32 +1249,32 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	switch(dir&0x0F)//Which DIR is it going in?
 	{
 	case 0:
-		ty--;
+		--ty;
 		break;
 	case 1:
-		tx++;
-		ty--;
+		++tx;
+		--ty;
 		break;
 	case 2:
-		tx++;
+		++tx;
 		break;
 	case 3:
-		tx++;
-		ty++;
+		++tx;
+		++ty;
 		break;
 	case 4:
-		ty++;
+		++ty;
 		break;
 	case 5:
-		tx--;
-		ty++;
+		--tx;
+		++ty;
 		break;
 	case 6:
-		tx--;
+		--tx;
 		break;
 	case 7:
-		tx--;
-		ty--;
+		--tx;
+		--ty;
 		break;
 	default:
 		{
