@@ -88,6 +88,7 @@ void staticeffectUO3D(CHARACTER player, ParticleFx *sta);
 void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta);
 void bolteffectUO3D(CHARACTER player);
 void itemeffectUO3D(P_ITEM pi, ParticleFx *sta);
+void MakeGraphicalEffectPkt_(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode );
 
 void dolight(int s, char level);
 void updateskill(int s, int skillnum);
