@@ -516,19 +516,19 @@ public:
     cNewzTarget(NXWCLIENT pCli) : cWpObjTarget(pCli) {}
     void CharSpecific()
     {
-	if (!ISVALIDPC(pc)) return; //Luxor
+		VALIDATEPC( pc ); //Luxor
 		pc->setPosition("z", addx[s]);
         pc->setPosition("dz", addx[s]);
 		P_CHAR pc_s=MAKE_CHAR_REF(inx);
-	if (!ISVALIDPC(pc_s)) return; //Luxor
+		VALIDATEPC( pc_s ) //Luxor
         pc_s->teleport();
     }
     void ItemSpecific()
     {
-	if (!ISVALIDPI(pi)) return; //Luxor
+		VALIDATEPIR( pi ) //Luxor
         pi->setPosition("z", addx[s]);
 		P_ITEM pi_c= MAKE_ITEM_REF(inx);
-	if (!ISVALIDPI(pi_c)) return; //Luxor
+		VALIDATEPI( pi_c ) //Luxor
         pi_c->Refresh();
     }
 };
@@ -3720,10 +3720,9 @@ void targets::MoveToBagTarget(NXWSOCKET s)
 	VALIDATEPI(pack);
 
     //setserial(DEREF_P_ITEM(pi),DEREF_P_ITEM(pack),1);
-	pi->setContSerial(pack->getSerial32());
-	pi->setPosition( 50+rand()%80, 50+rand()%80, 9);
     pi->layer=0x00;
     pi->setDecayTime(0);
+	pack->AddItem( pi );
 
     SndRemoveitem( pi->getSerial32() );
     pi->Refresh();

@@ -558,8 +558,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 			if (g_bByPass==true)
 				continue; //skip item, I hope
 			*/
-			pi->setCont( bp2 );
-			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
+			bp2->AddItem( pi );
 			sendbpitem(s2, pi);
 			pi->Refresh();
 		}
@@ -586,8 +585,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 				continue; //skip item, I hope
 			*/
 
-			pi->setCont( bp1 );
-			pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
+			bp1->AddItem( pi );
 			sendbpitem(s1, pi);
 			pi->Refresh();
 		}
