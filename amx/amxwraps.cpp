@@ -4145,14 +4145,19 @@ NATIVE(_ItemBounceToPack)
 \brief Launchs the web browser
 \author Luxor
 \since 0.82
-\param 1: socket
+\param 1: character
 \param 2: text
 \return 0
 */
 NATIVE(_weblaunch)
 {
+	//modified by SlasHeR
+	//replaced socket with char
 	cell *cstr;
-	int s = params[1];
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+        VALIDATEPCR(pc, INVALID);
+	int s = pc->getSocket();
+	// end by SlasHeR
 	if (s<0) return 0;
 	amx_GetAddr(amx,params[2],&cstr);
 	printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
