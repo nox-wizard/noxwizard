@@ -180,14 +180,25 @@ NATIVE2(_getCharProperty)
 
 		//we're here so we should pass a string, params[4] is a str ptr
 
-	  	char str[100];
-  		cell *cptr;
-	  	strcpy(str, getCharStrProperty( pc, params[2], params[3]));
+		if( params[2]!= NXW_CP_STR_SPEECH_CURRENT ) { //temp fix
 
-  		amx_GetAddr(amx,params[4],&cptr);
-	  	amx_SetString(cptr,str, g_nStringMode);
+	  		char str[100];	
+  			cell *cptr;
+	  		strcpy(str, getCharStrProperty( pc, params[2], params[3]));
 
-  		return strlen(str);
+  			amx_GetAddr(amx,params[4],&cptr);
+	  		amx_SetString(cptr,str, g_nStringMode);
+
+  			return strlen(str);
+		}
+		else {
+			if( pc->speechCurrent!=NULL ) {
+				cell *cptr;
+	  			amx_GetAddr(amx,params[4],&cptr);
+				amx_SetStringUnicode(cptr, &pc->speechCurrent->s );
+				return pc->speechCurrent->length();
+			}
+		}
   	}
   	return INVALID;
 }
@@ -925,11 +936,16 @@ NATIVE2(_setCharProperty)
 		case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
 			strcpy( pc->trigword, g_cAmxPrintBuffer );
 			break;
-		case NXW_CP_STR_SPEECHWORD :		 					//dec value: 457;
+		case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
 			strcpy( script1, g_cAmxPrintBuffer );
 			break;
 		case NXW_CP_STR_SPEECH :			 				//dec value: 458;
 			strcpy( script2, g_cAmxPrintBuffer );
+			break;
+		case NXW_CP_STR_SPEECH_CURRENT :			 		//dec value: 459;
+			if( pc->speechCurrent!=NULL ) {
+				pc->speechCurrent->copy( std::string( g_cAmxPrintBuffer ) );
+			}
 			break;
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
@@ -1932,7 +1948,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_STR_DISABLEDMSG , pc->disabledmsg )  		//dec value: 450;
 		CHECK(  NXW_CP_STR_GUILDTITLE , pc->GetGuildTitle() )  		//dec value: 451;
 		CHECK(  NXW_CP_STR_LASTON , "<obsolete>" )  			//dec value: 452;
-         	CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
+        CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
 		CHECK(  NXW_CP_STR_ORGNAME , "<obsolete>" )  			//dec value: 454;
 		CHECK(  NXW_CP_STR_TITLE , pc->title )  			//dec value: 455;
 		CHECK(  NXW_CP_STR_TRIGWORD , pc->trigword )  			//dec value: 456;
