@@ -27,11 +27,11 @@ class cMenu
 {
 	private:
 		static MENU_MAP menuMap;
-		static map<UI32, std::string > responseMap;
+		static map< UI32, std::string > responseMap;
 		static LOGICAL	addResponse( UI32 fieldID, std::string value );
 	public:
-		static LOGICAL	createGump(UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial);
-		static LOGICAL	createGump(UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial);
+		static LOGICAL	createGump( UI32 gump, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose, UI32 serial);
+		static LOGICAL	createGump( UI32 gump, UI32 x, UI32 y, UI08 options, UI32 serial);
 		static LOGICAL	deleteGump( UI32 gump );
 		static LOGICAL	handleGump( NXWCLIENT ps );
 		static cMenu* selectGump( UI32 gump );
