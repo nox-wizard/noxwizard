@@ -104,7 +104,7 @@ public:
 
 
 
-std::string path_tiledata;
+extern std::string path_tiledata;
 
 enum {
 	TILEFLAG_BACKGROUND	=	0x00000001,
@@ -230,8 +230,9 @@ public:
 
 
 
-std::string path_map;
-UI16	width_map, height_map;
+extern std::string path_map;
+extern UI16	width_map;
+extern UI16 height_map;
 
 const int DEFAULTHEIGHTMAP = 512;
 const int DEFAULTWIDTHMAP = 768;
@@ -283,8 +284,8 @@ public:
 
 
 
-std::string path_multiIdx;
-std::string path_multi;
+extern std::string path_multiIdx;
+extern std::string path_multi;
 
 struct multi_st {
 	UI16 id;
@@ -308,8 +309,8 @@ typedef cMULFile<multi_st> cMulti;
 
 
 
-std::string path_staticsIdx;
-std::string path_statics;
+extern std::string path_staticsIdx;
+extern std::string path_statics;
 
 
 struct statics_st {
@@ -351,7 +352,7 @@ public:
 
 
 
-std::string path_verdata;
+extern std::string path_verdata;
 
 enum MUL_FILES {
 	MUL_MAP = 0x00,

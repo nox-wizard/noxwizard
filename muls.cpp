@@ -10,12 +10,25 @@
 #include "nxwcommn.h"
 #include "muls.h"
 
-namespace mul {
+
+std::string path_verdata;
+std::string path_staticsIdx;
+std::string path_statics;
+std::string path_map;
+UI16	width_map;
+UI16	height_map;
+std::string path_tiledata;
+
+
+
+namespace data {
+
 cTiledata* tiledata=NULL;
 cMap* mappa=NULL;
 cStatics* statics=NULL;
 cVerdata* verdata=NULL;
 cMulti* multi=NULL;
+
 }
 
 
