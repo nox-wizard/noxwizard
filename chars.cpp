@@ -322,7 +322,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	statGainedToday = 0;	//Luxor
 	//resetSpeechCurrent(); //Endymion
 	speechCurrent = NULL; //Luxor
-	setRunning( false ); //Luxor
+	lastRunning = 0; //Luxor
 	resetProfile();
 	staticProfile=NULL;
 
@@ -4079,15 +4079,15 @@ void cChar::setOldSkinColor( UI16 newColor )
 */
 LOGICAL cChar::isRunning()
 {
-	return running_status;
+	return ( (uiCurrentTime - lastRunning) <= 100 );
 }
 
 /*!
 \author Luxor
 */
-void cChar::setRunning( LOGICAL status )
+void cChar::setRunning()
 {
-	running_status = status;
+	lastRunning = uiCurrentTime;
 }
 
 void cChar::heartbeat()
@@ -4100,7 +4100,6 @@ void cChar::heartbeat()
 	else
 		pc_heartbeat();
 
-	setRunning( false );
 }
 
 void cChar::generic_heartbeat()

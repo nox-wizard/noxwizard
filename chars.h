@@ -797,7 +797,7 @@ public:
 		UI08			lockSkill[ALLSKILLS+1]; // LB, client 1.26.2b skill managment
 		SI32			stealth; //AntiChrist - stealth ( steps already done, -1=not using )
 		UI32			running; //AntiChrist - Stamina Loose while running
-		LOGICAL			running_status; //Luxor
+		UI32			lastRunning; //Luxor
 		SI32			logout; //Time till logout for this char -1 means in the world or already logged out //Instalog
 		TIMERVAL		clientidletime; // LB
 		//UI32 swing;
@@ -862,7 +862,7 @@ public:
 	public:
 
 		LOGICAL			isRunning();
-		void			setRunning( LOGICAL status = false );
+		void			setRunning();
 		void 			updateStats(SI32 stat);
 
 		void 			setNextMoveTime(short tamediv=1);

@@ -425,7 +425,7 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 
 	if (dir&0x80)
 	{ //AntiChrist -- if running
-                pc->setRunning( true );
+                pc->setRunning();
 		//AntiChrist - we have to unhide always if running
 		if( pc->IsHidden() && !pc->IsHiddenBySpell() )
 			pc->unHide();
@@ -451,7 +451,6 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 	else
 	{
 		pc->running=0;
-		pc->setRunning( false );
 		if( pc->stealth > INVALID )
 		{ //AntiChrist - Stealth
 			if( /*pc->stealth >= 0 &&*/		// give them at least one step, regardless of skill (Duke)
