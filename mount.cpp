@@ -19,13 +19,12 @@ void loadmounts()
 {
 
 	cScpIterator* iter = NULL;
-	char script1[1024];
-	char script2[1024];
+	std::string script1;
+	std::string script2;
 	SI32 id=INVALID;
 	SI32 anim=INVALID;
 	int mount=0;
-	
-	int loopexit=0;
+
 	do
 	{
 		safedelete(iter);
@@ -38,24 +37,20 @@ void loadmounts()
 		do
 		{
 			iter->parseLine(script1, script2);
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				if (!strcmp("ANIM", script1))		  
-					anim = str2num(script2);
-				if (!strcmp("ID", script1))		  
-					id = str2num(script2);
-			}
-
+			if ( script1 == "ANIM" )
+				anim = str2num(script2);
+			if ( script1 == "ID" )
+				id = str2num(script2);
 		}
-        while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		while ( script1[0] != '}' );
 
 		if((id!=INVALID) && (anim!=INVALID))
 			mountinfo[anim]=id;
-    
-	}
-	while ( (strcmp("EOF", script1)) && (++loopexit < MAXLOOPS) );
 
-    safedelete(iter);
+	}
+	while ( script1 != "EOF" );
+
+	safedelete(iter);
 
 }
 
