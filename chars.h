@@ -941,7 +941,7 @@ class cChar : public cObject
 
 	public:
 		std::vector< UI32 >	lootVector;
-};
+} PACK_NEEDED;
 
 void openspecialbank(NXWSOCKET s, int i);
 

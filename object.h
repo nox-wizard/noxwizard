@@ -152,7 +152,7 @@ public:
 	UI32			getScriptID();
 	void			setScriptID(UI32 sid);
 //@}
-};
+} PACK_NEEDED;
 
 /*!
 \brief spawner

@@ -432,7 +432,7 @@ public:
 
 	UI32		distFrom( P_CHAR pc );
 	UI32		distFrom( P_ITEM pi );
-};
+} PACK_NEEDED;
 
 // will be fully implemented in 0.83
 // Anthalir
@@ -459,13 +459,13 @@ public:
 	void				dropItem(P_ITEM pi);
 	UI32				countItems(UI32 scriptID, LOGICAL bAddAmounts= false);
 
-};
+} PACK_NEEDED;
 
 class cWeapon : public cItem
 {
 public:
         cWeapon(SERIAL serial);
-};
+} PACK_NEEDED;
 
 extern LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2);
 
