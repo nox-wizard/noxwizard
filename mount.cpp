@@ -308,7 +308,8 @@ int cChar::unmountHorse()
 					p_pet->time_unused = 0;
 				
 					p_pet->mounted=false;
-
+					p_pet->npcWander = 1;
+					p_pet->ftargserial = getSerial32();
 					p_pet->MoveTo( getPosition() );
 					p_pet->dir = dir; // Luxor
 					p_pet->teleport();
