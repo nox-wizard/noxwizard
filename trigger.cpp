@@ -596,9 +596,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 			if (m_pcCurrChar->dx < 1) m_pcCurrChar->dx = 1;
 				} else { //extended syntax
 					if (params[0]<0)
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CLUMSY, (UI08)params[0], (UI08)0, (UI08)0, (UI16)params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CLUMSY, (UI08)params[0], (UI08)0, (UI08)0, (UI08)0,(UI16)params[1]);
 					else
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_AGILITY, (UI08)params[0], (UI08)0, (UI08)0, (UI16)params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_AGILITY, (UI08)params[0], (UI08)0, (UI08)0, (UI08)0,(UI16)params[1]);
 				}
 			}
 
@@ -788,9 +788,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 						m_pcCurrChar->in = 1;
 				} else { //extended syntax
 					if (params[0]<0)
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_FEEBLEMIND, (UI08)params[0], 0, 0, (UI16)params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_FEEBLEMIND, (UI08)params[0], 0, 0, (UI08)0,(UI16)params[1]);
 					else
-						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CUNNING, (UI08)params[0], 0, 0, (UI16)params[1]);
+						tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_CUNNING, (UI08)params[0], 0, 0, (UI08)0,(UI16)params[1]);
 				}
 			} else if (!(strcmp("IADD", cmd))) { // Add item in front of player //if 2nd param. is 1, add item into player's backpack - AntiChrist (with autostack)
 				parseIAddCommand(par);
@@ -1303,9 +1303,9 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 							m_pcCurrChar->setStrength(1);
 					} else { //extended syntax
 						if (params[0]<0)
-							tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_WEAKEN, params[0], 0, 0, params[1]);
+							tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_WEAKEN, params[0], 0, 0, (UI08)0,params[1]);
 						else
-							tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_STRENGHT, params[0], 0, 0, params[1]);
+							tempfx::add(m_pcCurrChar, m_pcCurrChar, tempfx::SPELL_STRENGHT, params[0], 0, 0,(UI08)0, params[1]);
 					}
 		}
 		//////////////////////////////////////////////////////////////////////////

@@ -1160,6 +1160,9 @@ void updateMenus();
 	ConOut("Clearing all trades...");
 	clearalltrades();
 	ConOut(" [DONE]\n");
+	ConOut("Initializing temp effects...");
+	tempfx::cTempfx::initTempFx();
+	ConOut(" [DONE]\n");
 
 	//ndEndy.. Very laggy stuff, not very usefull, modify house db and boat db insted of search avery time
 	//
@@ -1855,11 +1858,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		switch(pi->morez)
 		{
 		case 1:
-			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (5+RandomNum(1,10)), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (5+RandomNum(1,10)), 0, 0, 0,120);
 			pc->sysmsg(TRANSLATE("You feel more agile!"));
 			break;
 		case 2:
-			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (10+RandomNum(1,20)), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, (char) (10+RandomNum(1,20)), 0, 0, 0,120);
 			pc->sysmsg(TRANSLATE("You feel much more agile!"));
 			break;
 		default:
@@ -1964,7 +1967,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 
 	case 5: // Night Sight Potion
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
-		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,(short) (720*secondsperuominute*MY_CLOCKS_PER_SEC));
+		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,0,(short) (720*secondsperuominute*MY_CLOCKS_PER_SEC));
 		pc->playSFX(0x01E3);
 		break;
 
@@ -2007,11 +2010,11 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 		switch(pi->morez)
 		{
 		case 1:
-			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (5+RandomNum(1,10)), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (5+RandomNum(1,10)), 0, 0, 0,120);
 			pc->sysmsg(TRANSLATE("You feel more strong!"));
 			break;
 		case 2:
-			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (10+RandomNum(1,20)), 0, 0, 120);
+			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, (char) (10+RandomNum(1,20)), 0, 0, 0,120);
 			pc->sysmsg(TRANSLATE("You feel much more strong!"));
 			break;
 		default:
@@ -2542,8 +2545,15 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 
 			if( isCharSerial( objs.getSerial() ) )
 			{
-				if( first ) {
+				if( first ) 
+				{
 					P_CHAR pc=(P_CHAR)(objs.getObject());
+					if ( pc == NULL )
+					{
+						objects.eraseObject (objs.getObject());
+						++corrected;
+						continue;
+					}
 					if ( ISVALIDPC(pc) )
 					{
 						if( pc->getOwnerSerial32()!=INVALID ) {
@@ -2561,10 +2571,12 @@ void checkGarbageCollect () // Remove items which were in deleted containers
 					}
 				}
 			}
-			else {
+			else 
+			{
 
 				P_ITEM pi=(P_ITEM)(objs.getObject());
-				if ( ! ISVALIDPI(pi) )
+
+				if ( pi == NULL || ! ISVALIDPI(pi) )
 				{
 					objects.eraseObject (objs.getObject());
 					++corrected;

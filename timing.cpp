@@ -71,22 +71,22 @@ void checkFieldEffects( UI32 currenttime, P_CHAR pc, char timecheck )
 					case 0x3996:
 					case 0x398C: //Fire Field
 						if (!pc->resistsFire())
-							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, (UI08)(pi->morex/100.0), DAMAGE_FIRE, 0, 1);
+							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, (UI08)(pi->morex/100.0), DAMAGE_FIRE, 0, 0,1);
 						return;
 					case 0x3915:
 					case 0x3920: //Poison Field
 						if ((pi->morex<997)) {
-							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, 2, DAMAGE_POISON, 0, 2);
+							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, 2, DAMAGE_POISON, 0, 0,2);
 							pc->applyPoison(POISON_WEAK);
 						} else {
-							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, 3, DAMAGE_POISON, 0, 2); // gm mages can cast greater poison field, LB
+							tempfx::add(pc, pc, tempfx::FIELD_DAMAGE, 3, DAMAGE_POISON, 0, 0,2); // gm mages can cast greater poison field, LB
 							pc->applyPoison(POISON_NORMAL);
 						}
 						return;
 					case 0x3979:
 					case 0x3967: //Para Field
 						if (chance(50)) {
-							tempfx::add(pc, pc, tempfx::SPELL_PARALYZE, 0, 0, 0, 3);
+							tempfx::add(pc, pc, tempfx::SPELL_PARALYZE, 0, 0, 0, 0,3);
 							pc->playSFX( 0x0204 );
 						}
 						return;
@@ -242,7 +242,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Temporary effects
 	//
-        if( TIMEOUT( checktempfx ) )
+	if( TIMEOUT( checktempfx ) )
 		tempfx::checktempeffects();
 
 	//

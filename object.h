@@ -257,13 +257,15 @@ private:
 	TempfxVector		*tempfx;
 
 public:
-	LOGICAL			addTempfx( cObject& src, SI32 num, SI32 more1 = 0, SI32 more2 = 0, SI32 more3 = 0, SI32 dur = 0, SI32 amxcback = INVALID );
+	LOGICAL			addTempfx(tempfx::cTempfx *fx);
+	LOGICAL			addTempfx( cObject& src, SI32 num, SI08 more1 = 0, SI08 more2 = 0, SI08 more3 = 0, SI08 more4 = 0,SI32 dur = 0, SI32 amxcback = INVALID );
 	void			delTempfx( SI32 num, LOGICAL executeExpireCode = true, SERIAL funcidx = INVALID );
 	void			checkTempfx();
 	void			tempfxOn();
 	void			tempfxOff();
 	LOGICAL			hasTempfx();
 	tempfx::cTempfx*	getTempfx( SI32 num, SERIAL funcidx = INVALID );
+	TempfxVector	*getTempfxVec( );
 //@}
 
 	//! return the object's script number

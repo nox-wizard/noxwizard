@@ -102,7 +102,7 @@ void cResourceMap::load()
 		_findclose( hFile );
 	}
 #elif __unix__
-		DIR *dirp;
+	DIR *dirp;
 	struct dirent *entry;
 
 	if(dirp = opendir(SrvParms->savePath.c_str()))
@@ -122,7 +122,7 @@ void cResourceMap::load()
 				LOGICAL inMemory;
 				datafile.read((char *)&tempType,sizeof(tempType));
 				datafile.read((char *)&inMemory,sizeof(inMemory));
-				cResourceMap *map;
+				cResourceMap *map=NULL;
 				if ( tempType == RESOURCEMAP_LOCATION )
 				{
 					cResourceLocationMap *newmap = new cResourceLocationMap(mapName, 1);
@@ -133,10 +133,13 @@ void cResourceMap::load()
 					cResourceStringMap *newmap = new cResourceStringMap(mapName, 1);
 					map=newmap;
 				}
-				map->setType(tempType);
-				map->setInMemory(inMemory);
-				map->deserialize(&datafile);
-				addMap(map);
+				if ( map != NULL )
+				{
+					map->setType(tempType);
+					map->setInMemory(inMemory);
+					map->deserialize(&datafile);
+					addMap(map);
+				}
 			}
 		}
 		closedir(dirp);

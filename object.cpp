@@ -527,10 +527,34 @@ void cObject::delAmxEvent( UI32 eventId )
 */
 
 /*!
+\author Wintermute
+\brief Adds an existing temp effect to the object
+*/
+LOGICAL	cObject::addTempfx(tempfx::cTempfx *fx)
+{
+	if ( !fx->isValid() )
+		return false;
+
+    //
+    //	Put the object in the global check vector if necessary
+    //
+    tempfx::addTempfxCheck( getSerial32() );
+	//
+	//	Put it in the class vector
+	//
+	if ( tempfx == NULL )
+		tempfx = new TempfxVector;
+
+	tempfx->push_front( *fx);
+
+	return true;
+}
+
+/*!
 \author Luxor
 \brief Adds a temp effect to the object
 */
-bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback )
+bool cObject::addTempfx( cObject& src, SI32 num, SI08 more1, SI08 more2, SI08 more3, SI08 more4, SI32 dur, SI32 amxcback )
 {
 	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
 		return false;
@@ -547,15 +571,15 @@ bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 mo
 	//
 	//	Create the tempfx
 	//
-	tempfx::cTempfx tmpeff( src.getSerial32(), getSerial32(), num, dur, more1, more2, more3, amxcback );
+	tempfx::cTempfx tmpeff( src.getSerial32(), getSerial32(), num, dur, more1, more2, more3,more4, amxcback );
 
 	if ( !tmpeff.isValid() )
 		return false;
 
-        //
-        //	Put the object in the global check vector if necessary
-        //
-        tempfx::addTempfxCheck( getSerial32() );
+    //
+    //	Put the object in the global check vector if necessary
+    //
+    tempfx::addTempfxCheck( getSerial32() );
 
 	//
 	//	Start the tempfx
@@ -696,4 +720,16 @@ tempfx::cTempfx* cObject::getTempfx( SI32 num, SERIAL funcidx )
 	}
 
 	return NULL;
+}
+
+/*!
+\brief Return the tempfx vector from the object
+\author Wintermute
+*/
+TempfxVector *cObject::getTempfxVec( )
+{
+	if ( !hasTempfx() )
+		return NULL;
+
+	return this->tempfx;
 }

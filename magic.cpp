@@ -1113,35 +1113,35 @@ static void castStatPumper(SpellId spellnumber, TargetLocation& dest, P_CHAR pa,
 	{
 		case SPELL_CLUMSY:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
-			tempfx::add(pa, pd, tempfx::SPELL_CLUMSY, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_CLUMSY, bonus, 0, 0,0, duration);
 			break;
 		case SPELL_FEEBLEMIND:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
-			tempfx::add(pa, pd, tempfx::SPELL_FEEBLEMIND, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_FEEBLEMIND, bonus, 0, 0, 0,duration);
 			break;
 		case SPELL_WEAKEN:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 6;
-			tempfx::add(pa, pd, tempfx::SPELL_WEAKEN, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_WEAKEN, bonus, 0, 0, 0,duration);
 			break;
 		case SPELL_CURSE:
 			duration = int( pa->skill[MAGERY] * 0.12 );
-			tempfx::add(pa, pd, tempfx::SPELL_CURSE, bonus, bonus, bonus, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_CURSE, bonus, bonus, bonus, 0,duration);
 			break;
 		case SPELL_CUNNING:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
-			tempfx::add(pa, pd, tempfx::SPELL_CUNNING, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_CUNNING, bonus, 0, 0, 0,duration);
 			break;
 		case SPELL_AGILITY:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
-			tempfx::add(pa, pd, tempfx::SPELL_AGILITY, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_AGILITY, bonus, 0, 0, 0,duration);
 			break;
 		case SPELL_STRENGHT:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
-			tempfx::add(pa, pd, tempfx::SPELL_STRENGHT, bonus, 0, 0, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_STRENGHT, bonus, 0, 0, 0,duration);
 			break;
 		case SPELL_BLESS:
 			duration = ( ( pa->skill[EVALUATINGINTEL] / 50 ) + 1 ) * 12;
-			tempfx::add(pa, pd, tempfx::SPELL_BLESS, bonus, bonus, bonus, duration);
+			tempfx::add(pa, pd, tempfx::SPELL_BLESS, bonus, bonus, bonus, 0,duration);
 			break;
 		default :
 			ErrOut("Switch fallout. magic::castStatPumper\n");
@@ -1474,7 +1474,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 		case SPELL_REACTIVEARMOUR:
 			if (nTime==INVALID) nTime = src->skill[nSkill]/15;
 			spellFX(spellnumber, src, src);
-			tempfx::add(src,src, tempfx::SPELL_REACTARMOR, 0, 0, 0, nTime);
+			tempfx::add(src,src, tempfx::SPELL_REACTARMOR, 0, 0, 0, 0,nTime);
 			break;
 		case SPELL_DISPEL:	//Luxor
 			if ( ISVALIDPC(pd) && pd->summontimer > 0 ) { //Only if it's a summoned creature
@@ -1509,7 +1509,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			}}
 			break;
 		case SPELL_TELEKINESYS: // Luxor
-			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 10 );
+			tempfx::add( src, src, tempfx::SPELL_TELEKINESYS, 0, 0, 0, 0,10 );
 			spellFX( spellnumber, src );
 			break;
 		case SPELL_POLYMORPH:
@@ -1592,7 +1592,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			spellFX(spellnumber, src, pd);
 			if (nTime==INVALID) nTime = src->skill[nSkill]/15;
 			if (nValue==INVALID) nValue = src->skill[nSkill]/10;
-			tempfx::add(src,src, tempfx::SPELL_PROTECTION, nValue, 0, 0, nTime);
+			tempfx::add(src,src, tempfx::SPELL_PROTECTION, nValue, 0, 0, 0,nTime);
 			break;
 
 		case SPELL_ARCHPROTECTION: {
@@ -1609,7 +1609,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 				P_CHAR pd = sc.getChar();
 				if(ISVALIDPC(pd)) {
-					tempfx::add(pd,pd, tempfx::SPELL_PROTECTION, nValue, 0, 0, nTime);
+					tempfx::add(pd,pd, tempfx::SPELL_PROTECTION, nValue, 0, 0, 0,nTime);
 					spellFX(spellnumber, src, pd);
 				}
 			}
@@ -1623,7 +1623,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if ((pd==NULL)&&(src!=NULL)) pd = src;
 			if (pd!=NULL) {
 				if (nTime==INVALID) nTime = 90;
-				tempfx::add(pd,pd, tempfx::SPELL_INCOGNITO, 0,0,0, nTime);
+				tempfx::add(pd,pd, tempfx::SPELL_INCOGNITO, 0,0,0, 0,nTime);
 			}
 			break;
 
@@ -1711,7 +1711,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 					if (src!=NULL) nTime = src->skill[nSkill] / 2;
 					else nTime = 300; // 5' default
 				}
-				tempfx::add(src, pd, tempfx::SPELL_LIGHT, 0,0,0, nTime);
+				tempfx::add(src, pd, tempfx::SPELL_LIGHT, 0,0,0, 0,nTime);
 			}
 			break;
 
@@ -2157,7 +2157,7 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	}
 
 	pc->delTempfx( tempfx::SPELL_POLYMORPH );
-	pc->addTempfx( *pc, tempfx::SPELL_POLYMORPH, data );
+	pc->addTempfx( *pc, tempfx::SPELL_POLYMORPH, (data>>8)&0xFF, data&0xFF );
 
 	switch( data )
 	{

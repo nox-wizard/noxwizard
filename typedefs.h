@@ -386,6 +386,7 @@ struct title_st
 struct Location{
 	UI16			x, y;
 	SI08		z, dispz;		// dispz is used for the char location
+	// SI08		m;	// map level reserved for future
 };
 
 

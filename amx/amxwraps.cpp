@@ -2062,7 +2062,7 @@ NATIVE(_tempfx_activate)
 	}
 
 	tempfx::add(src, dest, params[1], (params[4])&0xFF, (params[4]>>8)&0xFF,
-		(params[4]>>16)&0xFF, params[5], params[6]);
+		(params[4]>>16)&0xFF, (params[4]>>24)&0xFF,params[5], params[6]);
 	//</Luxor>
 	return 0;
 }

@@ -481,7 +481,7 @@ class cChar : public cObject
 
 		//! Makes a character temporary grey
 		void 			SetGrey()
-		{ if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0, 0x7FFF); }
+		{ if (!npc) tempfx::add(this, this, tempfx::GREY, 0, 0, 0,0, 0x7FFF); }
 
 		inline			void setTelekinesisFlag(LOGICAL state)
 		{ nxwflags[0] |= (char) flagSpellTelekinesys*state; }
@@ -1310,7 +1310,10 @@ public:
 		{ return backupStats; };
 		inline void setBackupStats(cCharSaver *saver)
 		{ backupStats=saver; };
-	
+
+// preparation for 0.83
+		void serialize( ofstream *out);
+
 	/*
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );

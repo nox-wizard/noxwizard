@@ -2541,7 +2541,7 @@ void cChar::hideBySkill()
 void cChar::hideBySpell(SI32 timer)
 {
 	if (timer == INVALID) timer = SrvParms->invisibiliytimer;
-	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, (UI08)0,(UI08)0,(short)0, timer);
+	tempfx::add(this, this, tempfx::SPELL_INVISIBILITY, (UI08)0,(UI08)0,(UI08)0,(short)0, timer);
 }
 
 /*!
@@ -4204,10 +4204,10 @@ void cChar::drink(P_ITEM pi)
         VALIDATEPI(pi);
 
         if (pi->type == ITYPE_POTION) {
-                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 0);
-                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 1);
-                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 2);
-                tempfx::add(this, pi, tempfx::DRINK_FINISHED, 0, 0, 0, 3);
+                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 0,0);
+                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 0,1);
+                tempfx::add(this, pi, tempfx::DRINK_EMOTE, 0, 0, 0, 0,2);
+                tempfx::add(this, pi, tempfx::DRINK_FINISHED, 0, 0, 0, 0,3);
         }
 }
 
@@ -5320,3 +5320,858 @@ void cChar::showPaperdoll(P_CHAR viewer)
 	}
 	Xsend(this->getSocket(), pdoll, 66);
 }
+
+/*Format of binary file:
+	Header:
+	hex FF FE FD FC 00 01 02 03 FB FA F9 F8 04 05 06 07 // Signature for a binary char file
+	first dword: # of chars saved in file
+	Content:
+	F0 F0 FF FF // Start of char definition
+	<length of char in bytes>: first dword
+	<char number in save>: integer
+	<char serial>: integer
+
+
+*/ 
+const unsigned int NAME_ID=0xFA00;
+const unsigned int TITLE_ID=0xFA01;
+const unsigned int ACCOUNT_ID=0xFA02;
+const unsigned int CREATIONDAY_ID=0xFA03;
+const unsigned int GMMOVEEFF_ID=0xFA04;
+const unsigned int GUILDTYPE=0xFA05;
+const unsigned int GUILDTRAITOR_ID=0xFA06;
+const unsigned int POS_X_ID=0xFA07;
+const unsigned int POS_Y_ID=0xFA08;
+const unsigned int POS_Z_ID=0xFA09;
+const unsigned int POS_DISPZ_ID=0xFA0A;
+const unsigned int POS_M_ID=0xFA0B;
+const unsigned int POS_OLDX_ID=0xFA0C;
+const unsigned int POS_OLDY_ID=0xFA0D;
+const unsigned int POS_OLDZ_ID=0xFA0E;
+const unsigned int POS_OLDM_ID=0xFA0F;
+const unsigned int DIR_ID = 0xFA10;
+const unsigned int DOORUSE_ID = 0xFA11;
+const unsigned int BODY_ID = 0xFA12;
+const unsigned int XBODY_ID = 0xFA13;
+const unsigned int SKIN_ID = 0xFA14;
+const unsigned int XSKIN_ID = 0xFA15;
+const unsigned int PRIV_ID = 0xFA16;
+const unsigned int ALLMOVE_ID = 0xFA17;
+const unsigned int DAMAGETYPE_ID = 0xFA18;
+const unsigned int STABLEMASTER_ID = 0xFA19;
+const unsigned int NPCTYPE_ID = 0xFA1A;
+const unsigned int TIME_UNUSED_ID = 0xFA1B;
+const unsigned int FONT_ID = 0xFA1C;
+const unsigned int SAY_ID = 0xFA1D;
+const unsigned int EMOTE_ID = 0xFA1E;
+const unsigned int STRENGTH_ID = 0xFA1F;
+const unsigned int STRENGTH2_ID = 0xFA20;
+const unsigned int DEXTERITY_ID = 0xFA21;
+const unsigned int DEXTERITY2_ID = 0xFA22;
+const unsigned int INTELLIGENCE_ID = 0xFA23;
+const unsigned int INTELLIGENCE2_ID = 0xFA24;
+const unsigned int HITPOINTS_ID = 0xFA25;
+const unsigned int STAMINA_ID = 0xFA26;
+const unsigned int MANA_ID = 0xFA27;
+const unsigned int NPC_ID = 0xFA28;
+const unsigned int POSSESSEDSERIAL_ID = 0xFA29;
+const unsigned int HOLDGOLD_ID = 0xFA2A;
+const unsigned int OWN_ID = 0xFA2B;
+const unsigned int ROBE_ID = 0xFA2C;
+const unsigned int KARMA_ID = 0xFA2D;
+const unsigned int FAME_ID = 0xFA2E;
+const unsigned int KILLS_ID = 0xFA2F;
+const unsigned int DEATHS_ID = 0xFA30;
+const unsigned int FIXEDLIGHT_ID = 0xFA31;
+const unsigned int SPEECH_ID = 0xFA32;
+const unsigned int TRIGGER_ID = 0xFA33;
+const unsigned int TRIGWORD_ID = 0xFA34;
+const unsigned int DISABLEMSG_ID = 0xFA35;
+const unsigned int ATT_ID = 0xFA36;
+const unsigned int DEF_ID = 0xFA37;
+const unsigned int LODAMAGE_ID = 0xFA38;
+const unsigned int HIDAMAGE_ID = 0xFA39;
+const unsigned int WAR_ID = 0xFA3A;
+const unsigned int NPCWANDER_ID = 0xFA3B;
+const unsigned int OLDNPCWANDER_ID = 0xFA3C;
+const unsigned int PC_FTARGSER_ID = 0xFA3D;
+const unsigned int CARVE_ID = 0xFA3E;
+const unsigned int FX1_ID = 0xFA3F;
+const unsigned int FY1_ID = 0xFA40;
+const unsigned int FZ1_ID = 0xFA41;
+const unsigned int FX2_ID = 0xFA42;
+const unsigned int FY2_ID = 0xFA43;
+const unsigned int HIDDEN_ID = 0xFA44;
+const unsigned int HUNGER_ID = 0xFA45;
+const unsigned int NPCAITYPE_ID = 0xFA46;
+const unsigned int SPATTACK_ID = 0xFA47;
+const unsigned int SPADELAY_ID = 0xFA48;
+const unsigned int MAGICSPHERE_ID = 0xFA49;
+const unsigned int TAMING_ID = 0xFA4A;
+const unsigned int ADVOBJ_ID = 0xFA4B;
+const unsigned int POISON_ID = 0xFA4C;
+const unsigned int POISONED_ID = 0xFA4D;
+const unsigned int MURDERSAVE_ID = 0xFA4F;
+const unsigned int FLEEAT_ID = 0xFA50;
+const unsigned int RACE_ID = 0xFA51;
+const unsigned int REATTACKAT_ID = 0xFA52;
+const unsigned int HOLDG_ID = 0xFA53;
+const unsigned int SPLIT_ID = 0xFA54;
+const unsigned int SPLITCHANCE_ID = 0xFA55;
+const unsigned int GUILDTOGGLE_ID = 0xFA56;
+const unsigned int GUILDNUMBER_ID = 0xFA57;
+const unsigned int GUILDTITLE_ID = 0xFA58;
+const unsigned int GUILDFEALTY_ID = 0xFA59;
+const unsigned int REGEN_HP_ID = 0xFA5A;
+const unsigned int REGEN_ST_ID = 0xFA5B;
+const unsigned int REGEN_MN_ID = 0xFA5C;
+const unsigned int HOMEX_ID = 0xFA5D;
+const unsigned int HOMEY_ID = 0xFA5E;
+const unsigned int HOMEZ_ID = 0xFA5F;
+const unsigned int WORKX_ID = 0xFA60;
+const unsigned int WORKY_ID = 0xFA61;
+const unsigned int WORKZ_ID = 0xFA62;
+const unsigned int FOODX_ID = 0xFA63;
+const unsigned int FOODY_ID = 0xFA64;
+const unsigned int FOODZ_ID = 0xFA65;
+const unsigned int QUESTTYPE_ID = 0xFA66;
+const unsigned int QUESTDESTREGION_ID = 0xFA67;
+const unsigned int QUESTORIGREGION_ID = 0xFA68;
+const unsigned int QUESTBOUNTYPOSTSERIAL_ID = 0xFA69;
+const unsigned int QUESTBOUNTYREWARD_ID = 0xFA6A;
+const unsigned int GMRESTRICT_ID = 0xFA6B;
+const unsigned int COMMANDLEVEL_ID = 0xFA6C;
+const unsigned int MOVESPEED_ID = 0xFA6D;
+const unsigned int FOLLOWSPEED_ID = 0xFA6E;
+const unsigned int NXWFLAG0_ID = 0xFA6F;
+const unsigned int NXWFLAG1_ID = 0xFA70;
+const unsigned int NXWFLAG2_ID = 0xFA71;
+const unsigned int NXWFLAG3_ID = 0xFA72;
+const unsigned int RESISTS_ID = 0xFA73;
+const unsigned int SHOPKEEP_ID = 0xFA74;
+const unsigned int DEADFLAG_ID = 0xFA74;
+const unsigned int SKILL_ID = 0xFA75;
+const unsigned int SKILLOCK_ID = 0xFA76;
+const unsigned int CANTRAIN_ID = 0xFA77;
+const unsigned int MOUNTED_ID = 0xFA78;
+const unsigned int PROFILE_ID = 0xFA79;
+const unsigned int LOOTVEC_ID = 0xFA79;
+const unsigned int SERIAL_ID=0xFAFF;
+
+/* Preparation for binary saves in 0.83
+*/
+void cChar::serialize( ofstream *out)
+{
+	char valid=0;
+	int j;
+
+	static cChar dummy(false);
+
+	Location pcpos= getPosition();
+
+	//Luxor safe stats system
+	if (getStrength() != st3) setStrength(st3);
+	if (dx != dx3) dx = dx3;
+	if (in != in3) in = in3;
+	if (hp > getStrength()) hp = getStrength();
+	if (stm > dx) stm = dx;
+	if (mn > in) mn = in;
+	//End safe stats system
+
+	//Endy for remove pg not without accounts
+/*	if( account==INVALID && !npc )
+		free;
+*/
+	valid=1;
+	if (getSerial32() < 0) valid = 0;
+	if (summontimer ) valid = 0; //xan : we don't save summoned stuff
+	if (getSpawnRegion()!=INVALID || getSpawnSerial()!=INVALID ) valid=0;
+	if (valid)
+	{
+		out->write( (char *) &SERIAL_ID, sizeof(SERIAL_ID));
+		SERIAL myserial=getSerial32();
+		out->write( (char *) &myserial, sizeof(myserial));
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(morphed!=dummy.morphed)
+		{//save original name
+#ifndef DESTROY_REFERENCES
+			out->write( (char *) &NAME_ID, sizeof(NAME_ID));
+			*out << getRealNameC();
+#else
+			if (npc)
+			{
+				out->write( (char *) &NAME_ID, sizeof(NAME_ID));
+				*out << name;
+			}
+			else
+			{
+				out->write( (char *) &NAME_C_ID, sizeof(NAME_C_ID));
+				*out << serial;
+			}
+#endif
+		} 
+		else
+		{
+#ifndef DESTROY_REFERENCES
+			out->write( (char *) &NAME_ID, sizeof(NAME_ID));
+			*out << getCurrentNameC();
+#else
+			if (npc)
+			{
+				out->write( (char *) &NAME_ID, sizeof(NAME_ID));
+				*out << name;
+			}
+			else
+			{
+				out->write( (char *) &NAME_C_ID, sizeof(NAME_C_ID));
+				*out << serial;
+			}
+#endif
+		}
+#ifndef DESTROY_REFERENCES
+		out->write( (char *) &TITLE_ID, sizeof(TITLE_ID));
+		*out << title.c_str();
+#endif
+		if(account!=dummy.account)
+		{
+			out->write( (char *) &ACCOUNT_ID, sizeof(ACCOUNT_ID));
+			out->write( (char *) &account, sizeof(account));
+		}
+		if (GetCreationDay()!=dummy.GetCreationDay())
+		{
+			out->write( (char *) &CREATIONDAY_ID, sizeof(CREATIONDAY_ID));
+			out->write( (char *) &this->creationday, sizeof(this->creationday));
+		}
+		if (gmMoveEff!=dummy.gmMoveEff)
+		{
+			out->write( (char *) &GMMOVEEFF_ID, sizeof(GMMOVEEFF_ID));
+			out->write( (char *) &gmMoveEff, sizeof(gmMoveEff));
+		}
+		if(GetGuildType()!=dummy.GetGuildType())
+		{
+			out->write( (char *) &GUILDTYPE, sizeof(GUILDTYPE));
+			out->write( (char *) &this->guildType, sizeof(this->guildType));
+		}
+		if(IsGuildTraitor())
+		{
+			out->write( (char *) &GUILDTRAITOR_ID, sizeof(GUILDTRAITOR_ID));
+		}
+		out->write( (char *) &POS_X_ID, sizeof(POS_X_ID));
+		out->write( (char *) &pcpos.x, sizeof(pcpos.x));
+
+		out->write( (char *) &POS_Y_ID, sizeof(POS_Y_ID));
+		out->write( (char *) &pcpos.y, sizeof(pcpos.y));
+
+		out->write( (char *) &POS_Z_ID, sizeof(POS_Z_ID));
+		out->write( (char *) &pcpos.z, sizeof(pcpos.z));
+
+		out->write( (char *) &POS_DISPZ_ID, sizeof(POS_DISPZ_ID));
+		out->write( (char *) &pcpos.dispz, sizeof(pcpos.dispz));
+
+		out->write( (char *) &POS_M_ID, sizeof(POS_M_ID));
+
+		Location oldPos=getOldPosition();
+		if (getOldPosition("x")!=dummy.getOldPosition("x"))
+		{
+			out->write( (char *) &POS_OLDX_ID, sizeof(POS_OLDX_ID));
+			out->write( (char *) &oldPos.x, sizeof(oldPos.x));
+		}
+		if (getOldPosition("y")!=dummy.getOldPosition("y"))
+		{
+			out->write( (char *) &POS_OLDY_ID, sizeof(POS_OLDY_ID));
+			out->write( (char *) &oldPos.y, sizeof(oldPos.y));
+		}
+		if (getOldPosition("z")!=dummy.getOldPosition("z"))
+		{
+			out->write( (char *) &POS_OLDZ_ID, sizeof(POS_OLDZ_ID));
+			out->write( (char *) &oldPos.z, sizeof(oldPos.z));
+		}
+		/*
+		if (oldPos.m!=dummy.getOldPosition().m)
+		{
+			out->write( (char *) &POS_OLDM_ID, sizeof(POS_OLDM_ID));
+//			out->write( (char *) &oldPos.m, sizeof(oldPos.m));
+		}
+*/
+		
+		if (dir!=dummy.dir)
+		{
+			out->write( (char *) &DIR_ID, sizeof(DIR_ID));
+			out->write( (char *) &dir, sizeof(dir));
+		}				
+		if (doorUse!=dummy.doorUse)
+		{
+			out->write( (char *) &DOORUSE_ID, sizeof(DOORUSE_ID));
+		}				
+
+
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(morphed) 
+		{
+			if ( getOldId() != dummy.getOldId() )
+			{
+				UI16 myId=getOldId() ;
+				out->write( (char *) &BODY_ID, sizeof(BODY_ID));
+				out->write( (char *) &myId, sizeof(myId));
+			}				
+		}
+		else 
+		{
+			if ( getId() != dummy.getId() )
+			{
+				UI16 myId=getId() ;
+				out->write( (char *) &BODY_ID, sizeof(BODY_ID));
+				out->write( (char *) &myId, sizeof(myId));
+			}				
+		}
+		if ( getOldId() != dummy.getOldId() )
+		{
+			UI16 myId=getOldId() ;
+			out->write( (char *) &XBODY_ID, sizeof(XBODY_ID));
+			out->write( (char *) &myId, sizeof(myId));
+		}				
+
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(morphed) 
+		{
+			if ( getOldColor() != dummy.getOldColor() )
+			{
+				COLOR myColor=getOldColor();
+				out->write( (char *) &SKIN_ID, sizeof(SKIN_ID));
+				out->write( (char *) &myColor, sizeof(myColor));
+			}				
+		} 
+		else 
+		{
+			if ( getColor() != dummy.getColor() )
+			{
+				COLOR myColor=getColor();
+				out->write( (char *) &SKIN_ID, sizeof(SKIN_ID));
+				out->write( (char *) &myColor, sizeof(myColor));
+			}				
+		}
+
+		if ( getOldColor() != dummy.getOldColor() )
+		{
+			COLOR myColor=getOldColor();
+			out->write( (char *) &XSKIN_ID, sizeof(XSKIN_ID));
+			out->write( (char *) &myColor, sizeof(myColor));
+		}				
+		if (GetPriv()!=dummy.GetPriv())
+		{
+			out->write( (char *) &PRIV_ID, sizeof(PRIV_ID));
+			out->write( (char *) &this->priv, sizeof(this->priv));
+		}				
+		if (GetPriv2()!=dummy.GetPriv2())
+		{
+			out->write( (char *) &ALLMOVE_ID, sizeof(ALLMOVE_ID));
+			out->write( (char *) &this->priv2, sizeof(this->priv2));
+		}				
+		if (damagetype!=DAMAGE_PURE) //Luxor
+		{
+			out->write( (char *) &DAMAGETYPE_ID, sizeof(DAMAGETYPE_ID));
+			out->write( (char *) &damagetype, sizeof(damagetype));
+		}
+		if (getStablemaster()!=dummy.getStablemaster())
+		{
+			out->write( (char *) &STABLEMASTER_ID, sizeof(STABLEMASTER_ID));
+			out->write( (char *) &this->stablemaster_serial, sizeof(getStablemaster()));
+		}
+		if (npc_type!=dummy.npc_type)
+		{
+			out->write( (char *) &NPCTYPE_ID, sizeof(NPCTYPE_ID));
+			out->write( (char *) &npc_type, sizeof(npc_type));
+		}
+		if (time_unused!=dummy.time_unused)
+		{
+			out->write( (char *) &TIME_UNUSED_ID, sizeof(TIME_UNUSED_ID));
+			out->write( (char *) &time_unused, sizeof(time_unused));
+		}
+		
+		if (fonttype!=dummy.fonttype)
+		{
+			out->write( (char *) &FONT_ID, sizeof(FONT_ID));
+			out->write( (char *) &fonttype, sizeof(fonttype));
+		}
+		if ( saycolor != dummy.saycolor )
+		{
+			out->write( (char *) &SAY_ID, sizeof(SAY_ID));
+			out->write( (char *) &saycolor, sizeof(saycolor));
+		}
+		if ( emotecolor != dummy.emotecolor )
+		{
+			out->write( (char *) &EMOTE_ID, sizeof(EMOTE_ID));
+			out->write( (char *) &emotecolor, sizeof(emotecolor));
+		}
+		
+		SI32 myStat=st3;
+		out->write( (char *) &STRENGTH_ID, sizeof(STRENGTH_ID));
+		out->write( (char *) &myStat, sizeof(myStat));
+		out->write( (char *) &STRENGTH2_ID, sizeof(STRENGTH2_ID));
+		myStat=qmax(0, st2);
+		out->write( (char *) &myStat , sizeof(myStat ));
+		out->write( (char *) &DEXTERITY_ID, sizeof(DEXTERITY_ID));
+		out->write( (char *) &dx3, sizeof(dx3));
+		out->write( (char *) &DEXTERITY2_ID, sizeof(DEXTERITY2_ID));
+		myStat=qmax(0, dx2);
+		out->write( (char *) &myStat, sizeof(myStat));
+
+		out->write( (char *) &INTELLIGENCE_ID, sizeof(INTELLIGENCE_ID));
+		out->write( (char *) &in3, sizeof(in3));
+		out->write( (char *) &INTELLIGENCE2_ID, sizeof(INTELLIGENCE2_ID));
+		myStat=qmax(0, dx2);
+		out->write( (char *) &myStat, sizeof(myStat));
+		if (hp!=dummy.hp)
+		{
+			out->write( (char *) &HITPOINTS_ID, sizeof(HITPOINTS_ID));
+			out->write( (char *) &hp, sizeof(hp));
+		}
+		if (stm!=dummy.stm)
+		{
+			out->write( (char *) &STAMINA_ID, sizeof(STAMINA_ID));
+			out->write( (char *) &stm, sizeof(stm));
+		}
+		if (mn!=dummy.mn)
+		{
+			out->write( (char *) &MANA_ID, sizeof(MANA_ID));
+			out->write( (char *) &mn, sizeof(mn));
+		}
+		if (possessorSerial != INVALID) //Luxor
+		{
+			out->write( (char *) &NPC_ID, sizeof(NPC_ID));
+			out->write( (char *) &npc, sizeof(npc));
+		}
+		if (possessedSerial != INVALID) //Luxor
+		{
+			out->write( (char *) &POSSESSEDSERIAL_ID, sizeof(POSSESSEDSERIAL_ID));
+			out->write( (char *) &possessedSerial, sizeof(possessedSerial));
+		}
+		if (holdg!=dummy.holdg) // bugfix lb, holdgold value never saved !!!
+		{
+			out->write( (char *) &HOLDGOLD_ID, sizeof(HOLDGOLD_ID));
+			out->write( (char *) &holdg, sizeof(holdg));
+		}
+		if (shopkeeper!=dummy.shopkeeper)
+		{
+			out->write( (char *) &SHOPKEEP_ID, sizeof(SHOPKEEP_ID));
+		}
+		if (getOwnerSerial32()!=dummy.getOwnerSerial32())
+		{
+			SERIAL mySerial=getOwnerSerial32();
+			out->write( (char *) &OWN_ID, sizeof(OWN_ID));
+			out->write( (char *) &mySerial, sizeof(mySerial));
+		}
+		if (robe != dummy.robe)
+		{
+			out->write( (char *) &ROBE_ID, sizeof(ROBE_ID));
+			out->write( (char *) &robe, sizeof(robe));
+		}
+		if (GetKarma()!=dummy.GetKarma())
+		{
+			out->write( (char *) &KARMA_ID, sizeof(KARMA_ID));
+			out->write( (char *) &this->karma, sizeof(this->karma));
+		}
+		if (GetFame()!=dummy.GetFame())
+		{
+			out->write( (char *) &FAME_ID, sizeof(FAME_ID));
+			out->write( (char *) &this->fame, sizeof(this->fame));
+		}
+		if (kills!=dummy.kills)
+		{
+			out->write( (char *) &KILLS_ID, sizeof(KILLS_ID));
+			out->write( (char *) &kills, sizeof(kills));
+		}
+		if (deaths!=dummy.deaths)
+		{
+			out->write( (char *) &DEATHS_ID, sizeof(DEATHS_ID));
+			out->write( (char *) &deaths, sizeof(deaths));
+		}
+		if (dead!=dummy.dead)
+		{
+			out->write( (char *) &DEADFLAG_ID, sizeof(DEADFLAG_ID));
+		}
+		if (fixedlight!=dummy.fixedlight)
+		{
+			out->write( (char *) &FIXEDLIGHT_ID, sizeof(FIXEDLIGHT_ID));
+			out->write( (char *) &fixedlight, sizeof(fixedlight));
+		}
+		if (speech!=dummy.speech)
+		{
+			out->write( (char *) &SPEECH_ID, sizeof(SPEECH_ID));
+			out->write( (char *) &speech, sizeof(speech));
+		}
+		if (trigger!=dummy.trigger)
+		{
+			out->write( (char *) &TRIGGER_ID, sizeof(TRIGGER_ID));
+			out->write( (char *) &trigger, sizeof(trigger));
+		}
+		if (trigword.length()>0)
+		{
+			out->write( (char *) &TRIGWORD_ID, sizeof(TRIGWORD_ID));
+			out->write( (char *) trigword.c_str(), sizeof(trigword.c_str()));
+		}
+		if (disabledmsg!=NULL)
+		{
+			out->write( (char *) &DISABLEMSG_ID, sizeof(DISABLEMSG_ID));
+			out->write( (char *) disabledmsg->c_str(), sizeof(disabledmsg->c_str()));
+		} // Added by Magius(CHE) §
+		
+		for (j=0;j<TRUESKILLS;j++)
+		{
+			// Don't save the default value given by initchar
+			if ((baseskill[j] != 10)&&(baseskill[j]>1))
+			{
+				out->write( (char *) &SKILL_ID, sizeof(SKILL_ID));
+				// skill number
+				out->write( (char *) &j, sizeof(j));
+				out->write( (char *) &baseskill[j], sizeof(baseskill[j]));
+			
+			}
+			if( lockSkill[j] != 0 ) 
+			{
+				out->write( (char *) &SKILLOCK_ID, sizeof(SKILLOCK_ID));
+				out->write( (char *) &j, sizeof(j));
+				out->write( (char *) &lockSkill[j], sizeof(lockSkill[j]));
+			}
+		}
+		if (!cantrain)
+			out->write( (char *) &CANTRAIN_ID, sizeof(CANTRAIN_ID));
+		
+		if (att!=dummy.att)
+		{
+			out->write( (char *) &ATT_ID, sizeof(ATT_ID));
+			out->write( (char *) &att, sizeof(att));
+		}
+		if (def!=dummy.def)
+		{
+			out->write( (char *) &DEF_ID, sizeof(DEF_ID));
+			out->write( (char *) &def, sizeof(def));
+		}
+		if (lodamage!=dummy.lodamage)
+		{
+			out->write( (char *) &LODAMAGE_ID, sizeof(LODAMAGE_ID));
+			out->write( (char *) &lodamage, sizeof(lodamage));
+		}
+		if (hidamage!=dummy.hidamage)
+		{
+			out->write( (char *) &HIDAMAGE_ID, sizeof(HIDAMAGE_ID));
+			out->write( (char *) &hidamage, sizeof(hidamage));
+		}
+		if (war!=dummy.war)
+		{
+			out->write( (char *) &WAR_ID, sizeof(WAR_ID));
+			out->write( (char *) &war, sizeof(war));
+		}
+		if (npcWander!=dummy.npcWander)
+		{
+			out->write( (char *) &NPCWANDER_ID, sizeof(NPCWANDER_ID));
+			out->write( (char *) &npcWander, sizeof(npcWander));
+		}
+		if (oldnpcWander!=dummy.oldnpcWander)
+		{
+			out->write( (char *) &OLDNPCWANDER_ID, sizeof(OLDNPCWANDER_ID));
+			out->write( (char *) &oldnpcWander, sizeof(oldnpcWander));
+		}
+		
+		if (ftargserial!=dummy.ftargserial)
+		{
+			out->write( (char *) &PC_FTARGSER_ID, sizeof(PC_FTARGSER_ID));
+			out->write( (char *) &ftargserial, sizeof(ftargserial));
+		}
+		if (carve!=dummy.carve)
+		{
+			out->write( (char *) &CARVE_ID, sizeof(CARVE_ID));
+			out->write( (char *) &carve, sizeof(carve));
+		}
+		if (fx1!=dummy.fx1)
+		{
+			out->write( (char *) &FX1_ID, sizeof(FX1_ID));
+			out->write( (char *) &fx1, sizeof(fx1));
+		}
+		if (fy1!=dummy.fy1)
+		{
+			out->write( (char *) &FY1_ID, sizeof(FY1_ID));
+			out->write( (char *) &fy1, sizeof(fy1));
+		}
+		if (fz1!=dummy.fz1)
+		{
+			out->write( (char *) &FZ1_ID, sizeof(FZ1_ID));
+			out->write( (char *) &fz1, sizeof(fz1));
+		}
+		if (fx2!=dummy.fx2)
+		{
+			out->write( (char *) &FX2_ID, sizeof(FX2_ID));
+			out->write( (char *) &fx2, sizeof(fx2));
+		}
+		if (fy2!=dummy.fy2)
+		{
+			out->write( (char *) &FY2_ID, sizeof(FY2_ID));
+			out->write( (char *) &fy2, sizeof(fy2));
+		}
+		if (IsHidden())
+		{
+			out->write( (char *) &HIDDEN_ID, sizeof(HIDDEN_ID));
+			out->write( (char *) &hidden, sizeof(hidden));
+		}
+		if (hunger!=dummy.hunger)
+		{
+			out->write( (char *) &HUNGER_ID, sizeof(HUNGER_ID));
+			out->write( (char *) &hunger, sizeof(hunger));
+		}
+		if (npcaitype!=dummy.npcaitype)
+		{
+			out->write( (char *) &NPCAITYPE_ID, sizeof(NPCAITYPE_ID));
+			out->write( (char *) &npcaitype, sizeof(npcaitype));
+		}
+		if (spattack!=dummy.spattack)
+		{
+			out->write( (char *) &SPATTACK_ID, sizeof(SPATTACK_ID));
+			out->write( (char *) &spattack, sizeof(spattack));
+		}
+		if (spadelay!=dummy.spadelay)
+		{
+			out->write( (char *) &SPADELAY_ID, sizeof(SPADELAY_ID));
+			out->write( (char *) &spadelay, sizeof(spadelay));
+		}
+		if (magicsphere!=dummy.magicsphere)
+		{
+			out->write( (char *) &MAGICSPHERE_ID, sizeof(MAGICSPHERE_ID));
+			out->write( (char *) &magicsphere, sizeof(magicsphere));
+		}
+		if (mounted!=dummy.mounted)
+			out->write( (char *) &MOUNTED_ID, sizeof(MOUNTED_ID));
+		if (taming!=dummy.taming)
+		{
+			out->write( (char *) &TAMING_ID, sizeof(TAMING_ID));
+			out->write( (char *) &taming, sizeof(taming));
+		}
+		if (advobj!=dummy.advobj)
+		{
+			out->write( (char *) &ADVOBJ_ID, sizeof(ADVOBJ_ID));
+			out->write( (char *) &advobj, sizeof(advobj));
+		}
+		if (poison!=dummy.poison)
+		{
+			out->write( (char *) &POISON_ID, sizeof(POISON_ID));
+			out->write( (char *) &poison, sizeof(poison));
+		}
+		if (poisoned!=dummy.poisoned)
+		{
+			out->write( (char *) &POISONED_ID, sizeof(POISONED_ID));
+			out->write( (char *) &poisoned, sizeof(poisoned));
+		}
+		if ( IsMurderer() && ( murderrate>uiCurrentTime ) )
+		{
+			UI32 murderrateTime=( murderrate-uiCurrentTime) / MY_CLOCKS_PER_SEC ;
+			out->write( (char *) &MURDERSAVE_ID, sizeof(MURDERSAVE_ID));
+			out->write( (char *) &murderrateTime , sizeof(murderrateTime ));
+		}
+		if (fleeat!=dummy.fleeat)
+		{
+			out->write( (char *) &FLEEAT_ID, sizeof(FLEEAT_ID));
+			out->write( (char *) &fleeat, sizeof(fleeat));
+		}
+		if (getRace()!=dummy.getRace())
+		{
+			SI32 myrace=getRace();
+			out->write( (char *) &RACE_ID, sizeof(RACE_ID));
+			out->write( (char *) &myrace, sizeof(myrace));
+		}
+		if (reattackat!=dummy.reattackat)
+		{
+			out->write( (char *) &REATTACKAT_ID, sizeof(REATTACKAT_ID));
+			out->write( (char *) &reattackat, sizeof(reattackat));
+		}
+		if (holdg!=dummy.holdg) //Luxor: players vendors fix
+		{
+			out->write( (char *) &HOLDG_ID, sizeof(HOLDG_ID));
+			out->write( (char *) &holdg, sizeof(holdg));
+		}
+		if (split!=dummy.split)
+		{
+			out->write( (char *) &SPLIT_ID, sizeof(SPLIT_ID));
+			out->write( (char *) &split, sizeof(split));
+		}
+		if (splitchnc!=dummy.splitchnc)
+		{
+			out->write( (char *) &SPLITCHANCE_ID, sizeof(SPLITCHANCE_ID));
+			out->write( (char *) &splitchnc, sizeof(splitchnc));
+		}
+		// Begin of Guild related things (DasRaetsel)
+		if (HasGuildTitleToggle()!=dummy.HasGuildTitleToggle())
+		{
+			out->write( (char *) &GUILDTOGGLE_ID, sizeof(GUILDTOGGLE_ID));
+		}
+		if (GetGuildNumber()!=dummy.GetGuildNumber())
+		{
+			out->write( (char *) &GUILDNUMBER_ID, sizeof(GUILDNUMBER_ID));
+			out->write( (char *) &this->guildNumber, sizeof(this->guildNumber));
+		}
+		if (strlen( GetGuildTitle() ) )
+		#ifndef DESTROY_REFERENCES
+		{
+			out->write( (char *) &GUILDTITLE_ID, sizeof(GUILDTITLE_ID));
+			out->write( GetGuildTitle(), sizeof(GetGuildTitle()));
+		}
+		#else
+			fprintf(cWsc, "GUILDTITLE CG%x\n", serial);
+		#endif
+		if (GetGuildFealty()!=dummy.GetGuildFealty())
+		{
+			SERIAL myFealty=GetGuildFealty();
+			out->write( (char *) &GUILDFEALTY_ID, sizeof(GUILDFEALTY_ID));
+			out->write( (char *) &myFealty, sizeof(myFealty));
+		}
+		if (getRegenRate( STAT_HP, VAR_REAL ) != dummy.getRegenRate( STAT_HP, VAR_REAL ) )
+		{
+			out->write( (char *) &REGEN_HP_ID, sizeof(REGEN_HP_ID));
+			out->write( (char *) &this->regens[STAT_HP].rate_eff, sizeof(this->regens[STAT_HP].rate_eff));
+		}
+		if (getRegenRate( STAT_STAMINA, VAR_REAL ) != dummy.getRegenRate( STAT_STAMINA, VAR_REAL ) )
+		{
+			out->write( (char *) &REGEN_ST_ID, sizeof(REGEN_ST_ID));
+			out->write( (char *) &this->regens[STAT_STAMINA].rate_eff, sizeof(this->regens[STAT_STAMINA].rate_eff));
+		}
+		if (getRegenRate( STAT_MANA, VAR_REAL ) != dummy.getRegenRate( STAT_MANA, VAR_REAL ) )
+		{
+			out->write( (char *) &REGEN_MN_ID, sizeof(REGEN_MN_ID));
+			out->write( (char *) &this->regens[STAT_MANA].rate_eff, sizeof(this->regens[STAT_MANA].rate_eff));
+		}
+		if (homeloc.x!=dummy.homeloc.x)
+		{
+			out->write( (char *) &HOMEX_ID, sizeof(HOMEX_ID));
+			out->write( (char *) &homeloc.x, sizeof(homeloc.x));
+		}
+		if (homeloc.y!=dummy.homeloc.y)
+		{
+			out->write( (char *) &HOMEY_ID, sizeof(HOMEY_ID));
+			out->write( (char *) &homeloc.y, sizeof(homeloc.y));
+		}
+		if (homeloc.z!=dummy.homeloc.z)
+		{
+			out->write( (char *) &HOMEZ_ID, sizeof(HOMEZ_ID));
+			out->write( (char *) &homeloc.z, sizeof(homeloc.z));
+		}
+		if (workloc.x!=dummy.workloc.x)
+		{
+			out->write( (char *) &WORKX_ID, sizeof(WORKX_ID));
+			out->write( (char *) &workloc.x, sizeof(workloc.x));
+		}
+		if (workloc.y!=dummy.workloc.y)
+		{
+			out->write( (char *) &WORKY_ID, sizeof(WORKY_ID));
+			out->write( (char *) &workloc.y, sizeof(workloc.y));
+		}
+		if (workloc.z!=dummy.workloc.z)
+		{
+			out->write( (char *) &WORKZ_ID, sizeof(WORKZ_ID));
+			out->write( (char *) &workloc.z, sizeof(workloc.z));
+		}
+		if (foodloc.x!=dummy.foodloc.x)
+		{
+			out->write( (char *) &FOODX_ID, sizeof(FOODX_ID));
+			out->write( (char *) &foodloc.x, sizeof(foodloc.x));
+		}
+		if (foodloc.y!=dummy.foodloc.y)
+		{
+			out->write( (char *) &FOODY_ID, sizeof(FOODY_ID));
+			out->write( (char *) &foodloc.y, sizeof(foodloc.y));
+		}
+		if (foodloc.z!=dummy.foodloc.z)
+		{
+			out->write( (char *) &FOODZ_ID, sizeof(FOODZ_ID));
+			out->write( (char *) &foodloc.z, sizeof(foodloc.z));
+		}
+		if (questType!=dummy.questType && questType<1000)
+		{
+			out->write( (char *) &QUESTTYPE_ID, sizeof(QUESTTYPE_ID));
+			out->write( (char *) &questType, sizeof(questType));
+		}
+		if (questDestRegion!=dummy.questDestRegion && questDestRegion<1000)
+		{
+			out->write( (char *) &QUESTDESTREGION_ID, sizeof(QUESTDESTREGION_ID));
+			out->write( (char *) &questDestRegion, sizeof(questDestRegion));
+		}
+		if (questOrigRegion!=dummy.questOrigRegion && questOrigRegion<1000)
+		{
+			out->write( (char *) &QUESTORIGREGION_ID, sizeof(QUESTORIGREGION_ID));
+			out->write( (char *) &questOrigRegion, sizeof(questOrigRegion));
+		}
+		if (questBountyPostSerial !=dummy.questBountyPostSerial)
+		{
+			out->write( (char *) &QUESTBOUNTYPOSTSERIAL_ID, sizeof(QUESTBOUNTYPOSTSERIAL_ID));
+			out->write( (char *) &questBountyPostSerial, sizeof(questBountyPostSerial));
+		}
+		
+		if (questBountyReward !=dummy.questBountyReward)
+		{
+			out->write( (char *) &QUESTBOUNTYREWARD_ID, sizeof(QUESTBOUNTYREWARD_ID));
+			out->write( (char *) &questBountyReward, sizeof(questBountyReward));
+		}
+		
+		if (gmrestrict!=dummy.gmrestrict)
+		{
+			out->write( (char *) &GMRESTRICT_ID, sizeof(GMRESTRICT_ID));
+			out->write( (char *) &gmrestrict, sizeof(gmrestrict));
+		}
+		
+		if( npc && npcMoveSpeed != NPCSPEED )
+		{
+			out->write( (char *) &MOVESPEED_ID, sizeof(MOVESPEED_ID));
+			out->write( (char *) &npcMoveSpeed , sizeof(npcMoveSpeed ));
+		}
+		if( npc && npcFollowSpeed != NPCFOLLOWSPEED )
+		{
+			out->write( (char *) &FOLLOWSPEED_ID, sizeof(FOLLOWSPEED_ID));
+			out->write( (char *) &npcFollowSpeed , sizeof(npcFollowSpeed ));
+		}
+		if( profile!=dummy.profile )
+		{
+			out->write( (char *) &PROFILE_ID, sizeof(PROFILE_ID));
+			out->write( (char *) &profile, sizeof(profile));
+		}
+		if( !lootVector.empty() )
+		{
+			out->write( (char *) &LOOTVEC_ID, sizeof(LOOTVEC_ID));
+			
+			int last = lootVector.size();
+			for( int index = 0; index < last; ++index )
+				out->write( (char *) &lootVector[index], sizeof(lootVector[index]));
+		}
+		
+		if (nxwflags[0]!=dummy.nxwflags[0]) 	
+		{
+			out->write( (char *) &NXWFLAG0_ID, sizeof(NXWFLAG0_ID));
+			out->write( (char *) &nxwflags[0], sizeof(nxwflags[0]));
+		}
+		if (nxwflags[1]!=dummy.nxwflags[1]) 	
+		{
+			out->write( (char *) &NXWFLAG1_ID, sizeof(NXWFLAG1_ID));
+			out->write( (char *) &nxwflags[1], sizeof(nxwflags[1]));
+		}
+		if (nxwflags[2]!=dummy.nxwflags[2]) 	
+		{
+			out->write( (char *) &NXWFLAG2_ID, sizeof(NXWFLAG2_ID));
+			out->write( (char *) &nxwflags[2], sizeof(nxwflags[2]));
+		}
+		if (nxwflags[3]!=dummy.nxwflags[3]) 	
+		{
+			out->write( (char *) &NXWFLAG3_ID, sizeof(NXWFLAG3_ID));
+			out->write( (char *) &nxwflags[3], sizeof(nxwflags[3]));
+		}
+		
+		for (int JJ = 0; JJ< MAX_RESISTANCE_INDEX; JJ++)
+			if ( resists[JJ] != dummy.resists[JJ] )
+			{
+				out->write( (char *) &RESISTS_ID, sizeof(RESISTS_ID));
+				out->write( (char *) &JJ, sizeof(JJ));
+				out->write( (char *) &resists[JJ], sizeof(resists[JJ]));
+			}
+	}
+	if ( out->fail() )
+		ConOut("Error saving: %s\n", current_name.c_str());
+	out->flush();
+	out->clear();
+	
+}
+

@@ -45,6 +45,7 @@
 #include "house.h"
 #include "race.h"
 #include "resourcemap.h"
+#include "tmpeff.h"
 
 #ifdef _WIN32
 	using namespace std;
@@ -634,7 +635,14 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'T':
 		case 't':
-			if (!strcmp(script1, "TITLE"))				{ pc->title =script2; }
+			if (!strcmp(script1, "TEMPFX"))				
+			{ 
+				tempfx::cTempfx *fx = new tempfx::cTempfx();
+				fx->load();
+				pc->addTempfx(fx);
+				script1[0]='\0';
+			}
+			else if (!strcmp(script1, "TITLE"))				{ pc->title =script2; }
 			else if (!strcmp(script1, "TAMING"))			{ pc->taming=str2num(script2);}
 			else if (!strcmp(script1, "TRIGGER"))		{ pc->trigger=str2num(script2);;}
 			else if (!strcmp(script1, "TRIGWORD"))		{ pc->trigword=script2;}
@@ -1106,7 +1114,14 @@ void loaditem()
 
 		case 't':
 		case 'T':
-			if (!(strcmp(script1, "TYPE")))
+			if (!(strcmp(script1, "TEMPFX")))
+			{
+				tempfx::cTempfx *fx = new tempfx::cTempfx ();
+				fx->load();
+				pi->addTempfx(fx);
+				script1[0]='\0';
+			}
+			else if (!(strcmp(script1, "TYPE")))
 				pi->type=str2num(script2);
 			else if (!(strcmp(script1, "TYPE2")))
 				pi->type2=str2num(script2);
@@ -1951,6 +1966,16 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if (pc->nxwflags[1]!=dummy.nxwflags[1]) fprintf(cWsc, "NXWFLAG1 %i\n", pc->nxwflags[1]);
 			if (pc->nxwflags[2]!=dummy.nxwflags[2]) fprintf(cWsc, "NXWFLAG2 %i\n", pc->nxwflags[2]);
 			if (pc->nxwflags[3]!=dummy.nxwflags[3]) fprintf(cWsc, "NXWFLAG3 %i\n", pc->nxwflags[3]);
+			if (pc->hasTempfx())
+			{
+				TempfxVector *charTempfxVec = pc->getTempfxVec( );
+				TempfxVector::iterator iter=charTempfxVec->begin();
+				for ( ; iter != charTempfxVec->end(); iter++)
+				{
+					tempfx::cTempfx fx = *iter;
+					fx.save(cWsc);
+				}
+			}
 
 			for (int JJ = 0; JJ< MAX_RESISTANCE_INDEX; JJ++)
 				if ( pc->resists[JJ] != dummy.resists[JJ] )
@@ -2277,6 +2302,17 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		//if (strlen(pi->desc)>0)	fprintf(iWsc, "DESC %s\n", pi->desc);	// save out our vendor description
 		if (!pi->vendorDescription.empty())
 			fprintf(iWsc, "DESC %s\n", pi->vendorDescription.c_str() );
+		if (pi->hasTempfx())
+		{
+			TempfxVector *itemTempfxVec = pi->getTempfxVec( );
+			TempfxVector::iterator iter=itemTempfxVec->begin();
+			for ( ; iter != itemTempfxVec->end(); iter++)
+			{
+				tempfx::cTempfx fx = *iter;
+				fx.save(iWsc);
+			}
+		}
+
 
 #define SAVEITEMEVENT(A,B) { if (pi->amxevents[B]) if (pi->amxevents[B]->shouldBeSaved()) fprintf(iWsc, "%s %s\n", A, pi->amxevents[B]->getFuncName()); }
 //#define SAVEITEMEVENT(A,B) { AmxEvent *event = pi->getAmxEvent( B ); if ( event ) if ( event->shouldBeSaved() ) fprintf(iWsc, "%s %s\n", A, event->getFuncName()); }
@@ -2448,7 +2484,8 @@ void CWorldMain::realworldsave ()
 	{
 		if( isCharSerial( objs.getSerial() ) )
 			SaveChar( (P_CHAR)(objs.getObject()) );
-		else {
+		else 
+		{
 			pi = static_cast<P_ITEM>(objs.getObject());
 			if ( ISVALIDPI(pi))
 				SaveItem( pi );
@@ -2465,3 +2502,24 @@ void CWorldMain::realworldsave ()
 	Spawns->resetSpawnTime();
 }
 
+/* 
+
+  Binary save code
+  	ConOut("Finished text save at %d\n", getclock());
+	std::string outfile=SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileExtension + ".bin";
+	ofstream tmpBinary;
+	tmpBinary.open(outfile.c_str(), ios::out);
+	ConOut("Starting save at %d\n", getclock());
+	cAllObjectsIter objs2;
+	int count=0;
+	for( objs2.rewind(); !objs2.IsEmpty(); objs2++ )
+	{
+		if( isCharSerial( objs2.getSerial() ) )
+		{
+			((P_CHAR)objs2.getObject())->serialize(&tmpBinary);
+			count++;
+		}
+	}
+	ConOut("Finished binary save at %d saved %d chars\n", getclock(), count);
+	tmpBinary.close();
+*/

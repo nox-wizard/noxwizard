@@ -1104,7 +1104,8 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 							tempfx::NPC_HIRECOST, 
 							0, 
 							0, 
-							0, 
+							0,
+							0,
 							(UI16)(MY_CLOCKS_PER_SEC*secondsperuominute*60*24 )); // call callback every uo day
 						return true;
 					}

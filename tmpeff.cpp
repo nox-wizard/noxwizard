@@ -22,6 +22,7 @@
 #include "skills.h"
 #include "utils.h"
 #include "nox-wizard.h"
+#include "scripts.h"
 
 
 namespace tempfx {
@@ -39,22 +40,23 @@ void tempeffectson()
 	P_OBJECT po = NULL;
 
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
-	for ( ; it != tempfxCheck.end(); ) {
+	for ( ; it != tempfxCheck.end(); ) 
+	{
 		po = objects.findObject( (*it) );
 
-                if ( po == NULL ) {
+		if ( po == NULL ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
+		}
 
-	        if ( !po->hasTempfx() ) {
+		if ( !po->hasTempfx() ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
-
-	        po->tempfxOn();
-
-	        it++;
+		}
+	    po->tempfxOn();
+	    it++;
 	}
 }
 
@@ -69,21 +71,24 @@ void tempeffectsoff()
 	P_OBJECT po = NULL;
 
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
-        for ( ; it != tempfxCheck.end(); ) {
-                po = objects.findObject( (*it) );
+	for ( ; it != tempfxCheck.end(); ) 
+	{
+		po = objects.findObject( (*it) );
 
-                if ( po == NULL ) {
+		if ( po == NULL ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
+		}
 
-	        if ( !po->hasTempfx() ) {
+		if ( !po->hasTempfx() ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
+		}
 
-	        po->tempfxOff();
-	        it++;
+		po->tempfxOff();
+		it++;
 	}
 }
 
@@ -92,27 +97,30 @@ void tempeffectsoff()
 */
 void checktempeffects()
 {
-        if ( tempfxCheck.empty() )
+	if ( tempfxCheck.empty() )
 		return;
 
 	P_OBJECT po = NULL;
 
 	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
-        for ( ; it != tempfxCheck.end(); ) {
-                po = objects.findObject( (*it) );
+	for ( ; it != tempfxCheck.end(); ) 
+	{
+		po = objects.findObject( (*it) );
 
-                if ( po == NULL ) {
+		if ( po == NULL ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
+		}
 
-	        if ( !po->hasTempfx() ) {
+		if ( !po->hasTempfx() ) 
+		{
 			it = tempfxCheck.erase( it );
 			continue;
-	        }
+		}
 
-	        po->checkTempfx();
-	        it++;
+		po->checkTempfx();
+		it++;
 	}
 }
 
@@ -456,7 +464,7 @@ void cTempfx::start()
 				dest->morph();  //if the char is morphed, unmorph him
 			setCrimGrey(dest, ServerScp::g_nPolymorphWillCriminal);
 			// dest->morph( m_nMore1, -1, -1, -1, -1, -1, NULL, true );
-			dest->morph( m_nMore1, true );
+			dest->morph( (m_nMore1<<8)+m_nMore2, true );
 			dest->polymorph = true;
 			break;
 
@@ -898,6 +906,7 @@ void cTempfx::executeExpireCode()
 					0,
 					0,
 					0,
+					0,
 					MY_CLOCKS_PER_SEC*secondsperuominute*60
 				);
 			}
@@ -916,6 +925,7 @@ void cTempfx::executeExpireCode()
 						0,
 						0,
 						0,
+						0,
 						MY_CLOCKS_PER_SEC*secondsperuominute*60
 					);
 
@@ -925,7 +935,8 @@ void cTempfx::executeExpireCode()
 					tempfx::NPC_HIRECOST, 
 					0, 
 					0, 
-					0, 
+					0,
+					0,
 					MY_CLOCKS_PER_SEC*secondsperuominute*60*24 
 				); // call callback every uo day
 
@@ -1184,7 +1195,27 @@ bool cTempfx::isValid()
 \author Luxor
 \brief cTempfx constructor
 */
-cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI32 more2, SI32 more3, SI32 amxcback )
+cTempfx::cTempfx()
+{
+	m_nSrc = INVALID;
+	m_nDest = INVALID;
+	m_nNum = INVALID;
+	m_nMode = INVALID;
+	m_nExpireTime = 0;
+	m_nAmxcback = INVALID;
+	m_nMore1 = INVALID;
+	m_nMore2 = INVALID;
+	m_nMore3 = INVALID;
+	m_bDispellable = false;
+	m_bSrcRepeatable = false;
+	m_bDestRepeatable = false;
+}
+
+/*!
+\author Luxor
+\brief cTempfx constructor
+*/
+cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI08 more1, SI08 more2, SI08 more3, SI08 more4, SI32 amxcback )
 {
 	m_nSrc = INVALID;
 	m_nDest = INVALID;
@@ -1244,6 +1275,7 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_nMore1 = more1;
 	m_nMore2 = more2;
 	m_nMore3 = more3;
+	m_nMore4 = more4;
 	m_nAmxcback = amxcback;
 }
 
@@ -1251,12 +1283,12 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 \author Luxor
 \brief	Adds a temp effect
 */
-bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned char more2, unsigned char more3, short dur, int amxcback)
+bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned char more2, unsigned char more3, unsigned char more4,short dur, int amxcback)
 {
 	VALIDATEPOR(src, false);
 	VALIDATEPOR(dest, false);
 
-	return dest->addTempfx( *src, num, (int)more1, (int)more2, (int)more3, (int)dur, amxcback );
+	return dest->addTempfx( *src, num, more1, more2, more3, more4, (int)dur, amxcback );
 }
 
 /*!
@@ -1271,6 +1303,165 @@ void addTempfxCheck( SERIAL serial )
 		return;
 
 	tempfxCheck.push_front( serial );
+}
+
+// Binary save method for 0.83
+
+void cTempfx::serialize (ofstream *out )
+{
+	out->write((char *)&m_nSrc, sizeof(m_nSrc));
+	out->write((char *)&m_nDest, sizeof(m_nDest));
+	out->write((char *)&m_nNum, sizeof(m_nNum));
+	out->write((char *)&m_nMode, sizeof(m_nMode));
+	SI32 time= (m_nExpireTime-uiCurrentTime)/MY_CLOCKS_PER_SEC;
+	out->write((char *)&time, sizeof(time));
+	out->write((char *)&m_nAmxcback, sizeof(m_nAmxcback));
+	out->write((char *)&m_nMore1, sizeof(m_nMore1));
+	out->write((char *)&m_nMore2, sizeof(m_nMore2));
+	out->write((char *)&m_nMore3, sizeof(m_nMore3));
+	out->write((char *)&m_nMore4, sizeof(m_nMore4));
+	out->write((char *)&m_bDispellable, sizeof(m_bDispellable));
+
+}
+
+// Binary load method for 0.83
+void cTempfx::deserialize(ifstream *in)
+{
+	in->read((char *)&m_nSrc, sizeof(m_nSrc));
+	in->read((char *)&m_nDest, sizeof(m_nDest));
+	in->read((char *)&m_nNum, sizeof(m_nNum));
+	in->read((char *)&m_nMode, sizeof(m_nMode));
+	SI32 time;
+	in->read((char *)&time, sizeof(time));
+	in->read((char *)&m_nAmxcback, sizeof(m_nAmxcback));
+	in->read((char *)&m_nMore1, sizeof(m_nMore1));
+	in->read((char *)&m_nMore2, sizeof(m_nMore2));
+	in->read((char *)&m_nMore3, sizeof(m_nMore3));
+	in->read((char *)&m_nMore4, sizeof(m_nMore4));
+	in->read((char *)&m_bDispellable, sizeof(m_bDispellable));
+}
+
+void cTempfx::initTempFx()
+{
+	cAllObjectsIter objs;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ )
+	{
+		P_OBJECT obj=objs.getObject();
+		if ( obj->hasTempfx() )
+		{
+			TempfxVector *objTempfxVec = obj->getTempfxVec( );
+			TempfxVector::iterator iter=objTempfxVec->begin();
+			for ( ; iter != objTempfxVec->end(); iter++)
+			{
+				tempfx::cTempfx fx = *iter;
+				fx.start();
+			}
+		}
+
+	}
+
+}
+void cTempfx::save (FILE *out)
+{
+	fprintf (out, "TEMPFX\n");
+	fprintf (out, "{\n");
+	fprintf (out, "SOURCE %d\n", m_nSrc);
+	fprintf (out, "DEST %d\n", m_nDest);
+	fprintf (out, "TYPE %d\n", m_nNum);
+	fprintf (out, "MODE %d\n", m_nMode);
+	fprintf (out, "EXPIRETIME %d\n", (m_nExpireTime-uiCurrentTime)/MY_CLOCKS_PER_SEC);
+	fprintf (out, "AMXCBACK %d\n", m_nAmxcback);
+	fprintf (out, "MORE1 %d\n", m_nMore1);
+	fprintf (out, "MORE2 %d\n", m_nMore2);
+	fprintf (out, "MORE3 %d\n", m_nMore3);
+	fprintf (out, "MORE4 %d\n", m_nMore4);
+	fprintf (out, "DISPELLABLE %d\n", m_bDispellable);
+	fprintf (out, "}\n\n");
+}
+
+void cTempfx::load()
+{
+	do
+	{
+		readw2();
+		switch ( script1[0] )
+		{
+			case '{':
+			case '}':
+				break;
+			case 'A':
+			{
+				if ( !strcmp(script1, "AMXCBACK") )
+				{
+					m_nAmxcback=str2num(script2);
+				}
+				break;
+			}
+			case 'D':
+			{
+				if ( !strcmp(script1, "DEST") )
+				{
+					m_nDest=str2num(script2);
+				}
+				else if ( !strcmp(script1, "DISPELLABLE") )
+				{
+					m_bDispellable=str2num(script2);
+				}
+				break;
+			}
+			case 'E':
+			{
+				if ( !strcmp(script1, "EXPIRETIME") )
+				{
+					m_nExpireTime=uiCurrentTime+str2num(script2)*MY_CLOCKS_PER_SEC;
+				}
+				break;
+			}
+			case 'M':
+			{
+				if ( !strcmp(script1, "MODE") )
+				{
+					m_nMode=str2num(script2);
+				}
+				else if ( !strcmp(script1, "MORE1") )
+				{
+					m_nMore1=str2num(script2);
+				}
+				else if ( !strcmp(script1, "MORE2") )
+				{
+					m_nMore2=str2num(script2);
+				}
+				else if ( !strcmp(script1, "MORE3") )
+				{
+					m_nMore3=str2num(script2);
+				}
+				else if ( !strcmp(script1, "MORE4") )
+				{
+					m_nMore4=str2num(script2);
+				}
+				break;
+			}
+			case 'S':
+			{
+				if ( !strcmp(script1, "SOURCE") )
+				{
+					m_nSrc=str2num(script2);
+				}
+				break;
+			}
+			case 'T':
+			{
+				if ( !strcmp(script1, "TYPE") )
+				{
+					m_nNum=str2num(script2);
+				}
+				break;
+			}
+			default:
+				break;
+		}
+	}
+	while( script1[0] != '}' );
 }
 
 } //namespace
