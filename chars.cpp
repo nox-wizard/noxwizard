@@ -4189,7 +4189,7 @@ void cChar::drink(P_ITEM pi)
 */
 bool cChar::isGuilded()
 {
-	return ISVALIDGUILD( getGuild() );
+	return getGuild()!=INVALID;
 }
 
 /*!

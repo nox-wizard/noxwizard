@@ -2068,8 +2068,6 @@ NATIVE2(_setGuildProperty)
 		return INVALID;
 	}
 
-	P_CHAR pc;
-
 	int tp = getPropertyType(params[2]);
 
 	cell *cptr;
@@ -2082,16 +2080,7 @@ NATIVE2(_setGuildProperty)
 
 		switch( params[2] )
 		{
-			case NXW_GP_I_GUILDMASTER :	  				//dec value: 200;
-				pc = pointers::findCharBySerial(p);
-				VALIDATEPCR( pc, INVALID );
-
-				if( pc->getGuild()!=guild )
-					return INVALID;
-
-				pGuild->setGuildMaster( pc );
-
-				break;
+			case INVALID:
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -2136,9 +2125,7 @@ NATIVE2(_setGuildProperty)
 
 		switch( params[2] )
 		{
-			case  NXW_GP_C_TYPE :				  		//dec value: 100;
-				pGuild->setType( static_cast<GUILD_TYPE>(p) );
-				break;
+			case  INVALID :				  		//dec value: 100;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
 				break;
@@ -2156,13 +2143,13 @@ NATIVE2(_setGuildProperty)
 		switch( params[2] )
 		{
 			case NXW_GP_STR_NAME :			  				//dec value: 450;
-				pGuild->setName( g_cAmxPrintBuffer );
+				pGuild->setName( std::string( g_cAmxPrintBuffer ) );
 				break;
 			case NXW_GP_STR_WEBPAGE :		  				//dec value: 451;
-				pGuild->setWebPage( g_cAmxPrintBuffer );
+				pGuild->webpage = g_cAmxPrintBuffer;
 				break;
 			case NXW_GP_STR_ABBREVIATION :	  				//dec value: 452;
-				pGuild->setAbbreviation( g_cAmxPrintBuffer );
+				pGuild->setAbbreviation( std::string( g_cAmxPrintBuffer ) );
 				break;
 			default :
 				ErrOut("guild_setProperty called with invalid property %d!\n", params[2] );
@@ -2181,7 +2168,7 @@ NATIVE2(_setGuildProperty)
 		switch( params[2] )
 		{
 			case NXW_GP_UNI_CHARTER :
-				pGuild->setCharter( w );
+				pGuild->charter = w;
 				break;
 			default :
 				ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
@@ -2217,9 +2204,7 @@ NATIVE2(_getGuildProperty)
 	
 		int p;
 		switch(params[2]) {
-			case NXW_GP_I_GUILDMASTER:
-				p = pGuild->getGuildMaster();
-				break;
+			case INVALID:
 			default:
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
 				return INVALID;
@@ -2261,9 +2246,7 @@ NATIVE2(_getGuildProperty)
 
 		char p; 
 		switch(params[2]) {
-			case NXW_GP_C_TYPE:
-				p = pGuild->getType();
-				break;
+			case INVALID:
 			default:
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
 				return INVALID;
@@ -2284,7 +2267,7 @@ NATIVE2(_getGuildProperty)
 			  	strcpy(str, pGuild->getName().c_str());
 				break;
 			case NXW_GP_STR_WEBPAGE:
-			  	strcpy(str, pGuild->getWebPage().c_str());
+			  	strcpy(str, pGuild->webpage.c_str());
 				break;
 			case NXW_GP_STR_ABBREVIATION:
 			  	strcpy(str, pGuild->getAbbreviation().c_str());
@@ -2306,7 +2289,7 @@ NATIVE2(_getGuildProperty)
 		switch( params[2] )
 		{
 			case NXW_GP_UNI_CHARTER :		
-				w = &pGuild->getCharter();
+				w = &pGuild->charter;
 				break;
 			default :
 				ErrOut("guild_getProperty called with invalid property %d!\n", params[2] );
