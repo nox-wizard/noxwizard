@@ -32,11 +32,14 @@ class cCommand {
 
 public:
 
-	cCommand(std::string cmd_name, SI32 cmd_priv, AmxFunction* callback);
+	cCommand(std::string cmd_name, SI32 cmd_priv, SI08 params_number ,AmxFunction* callback);
 	
 	std::string cmd_name;
 	SI32 cmd_priv;  //stonedz: this should be a std::bitset (?) //frodo: bitset later defined in cChar
 	AmxFunction* cmd_callback;
+	SI08 cmd_params_number ; //Max number of parameters the command should have.
+							 //There is a problem if a command uses more than one 
+							 //multi-word parameter (e.g. 'COMMAND param one param two).
 };
 
 
@@ -74,7 +77,7 @@ class cCommandMap {
 public:
 	
 	cCommandMap();
-	P_COMMAND addGmCommand(std::string name, SI32 priv, AmxFunction* callback);
+	P_COMMAND addGmCommand(std::string name, SI32 priv,SI08 params_number ,AmxFunction* callback);
 	P_COMMAND findCommand(std::string name);
 	
 

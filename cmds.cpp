@@ -48,65 +48,15 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 		client->sysmsg("Unrecognized command: %s", comm);
 			return;
 		}
-		if(cmd->notValid(pc_currchar)) {
-			client->sysmsg("Access denied.");
-			return;
-		}
+		/*
+		
+		  Here there must be a control between cCommand privilege and cChar privilege.
 
-		switch(cmd->cmd_type) {
-		// Single step commands
-			case CMD_FUNC:
-				(*((CMD_EXEC)cmd->cmd_extra)) (client);
-				break;
-			case CMD_TARGET: {
-				P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
-				targ->code_callback=((target_st*)cmd->cmd_extra)->func;
-				targ->send( client );
-				client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
-				break;
-			}
-			case CMD_TARGETN:
-				if(tnum==2) {
-					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
-					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
-					targ->buffer[0]=strtonum(1);
-					targ->send( client );
-					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
-				} 
-				else 
-					client->sysmsg("This command takes one number as an argument.");
-				break;
-			case CMD_TARGETNNN:
-				if(tnum==4) {
-					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
-					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
-					targ->buffer[0]=strtonum(1);
-					targ->buffer[1]=strtonum(2);
-					targ->buffer[2]=strtonum(3);
-					targ->send( client );
-					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
-				} 
-				else
-					sysmessage(s, "This command takes three numbers as arguments.");
-				break;
-			case CMD_TARGETS:
-				if(tnum==2) {
-					P_TARGET targ = clientInfo[s]->newTarget( createTarget( ((target_st*)cmd->cmd_extra)->type ) );
-					targ->code_callback=((target_st*)cmd->cmd_extra)->func;
-					targ->buffer_str[0]=&tbuffer[Commands::cmd_offset+strlen(cmd->cmd_name)];
-					targ->send( client );
-					client->sysmsg( ((target_st*)cmd->cmd_extra)->msg );
-				} 
-				else
-					sysmessage(s, "This command takes a string as arguments.");
-				break;
-			case CMD_MANAGEDCMD:
-				client->startCommand(cmd, speech);
-				break;
-			default:
-				client->sysmsg("INTERNAL ERROR: Command has a bad command type set!");
-				break;
-		}
+		  To be continued...
+		*/
+
+		
+		
 
 	}
 
@@ -122,13 +72,18 @@ void Command(NXWSOCKET  s, char* speech) // Client entred a '/' command like /AD
 
 //Implementation of cCommand Class
 
-cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback) {
+cCommand::cCommand(std::string name, SI32 priv,SI08 params_number ,AmxFunction* callback) {
 
 	cmd_name=name;
 	cmd_priv=priv; //stonedz: should be a std::bitset (?)
+	cmd_params_number=params_number;
 	cmd_callback=callback;
 }
 
+
+bool cCommand::isValid(P_CHAR character) {
+	return !notValid(character);
+}
 
 
 
@@ -141,9 +96,9 @@ cCommandMap::cCommandMap() {
 }
 
 
-P_COMMAND cCommandMap::addGmCommand(std::string name, SI32 priv, AmxFunction* callback) {
+P_COMMAND cCommandMap::addGmCommand(std::string name, SI32 priv,SI08 params_number ,AmxFunction* callback) {
 
-	P_COMMAND cmd= new cCommand(name, priv, callback);
+	P_COMMAND cmd= new cCommand(name, priv, params_number,callback);
     command_map[name]= cmd;
  	return cmd;
 }
