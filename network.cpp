@@ -1897,6 +1897,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 
 				case PACKET_UNICODE_TALKREQUEST:
 					if( pc_currchar!=NULL ) {
+						int i=0;
 						pc_currchar->unicode=true;
 			    		// Check for command word versions of this packet
 
@@ -1939,7 +1940,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						//cout << "Max length characters will be " << dec << (iWord - myoffset) << endl ;
 						mysize = iWord - myoffset ;
 
-						for (int i=0; i < mysize ; i++)
+						for (i=0; i < mysize ; i++)
 							mytempbuf[i] = buffer[s][i+myoffset] ;
 
 						for (i=0; i < mysize ; i++)
