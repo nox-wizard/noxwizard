@@ -604,7 +604,7 @@ cMULFile<T>::cMULFile( std::string path, std::string mode )
 			safedelete( s );
 			strcat( fn, "\\" );
 			strcat( fn, f );
-			ConOut( "*** Can't open %s, trying %s ***\n", fileName, fn );
+			ConOut( "*** Can't open %s, trying %s ***\n", path.c_str(), fn );
 			m_file = fopen( fn, mode.c_str() );
 		}
 	} else
