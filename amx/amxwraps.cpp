@@ -1322,8 +1322,9 @@ NATIVE(_itm_showContainer)
 	if ( pi->isContainer() )
 	{
 		P_CHAR pc=pointers::findCharBySerial(params[2]);
+		wearIt(pc->getSocket(), pi);
 		pc->showContainer(pi);
-		pc->objectdelay=0;
+		// pc->objectdelay=0;
 	}
 	return 0;
 }

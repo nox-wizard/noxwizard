@@ -37,6 +37,7 @@
 #include "layer.h"
 #include "party.h"
 #include "accounts.h"
+#include "weight.h"
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
 static char emptyString[1] = { '\0' };
@@ -228,8 +229,25 @@ void setItemIntProperty(P_ITEM pi, int property, int prop2, int value )
 			pi->carve = value;
 			break;
 		case NXW_IP_I_CONTAINERSERIAL :				   //dec value :  202;
+			{
 			//pi->contserial = value;
-			pi->setContSerial(value, false, false);
+				P_OBJECT old_container = (P_OBJECT) (pi->getContainer());
+				pi->setContSerial(value, false, false);
+				if ( ISVALIDPO(old_container) )
+				{
+					if ( isItemSerial(old_container->getSerial32()))
+					{
+						P_ITEM pack = static_cast<P_ITEM>(old_container)->getOutMostCont();
+						P_CHAR owner = pointers::findCharBySerial(pack->getContSerial());
+						if ( ISVALIDPC(owner) )
+						{
+							weights::NewCalc(owner);
+							statwindow(owner,owner);
+						}
+					}
+				}
+
+			}
 			break;
 		case NXW_IP_I_DECAYTIME :				   //dec value :  203;
 			pi->setDecayTime( (TIMERVAL) value );
