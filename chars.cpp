@@ -1760,7 +1760,6 @@ UI32 cChar::distFrom(P_ITEM pi)
 /*!
 \author Luxor
 \brief Teleports character to its current set coordinates.
-\todo Rewrite this function and where it's used to reduce lag. Implement a bitfield to choose what has to be sent.
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
