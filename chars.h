@@ -430,7 +430,7 @@ class cChar : public cObject
 
 		const SI32		GetKarma() const;
 		void			SetKarma(SI32 newkarma);
-		void			IncreaseKarma(SI32 value, P_CHAR killed=NULL);
+		void			IncreaseKarma(SI32 value, P_CHAR pKilled = 0 );
 
 		const SI32		GetFame() const;
 		void			SetFame(SI32 newfame);

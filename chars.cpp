@@ -1901,29 +1901,45 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         // Send other players and items to char (if online)
         //
         if ( cli == NULL || cli == getClient() )
-	if ( socket != INVALID ) {
-                if ( flags&TELEFLAG_SENDNEARCHARS ) {
-                        NxwCharWrapper sc;
-			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
-			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-				P_CHAR pc=sc.getChar();
-				if( ISVALIDPC( pc ) )
-					if( getSerial32() != pc->getSerial32() ) {
-						impowncreate( socket, pc, 1 );
-					}
-			}
-		}
+		if ( socket != INVALID )
+		{
+			if ( flags&TELEFLAG_SENDNEARCHARS )
+			{
+#ifdef SPAR_C_LOCATION_MAP
+				UI32 flags = pointers::ONLINE | pointers::EXCLUDESELF;
+				if( IsGM() )
+					flags |= pointers::OFFLINE;
 
-		if ( flags&TELEFLAG_SENDNEARITEMS ) {
-			NxwItemWrapper si;
-			si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
-			for( si.rewind(); !si.isEmpty(); si++ ) {
-				P_ITEM pi = si.getItem();
-				if( ISVALIDPI( pi ) )
-					senditem( socket, pi );
+				PCHAR_VECTOR *pCV = pointers::getNearbyChars( this, VISRANGE, flags );
+				PCHAR_VECTOR it( pCV->begin() ), end( pCV->end() );
+				while( it != end )
+				{
+					impowncreate( socket, (*it), 1 );
+					++it;
+				}
+#else
+				NxwCharWrapper sc;
+				sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
+				for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+					P_CHAR pc=sc.getChar();
+					if( ISVALIDPC( pc ) )
+						if( getSerial32() != pc->getSerial32() ) {
+							impowncreate( socket, pc, 1 );
+						}
+				}
+#endif
+			}
+
+			if ( flags&TELEFLAG_SENDNEARITEMS ) {
+				NxwItemWrapper si;
+				si.fillItemsNearXYZ( getPosition(), VISRANGE, false );
+				for( si.rewind(); !si.isEmpty(); si++ ) {
+					P_ITEM pi = si.getItem();
+					if( ISVALIDPI( pi ) )
+						senditem( socket, pi );
+				}
 			}
 		}
-	}
 
 	//
 	// Send the light level
@@ -2967,7 +2983,95 @@ void cChar::Kill()
 	murdererSer = INVALID;
 
 	//--------------------- reputation stuff
+#ifdef SPAR_C_LOCATION_MAP
+	PCHAR_VECTOR *pCV = pointers::getNearbyChars( this, VISRANGE*2, pointers::COMBATTARGET );
+	PCHAR_VECTOR it( pCV->begin() ), end( pCV->end() );
+	P_CHAR pKiller = 0;
+	while( it != end )
+	{
+		pKiller = (*it);
+		if( pKiller->npcaitype==NPCAI_TELEPORTGUARD )
+		{
+			pKiller->summontimer=(uiCurrentTime+(MY_CLOCKS_PER_SEC*20));
+			pKiller->npcWander=2;
+			pKiller->setNpcMoveTime();
+			pKiller->talkAll(TRANSLATE("Thou have suffered thy punishment, scoundrel."),0);
+		}
 
+		pKiller->targserial=INVALID;
+		pKiller->timeout=0;
+
+		P_CHAR pk_att = pointers::findCharBySerial( pKiller->attackerserial );
+		if ( pk_att )
+		{
+			pk_att->ResetAttackFirst();
+			pk_att->attackerserial = INVALID;
+		}
+
+		pk->attackerserial = INVALID;
+		pk->ResetAttackFirst();
+
+		if( pKiller->attackerserial == getSerial32() )
+		{
+			pk->attackerserial = INVALID;
+			pk->ResetAttackFirst();
+		}
+
+		if( !pKiller->npc )
+		{
+			strncpy(murderername, pk->getCurrentNameC(), 48);
+
+			NxwCharWrapper party;
+			party.fillPartyFriend( pk, VISRANGE, true );
+			for( party.rewind(); !party.isEmpty(); party++ )
+			{
+				P_CHAR fr=party.getChar();
+				if( ISVALIDPC(fr) )
+				{
+					fr->IncreaseKarma( (0-(karma)), this  );
+					fr->modifyFame( fame );
+				}
+			}
+
+			pKiller->IncreaseKarma( (0-(karma)), this  );
+			pKiller->modifyFame( fame );
+
+			//murder count \/
+			if (!npc)
+			{ // PvP
+				if ( (!IsGrey()) && IsInnocent() && Guilds->Compare(pk,this)==0)
+				{
+					murdererSer = pk->getSerial32();
+					pk->kills++;
+					pk->sysmsg(TRANSLATE("You have killed %i innocent people."), pk->kills);
+
+					if (pk->kills==(unsigned)repsys.maxkills)
+						pk->sysmsg(TRANSLATE("You are now a murderer!"));
+					setcharflag(pk);
+
+				if (SrvParms->pvp_log)
+				{
+						LogFile pvplog("PvP.log");
+						pvplog.Write("%s was killed by %s!\n",getCurrentNameC(), pk->getCurrentNameC());
+				}
+			}   // was innocent
+
+			if (pk->amxevents[EVENT_CHR_ONKILL])
+				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+
+				//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+			} //PvP
+		}//if !npc
+		else
+		{
+			if (pk->amxevents[EVENT_CHR_ONKILL])
+				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), INVALID, getSerial32(), s);
+			if (pk->war)
+				pk->toggleCombat(); // ripper
+		}
+		++it;
+	}
+#else
 	P_CHAR pk = MAKE_CHAR_REF(0);
 
 	NxwCharWrapper sc;
@@ -3052,7 +3156,7 @@ void cChar::Kill()
 				pk->toggleCombat(); // ripper
 		}
 	}
-
+#endif
 
 	//--------------------- trade stuff
 
@@ -3225,6 +3329,8 @@ void cChar::Kill()
 
 	if ( npc )
 		Delete();
+	else
+		++deaths;
 }
 
 /*!
@@ -5087,4 +5193,192 @@ void cChar::unStable()
 SERIAL cChar::getStablemaster()
 {
 	return stablemaster_serial;
+}
+
+/*!
+\brief increase or decrease the karma of the char
+\author Endymion
+\since 0.82a
+\param value positive or negative value to add to karma
+\param killed ptr to killed char
+\note every increase of karma has a related event
+\note Sparhawk: karma increase now can also be applied to npc's
+*/
+void cChar::IncreaseKarma( SI32 value, P_CHAR pKilled )
+{
+	SI32 nCurKarma		= GetKarma();
+
+	if( nCurKarma > 10000 )
+		SetKarma( 10000 );
+	else
+		if( nCurKarma < -10000 )
+			SetKarma( -10000 );
+
+	if( value != 0 )
+	{
+		SI32 	nKarma			= value,
+			nChange			= 0;
+
+		LOGICAL	positiveKarmaEffect	= false;
+
+		if	( nCurKarma < nKarma && nKarma > 0 )
+		{
+			nChange=((nKarma-nCurKarma)/75);
+			SetKarma( GetKarma() + nChange );
+			positiveKarmaEffect = true;
+		}
+		else if ( nCurKarma > nKarma )
+		{
+			if ( !ISVALIDPC( pKilled) )
+			{
+				nChange=((nCurKarma-nKarma)/50);
+				SetKarma( GetKarma() + nChange );
+			}
+			else if( pKilled->GetKarma()>0 )
+			{
+				nChange=((nCurKarma-nKarma)/50);
+				SetKarma( GetKarma() + nChange );
+			}
+		}
+
+		if( nChange != 0 )
+		{
+			if ( amxevents[EVENT_CHR_ONREPUTATIONCHG] )
+			{
+				g_bByPass = false;
+				SI32 n = nChange;
+				if (!positiveKarmaEffect)
+					n = -nChange;
+				amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call( getSerial32(), n, REPUTATION_KARMA );
+			}
+			/*
+			pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_KARMA);
+			if (g_bByPass==true)
+				return;
+			*/
+			if( !g_bByPass && !npc )
+			{
+				if(nChange<=25)
+				{
+					if(positiveKarmaEffect)
+						sysmsg( TRANSLATE("You have gained a little karma."));
+					else
+						sysmsg( TRANSLATE("You have lost a little karma."));
+				}
+				else if(nChange<=75)
+				{
+					if(positiveKarmaEffect)
+						sysmsg( TRANSLATE("You have gained some karma."));
+					else
+						sysmsg( TRANSLATE("You have lost some karma."));
+				}
+				else if(nChange<=100)
+				{
+					if(positiveKarmaEffect)
+						sysmsg( TRANSLATE("You have gained alot of karma."));
+					else
+						sysmsg( TRANSLATE("You have lost alot of karma."));
+				}
+				else if(nChange>100)
+				{
+					if(positiveKarmaEffect)
+						sysmsg( TRANSLATE("You have gained a huge amount of karma."));
+					else
+						sysmsg( TRANSLATE("You have lost a huge amount of karma."));
+				}
+			}
+		}
+	}
+}
+
+/*!
+\brief increase or decrease the fame of the char
+\author Endymion
+\since 0.82a
+\param value positive or negative value to add to fame
+\note every increase of karma have an event and stuff related
+*/
+void cChar::modifyFame( SI32 value )
+{
+	if( GetFame() > 10000 )
+		SetFame( 10000 );
+
+	if ( value != 0 )
+	{
+		SI32	nFame	= value;
+		int	nChange	= 0,
+			nEffect	= 0;
+		int	nCurFame= fame;
+
+		if( nCurFame > nFame ) // if player fame greater abort function
+		{
+			return;
+		}
+
+		if( nCurFame < nFame )
+		{
+			nChange=(nFame-nCurFame)/75;
+			fame=(nCurFame+nChange);
+			nEffect=1;
+		}
+
+		if( dead )
+		{
+			if(nCurFame<=0)
+			{
+				fame=0;
+			}
+			else
+			{
+				nChange=(nCurFame-0)/25;
+				fame=(nCurFame-nChange);
+			}
+			nEffect=0;
+		}
+		if( nChange != 0 )
+		{
+
+			if (amxevents[EVENT_CHR_ONREPUTATIONCHG])
+			{
+				g_bByPass = false;
+				int n = nChange;
+				if (!nEffect) n = -nChange;
+				amxevents[EVENT_CHR_ONREPUTATIONCHG]->Call(getSerial32(), n, REPUTATION_FAME);
+			}
+			/*
+			pc->runAmxEvent( EVENT_CHR_ONREPUTATIONCHG, pc->getSerial32(), (!nEffect ? -nChange : nChange), REPUTATION_FAME);
+			*/
+			if ( !g_bByPass && !npc )
+			{
+				if(nChange<=25)
+				{
+					if(nEffect)
+						sysmsg( TRANSLATE("You have gained a little fame."));
+					else
+						sysmsg( TRANSLATE("You have lost a little fame."));
+				}
+				else if(nChange<=75)
+				{
+					if(nEffect)
+						sysmsg( TRANSLATE("You have gained some fame."));
+					else
+						sysmsg( TRANSLATE("You have lost some fame."));
+				}
+				else if(nChange<=100)
+				{
+					if(nEffect)
+						sysmsg( TRANSLATE("You have gained alot of fame."));
+					else
+						sysmsg( TRANSLATE("You have lost alot of fame."));
+				}
+				else if(nChange>100)
+				{
+					if(nEffect)
+						sysmsg( TRANSLATE("You have gained a huge amount of fame."));
+					else
+						sysmsg( TRANSLATE("You have lost a huge amount of fame."));
+				}
+			}
+		}
+	}
 }
