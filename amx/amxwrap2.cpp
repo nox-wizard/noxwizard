@@ -913,6 +913,11 @@ NATIVE2(_setCharProperty)
 
 	cell *cstr;
 	amx_GetAddr(amx,params[4],&cstr);
+	if( params[2] == NXW_CP_STR_SPEECH_CURRENT ) { 
+		pc->speechCurrent= new cUnicodeString( (char*)cstr );
+	}
+	else {
+
 	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
 	g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
 	switch( params[2] )
@@ -942,13 +947,12 @@ NATIVE2(_setCharProperty)
 		case NXW_CP_STR_SPEECH :			 				//dec value: 458;
 			strcpy( script2, g_cAmxPrintBuffer );
 			break;
-		case NXW_CP_STR_SPEECH_CURRENT :			 		//dec value: 459;
-			pc->speechCurrent= new cUnicodeString( (char*)&g_cAmxPrintBuffer );
-			break; 
 		default :
 			ErrOut("chr_setProperty called with invalid property %d!\n", params[2] );
 			break;
   	}
+
+	}
   	g_nAmxPrintPtr=0;
   	return 0;
 }
