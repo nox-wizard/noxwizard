@@ -218,8 +218,11 @@ void cChar::mounthorse( P_CHAR mount )
 
 
 		mount->mounted=true;
-		mapRegions->remove( mount );
+#ifdef SPAR_NEW_WR_SYSTEM
 		pointers::delCharFromLocationMap( mount );
+#else
+		mapRegions->remove( mount );
+#endif
 		pointers::pMounted.insert( make_pair( getSerial32(), mount ) );
 
 		sw.clear();

@@ -143,8 +143,11 @@ static void item_char_test()
 				if (!ISVALIDPC(stablemaster))
 				{
 					p_pet->unStable();
-					mapRegions->add(p_pet);
+#ifdef SPAR_NEW_WR_SYSTEM
 					pointers::addCharToLocationMap( p_pet );
+#else
+					mapRegions->add(p_pet);
+#endif
 					p_pet->timeused_last=getclock();
 					p_pet->time_unused=0;
 					LogMessage("Stabled animal got freed because stablemaster died");

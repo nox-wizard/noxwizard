@@ -271,8 +271,11 @@ void buildhouse(int s, int i)
 		pHouse->setOwnerSerial32(pc->getSerial32());
 		if (pHouse->isInWorld()) 
 		{
-			mapRegions->add(pHouse);
+#ifdef SPAR_NEW_WR_SYSTEM
 			pointers::addItemToLocationMap(pHouse);
+#else
+			mapRegions->add(pHouse);
+#endif
 		}
 		if (!hitem[0] && !boat)
 		{
@@ -460,8 +463,11 @@ void buildhouse(int s, int i)
 				if (ISVALIDPI(pi_l)) 
 					if (pi_l->isInWorld()) 
 					{
-						mapRegions->add(pi_l);
+#ifdef SPAR_NEW_WR_SYSTEM
 						pointers::addItemToLocationMap(pi_l);
+#else
+						mapRegions->add(pi_l);
+#endif
 					}
 				safedelete(iter);
 			}
@@ -703,8 +709,11 @@ void addthere(int s, int xx, int yy, int zz, int t)
 
 	if (pi->isInWorld()) 
 	{
-		mapRegions->add(pi);
+#ifdef SPAR_NEW_WR_SYSTEM
 		pointers::addItemToLocationMap(pi);
+#else
+		mapRegions->add(pi);
+#endif
 	}
 
 	Map->SeekTile(pi->id(), &tile);
@@ -852,9 +861,11 @@ int add_hlist(int c, int h, int t)
 		pi->setCurrentName(TRANSLATE("friend of house"));
 
 		pi->setPosition( pi_h->getPosition() );
-
-		mapRegions->add(pi);
+#ifdef SPAR_NEW_WR_SYSTEM
 		pointers::addItemToLocationMap(pi);
+#else
+		mapRegions->add(pi);
+#endif
 		return 1;
 	}
 	return 3;
@@ -881,8 +892,14 @@ int del_hlist(int c, int h)
 	if(hl) {
 		P_ITEM pli=MAKE_ITEM_REF(li);
 		if(ISVALIDPI(pli)) {
-			mapRegions->remove(pli);
+#ifdef SPAR_NEW_WR_SYSTEM
+			//
+			// Hmmm....this is handled by pointers::delItem()....must remove it later
+			//
 			pointers::delItemFromLocationMap(pli);
+#else
+			mapRegions->remove(pli);
+#endif
 			pli->Delete();
 		}
 	}

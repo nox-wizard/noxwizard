@@ -291,7 +291,7 @@ namespace pointers {
 	std::map<SERIAL, vector <P_CHAR> > pMultiCharMap;
 	std::map<SERIAL, vector <P_ITEM> > pMultiItemMap;
 
-
+#ifdef SPAR_NEW_WR_SYSTEM
 	typedef std::multimap< UI32, P_CHAR >	PCHARLOCATIONMAP;
 	typedef PCHARLOCATIONMAP::iterator	PCHARLOCATIONMAPIT;
 
@@ -555,7 +555,7 @@ namespace pointers {
 		*/
 		return vItemsInRange;
 	}
-
+#endif
 	/*!
 	\brief initializes pointer maps
 	\author Luxor
@@ -574,7 +574,7 @@ namespace pointers {
 
 		cAllObjectsIter objs;
 
-		for( objs.rewind(); !objs.IsEmpty(); objs++ ) 
+		for( objs.rewind(); !objs.IsEmpty(); objs++ )
 		{
 			if( isCharSerial( objs.getSerial() ) ) {
 				pc=(P_CHAR)objs.getObject();
@@ -870,7 +870,9 @@ namespace pointers {
 
 		delFromStableMap(pc);
 		delFromOwnerMap(pc);
+#ifdef SPAR_NEW_WR_SYSTEM
 		delCharFromLocationMap(pc);
+#endif
 		objects.eraseObject( pc );
 
 		eraseContainerInfo( pc->getSerial32() );
@@ -886,6 +888,15 @@ namespace pointers {
 	void delItem(P_ITEM pi)
 	{
 		VALIDATEPI(pi);
+
+		if (pi->isInWorld())
+		{
+#ifdef SPAR_NEW_WR_SYSTEM
+			pointers::delItemFromLocationMap(pi);
+#else
+			mapRegions->remove(pi);
+#endif
+		}
 
 		objects.eraseObject(pi);
 

@@ -1204,12 +1204,15 @@ void cChar::MoveTo(Location newloc)
 	// Avoid crash if go to 0,0
 	if ((newloc.x < 1) || (newloc.y < 1))
 		return;
-
-	mapRegions->remove(this);
+#ifdef SPAR_NEW_WR_SYSTEM
 	pointers::delCharFromLocationMap( this );
 	setPosition( newloc );
-	mapRegions->add(this);
 	pointers::addCharToLocationMap( this );
+#else
+	mapRegions->remove(this);
+	setPosition( newloc );
+	mapRegions->add( this );
+#endif
 }
 
 UI32 cChar::getSkillSum()

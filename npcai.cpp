@@ -409,17 +409,57 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					if (pc->poisoned > 0)
 						NPC_CASTSPELL(magic::SPELL_CURE, pc);
 			}
-
+#ifdef SPAR_NEW_WR_SYSTEM
+			pointers::pCharVector *pcv = pointers::getCharsNearLocation( pc, VISRANGE, pointers::NPC );
+			pointers::pCharVectorIt it( pcv->begin() ), end( pcv->end() );
+			P_CHAR	pj = 0;
+			P_CHAR	pc_target = NULL;
+			SI32	att_value = 0, curr_value = 0;
+			while( it != end )
+			{
+				pj = (*it);
+				if ( 	!(
+					pc->getSerial32() == pj->getSerial32() ||
+					pj->IsInvul() ||
+					pj->hidden > 0 ||
+					pj->dead ||
+					pj->npcaitype == NPCAI_EVIL ||
+					pj->npcaitype == NPCAI_HEALER ||
+					( SrvParms->monsters_vs_animals == 0 && ((pj->title.size() == 0) && !pj->IsOnline()) ) ||
+					( SrvParms->monsters_vs_animals == 1 && chance( SrvParms->animals_attack_chance ) )
+					)
+				   )
+				{
+					if( pc->losFrom( pj ) )
+					{
+						if ( pc_target != 0 )
+						{
+                                        		curr_value = pc->distFrom( pj ) + pj->hp/3;
+							if ( curr_value < att_value )
+								pc_target = pj;
+						}
+						else
+						{
+							att_value = curr_value = pc->distFrom( pj ) + pj->hp/3;
+							pc_target = pj;
+						}
+					}
+				}
+				++it;
+			}
+			if ( pc_target != NULL )
+				pc->fight( pc_target );
+#else
 			NxwCharWrapper sc;
 			sc.fillCharsNearXYZ( pc->getPosition(), VISRANGE, true, false );
 			P_CHAR pc_target = NULL;
 			SI32 att_value = 0, curr_value = 0;
 			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-			
+
 				P_CHAR pj=sc.getChar();
-				if (!ISVALIDPC(pj) || pc->getSerial32()==pj->getSerial32() ) 
+				if (!ISVALIDPC(pj) || pc->getSerial32()==pj->getSerial32() )
 					continue;
-					
+
 				if (	pj->IsInvul() ||
 						pj->hidden > 0 ||
 						pj->dead ||
@@ -427,7 +467,7 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 						pj->npcaitype == NPCAI_HEALER ||
 						( SrvParms->monsters_vs_animals == 0 && ((pj->title.size() == 0) && !pj->IsOnline()) ) ||
 						( SrvParms->monsters_vs_animals == 1 && chance( SrvParms->animals_attack_chance ) )
-					) 
+					)
 					continue;
 
 				if ( !pc->losFrom( pj ) )
@@ -442,8 +482,10 @@ void checkAI(P_CHAR pc) //Lag Fix -- Zippy
 					pc_target = pj;
 				}
 			}
+
                         if ( pc_target != NULL )
 				pc->fight( pc_target );
+#endif
 		}
 		break;
 		case NPCAI_EVILHEALER:

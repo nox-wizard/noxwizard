@@ -10,8 +10,8 @@
 CC	=	gcc
 CXX	=	g++
 
-CFLAGS	=	-pipe -D_REENTRANT -O
-CXXFLAGS=	-pipe -funsigned-char -D_REENTRANT -O
+CFLAGS	=	-pipe -D_REENTRANT -O3 -march=athlon -mcpu=athlon-xp
+CXXFLAGS=	-pipe -funsigned-char -D_REENTRANT -O3 -march=athlon -mcpu=athlon-xp
 INCPATH =	-I ./
 LINK	=	g++
 LFLAGS	=	-lc -lstdc++ -static

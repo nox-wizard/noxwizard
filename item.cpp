@@ -516,8 +516,11 @@ namespace item
 			else
 				if (pi->isInWorld())
 				{
-					mapRegions->add(pi);
+#ifdef SPAR_NEW_WR_SYSTEM
 					pointers::addItemToLocationMap( pi );
+#else
+					mapRegions->add(pi);
+#endif
 				}
 		}
 

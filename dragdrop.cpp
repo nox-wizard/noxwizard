@@ -397,9 +397,11 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 				pi->amount = amount;
 
 			} // end if corpse
-
-			mapRegions->remove( pi );
+#ifdef SPAR_NEW_WR_SYSTEM
 			pointers::delItemFromLocationMap( pi );
+#else
+			mapRegions->remove( pi );
+#endif
 			pi->setPosition( 0, 0, 0 );
 			pi->setContSerial( INVALID );
 		}
@@ -1495,8 +1497,11 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 				pItem->setPosition( pp->TxLoc, pp->TyLoc, pp->TzLoc);
 				if( pItem->getContSerial( true )==INVALID  ) //current cont serial is invalid because is dragging
 				{
-					mapRegions->remove(pItem);
+#ifdef SPAR_NEW_WR_SYSTEM
 					pointers::delItemFromLocationMap(pItem);
+#else
+					mapRegions->remove(pItem);
+#endif
 				}
 
 				pItem->setContSerial( pCont->getContSerial() );

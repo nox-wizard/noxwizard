@@ -71,7 +71,7 @@ namespace pointers {
 	UI32 containerCountItems(SERIAL serial, short id, short color, LOGICAL bAddAmounts = true, LOGICAL recurseSubpack=true);
 	UI32 containerCountItemsByID(SERIAL serial, UI32 scriptID, LOGICAL bAddAmounts);
 	P_CHAR stableSearch(int serial, int *index);
-
+#ifdef SPAR_NEW_WR_SYSTEM
 	//
 	// Sparhawk:	mapRegion replacement (work in progress)
 	//
@@ -88,7 +88,7 @@ namespace pointers {
 		NPC		=  4,
 		SELF		=  8
 	};
-	
+
 	void showCharLocationMap();
 	void addCharToLocationMap( const P_CHAR who );
 	void delCharFromLocationMap( const P_CHAR who );
@@ -97,6 +97,7 @@ namespace pointers {
 	void addItemToLocationMap( const P_ITEM what );
 	void delItemFromLocationMap( const P_ITEM what );
 	pItemVector getItemFromLocationMap( SI32 x, SI32 y, SI32 range, UI32 flags = 0 );
+#endif
 }
 
 #endif

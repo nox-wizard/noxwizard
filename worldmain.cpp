@@ -564,10 +564,15 @@ void CWorldMain::loadChar() // Load a character from WSC
 	//
 	//
 	pc->region=static_cast<unsigned char>(calcRegionFromXY( pc->getPosition() )); //LB bugfix
-
- // lord binarys body/skin autocorrection code
-	mapRegions->add(pc);
+#ifdef SPAR_NEW_WR_SYSTEM
+	//
+	// Hmmm...is not needed here because lowerdown a move to is done!
+	// will correct this later
 	pointers::addCharToLocationMap(pc);
+#else
+	mapRegions->add(pc);
+#endif
+
  // begin of meta gm stuff
 
 	if (!pc->npc)
@@ -1030,8 +1035,12 @@ void loaditem()
 	{
 		int max_x = MapTileWidth  * 8;
 		int max_y = MapTileHeight * 8;
-		mapRegions->add(pi);
+
+#ifdef SPAR_NEW_WR_SYSTEM
 		pointers::addItemToLocationMap(pi);
+#else
+		mapRegions->add(pi);
+#endif
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{

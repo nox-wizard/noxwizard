@@ -122,12 +122,6 @@ void deleteItem( P_ITEM pi )
 	pointers::delItem(pi);	//Luxor
 
 	pi->setOwnerSerial32(-1);
-	// - remove from mapRegions if a world item
-	if (pi->isInWorld())
-	{
-	   	mapRegions->remove(pi);
-		pointers::delItemFromLocationMap(pi);
-	}
 
 	if (pi->type==ITYPE_BOOK && (pi->morex==666 || pi->morey==999) && pi->morez)
 		Books::books.erase( Books::books.find(pi->morez) );
