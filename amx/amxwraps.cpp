@@ -1865,7 +1865,7 @@ NATIVE(_magic_castFieldSpell)
 	P_CHAR mage = pointers::findCharBySerial( params[1] ); 
 	VALIDATEPCR( mage, INVALID );
 	TargetLocation targ(params[2],params[3],params[4]);
-	mage->castSpell(static_cast<magic::SpellId>( params[5] ), targ, SPELLFLAG_DONTCHECKSPELLBOOK|SPELLFLAG_DONTCHECKSKILL|SPELLFLAG_SILENTSPELL );
+	mage->castSpell(static_cast<magic::SpellId>( params[5] ), targ, SPELLFLAG_DONTCHECKSPELLBOOK|SPELLFLAG_DONTCHECKSKILL|SPELLFLAG_SILENTSPELL|SPELLFLAG_NOUSEMANA|SPELLFLAG_DONTREQREAGENTS );
 	return 0;
 
 }
@@ -1916,7 +1916,7 @@ NATIVE(_magic_checkMana)
 	P_CHAR pc_def = pointers::findCharBySerial( DEF ); \
 	VALIDATEPCR( pc_def, INVALID ); \
 	TargetLocation targ(pc_def);\
-	pc_att->castSpell( SPELL , targ, SPELLFLAG_DONTCHECKSPELLBOOK|SPELLFLAG_DONTCHECKSKILL|SPELLFLAG_SILENTSPELL|SPELLFLAG_NOUSEMANA );\
+	pc_att->castSpell( SPELL , targ, SPELLFLAG_DONTCHECKSPELLBOOK|SPELLFLAG_DONTCHECKSKILL|SPELLFLAG_SILENTSPELL|SPELLFLAG_NOUSEMANA|SPELLFLAG_DONTREQREAGENTS );\
 	return 0; \
 \
 
