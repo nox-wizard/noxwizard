@@ -8,6 +8,7 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 
+
 #include "nxwcommn.h"
 
 // Luxor: If we've got a bridge flagged tile or we're moving in map0 (stairs or whatever) we can elevate our Z by 14.
