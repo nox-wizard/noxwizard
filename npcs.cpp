@@ -70,53 +70,10 @@ void SpawnGuard(P_CHAR pc, P_CHAR pc_i, int x, int y, signed char z)
 P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 {
 	VALIDATEPIR(pack, NULL);
-
-	std::string 	script1;
-	int		i	= 0,
-			j,
-			loopexit= 0;
-	P_ITEM 		pi	= 0;
-
-	cScpIterator* iter = Scripts::Npc->getNewIterator( "SECTION LOOTLIST %s", lootlist );
-	if ( iter )
-	{
-
-		loopexit=0;
-		do
-		{
-			script1 = iter->getEntry()->getFullLine();
-			if ( script1[0]!='}' && script1[0]!='{' )
-			{
-				++i; // Count number of entries on list.
-			}
-		} while ( script1[0]!='}' && ++loopexit < MAXLOOPS );
-
-		iter->rewind();
-
-		if( i > 0 )
-		{
-			i=rand()%(i);
-
-			loopexit=0;
-			do
-			{
-				script1 = iter->getEntry()->getFullLine();
-				if ( script1[0]!='}' && script1[0]!='{' )
-				{
-					if(j==i)
-					{
-						pi=item::CreateFromScript( (SCRIPTID) str2num( script1 ), pack );
-						break;
-					}
-					else
-						++j;
-				}
-			}	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		}
-		safedelete(iter);
-	}
+	std::string	value( lootlist );
+	std::string 	loot	= cObject::getRandomScriptValue( "LOOTLIST", value );
+	P_ITEM 		pi	= item::CreateFromScript( (SCRIPTID) str2num( loot ), pack );
 	return pi;
-
 }
 
 /*** s: socket ***/
