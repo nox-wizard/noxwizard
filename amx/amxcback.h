@@ -35,6 +35,7 @@
 #include <vector>
 using namespace std ;
 
+#include "client.h"
 
 void checkTimer (void);
 void initTimers (void);

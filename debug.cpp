@@ -12,6 +12,7 @@
 #include <signal.h>
 #include "version.h"
 #include "nxw_utils.h"
+#include "inlines.h"
 
 #include <stdio.h>
 #include <stdarg.h>

@@ -17,6 +17,14 @@
 #include "debug.h"
 #include "pointer.h"
 #include "range.h"
+#include "muls.h"
+#include "boats.h"
+#include "archive.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "basics.h"
+#include "utils.h"
 
 /*!
 \author Duke

@@ -13,6 +13,8 @@
 
 #include "scp_parser.h"
 #include "console.h"
+#include "utils.h"
+#include "inlines.h"
 
 /*=========================================================================================
 

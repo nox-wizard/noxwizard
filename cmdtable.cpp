@@ -24,6 +24,15 @@
 #include "telport.h"
 #include "accounts.h"
 #include "worldmain.h"
+#include "muls.h"
+#include "spawn.h"
+#include "trade.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
+#include "inlines.h"
+#include "nox-wizard.h"
+
 
 // Includes command definitions
 #include "commands/tweaking.h"
@@ -728,8 +737,8 @@ void command_bounty(NXWSOCKET  s)
 {
 	// Check if boountys are active
 
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	if( !SrvParms->bountysactive )
 	{
@@ -853,9 +862,8 @@ void command_reloadcachedscripts(NXWSOCKET  s)
 // Returns the current bulletin board posting mode for the player
 void command_post(NXWSOCKET  s)
 {
-	int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	strcpy( s_szCmdTableTemp, "You are currently posting " );
 
@@ -884,9 +892,8 @@ void command_post(NXWSOCKET  s)
 // ALL bulletin boards will see the next message posted to any bulletin board
 void command_gpost(NXWSOCKET  s)
 {
-	int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	pc_cs->postType = MsgBoards::GLOBALPOST;
 	pc_cs->sysmsg("Now posting GLOBAL messages." );
@@ -897,9 +904,8 @@ void command_gpost(NXWSOCKET  s)
 // next message posted
 void command_rpost(NXWSOCKET  s)
 {
-	int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	pc_cs->postType = MsgBoards::REGIONALPOST;
 	pc_cs->sysmsg("Now posting REGIONAL messages." );
@@ -909,9 +915,8 @@ void command_rpost(NXWSOCKET  s)
 // Only this bulletin board will have this post
 void command_lpost(NXWSOCKET  s)
 {
-	int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	pc_cs->postType = MsgBoards::REGIONALPOST;
 	pc_cs->sysmsg("Now posting LOCAL messages." );
@@ -986,15 +991,14 @@ void command_readaccounts(NXWSOCKET  s)
 void command_showp(NXWSOCKET  s)
 // Displays hex values of your PRIV3 settings.
 {
-	int i,err;
 
-    P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
-	for (i=0;i<7;i++)
+	for( int i=0;i<7;i++)
 	{
-		sprintf(s_szCmdTableTemp, "priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
-		pcc_cs->sysmsg(s_szCmdTableTemp);
+		sprintf(s_szCmdTableTemp, "priv3%c : %X ", ch[i],pc_cs->priv3[i]);
+		pc_cs->sysmsg(s_szCmdTableTemp);
 	}
 }
 
@@ -1017,17 +1021,18 @@ Lord Binary's UOX Site</A>.
 */
 void command_setpriv3(NXWSOCKET  s)
 {
-	UI32 i;
-	int y, err;
 
-	P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
+
+	UI32 i;
+	int y;
 
 	switch(tnum) {
 		case 7:
 		case 8:
 			if (SrvParms->gm_log)
-				WriteGMLog(pcc_cs, "setpriv3 executed!\n");
+				WriteGMLog(pc_cs, "setpriv3 executed!\n");
 
 			priv3a[s]=strtonum(1);
 			priv3b[s]=strtonum(2);
@@ -1042,13 +1047,13 @@ void command_setpriv3(NXWSOCKET  s)
 		case 2:
 			y=strtonum(1);
 			if (SrvParms->gm_log)
-				WriteGMLog(pcc_cs, "setpriv3 executed!\n");
+				WriteGMLog(pc_cs, "setpriv3 executed!\n");
 
 			//AntiChrist-this was metagm[y%255]-
 			if ((y>255)||(y<0)) //was (y<255), Ummon
 			{
 				LogError("setpriv3-command: avoiding crash. argument was out of range [0-255]!\n");
-				pcc_cs->sysmsg("Setpriv3-command argument has to be between 0 and 255.");
+				pc_cs->sysmsg("Setpriv3-command argument has to be between 0 and 255.");
 				return;
 			}
 			priv3a[s]=metagm[y][0];
@@ -1076,9 +1081,9 @@ void command_setpriv3(NXWSOCKET  s)
 					i++;
 				} */
 				if(cmd==NULL) {
-					pcc_cs->sysmsg("That command doesn't exist.");
+					pc_cs->sysmsg("That command doesn't exist.");
 				} else if(cmd->cmd_priv_m==255) {
-					pcc_cs->sysmsg("No special permissions are neccessary to use that command.");
+					pc_cs->sysmsg("No special permissions are neccessary to use that command.");
 				} else {
 					//
 					//	Sparhawk:	Very very dirty trick to get setpriv3 cmd working again
@@ -1089,11 +1094,11 @@ void command_setpriv3(NXWSOCKET  s)
 					target(s, 0, 1, 0, 225, s_szCmdTableTemp);
 				}
 			} else {
-				pcc_cs->sysmsg("2-Argument Usage: /SETPRIV3 +/- COMMAND");
+				pc_cs->sysmsg("2-Argument Usage: /SETPRIV3 +/- COMMAND");
 			}
 			break;
 		default:
-			pcc_cs->sysmsg("This command takes 1, 2, 6, or 7 arguments.");
+			pc_cs->sysmsg("This command takes 1, 2, 6, or 7 arguments.");
 			break;
 	}
 }
@@ -1314,25 +1319,24 @@ void command_teleport(NXWSOCKET s)
 */
 void command_where(NXWSOCKET  s)
 {
-	int err;
-	P_CHAR pcc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-	Location charpos= pcc_cs->getPosition();
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
-	if (strlen(region[pcc_cs->region].name)>0)
-		pcc_cs->sysmsg("You are at: %s",region[pcc_cs->region].name);
+	Location charpos= pc_cs->getPosition();
+
+	if (strlen(region[pc_cs->region].name)>0)
+		pc_cs->sysmsg("You are at: %s",region[pc_cs->region].name);
 	else 
-		pcc_cs->sysmsg("You are at: unknown area");
+		pc_cs->sysmsg("You are at: unknown area");
 
-	pcc_cs->sysmsg("%i %i (%i)", charpos.x, charpos.y, charpos.z);
+	pc_cs->sysmsg("%i %i (%i)", charpos.x, charpos.y, charpos.z);
 }
 
 // Shows the GM or Counsellor queue.
 void command_q(NXWSOCKET  s)
 {
-    int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	if (!pc_cs->IsGM()) //They are not a GM
 		Commands::ShowGMQue(s, 0);
@@ -1343,9 +1347,8 @@ void command_q(NXWSOCKET  s)
 // For Counselors or GM's, goes to next call in queue.
 void command_next(NXWSOCKET  s)
 {
-    int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	if (!pc_cs->IsGM()) //They are not a GM
 	   Commands::NextCall(s, 0);
@@ -1356,9 +1359,8 @@ void command_next(NXWSOCKET  s)
 void command_clear(NXWSOCKET  s)
 // For Counselor's and GM's, removes current call from queue.
 {
-	int err;
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	if (!pc_cs->IsGM()) //They are not a GM
 	   donewithcall(s, 0);
@@ -1369,8 +1371,8 @@ void command_clear(NXWSOCKET  s)
 void command_goplace(NXWSOCKET  s)
 // (d) Teleports you to a location from the LOCATIONS.SCP file.
 {
-	P_CHAR pc_cs=MAKE_CHARREF_LOGGED(currchar[s],err);
-    if (err) return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	if (tnum==2)
 	{
@@ -1394,8 +1396,9 @@ void command_goplace(NXWSOCKET  s)
 void command_gochar(NXWSOCKET  s)
 {
 
-	P_CHAR pc_cs = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_cs);
+
 	PC_CHAR pc_i=NULL;
 
 	switch( tnum ) {
@@ -1438,8 +1441,9 @@ void command_gochar(NXWSOCKET  s)
 void command_fix(NXWSOCKET  s)
 // Try to compensate for messed up Z coordinates. Use this if you find yourself half-embedded in the ground.
 {
-	int err;
-	P_CHAR pc_cs = MAKE_CHARREF_LOGGED(currchar[s], err);
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
+
 	Location charpos= pc_cs->getPosition();
 
 	if (err)
@@ -1466,15 +1470,15 @@ void command_fix(NXWSOCKET  s)
 void command_xgoplace(NXWSOCKET  s)
 // (d) Send another character to a location in your LOCATIONS.SCP file.
 {
-			if (tnum==2)
-			{
-				Commands::MakePlace(s, strtonum(1));
-				if (addx[s]!=0)
-				{
-					target(s, 0, 1, 0, 8, "Select char to teleport.");
-				}
-			}
-			return;
+	if (tnum==2)
+	{
+		Commands::MakePlace(s, strtonum(1));
+		if (addx[s]!=0)
+		{
+			target(s, 0, 1, 0, 8, "Select char to teleport.");
+		}
+	}
+	return;
 
 }
 
@@ -1482,14 +1486,15 @@ void command_showids(NXWSOCKET  s)
 // Display the serial number of every item on your screen.
 {
 	
-	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
 
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( pc_currchar->getPosition() );
+	sc.fillCharsNearXYZ( pc_cs->getPosition() );
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 		P_CHAR pc=sc.getChar();
 		if(ISVALIDPC(pc)) {
-			pc->showLongName( pc_currchar, true );
+			pc->showLongName( pc_cs, true );
 		}
 	}
 
@@ -1499,6 +1504,7 @@ void command_poly(NXWSOCKET  s)
 // (h h) Polymorph yourself into any other creature.
 {
 	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
 
 	if (tnum==3)
 	{
@@ -3213,10 +3219,11 @@ void command_jail(NXWSOCKET  s)
 void command_setGmMoveEff(NXWSOCKET  s)
 // (h) set your movement effect.
 {
- P_CHAR pc_cs = MAKE_CHARREF_LOGGED(currchar[s], err);
- if (tnum==2)
-  pc_cs->gmMoveEff = strtonum(1);
- return;
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_cs);
+	 if (tnum==2)
+		pc_cs->gmMoveEff = strtonum(1);
+	return;
 }
 
 

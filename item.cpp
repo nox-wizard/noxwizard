@@ -8,6 +8,15 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "item.h"
+#include "muls.h"
+#include "scp_parser.h"
+#include "archive.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "scripts.h"
+
 
 namespace item
 {
@@ -602,7 +611,8 @@ namespace item
 	{
 		tile_st tile;
 		int j, len, mode, used, ok, namLen;
-		P_ITEM pi=MAKE_ITEMREF_LRV(i,1);
+		P_ITEM pi=MAKE_ITEM_REF(i);
+		VALIDATEPIR(pi,1)
 		if ( strncmp(pi->getCurrentNameC(), "#", 1) )	// if name[0] != '#'
 		{
 			strcpy(itemname, pi->getCurrentNameC());

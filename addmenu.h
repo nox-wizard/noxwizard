@@ -19,6 +19,9 @@
 
 #include "menu.h"
 #include "oldmenu.h"
+#include "utils.h"
+#include "chars.h"
+#include "client.h"
 
 
 class cRawItem {
@@ -67,7 +70,7 @@ class cNewAddMenu : public cBasicMenu
 		P_OLDMENU oldmenu;
 
 		void loadFromScript( P_CHAR pc = NULL );
-		bool checkShouldAdd (cScpEntry* entry, P_CHAR pc);
+		bool checkShouldAdd ( class cScpEntry* entry, P_CHAR pc);
 		std::string cleanString( std::string s );
 
 	protected:

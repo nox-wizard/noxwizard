@@ -182,10 +182,6 @@ SOURCE=.\calendar.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\char_array.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\chars.cpp
 # End Source File
 # Begin Source File
@@ -279,10 +275,6 @@ SOURCE=.\html.cpp
 # Begin Source File
 
 SOURCE=.\item.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\item_array.cpp
 # End Source File
 # Begin Source File
 
@@ -634,10 +626,6 @@ SOURCE=.\calendar.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\char_array.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\chars.h
 # End Source File
 # Begin Source File
@@ -731,10 +719,6 @@ SOURCE=.\inlines.h
 # Begin Source File
 
 SOURCE=.\item.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\item_array.h
 # End Source File
 # Begin Source File
 

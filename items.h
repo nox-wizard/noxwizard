@@ -17,8 +17,8 @@
 #include "amx/amxcback.h"
 #include "object.h"
 #include "magic.h"
-#include "item_array.h"
 #include "item.h"
+#include "globals.h"
 
 /*!
 \author Luxor
@@ -475,5 +475,17 @@ public:
 } PACK_NEEDED;
 
 extern LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2);
+
+
+#define MAKE_ITEM_REF(i) pointers::findItemBySerial(i)
+
+#define DEREF_P_ITEM(pi) ( ( ISVALIDPI(pi) ) ? pi->getSerial32() : INVALID )
+
+#define ISVALIDPI(pi) ( ( pi!=NULL && sizeof(*pi) == sizeof(cItem) ) ? (pi->getSerial32() >= 0) : false )
+
+#define VALIDATEPI(pi) if (!ISVALIDPI(pi)) { LogWarning("Warning: a non-valid P_ITEM pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
+#define VALIDATEPIR(pi, r) if (!ISVALIDPI(pi)) { LogWarning("Warning: a non-valid P_ITEM pointer was used in %s:%d", basename(__FILE__), __LINE__); return r; }
+
+
 
 #endif

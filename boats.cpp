@@ -8,8 +8,16 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 
-#include "boats.h"
 #include "nxwcommn.h"
+#include "boats.h"
+#include "set.h"
+#include "sndpkg.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "classes.h"
+#include "range.h"
+#include "inlines.h"
 
 BOATS	s_boat;
 
@@ -931,7 +939,8 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 {
 	if ( s < 0 || s >= now )
 		return false;
-	P_CHAR pc_cs=MAKE_CHARREF_LRV(currchar[s],false);
+	P_CHAR pc_cs=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPCR( pc_cs, false );
 
 	int nid2=id2;
 

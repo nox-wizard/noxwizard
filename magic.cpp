@@ -17,6 +17,17 @@
 #include "particles.h"
 #include "sndpkg.h"
 #include "npcai.h"
+#include "muls.h"
+#include "scp_parser.h"
+#include "rcvpkg.h"
+#include "map.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "classes.h"
+#include "utils.h"
+
+
 
 namespace magic {
 

@@ -12,11 +12,15 @@
 #include "nxwcommn.h"
 #include "network.h"
 #include "sndpkg.h"
-
 #include "race.h"
 #include "racescriptentry.h"
 #include "raceskill.h"
 #include "racetokenizer.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "basics.h"
 
 using namespace std;
 
@@ -845,7 +849,9 @@ void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 but
 					break;
 				default: // user has choosen a race to become a member of
 					{
-					P_CHAR pc = MAKE_CHARREF_LOGGED( currchar[socket], err );
+					P_CHAR pc = MAKE_CHAR_REF( currchar[socket] );
+					VALIDATEPC(pc);
+
 					pc->race = button;
 					// start racial parameter dialog. For now all settings like coloring are done automatically i.e. no choices.
 					//enlistDialog121( socket );
@@ -971,7 +977,8 @@ void Race::enlist( const NXWSOCKET socket )
 {
 	if ( teleportOnEnlist )
 	{
-		P_CHAR pc = MAKE_CHARREF_LOGGED( currchar[socket], err );
+		P_CHAR pc = MAKE_CHAR_REF( currchar[socket] );
+		VALIDATEPC(pc);
 		/*
 		Location charpos= pc->getPosition();
 		pc->oldx = charpos.x;

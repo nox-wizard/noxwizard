@@ -16,6 +16,8 @@
 
 #include "nxwcommn.h"
 #include "debug.h"
+#include "basics.h"
+#include "globals.h"
 
 char g_strScriptTemp[TEMP_STR_SIZE]; //xan -> this is terrible :(
 

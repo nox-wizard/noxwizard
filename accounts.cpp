@@ -13,6 +13,15 @@
 #include "debug.h"
 #include "encryption.h"
 #include "network.h"
+#include "chars.h"
+#include "chars.h"
+#include "client.h"
+#include "srvparms.h"
+#include "globals.h"
+#include "logsystem.h"
+#include "basics.h"
+#include "inlines.h"
+#include "items.h"
  
 
 cAccounts* Accounts=NULL;

@@ -24,7 +24,10 @@
 #include "../nxwcommn.h"
 #include "../cmdtable.h"
 #include "tweaking.h"
-
+#include "../client.h"
+#include "../chars.h"
+#include "../items.h"
+#include "../basics.h"
 
 // Register tweaking commands
 void cTweaking::init(cCommandTable* commands) {

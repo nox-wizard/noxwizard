@@ -9,6 +9,13 @@
 
 #include "nxwcommn.h"
 #include "debug.h"
+#include "scp_parser.h"
+#include "titles.h"
+#include "items.h"
+#include "chars.h"
+#include "scripts.h"
+#include "basics.h"
+#include "inlines.h"
 
 static int nextbestskill(P_CHAR pc, int bstskll)  // Which skill is the second highest
 {

@@ -9,6 +9,11 @@
 
 #include "nxwcommn.h"
 #include "object.h"
+#include "archive.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "utils.h"
 
 cScpIterator* cObject::getScriptIterator( std::string section, std::string& sectionId )
 {

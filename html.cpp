@@ -12,7 +12,12 @@
 #include "version.h"
 #include "debug.h"
 #include "accounts.h"
-
+#include "scp_parser.h"
+#include "globals.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "basics.h"
 
 void offlinehtml()//HTML
 {

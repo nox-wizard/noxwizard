@@ -196,7 +196,7 @@ namespace magic {
 			
 	bool beginCasting (SpellId num, NXWCLIENT s, CastingType type);
 	SpellId spellNumberFromScrollId(int id);
-	void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);
+	void castSpell(SpellId spellnumber, class TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);
 	void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster = NULL);
 	void loadSpellsFromScript();
 	bool spellRequiresTarget(SpellId spellnum);

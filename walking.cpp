@@ -12,6 +12,7 @@
 */
 
 #include "nxwcommn.h"
+#include "walking.h"
 #include "network.h"
 #include "sregions.h"
 #include "sndpkg.h"
@@ -23,6 +24,16 @@
 #include "packets.h"
 #include "telport.h"
 #include "weight.h"
+#include "boats.h"
+#include "set.h"
+#include "map.h"
+#include "chars.h"
+#include "items.h"
+#include "classes.h"
+#include "inlines.h"
+#include "basics.h"
+#include "range.h"
+#include "utils.h"
 
 
 

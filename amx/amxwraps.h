@@ -269,19 +269,19 @@ const int NXW_CP_UNI_SPEECH_CURRENT = 500;
 const int NXW_CP_UNI_PROFILE = 501;
 
 
-static bool  		getCharBoolProperty(P_CHAR pc, int property, int prop2);
-static int   		getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
-static short 		getCharShortProperty(P_CHAR pc, int property, int prop2);
-static char			getCharCharProperty(P_CHAR pc, int property, int prop2);
-static const char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
-static wstring&		getCharUniProperty( P_CHAR pc, int property, int prop2 );
+bool  		getCharBoolProperty(P_CHAR pc, int property, int prop2);
+int   		getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
+short 		getCharShortProperty(P_CHAR pc, int property, int prop2);
+char			getCharCharProperty(P_CHAR pc, int property, int prop2);
+const char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
+wstring&		getCharUniProperty( P_CHAR pc, int property, int prop2 );
 
-static void	setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value );
-static void	setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value );
-static void	setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, short value );
-static void	setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value );
-static void	setCharStrProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char* value );
-static void	setCharUniProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, wstring& value );
+void	setCharIntProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, int value );
+void	setCharBoolProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, LOGICAL value );
+void	setCharShortProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, short value );
+void	setCharCharProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char value );
+void	setCharStrProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, char* value );
+void	setCharUniProperty( P_CHAR pc, int property, int subproperty, int subsubproperty, wstring& value );
 
 
 ///// NOW ITEM PROPS :)
@@ -379,19 +379,19 @@ const int NXW_IP_STR_NAME = 454;
 const int NXW_IP_STR_NAME2 = 455;
 
 
-static bool  		getItemBoolProperty(P_ITEM pi, int property, int prop2);
-static int   		getItemIntProperty(P_ITEM pi, int property, int prop2);
-static short 		getItemShortProperty(P_ITEM pi, int property, int prop2);
-static char			getItemCharProperty(P_ITEM pi, int property, int prop2);
-static const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
-static wstring&		getItemUniProperty( P_ITEM pi, int property, int prop2 );
+bool  		getItemBoolProperty(P_ITEM pi, int property, int prop2);
+int   		getItemIntProperty(P_ITEM pi, int property, int prop2);
+short 		getItemShortProperty(P_ITEM pi, int property, int prop2);
+char			getItemCharProperty(P_ITEM pi, int property, int prop2);
+const char*	getItemStrProperty(P_ITEM pi, int property, int prop2);
+wstring&		getItemUniProperty( P_ITEM pi, int property, int prop2 );
 
-static void	setItemBoolProperty(P_ITEM pi, int property, int prop2, bool value );
-static void	setItemIntProperty(P_ITEM pi, int property, int prop2, int value );
-static void	setItemShortProperty(P_ITEM pi, int property, int prop2, short value );
-static void	setItemCharProperty(P_ITEM pi, int property, int prop2, char value );
-static void	setItemStrProperty(P_ITEM pi, int property, int prop2, char* value );
-static void	setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value );
+void setItemBoolProperty(P_ITEM pi, int property, int prop2, bool value );
+void setItemIntProperty(P_ITEM pi, int property, int prop2, int value );
+void setItemShortProperty(P_ITEM pi, int property, int prop2, short value );
+void setItemCharProperty(P_ITEM pi, int property, int prop2, char value );
+void setItemStrProperty(P_ITEM pi, int property, int prop2, char* value );
+void setItemUniProperty( P_ITEM pi, int property, int prop2, std::wstring& value );
 
 
 // calendar properties added by Sparhawk

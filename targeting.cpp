@@ -29,6 +29,23 @@
 #include "tmpeff.h"
 #include "jail.h"
 #include "weight.h"
+#include "muls.h"
+#include "boats.h"
+#include "scp_parser.h"
+#include "archive.h"
+#include "fishing.h"
+#include "rcvpkg.h"
+#include "map.h"
+#include "chars.h"
+#include "items.h"
+#include "skills.h"
+#include "classes.h"
+#include "inlines.h"
+#include "basics.h"
+#include "range.h"
+#include "scripts.h"
+#include "nox-wizard.h"
+#include "utils.h"
 
 
 cTargets* Targ=NULL;
@@ -76,9 +93,8 @@ public:
         makeCharIndex();
         if(inx > -1)
         {
-            int err;
-            pc = MAKE_CHARREF_LOGGED(inx,err);
-            if (err) return;
+            pc = MAKE_CHAR_REF(inx);
+			VALIDATEPC(pc);
             CharSpecific();
         }
         else
@@ -103,10 +119,10 @@ public:
         makeItemIndex();
         if(inx > -1)
         {
-            pi = MAKE_ITEMREF_LR(inx);
-	    VALIDATEPI(pi);
-	    if (addid1[s] == 0)
-	    	pi->setDecay(false);
+            pi = MAKE_ITEM_REF(inx);
+			VALIDATEPI(pi);
+			if (addid1[s] == 0)
+	    		pi->setDecay(false);
             ItemSpecific();
         }
         else
@@ -132,7 +148,8 @@ class cWpObjTarget : public cTarget
 					makeItemIndex();
 					if(inx > -1)
 					{
-						pi = MAKE_ITEMREF_LR(inx);
+						pi = MAKE_ITEM_REF(inx);
+						VALIDATEPI(pi);
 						ItemSpecific();
 					}
 					else
@@ -143,9 +160,8 @@ class cWpObjTarget : public cTarget
 					makeCharIndex();
 					if(inx > -1)
 					{
-						int err;
-						pc = MAKE_CHARREF_LOGGED(inx,err);
-						if (err) return;
+						pc = MAKE_CHAR_REF(inx);
+						VALIDATEPC(pc);
 						CharSpecific();
 					}
 					else
@@ -189,8 +205,10 @@ void cTargets::PlVBuy(NXWSOCKET s)//PlayerVendors
 {
     if (s==-1) return;
     int v=addx[s];
-    P_CHAR pc = MAKE_CHARREF_LR(v);
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(v);
+	VALIDATEPC(pc);
+    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
 
     P_ITEM pBackpack= pc_currchar->getBackpack();
     if (!pBackpack) {sysmessage(s,TRANSLATE("Time to buy a backpack")); return; } //LB
@@ -250,7 +268,8 @@ void cTargets::triggertarget(NXWSOCKET s)
         i=calcItemFromSer(serial);
         if(i!=-1)
         {
-            P_ITEM pi = MAKE_ITEMREF_LR(i);
+            P_ITEM pi = MAKE_ITEM_REF(i);
+			VALIDATEPI(pi);
             triggerItem(s, pi, TRIGTYPE_TARGET);
         }
     }
@@ -544,7 +563,8 @@ void cTargets::IDtarget(NXWSOCKET s)
     int i=calcItemFromSer(serial);
     if (i!=-1)
     {
-	P_ITEM pi=MAKE_ITEMREF_LR(i);
+		P_ITEM pi=MAKE_ITEM_REF(i);
+		VALIDATEPI(pi);
         pi->id1=addx[s];
         pi->id2=addy[s];
         pi->Refresh();
@@ -553,10 +573,11 @@ void cTargets::IDtarget(NXWSOCKET s)
     i=calcCharFromSer(serial);
     if (i!=-1)
     {
-	P_CHAR pc = MAKE_CHARREF_LR(i);
-	pc->SetBodyType((addx[s]<<8)|(addy[s]%256));
-	pc->SetOldBodyType((addx[s]<<8)|(addy[s]%256));
-	pc->teleport();
+		P_CHAR pc = MAKE_CHAR_REF(i);
+		VALIDATEPC(pc);
+		pc->SetBodyType((addx[s]<<8)|(addy[s]%256));
+		pc->SetOldBodyType((addx[s]<<8)|(addy[s]%256));
+		pc->teleport();
     }
 }
 
@@ -1617,7 +1638,7 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
 	pi1->setId( 0x122A );
-	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
+	P_ITEM pi2=MAKE_ITEM_REF(npcshape[0]);
 	VALIDATEPI(pi2);
 #ifdef SPAR_I_LOCATION_MAP
 	pi1->setPosition( pi2->getPosition() );
@@ -1697,9 +1718,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
 	pi1->setId( 0x122A );
-	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
+	P_ITEM pi2=MAKE_ITEM_REF(npcshape[0]);
 	VALIDATEPI(pi2);
-	P_ITEM pi3=MAKE_ITEMREF_LR(i);
+	P_ITEM pi3=MAKE_ITEM_REF(i);
 	VALIDATEPI(pi3);
 #ifdef SPAR_I_LOCATION_MAP
 	pi1->setPosition( pi2->getPosition() );
@@ -1889,7 +1910,8 @@ static void CorpseTarget(const NXWCLIENT pC)
 
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
+    P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
     P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
     if(ISVALIDPI(pi))
     {
@@ -2091,7 +2113,8 @@ void cTargets::NpcTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s] +7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         addid1[s]= pc->getSerial().ser1;
@@ -2106,7 +2129,8 @@ void cTargets::NpcTarget2(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
         if (pc->npc==1)
         {
@@ -2119,7 +2143,8 @@ void cTargets::NpcRectTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
         if ((pc->npc==1))
         {
@@ -2136,7 +2161,8 @@ void cTargets::NpcCircleTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
         if ((pc->npc==1))
         {
@@ -2152,7 +2178,8 @@ void cTargets::NpcWanderTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
         if ((pc->npc==1)) pc->npcWander=npcshape[0];
 }
@@ -2162,7 +2189,8 @@ void cTargets::NpcAITarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->npcaitype=addx[s];
@@ -2173,8 +2201,8 @@ void cTargets::NpcAITarget(NXWSOCKET s)
 void cTargets::xBankTarget(NXWSOCKET s)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
-	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(pc);
+	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(pc2);
 
 	pc->openBankBox(pc2);
@@ -2183,11 +2211,11 @@ void cTargets::xBankTarget(NXWSOCKET s)
 void cTargets::xSpecialBankTarget(NXWSOCKET s)
 {
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
-	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(pc);
+	P_CHAR pc2 = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(pc2);
 
-        pc->openSpecialBank(pc2);
+    pc->openSpecialBank(pc2);
 }
 
 void cTargets::SellStuffTarget(NXWSOCKET s)
@@ -2417,7 +2445,8 @@ int cTargets::BuyShop(NXWSOCKET s, CHARACTER c)
 {
     P_ITEM buyRestockContainer=NULL, buyNoRestockContainer=NULL;
 
-    P_CHAR pc = MAKE_CHARREF_LRV(c, 0);
+    P_CHAR pc = MAKE_CHAR_REF(c);
+	VALIDATEPCR(pc,0);
 	P_CHAR curr=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPCR(curr,0);
 
@@ -2459,7 +2488,8 @@ void cTargets::permHideTarget(NXWSOCKET s)
 {
 	SERIAL serial = LongFromCharPtr(buffer[s] + 7);
 	int i = calcCharFromSer(serial);
-	P_CHAR pc = MAKE_CHARREF_LR(i);
+	P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
 	Location pcpos= pc->getPosition();
 
 	if (i!=-1)
@@ -2494,7 +2524,8 @@ void cTargets::unHideTarget(NXWSOCKET s)
 {
 	SERIAL serial = LongFromCharPtr(buffer[s] + 7);
 	int i = calcCharFromSer(serial);
-	P_CHAR pc = MAKE_CHARREF_LR(i);
+	P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
 
 	Location pcpos= pc->getPosition();
 
@@ -2529,7 +2560,8 @@ void cTargets::SetSpeechTarget(NXWSOCKET s)
     int i=calcCharFromSer(serial);
     if (i!=-1)
     {
-        P_CHAR pc = MAKE_CHARREF_LR(i);
+        P_CHAR pc = MAKE_CHAR_REF(i);
+		VALIDATEPC(pc);
         if (pc->npc==0)
         {
             sysmessage(s,"You can only change speech for npcs.");
@@ -2543,7 +2575,8 @@ static void SetSpAttackTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->spattack=tempint[s];
@@ -2554,7 +2587,8 @@ void cTargets::SetSpaDelayTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->spadelay=tempint[s];
@@ -2565,7 +2599,8 @@ void cTargets::SetPoisonTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->poison=tempint[s];
@@ -2605,7 +2640,8 @@ void cTargets::SetAdvObjTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->advobj=tempint[s];
@@ -2621,7 +2657,8 @@ void cTargets::CanTrainTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         if (pc->npc==0)
@@ -2637,7 +2674,8 @@ void cTargets::SetSplitTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->split=tempint[s];
@@ -2648,7 +2686,8 @@ void cTargets::SetSplitChanceTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if (i!=-1)
     {
         pc->splitchnc=tempint[s];
@@ -2701,7 +2740,8 @@ void cTargets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th functio
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
+    P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
     if (i!=-1)
     {
         //item::MoveTo(i,addx[s],pi->y,pi->z);
@@ -2710,7 +2750,8 @@ void cTargets::NewXTarget(NXWSOCKET s) // Notice a high similarity to th functio
     }
 
     i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
 	Location pcpos= pc->getPosition();
 
     if (i!=-1)
@@ -2725,7 +2766,8 @@ void cTargets::NewYTarget(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
+    P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
     if (i!=-1)
     {
         //item::MoveTo(i,pi->x,addx[s],pi->z);
@@ -2734,7 +2776,8 @@ void cTargets::NewYTarget(NXWSOCKET s)
     }
 
     i=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
 	Location pcpos= pc->getPosition();
 
     if (i!=-1)
@@ -2833,7 +2876,8 @@ void cTargets::Priv3XTarget( NXWSOCKET socket )
 {
 	SERIAL serial=LongFromCharPtr(buffer[socket]+7);
 	int i=calcCharFromSer(serial);
-	P_CHAR pc = MAKE_CHARREF_LR(i);
+	P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
 	int grantcmd=1;
 	int revokecmd;
 	//
@@ -2981,7 +3025,8 @@ void cTargets::HouseEjectTarget(NXWSOCKET s) // crackerjack 8/11/99 - kick someo
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
     c=calcCharFromSer(serial);
-    P_CHAR pc = MAKE_CHARREF_LR(c);
+    P_CHAR pc = MAKE_CHAR_REF(c);
+	VALIDATEPC(pc);
 	Location pcpos= pc->getPosition();
     serial=calcserial(addid1[s],addid2[s],addid3[s],addid4[s]);
 
@@ -3542,7 +3587,8 @@ void cTargets::SetHome(NXWSOCKET s)
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
     int i=calcCharFromSer(serial);
-     P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if(i!=-1)
     {
         pc->homeloc.x=addx[s];
@@ -3556,7 +3602,8 @@ void cTargets::SetWork(NXWSOCKET s)
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
     int i=calcCharFromSer(serial);
-     P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if(i!=-1)
     {
         pc->workloc.x=addx[s];
@@ -3570,7 +3617,8 @@ void cTargets::SetFood(NXWSOCKET s)
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     if(serial==-1) return;
     int i=calcCharFromSer(serial);
-     P_CHAR pc = MAKE_CHARREF_LR(i);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPC(pc);
     if(i!=-1)
     {
         pc->foodloc.x=addx[s];
@@ -3663,7 +3711,8 @@ void cTargets::LoadCannon(NXWSOCKET s)
 {
     SERIAL serial=LongFromCharPtr(buffer[s]+7);
     int i=calcItemFromSer(serial);
-    P_ITEM pi=MAKE_ITEMREF_LR(i);
+    P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
     if (i!=-1)
     {
         //if((items[i].id1==0x0E && items[i].id2==0x91) && items[i].morez==0)
@@ -3811,8 +3860,8 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
                 int i=calcItemFromSer(serial);
                 if(i>=0)
                 {
-                    P_ITEM pi = MAKE_ITEMREF_LR(i);
-		    VALIDATEPI(pi);
+                    P_ITEM pi = MAKE_ITEM_REF(i);
+					VALIDATEPI(pi);
                     triggerItem(s,pi, TRIGTYPE_ENVOKED);
                     curr->envokeid1=0x00;
                     curr->envokeid2=0x00;
@@ -3823,8 +3872,8 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
                 if(i>=0)
                 {
                     ConOut("Envoke triggered on npc :]\n");
-                    pc = MAKE_CHARREF_LR(i);
-		    VALIDATEPC(pc);
+                    pc = MAKE_CHAR_REF(i);
+					VALIDATEPC(pc);
                     triggerNpc(s, pc, TRIGTYPE_NPCENVOKED);
                     curr->envokeid1=0x00;
                     curr->envokeid2=0x00;

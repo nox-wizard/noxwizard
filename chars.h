@@ -19,12 +19,12 @@
 #include "object.h"
 #include "magic.h"
 
-#include "char_array.h"
 #include "npcs.h"
 #include "msgboard.h"
 #include "target.h"
 #include "constants.h"
 #include "menu.h"
+#include "logsystem.h"
 
 //@{
 /*!
@@ -1018,6 +1018,17 @@ public:
 	*/
 
 } PACK_NEEDED;
+
+
+#define MAKE_CHAR_REF(i) pointers::findCharBySerial(i)
+
+#define DEREF_P_CHAR(pc) ( ( ISVALIDPC(pc) ) ? pc->getSerial32() : INVALID )
+
+#define ISVALIDPC(pc) ( ( pc!=NULL && sizeof(*pc) == sizeof(cChar) ) ? (pc->getSerial32() >= 0) : false )
+
+#define VALIDATEPC(pc) if (!ISVALIDPC(pc)) { LogWarning("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
+#define VALIDATEPCR(pc, r) if (!ISVALIDPC(pc)) { LogWarning("a non-valid P_CHAR pointer was used in %s:%d", basename(__FILE__), __LINE__); return r; }
+
 
 
 #endif

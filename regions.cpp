@@ -9,6 +9,8 @@
 
 #include "nxwcommn.h"
 #include "debug.h"
+#include "items.h"
+#include "chars.h"
 
 cRegion::cRegion()
 {

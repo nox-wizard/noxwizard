@@ -17,6 +17,14 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
+#include "muls.h"
+#include "scp_parser.h"
+#include "fishing.h"
+#include "globals.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
+#include "inlines.h"
 
 cFishing* Fishing=NULL;
 

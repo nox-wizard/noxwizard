@@ -10,6 +10,9 @@
 #include "nxwcommn.h"
 #include "network.h"
 #include "calendar.h"
+#include "set.h"
+#include "chars.h"
+#include "globals.h"
 
 
 namespace Calendar {

@@ -10,6 +10,9 @@
 #ifndef __RANGE_H__
 #define __RANGE_H__
 
+#include "globals.h"
+#include "basics.h"
+
 #define VERY_VERY_FAR 50000;
 
 R64 dist( Location a, Location b, LOGICAL countZ = (server_data.disable_z_checking == 0) );

@@ -21,7 +21,15 @@
 #include "set.h"
 #include "house.h"
 #include "npcai.h"
-//#include "ai.h"
+#include "muls.h"
+#include "boats.h"
+#include "scp_parser.h"
+#include "archive.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "classes.h"
 
 std::map< SERIAL, P_CHAR > houses;
 

@@ -8,6 +8,8 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "raceskill.h"
+#include "basics.h"
+
 //
 // SkillAdvancePoint
 //

@@ -12,6 +12,11 @@
 #include "debug.h"
 #include "network.h"
 #include "worldmain.h"
+#include "globals.h"
+#include "items.h"
+#include "chars.h"
+#include "utils.h"
+#include "basics.h"
 
 namespace Books
 {

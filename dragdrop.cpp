@@ -39,6 +39,18 @@
 #include "npcai.h"
 #include "nxw_utils.h"
 #include "weight.h"
+#include "muls.h"
+#include "books.h"
+#include "boats.h"
+#include "archive.h"
+#include "trade.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "skills.h"
+#include "nox-wizard.h"
+
 
 
 typedef struct _PKGx08

@@ -16,6 +16,14 @@
 #include "sndpkg.h"
 #include "debug.h"
 #include "layer.h"
+#include "scp_parser.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "basics.h"
+#include "scripts.h"
+
 
 void read_in_teleport()
 {

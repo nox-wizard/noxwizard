@@ -17,6 +17,17 @@
 #include "layer.h"
 #include "commands.h"
 #include "npcai.h"
+#include "muls.h"
+#include "scp_parser.h"
+#include "archive.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "classes.h"
+#include "scripts.h"
+#include "skills.h"
+#include "utils.h"
 
 namespace npcs {	//Luxor
 

@@ -20,6 +20,23 @@
 #include "calendar.h"
 #include "dragdrop.h"
 #include "speech.h"
+#include "muls.h"
+#include "books.h"
+#include "boats.h"
+#include "scp_parser.h"
+#include "dbl_single_click.h"
+#include "trade.h"
+#include "sndpkg.h"
+#include "walking.h"
+#include "rcvpkg.h"
+#include "items.h"
+#include "chars.h"
+#include "range.h"
+#include "inlines.h"
+#include "skills.h"
+#include "nox-wizard.h"
+
+
 
 //#define USE_MTHREAD_SEND
 

@@ -2,6 +2,7 @@
 
 #include "organisation.h"
 #include "gamedate.h"
+#include "basics.h"
 
 namespace Organisation
 {

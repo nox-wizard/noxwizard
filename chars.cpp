@@ -26,6 +26,21 @@
 #include "jail.h"
 #include "nxw_utils.h"
 #include "weight.h"
+#include "boats.h"
+#include "archive.h"
+#include "walking.h"
+#include "rcvpkg.h"
+#include "map.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "basics.h"
+#include "magic.h"
+#include "skills.h"
+#include "range.h"
+#include "classes.h"
+#include "utils.h"
+#include "nox-wizard.h"
 
 
 void cChar::setClient(NXWCLIENT client)

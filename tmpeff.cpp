@@ -15,6 +15,13 @@
 #include "set.h"
 #include "srvparms.h"
 #include "nxw_utils.h"
+#include "archive.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "skills.h"
+#include "utils.h"
+#include "nox-wizard.h"
 
 
 namespace tempfx {

@@ -8,7 +8,10 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "ai.h"
-
+#include "map.h"
+#include "classes.h"
+#include "range.h"
+#include "object.h"
 
 /*!
 \file

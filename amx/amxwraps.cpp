@@ -28,6 +28,18 @@
 #include "itemid.h"
 #include "timers.h"
 #include "muls.h"
+#include "scp_parser.h"
+#include "fishing.h"
+#include "archive.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "classes.h"
+#include "nox-wizard.h"
+#include "range.h"
+#include "skills.h"
+#include "utils.h"
 
 #ifdef _WINDOWS
 #include "nxwgui.h"

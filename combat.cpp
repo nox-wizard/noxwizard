@@ -20,6 +20,15 @@
 #include "layer.h"
 #include "tmpeff.h"
 #include "npcai.h"
+#include "muls.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
+#include "inlines.h"
+#include "classes.h"
+#include "utils.h"
+
 
 /*!
 \author Luxor

@@ -11,6 +11,10 @@
 #include "sndpkg.h"
 #include "debug.h"
 #include "weight.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+
 
 /*!
 \brief Search player's paperdoll and then backpacks for items with weight then set the weight of the current player

@@ -11,6 +11,9 @@
 #include "cmdtable.h"
 #include "sndpkg.h"
 #include "addremove.h"
+#include "archive.h"
+#include "inlines.h"
+#include "client.h"
 
 // Register admin commands
 void cAddRemove::init(cCommandTable* commands) {

@@ -8,6 +8,10 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
+#include "titles.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
 
 int bestskill(P_CHAR p) // Which skill is the highest for character p
 {

@@ -14,6 +14,14 @@
 #include "amx/amxcback.h"
 #include "debug.h"
 #include "npcai.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "basics.h"
+#include "inlines.h"
+#include "classes.h"
+#include "skills.h"
+#include "nox-wizard.h"
 
 void deadattack (NXWSOCKET  s, CHARACTER i)
 {

@@ -10,6 +10,8 @@
 #ifndef __TRIGGER_H__
 #define __TRIGGER_H__
 
+#include "scp_parser.h"
+
 class cTriggerContext
 {
 		char m_szFailMsg[50];

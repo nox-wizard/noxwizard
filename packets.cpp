@@ -10,6 +10,8 @@
 #include "nxwcommn.h"
 #include "packets.h"
 #include "network.h"
+#include "globals.h"
+#include "chars.h"
 
 wstring emptyUnicodeString;
 char stringTerminator = 0x00;

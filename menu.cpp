@@ -10,12 +10,11 @@
 
 #include "menu.h"
 #include "amx/amxwraps.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
 
 cMenus Menus;
-
-#define OPTIONS2BITSET( MOVE, CLOSE, DISPOSE ) \
-	( MOVE*MOVEABLE | CLOSE*CLOSEABLE | DISPOSE*DISPOSEABLE  ) \
-
 
 /*!
 \brief Constructor

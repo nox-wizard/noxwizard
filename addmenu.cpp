@@ -12,6 +12,8 @@
 #include "sndpkg.h"
 #include "addmenu.h"
 #include "menu.h"
+#include "scp_parser.h"
+#include "inlines.h"
 
 
 cNewAddMenu::cNewAddMenu( SERIAL section, P_CHAR pc ) : cBasicMenu( MENUTYPE_CUSTOM )

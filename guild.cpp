@@ -11,6 +11,12 @@
 #include "sndpkg.h"
 #include "debug.h"
 #include "worldmain.h"
+#include "guild.h"
+#include "items.h"
+#include "chars.h"
+#include "basics.h"
+#include "scripts.h"
+
 
 cGuildz Guildz;
 

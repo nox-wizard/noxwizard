@@ -18,6 +18,10 @@
 #include "itemid.h"
 #include "debug.h"
 #include "npcai.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
 
 WEAPONINFOMAP weaponinfo;
 

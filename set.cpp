@@ -11,6 +11,10 @@
 #include "race.h"
 #include "set.h"
 #include "layer.h"
+#include "chars.h"
+#include "items.h"
+#include "range.h"
+#include "network.h"
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
   Purpose : define standard container for a set of objects which responds to common

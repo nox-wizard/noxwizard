@@ -8,6 +8,12 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
+#include "area.h"
+#include "scp_parser.h"
+#include "globals.h"
+#include "basics.h"
+#include "inlines.h"
+
 
 cAreas*	Areas=NULL;
 

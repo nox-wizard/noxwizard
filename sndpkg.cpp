@@ -23,6 +23,15 @@
 #include "layer.h"
 #include "weight.h"
 #include "accounts.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "basics.h"
+#include "skills.h"
+#include "range.h"
+#include "classes.h"
+#include "utils.h"
 
 void gmyell(char *txt)
 {
@@ -822,7 +831,8 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 // used for LSd potions now, LB 5'th nov 1999
 void senditem_lsd(NXWSOCKET  s, ITEM i,char color1, char color2, int x, int y, signed char z)
 {
-	const P_ITEM pi=MAKE_ITEMREF_LR(i);	// on error return
+	const P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
@@ -1839,7 +1849,8 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 {
 	//0x0f 0x42 = arrow 0x1b 0xfe=bolt
 
-	const P_ITEM pi=MAKE_ITEMREF_LR(dest);	// on error return
+	const P_ITEM pi=MAKE_ITEM_REF(dest);
+	VALIDATEPI(pi);
 	P_CHAR pc_source = MAKE_CHAR_REF(source);
 	VALIDATEPC(pc_source);
 
@@ -2266,7 +2277,8 @@ void sendshopinfo(int s, int c, P_ITEM pi)
 int sellstuff(NXWSOCKET s, CHARACTER i)
 {
 	if (s < 0 || s >= now) return 0; //Luxor
-    P_CHAR pc = MAKE_CHARREF_LRV(i, 0);
+    P_CHAR pc = MAKE_CHAR_REF(i);
+	VALIDATEPCR(pc, 0);
 	P_CHAR pcs = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPCR(pcs,0);
 
@@ -2612,10 +2624,10 @@ void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta)
 {
 
 
-   PC_CHAR pc_cs=MAKE_CHARREF_LOGGED(source,err);
-   if (err) return;
-   PC_CHAR pc_cd=MAKE_CHARREF_LOGGED(dest, err);
-   if (err) return;
+   PC_CHAR pc_cs=MAKE_CHAR_REF(source);
+   VALIDATEPC(pc_cs);
+   PC_CHAR pc_cd=MAKE_CHAR_REF(dest);
+   VALIDATEPC(pc_cd);
 
    Location srcpos= pc_cs->getPosition();
    Location destpos= pc_cd->getPosition();

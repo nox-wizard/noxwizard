@@ -9,6 +9,7 @@
 
 #include "nxwcommn.h"
 #include "muls.h"
+#include "inlines.h"
 
 
 std::string verdata_path;

@@ -9,6 +9,8 @@
 
 #include "nxwcommn.h"
 #include "target.h"
+#include "client.h"
+#include "inlines.h"
 
 /*
 0x6C Packet

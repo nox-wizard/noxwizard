@@ -8,6 +8,8 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "logsystem.h"
+#include "globals.h"
+#include "inlines.h"
 
 
 #define MAXLINESIZE	200

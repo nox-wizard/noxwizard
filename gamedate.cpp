@@ -11,6 +11,7 @@
 #include "nxwcommn.h"
 #include "calendar.h"
 #include "gamedate.h"
+#include "basics.h"
 
 char cGameDate::dateSeparator = '-';
 char cGameDate::timeSeparator = ':';

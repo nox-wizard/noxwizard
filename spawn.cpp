@@ -9,6 +9,10 @@
 
 #include "nxwcommn.h"
 #include "spawn.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
 
 cSpawns* Spawns=NULL;
 

@@ -13,6 +13,13 @@
 #include "npcai.h"
 #include "nxw_utils.h"
 #include "weight.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+#include "skills.h"
+#include "classes.h"
+#include "inlines.h"
+#include "range.h"
 
 
 /*!

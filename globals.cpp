@@ -9,6 +9,7 @@
 
 
 #include "nxwcommn.h"
+#include "globals.h"
 
 server_st server_data;
 

@@ -9,10 +9,19 @@
 
 
 #include "nxwcommn.h"
+#include "classes.h"
 #include "network.h"
 #include "sndpkg.h"
 #include "debug.h"
 #include "house.h"
+#include "boats.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
+#include "inlines.h"
+#include "utils.h"
+#include "scripts.h"
 
 //////////////////////////////OLD CODE TO REMOVE ////////////////////////////////////
 
@@ -26,7 +35,9 @@ void cGuilds::StonePlacement(int s)
 	P_ITEM pStone;
 	//unsigned int k; // lb, msvc++ 5.0 didnt like the guild(int x,inty) ...
 	char stonename[60];
-	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
 	Location charpos= pc->getPosition();
 	/*if (CheckValidPlace(s)!=1)
 	{
@@ -135,8 +146,10 @@ void cGuilds::Menu(int s, int page)
 		toggle[6];
 	static char mygump[MAXMEMRECWAR][257];
 
-	P_CHAR pc	= MAKE_CHARREF_LR(currchar[s]);
-	P_ITEM pStone	= MAKE_ITEMREF_LR( pc->fx1 );
+	P_CHAR pc	= MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+	P_ITEM pStone	= MAKE_ITEM_REF( pc->fx1 );
+	VALIDATEPI(pStone);
 
 	//VALIDATEPC(pc);
 	//VALIDATEPI(pStone);
@@ -562,7 +575,9 @@ static void RemoveShields(P_CHAR pc)
 
 void cGuilds::EraseMember(int c)
 {
-	P_CHAR pc = MAKE_CHARREF_LR(c);
+	P_CHAR pc = MAKE_CHAR_REF(c);
+	VALIDATEPC(pc);
+
 	int guildnumber = pc->GetGuildNumber();
 
 	if (guildnumber>=0 && guildnumber <MAXGUILDS)
@@ -601,7 +616,9 @@ void cGuilds::EraseMember(int c)
 
 void cGuilds::ToggleAbbreviation(int s)
 {
-	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
 	int guildnumber = pc->GetGuildNumber();
 
 	if (guildnumber<0 || guildnumber>MAXGUILDS)
@@ -1438,7 +1455,9 @@ int cGuilds::SearchByStone(int s)
 {
 	int guildnumber;
 
-	P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], -1);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPCR(pc, INVALID );
+
 	P_ITEM pStone=MAKE_ITEM_REF(pc->fx1);
 	if(!ISVALIDPI(pStone))
 		return -1;

@@ -25,6 +25,22 @@
 #include "layer.h"
 #include "jail.h"
 #include "accounts.h"
+#include "muls.h"
+#include "boats.h"
+#include "books.h"
+#include "spawn.h"
+#include "set.h"
+#include "archive.h"
+#include "trade.h"
+#include "basics.h"
+#include "inlines.h"
+#include "items.h"
+#include "chars.h"
+#include "classes.h"
+#include "scripts.h"
+#include "skills.h"
+#include "utils.h"
+#include "nox-wizard.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -1303,11 +1319,10 @@ bool CWorldMain::Saving()
 \param name the variable name
 \param c the wstring
 */
-void fprintWstring( FILE* f, char* name, wstring* c )
+void fprintWstring( FILE* f, char* name, wstring& c )
 {
-	if( c==NULL ) return;
 	fprintf( f, "%s ", name );
-	wstring::iterator iter( c->begin() ), end( c->end() );
+	wstring::iterator iter( c.begin() ), end( c.end() );
 	for( ; iter!=end; iter++ ) {
 		fprintf( f, "%04x", (*iter) );
 	}

@@ -18,6 +18,12 @@
 #include "trade.h"
 #include "commands.h"
 #include "weight.h"
+#include "chars.h"
+#include "items.h"
+#include "inlines.h"
+#include "nox-wizard.h"
+#include "utils.h"
+
 
 void buyaction(int s)
 {

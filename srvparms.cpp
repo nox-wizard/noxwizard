@@ -41,14 +41,16 @@
 
 ***********************************************************************************/
 
-#include "party.h"
-
 #include "nxwcommn.h"
+#include "party.h"
 #include "debug.h"
 #include "version.h"
 #include "calendar.h"
 #include "amx/amxscript.h"
-//#include "adventure.h"
+#include "muls.h"
+#include "extractionskills.h"
+#include "inlines.h"
+#include "scripts.h"
 
 static int loadnxwoptions (char *script1, char *script2);
 

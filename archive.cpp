@@ -9,6 +9,12 @@
 
 #include "nxwcommn.h"
 #include "network.h"
+#include "books.h"
+#include "spawn.h"
+#include "set.h"
+#include "archive.h"
+#include "sndpkg.h"
+#include "inlines.h"
 
 OBJECT_MAP cAllObjects::all;
 SERIAL cAllObjects::current_item_serial=0x40000000;

@@ -12,6 +12,13 @@
 #include "sndpkg.h"
 #include "layer.h"
 #include "npcai.h"
+#include "scp_parser.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "utils.h"
+#include "range.h"
 
 std::map< SI32, SI32 > mountinfo;
 

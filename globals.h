@@ -18,6 +18,8 @@
 
 #include "amx/amxvarserver.h"
 #include "regions.h"
+#include "scp_parser.h"
+
 
 // GOOD GLOBALZ (Those which are just fine)
 

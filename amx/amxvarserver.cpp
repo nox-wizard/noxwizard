@@ -8,6 +8,8 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "amxvarserver.h"
+#include "scp_parser.h"
+
 AMXVARSRV_DATATYPE amxVariable::getType()
 {
 	return AMXVARSRV_UNDEFINED;

@@ -9,6 +9,10 @@
 
 #include "nxwcommn.h"
 #include "jail.h"
+#include "items.h"
+#include "chars.h"
+#include "basics.h"
+#include "inlines.h"
 
 PRISONCELLVECTOR prison::cells;
 JAILEDVECTOR prison::jailed;

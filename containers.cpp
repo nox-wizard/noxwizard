@@ -8,6 +8,11 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
+#include "containers.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "basics.h"
+#include "inlines.h"
 
 CONTINFOGUMPMAP contInfoGump;
 CONTINFOMAP contInfo;

@@ -9,6 +9,7 @@
 
 #include "nxwcommn.h"
 #include "basics.h"
+#include "inlines.h"
 
 /*!
 \brief convert a char* into a number with the specified base

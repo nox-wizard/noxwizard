@@ -19,6 +19,13 @@
 #include "trigger.h"
 #include "nxwgui.h"
 #include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "skills.h"
+#include "range.h"
+#include "utils.h"
+
 
 //debugger things :] --begin--
 bool g_bStepInTriggers = false;

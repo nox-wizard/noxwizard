@@ -53,6 +53,15 @@
 #include "srvparms.h"
 #include "jail.h"
 #include "worldmain.h"
+#include "books.h"
+#include "set.h"
+#include "archive.h"
+#include "trade.h"
+#include "globals.h"
+#include "inlines.h"
+#include "chars.h"
+#include "items.h"
+#include "nox-wizard.h"
 
 
 

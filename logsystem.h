@@ -19,7 +19,6 @@
 #include <stdarg.h>
 #include "nxwcommn.h"
 #include "common_libs.h"
-#include "char_array.h"
 #include "constants.h"
 #include "typedefs.h"
 #include "translation.h"

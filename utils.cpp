@@ -20,8 +20,15 @@
 #include "commands.h"
 #include "tmpeff.h"
 #include "accounts.h"
-
-
+#include "boats.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "skills.h"
+#include "nox-wizard.h"
+#include "scripts.h"
+#include "inlines.h"
+#include "range.h"
 
 cScriptCommand::cScriptCommand( )
 {
@@ -862,8 +869,8 @@ void npcsimpleattacktarget(CHARACTER target2, CHARACTER target)
 */
 void delequan(int c, short id, int amount, int &not_deleted)
 {
-	P_CHAR pc=MAKE_CHARREF_LR(c);
-	if (pc==NULL) 
+	P_CHAR pc=MAKE_CHAR_REF(c);
+	if(!ISVALIDPC(pc)) 
 	{ 
 		LogError("invalid character used");
 		not_deleted = amount; 
@@ -871,7 +878,7 @@ void delequan(int c, short id, int amount, int &not_deleted)
 	}
 
 	P_ITEM pi= pc->getBackpack();
-	if (pi==NULL) 
+	if(!ISVALIDPI(pi)) 
 	{ 
 		LogError("invalid backpack");
 		not_deleted = amount; 
@@ -923,7 +930,8 @@ void donewithcall(int s, int type)
 int calcValue(int i, int value)
 {
 	int mod=10;
-	const P_ITEM pi=MAKE_ITEMREF_LRV(i,value);	// on error return
+	const P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPIR(pi, value );
 
 	if (pi->type==19)
 	{
@@ -969,7 +977,8 @@ int calcGoodValue(CHARACTER npcnum2, int i, int value,int goodtype)
 	P_CHAR npc=MAKE_CHAR_REF(npcnum2);
 	VALIDATEPCR(npc,0);
 	
-	const P_ITEM pi=MAKE_ITEMREF_LRV(i,value);	// on error return
+	const P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPIR(pi,value);
 
 	int actreg=calcRegionFromXY( npc->getPosition() );
 	int regvalue=0;

@@ -10,6 +10,14 @@
 
 
 #include "nxwcommn.h"
+#include "map.h"
+#include "muls.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "classes.h"
+#include "inlines.h"
+
 
 // Luxor: If we've got a bridge flagged tile or we're moving in map0 (stairs or whatever) we can elevate our Z by 14.
 #define MAX_Z_CLIMB_BRIDGE 14

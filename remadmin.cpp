@@ -16,6 +16,9 @@
 #include "remadmin.h"
 #include "accounts.h"
 #include "worldmain.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
 
 
 #ifdef ECHO

@@ -14,6 +14,9 @@
 #include "party.h"
 #include "menu.h"
 #include "oldmenu.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
 
 
 cPartys* Partys=NULL;

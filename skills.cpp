@@ -8,6 +8,7 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
+#include "skills.h"
 #include "basics.h"
 #include "itemid.h"
 #include "sndpkg.h"
@@ -18,7 +19,13 @@
 #include "network.h"
 #include "tmpeff.h"
 #include "addmenu.h"
-
+#include "scp_parser.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "nox-wizard.h"
+#include "scripts.h"
 
 //<Luxor>: for skills implementation by small
 /*
@@ -105,7 +112,8 @@ void Skills::ApplyRank(NXWSOCKET s, int i,int rank)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	const P_ITEM pi=MAKE_ITEMREF_LR(i); // on error return
+	const P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPI(pi);
 
 //	char tmpmsg[512];
 //	*tmpmsg='\0';
@@ -1228,7 +1236,9 @@ void Skills::PotionToBottle( P_CHAR pc, P_ITEM pi_mortar )
 
 char Skills::CheckSkillSparrCheck(int c, unsigned short int sk, int low, int high, P_CHAR pcd)
 {
-    P_CHAR pc=MAKE_CHARREF_LRV(c,0);
+    P_CHAR pc=MAKE_CHAR_REF(c);
+	VALIDATEPCR(pc, 0);
+
     bool bRaise = false;
     if (pcd->npc) bRaise = true;
     if (ServerScp::g_nLimitPlayerSparring==0) bRaise = true;
@@ -1242,7 +1252,8 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
 	if ( sk < 0 || sk >= TRUESKILLS ) //Luxor
 		return 0;
 
-    P_CHAR pc = MAKE_CHARREF_LRV(s, 0)
+    P_CHAR pc = MAKE_CHAR_REF(s);
+	VALIDATEPCR(pc,0);
 
     int a,ges=0,d=0;
     unsigned char lockstate;
@@ -1588,7 +1599,8 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 		return;
 
 
-	P_CHAR pc = MAKE_CHARREF_LR(s)
+	P_CHAR pc = MAKE_CHAR_REF(s);
+	VALIDATEPC(pc);
 
     	// Begin: Determine statcap
     	// 1. get statcap as defined in server.cfg
@@ -1722,7 +1734,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
     
     
 	int cc=currchar[s];
-	P_CHAR pc = MAKE_CHARREF_LOGGED( currchar[s], err );
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC(pc);
 
 	if( (pc->skilldelay>uiCurrentTime) && (!pc->IsGM()) )
@@ -2334,7 +2346,8 @@ int Skills::EngraveAction(NXWSOCKET s, int i, int cir, int spl)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPCR(pc,0);
 
-    P_ITEM pi=MAKE_ITEMREF_LRV(i,0);
+    P_ITEM pi=MAKE_ITEM_REF(i);
+	VALIDATEPIR(pi,0);
 
     char *spn;                  // spellname
 //    int num=(8*(cir-1))+spl;

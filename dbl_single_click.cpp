@@ -22,6 +22,24 @@
 #include "layer.h"
 #include "mount.h"
 #include "nxw_utils.h"
+#include "muls.h"
+#include "boats.h"
+#include "books.h"
+#include "set.h"
+#include "dbl_single_click.h"
+#include "titles.h"
+#include "rcvpkg.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "basics.h"
+#include "inlines.h"
+#include "skills.h"
+#include "classes.h"
+#include "range.h"
+#include "scp_parser.h"
+#include "nox-wizard.h"
+#include "utils.h"
 
 /*!
 \brief apply wear out to item, delete if necessary
@@ -1174,7 +1192,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 */
 void singleclick(NXWSOCKET  s)
 {
-	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC( pc_currchar );
 	pc_currchar->doSingleClick( LongFromCharPtr(buffer[s] +1));
 }

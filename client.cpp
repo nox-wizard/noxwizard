@@ -15,6 +15,10 @@
 #include "set.h"
 #include "itemid.h"
 #include "speech.h"
+#include "globals.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
 
 cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 	this->m_sck=s;

@@ -23,6 +23,7 @@
 #include "../nxwcommn.h"
 #include "../cmdtable.h"
 #include "../sndpkg.h"
+#include "../client.h"
 #include "privlevels.h"
 
 // Register admin commands

@@ -10,6 +10,8 @@
 #include "nxwcommn.h"
 #include "bounty.h"
 #include "debug.h"
+#include "items.h"
+#include "chars.h"
 
 /*
 //////////////////////////////////////////////////////////////////////////////

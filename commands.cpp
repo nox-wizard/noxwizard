@@ -17,6 +17,15 @@
 #include "commands.h"
 #include "layer.h"
 #include "addmenu.h"
+#include "muls.h"
+#include "spawn.h"
+#include "set.h"
+#include "archive.h"
+#include "item.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+
 
 static inline void _do_target(NXWSOCKET s, TARGET_S *ts) {
 	target(s, ts->a1, ts->a2, ts->a3, ts->a4, ts->txt);
@@ -38,7 +47,8 @@ namespace Commands
 
 		cmd_offset = 1;
 
-		P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+		P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+		VALIDATEPC( pc_currchar );
 
 		strcpy((char*)nonuni, speech);
 		strcpy((char*)tbuffer, (char*)nonuni);

@@ -11,6 +11,13 @@
 #include "amx/amxcback.h"
 #include "magic.h"
 #include "npcai.h"
+#include "set.h"
+#include "chars.h"
+#include "items.h"
+#include "basics.h"
+#include "utils.h"
+#include "inlines.h"
+#include "nox-wizard.h"
 
 namespace npcs {
 

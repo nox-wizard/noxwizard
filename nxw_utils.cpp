@@ -17,6 +17,12 @@
 #include "srvparms.h"
 #include "nxw_utils.h"
 #include "layer.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
+#include "nox-wizard.h"
+
+
 #ifdef WIN32
 #include <process.h>
 #endif

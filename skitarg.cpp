@@ -19,6 +19,16 @@
 #include "srvparms.h"
 #include "addmenu.h"
 #include "weight.h"
+#include "set.h"
+#include "archive.h"
+#include "map.h"
+#include "items.h"
+#include "chars.h"
+#include "skills.h"
+#include "basics.h"
+#include "inlines.h"
+#include "range.h"
+#include "nox-wizard.h"
 
 
 //Luxor: for AMX skills implementation
@@ -175,7 +185,8 @@ void Skills::Fletching(NXWSOCKET s)
 
 void Skills::BowCraft(NXWSOCKET s)
 {
-	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
 
 	pc_currchar->playAction(pc_currchar->isMounting() ? 0x1C : 0x0D);
 
@@ -249,7 +260,8 @@ void Skills::Carpentry(NXWSOCKET s)
 */
 static bool ForgeInRange(NXWSOCKET s)
 {
-    P_CHAR pc = MAKE_CHARREF_LRV(currchar[s], false);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPCR(pc, false);
 
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( pc->getPosition(), 3, false );
@@ -263,7 +275,8 @@ static bool ForgeInRange(NXWSOCKET s)
 
 static bool AnvilInRange(NXWSOCKET s)
 {
-    P_CHAR pc = MAKE_CHARREF_LRV( currchar[s], false);
+    P_CHAR pc = MAKE_CHAR_REF( currchar[s]);
+	VALIDATEPCR(pc, false);
 
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( pc->getPosition(), 3, false );
@@ -657,7 +670,7 @@ void Skills::TreeTarget(NXWSOCKET s)
 
 void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 {
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
     int nAmount, nFame;
@@ -841,7 +854,8 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
 //
 void Skills::SmeltOre(NXWSOCKET s)
 {
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -887,7 +901,8 @@ void Skills::SmeltOre(NXWSOCKET s)
 
 void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     VALIDATEPI(pi);
 
@@ -934,7 +949,8 @@ void Skills::Wheel(NXWSOCKET s, int mat)//Spinning wheel
 
 void Skills::Loom(NXWSOCKET s)
 {
-    	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
 	P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -1013,7 +1029,8 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
 
     if (pi->magic!=4) // Ripper
     {
-        P_ITEM piRaw=MAKE_ITEMREF_LR(addmitem[s]);
+        P_ITEM piRaw=MAKE_ITEM_REF(addmitem[s]);
+		VALIDATEPI(piRaw);
         if (pc->isInBackpack(piRaw))
         {
             if(pi->IsCookingPlace() )
@@ -1046,7 +1063,8 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
 
 void Skills::MakeDough(NXWSOCKET s)
 {
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -1064,12 +1082,12 @@ void Skills::MakeDough(NXWSOCKET s)
                     return;
                 }
 
-                P_ITEM pti=MAKE_ITEMREF_LR(pc->tailserial);
-		VALIDATEPI(pti);
+                P_ITEM pti=MAKE_ITEM_REF(pc->tailserial);
+				VALIDATEPI(pti);
 
                 pc->sysmsg(TRANSLATE("You have mixed very well to make your dough."));
 
-		pti->setCurrentName("#");
+				pti->setCurrentName("#");
                 pti->setId(0x103D);
                 pti->priv |= ITMPRIV_DECAY;
                 pti->amount *= 2;
@@ -1084,7 +1102,8 @@ void Skills::MakeDough(NXWSOCKET s)
 
 void Skills::MakePizza(NXWSOCKET s)
 {
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
     VALIDATEPI(pi);
 
@@ -1302,7 +1321,8 @@ void Skills::ProvocationTarget2(NXWSOCKET  s)
 	P_CHAR Victim2 = pointers::findCharBySerPtr(buffer[s]+7);
 	VALIDATEPC(Victim2);
 
-	P_CHAR Player = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR Player = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(Player);
 	Location charpos= Player->getPosition();
 
 	P_CHAR Victim1 = pointers::findCharBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s]));
@@ -1431,12 +1451,14 @@ void Skills::AlchemyTarget(NXWSOCKET s)
 void Skills::HealingSkillTarget(NXWSOCKET s)
 {
 
-    P_CHAR ph = MAKE_CHARREF_LR(currchar[s]);   // points to the healer
+    P_CHAR ph = MAKE_CHAR_REF(currchar[s]);   // points to the healer
+	VALIDATEPC(ph);
     P_CHAR pp = pointers::findCharBySerPtr(buffer[s]+7); // pointer to patient
 	VALIDATEPC(pp);
 
     int j;
-    P_ITEM pib=MAKE_ITEMREF_LR(addx[s]);    // item index of bandage
+    P_ITEM pib=MAKE_ITEM_REF(addx[s]);    // item index of bandage
+	VALIDATEPI(pib);
 
 
     AMXEXECSV(s,AMXT_SKITARGS,HEALING,AMX_BEFORE);
@@ -1562,7 +1584,9 @@ void Skills::ArmsLoreTarget(NXWSOCKET s)
     int total;
     float totalhp;
     char p2[100];
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     P_ITEM pi = pointers::findItemBySerPtr(buffer[s] +7);
@@ -1880,7 +1904,8 @@ void Skills::AnatomyTarget(NXWSOCKET s)
 //taken from 6904t2(5/10/99) - AntiChrist
 void Skills::TameTarget(NXWSOCKET s)
 {
-	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 	P_CHAR target = pointers::findCharBySerPtr(buffer[s] +7);
 	VALIDATEPC(target);
 
@@ -2117,7 +2142,8 @@ void Skills::AnimalLoreTarget(NXWSOCKET s)
 
 void Skills::ForensicsTarget(NXWSOCKET s) //AntiChrist
 {
-	P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
 	P_ITEM pi = pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -2296,7 +2322,8 @@ void Skills::PoisoningTarget(NXWCLIENT ps)
 
 void Skills::Tinkering(NXWSOCKET s)
 {
-    P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
     const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
 	VALIDATEPI(pi);
 
@@ -2541,7 +2568,7 @@ void Skills::TinkerClock(NXWSOCKET s)
 void Skills::RepairTarget(NXWSOCKET  s)
 {
 
-    P_CHAR pc = MAKE_CHARREF_LR(currchar[s]);
+    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
     P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);

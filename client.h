@@ -16,7 +16,7 @@
 #define __CLIENT_H__
 
 #include "cmdtable.h"
-
+#include "targeting.h"
 
 typedef std::vector< std::string > td_cmdparams;
 typedef std::vector< TargetLocation > td_targets;

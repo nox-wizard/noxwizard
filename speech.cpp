@@ -19,6 +19,15 @@
 #include "network.h"
 #include "commands.h"
 #include "packets.h"
+#include "boats.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
+#include "classes.h"
+#include "utils.h"
+#include "nox-wizard.h"
+
 
 #define MAXBUFFER_REAL MAXBUFFER
 
@@ -897,7 +906,8 @@ void responsevendor(NXWSOCKET  s, CHARACTER vendor)
 
 //	CHARACTER cc=currchar[s];
 
-	P_CHAR pc_currchar = MAKE_CHARREF_LR(currchar[s]);
+	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc_currchar);
 	P_CHAR pc_vendor = MAKE_CHAR_REF(vendor);
 	VALIDATEPC(pc_vendor);
 

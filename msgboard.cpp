@@ -21,6 +21,12 @@
 #include "debug.h"
 #include "msgboard.h"
 #include "npcai.h"
+#include "scp_parser.h"
+#include "items.h"
+#include "chars.h"
+#include "utils.h"
+#include "inlines.h"
+#include "nox-wizard.h"
 
 namespace MsgBoards
 {

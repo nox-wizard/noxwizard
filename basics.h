@@ -187,6 +187,6 @@ int fillIntArray(char* str, int *array, int maxsize, int defval = -1, int base =
 void readSplitted(FILE* F, char* script1, char* script2);
 int RandomNum(int nLowNum, int nHighNum);
 char *RealTime(char *time_str);
-Location Loc(SI32 x, SI32 y, SI08 z, SI08 dispz);
+Location Loc(SI32 x, SI32 y, SI08 z, SI08 dispz=0);
 
 #endif //__BASICS_H__

@@ -9,6 +9,9 @@
 
 #include "nxwcommn.h"
 #include "timers.h"
+#include "items.h"
+#include "chars.h"
+#include "inlines.h"
 
 
 TIMERSMAP timers::alltimers;

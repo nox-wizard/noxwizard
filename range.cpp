@@ -8,7 +8,11 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
+#include "range.h"
 #include "npcai.h"
+#include "set.h"
+#include "items.h"
+#include "chars.h"
 
 /*!
 \author Luxor

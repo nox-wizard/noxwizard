@@ -15,6 +15,11 @@
 #ifndef __INLINES_H__
 #define __INLINES_H__
 
+#include "items.h"
+#include "chars.h"
+#include "basics.h"
+
+
 #define TIMEOUT(X) (((X) <= uiCurrentTime) || overflow)
 // Macros & Templates by Xan :
 
