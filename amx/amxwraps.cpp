@@ -5420,6 +5420,17 @@ NATIVE( _callFunction5P )
 }
 
 /*
+\brief Call an AMX function with 6 parameters
+\author Luxor
+\since 0.82
+*/
+NATIVE( _callFunction6P )
+{
+	if (params[1] < 0) return INVALID;
+	return AmxFunction::g_prgOverride->CallFn(params[1], params[2], params[3], params[4], params[5], params[6], params[7]);
+}
+
+/*
 \brief Check if a character is online
 \author Luxor
 \since 0.82
@@ -7952,6 +7963,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "callFunction3P", _callFunction3P },
  { "callFunction4P", _callFunction4P },
  { "callFunction5P", _callFunction5P },
+ { "callFunction6P", _callFunction6P },
  { "sprintf", _sprintf },
  { "bypass", _bypass },
  { "setWindowTitle", _setWindowTitle },
