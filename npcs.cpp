@@ -18,69 +18,6 @@
 #include "commands.h"
 #include "npcai.h"
 
-COLOR addrandomcolor(cObject* po, char *colorlist)
-{
-	
-	if( (po!=NULL) && isCharSerial( po->getSerial32() ) )
-		{ VALIDATEPCR(po,0); }
-	else 
-		VALIDATEPIR(po,0);
-	
-	char sect[512];
-	int i,j,storeval = 0;
-	i=0; j=0;
-	cScpIterator* iter = NULL;
-	char script1[1024];
-
-	sprintf(sect, "SECTION RANDOMCOLOR %s", colorlist);
-	iter = Scripts::Colors->getNewIterator(sect);
-	if (iter==NULL) {
-		WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
-		return 0;
-	}
-
-	int loopexit=0;
-	do
-	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++;
-		}
-	}
-	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	safedelete(iter);
-
-	if(i>0)
-	{
-		i=rand()%i;
-		i++;
-		iter = Scripts::Colors->getNewIterator(sect);
-		if (iter==NULL) {
-			WarnOut("Colorlist %s not found on character: %s\n", colorlist, po->getCurrentNameC());
-			return 0;
-		}
-		loopexit=0;
-		do
-		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
-			{
-				j++;
-				if(j==i)
-				{
-					storeval=hex2num(script1);
-				}
-			}
-		}
-		while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-		safedelete(iter);
-	}
-	return (storeval);
-
-}
-
 static COLOR addrandomhaircolor(P_CHAR pc, char* colorlist)
 {
 
@@ -396,7 +333,7 @@ int AddRandomNPC(NXWSOCKET s, char * npclist, int spawnpoint)
 		if (spawnpoint==-1)
 		{
 			addmitem[s]=k;
-			return targets::NpcMenuTarget(s);
+			return Targ->NpcMenuTarget(s);
 			//return -1;
 		}
 		else
@@ -561,7 +498,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// Now lets spawn him/her
 					//
 
-					pc=archive::character::New();
+					pc=archive::getNewChar();
 					if(!ISVALIDPC(pc))
 					{
 						safedelete(iter);
@@ -730,10 +667,10 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "COLORLIST" == script1 )
 								{
-									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
 									if (ISVALIDPI(pi_n))
 									{
-										pi_n->setColor( storeval );
+										std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
+										pi_n->setColor( hex2num( value ) );
 									}
 									script1 = "DUMMY";
 								}
@@ -1188,9 +1125,9 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								}
 								else if ( "SKINLIST" == script1 )
 								{
-									storeval=addrandomcolor(pc,const_cast<char*>(script2.c_str()));
-									pc->setSkinColor(storeval);
-									pc->setOldSkinColor(storeval);
+									std::string value = cObject::getRandomScriptValue( string("RANDOMCOLOR"), script2 );
+									pc->setSkinColor( hex2num( value ) );
+									pc->setOldSkinColor( pc->getSkinColor() );
 									script1 = "DUMMY";
 								}
 								else if ( "SNOOPING" == script1 )
@@ -1314,7 +1251,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 								{
 									if (k>=50) //this CAN be a bit laggy. adjust as nessicary
 									{
-										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition().x, pi_i->getPosition().y, pi_i->getPosition().z);
+										WarnOut("Problem area spawner found at [%i,%i,%i]. NPC placed at default location.\n",pi_i->getPosition("x"), pi_i->getPosition("y"), pi_i->getPosition("z"));
 										xos=0;
 										yos=0;
 										break;
@@ -1324,7 +1261,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									//ConOut("AddNPC Spawning at Offset %i,%i (%i,%i,%i) [-%i,%i <-> -%i,%i]. [Loop #: %i]\n",xos,yos,items[i].x+xos,items[i].y+yos,items[i].z,items[i].more3,items[i].more3,items[i].more4,items[i].more4,k); /** lord binary, changed %s to %i, crash when uncommented ! **/
 									k++;
 
-									if ((pi_i->getPosition().x+xos<1) || (pi_i->getPosition().y+yos<1))
+									if ((pi_i->getPosition("x")+xos<1) || (pi_i->getPosition("y")+yos<1))
 										lb=0; /* lord binary, fixes crash when calling npcvalid with negative coordiantes */
 									else { //<Luxor>
 										Location newpos = Loc( pi_i->getPosition().x+xos, pi_i->getPosition().y+yos, pi_i->getPosition().z );
@@ -1332,7 +1269,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									}//</Luxor>
 
 									//Bug fix Monsters spawning on water:
-									MapStaticIterator msi(pi_i->getPosition().x + xos, pi_i->getPosition().y + yos);
+									MapStaticIterator msi(pi_i->getPosition("x") + xos, pi_i->getPosition("y") + yos);
 									staticrecord *stat;
 									loopexit=0;
 									while ( ((stat = msi.Next())!=NULL) && (++loopexit < MAXLOOPS) )
@@ -1433,7 +1370,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					// End - Dupois
 
 					//Char mapRegions
-					regions::add(pc);
+					mapRegions->add(pc);
 					//	Sparhawk: The Need For Speed
 					pointers::addCharToLocationMap( pc );
 					//

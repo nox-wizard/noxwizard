@@ -17,7 +17,6 @@
 
 char* getRandomName(char * namelist);
 void setrandomname(P_CHAR pc, char * namelist);
-COLOR addrandomcolor(cObject* po, char *colorlist);
 
 namespace npcs
 {
