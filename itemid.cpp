@@ -457,27 +457,27 @@ void itemGetPopUpHelp(char *str, P_ITEM pi)
 	int type = pi->type;
 	if (pi->IsInstrument()) 
 		sprintf(str, TRANSLATE("This item is a musical instrument. You can use it for bardic skills like enticement or provocation"));	
-	else if (type == 12) 
+	else if (type == ITYPE_DOOR) 
 		sprintf(str, TRANSLATE("This a door. To open or close it, double click on it."));
-	else if (type == 13) 
+	else if (type == ITYPE_LOCKED_DOOR) 
 		sprintf(str, TRANSLATE("This a locked door. To open or close it, click on the proper key and target it."));
-	else if (type == 14)
+	else if (type == ITYPE_FOOD)
 		sprintf(str, TRANSLATE("This food you can eat when you're hungry. To eat, double click the food, but beware poisoned food!"));
-	else if (type == 50)
+	else if (type == ITYPE_RUNE)
 		sprintf(str, TRANSLATE("This is a rune for use with recall, mark and gate travel spells"));
-	else if (type == 16)
+	else if (type == ITYPE_RESURRECT)
 		sprintf(str, TRANSLATE("If you dye (or are dead) you can double click this item to resurrect!"));
-	else if (type == 7)
+	else if (type == ITYPE_KEY)
 		sprintf(str, TRANSLATE("This is a key you can use (double click) to open doors"));
-	else if (type == 9)
+	else if (type == ITYPE_SPELLBOOK)
 		sprintf(str, TRANSLATE("This is the spellbook, where you can write down your own spells for later use"));
-	else if (type == 19)
+	else if (type == ITYPE_POTION)
 		sprintf(str, TRANSLATE("This is a potion! You can drink that when you need its effects... but beware of poison potions!"));
 }
 
 void charGetPopUpHelp(char *str, P_CHAR pc)
 {
-	if (pc->npc==0) {
+	if (!pc->npc) {
 		sprintf(str, TRANSLATE("He/She is a player like you. You've met new people!!"));	
 
 		if (pc->IsCounselor()) {

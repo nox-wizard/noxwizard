@@ -105,8 +105,7 @@ void cChar::mounthorse( P_CHAR mount )
 
 		strcpy(temp, mount->getCurrentNameC());
 		onhorse = true;
-		//int c = item::SpawnItem(ps->toInt(), 1, (char*)temp, 0, 0x09, 0x15, mount->skin1, mount->skin2, 0, 0);
-		//const P_ITEM pi = MAKE_ITEMREF_LR(c); // on error return
+
 		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, temp, 0, 0x0915, mount->getSkinColor(), 0 );
 		VALIDATEPI(pi);
 
@@ -192,7 +191,7 @@ void cChar::mounthorse( P_CHAR mount )
 
 		
 		pi->setContSerial(getSerial32());
-		pi->layer = 0x19;
+		pi->layer = LAYER_MOUNT;
 
 		// v-- is not cheched for decay, so useless
 		if (mount->summontimer != 0) {
@@ -227,14 +226,17 @@ void cChar::mounthorse( P_CHAR mount )
 		sw.clear();
 		sw.fillOnline( this, false );
 
-		UI08 removeitem[5] = {0x1D, 0x00, };
+		UI08 removeitem[5] ={ 0x1D, 0x00, };
 		LongToCharPtr(mount->getSerial32(), removeitem +1);
 
 		for( sw.rewind(); !sw.isEmpty(); sw++ )		
 		{
 			NXWSOCKET si=sw.getSocket();
 			if(si!=INVALID)
-				Xsend(si, removeitem, 5);
+			{
+ 				Xsend(si, removeitem, 5);
+//AoS/				Network->FlushBuffer(si);
+			}
 		}
 
 		sysmsg( "Now you are riding %s", mount->getCurrentNameC());
@@ -242,15 +244,11 @@ void cChar::mounthorse( P_CHAR mount )
 		mount->war = 0;
 		mount->attackerserial=INVALID;
 
-
 		mount->time_unused = 0;
 		mount->timeused_last = uiCurrentTime;
-
-
 	}
 	else
 		sysmsg(TRANSLATE("You dont own that creature."));
-
 }
 
 /*!

@@ -31,7 +31,7 @@ LOGICAL CheckBuildSite(int x, int y, int z, int sx, int sy);
 */
 void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 {
-	char multitarcrs[26]= { 0x99, 0x01, 0x40, 0x01, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	UI08 multitarcrs[26]= { 0x99, 0x01, 0x40, 0x01, 0x02, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
 	targetok[s]=1;
 	multitarcrs[2]=a1;
@@ -42,6 +42,7 @@ void mtarget(int s, int a1, int a2, int a3, int a4, char b1, char b2, char *txt)
 	multitarcrs[19]=b2;
 	sysmessage(s, txt);
 	Xsend(s, multitarcrs, 26);
+//AoS/	Network->FlushBuffer(s);
 }
 
 /*!
@@ -62,7 +63,6 @@ void buildhouse(int s, int i)
 	int tmp;                                            //Temps
 	int hitem[100];//extra "house items" (up to 100)
 	char sect[512];                         //file reading
-	unsigned char id1 = 0xFF,id2 = 0xFF;                                   //house ID
 	char itemsdecay = 0;            // set to 1 to make stuff decay in houses
 	static int looptimes=0;         //for targeting
 	int cx=0,cy=0,cz=8;             //where the char is moved to when they place the house (Inside, on the steps.. etc...)(Offset)
@@ -74,7 +74,9 @@ void buildhouse(int s, int i)
 	VALIDATEPC(pc);
 	Location charpos= pc->getPosition();
 
-	if(buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF) return; // do nothing if user cancels, avoids CRASH!
+	SI16 id = INVALID; //house ID
+
+	if(LongFromCharPtr(buffer[s] +11)== INVALID) return; // do nothing if user cancels, avoids CRASH!
 
 	hitem[0]=0;//avoid problems if there are no HOUSE_ITEMs by initializing the first one as 0
 	if (i)
@@ -94,9 +96,7 @@ void buildhouse(int s, int i)
 			{
 				if (!(strcmp(script1,"ID")))
 				{
-					tmp=hex2num(script2);
-					id1 = (unsigned char)(tmp>>8);
-					id2 = (unsigned char)(tmp%256);
+					id = hex2num(script2);
 				}
 				else if (!(strcmp(script1,"SPACEX")))
 				{
@@ -145,7 +145,7 @@ void buildhouse(int s, int i)
 		while ( (strcmp(script1,"}")) && (++loopexit < MAXLOOPS) );
 		safedelete(iter);
 
-		if (!id1)
+		if (!id)
 		{
 			ErrOut("Bad house script # %i!\n",i);
 			return;
@@ -159,7 +159,7 @@ void buildhouse(int s, int i)
 
 			addid1[s]=0x40;addid2[s]=100;//Used in addtarget
 			if (norealmulti) target(s, 0, 1, 0, 245, TRANSLATE("Select a place for your structure: ")); else
-				mtarget(s, 0, 1, 0, 0, id1-0x40, id2, TRANSLATE("Select location for building."));
+				mtarget(s, 0, 1, 0, 0, (id>>8) -0x40, (id%256), TRANSLATE("Select location for building."));
 
 		}
 		else
@@ -174,16 +174,16 @@ void buildhouse(int s, int i)
 		looptimes=0;
 		if(!pc->IsGM() && SrvParms->houseintown==0)
 		{
-			if (region[pc->region].priv&0x01 && itemById::IsHouse(tmp) ) // popy
+			if ((region[pc->region].priv & RGNPRIV_GUARDED) && itemById::IsHouse(tmp) ) // popy
 			{
 			    sysmessage(s,TRANSLATE(" You cannot build houses in town!"));
 			    return;
 			}
 		}
 
-		x=(buffer[s][11]<<8)+buffer[s][12];//where they targeted
-		y=(buffer[s][13]<<8)+buffer[s][14];
-		z=buffer[s][16]+Map->TileHeight((buffer[s][17]<<8)+buffer[s][18]);
+		x = ShortFromCharPtr(buffer[s] +11); //where they targeted
+		y = ShortFromCharPtr(buffer[s] +13);
+		z = buffer[s][16] + Map->TileHeight(ShortFromCharPtr(buffer[s] +17));
 
 #define XBORDER 200
 #define YBORDER 200
@@ -240,7 +240,7 @@ void buildhouse(int s, int i)
 		}
 
 		//Boats ->
-		if(id2>=18)
+		if((id % 256)>=18)
 			sprintf(temp,"%s's house",pc->getCurrentNameC());//This will make the little deed item you see when you have showhs on say the person's name, thought it might be helpful for GMs.
 		else
 			strcpy(temp, "a mast");
@@ -251,10 +251,10 @@ void buildhouse(int s, int i)
 		if (othername)
 			strcpy(temp,name);
 
-		if ((id1==0xFF)&&(id2==0xFF))
+		if (id == INVALID)
 			return;
 
-		P_ITEM pHouse=item::SpawnItem(s,currchar[s], 1,temp,0,(id1<<8)+id2,0,0,0);
+		P_ITEM pHouse=item::SpawnItem(s,currchar[s], 1,temp,0,id,0,0,0);
 		VALIDATEPI(pHouse);
 
 		pc->making=0;
@@ -278,7 +278,7 @@ void buildhouse(int s, int i)
 
 		if(boat) //Boats
 		{
-			if(!Boats->Build(s,pHouse, id2))
+			if(!Boats->Build(s,pHouse, id%256/*id2*/))
 			{
 				pHouse->deleteItem();
 				return;
@@ -296,25 +296,24 @@ void buildhouse(int s, int i)
 
 		//Key...
 		//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
-		if (id2>=112&&id2<=115)
+		if ((id%256 >=0x70) && (id%256 <=0x73))
 		{
 			sprintf(temp,"%s's tent key",pc->getCurrentNameC());
 			pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);//iron key for tents
 			pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x1010,0,1,1);
 		}
+		else if(id%256 <=0x18)
+		{
+			sprintf(temp,"%s's ship key",pc->getCurrentNameC());
+			pKey=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);//Boats -Rusty Iron Key
+			pKey2=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);
+		}
 		else
-			if(id2<=0x18)
-			{
-				sprintf(temp,"%s's ship key",pc->getCurrentNameC());
-				pKey=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);//Boats -Rusty Iron Key
-				pKey2=item::SpawnItem(s,currchar[s],1, temp,0,0x1013,0,1,1);
-			}
-			else
-			{
-				sprintf(temp,"%s's house key",pc->getCurrentNameC());
-				pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);//gold key for everything else;
-				pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);
-			}
+		{
+			sprintf(temp,"%s's house key",pc->getCurrentNameC());
+			pKey=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);//gold key for everything else;
+			pKey2=item::SpawnItem(s, currchar[s], 1, temp, 0, 0x100F, 0,1,1);
+		}
 
 
 		pHouse->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
@@ -388,13 +387,12 @@ void buildhouse(int s, int i)
 							pi_l->setOwnerSerial32(pc->getSerial32());
 							// SPARHAWK 2001-01-28 Added House sign naming
 							if (pi_l->IsSign())
-								if (id2>=112&&id2<=115)
+								if ((id%256 >=0x70) && (id%256<=0x73))
 									pi_l->setCurrentName("%s's tent",pc->getCurrentNameC());
+								else if (id%256<=0x18)
+									pi_l->setCurrentName("%s's ship",pc->getCurrentNameC());
 								else
-									if (id2<=0x18)
-										pi_l->setCurrentName("%s's ship",pc->getCurrentNameC());
-									else
-										pi_l->setCurrentName("%s's house",pc->getCurrentNameC());
+									pi_l->setCurrentName("%s's house",pc->getCurrentNameC());
 
 							}
 						}
@@ -678,7 +676,7 @@ void addthere(int s, int xx, int yy, int zz, int t)
 	//ConOut("addthere!x=%d y=%d z=%d\n",xx,yy,zz);
 	tile_st tile;
 
-	P_ITEM pi=item::SpawnItem(-1,s,1,"#",0,(addid1[s]<<8)+addid2[s],0,0,0);
+	P_ITEM pi=item::SpawnItem(-1,s,1,"#",0,(addid1[s]<<8)|addid2[s],0,0,0);
 	VALIDATEPI(pi);
 
 	pi->setPosition(xx, yy, zz);

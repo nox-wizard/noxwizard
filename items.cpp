@@ -439,7 +439,7 @@ void cItem::explode(NXWSOCKET  s)
 	if(!isInWorld())
 		return;
 
-	this->type=0; //needed for recursive explosion
+	type=0; //needed for recursive explosion
 
 	//Luxor - recursive explosions!! :DD
 	NxwItemWrapper si;
@@ -778,7 +778,7 @@ int cItem::getName(char* itemname)
 R32 cItem::getWeight()
 {
 
-	if (id()==0x0EED) //gold
+	if (id() == ITEMID_GOLD)
 		return (R32)SrvParms->goldweight;
 
 	R32 itemweight=0.0;
@@ -791,7 +791,7 @@ R32 cItem::getWeight()
 		Map->SeekTile(id(), &tile);
 		if (tile.weight==0) // can't find weight
 		{
-			if(type!=14)
+			if(type != ITYPE_FOOD)
 				itemweight = 2.0;	// not food weighs .02 stone
 
 			else
@@ -805,7 +805,6 @@ R32 cItem::getWeight()
 
 	}
 	return itemweight;
-
 }
 
 

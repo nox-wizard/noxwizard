@@ -29,13 +29,12 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	
 	P_CHAR pc_c;
 
-	P_ITEM pHouseSign,pHouse,pHouseKey;
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	int j=-1,i,serhash;
 
 	/*
-	ConOut("Button: datasize %i\n", ((buffer[s][1]<<8)+buffer[s][2]) );
-	for (i = 0; i < ((buffer[s][1]<<8)+buffer[s][2]); ++i)
+	ConOut("Button: datasize %i\n", ShortFromCharPtr(buffer[s] +1) );
+	for (i = 0; i < ShortFromCharPtr(buffer[s] +1); ++i)
 	{
 		if ( ( buffer[s][i] >= 'a' && buffer[s][i] <= 'z' ) ||
 				 ( buffer[s][i] >= 'A' && buffer[s][i] <= 'Z' ) )
@@ -45,7 +44,8 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	}
 	*/
 
-	ITEM	house, house_sign, house_key;
+	P_ITEM pHouseSign, pHouse, pHouseKey;
+//	ITEM	house, house_sign, house_key;
 	SERIAL	serial, housesign_serial, house_serial;
 
 	// Sparhawk: 	race gumps, all race gumps are currently hardcoded
@@ -107,26 +107,24 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 		break;
 	case 5: // House maintenance (Sparhawk)
 		housesign_serial = calcserial(addid1[s],addid2[s],addid3[s],addid4[s]);
-		house_sign = calcItemFromSer( housesign_serial );
+		pHouseSign = pointers::findItemBySerial(housesign_serial);
 
-		pHouseSign=MAKE_ITEM_REF(house_sign);
 		if( ISVALIDPI(pHouseSign) )
 		{
 			house_serial = calcserial(pHouseSign->more1,pHouseSign->more2,pHouseSign->more3,pHouseSign->more4);
-			house = calcItemFromSer( house_serial );
+			pHouse = pointers::findItemBySerial(house_serial);
 
-			pHouse=MAKE_ITEM_REF(house);
 			if ( !ISVALIDPI(pHouse) )
 			{
 				ErrOut("housegump cannot determine index for house with serial %d\n", house_serial);
-				sysmessage(s, TRANSLATE("HouseGump failed - house not found\n"));
+				pc->sysmsg(TRANSLATE("HouseGump failed - house not found\n"));
 				return;
 			}
 		}
 		else
 		{
 			ErrOut("housegump cannot determine index for house sign with serial %d\n", housesign_serial);
-			sysmessage(s, TRANSLATE("HouseGump failed - house sign not found\n"));
+			pc->sysmsg(TRANSLATE("HouseGump failed - house sign not found\n"));
 			return;
 		}
 		break;
@@ -211,17 +209,20 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			i=pc->making;
 			if (i<0)
 			{
-			  sysmessage(s,"selected character not found");
+			  pc->sysmsg("selected character not found");
 			  return;
 			}
+
 			serial=whomenudata[i];
-		    serhash=serial%HASHMAX;
+			serhash=serial%HASHMAX;
 			pc_c=pointers::findCharBySerial( serial );
-		    if (!ISVALIDPC(pc_c))
+
+			if (!ISVALIDPC(pc_c))
 			{
-			  sysmessage(s,"selected character not found");
+			  pc->sysmsg("selected character not found");
 			  return;
 			}
+
 			switch(button)
 			{
 			case 200://gochar
@@ -239,7 +240,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			case 202://jail char
 				if(pc_c->getSerial32()==pc->getSerial32())
 				{
-					sysmessage(s,"You cannot jail yourself!");
+					pc->sysmsg("You cannot jail yourself!");
 					break;
 				}
 				else
@@ -253,17 +254,17 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			case 204:
 				if(pc_c->getSerial32()==pc->getSerial32())
 				{
-					sysmessage(s,"You cannot kick yourself");
+					pc->sysmsg("You cannot kick yourself");
 					break; // lb
 				}
 				else
 				{
 					if( pc_c->IsOnline() )
 					{
-						sysmessage(s,"you cant kick an offline player");
+						pc->sysmsg("you cant kick an offline player");
 						break;
 					}
-					sysmessage(s, "Kicking player");
+					pc->sysmsg("Kicking player");
 					pc_c->kick();
 					break;
 				}
@@ -274,7 +275,7 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 		}
 		break;
 	case 5: // House maintenance (Sparhawk)
-		i = (buffer[s][21] << 8) + buffer[s][22];
+		i = ShortFromCharPtr(buffer[s] +21);
 		if (button != 20 && button != 2)
 		{
 			addid1[s] = pHouse->getSerial().ser1;
@@ -321,29 +322,27 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			case 13: // Rename house, housesign and house keys
 				// 1) transform name in UO client wide char format to char format
 				int idx;
-				for (idx = 1; idx <= ((buffer[s][25]<<8)+buffer[s][26]); idx++)
+				for (idx = 1; idx <= ShortFromCharPtr(buffer[s] +25); idx++)
 					temp[idx-1] = buffer[s][26+idx*2];
 				temp[idx-1] = 0;
+
 				// 2) rename items
 				pHouse->setCurrentName( temp );			// rename house
 				pHouseSign->setCurrentName( temp );		// rename house sign
-				house_key = calcItemFromSer( pHouse->st );
 
-				pHouseKey=MAKE_ITEM_REF(house_key);
+				pHouseKey = pointers::findItemBySerial(pHouse->st);
 				if ( ISVALIDPI(pHouseKey) )
 					pHouseKey->setCurrentName( temp );	// rename house key (originally put in backpack
-				house_key = calcItemFromSer( pHouse->st2 );
 
-				pHouseKey=MAKE_ITEM_REF(house_key);
+				pHouseKey = pointers::findItemBySerial(pHouse->st2);
 				if ( ISVALIDPI(pHouseKey) )
 					pHouseKey->setCurrentName( temp );	// rename house key (originally put in bankbox)
+
 				// 3) display success
-				sprintf( temp, TRANSLATE("House renamed to %s"), pHouse->getCurrentNameC() );
-				sysmessage( s, temp );
+				pc->sysmsg(TRANSLATE("House renamed to %s"), pHouse->getCurrentNameC() );
 				return;
 			default:
-				sprintf(temp, TRANSLATE("HouseGump Called - Button=%i"), button);
-				sysmessage(s, temp);
+				pc->sysmsg(TRANSLATE("HouseGump Called - Button=%i"), button);
 				return;
 			}
 	default :
@@ -584,29 +583,19 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 	}
 	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
-	unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
-	gump1[1]= length>>8; // total length
-	gump1[2]= length%256;
-	gump1[3]= pc->getSerial().ser1;
-	gump1[4]= pc->getSerial().ser2;
-	gump1[5]= pc->getSerial().ser3;
-	gump1[6]= pc->getSerial().ser4;
-	gump1[7]= 0;
-	gump1[8]= 0;
-	gump1[9]= 0;
-//	gump1[10]= 0x12; // Gump Number
-	gump1[10]= m+200; // 200 + gump_id : for scripted gumps
-	gump1[19]= length2>>8; // command section length
-	gump1[20]= length2%256;
+	UI08 gump1[22]={ 0xB0, 0x00, };
 
-	// remark LB,
-	// 11-14 .. offset x
-	// 15-18 .. offset y
+	ShortToCharPtr(length, gump1 +1); 		// Total Length
+	LongToCharPtr(pc->getSerial32(), gump1 +3);	// id
+	LongToCharPtr((UI32)m+200, gump1 +7); 		// Gump Number 0x12 ,  200 + gump_id: for scripted gumps
+	LongToCharPtr(0x0000006E, gump1 +11); 		// X
+	LongToCharPtr(0x00000046, gump1 +15); 		// Y
+	ShortToCharPtr(length2, gump1 +19); 		// command section length
 
 	sprintf(sect, "SECTION GUMPMENU %i", m);
 	safedelete(iter);
 	iter = Scripts::Gumps->getNewIterator(sect);
-    if (iter==NULL) return;
+	if (iter==NULL) return;
 	// typecode setting - Crackerjack 8/8/99
 	strcpy(script1, iter->getEntry()->getFullLine().c_str()); //discard the shitty {
 	strcpy(script1, iter->getEntry()->getFullLine().c_str());
@@ -624,16 +613,13 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 			// 1) get house item#
 
 			is=pi_it->getSerial32();
-			j = calcItemFromSer( is );
+			pi_j = pointers::findItemBySerial(is); // pi_j =?= pi_it
 
-			pi_j=MAKE_ITEM_REF(j);
 			if(ISVALIDPI(pi_j))
 			{
 				is=calcserial(pi_j->more1,pi_j->more2,pi_j->more3,pi_j->more4);
-				j = calcItemFromSer( is );
+				pi_j = pointers::findItemBySerial(is);
 			}
-
-			pi_j=MAKE_ITEM_REF(j);
 
 			// 2) calc decay % number
 
@@ -670,8 +656,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 				length += strlen(pi_j->getCurrentNameC()) * 2;
 			}
 
-	        	gump1[1]=length>>8;
-	        	gump1[2]=length%256;
+	        	ShortToCharPtr(length, gump1 +1);
 		}
 	}
 	Xsend(s, gump1, 21);
@@ -689,15 +674,14 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
 	// remark: gump2[0]==0, = termination of the sequence above
-	unsigned char gump2[4]="\x00\x00\x00";
-	gump2[1]=textlines>>8;
-	gump2[2]=textlines%256;
+	UI08 gump2[3]={ 0x00, }; // ^-- term. + len => 3 BYTE
+	ShortToCharPtr(textlines, gump2 +1);
 	Xsend(s, gump2, 3);
 
 	sprintf(sect, "SECTION GUMPTEXT %i", m);
-    safedelete(iter);
-    iter = Scripts::Gumps->getNewIterator(sect);
-    if (iter==NULL) return;
+	safedelete(iter);
+	iter = Scripts::Gumps->getNewIterator(sect);
+	if (iter==NULL) return;
 
 	loopexit=0;
 	do
@@ -725,11 +709,10 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 						strcpy( script1, pi_j->getCurrentNameC());
 			}
 
-			unsigned char gump3[3]="\x00\x00";
-			gump3[0]=strlen(script1)>>8;
-			gump3[1]=strlen(script1)%256;
+			UI08 gump3[2]= {0x00, 0x00};
+			ShortToCharPtr(strlen(script1), gump3);
 			Xsend(s, gump3, 2);
-			gump3[0]=0;
+			gump3[0]=0;	// script_text in unicode !? [Kheru]
 			for (i=0;i<strlen(script1);i++)
 			{
 				gump3[1]=script1[i];
@@ -739,6 +722,7 @@ void gumps::Menu(NXWSOCKET  s, int m,P_ITEM pi_it)
 	}
 	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
 	safedelete(iter);
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -813,97 +797,94 @@ void whomenu(int s, int type) //WhoList--By Homey-- Thx Zip and Taur helping me 
 	length=21;
 	length2=1;
 
-		for(line=0;line<linecount;line++)
-		{
+	for(line=0;line<linecount;line++)
+	{
 
-			if (strlen(menuarray[line])==0)
-				break;
+		if (strlen(menuarray[line])==0)
+			break;
+		{
+			length+=strlen(menuarray[line])+4;
+			length2+=strlen(menuarray[line])+4;
+		}
+	}
+
+	length+=3;
+	textlines=0;
+	line=0;
+
+	sprintf(menuarray1[linecount1++], "Users currently online: %i",j);
+
+	//Start user list
+
+	x=0;
+
+	/*for(i=0;i<charcount;i++)
+	{
+		P_CHAR pc= MAKE_CHAR_REF(i);
+		if(!ISVALIDPC(pc))
+			continue;
+
+		if (!pc->npc && !pc->free )
+			if( !pc->IsOnline()) 
 			{
-				length+=strlen(menuarray[line])+4;
-				length2+=strlen(menuarray[line])+4;
+				sprintf(menuarray1[linecount1++], "Player: %s [offline]",pc->getCurrentNameC());
+				whomenudata[x++]=pc->getSerial32();
+				//ConOut("name: %s\n",chars[i].name);
 			}
-		}
-
-		length+=3;
-		textlines=0;
-		line=0;
-
-		sprintf(menuarray1[linecount1++], "Users currently online: %i",j);
-
-		//Start user list
-
-		x=0;
-
-		/*for(i=0;i<charcount;i++)
-		{
-			P_CHAR pc= MAKE_CHAR_REF(i);
-			if(!ISVALIDPC(pc))
-				continue;
-
-			if (!pc->npc && !pc->free )
-				if( !pc->IsOnline()) 
-				{
-					sprintf(menuarray1[linecount1++], "Player: %s [offline]",pc->getCurrentNameC());
-					whomenudata[x++]=pc->getSerial32();
-					//ConOut("name: %s\n",chars[i].name);
-				}
-				else {
-					sprintf(menuarray1[linecount1++], "Player %s [online]",pc->getCurrentNameC());
-					whomenudata[x++]=pc->getSerial32();
-				}
-		}*/
-
-		for(line=0;line<linecount1;line++)
-		{
-
-			if (strlen(menuarray1[line])==0)
-				break;
-			{
-				length+=strlen(menuarray1[line])*2 +2;
-				textlines++;
+			else {
+				sprintf(menuarray1[linecount1++], "Player %s [online]",pc->getCurrentNameC());
+				whomenudata[x++]=pc->getSerial32();
 			}
-		}
+	}*/
 
-		unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
-		gump1[1]=length>>8;
-		gump1[2]=length%256;
-		gump1[7]=0;
-		gump1[8]=0;
-		gump1[9]=0;
-		gump1[10]=type; // Gump Number
-		gump1[19]=length2>>8;
-		gump1[20]=length2%256;
-		Xsend(s, gump1, 21);
+	for(line=0;line<linecount1;line++)
+	{
 
-		for(line=0;line<linecount;line++)
+		if (strlen(menuarray1[line])==0)
+			break;
 		{
-			sprintf(sect, "{ %s }", menuarray[line]);
-			Xsend(s, sect, strlen(sect));
+			length+=strlen(menuarray1[line])*2 +2;
+			textlines++;
 		}
+	}
 
-		unsigned char gump2[4]="\x00\x00\x00";
-		gump2[1]=textlines>>8;
-		gump2[2]=textlines%256;
+	UI08 gump1[22]={ 0xB0, 0x00, };
 
-		Xsend(s, gump2, 3);
+	ShortToCharPtr(length, gump1 +1); 		// Total Length
+	LongToCharPtr(0x409151E7, gump1 +3);		// id
+	LongToCharPtr((UI32)type, gump1 +7); 		// Gump Number
+	LongToCharPtr(0x0000006E, gump1 +11); 		// X
+	LongToCharPtr(0x00000046, gump1 +15); 		// Y
+	ShortToCharPtr(length2, gump1 +19); 		// command section length
+	Xsend(s, gump1, 21);
 
-		unsigned char gump3[3]="\x00\x00";
-		for(line=0;line<linecount1;line++)
+	for(line=0;line<linecount;line++)
+	{
+		sprintf(sect, "{ %s }", menuarray[line]);
+		Xsend(s, sect, strlen(sect));
+	}
+
+	UI08 gump2[3]={ 0x00, };
+	ShortToCharPtr(textlines, gump2 +1);
+	Xsend(s, gump2, 3);
+
+	UI08 gump3[2]={0x00, };
+	for(line=0;line<linecount1;line++)
+	{
+		if (strlen(menuarray1[line])==0)
+			break;
 		{
-			if (strlen(menuarray1[line])==0)
-				break;
+			ShortToCharPtr(strlen(menuarray1[line]), gump3);
+			Xsend(s, gump3, 2);
+			gump3[0]=0;
+			for (i=0;i<strlen(menuarray1[line]);i++)
 			{
-				gump3[0]=strlen(menuarray1[line])>>8;
-				gump3[1]=strlen(menuarray1[line])%256;
+				gump3[1]=menuarray1[line][i];
 				Xsend(s, gump3, 2);
-				gump3[0]=0;
-				for (i=0;i<strlen(menuarray1[line]);i++)
-				{
-					gump3[1]=menuarray1[line][i];
-					Xsend(s, gump3, 2);
-				}
 			}
 		}
+	}
+//AoS/	Network->FlushBuffer(s);
 }
 
 void playermenu(int s, int type) //WhoList2 with offline players--By Ripper
@@ -1019,15 +1000,14 @@ void playermenu(int s, int type) //WhoList2 with offline players--By Ripper
 		}
 	}
 
-	unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
-	gump1[1]=length>>8;
-	gump1[2]=length%256;
-	gump1[7]=0;
-	gump1[8]=0;
-	gump1[9]=0;
-	gump1[10]=type; // Gump Number
-	gump1[19]=length2>>8;
-	gump1[20]=length2%256;
+	UI08 gump1[22]={ 0xB0, 0x00, };
+
+	ShortToCharPtr(length, gump1 +1); 		// Total Length
+	LongToCharPtr(0x409151E7, gump1 +3);		// id
+	LongToCharPtr((UI32)type, gump1 +7); 		// Gump Number
+	LongToCharPtr(0x0000006E, gump1 +11); 		// X
+	LongToCharPtr(0x00000046, gump1 +15); 		// Y
+	ShortToCharPtr(length2, gump1 +19); 		// command section length
 	Xsend(s, gump1, 21);
 
 	for(line=0;line<linecount;line++)
@@ -1036,20 +1016,17 @@ void playermenu(int s, int type) //WhoList2 with offline players--By Ripper
 		Xsend(s, sect, strlen(sect));
 	}
 
-	unsigned char gump2[4]="\x00\x00\x00";
-	gump2[1]=textlines>>8;
-	gump2[2]=textlines%256;
-
+	UI08 gump2[3]={ 0x00, };
+	ShortToCharPtr(textlines, gump2 +1);
 	Xsend(s, gump2, 3);
 
-	unsigned char gump3[3]="\x00\x00";
+	UI08 gump3[2]={0x00, };
 	for(line=0;line<linecount1;line++)
 	{
 		if (strlen(menuarray1[line])==0)
 			break;
 		{
-			gump3[0]=strlen(menuarray1[line])>>8;
-			gump3[1]=strlen(menuarray1[line])%256;
+			ShortToCharPtr(strlen(menuarray1[line]), gump3);
 			Xsend(s, gump3, 2);
 			gump3[0]=0;
 			for (i=0;i<strlen(menuarray1[line]);i++)
@@ -1059,6 +1036,7 @@ void playermenu(int s, int type) //WhoList2 with offline players--By Ripper
 			}
 		}
 	}
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -1410,19 +1388,17 @@ void tweakmenu(NXWSOCKET  s, SERIAL serial)
 	}
 	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
-	unsigned char gump1[22]="\xB0\x04\x0A\x40\x91\x51\xE7\x00\x00\x00\x03\x00\x00\x00\x6E\x00\x00\x00\x46\x02\x3B";
-	gump1[1]=length>>8;
-	gump1[2]=length%256;
-	LongToCharPtr(serial, &gump1[3]);
-	gump1[7]=0;
-	gump1[8]=0;
-	gump1[9]=0;
-	gump1[10]=type; // Gump Number
-	gump1[19]=length2>>8;
-	gump1[20]=length2%256;
-	Xsend(s, gump1, 21);
-	line=0;
+	UI08 gump1[22]={ 0xB0, 0x00, };
 
+	ShortToCharPtr(length, gump1 +1); 		// Total Length
+	LongToCharPtr(serial, gump1 +3);		// id
+	LongToCharPtr((UI32)type, gump1 +7); 		// Gump Number
+	LongToCharPtr(0x0000006E, gump1 +11); 		// X
+	LongToCharPtr(0x00000046, gump1 +15); 		// Y
+	ShortToCharPtr(length2, gump1 +19); 		// command section length
+	Xsend(s, gump1, 21);
+
+	line=0;
 	loopexit=0;
 	do
 	{
@@ -1436,13 +1412,12 @@ void tweakmenu(NXWSOCKET  s, SERIAL serial)
 	}
 	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
 
-	unsigned char gump2[4]="\x00\x00\x00";
-	gump2[1]=textlines>>8;
-	gump2[2]=textlines%256;
+	UI08 gump2[3]={ 0x00, };
+	ShortToCharPtr(textlines, gump2 +1);
 	Xsend(s, gump2, 3);
 	line=0;
 
-	unsigned char gump3[3]="\x00\x00";
+	UI08 gump3[2]={0x00, };
 	loopexit=0;
 	do
 	{
@@ -1450,8 +1425,7 @@ void tweakmenu(NXWSOCKET  s, SERIAL serial)
 		ttext(line, serial);
 		if (script1[0]!='}')
 		{
-			gump3[0]=strlen(script1)>>8;
-			gump3[1]=strlen(script1)%256;
+			ShortToCharPtr(strlen(script1), gump3);
 			Xsend(s, gump3, 2);
 			gump3[0]=0;
 			for (i=0;i<strlen(script1);i++)
@@ -1462,35 +1436,34 @@ void tweakmenu(NXWSOCKET  s, SERIAL serial)
 		}
 	}
 	while ((script1[0]!='}') && (++loopexit < MAXLOOPS) );
+//AoS/	Network->FlushBuffer(s);
 }
 
 void entrygump(int s, unsigned char tser1, unsigned char tser2, unsigned char tser3, unsigned char tser4, unsigned char type, char index, short int maxlength, char *text1)
 {
 	short int length;
-	char textentry1[12]="\xAB\x01\x02\x01\x02\x03\x04\x00\x01\x12\x34";
-	char textentry2[9]="\x01\x01\x00\x00\x12\x34\x12\x34";
+	SERIAL tser = calcserial(tser1, tser2, tser3, tser4);
+	UI08 textentry1[11]={ 0xAB, 0x00, };
+	UI08 textentry2[8]={ 0x00, };
+
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
 	sprintf(temp, "(%i chars max)", maxlength);
 	length=11+strlen(text1)+1+8+strlen(temp)+1;
-	textentry1[1]=length>>8;
-	textentry1[2]=length%256;
-	textentry1[3]=tser1;
-	textentry1[4]=tser2;
-	textentry1[5]=tser3;
-	textentry1[6]=tser4;
+	ShortToCharPtr(length, textentry1 +1);
+	LongToCharPtr(tser, textentry1 +3);
 	textentry1[7]=type;
 	textentry1[8]=index;
-	textentry1[9]=(strlen(text1)+1)>>8;
-	textentry1[10]=(strlen(text1)+1)%256;
+	ShortToCharPtr(strlen(text1)+1, textentry1 +9);
 	Xsend(s, textentry1, 11);
 	Xsend(s, text1, strlen(text1)+1);
-	textentry2[4]=maxlength>>8;
-	textentry2[5]=maxlength%256;
-	textentry2[6]=(strlen(temp)+1)>>8;
-	textentry2[7]=(strlen(temp)+1)%256;
+	textentry2[0]=0x01;
+	textentry2[1]=0x01;
+	LongToCharPtr(maxlength, textentry2 +2);
+	ShortToCharPtr(strlen(temp)+1, textentry2 +6);
 	Xsend(s, textentry2, 8);
 	Xsend(s, temp, strlen(temp)+1);
+//AoS/	Network->FlushBuffer(s);
 }
 
 
@@ -1553,7 +1526,7 @@ void choice(int s) // Choice from GMMenu, Itemmenu or Makemenu received
 		if(!sub) return;
 		if(!pc->checkSkill(TRACKING, 0, 1000))
 		{
-			sysmessage(s,TRANSLATE("You fail your attempt at tracking."));
+			pc->sysmsg(TRANSLATE("You fail your attempt at tracking."));
 			return;
 		}
 		Skills::TrackingMenu(s,sub-1);
@@ -1563,7 +1536,7 @@ void choice(int s) // Choice from GMMenu, Itemmenu or Makemenu received
 		if(!sub) return;
 		if(!pc->checkSkill(TRACKING, 0, 1000))
 		{
-			sysmessage(s,TRANSLATE("You fail your attempt at tracking."));
+			pc->sysmsg(TRANSLATE("You fail your attempt at tracking."));
 			return;
 		}
 		Skills::CreateTrackingMenu(s,main-TRACKINGMENUOFFSET+sub);
@@ -1658,13 +1631,11 @@ void gumps::Open(int s, int i, int num1, int num2)
 	P_CHAR pc=MAKE_CHAR_REF(i);
 	VALIDATEPC(pc);
 	
-	unsigned char shopgumpopen[8]="\x24\x00\x00\x00\x01\x00\x30";
-	shopgumpopen[1]= pc->getSerial().ser1;
-	shopgumpopen[2]= pc->getSerial().ser2;
-	shopgumpopen[3]= pc->getSerial().ser3;
-	shopgumpopen[4]= pc->getSerial().ser4;
+	UI08 shopgumpopen[7]={ 0x24, 0x00, };
+	LongToCharPtr(pc->getSerial32(), shopgumpopen +1);
 	shopgumpopen[5]= num1;
 	shopgumpopen[6]= num2;
 	Xsend(s, shopgumpopen, 7);
+//AoS/	Network->FlushBuffer(s);
 }
 
