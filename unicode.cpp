@@ -12,8 +12,12 @@
 
 cUnicodeString::cUnicodeString()
 {
-	s.push_back(0); // 0 0 termination
-	s.push_back(0);
+	addTerminator();
+}
+
+cUnicodeString::cUnicodeString( std::string& s )
+{
+	this->copy(s);
 }
 
 cUnicodeString::~cUnicodeString() { }
@@ -23,6 +27,14 @@ UI32 cUnicodeString::size()
 	return (s.size()-2)/2;
 }
 
+void cUnicodeString::addTerminator()
+{
+	s.push_back(0); // 0 0 termination
+	before_term=s.begin();
+	s.push_back(0);
+}
+
+
 UI32 cUnicodeString::length()
 {
 	return size();
@@ -31,8 +43,7 @@ UI32 cUnicodeString::length()
 void cUnicodeString::clear()
 {
 	s.clear();
-	s.push_back(0); // 0 0 termination
-	s.push_back(0);
+	addTerminator();
 }
 
 void cUnicodeString::copy( std::string& s )
@@ -43,10 +54,16 @@ void cUnicodeString::copy( std::string& s )
 		this->s.push_back( 0 );
 		this->s.push_back( (*iter) );
 	}
-	this->s.push_back(0); //terminator
-	this->s.push_back(0);
-
+	addTerminator();
 }
+
+cUnicodeString& cUnicodeString::operator+=( wchar_t c )
+{
+	this->s.insert( before_term, c >> 8   );
+	this->s.insert( before_term, c & 0xFF );
+	return (*this);
+}
+
 
 template < class T >
   void u < T >::set( T value )

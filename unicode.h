@@ -18,15 +18,21 @@ typedef UI16 UNI_TEXT;
 */
 class cUnicodeString {
 public:
+	std::vector<UI08>::iterator before_term;
 	std::vector<UI08> s;
+
+	void addTerminator();
+
 public:
 	cUnicodeString();
+	cUnicodeString( std::string& s );
 	virtual ~cUnicodeString();
 
 	UI32 size();
 	UI32 length();
 
 	void copy( std::string& s );
+	cUnicodeString& operator+=( wchar_t c );
 
 	void clear();
 };
