@@ -531,12 +531,11 @@ LOGICAL seekVerTile( UI16 id, tile_st& tile )
 	if ( !verIdx->isReady() || !verTile->isReady() )
 		return false;
 
-	UI32 i, pos;
-	UI08 index;
+	UI32 pos;
 	verdata_st v;
 	UI32 block = id / 32 + 512;
 
-	for ( i = 0; i < verdataEntries; i++ ) {
+	for( int i = 0; i < verdataEntries; i++ ) {
 		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
 		if ( !verIdx->getData( pos, v ) )
 			continue;
@@ -560,12 +559,11 @@ LOGICAL seekVerLand( UI16 id, land_st& land )
 	if ( !verIdx->isReady() || !verLand->isReady() )
 		return false;
 
-	UI32 i, pos;
-	UI08 index;
+	UI32 pos;
 	verdata_st v;
 	UI32 block = id / 32;
 
-	for ( i = 0; i < verdataEntries; i++ ) {
+	for( int i = 0; i < verdataEntries; i++ ) {
 		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
 		if ( !verIdx->getData( pos, v ) )
 			continue;

@@ -776,11 +776,10 @@ void cChar::walkNextStep()
 	}
 	// </LB>
 
-	Location oldpos = getPosition();
-        SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
-        dir = dirXY & 0x0F;
+    SI08 dirXY = getDirFromXY( this, pos.x, pos.y );
+    dir = dirXY & 0x0F;
 	MoveTo( pos );
-        sendToPlayers( this, dirXY );
+    sendToPlayers( this, dirXY );
 	setNpcMoveTime();
 }
 

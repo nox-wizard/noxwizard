@@ -348,7 +348,7 @@ SI08 dynamicElevation( Location pos )
 */
 SI08 getHeight( Location pos )
 {
-	SI08 final_z = illegal_z, item_z = illegal_z, temp_z, base_z, z_off;
+	SI08 final_z = illegal_z, item_z = illegal_z, temp_z, base_z;
 	UI32 item_flags;
 	tile_st tile;
 

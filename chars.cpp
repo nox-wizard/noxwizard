@@ -1758,7 +1758,7 @@ void cChar::talkAllRunic(TEXT *txt, LOGICAL antispam)
 UI32 cChar::distFrom(P_CHAR pc)
 {
 	VALIDATEPCR(pc, VERY_VERY_FAR); //Endymion, fix: if not valid very far :P
-	return (SI32)dist(getPosition(),pc->getPosition());
+	return (UI32)dist(getPosition(),pc->getPosition());
 }
 
 /*!
@@ -1775,7 +1775,7 @@ UI32 cChar::distFrom(P_ITEM pi)
 	VALIDATEPIR(cont, VERY_VERY_FAR); 
 	
 	if(cont->isInWorld())
-		return (SI32)dist(getPosition(),cont->getPosition());
+		return (UI32)dist(getPosition(),cont->getPosition());
 	else 
 		if(isCharSerial(cont->getContSerial())) //can be weared
 			return distFrom( pointers::findCharBySerial(cont->getContSerial()) );
