@@ -437,10 +437,10 @@ public:
 
 	UI32		distFrom( P_CHAR pc );
 	UI32		distFrom( P_ITEM pi );
-
+/*
 public:
 	LOGICAL 	isValidAmxEvent( UI32 eventId );
-
+*/
 } PACK_NEEDED;
 
 // will be fully implemented in 0.83

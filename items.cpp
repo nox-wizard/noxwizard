@@ -139,13 +139,14 @@ cItem& cItem::operator=(cItem& b)
         for ( i = 0; i < MAX_RESISTANCE_INDEX; i++ )
                 resists[i] = b.resists[i];
 
-	AmxEvent *event;
-	for ( i = 0; i < ALLITEMEVENTS; i++ ) {
-		event = b.getAmxEvent( i );
+	for ( i=0; i < ALLITEMEVENTS; i++ ) {
+		amxevents[i] = b.amxevents[i];
+		/*
+		AmxEvent* event = b.getAmxEvent( i );
 		if ( event == NULL )
 			continue;
 
-		setAmxEvent( i, event->getFuncName(), !(event->shouldBeSaved()) );
+		setAmxEvent( i, event->getFuncName(), !(event->shouldBeSaved()) );*/
 	}
 	vendorDescription = b.vendorDescription;
 	amxVS.copyVariable(getSerial32(), b.getSerial32());
@@ -364,7 +365,7 @@ LOGICAL cItem::doDecay()
 	if ( TIMEOUT( decaytime ) )
 	{
 
-		/*
+		
 		if ( amxevents[EVENT_IONDECAY] !=NULL )
 		{
 			g_bByPass = false;
@@ -372,11 +373,12 @@ LOGICAL cItem::doDecay()
 			if ( g_bByPass == true )
 				return false;
 		}
-		*/
+		/*
 		g_bByPass = false;
 		runAmxEvent( EVENT_IONDECAY, getSerial32(), DELTYPE_DECAY );
 		if ( g_bByPass == true )
 			return false;
+		*/
 
 		//Multis
 		if ( !isFieldSpellItem() && !corpse )
@@ -962,7 +964,8 @@ cItem::cItem( SERIAL ser )
 	for (i=0;i<MAX_RESISTANCE_INDEX;i++)
 		resists[i]=0;
 
-	//for (int X=0; X<ALLITEMEVENTS; X++) amxevents[X] = NULL;
+	for (int X=0; X<ALLITEMEVENTS; X++) 
+		amxevents[X] = NULL;
 	//desc[0]=0x00;
 	vendorDescription = "";
 	setDecayTime(); //Luxor
@@ -971,7 +974,7 @@ cItem::cItem( SERIAL ser )
 
 LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 {
-	/*
+	
 	if (!(strcmp("@ONDAMAGE",script1))) pi->amxevents[EVENT_IONDAMAGE] = newAmxEvent(script2);
 	else if (!(strcmp("@ONEQUIP",script1))) pi->amxevents[EVENT_IONEQUIP] = newAmxEvent(script2);
 	else if (!(strcmp("@ONUNEQUIP",script1))) pi->amxevents[EVENT_IONUNEQUIP] = newAmxEvent(script2);
@@ -995,7 +998,7 @@ LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 						}
 	else return false;
 	return true;
-	*/
+	/*
 	if	(!strcmp("@ONDAMAGE",		script1))	pi->setAmxEvent( EVENT_IONDAMAGE, script2 );
 	else if (!strcmp("@ONEQUIP",		script1))	pi->setAmxEvent( EVENT_IONEQUIP, script2 );
 	else if (!strcmp("@ONUNEQUIP",		script1))	pi->setAmxEvent( EVENT_IONUNEQUIP, script2 );
@@ -1023,7 +1026,7 @@ LOGICAL LoadItemEventsFromScript (P_ITEM pi, char *script1, char *script2)
 	else
 		return false;
 
-	return true;
+	return true;*/
 }
 
 /*!
@@ -1587,7 +1590,7 @@ void cItem::setDispellable( const LOGICAL on )
 	else
 		priv &= ~0x04;
 }
-
+/*
 LOGICAL cItem::isValidAmxEvent( UI32 eventId )
 {
 	if( eventId < ALLITEMEVENTS )
@@ -1595,3 +1598,4 @@ LOGICAL cItem::isValidAmxEvent( UI32 eventId )
 	else
 		return false;
 }
+*/
