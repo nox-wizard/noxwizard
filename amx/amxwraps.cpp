@@ -7540,11 +7540,53 @@ NATIVE (_setResourceLocationValue )
 
 NATIVE (_getResourceStringValue )
 {
+	UI32 resourceIndex = params[1];
+	cResourceStringMap * myMap = (cResourceStringMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
+	{
+		cell *cstr=NULL;
+		amx_GetAddr(amx, params[2], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;	
+		std::string key = g_cAmxPrintBuffer;
+		return myMap->getValue(key);
+	}
 	return -1;
 }
 NATIVE (_setResourceStringValue )
 {
-	return -1;
+	UI32 resourceIndex = params[1];
+	cResourceStringMap * myMap = (cResourceStringMap *) cResourceMap::getMap(resourceIndex);
+	if ( myMap != NULL && myMap->getType() == RESOURCEMAP_STRING)
+	{
+		cell *cstr;
+		amx_GetAddr(amx, params[3], &cstr);
+		printstring(amx,cstr,params+3,(int)(params[0]/sizeof(cell))-1);
+ 		g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+		g_nAmxPrintPtr=0;	
+		std::string key = g_cAmxPrintBuffer;
+		myMap->setValue(key, params[2]);
+	}
+	return 0;
+}
+
+NATIVE (_isChar )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	else
+		return 1;
+}
+
+NATIVE (_isItem )
+{
+	P_ITEM pi=pointers::findItemBySerial(params[1]);
+	if ( !ISVALIDPI(pi))
+		return 0;
+	else
+		return 1;
 }
 
 /*!
@@ -8021,6 +8063,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "setSecondsPerUoMinute", _setSecondsPerUoMinute },
  { "garbageCollection", _garbageCollection },
  { "recompileSmall", _recompileSmall },
+ { "isChar", _isChar },
+ { "isItem", _isItem },
+
 
  // resource map api
  { "createResourceMap", _createResourceMap },

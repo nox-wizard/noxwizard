@@ -11,6 +11,7 @@ UI32 resourcemapSerial =0;
 
 cResourceMap::cResourceMap(LOGICAL keepInMemory)
 {
+	type=RESOURCEMAP_NONE;
 	this->keepInMemory=keepInMemory;
 	if ( !keepInMemory )
 	{
@@ -163,11 +164,6 @@ UI32 cResourceMap::addMap(cResourceMap *newMap)
 	for ( ; iter !=  resourceMaps.end();iter++)
 	{
 		cResourceMap *map = iter->second;
-		if (iter->second ==newMap )
-		{
-			delete newMap;
-			return iter->first;
-		}
 		if ( (map->getFile() == newMap->getFile()) && (map->getFile() != "" ))
 		{
 			delete newMap;
@@ -338,7 +334,15 @@ void cResourceStringMap::setValue(std::string key, SI32 value)
 
 SI32 cResourceStringMap::getValue(std::string key)
 {
-	if ( getFile() != "" )
+	if ( isInMemory() )
+	{
+		std::map<std::string, SI32>::iterator iter = resourceMap.find(key);
+		if ( iter != resourceMap.end())
+			return iter->second;
+		else
+			return -1;
+	}
+	if ( !isInMemory() && getFile() != "" )
 	{
 		SI32 value;
 		// since we have a sorted file get Operations should be much faster using a binary sort
@@ -371,14 +375,7 @@ SI32 cResourceStringMap::getValue(std::string key)
 		datafile.close();
 		return -1;
 	}
-	else
-	{
-		std::map<std::string, SI32>::iterator iter = resourceMap.find(key);
-		if ( iter != resourceMap.end())
-			return iter->second;
-		else
-			return -1;
-	}
+	return -1;
 }
 
 void cResourceLocationMap::deserialize(ifstream *myStream)
