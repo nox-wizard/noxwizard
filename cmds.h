@@ -60,9 +60,17 @@ class cCommand {
 */
 class cCallCommand {
 
+private:
+
+	static SERIAL current_serial=0;
+	std::map< SERIAL, cCallCommand* > callcommand_map;
+
 public:
 
-	cCallCommand( std::string& params );
+	std::string params;
+	cCallCommand* findCallCommand(SERIAL);
+	void delCommand(SERIAL);
+	std::vector< string >* param;
 
 };
  
