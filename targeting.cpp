@@ -1839,8 +1839,8 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 				{
 					std::string itemnum, amount;
 					splitLine( script2, itemnum, amount );
-					int amt=str2num( amount );
-					if( amt=0 )
+					int amt = str2num( amount );
+					if( amt == 0 )
 						amt=INVALID;
 					P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pi3, amt );
 					if( ISVALIDPI(pi) ) {

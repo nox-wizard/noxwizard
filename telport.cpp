@@ -343,8 +343,8 @@ void advancementobjects(CHARACTER s, int x, int allways)
 					{
 						char itmnum[1024], amount[1024];
 						splitLine( script2, itmnum, amount );
-						int amt=str2num( amount );
-						if( amt=0 )
+						int amt = str2num( amount );
+						if( amt == 0 )
 							amt=INVALID;
 						P_ITEM pi= item::CreateFromScript( itmnum, NULL, amt );
 						packnum= pc->getBackpack();
