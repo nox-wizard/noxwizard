@@ -154,8 +154,8 @@ CWorldMain::CWorldMain()
 	this->gWsc=NULL;
 	this->iWsc=NULL;
 	this->jWsc=NULL;
-	this->chr_curr=0;
-	this->itm_curr=0;
+	this->chr_curr=1;
+	this->itm_curr=1;
 }
 
 CWorldMain::~CWorldMain()
@@ -1187,7 +1187,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		ConOut("Loading characters \n");
 
 		int loopexit=0;
-		UI32 ichar=0;
+		UI32 ichar=1;
 
 		do
 		{
@@ -1215,7 +1215,7 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 		ConOut("Loading items \n");
 
 		int loopexit=0;
-		UI32 iitem=0;
+		UI32 iitem=1;
 
 		do
 		{
