@@ -455,6 +455,7 @@ const int NXW_GP_UNI_CHARTER = 500;
 //const int NXW_GP_C = 100;
 const int NXW_GMP_C_RANK = 100;
 const int NXW_GMP_C_TITLETOGGLE = 101;
+const int NXW_GMP_I_FEALTY = 200;
 //const int NXW_GP_I = 200;
 //const int NXW_GP_S = 400;
 //const int NXW_GP_STR = 450;
