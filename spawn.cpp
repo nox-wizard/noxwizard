@@ -107,11 +107,14 @@ void cSpawnScripted::safeCreate( P_ITEM pi, cSpawnArea& single  )
 }
 
 void cSpawnScripted::doSpawn( cSpawnArea& c ) {
-
-	if ( c.disabled )
+	if ( c.disabled ) {
+		c.nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
 		return;
-	if( c.current >= max ) 
+	}
+	if( c.current >= max ) {
+		c.nextspawn=uiCurrentTime+ (60*RandomNum( mintime, maxtime)*MY_CLOCKS_PER_SEC);
 		return;
+	}
 
 	if( npclists.size() > 0 )
 	{
