@@ -1153,7 +1153,7 @@ void LoadOverrides (void)
 				ConOut("\nError parsing %s", buf);
 			}
 		}
-
+		fclose(F);
 	} catch(...) { ConOut("[FATAL!]\n"); return ; }
 
 	ConOut("%d overrides loaded\n", count);
