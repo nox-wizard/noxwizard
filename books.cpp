@@ -374,7 +374,6 @@ namespace Books
 	*/
 	void cBook::DumpTo(std::ostream &s)
 	{
-#ifndef _MSC_VER
 		if ( readonly )	// a readonly book shouldn't be dumped, but if we don't want to test it first...
 			return; // note that a class should be totally independent for OOP...
 
@@ -395,7 +394,6 @@ namespace Books
 		}
 
 		s << "}" << std::endl << std::endl;
-#endif
 	}
 
 	/*!
