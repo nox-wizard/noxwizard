@@ -231,7 +231,7 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 		sprintf(temp,"the left leg of %s",pi3->getSecondaryNameC());
         pi = item::CreateFromScript( "$item_hardcoded" );
         VALIDATEPI(pi);
-        pi->setId( 0x1DAE );
+        pi->setId( 0x1DB2 );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
