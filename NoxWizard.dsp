@@ -384,6 +384,10 @@ SOURCE=.\object.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\oldmenu.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\packets.cpp
 # End Source File
 # Begin Source File
@@ -853,6 +857,10 @@ SOURCE=.\nxwStringList.h
 # Begin Source File
 
 SOURCE=.\object.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\oldmenu.h
 # End Source File
 # Begin Source File
 
