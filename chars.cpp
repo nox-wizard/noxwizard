@@ -572,14 +572,14 @@ void cChar::checkSafeStats()
 */
 
 void cChar::resetCommandParams(){
-	param1="";
-	param2="";
-	param3="";
-	param4="";
-	param5="";
-	param6="";
-	param7="";
-	param8="";
+	param1="_";
+	param2="_";
+	param3="_";
+	param4="_";
+	param5="-";
+	param6="-";
+	param7="-";
+	param8="-";
 }
 
 /*!
@@ -590,14 +590,14 @@ void cChar::resetCommandParams(){
 void cChar::setCommandParams(int number, std::string param){
 	
 	switch(number){
-	case 1: param1=param;
-	case 2: param2=param;
-	case 3: param3=param;
-	case 4: param4=param;
-	case 5: param5=param;
-	case 6: param6=param;
-	case 7: param7=param;
-	case 8: param8=param;
+	case 1: param1 = param;
+	case 2: param2 = param;
+	case 3: param3 = param;
+	case 4: param4 = param;
+	case 5: param5 = param;
+	case 6: param6 = param;
+	case 7: param7 = param;
+	case 8: param8 = param;
 	default: return;
 	}
 }
@@ -607,18 +607,19 @@ void cChar::setCommandParams(int number, std::string param){
 \authors Frodo & Stonedz
 */
 
-std::string cChar::getCommandParams(int number){
+
+TEXT* cChar::getCommandParams(int number){
 
 	switch(number){
-	case 1: return param1;
-	case 2: return param2;
-	case 3: return param3;
-	case 4: return param4;
-	case 5: return param5;
-	case 6: return param6;
-	case 7: return param7;
-	case 8: return param8;
-	default: return "";
+	case 1: return (char * )param1.c_str();
+	case 2: return (char * )param2.c_str();
+	case 3: return (char * )param3.c_str();
+	case 4: return (char * )param4.c_str();
+	case 5: return (char * )param5.c_str();
+	case 6: return (char * )param6.c_str();
+	case 7: return (char * )param7.c_str();
+	case 8: return (char * )param8.c_str();
+	default: return "Error : Invalid Index";
 	}
 }
 

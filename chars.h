@@ -849,7 +849,7 @@ public:
 		//! Set a Param
 		void setCommandParams(int index, std::string param); 
 		//! Get a Param
-		std::string getCommandParams(int index);
+		TEXT* getCommandParams(int index);
 		
 		inline SI32 getHireFee()
 		{ return hirefee; }

@@ -176,7 +176,9 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		unsigned char *comm;
 		unsigned char nonuni[512];
 		char command_line[512];
+		char param[30];
 		int n=1;
+		std::string par;
 
 		//cmd_offset = 1;
 
@@ -204,7 +206,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		
 		//Control between cCommand privilege and cChar privilege.
 		if( (p_cmd->getCommandLevel()) > pc_currchar->getPrivLevel()){
-		client->sysmsg("You can't use this command!");
+		client->sysmsg("You can't use this command! %d %d",p_cmd->getCommandLevel(),pc_currchar->getPrivLevel());
 		return;	
 		}
 		
@@ -214,7 +216,7 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		
 		strlwr(command_line);
 		
-		char * pch;
+		char* pch;
   
 		pch = strtok (command_line," ");
 		pch = strtok (NULL, " ");
@@ -222,13 +224,24 @@ void Command(NXWSOCKET  s, char* speech) // Client entered a command like 'ADD
 		while (pch != NULL && n<9)
 		{
 			if( strcmp( pch, "\0" )!=0 ){
-				pc_currchar->setCommandParams(n, pch);
+				
+				strcpy(param, pch);
+				par=param;
+				InfoOut("PARMA %s\n",(char*)par.c_str());
+				pc_currchar->setCommandParams(n, par);
 				n++;
 			}
 			
 			pch = strtok (NULL, " ");
 		}
+
+		while(n<9){
+			pc_currchar->setCommandParams(n, "_");
+			n++;
+		}
   		
+		par=pc_currchar->getCommandParams(8);
+		InfoOut("PARMA %s\n",(char*)par.c_str());
 		p_cmd->call(pc_currchar); //Let's call the Small Function
    
 		

@@ -1936,7 +1936,7 @@ const char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(	NXW_CP_STR_SPEECH, script2 ) 				//dec value: 458;
 		CHECK(	NXW_CP_STR_ACCOUNT, Accounts->GetAccount( pc->account)->name.c_str()); 				//dec value: 459;
 		CHECK(	NXW_CP_STR_PASSWORD, Accounts->GetAccount( pc->account)->pass.c_str()); 				//dec value: 460;
-		CHECK(	NXW_CP_STR_PARAM, pc->getCommandParams(prop2).c_str());    //dec value: 461; 
+		CHECK(	NXW_CP_STR_PARAM, pc->getCommandParams(prop2) );    //dec value: 461; 
 		default:
 			ErrOut("chr_getProperty called with invalid property %d!\n", property );     //dec value: 461;
 			return emptyString;
