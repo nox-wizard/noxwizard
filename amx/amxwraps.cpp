@@ -2255,11 +2255,9 @@ NATIVE(_chr_delEventHandler)
 */
 NATIVE(_itm_delEventHandler)
 {
-
-
-    P_ITEM pi = pointers::findItemBySerial(params[1]);
-    VALIDATEPIR(pi, INVALID);
-	pi->amxevents[params[2]] = NULL;
+	P_ITEM pi = pointers::findItemBySerial(params[1]);
+	VALIDATEPIR(pi, INVALID);
+	pi->delAmxEvent( params[2] );
 	return 0;
 }
 
