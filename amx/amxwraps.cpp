@@ -4774,7 +4774,7 @@ NATIVE(_guild_addMember)
 	VALIDATEPCR( pc, INVALID );
 
 
-	/*P_GUILD_MEMBER member = guild->addMember( pc );
+	P_GUILD_MEMBER member = guild->addMember( pc );
 	if ( member==NULL)	return INVALID;
 	
 	member->rank = params[3];
@@ -4790,7 +4790,7 @@ NATIVE(_guild_addMember)
 
 	member->title = g_cAmxPrintBuffer;
 
-	return member->serial;*/
+	return member->serial;
 
 }
 
@@ -6111,12 +6111,6 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_getGuildTitle", _chr_getGuildTitle },
  { "chr_setGuildTitle", _chr_setGuildTitle },
 //
-// Sparhawk:	New guild functions
-//
- { "chr_getGuild",		_chr_getGuild },
- { "chr_setGuild",		_chr_setGuild },
-//
-// End of new character guild functions
 //
  { "chr_flee", _chr_flee },
  { "chr_attackStuff", _chr_attackStuff },
