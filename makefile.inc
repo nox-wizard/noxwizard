@@ -85,6 +85,7 @@ SOURCES =	\
 		nxwString.cpp \
 		nxwStringList.cpp \
 		object.cpp \
+		organisation.cpp \
 		packets.cpp \
 		particles.cpp \
 		party.cpp \
@@ -191,6 +192,7 @@ HEADERS =	\
 		nxwString.h \
 		nxwStringList.h \
 		object.h \
+		organisation.h \
 		osdefs.h \
 		packets.h \
 		party.h \
