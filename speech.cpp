@@ -1971,9 +1971,14 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			return;
 	}
 	*/
-	pc->runAmxEvent( EVENT_CHR_ONSPEECH, pc->getSerial32() );
-	if( g_bByPass == true )
-		return;
+        if ( pc->getAmxEvent( EVENT_CHR_ONSPEECH ) != NULL ) {
+                strcpy( script2, speech.c_str() );
+                pc->runAmxEvent( EVENT_CHR_ONSPEECH, pc->getSerial32() );
+
+                if( g_bByPass == true )
+                        return;
+        }
+
 	//</Luxor>
 
 	//
