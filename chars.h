@@ -649,7 +649,7 @@ public:
 		void		resetSkill();
 		void		resetTrackingTargets();
 		void		resetNxwFlags();
-		//void		resetAmxEvents();
+		void		resetAmxEvents();
 		void		resetResists();
 		void		resetLockSkills();
 
@@ -991,8 +991,10 @@ public:
 	public:
 		std::vector< UI32 >	lootVector;
 	
+	/*
 	public:
 		LOGICAL			isValidAmxEvent( UI32 eventId );
+	*/
 
 } PACK_NEEDED;
 
