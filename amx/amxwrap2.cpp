@@ -951,7 +951,7 @@ NATIVE2(_setCharProperty)
 				pc->title = g_cAmxPrintBuffer;
 				break;
 			case NXW_CP_STR_TRIGWORD :		  					//dec value: 456;
-				strcpy( pc->trigword, g_cAmxPrintBuffer );
+				pc->trigword = g_cAmxPrintBuffer;
 				break;
 			case NXW_CP_STR_SPEECHWORD :		 				//dec value: 457;
 				strcpy( script1, g_cAmxPrintBuffer );
@@ -1994,7 +1994,7 @@ static char* getCharStrProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_STR_NAME, const_cast<char *>(pc->getCurrentNameC()) )  //dec value: 453;
 		CHECK(  NXW_CP_STR_ORGNAME , "<obsolete>" )  			//dec value: 454;
 		CHECK(  NXW_CP_STR_TITLE , const_cast<char *>(pc->title.c_str()) )  			//dec value: 455;
-		CHECK(  NXW_CP_STR_TRIGWORD , pc->trigword )  			//dec value: 456;
+		CHECK(  NXW_CP_STR_TRIGWORD , const_cast<char *>(pc->trigword.c_str()) )  			//dec value: 456;
 		CHECK(	NXW_CP_STR_SPEECHWORD, script1 ) 			//dec value: 457;
 		CHECK(	NXW_CP_STR_SPEECH, script2 ) 				//dec value: 458;
 	}
