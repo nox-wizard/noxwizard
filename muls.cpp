@@ -151,8 +151,8 @@ void cMULFile<T>::loadCache() {
 	
 	idx->file.seekg( 0 );
 	while( !idx->file.eof() ) {
-		TINDEX index;
-		idx->file.read( (char*)&index, sizeof(TINDEX) );
+		mul_index_st index;
+		idx->file.read( (char*)&index, sizeof(mul_index_st) );
 		++i;
 
 		if( index.start==INVALID || index.size==INVALID )
@@ -314,7 +314,7 @@ bool cTiledata::isReady()
 \param id the id
 \param land the land info
 */
-bool cTiledata::getLand( SERIAL id, TLANDINFO& land )
+bool cTiledata::getLand( SERIAL id, land_st& land )
 {
 	if( !(id>INVALID && id<LANDSINFOCOUNT)) 
 		return false;
@@ -329,12 +329,12 @@ bool cTiledata::getLand( SERIAL id, TLANDINFO& land )
 		if( isCached )
 			return false;
 
-		UI32 pos= ( id / LANDINGROUP ) *sizeof( TLANDGROUP ) +
+		UI32 pos= ( id / LANDSINGROUP ) *sizeof( land_group_st ) +
 			sizeof( UI32 ) + // TLANDGROUP.header
-			( id % LANDINGROUP ) *sizeof( TLANDINFO );
+			( id % LANDSINGROUP ) *sizeof( land_st );
 		
 		file.seekg( pos );
-		file.read((char*)&land, sizeof(TLANDINFO));
+		file.read((char*)&land, sizeof(land_st));
 		return true;
 	};
 };
@@ -346,7 +346,7 @@ bool cTiledata::getLand( SERIAL id, TLANDINFO& land )
 \param id the id
 \param stat the static info
 */
-bool cTiledata::getStatic( SERIAL id, TSTATICINFO& stat )
+bool cTiledata::getStatic( SERIAL id, tile_st& stat )
 {
 	//if( !( (id>(INVALID +FIRSTSTATICSINFO)) && (id<FIRSTSTATICSINFO+STATICSINFOCOUNT))) 
 	//	return false;
@@ -361,13 +361,13 @@ bool cTiledata::getStatic( SERIAL id, TSTATICINFO& stat )
 		if( isCached )
 			return false;
 			
-		UI32 pos= LANDGROUPCOUNT *sizeof(TLANDGROUP)+
-				( id / STATICINGROUP ) *sizeof( TSTATICGROUP ) +
+		UI32 pos= BASESTATICINFO +
+				( id / TILESINGROUP ) *sizeof( tile_group_st ) +
 				sizeof( UI32 ) + // TSTATICGROUP.header
-				( id % STATICINGROUP ) *sizeof( TSTATICINFO );
+				( id % TILESINGROUP ) *sizeof( tile_st );
 		
 		file.seekg( pos );
-		file.read((char*)&stat, sizeof(TSTATICINFO));
+		file.read((char*)&stat, sizeof(tile_st));
 		return true;
 	};
 };
@@ -382,18 +382,18 @@ void cTiledata::loadForCaching() {
 		return;
 
 	int i;
-	TLANDGROUP landg;
+	land_group_st landg;
 	for ( i=0; i<LANDGROUPCOUNT; i++ ) {
-		file.read( (char*)&landg, sizeof(TLANDGROUP) );
-		for( int j=0; j<LANDINGROUP; j++ )
-			landsCached[i*LANDINGROUP+j]=landg.lands[j];
+		file.read( (char*)&landg, sizeof(land_group_st) );
+		for( int j=0; j<LANDSINGROUP; j++ )
+			landsCached[i*LANDSINGROUP+j]=landg.land[j];
 	}
 
-	TSTATICGROUP staticg;
-	for ( i=0; i<STATICGROUPCOUNT; i++ ) {
-		file.read( (char*)&staticg, sizeof(TSTATICGROUP) );
-		for( int j=0; j<STATICINGROUP; j++ )
-			staticsCached[i*STATICINGROUP+j]=staticg.statics[j];
+	tile_group_st staticg;
+	for ( i=0; i<TILEGROUPCOUNT; i++ ) {
+		file.read( (char*)&staticg, sizeof(tile_group_st) );
+		for( int j=0; j<TILESINGROUP; j++ )
+			staticsCached[i*TILESINGROUP+j]=staticg.tile[j];
 	}
 
 	isCached=true;
@@ -513,9 +513,9 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 	file.read( (char*)&nblocchi, sizeof( SI32 ) );
 	
 	for( int i=0; i<nblocchi; i++ ) {
-		file.seekg( sizeof(UI32) + i*sizeof(TPATCH) );
-		TPATCH patch;
-		file.read( (char*)&patch, sizeof(patch) );
+		file.seekg( sizeof(UI32) + i*sizeof(mul_patch_st) );
+		mul_patch_st patch;
+		file.read( (char*)&patch, sizeof(mul_patch_st) );
 		switch( patch.file ) {
 			case MUL_MAP:
 			case MUL_STATIDX:
@@ -525,11 +525,11 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 			case MUL_MULTIIDX:
 			case MUL_MULTI:
 				file.seekg( patch.info.start );
-				if((patch.info.size % sizeof(TMULTI))==0) {
-					TMULTI m;
+				if((patch.info.size % sizeof(multi_st))==0) {
+					multi_st m;
 					multi->cache.erase( patch.id );
-					for( UI32 j=0; j<(patch.info.size % sizeof(TMULTI)); j++ ) {
-						file.read( (char*)&m, sizeof(TMULTI) );
+					for( UI32 j=0; j<(patch.info.size % sizeof(multi_st)); j++ ) {
+						file.read( (char*)&m, sizeof(multi_st) );
 						multi->cache[patch.id+j].push_back(m);
 					}
 				}
@@ -539,24 +539,24 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 			case MUL_TILEDATA:
 				if( patch.id<LANDGROUPCOUNT ) {
 					file.seekg( patch.info.start );
-					if(patch.info.size==sizeof(TLANDGROUP)) {
-						TLANDGROUP landg;
+					if(patch.info.size==sizeof(land_group_st)) {
+						land_group_st landg;
 						tiledata->landsCached.erase( patch.id );
-						file.read( (char*)&landg, sizeof(TLANDGROUP) );
-						for( int j=0; j<LANDINGROUP; j++ )
-							tiledata->landsCached[(patch.id*LANDINGROUP)+j]=landg.lands[j];
+						file.read( (char*)&landg, sizeof(land_group_st) );
+						for( int j=0; j<LANDSINGROUP; j++ )
+							tiledata->landsCached[(patch.id*LANDSINGROUP)+j]=landg.land[j];
 					}
 					else 
 						ErrOut("VERDATA contains tiledata.land data with wrong lenght. Ignoring version record.\n");
 				}
-				else if( (patch.id>=LANDGROUPCOUNT) && (patch.id<(LANDGROUPCOUNT+STATICGROUPCOUNT)) ) {
+				else if( (patch.id>=LANDGROUPCOUNT) && (patch.id<(LANDGROUPCOUNT+TILEGROUPCOUNT)) ) {
 					file.seekg( patch.info.start );
-					if(patch.info.size==sizeof(TSTATICGROUP)) {
-						TSTATICGROUP staticg;
+					if(patch.info.size==sizeof(tile_group_st)) {
+						tile_group_st staticg;
 						tiledata->staticsCached.erase( patch.id );
-						file.read( (char*)&staticg, sizeof(TSTATICGROUP) );
-						for( int j=0; j<STATICINGROUP; j++ )
-							tiledata->staticsCached[(patch.id*STATICINGROUP)+j]=staticg.statics[j];
+						file.read( (char*)&staticg, sizeof(tile_group_st) );
+						for( int j=0; j<TILESINGROUP; j++ )
+							tiledata->staticsCached[(patch.id*TILESINGROUP)+j]=staticg.tile[j];
 					}
 					else 
 						ErrOut("VERDATA contains tiledata.statics data with wrong lenght. Ignoring version record.\n");
@@ -585,8 +585,8 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 */
 cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache ) : cMULFile<statics_st>( pathidx, pathdata, cache )
 {
-	width=width;
-	height=height;
+	this->width=width;
+	this->height=height;
 }
 
 /*!
@@ -621,12 +621,13 @@ bool cStatics::getData( UI16 x, UI16 y, std::vector<statics_st>* stats )
 
 SERIAL cStatics::idFromXY( UI16 x, UI16 y ) {
 
-	if( x>=width || y>=height ) {
+	UI16 blockX = x/8, blockY = y/8;
+	if( (blockX>=width) || (blockY>=height) ) {
 		ErrOut( "Bad static ( x=%i y=%i ) search in map %s ( width=%i height=%i )",x,y,getPath().c_str(),width,height );
 		return INVALID;
 	}
 
-	return x*height+y;
+	return blockX*height+blockY;
 }
 
 

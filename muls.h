@@ -77,14 +77,14 @@ public:
 			return false;
 		}
 
-		if( (id==INVALID) || ( isCached ) || ( id*sizeof(TINDEX) >= idx->file.width() ) ) {
+		if( (id==INVALID) || ( isCached ) ) {
 			data=NULL;
 			return false;
 		}
 
-		TINDEX index;
-		idx->file.seekg( id*sizeof(TINDEX) );
-		idx->file.read( (char*)&index, sizeof(TINDEX) );
+		mul_index_st index;
+		idx->file.seekg( id*sizeof(mul_index_st) );
+		idx->file.read( (char*)&index, sizeof(mul_index_st) );
 		if( index.start==INVALID || index.size==INVALID ) {
 			data=NULL;
 			return false;
@@ -180,15 +180,15 @@ enum {
 const int LENGTHNAMESTRING = 20;
 
 const UI32 LANDGROUPCOUNT = 512;
-const int LANDINGROUP = 32;
-const int LANDSINFOCOUNT = LANDGROUPCOUNT*LANDINGROUP;
+const int LANDSINGROUP = 32;
+const int LANDSINFOCOUNT = LANDGROUPCOUNT*LANDSINGROUP;
 
-const UI32 STATICGROUPCOUNT = 512;
-const int STATICINGROUP = 32;
-const int STATICSINFOCOUNT = STATICGROUPCOUNT*STATICINGROUP;
-const int FIRSTSTATICSINFO = LANDGROUPCOUNT*LANDINGROUP;
+const UI32 TILEGROUPCOUNT = 512;
+const int TILESINGROUP = 32;
+const int TILESINFOCOUNT = TILEGROUPCOUNT*TILESINGROUP;
+const int FIRSTTILEINFO = LANDGROUPCOUNT*LANDSINGROUP;
 
-struct staticinfo_st {
+struct tile_st {
 	UI32 flags;
 	UI08 weight;
 	UI08 quality;
@@ -203,34 +203,28 @@ struct staticinfo_st {
 	UI08 height;	//!< Carries
 	char name[ LENGTHNAMESTRING ];
 } PACK_NEEDED;
-typedef staticinfo_st TSTATICINFO;
-typedef staticinfo_st tile_st;
 
-struct staticgroup_st {
+struct tile_group_st {
 	UI32 header;
-	TSTATICINFO statics[STATICINGROUP];
+	tile_st tile[ TILESINGROUP ];
 } PACK_NEEDED;
-typedef staticgroup_st TSTATICGROUP;
 
 
-struct landinfo_st {
+struct land_st {
 	UI32 flags;
 	UI16 textureID;
 	char name[ LENGTHNAMESTRING ];
 } PACK_NEEDED;
-typedef landinfo_st TLANDINFO;
-typedef landinfo_st land_st;
 
-struct landgroup_st {
+struct land_group_st {
    	UI32 header;
-	TLANDINFO lands[ LANDINGROUP ];
+	land_st land[ LANDSINGROUP ];
 } PACK_NEEDED;
-typedef landgroup_st TLANDGROUP;
 
-const int BASESTATICINFO = LANDGROUPCOUNT *sizeof( TLANDGROUP );
+const int BASESTATICINFO = LANDGROUPCOUNT *sizeof(land_group_st);
 
-typedef std::map<SERIAL, TSTATICINFO> STATICINFOMAP;
-typedef std::map<SERIAL, TLANDINFO> LANDINFOMAP;
+typedef std::map<SERIAL, tile_st> STATICINFOMAP;
+typedef std::map<SERIAL, land_st> LANDINFOMAP;
 
 
 /*!
@@ -254,8 +248,8 @@ public:
 	bool isReady();
 	
 	void loadForCaching();
-	bool getLand( SERIAL id, TLANDINFO& land );
-	bool getStatic( SERIAL id, TSTATICINFO& stat );
+	bool getLand( SERIAL id, land_st& land );
+	bool getStatic( SERIAL id, tile_st& stat );
 
 };
 
@@ -329,9 +323,8 @@ struct multi_st {
 	UI16 alt;
 	UI32 flags;
 } PACK_NEEDED;
-typedef multi_st TMULTI;
 
-#define MULTISVEC std::vector<TMULTI>
+#define MULTISVEC std::vector<multi_st>
 #define MULTISMAP std::map< UI32, MULTISVEC >
 typedef MULTISVEC* P_MULTISVEC;
 
@@ -413,20 +406,18 @@ enum MUL_FILES {
 	MUL_VERDATA
 };
 
-struct index_st {
+struct mul_index_st {
 	SI32 start;
 	SI32 size;
 	UI16 height;
 	UI16 width;
 } PACK_NEEDED;
-typedef index_st TINDEX;
 
-struct patch_st {
+struct mul_patch_st {
 	UI32 file;
 	UI32 id;
-	TINDEX info;
+	mul_index_st info;
 } PACK_NEEDED;
-typedef patch_st TPATCH;
 
 /*!
 \brief Verdata
