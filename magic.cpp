@@ -1347,10 +1347,12 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				} 
 				else
 				{
-					if (spellnumber == SPELL_EARTHQUAKE || spellnumber == SPELL_EXPLOSION) //Luxor
-					{
+					if ( spellnumber == SPELL_EARTHQUAKE ) {  //Luxor
 						x = srcpos.x;
 						y = srcpos.y;
+					} else if ( spellnumber == SPELL_EXPLOSION ) {
+						x = pd->getPosition().x;
+						y = pd->getPosition().y;
 					}
 					castAreaAttackSpell(x, y, spellnumber, src);
 				}
@@ -1362,7 +1364,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 				CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
 				param = ( (src->in + 10) - pd->in ) / 2;
-				damage(pd, src, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
+				damage(src, pd, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
 			}
 			break;
 
@@ -2068,7 +2070,7 @@ cPolymorphMenu::cPolymorphMenu( P_CHAR pc ) : cIconListMenu()
 {
 	VALIDATEPC( pc );
 	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL )
-		addIcon( 0x2106, 0, pc->getOldId(), string("Undo polymorph") );
+		addIcon( 0x2106, 0, pc->GetOldBodyType(), string("Undo polymorph") );
 	addIcon( 0x20CF, 0, 0xd3, string("Black Bear") );
 	addIcon( 0x20DB, 0, 0xd4, string("Grizzly Bear") );
 	addIcon( 0x20E1, 0, 0xd5, string("Polar Bear") );
@@ -2113,7 +2115,7 @@ void cPolymorphMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	pc->delTempfx( tempfx::SPELL_WEAKEN );
 
 
-	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->getOldId() ) {
+	if ( pc->getTempfx( tempfx::SPELL_POLYMORPH ) != NULL && data == pc->GetOldBodyType() ) {
 		pc->delTempfx( tempfx::SPELL_POLYMORPH );
 		return;
 	}
