@@ -1677,7 +1677,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if (src!=NULL) {
 				if (nValue == INVALID)
 					nValue = xss::getIntFromDefine("$item_french_bread");
-				src->spawnItemInBackpack(nValue);
+				item::CreateFromScript( nValue, src->getBackpack() );
 				spellFX(spellnumber, src, pd);
 			}
 		break;

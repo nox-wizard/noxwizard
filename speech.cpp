@@ -1723,7 +1723,7 @@ static LOGICAL requestChaosShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 					}
 					if( success )
 					{
-						item::SpawnItemBackpack2( socket, 28, 1 );
+						item::CreateFromScript( "$item_chaos_shield", pc->getBackpack() );
 						chaosGuard->talk( socket, TRANSLATE("Here's is your new shield."), 0);
 					}
 					else
@@ -1778,7 +1778,7 @@ static LOGICAL requestOrderShield( P_CHAR pc, NXWSOCKET socket, std::string &spe
 					}
 					if( success )
 					{
-						item::SpawnItemBackpack2( socket, 29, 1 );
+						item::CreateFromScript( "$item_order_shield", pc->getBackpack() );
 						orderGuard->talk( socket, TRANSLATE("Here's is your new shield."), 0);
 					}
 					else

@@ -2753,6 +2753,9 @@ void cChar::modifyFame( SI32 value )
 
 void enlist(int s, int listnum) // listnum is stored in items morex
 {
+	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	VALIDATEPC(pc);
+	
 	int x,j;
 //	char sect[512];
     cScpIterator* iter = NULL;
@@ -2770,7 +2773,7 @@ void enlist(int s, int listnum) // listnum is stored in items morex
 		if ((script1[0]!='}')&&(script1[0]!='{'))
 		{
 			x=str2num(script1);
-			P_ITEM pj=item::SpawnItemBackpack2(s, x, 0);
+			P_ITEM pj=item::CreateFromScript( x, pc->getBackpack() );
 			VALIDATEPI(pj);
 			j= DEREF_P_ITEM(pj);
 			pj->Refresh();
