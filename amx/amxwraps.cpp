@@ -5182,7 +5182,7 @@ NATIVE( _chr_unStable )
 \param 6 function callback
 \return the menu serial
 */
-NATIVE ( _menu_create )
+NATIVE ( _gui_create )
 {
 	P_MENU menu = Menus.insertMenu( new cMenu( MENUTYPE_CUSTOM, params[1], params[2], (params[3]?true:false), (params[4]?true:false), (params[5]?true:false) ) );
 	VALIDATEPMR( menu, INVALID );
@@ -5202,7 +5202,7 @@ NATIVE ( _menu_create )
 \param 1 the menu serial
 \return true if is deleted or false if error
 */
-NATIVE ( _menu_delete )
+NATIVE ( _gui_delete )
 {
 	return ( Menus.removeMenu( params[1] )==INVALID )? 1 : 0;
 }
@@ -5215,7 +5215,7 @@ NATIVE ( _menu_delete )
 \param 2 the character
 \return true if is show or false if error
 */
-NATIVE ( _menu_show )
+NATIVE ( _gui_show )
 {
 	P_CHAR pc = pointers::findCharBySerial( params[2] );
 	VALIDATEPCR( pc, 0 );
@@ -5237,7 +5237,7 @@ NATIVE ( _menu_show )
 \param 4 the height
 \return false if error, true else
 */
-NATIVE( _menu_addBackground ) 
+NATIVE( _gui_addBackground )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5260,7 +5260,7 @@ NATIVE( _menu_addBackground )
 \param 7 pressable, if true can be pressed
 \return false if error, true else
 */
-NATIVE ( _menu_addButton )
+NATIVE ( _gui_addButton )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5284,7 +5284,7 @@ NATIVE ( _menu_addButton )
 \param 8 function callback
 \return false if error, true else
 */
-NATIVE ( _menu_addButtonFn )
+NATIVE ( _gui_addButtonFn )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5316,7 +5316,7 @@ NATIVE ( _menu_addButtonFn )
 \param 7 result
 \return false if error, true else
 */
-NATIVE( _menu_addCheckbox )
+NATIVE( _gui_addCheckbox )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5337,7 +5337,7 @@ NATIVE( _menu_addCheckbox )
 \param 5 height
 \return false if error, true else
 */
-NATIVE( _menu_addCheckTrans )
+NATIVE( _gui_addCheckTrans )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5360,7 +5360,7 @@ NATIVE( _menu_addCheckTrans )
 \param 7 text
 \return false if error, true else
 */
-NATIVE( _menu_addCroppedText )
+NATIVE( _gui_addCroppedText )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5389,7 +5389,7 @@ NATIVE( _menu_addCroppedText )
 \param 5 color
 \return false if error, true else
 */
-NATIVE( _menu_addGump )
+NATIVE( _gui_addGump )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5413,7 +5413,7 @@ NATIVE( _menu_addGump )
 \param 8 can scroll
 \return false if error, true else
 */
-NATIVE( _menu_addHtmlGump )
+NATIVE( _gui_addHtmlGump )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5443,7 +5443,7 @@ NATIVE( _menu_addHtmlGump )
 \param 8 initial value
 \return false if error, true else
 */
-NATIVE( _menu_addInputField )
+NATIVE( _gui_addInputField )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5478,7 +5478,7 @@ NATIVE( _menu_addInputField )
 \param 8 color
 \return false if error, true else
 */
-NATIVE( _menu_addPropField )
+NATIVE( _gui_addPropField )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5501,7 +5501,7 @@ NATIVE( _menu_addPropField )
 \param 7 result
 \return false if error, true else
 */
-NATIVE( _menu_addRadioButton )
+NATIVE( _gui_addRadioButton )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5523,7 +5523,7 @@ NATIVE( _menu_addRadioButton )
 \param 6 height
 \return false if error, true else
 */
-NATIVE (  _menu_addResizeGump )
+NATIVE (  _gui_addResizeGump )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5543,7 +5543,7 @@ NATIVE (  _menu_addResizeGump )
 \param 5 text
 \return false if error, true else
 */
-NATIVE ( _menu_addText )
+NATIVE ( _gui_addText )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5574,7 +5574,7 @@ NATIVE ( _menu_addText )
 \param 5 color
 \return false if error, true else
 */
-NATIVE( _menu_addTilePic )
+NATIVE( _gui_addTilePic )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5596,7 +5596,7 @@ NATIVE( _menu_addTilePic )
 \param 7 color
 \return false if error, true else
 */
-NATIVE( _menu_addTiledGump )
+NATIVE( _gui_addTiledGump )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5619,7 +5619,7 @@ NATIVE( _menu_addTiledGump )
 \param 8 can scroll
 \return false if error, true else
 */
-NATIVE( _menu_addXmfHtmlGump )
+NATIVE( _gui_addXmfHtmlGump )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5641,7 +5641,7 @@ NATIVE( _menu_addXmfHtmlGump )
 \param 2 the page
 \return false if error, true else
 */
-NATIVE( _menu_addPage )
+NATIVE( _gui_addPage )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5662,7 +5662,7 @@ NATIVE( _menu_addPage )
 \param 6 page to go
 \return false if error, true else
 */
-NATIVE( _menu_addPageButton )
+NATIVE( _gui_addPageButton )
 {
 	cMenu* menu = static_cast<cMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -5679,7 +5679,7 @@ NATIVE( _menu_addPageButton )
 \param 2 question
 \return the menu serial
 */
-NATIVE( _menu_createIconList )
+NATIVE( _gui_createIconList )
 {
 	cIconListMenu* menu = (cIconListMenu*)Menus.insertMenu( new cIconListMenu() );
 	VALIDATEPMR( menu, INVALID );
@@ -5710,7 +5710,7 @@ NATIVE( _menu_createIconList )
 \param 5 response
 \return false if error, true else
 */
-NATIVE( _menu_addIcon )
+NATIVE( _gui_addIcon )
 {
 	cIconListMenu* menu = static_cast<cIconListMenu*>( Menus.getMenu( params[1] ) );
 	VALIDATEPMR( menu, 0 );
@@ -6029,32 +6029,32 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "mnu_setCallback", _mnu_SetCallback },
 // New Menu functions :
 
- { "menu_create", _menu_create },
- { "menu_delete", _menu_delete },
- { "menu_show", _menu_show },
- { "menu_getProperty", _getMenuProperty },
- { "menu_setProperty", _setMenuProperty },
- { "menu_addBackground", _menu_addBackground },
- { "menu_addButton", _menu_addButton },
- { "menu_addButtonFn", _menu_addButtonFn },
- { "menu_addCheckbox", _menu_addCheckbox },
- { "menu_addCheckTrans", _menu_addCheckTrans },
- { "menu_addCroppedText", _menu_addCroppedText },
- { "menu_addGump", _menu_addGump },
- { "menu_addHtmlGump", _menu_addHtmlGump },
- { "menu_addInputField", _menu_addInputField },
- { "menu_addPropField", _menu_addPropField },
- { "menu_addRadioButton", _menu_addRadioButton },
- { "menu_addResizeGump", _menu_addResizeGump },
- { "menu_addText", _menu_addText },
- { "menu_addTilePic", _menu_addTilePic },
- { "menu_addTiledGump", _menu_addTiledGump },
- { "menu_addXmfHtmlGump", _menu_addXmfHtmlGump },
- { "menu_addPage", _menu_addPage },
- { "menu_addPageButton", _menu_addPageButton },
+ { "gui_create", _gui_create },
+ { "gui_delete", _gui_delete },
+ { "gui_show", _gui_show },
+ { "gui_getProperty", _getMenuProperty },
+ { "gui_setProperty", _setMenuProperty },
+ { "gui_addBackground", _gui_addBackground },
+ { "gui_addButton", _gui_addButton },
+ { "gui_addButtonFn", _gui_addButtonFn },
+ { "gui_addCheckbox", _gui_addCheckbox },
+ { "gui_addCheckTrans", _gui_addCheckTrans },
+ { "gui_addCroppedText", _gui_addCroppedText },
+ { "gui_addGump", _gui_addGump },
+ { "gui_addHtmlGump", _gui_addHtmlGump },
+ { "gui_addInputField", _gui_addInputField },
+ { "gui_addPropField", _gui_addPropField },
+ { "gui_addRadioButton", _gui_addRadioButton },
+ { "gui_addResizeGump", _gui_addResizeGump },
+ { "gui_addText", _gui_addText },
+ { "gui_addTilePic", _gui_addTilePic },
+ { "gui_addTiledGump", _gui_addTiledGump },
+ { "gui_addXmfHtmlGump", _gui_addXmfHtmlGump },
+ { "gui_addPage", _gui_addPage },
+ { "gui_addPageButton", _gui_addPageButton },
 
- { "menu_createIconList", _menu_createIconList },
- { "menu_addIcon", _menu_addIcon },
+ { "gui_createIconList", _gui_createIconList },
+ { "gui_addIcon", _gui_addIcon },
 // Region functions :
  { "rgn_setWeather", _rgn_setWeather },
  { "rgn_getWeather", _rgn_getWeather },
