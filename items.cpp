@@ -425,36 +425,23 @@ void cItem::explode(NXWSOCKET  s)
 	P_CHAR pc_current=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc_current);
 
+	if(!isInWorld())
+		return;
+
 	//Luxor - recursive explosions!! :DD
 	NxwItemWrapper si;
 	si.fillItemsNearXYZ( getPosition(), 5, true );
     for( si.rewind(); !si.isEmpty(); si++ ) {
 		P_ITEM p_nearbie=si.getItem();
-		if(ISVALIDPI(p_nearbie) && p_nearbie->type == 19 && p_nearbie->morey == 3) { //It's an explosion potion!
+		if(ISVALIDPI(p_nearbie) && p_nearbie->type == ITYPE_POTION && p_nearbie->morey == 3) { //It's an explosion potion!
     		if(rand()%2==1)
 				p_nearbie->explode(s);
     	}
     }
 	//End Luxor recursive explosions
 
-	// - send the effect (visual and sound)
-	if (!isInWorld()) //bugfix LB
-	{
-		Location charpos= pc_current->getPosition();
-		/*
-		pi->x= charpos.x;
-		pi->y= charpos.y;
-		pi->z= charpos.z;
-		*/
-		setPosition( charpos );
-		pc_current->playAction(0x15);
-		pc_current->playSFX(0x0207);
-	}
-	else
-	{
-		staticeffect2(this, 0x36, 0xB0, 0x10, 0x80, 0x00);
-		soundeffect3(this, 0x0207);
-	}
+	staticeffect2(this, 0x36, 0xB0, 0x10, 0x80, 0x00);
+	soundeffect3(this, 0x0207);
 
 	len=morex/250; //4 square max damage at 100 alchemy
 	switch (morez)
@@ -470,24 +457,14 @@ void cItem::explode(NXWSOCKET  s)
 	if (dmg<5) dmg=RandomNum(5,10);	// 5 points minimum damage
 	if (len<2) len=2;	// 2 square min damage range
 
-	if(!isInWorld())
-		return;
-
 	NxwCharWrapper sc;
 	sc.fillCharsNearXYZ( getPosition(), len, true );
 	for( sc.rewind(); !sc.isEmpty(); sc++ ) {
 
 		P_CHAR pc=sc.getChar();
-		if( ISVALIDPC(pc) && (!(pc->IsGM() || (!pc->npc && !pc->IsOnline()) ))) {
-			pc->hp-=dmg+(2-pc->distFrom(this));
-			pc->updateStats(0);
-			if (pc->hp<=0)
-				pc->Kill();
-			else
-			{
-				npcattacktarget(DEREF_P_CHAR(pc), DEREF_P_CHAR(pc_current));
-				pc->teleport();
-			}
+		if( ISVALIDPC(pc) ) {
+			pc->damage( dmg+(2-pc->distFrom(this)), DAMAGE_FIRE );
+			pc->sysmsg( "damage %i", dmg );
 		}
 	}
 
