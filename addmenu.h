@@ -56,7 +56,7 @@ public:
     
 	cMakeItem();
 	~cMakeItem();
-    bool checkReq( P_CHAR pc, bool inMenu = false, cMakeItem* def = NULL );
+    bool checkReq( P_CHAR pc, bool inMenu = false, cRawItem* def = NULL );
 };
 
 class cMakeMenu : public cBasicMenu 
@@ -73,7 +73,7 @@ class cMakeMenu : public cBasicMenu
 
 		virtual void loadFromScript( P_CHAR pc );
 		std::string cleanString( std::string s );
-		void execMake( NXWCLIENT ps, UI32 button );
+		void execMake( NXWCLIENT ps, UI32 item );
 
 	protected:
 		virtual cServerPacket* build();
@@ -83,6 +83,7 @@ class cMakeMenu : public cBasicMenu
 		int skill;
 		cRawItem mat[2];
 		
+		cMakeMenu( SERIAL section );
 		cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second=NULL );
 		~cMakeMenu();
 
@@ -94,7 +95,7 @@ class cAddMenu : public cMakeMenu
 {
 
 	private:
-		virtual void loadFromScript( P_CHAR pc = NULL );
+		virtual void loadFromScript( P_CHAR pc );
 
 	public:
 		cAddMenu( SERIAL section, P_CHAR pc );

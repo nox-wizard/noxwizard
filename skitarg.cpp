@@ -167,14 +167,16 @@ void Skills::target_fletching( NXWCLIENT ps, P_TARGET t )
     AMXEXECSV(s,AMXT_SKITARGS,BOWCRAFT,AMX_AFTER);
 }
 
-void Skills::BowCraft(NXWSOCKET s)
+void Skills::target_bowcraft( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR pc_currchar = MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc_currchar = ps->currChar();
 	VALIDATEPC(pc_currchar);
+
+	NXWSOCKET s = ps->toInt();
 
 	pc_currchar->playAction(pc_currchar->isMounting() ? 0x1C : 0x0D);
 
-	const P_ITEM pi=pointers::findItemBySerPtr(buffer[s]+7);
+	const P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
 	AMXEXECSV(s,AMXT_SKITARGS,BOWCRAFT,AMX_BEFORE);
@@ -411,53 +413,43 @@ const short NumberOfOres = sizeof(OreTable)/sizeof(Ore);
 #define max_res_x 610
 #define max_res_y 410
 
-void Skills::TreeTarget(NXWSOCKET s)
+void Skills::target_tree( NXWCLIENT ps, P_TARGET t )
 {
 
-    P_CHAR pc = MAKE_CHAR_REF(currchar[s]);
-	VALIDATEPC(pc);
+    P_CHAR pc = ps->currChar();
+
+	NXWSOCKET s = ps->toInt();
 
     AMXEXECSV(s,AMXT_SKITARGS,LUMBERJACKING,AMX_BEFORE);
-    int lumber=0;
-    int px,py,cx,cy;
+
     static TIMERVAL logtime[max_res_x][max_res_y];//see mine for values...they were 1000 also here
     static UI32 logamount[max_res_x][max_res_y];
     int a, b;
     unsigned int c;
     unsigned long int curtime=uiCurrentTime;
-	if (pc->isMounting()) {
+	
+	if( pc->isMounting() ) {
 		pc->sysmsg(TRANSLATE("You cannot do this on a horse"));
 		return;
 	}
+
 	Location charpos= pc->getPosition();
+	Location location = t->getLocation();	
 
-	P_ITEM packnum;
 
-    // Juliunus : some addons : distance max, and need a weapon in hand.
-    px=((buffer[s][0x0b]<<8)+(buffer[s][0x0c]%256));
-    py=((buffer[s][0x0d]<<8)+(buffer[s][0x0e]%256));
-    // amount=world_resource_check(px,py,4,1); working... but not finished
-    cx= abs((int)charpos.x - px);
-    cy= abs((int)charpos.y - py);
-    int cz= abs(charpos.z - buffer[s][0x10]);
-
-    if(!((cx<=2) && (cy<=2) && (cz<=25)))
+    if( dist( charpos, location )>2 )
     {
         pc->sysmsg(TRANSLATE("You are to far away to reach that"));
         return;
     }
-	int weapon = DEREF_P_ITEM(pc->getWeapon());
-	bool cancut = false;
-	if (weapon > -1) // need some more tests to check if the pc has a weapon which can chop (no pickaxe, showel, crook, staff...).
-			cancut = true;
-	if (!cancut)
+
+	P_ITEM weapon = pc->getWeapon();
+	if( !( ISVALIDPI(weapon) && ( weapon->IsAxe() || weapon->IsSword() ) ) )
 	{
 		pc->sysmsg(TRANSLATE("You must have a weapon in hand in order to chop."));
 		return;
 	}
 
-    //AntiChrist
-    //Logging stamina
     if (resource.logstamina<0 && abs(resource.logstamina)>pc->stm)
     {
         pc->sysmsg(TRANSLATE("You are too tired to chop."));
@@ -489,22 +481,7 @@ void Skills::TreeTarget(NXWSOCKET s)
         LogMessage("[DONE]");
     }
 
-    if (LongFromCharPtr(buffer[s] + 11) == INVALID)
-    return; // Test if use canceled the mining request
-
-    px = ShortFromCharPtr(buffer[s] +11);
-    py = ShortFromCharPtr(buffer[s] +13);
-    // amount=world_resource_check(px,py,4,1); working... but not finished
-    cx= abs((int)charpos.x - px);
-    cy= abs((int)charpos.y - py);
-
-    if((cx>5) || (cy >5))
-    {
-        pc->sysmsg(TRANSLATE("You are to far away to reach that"));
-        return;
-    }
-
-	pc->facexy(px, py);
+	pc->facexy( location.x, location.y );
 
     a= charpos.x / resource.logarea; //Zippy
     b= charpos.y / resource.logarea;
@@ -530,9 +507,9 @@ void Skills::TreeTarget(NXWSOCKET s)
         return;
     }
 
-    packnum = pc->getBackpack();
-    	if (!packnum) {
-    		pc->sysmsg(TRANSLATE("No backpack to store logs"));
+    P_ITEM packnum = pc->getBackpack();
+    if( !ISVALIDPI(packnum) ) {
+    	pc->sysmsg(TRANSLATE("No backpack to store logs"));
 		return;
 	}
 
@@ -542,23 +519,15 @@ void Skills::TreeTarget(NXWSOCKET s)
     if (!pc->checkSkill(LUMBERJACKING, 0, 1000))
     {
         pc->sysmsg(TRANSLATE("You chop for a while, but fail to produce any usable wood."));
-        if(logamount[a][b]>0 && rand()%2==1) logamount[a][b]--;//Randomly deplete resources even when they fail 1/2 chance you'll loose wood.
+        if(logamount[a][b]>0 && rand()%2==1) 
+			logamount[a][b]--;//Randomly deplete resources even when they fail 1/2 chance you'll loose wood.
         return;
     }
 
-    if(logamount[a][b]>0) logamount[a][b]--;
+    if(logamount[a][b]>0) 
+		logamount[a][b]--;
 
-    if ((buffer[s][1]==1 || buffer[s][1]==0)&&(buffer[s][2]==0)
-        &&(buffer[s][3]==1)&&(buffer[s][4]==0))
-    {
-        //
-        //28/11/01
-        //
-        //Luxor - new implementation of AMX controlled lumberjacking.
-        AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
-
-        lumber=1;
-    }
+    AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXLUMBERJACKING), s);
 
     AMXEXECSV(s,AMXT_SKITARGS,LUMBERJACKING,AMX_AFTER);
 }

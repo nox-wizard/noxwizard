@@ -724,11 +724,11 @@ void target_axe( NXWCLIENT ps, P_TARGET t )
 
     UI16 id=t->getModel();
     if (itemById::IsTree(id))
-		Skills::TreeTarget(s);
+		Skills::target_tree( ps, t );
     else if (itemById::IsCorpse(id))
         CorpseTarget(ps);
     else if (itemById::IsLog(id)) //Luxor bug fix
-		Skills::BowCraft(s);
+		Skills::target_bowcraft( ps, t );
 }
 
 
@@ -764,7 +764,7 @@ void target_sword( NXWCLIENT ps, P_TARGET t )
 	}
 	else if(itemById::IsLog(id)) // vagrant
 	{
-		Skills::BowCraft(s);
+		Skills::target_bowcraft( ps, t );
 	} 
 	else if(itemById::IsCorpse(id))
 	{

@@ -17,6 +17,12 @@
 #include "scripts.h"
 #include "skills.h"
 
+cMakeMenu::cMakeMenu( SERIAL section ) : cBasicMenu( MENUTYPE_CUSTOM )
+{
+	oldmenu = new cOldMenu();
+	this->section=section;
+}
+
 cMakeMenu::cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second ) : cBasicMenu( MENUTYPE_CUSTOM )
 {
 	oldmenu = new cOldMenu();
@@ -66,7 +72,8 @@ void cMakeMenu::loadFromScript( P_CHAR pc )
     cScpIterator* iter = Scripts::Create->getNewIterator("SECTION MAKEMENU %i", section);
     if (iter==NULL) return;
 
-	std::vector<std::string> info; //name
+	std::vector<std::string> names; //name
+	std::vector<std::string> models; //models
     
 	this->mat[0].number = ( mat[0].id!=0 )? pc->CountItems( mat[0].id, mat[0].color ) : 0;
 	this->mat[1].number = ( mat[1].id!=0 )? pc->CountItems( mat[1].id, mat[1].color ) : 0;
@@ -77,7 +84,7 @@ void cMakeMenu::loadFromScript( P_CHAR pc )
 	cMakeItem* imk = NULL;
     pc->making=skill;
 
-
+	oldmenu->style=MENUTYPE_ICONLIST;
 
     int minskl=0; // To calculate minimum skill required
 
@@ -161,13 +168,14 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 
 			case MAKE_NEED_INFO: { //1416 Armor
 				item++;
-				info[item]=rha;				
+				names.push_back( rha );
+				models.push_back( lha );
 				type = MAKE_NEED_RESOURCE;
 				break;
 			}
 			case MAKE_NEED_RESOURCE: //RESOURCE 10
 		        if( lha!="RESOURCE" ) {
-					LogWarning("create.xss, MAKEMENU %i: Expected 'RESOURCE <num>' after '%s'!", section, info[item] );
+					LogWarning("create.xss, MAKEMENU %i: Expected 'RESOURCE <num>' after '%s'!", section, names[item] );
 					error=true;
 				}
 				else {
@@ -199,24 +207,25 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 					if( imk->maxskill<200 )
 						imk->maxskill=200;
 
-					if( !imk->checkReq( pc, true ) )
+					if( !imk->checkReq( pc, true, &this->mat[0] ) )
 					{
 						safedelete( imk );
 						item--;
+						names.pop_back();
+						models.pop_back();
 					}
 					else {
 						makeItems.push_back( *imk );
 						
 						std::wstring w;
+						char b[TEMP_STR_SIZE];
 						if( mat[0].id!=0 ) {
-							char b[TEMP_STR_SIZE];
-							sprintf( b, "%s - [%d/%d.%d]", info[item].c_str(), imk->reqitems[0].number, imk->minskill/10, imk->minskill%10 );
-							string2wstring( std::string( b ), w );
+							sprintf( b, "%s %s - [%d/%d.%d]", models[item].c_str(), names[item].c_str(), imk->reqitems[0].number, imk->minskill/10, imk->minskill%10 );
 						}
 						else {
-							string2wstring( info[item], w );
-
+							sprintf( b, "%s %s", models[item].c_str(), names[item].c_str() );
 						}
+						string2wstring( std::string( b ), w );
 						oldmenu->addMenuItem( 0, item, w );
 					}
 
@@ -224,12 +233,10 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 				}
 				break;
 			case MAKE_NEED_MENUORITEM: //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
-				if( lha=="MAKEMENU" ) {
-					commands.push_back( cScriptCommand( std::string("MAKEMENU"), rha ) );
-				}
-				else if( lha=="ADDITEM" ) {
-					commands.push_back( cScriptCommand( lha, rha ) );
-
+				if( ( lha=="MAKEMENU" ) || ( lha=="ADDITEM" ) ) {
+					imk->command.command = lha;
+					imk->command.param   = rha;
+					type = MAKE_NEED_INFO;
 				}
 				else {
 					LogWarning("create.xss, MAKEMENU %i: Expected'MAKEMENU or ADDITEM after 'SKILL %i'!", section, imk->minskill );
@@ -243,12 +250,11 @@ MAKE_NEED_MENUORITEM, //MAKEMENU 3  or ADDITEM $item_golden_ringmail_tunic
 
     if( item<=0 ) {
         ps->sysmsg( TRANSLATE("You aren't skilled enough to make anything with what you have.") );
-		error=true;
     }
 
 	safedelete(iter);
 	if( error ) {
-		safedelete( oldmenu );
+		ConOut( "[ERROR] on cration of makemenu %d\n", section );
         return;
 	}
 
@@ -306,20 +312,24 @@ void cMakeMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 \param pc player who do make
 \param n item number
 */
-void cMakeMenu::execMake( NXWCLIENT ps, UI32 button )
+void cMakeMenu::execMake( NXWCLIENT ps, UI32 item )
 {
     
 	P_CHAR pc = ps->currChar();
-
 
     if( pc->dead ) {
         pc->sysmsg(TRANSLATE("Ever thought an ethereal soul can't really do some actions ?"));
         return;
     }
 
-	cMakeItem& mi = (makeItems)[button];
+	cMakeItem& mi = makeItems[item];
 
-	if( !mi.checkReq( pc, false ) )
+	if( mi.command.command=="MAKEMENU" ) {
+		mi.command.execute( ps->toInt() );
+		return;
+	}
+
+	if( !mi.checkReq( pc ) )
 		return;
 
     
@@ -353,7 +363,7 @@ void cMakeMenu::execMake( NXWCLIENT ps, UI32 button )
 \param inMenu if write a sysmessage on error
 \todo Add message if haven't enough item..
 */
-bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cMakeItem* def )
+bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cRawItem* def )
 {
 
     if( pc->IsGM() ) 
@@ -368,7 +378,7 @@ bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cMakeItem* def )
 	for( int i=0; i<2; ++i ) {
         cRawItem& raw = reqitems[i];
 		if( raw.id!=0 ) {
-			bool have = ( def!=NULL )? (def->reqitems[i].number>=raw.number) : ( pc->CountItems( raw.id, raw.color)>= raw.number );
+			bool have = ( def!=NULL )? (def[i].number>=raw.number) : ( pc->CountItems( raw.id, raw.color)>= raw.number );
 			if( !have ) {
 				if( !inMenu )
 					pc->sysmsg(TRANSLATE("You've not enough resources"));
@@ -386,8 +396,9 @@ bool cMakeItem::checkReq( P_CHAR pc, bool inMenu, cMakeItem* def )
 
 
 
-cAddMenu::cAddMenu( SERIAL section, P_CHAR pc ) : cMakeMenu( section, pc, NULL, NULL )
+cAddMenu::cAddMenu( SERIAL section, P_CHAR pc ) : cMakeMenu( section )
 {
+	loadFromScript( pc );
 }
 
 cAddMenu::~cAddMenu(  )

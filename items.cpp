@@ -873,6 +873,7 @@ R32 cItem::getWeightActual()
 {
 	return (amount>1)? getWeight()*amount : getWeight();
 }
+
 cItem::cItem( SERIAL ser )
 {
 
@@ -884,7 +885,7 @@ cItem::cItem( SERIAL ser )
 	setSecondaryName("#");
 	setScriptID( 0 );
 	murderer = string("");
-	creator = "";
+	creator = string("");
 	incognito=false;//AntiChrist - incognito
 	madewith=0; // Added by Magius(CHE)
 	rank=0; // Magius(CHE)
@@ -980,7 +981,7 @@ cItem::cItem( SERIAL ser )
 	for (int X=0; X<ALLITEMEVENTS; X++) 
 		amxevents[X] = NULL;
 	//desc[0]=0x00;
-	vendorDescription = "";
+	vendorDescription = std::string("");
 	setDecayTime(); //Luxor
 
 }

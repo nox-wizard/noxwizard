@@ -763,7 +763,7 @@ void doubleclick(NXWCLIENT ps)
 		ps->sysmsg( TRANSLATE("Select item to be repaired."));
 	}
 	CASE(IsAxe) {
-		targ = clientInfo[s]->newTarget( new cItemTarget() );
+		targ = clientInfo[s]->newTarget( new cTarget() );
 		targ->code_callback=target_axe;
 		targ->buffer[0]=pi->getSerial32();
 		targ->send( ps );
@@ -777,7 +777,7 @@ void doubleclick(NXWCLIENT ps)
 		ps->sysmsg( TRANSLATE("What would you like to use this with?"));
 	}
 	CASEOR( IsFencing1H, IsSword ) {
-		targ = clientInfo[s]->newTarget( new cObjectTarget() );
+		targ = clientInfo[s]->newTarget( new cTarget() );
 		targ->code_callback=target_sword;
 		targ->send( ps );
 		ps->sysmsg( TRANSLATE("What would you like to use that on ?"));

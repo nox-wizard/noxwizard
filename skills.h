@@ -115,7 +115,7 @@ namespace Skills {
 	\name Bowcrafting stuff
 	*/
 	void target_fletching( NXWCLIENT ps, P_TARGET t );
-	void BowCraft(NXWSOCKET s);
+	void target_bowcraft( NXWCLIENT ps, P_TARGET t );
 	//@}
 
 	void target_removeTraps( NXWCLIENT ps, P_TARGET t );
@@ -134,7 +134,7 @@ namespace Skills {
 	//@}
 
 	void target_smeltOre( NXWCLIENT ps, P_TARGET t );
-	void TreeTarget(NXWSOCKET s);
+	void target_tree( NXWCLIENT ps, P_TARGET t );
 
 	void target_detectHidden( NXWCLIENT ps, P_TARGET t );
 
