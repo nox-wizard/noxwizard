@@ -53,6 +53,9 @@
 #include "srvparms.h"
 #include "amx_api.h"
 #include "constants.h"
+#include "target.h"
+#include "globals.h"
+#include "inlines.h"
 
 
 
@@ -685,6 +688,48 @@ bool AmxOverride::Exec (int moment, int socket)
 	return ((g_bByPass) || (bypassmode));
 }
 
+/*!
+\brief executes an target override
+\author Xanathar
+\return bool
+\param moment the phase of this override (BEFORE/AFTER)
+\param socket the socket which directly or indirectly invoked this override
+*/
+bool AmxOverride::ExecTarget(int moment, int socket)
+{
+	CHECKAMX;
+	bool bypassmode = (m_mode&0x04) ? true : false;
+
+	if (AmxFunction::g_prgOverride==NULL) return false;
+	if (m_mode==AMX_NONE) return false;
+	if (m_mode==AMX_SKIP) return true;
+	if ((moment&m_mode)==0) return false;
+
+	g_bByPass = false;
+
+	g_nMoment = moment;
+
+	P_TARGET targ_amx =clientInfo[socket]->getTarget();
+	if( targ_amx==NULL ) {
+		return false;
+	}
+
+	SERIAL obj_serial = targ_amx->getClicked();
+	if( isCharSerial( obj_serial) ) {
+		obj_serial = ISVALIDPC( MAKE_CHAR_REF( obj_serial) )? obj_serial : INVALID;
+	} else if( isItemSerial( obj_serial ) ) {
+		obj_serial = ISVALIDPI( MAKE_ITEM_REF( obj_serial) )? obj_serial : INVALID;
+	}
+	else 
+		obj_serial = INVALID;
+		
+	g_nCurrentSocket = socket;
+	AmxFunction::g_prgOverride->CallFn(m_ordinal, socket, targ_amx->serial, obj_serial );
+	g_nCurrentSocket = INVALID;
+
+	return ((g_bByPass) || (bypassmode));
+
+} 
 
 /*!
 \brief converts a mode to a string

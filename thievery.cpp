@@ -112,7 +112,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPC(thief);
 	SERIAL target_serial = t->getClicked();
 
-	AMXEXECSV(s,AMXT_SKITARGS,STEALING,AMX_BEFORE);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,STEALING,AMX_BEFORE);
 
 	//steal a char
 	if ( isCharSerial(target_serial) )
@@ -266,7 +266,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 		thief->sysmsg(TRANSLATE("You are too far away to steal that item."));
 	}
 
-	AMXEXECSV(s,AMXT_SKITARGS,STEALING,AMX_AFTER);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,STEALING,AMX_AFTER);
 }
 
 /*!
@@ -483,7 +483,7 @@ void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 	P_ITEM pick=MAKE_ITEM_REF( t->buffer[0] );
 	VALIDATEPI(pick);
 
-	AMXEXECSV(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
 
 
 	if (chest->amxevents[EVENT_IONLOCKPICK]!=NULL)
@@ -547,5 +547,5 @@ void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 		pc->sysmsg(TRANSLATE("That cannot be unlocked without a key."));
 
 
-	AMXEXECSV(s,AMXT_SKITARGS,LOCKPICKING,AMX_AFTER);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,LOCKPICKING,AMX_AFTER);
 }

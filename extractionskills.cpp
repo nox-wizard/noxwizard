@@ -199,7 +199,7 @@ void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 
 	pc->facexy( target.x, target.y );
 
-	AMXEXECSV(s,AMXT_SKITARGS,MINING,AMX_BEFORE);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,MINING,AMX_BEFORE);
 
 	if ( pc->hidden )
 		pc->unHide();
@@ -314,6 +314,6 @@ void Skills::target_mine( NXWCLIENT ps, P_TARGET t )
 	ores.decreaseResource( target, res );
 
 	AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXMINING), s);
-	AMXEXECSV(s,AMXT_SKITARGS,MINING,AMX_AFTER);
+	AMXEXECSVTARGET(s,AMXT_SKITARGS,MINING,AMX_AFTER);
 }
 

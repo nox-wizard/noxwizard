@@ -140,6 +140,7 @@ class AmxOverride {
 public: 
 	bool Exec (int moment);
 	bool Exec (int moment, int sock);
+	bool ExecTarget(int moment, int sock);
 	int  getOrdinal (void) {return m_ordinal; };
 	AmxOverride(); 
 	~AmxOverride(); 
@@ -157,6 +158,8 @@ extern AmxOverride g_Scripts[AMX_MAXTYPE][AMX_MAXNUMBER];
 #define AMXEXECS(SOCKET,TYPE,NUMBER,RET,MOMENT) { if (g_Scripts[TYPE][NUMBER].Exec(MOMENT,SOCKET)) return RET; }
 #define AMXEXECSV(SOCKET,TYPE,NUMBER,MOMENT) { if (g_Scripts[TYPE][NUMBER].Exec(MOMENT,SOCKET)) return; }
 #define AMXEXECSVNR(SOCKET,TYPE,NUMBER,MOMENT) { g_Scripts[TYPE][NUMBER].Exec(MOMENT,SOCKET); }
+#define AMXEXECSVTARGET(SOCKET,TYPE,NUMBER,MOMENT) { if (g_Scripts[TYPE][NUMBER].ExecTarget(MOMENT,SOCKET)) return; }
+
 
 #define AMXT_SKITARGS 0
 #define AMXT_SKILLS 1
