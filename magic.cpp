@@ -2022,7 +2022,7 @@ bool beginCasting (SpellId num, NXWCLIENT s, CastingType type)
 	
 	if (pc->amxevents[EVENT_CHR_ONCASTSPELL]) {
 		g_bByPass = false;
-		pc->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc->getSerial32(), num, type, s->toInt());
+		pc->amxevents[EVENT_CHR_ONCASTSPELL]->Call(pc->getSerial32(), num, type, INVALID );
 		if (g_bByPass==true) return false;
 	}
 	/*

@@ -99,6 +99,9 @@ void cOldMenu::addMenuItem( int page, int idx, std::wstring desc )
 void cOldMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
 	
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc )
+
 	UI32 button;
 	if( isIconList( pkg->cmd ) )
 		button = ((cPacketResponseToDialog*)pkg)->index.get();
@@ -108,7 +111,7 @@ void cOldMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 			button = ((cMenu*)type)->getButton( button );
 	}
 
-	callback->Call( ps->toInt(), ps->currChar()->getSerial32(), button-1 );
+	callback->Call( ps->currCharIdx(), ps->currCharIdx(), button-1 );
 
 }
 

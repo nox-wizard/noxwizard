@@ -559,7 +559,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
 				g_bByPass = false;
-				pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s1, s2);
+				pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), pc1->getSerial32(), pc2->getSerial32());
 				if (g_bByPass==true) continue; //skip item, I hope
 			}
 			/*
@@ -586,7 +586,7 @@ void dotrade(P_ITEM cont1, P_ITEM cont2)
 
 			if (pi->amxevents[EVENT_IONTRANSFER]!=NULL) {
         		g_bByPass = false;
-        		pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), s2, s1);
+        		pi->amxevents[EVENT_IONTRANSFER]->Call(pi->getSerial32(), pc2->getSerial32(), pc1->getSerial32());
         		if (g_bByPass==true) continue; //skip item, I hope
 			}
 			/*

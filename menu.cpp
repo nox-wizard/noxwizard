@@ -431,6 +431,9 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	
 	cPacketMenuSelection* p = (cPacketMenuSelection*)pkg;
 
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc )
+
 	UI32 button = p->buttonId.get();
 
 	this->switchs = &p->switchs;
@@ -445,7 +448,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 		if( iter!=buttonCallbacks.end() ) {
 
 			AmxFunction func( iter->second );
-			func.Call( ps->toInt(), serial, buttonReturnCode );
+			func.Call( serial, pc->getSerial32(), buttonReturnCode );
 			return;
 
 		}
@@ -476,7 +479,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	}
 	
 	if( callback!=NULL )
-		callback->Call( ps->toInt(), serial, buttonReturnCode );
+		callback->Call( serial, pc->getSerial32(), buttonReturnCode );
 	else
 		hard( this, ps, buttonReturnCode );
 }
@@ -841,11 +844,15 @@ void cIconListMenu::addIcon( UI16 model, COLOR color, SI32 data, std::string res
 
 void cIconListMenu::handleButton( NXWCLIENT ps,  cClientPacket* pkg  )
 {
+
+	P_CHAR pc = ps->currChar();
+	VALIDATEPC( pc )
+
 	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
 
 	SERIAL index = p->index.get();
 	
-	callback->Call( ps->toInt(), serial, index, icons[index-1].model.get(), icons[index-1].color.get(), iconData[index-1] );
+	callback->Call( serial, pc->getSerial32(), index, icons[index-1].model.get(), icons[index-1].color.get(), iconData[index-1] );
 
 }
 

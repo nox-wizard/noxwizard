@@ -93,7 +93,7 @@ bool checkItemUsability(P_CHAR pc, P_ITEM pi, int type)
 	{
 		
 		if (pi->amxevents[EVENT_IONCHECKCANUSE]==NULL) return true;
-		return (0!=pi->amxevents[EVENT_IONCHECKCANUSE]->Call(pi->getSerial32(), s, g_nType));
+		return (0!=pi->amxevents[EVENT_IONCHECKCANUSE]->Call(pi->getSerial32(), pc->getSerial32(), g_nType));
 		/*
 		AmxEvent* event = pi->getAmxEvent( EVENT_IONCHECKCANUSE );
 		if ( !event ) return true;

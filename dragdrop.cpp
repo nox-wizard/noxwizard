@@ -276,7 +276,7 @@ void get_item( NXWCLIENT client ) // Client grabs an item
 			if (pi->amxevents[EVENT_ITAKEFROMCONTAINER]!=NULL)
 			{
 				g_bByPass = false;
-				pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), s );
+				pi->amxevents[EVENT_ITAKEFROMCONTAINER]->Call( pi->getSerial32(), pi->getContSerial(), pc_currchar->getSerial32() );
 				if (g_bByPass)
 				{
 					Sndbounce5(s);

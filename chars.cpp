@@ -900,7 +900,7 @@ void cChar::disturbMed()
 		//<Luxor>
 		NXWCLIENT cli = getClient();
 		if (cli != NULL)
-  			amxevents[EVENT_CHR_ONBREAKMEDITATION]->Call(getSerial32(), cli->toInt(), INVALID);
+  			amxevents[EVENT_CHR_ONBREAKMEDITATION]->Call( getSerial32() );
 		//</Luxor>
 		if (g_bByPass==true) return;
   	}
@@ -2525,7 +2525,7 @@ void cChar::resurrect( NXWCLIENT healer )
 		
 		if (amxevents[EVENT_CHR_ONRESURRECT]) {
 			g_bByPass = false;
-			amxevents[EVENT_CHR_ONRESURRECT]->Call(getSerial32(), (healer!=NULL)? healer->toInt() : INVALID );
+			amxevents[EVENT_CHR_ONRESURRECT]->Call(getSerial32(), (healer!=NULL)? healer->currCharIdx() : INVALID );
 			if (g_bByPass==true) return;
 		}
 		/*
@@ -2908,7 +2908,7 @@ void cChar::Kill()
 
 	if (amxevents[EVENT_CHR_ONBEFOREDEATH]) {
 		g_bByPass = false;
-		amxevents[EVENT_CHR_ONBEFOREDEATH]->Call(getSerial32(), s);
+		amxevents[EVENT_CHR_ONBEFOREDEATH]->Call(getSerial32(), INVALID);
 		if (g_bByPass==true) return;
 	}
 	
@@ -3036,7 +3036,7 @@ void cChar::Kill()
 			}   // was innocent
 
 			if (pKiller->amxevents[EVENT_CHR_ONKILL])
-				pKiller->amxevents[EVENT_CHR_ONKILL]->Call(pKiller->getSerial32(), pKiller->getClient()->toInt(), getSerial32(), s);
+				pKiller->amxevents[EVENT_CHR_ONKILL]->Call( pKiller->getSerial32(), getSerial32() );
 
 				//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
 			} //PvP
@@ -3044,7 +3044,7 @@ void cChar::Kill()
 		else
 		{
 			if (pKiller->amxevents[EVENT_CHR_ONKILL])
-				pKiller->amxevents[EVENT_CHR_ONKILL]->Call(pKiller->getSerial32(), INVALID, getSerial32(), s);
+				pKiller->amxevents[EVENT_CHR_ONKILL]->Call( pKiller->getSerial32(), getSerial32() );
 			if (pKiller->war)
 				pKiller->toggleCombat(); // ripper
 		}
@@ -3122,7 +3122,7 @@ void cChar::Kill()
 			}   // was innocent
 
 			if (pk->amxevents[EVENT_CHR_ONKILL])
-				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
+				pk->amxevents[EVENT_CHR_ONKILL]->Call( pk->getSerial32(), getSerial32() );
 
 				//pk->runAmxEvent( EVENT_CHR_ONKILL, pk->getSerial32(), pk->getClient()->toInt(), getSerial32(), s);
 			} //PvP
@@ -3130,7 +3130,7 @@ void cChar::Kill()
 		else
 		{
 			if (pk->amxevents[EVENT_CHR_ONKILL])
-				pk->amxevents[EVENT_CHR_ONKILL]->Call(pk->getSerial32(), INVALID, getSerial32(), s);
+				pk->amxevents[EVENT_CHR_ONKILL]->Call( pk->getSerial32(), getSerial32() );
 			if (pk->war)
 				pk->toggleCombat(); // ripper
 		}
@@ -3399,7 +3399,7 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 	// function(item, chr)
 	
 	if (pi->amxevents[EVENT_IONEQUIP] != NULL)
-		pi->amxevents[EVENT_IONEQUIP]->Call(pi->getSerial32(), s);
+		pi->amxevents[EVENT_IONEQUIP]->Call(pi->getSerial32(), this->getSerial32() );
 	
 	//runAmxEvent( EVENT_IONEQUIP, pi->getSerial32(), s );
 
@@ -3471,7 +3471,7 @@ SI32 cChar::UnEquip(P_ITEM pi, LOGICAL drag)
 	g_bByPass= false;
 	
 	if (pi->amxevents[EVENT_IONUNEQUIP] != NULL)
-		pi->amxevents[EVENT_IONUNEQUIP]->Call(pi->getSerial32(), s);
+		pi->amxevents[EVENT_IONUNEQUIP]->Call(pi->getSerial32(), this->getSerial32());
 	
 	/*
 	pi->runAmxEvent( EVENT_IONUNEQUIP, pi->getSerial32(), s );
@@ -3613,7 +3613,7 @@ void cChar::SetMurderer()
 {
 	
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
-		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 
@@ -3624,7 +3624,7 @@ void cChar::SetInnocent()
 {
 	
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
-		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_INNOCENT;
@@ -3634,7 +3634,7 @@ void cChar::SetCriminal()
 {
 	
 	if (amxevents[EVENT_CHR_ONFLAGCHG])
-		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32(), getSocket());
+		amxevents[EVENT_CHR_ONFLAGCHG]->Call(getSerial32() );
 	
 	//runAmxEvent( EVENT_CHR_ONFLAGCHG, getSerial32(), getSocket() );
 	flag=CHRFLAG_CRIMINAL;
@@ -3749,7 +3749,7 @@ void cChar::doSingleClickOnItem( SERIAL serial )
 	if (pi->amxevents[EVENT_IONCLICK]!=NULL)
 	{
 		g_bByPass = false;
-		pi->amxevents[EVENT_IONCLICK]->Call(pi->getSerial32(), getSocket() );
+		pi->amxevents[EVENT_IONCLICK]->Call(pi->getSerial32(), this->getSerial32() );
 		if ( g_bByPass==true )
 			return;
 	}

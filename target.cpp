@@ -147,7 +147,7 @@ void cLocationTarget::error( NXWCLIENT ps )
 }
 
 
-
+/*
 void amxCallbackOld( NXWCLIENT ps, P_TARGET t )
 {
 	if( t->amx_callback==NULL) 
@@ -155,19 +155,19 @@ void amxCallbackOld( NXWCLIENT ps, P_TARGET t )
 	
 	P_CHAR pc = pointers::findCharBySerial( t->getClicked() );
 	if( ISVALIDPC(pc) ) {
-        t->amx_callback->Call( ps->toInt(), pc->getSerial32(), INVALID, INVALID, INVALID, INVALID );
+        t->amx_callback->Call( ps->currCharIdx(), pc->getSerial32(), INVALID, INVALID, INVALID, INVALID );
         return;
     }
 
     P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
     if( ISVALIDPI(pi) ) {
-		t->amx_callback->Call( ps->toInt(), INVALID, pi->getSerial32(), INVALID, INVALID, INVALID );
+		t->amx_callback->Call( ps->currCharIdx(), INVALID, pi->getSerial32(), INVALID, INVALID, INVALID );
         return;
     }
 
     Location loc = t->getLocation();
-	t->amx_callback->Call( ps->toInt(), INVALID, INVALID, loc.x, loc.y, loc.z );
-}
+	t->amx_callback->Call( ps->currCharIdx(), INVALID, INVALID, loc.x, loc.y, loc.z );
+}*/
 
 void amxCallback( NXWCLIENT ps, P_TARGET t )
 {

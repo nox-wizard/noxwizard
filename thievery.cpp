@@ -58,7 +58,7 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 				if ( owner->amxevents[EVENT_CHR_ONSNOOPED])
 				{
 					g_bByPass = false;
-					owner->amxevents[EVENT_CHR_ONSNOOPED]->Call( owner->getSerial32(), s);
+					owner->amxevents[EVENT_CHR_ONSNOOPED]->Call( owner->getSerial32(), snooper->getSerial32());
 					if (g_bByPass==true) return;
 				}
 				/*
@@ -112,7 +112,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPC(thief);
 	SERIAL target_serial = t->getClicked();
 
-	AMXEXECSVTARGET(s,AMXT_SKITARGS,STEALING,AMX_BEFORE);
+	AMXEXECSVTARGET( thief->getSerial32(),AMXT_SKITARGS,STEALING,AMX_BEFORE);
 
 	//steal a char
 	if ( isCharSerial(target_serial) )
@@ -175,7 +175,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 			if (pi->amxevents[EVENT_IONSTOLEN]!=NULL)
 			{
 				g_bByPass = false;
-				pi->amxevents[EVENT_IONSTOLEN]->Call(pi->getSerial32(), s, victim->getSerial32());
+				pi->amxevents[EVENT_IONSTOLEN]->Call(pi->getSerial32(), thief->getSerial32(), victim->getSerial32());
 				if (g_bByPass==true)
 					return;
 			}
@@ -183,7 +183,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 			if (victim->amxevents[EVENT_CHR_ONSTOLEN])
 			{
 				g_bByPass = false;
-				victim->amxevents[EVENT_CHR_ONSTOLEN]->Call(victim->getSerial32(), s);
+				victim->amxevents[EVENT_CHR_ONSTOLEN]->Call(victim->getSerial32(), thief->getSerial32());
 				if (g_bByPass==true)
 					return;
 			}
@@ -266,7 +266,7 @@ void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 		thief->sysmsg(TRANSLATE("You are too far away to steal that item."));
 	}
 
-	AMXEXECSVTARGET(s,AMXT_SKITARGS,STEALING,AMX_AFTER);
+	AMXEXECSVTARGET( thief->getSerial32(),AMXT_SKITARGS,STEALING,AMX_AFTER);
 }
 
 /*!
@@ -394,7 +394,7 @@ void Skills::target_randomSteal( NXWCLIENT ps, P_TARGET t )
 					if (victim->amxevents[EVENT_CHR_ONSTOLEN])
 					{
 						g_bByPass = false;
-						victim->amxevents[EVENT_CHR_ONSTOLEN]->Call(victim->getSerial32(), s);
+						victim->amxevents[EVENT_CHR_ONSTOLEN]->Call(victim->getSerial32(), thief->getSerial32());
 						if (g_bByPass==true)
 							return;
 					}
@@ -483,13 +483,13 @@ void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 	P_ITEM pick=MAKE_ITEM_REF( t->buffer[0] );
 	VALIDATEPI(pick);
 
-	AMXEXECSVTARGET(s,AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
+	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LOCKPICKING,AMX_BEFORE);
 
 
 	if (chest->amxevents[EVENT_IONLOCKPICK]!=NULL)
 	{
 		g_bByPass = false;
-		chest->amxevents[EVENT_IONLOCKPICK]->Call(chest->getSerial32(), s);
+		chest->amxevents[EVENT_IONLOCKPICK]->Call(chest->getSerial32(), pc->getSerial32());
 		if (g_bByPass==true)
 			return;
 	}
@@ -547,5 +547,5 @@ void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 		pc->sysmsg(TRANSLATE("That cannot be unlocked without a key."));
 
 
-	AMXEXECSVTARGET(s,AMXT_SKITARGS,LOCKPICKING,AMX_AFTER);
+	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,LOCKPICKING,AMX_AFTER);
 }

@@ -1087,7 +1087,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 
 	pc->disturbMed(); // Meditation
 	
-	AMXEXECSV(s,AMXT_SKILLS, x, AMX_BEFORE);
+	AMXEXECSV( pc->getSerial32(),AMXT_SKILLS, x, AMX_BEFORE);
 	
 	bool setSkillDelay = true;
 
@@ -1250,7 +1250,7 @@ void Skills::SkillUse(NXWSOCKET s, int x)
 	if ( setSkillDelay )
 		SetSkillDelay(pc->getSerial32());
 
-	AMXEXECSV(s,AMXT_SKILLS, x, AMX_AFTER);
+	AMXEXECSV( pc->getSerial32(),AMXT_SKILLS, x, AMX_AFTER);
 }
 
 

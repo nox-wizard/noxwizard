@@ -126,7 +126,7 @@ void doubleclick(NXWCLIENT ps)
 
 	if (pi->amxevents[EVENT_IONDBLCLICK]!=NULL) {
 		g_bByPass = false;
-		pi->amxevents[EVENT_IONDBLCLICK]->Call(pi->getSerial32(), s);
+		pi->amxevents[EVENT_IONDBLCLICK]->Call( pi->getSerial32(), pc->getSerial32() );
 		if (g_bByPass==true)
 			return;
 	}

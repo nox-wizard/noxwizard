@@ -925,7 +925,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
-	AMXEXECSV(s,AMXT_SPECIALS, 4, AMX_BEFORE);
+	AMXEXECSV( pc->getSerial32(),AMXT_SPECIALS, 4, AMX_BEFORE);
 
 	enterchar( s );
 
@@ -958,7 +958,7 @@ void cNetwork::startchar(int s) // Send character startup stuff to player
 	t = (*vis).c_str();
 	strcpy(temp,t);
 
-	AMXEXECSV(s,AMXT_SPECIALS, 4, AMX_AFTER);
+	AMXEXECSV(pc->getSerial32(),AMXT_SPECIALS, 4, AMX_AFTER);
 
 	//
 	// Sparhawk	Race system support
@@ -1025,7 +1025,7 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 	UI32 x= charpos.x, y= charpos.y;
 
 
-	AMXEXECSVNR(s,AMXT_SPECIALS, 8, AMX_BEFORE);
+	AMXEXECSVNR(pc->getSerial32(),AMXT_SPECIALS, 8, AMX_BEFORE);
 
 	P_ITEM pack;
 	for(a=0;a<logoutcount;a++)
@@ -1539,7 +1539,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
         		    // LB, client activity-timestamp !!! to detect client crashes, ip changes etc and disconnect in that case
         		    // 0x73 (idle packet) also counts towards client idle time
 
-				AMXEXECSV(s,AMXT_NETRCV, packet, AMX_BEFORE);
+				AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_BEFORE);
 
 				//if (packet != PACKET_FIRSTLOGINREQUEST && !ISVALIDPC(pc_currchar)) return;	
 				switch(packet)
@@ -2123,7 +2123,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
     				} // end switch
-				AMXEXECSV(s,AMXT_NETRCV, packet, AMX_AFTER);
+				AMXEXECSV(pc_currchar->getSerial32(),AMXT_NETRCV, packet, AMX_AFTER);
 
 			}
 			else
