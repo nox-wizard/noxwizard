@@ -39,8 +39,8 @@ class cMenu
 		static LOGICAL	selectResponse( UI32 fieldId, std::string &value );
 
 	private:
-		std::vector<std::string>	commands; //!< all commands
-		std::vector<std::string>	strings; //!< 
+		std::vector< std::string >	commands; //!< all commands
+		std::vector< cUnicodeString >	strings; //!< all strings
 		UI08	options; //!< menu options
 		UI32	gumpId; //!< gump id
 		UI32	serial; //!< serial
@@ -49,7 +49,7 @@ class cMenu
 		class AmxEvent	*callback; //!< amx callback
 
 	private:
-		UI32 addString( std::string& s );
+		UI32 addString( cUnicodeString& s );
 		UI32 addString( const char* c );
 
 	public:

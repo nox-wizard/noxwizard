@@ -167,15 +167,15 @@ void cMenu::addCommand( char const *formatStr, ... )
 }
 
 
-UI32 cMenu::addString( std::string& s )
+UI32 cMenu::addString( cUnicodeString& u )
 {
-	strings.push_back( s );
+	strings.push_back( u );
 	return strings.size()-1;
 }
 
 UI32 cMenu::addString( const char* c )
 {
-	return addString( std::string( c ) );
+	return addString( cUnicodeString( (char*)c ) );
 }
 
 
