@@ -1,0 +1,71 @@
+#############################################################################
+# Makefile for building noxwizard with mingw32 (dev-cpp)
+#     Project: nxw
+#############################################################################
+
+####### Compiler, tools and options
+
+CC	=	gcc.exe
+CXX	=	g++.exe
+WINDRES =	windres.exe
+LINK	=	g++.exe
+
+FLAGS   = -DWIN32 -D_WINDOWS
+CFLAGS	= -pipe -D_REENTRANT -O2
+CXXFLAGS	= -pipe -funsigned-char -D_REENTRANT -O2 $(FLAGS)
+INCPATH = -I ./ -I C:/Dev-Cpp/include  $(FLAGS)
+IXXPATH = -I ./ -I C:/Dev-Cpp/include/c++ -I C:/Dev-Cpp/include -I C:/Dev-Cpp/include/c++/mingw32
+LFLAGS	=	-lc -lstdc++ -mwindows
+LIBS	=	$(SUBLIBS)
+
+TAR	=	tar -cf
+GZIP	=	gzip -9f
+
+include makefile.inc
+
+INTERFACES =
+UICDECLS =
+UICIMPLS =
+SRCMOC	=
+OBJMOC	=
+DIST	=
+TARGET	=	noxwizard
+INTERFACE_DECL_PATH = .
+
+####### Implicit rules
+
+.SUFFIXES: .cpp .cxx .cc .C .c
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(IXXPATH) -o $@ $<
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(IXXPATH) -o $@ $<
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(IXXPATH) -o $@ $<
+
+.C.o:
+	$(CXX) -c $(CXXFLAGS) $(IXXPATH) -o $@ $<
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCPATH) -o $@ $<
+
+####### Build rules
+
+
+all: $(TARGET)
+
+$(TARGET): $(UICDECLS) $(OBJECTS) $(OBJMOC)
+	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJMOC) $(LIBS)
+
+moc: $(SRCMOC)
+
+dist:
+	$(TAR) nxw.tar $(SOURCES) $(HEADERS) $(INTERFACES) $(DIST)
+	$(GZIP) nxw.tar
+
+clean:
+	-rm -f $(OBJECTS) $(OBJMOC) $(SRCMOC) $(UICIMPLS) $(UICDECLS) $(TARGET)
+	-rm -f *~ core
+

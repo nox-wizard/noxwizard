@@ -1,0 +1,406 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+#include "resource.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Italian (Italy) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
+#ifdef _WIN32
+LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_XWGUI MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save World\tCtrl+S",         ID_FILE_SAVEWORLD
+        MENUITEM "S&hutdown in 2 minutes\tCtrl+T", 
+                                                ID_ADMIN_SHUTDOWNIN10MINUTES
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit\tCtrl+X",               IDM_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Lock Scroll \tCtrl+Alt+L",   ID_VIEW_LOCKSCREEN
+    END
+    POPUP "&Query"
+    BEGIN
+        MENUITEM "&Who is online\tCtrl+W",      ID_ADMIN_WHOISONLINE
+        MENUITEM SEPARATOR
+        MENUITEM "&Performance Dump\tCtrl+P",   ID_ADMIN_PERFORMANCEDUMP
+    END
+    POPUP "&Reload"
+    BEGIN
+        MENUITEM "Reload &accounts\tCtrl+A",    ID_RELOAD_RELOADACCOUNTS
+        MENUITEM "&Reload XSS scripts\tCtrl+R", ID_RELOAD_RELOADCLASSFILES
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Disconnect Account 0\tCtrl+Alt+D", 
+                                                ID_TOOLS_DISCONNECTACCOUNT0
+        MENUITEM SEPARATOR
+        MENUITEM "Toggle &Layer Display\tCtrl+L", 
+                                                ID_TOOLS_TOGGLELAYERDISPLAY
+    END
+    POPUP "&Debug", GRAYED
+    BEGIN
+        MENUITEM "&Break on next AMX call\tCtrl+B", 
+                                                ID_DEBUG_BREAKONNEXTAMXCALL
+        , GRAYED
+        MENUITEM "Break on next Legacy Trigger\tCtrl+Shift+B", 
+                                                ID_DEBUG_BREAKONNEXTLEGACYTRIGGER
+        , GRAYED
+        MENUITEM "Trace Native Functions\tCtrl+N", 
+                                                ID_DEBUG_TRACENATIVEFUNCTIONS
+        , GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Step In\tF11",                ID_DEBUG_STEPIN, GRAYED
+        MENUITEM "Step Over\tF10",              ID_DEBUG_STEPOUT, GRAYED
+        MENUITEM "Step Out\tShift+F11",         ID_DEBUG_STEPOUTCF, GRAYED
+        MENUITEM "Go!\tF5",                     ID_DEBUG_GO, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Show Watches\tF7",            ID_DEBUG_SHOWWATCHES, GRAYED
+        MENUITEM "Show Variables\tShift+F7",    ID_DEBUG_SHOWVARIABLES
+        , GRAYED
+        MENUITEM "Show Call Stack\tF8",         ID_DEBUG_SHOWCALLSTACK
+        , GRAYED
+        MENUITEM "Show Functions\tShift+F8",    ID_DEBUG_LISTFUNCTIONS
+        , GRAYED
+        MENUITEM "Show Breakpoints\tF9",        ID_DEBUG_LISTBREAKPOINTS
+        , GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Remove All Breakpoints\tCtrl+F9", 
+                                                ID_DEBUG_REMOVEALLBREAKPOINTS
+        , GRAYED
+        MENUITEM "Remove All Watches\tCtrl+F7", ID_DEBUG_REMOVEALLWATCHES
+        , GRAYED
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Show keyboard commands\t?",  ID_HELP_SHOWKEYBOARDCOMMANDS
+        MENUITEM SEPARATOR
+        MENUITEM "&About\tAlt+?",               IDM_ABOUT
+    END
+END
+
+IDC_XWPOPUP MENU DISCARDABLE 
+BEGIN
+    POPUP "PopUpMenu"
+    BEGIN
+        MENUITEM "Save",                        ID_FILE_SAVEWORLD
+        MENUITEM SEPARATOR
+        MENUITEM "Shutdown in 2 minutes",       ID_ADMIN_SHUTDOWNIN10MINUTES
+        MENUITEM "E&xit",                       IDM_EXIT
+        MENUITEM SEPARATOR
+        MENUITEM "Who is Online",               ID_ADMIN_WHOISONLINE
+        MENUITEM "Performance Dump",            ID_ADMIN_PERFORMANCEDUMP
+        MENUITEM SEPARATOR
+        MENUITEM "Disconnect Account 0..",      ID_TOOLS_DISCONNECTACCOUNT0
+    END
+END
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "Useless"
+    BEGIN
+        MENUITEM "-- Just to get an ID :) -",   ID_TOOLBAR
+        MENUITEM "Idem :D",                     ID_STATUSBAR
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_XWGUI ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "/",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "?",            IDM_ABOUT,              ASCII,  ALT, NOINVERT
+    "A",            ID_RELOAD_RELOADACCOUNTS, VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_DEBUG_BREAKONNEXTAMXCALL, VIRTKEY, CONTROL, NOINVERT
+    "B",            ID_DEBUG_BREAKONNEXTLEGACYTRIGGER, VIRTKEY, SHIFT, 
+                                                    CONTROL, NOINVERT
+    "D",            ID_TOOLS_DISCONNECTACCOUNT0, VIRTKEY, CONTROL, ALT, 
+                                                    NOINVERT
+    "H",            ID_TOOLS_TOGGLEHEARTBEAT, VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_TOOLS_TOGGLELAYERDISPLAY, VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_VIEW_LOCKSCREEN,     VIRTKEY, CONTROL, ALT, NOINVERT
+    "N",            ID_DEBUG_TRACENATIVEFUNCTIONS, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "P",            ID_ADMIN_PERFORMANCEDUMP, VIRTKEY, CONTROL, NOINVERT
+    "Q",            IDM_EXIT,               VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_RELOAD_RELOADCLASSFILES, VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEWORLD,      VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_ADMIN_SHUTDOWNIN10MINUTES, VIRTKEY, CONTROL, NOINVERT
+    VK_ESCAPE,      IDM_EXIT,               VIRTKEY, NOINVERT
+    VK_F10,         ID_DEBUG_STEPOUT,       VIRTKEY, NOINVERT
+    VK_F11,         ID_DEBUG_STEPIN,        VIRTKEY, NOINVERT
+    VK_F11,         ID_DEBUG_STEPOUTCF,     VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_DEBUG_GO,            VIRTKEY, NOINVERT
+    VK_F7,          ID_DEBUG_SHOWWATCHES,   VIRTKEY, NOINVERT
+    VK_F7,          ID_DEBUG_REMOVEALLWATCHES, VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          ID_DEBUG_SHOWVARIABLES, VIRTKEY, SHIFT, NOINVERT
+    VK_F8,          ID_DEBUG_SHOWCALLSTACK, VIRTKEY, NOINVERT
+    VK_F8,          ID_DEBUG_LISTFUNCTIONS, VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_DEBUG_LISTBREAKPOINTS, VIRTKEY, NOINVERT
+    VK_F9,          ID_DEBUG_REMOVEALLBREAKPOINTS, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "W",            ID_ADMIN_WHOISONLINE,   VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 22, 17, 379, 243
+STYLE DS_ABSALIGN | DS_MODALFRAME | DS_3DLOOK | DS_CENTER | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_TOOLWINDOW | WS_EX_CLIENTEDGE
+CAPTION "About"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CTEXT           "NoX-Wizard UO Server Emulator Version 0.82a" // - Internal Development Version, DON'T RELEASE TO PUBLIC",
+                    IDC_STATIC,4,59,372,8,SS_NOPREFIX,WS_EX_TRANSPARENT
+    CTEXT           "Program by Xanathar, Luxor, Elcabesa, Araknesh, LordShoo, Dr.X and Anthalir",
+                    IDC_STATIC,4,68,372,8,0,WS_EX_TRANSPARENT
+    DEFPUSHBUTTON   "OK",IDOK,319,226,57,15,WS_GROUP,WS_EX_STATICEDGE
+    CTEXT           "http://nox-wizard.sunsite.dk",IDC_STATIC,4,91,372,8
+    LTEXT           "This program uses a modified version of scripting technologies from ITB CompuPhase Small Language (AMX Abstract Machine, Small compiler and SDBG debugger). Copyright 1997-2001 by ITB CompuPhase.",
+                    IDC_STATIC,4,191,372,17
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,182,372,1
+    CONTROL         148,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,89,2,201,
+                    54
+    LTEXT           "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public",
+                    IDC_STATIC,4,105,372,8
+    LTEXT           "This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied",
+                    IDC_STATIC,4,126,372,8
+    LTEXT           "In addition to that license, if you are running this program or modified versions of it on a public system you HAVE TO make the complete source of the version used by you available or provide people with a location to download it.",
+                    IDC_STATIC,4,164,372,18
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,101,372,1
+    LTEXT           "License as published by the Free Software Foundation; either version 2 of the License, or any later version.",
+                    IDC_STATIC,4,113,372,8
+    LTEXT           "warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public",
+                    IDC_STATIC,4,134,372,8
+    LTEXT           "License for more details. You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.",
+                    IDC_STATIC,4,142,372,18
+    LTEXT           "See http://www.compuphase.com/small.htm for more informations.",
+                    IDC_STATIC,4,209,372,11
+    LTEXT           "NoX-Wizard logo by CrueL",IDC_STATIC,4,231,91,10
+    CTEXT           "Based on Wolfpack Emu v.12.5b1",IDC_STATIC,4,78,372,8
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""resource.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_XWGUI               ICON    DISCARDABLE     "nxwgui.ico"
+IDI_ICON1               ICON    DISCARDABLE     "sc.ico"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,0,0
+ PRODUCTVERSION 0,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x29L
+#else
+ FILEFLAGS 0x28L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040004b0"
+        BEGIN
+            VALUE "Comments", "Program by Xanathar, Ummon, Elcabesa, Luxor, Dr.X-Anfibius based on Wolfpack 12.5b1\0"
+            VALUE "CompanyName", "Please, visit http://nox-wizard.sunsite.dk\0"
+            VALUE "FileDescription", "NoX-Wizard\0"
+            VALUE "FileVersion", "0, 0, 0, 0\0"
+            VALUE "InternalName", "NXW-WIN32 (CONSOLE/SVC/GUI/EZ-GUI)\0"
+            VALUE "LegalCopyright", "Program by Xanathar, Ummon based on Wolfpack EMU\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "XWizard.exe\0"
+            VALUE "PrivateBuild", "Nop!\0"
+            VALUE "ProductName", "NoX-Wizard Server Emulator\0"
+            VALUE "ProductVersion", "0, 0, 0, 1\0"
+            VALUE "SpecialBuild", "Yep! NoX-Wizard is always *special* :D\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x400, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP2             BITMAP  DISCARDABLE     "nxwlogo.bmp"
+IDR_TOOLBAR             BITMAP  DISCARDABLE     "toolbar1.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 376
+        TOPMARGIN, 2
+        BOTTOMMARGIN, 241
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_TOOLBAR TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_BUTTON32896
+    SEPARATOR
+    BUTTON      ID_BUTTON32898
+    BUTTON      ID_BUTTON32919
+    SEPARATOR
+    BUTTON      ID_BUTTON32902
+    SEPARATOR
+    BUTTON      ID_BUTTON32901
+    BUTTON      ID_BUTTON32899
+    SEPARATOR
+    BUTTON      ID_BUTTON32903
+    BUTTON      ID_BUTTON32904
+    SEPARATOR
+    BUTTON      ID_BUTTON32920
+    SEPARATOR
+    BUTTON      ID_BUTTON32905
+    BUTTON      ID_BUTTON32910
+    SEPARATOR
+    BUTTON      ID_BUTTON32907
+    BUTTON      ID_BUTTON32908
+    BUTTON      ID_BUTTON32917
+    SEPARATOR
+    BUTTON      ID_BUTTON32915
+    SEPARATOR
+    BUTTON      ID_BUTTON32912
+    BUTTON      ID_BUTTON32913
+    BUTTON      ID_BUTTON32914
+    BUTTON      ID_BUTTON32916
+    BUTTON      ID_BUTTON32911
+    SEPARATOR
+    BUTTON      ID_BUTTON32906
+    BUTTON      ID_BUTTON32918
+    SEPARATOR
+    BUTTON      ID_BUTTON32921
+    SEPARATOR
+    BUTTON      ID_BUTTON32909
+    BUTTON      ID_BUTTON32897
+    BUTTON      ID_BUTTON32922
+    BUTTON      ID_BUTTON32923
+    BUTTON      ID_BUTTON32931
+    BUTTON      ID_BUTTON32932
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_APP_TITLE           "NoX-Wizard"
+    IDS_HELLO               "**"
+    IDC_XWGUI               "XWGUI"
+END
+
+#endif    // Italian (Italy) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

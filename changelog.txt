@@ -1,0 +1,27 @@
+CHANGELOG
+
+DATE		AUTHOR		CHANGETYPE	DESCRIPTION
+---------------------------------------------------------------------------------------------------------------------
+2002-sep-01	Sparhawk	FEATURE		Symbolic constants can now be used in the commands addnpc and additem
+						example addnpc $npc_ratman
+							additem $item_heater
+
+
+2002-aug-31	Sparhawk	BUGFIX		Linux server abort when walking
+				BUGFIX		Wrestling
+				FEATURE		Small API added	chr_getGuildType( const chr );
+								chr_setGuildType( const chr, const type );
+								chr_isGuildTraitor( const chr );
+								chr_setGuildTraitor( const chr, const traitor = 1 );
+								chr_hasGuildToggle( const chr );
+								chr_setGuildToggle( const chr, const toggle = 1 );
+								chr_getGuildTitle( const chr, title[] );
+								chr_setGuildTitle( const chr, const title[] );
+								chr_getGuildFealty( const chr );
+								chr_setGuildFealty( const chr, const serial );
+								chr_getGuildNumber( const chr );
+								chr_setGuildNumebr( const chr, const guild );
+								chr_getCreationDay( const chr );
+								chr_setCreationDay( const chr, const creationday );
+				FEATURE		Speech overrides in override.scp can now be bypassed through small code
+						This way texts like e.g. passwords will not be echoed to the screen.

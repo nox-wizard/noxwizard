@@ -1,0 +1,22 @@
+<?xml version = '1.0'?>
+<kdevelop>
+  <general>
+    <author>Fabrizio Montesi</author>
+    <email>luxor@e-vinco.it</email>
+    <projectmanagement>KDevCustomProject</projectmanagement>
+    <primarylanguage>C++</primarylanguage>
+    <ignoreparts>
+      <part>KDevFileView</part>
+    </ignoreparts>
+  </general>
+  <kdevcustomproject>
+    <run>
+      <mainprogram>src/src</mainprogram>
+    </run>
+  </kdevcustomproject>
+  <kdevdebugger>
+    <general>
+      <dbgshell/>
+    </general>
+  </kdevdebugger>
+</kdevelop>

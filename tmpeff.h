@@ -1,0 +1,65 @@
+  /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+    || NoX-Wizard UO Server Emulator (NXW) [http://noxwizard.sourceforge.net]  ||
+    ||                                                                         ||
+    || This software is free software released under GPL2 license.             ||
+    || You can find detailed license information in nox-wizard.cpp file.       ||
+    ||                                                                         ||
+    || For any question post to NoX-Wizard forums.                             ||
+    -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
+
+/*!
+\file
+\brief Temp Effect Related Stuff
+*/
+
+#ifndef __TMPEFF_H__
+#define __TMPEFF_H__
+
+namespace tempfx {
+	enum {
+		MODE_START = 0,
+		MODE_END,
+		MODE_ON,
+		MODE_OFF,
+		MODE_REVERSE
+	};
+
+	bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1 = 0, unsigned char more2 = 0, unsigned char more3 = 0,short dur=-1, int amxcback = -3);
+	
+	//Begin -- Luxor's new temp effects system :D
+	class cTempfx {
+	private:
+		SERIAL m_nSrc;
+		SERIAL m_nDest;
+		SI32 m_nNum;
+		SI32 m_nMode;
+		UI32 m_nExpireTime;
+		SI32 m_nAmxcback;
+		SI32 m_nMore1;
+		SI32 m_nMore2;
+		SI32 m_nMore3;
+		LOGICAL m_bDispellable;
+		LOGICAL m_bSrcRepeatable;
+		LOGICAL m_bDestRepeatable;
+	public:
+		cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI32 more2, SI32 more3, SI32 amxcback );
+		int getExpireTime(void) { return m_nExpireTime; }
+		bool isDispellable(void) { return m_bDispellable; }
+		void activate(void);
+		void deactivate(void);
+		bool isValid(void);
+		bool checkForExpire(void);
+		void start(void);
+		int getNum(void) { return m_nNum; }
+	};
+
+	void tempeffectson(void);
+	void tempeffectsoff(void);
+	void checktempeffects(void);
+
+	//End Luxor's temp effects system
+}
+
+
+
+#endif //__TMPEFF_H__
