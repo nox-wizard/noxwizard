@@ -768,7 +768,11 @@ void spellFailFX(P_CHAR pc)
 void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster)
 {
 	NxwCharWrapper sc;
-	sc.fillCharsNearXYZ( x, y, VISRANGE -2 );
+	UI32 range = VISRANGE -2;
+	if ( spellnum == SPELL_EXPLOSION )
+		range = 4;
+
+	sc.fillCharsNearXYZ( x, y, range );
 
 	int damagetobedone = RandomNum(g_Spells[spellnum].lodamage, g_Spells[spellnum].hidamage);
 	int divider = (sc.size() / 4) + 1;
