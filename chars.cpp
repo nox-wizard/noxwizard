@@ -2938,7 +2938,6 @@ void cChar::Kill()
 		return;
 
 	NXWCLIENT ps=getClient();
-	NXWSOCKET s=(ps!=NULL)? ps->toInt() : INVALID;
 
 	char murderername[128];
 	murderername[0] = '\0';
@@ -3439,7 +3438,6 @@ SI32 cChar::Equip(P_ITEM pi, LOGICAL drag)
 {
 
 	tile_st item;
-	NXWSOCKET s = getSocket();
 
 	g_bByPass= false;
 

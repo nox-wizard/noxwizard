@@ -67,7 +67,7 @@ class cBasicMenu {
 		menu_callback hard; //!< hard code callback
 
 		cBasicMenu( MENU_TYPE id );
-		~cBasicMenu();
+		virtual ~cBasicMenu();
 
 		SERIAL	serial; //!< serial
 

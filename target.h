@@ -43,7 +43,7 @@ public:
 	processTarget code_callback;
 
 	cTarget( bool selectLocation=true );
-	~cTarget();
+	virtual ~cTarget();
 
 	void send( NXWCLIENT ps );
 	void receive( NXWCLIENT ps );

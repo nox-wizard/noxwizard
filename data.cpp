@@ -121,7 +121,7 @@ static void cacheStatics()
 				// Blocks are registered in file by top to bottom columns from left to right.
 				( blockX * map_height * staticIdx_st_size ) + ( blockY * staticIdx_st_size );
 
-			if ( !staticIdx->getData( pos, staidx ) || staidx.start == 0xFFFFFFFF || staidx.start < 0 || staidx.length <= 0 )
+			if ( !staticIdx->getData( pos, staidx ) || staidx.start < 0 || staidx.length <= 0 )
 				continue;
 			staidx_cache->insert( pair< UI32, staticIdx_st >( pos, staidx ) );
 
@@ -202,7 +202,8 @@ static void cacheVerdataIndex()
 	verIdx->getData( 0, (BYTE*)(&verdataEntries), 4 );
 
 	verdata_st v;
-	UI32 i, pos;
+	SI32 i;
+	UI32 pos;
 
 	ConOut( "\nCaching verdata index ( verdata.mul ) \t\t" );
 	for ( i = 0; i < verdataEntries; i++ ) {
@@ -228,9 +229,9 @@ static void cacheVerdata()
 	verdata_st v;
 	tile_st t;
 	land_st l;
-	UI32 block;
+	UI32 block, pos;
 	UI08 index;
-	UI32 i, pos;
+	SI32 i;
 
 	ConOut( "\nCaching verdata tiledata info ( verdata.mul ) \t\t" );
 	for ( i = 0; i < verdataEntries; i++ ) {
@@ -465,7 +466,7 @@ LOGICAL collectStatics( UI32 x, UI32 y, staticVector& s_vec )
 		( blockX * map_height * staticIdx_st_size ) + ( blockY * staticIdx_st_size );
 
 	staticIdx_st staidx;
-	if ( !staticIdx->getData( pos, staidx ) || staidx.start == 0xFFFFFFFF || staidx.start < 0 || staidx.length <= 0 )
+	if ( !staticIdx->getData( pos, staidx ) || staidx.start < 0 || staidx.length <= 0 )
 		return false;
 
 	UI32 num = staidx.length / static_st_size;
@@ -533,7 +534,7 @@ LOGICAL seekMulti( UI16 id, multiVector& m_vec )
 
 	multiIdx_st idx;
 	UI32 pos = id * multiIdx_st_size;
-	if ( !multiIdx->getData( pos, idx ) || idx.start == (0xFFFFFFFF - 1) || idx.start < 0 || idx.length <= 0 )
+	if ( !multiIdx->getData( pos, idx ) || idx.start < 0 || idx.length <= 0 )
 		return false;
 
 	multi_st m;
@@ -555,9 +556,9 @@ LOGICAL seekVerTile( UI16 id, tile_st& tile )
 	if ( !verIdx->isReady() || !verTile->isReady() )
 		return false;
 
-	UI32 i, pos;
+	SI32 i, block = id / 32 + 512;
 	verdata_st v;
-	UI32 block = id / 32 + 512;
+	UI32 pos;
 
 	for ( i = 0; i < verdataEntries; i++ ) {
 		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );
@@ -583,9 +584,9 @@ LOGICAL seekVerLand( UI16 id, land_st& land )
 	if ( !verIdx->isReady() || !verLand->isReady() )
 		return false;
 
-	UI32 i, pos;
+	UI32 pos;
 	verdata_st v;
-	UI32 block = id / 32;
+	SI32 i, block = id / 32;
 
 	for ( i = 0; i < verdataEntries; i++ ) {
 		pos = VERDATA_HEADER_SIZE + ( i * verdata_st_size );

@@ -843,9 +843,6 @@ See definitions of ALL-types below to have a list of possible class. Feel free t
 */
 void command_spreadpriv3(NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
         return;
         /*int ichar, icmd, imeta;
 	int y, err, Condtype;
@@ -1427,9 +1424,6 @@ void command_go( NXWCLIENT ps )
 // Sets all PK counters to 0.
 void command_zerokills( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
                         return;
                         /*sysmessage(s,"Zeroing all player kills...");
 			for(int a=0;a<charcount;a++)
@@ -1598,9 +1592,6 @@ void command_cfg( NXWCLIENT ps )
 // Saves the current world data into NXWITEMS.WSC and NXWCHARS.WSC.
 void command_save( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	cwmWorldState->saveNewWorld();
 }
 
@@ -1713,8 +1704,6 @@ void command_showtime( NXWCLIENT ps )
 // (d d) Sets the current UO time in hours and minutes.
 void command_settime( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
 
 	int newhours, newminutes;
 			if (tnum==3)
@@ -1734,9 +1723,6 @@ void command_settime( NXWCLIENT ps )
 // (d) Shuts down the server. Argument is how many minutes until shutdown.
 void command_shutdown( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 			if (tnum==2)
 			{
 				endtime=uiCurrentTime+(MY_CLOCKS_PER_SEC*strtonum(1));
@@ -1801,9 +1787,6 @@ void command_sfx( NXWCLIENT ps )
 // (h) Sets the light level. 0=brightest, 15=darkest, -1=enable day/night cycles.
 void command_light( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	if (tnum==2)
 	{
 		worldfixedlevel=strtonum(1);
@@ -1828,9 +1811,6 @@ void command_web( NXWCLIENT ps )
 // (d) Disconnects the user logged in under the specified slot.
 void command_disconnect( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	if (tnum==2) Network->Disconnect(strtonum(1));
 }
 
@@ -1851,9 +1831,6 @@ void command_tell( NXWCLIENT ps )
 // Set weather to dry (no rain or snow).
 void command_dry( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	wtype=0;
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -1868,10 +1845,6 @@ void command_dry( NXWCLIENT ps )
 // Sets the weather condition to rain.
 void command_rain( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-	
 	NxwSocketWrapper sw;
 
 	if (wtype==2)
@@ -1899,10 +1872,6 @@ void command_rain( NXWCLIENT ps )
 // Sets the weather condition to snow.
 void command_snow( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
-
 	NxwSocketWrapper sw;
 	if (wtype==1)
 	{
@@ -2505,9 +2474,6 @@ void command_reloadserver( NXWCLIENT ps )
 // Loads the server defaults.
 void command_loaddefaults( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	loadserverdefaults();
 }
 
@@ -2542,9 +2508,6 @@ void command_cclear( NXWCLIENT ps )
 // (d) Set the server mine check interval in minutes.
 void command_minecheck( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	if (tnum==2)
 		SrvParms->minecheck=strtonum(1);
 }
@@ -2591,9 +2554,6 @@ void command_noinvul( NXWCLIENT ps )
 // Activates town guards.
 void command_guardson( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	SrvParms->guardsactive=1;
 	sysbroadcast(TRANSLATE("Guards have been reactivated."));
 
@@ -2602,9 +2562,6 @@ void command_guardson( NXWCLIENT ps )
 // Deactivates town guards.
 void command_guardsoff( NXWCLIENT ps )
 {
- 
-	NXWSOCKET s = ps->toInt();
-
 	SrvParms->guardsactive=0;
 	sysbroadcast(TRANSLATE("Warning: Guards have been deactivated globally."));
 
@@ -3333,8 +3290,6 @@ void target_ban( NXWCLIENT ps, P_TARGET t )
 
 void target_emptypack( NXWCLIENT ps, P_TARGET t )
 {
-	P_CHAR curr=ps->currChar();
-
 	SERIAL serial = t->getClicked();
 	P_ITEM pack=NULL;
 

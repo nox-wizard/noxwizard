@@ -257,8 +257,8 @@ void cNetwork::DoStreamCode( NXWSOCKET  socket )
 	int len = Pack( outbuffer[socket], xoutbuffer, boutlength[socket] );
 	// ConOut("Packed %d bytes input to %d bytes out\n", boutlength[socket], len);
 	NXWCLIENT ps = getClientFromSocket(socket);
-	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
 #ifdef ENCRYPTION
+	P_CHAR pc_currchar= (ps!=NULL)? ps->currChar() : NULL;
 	if ( clientCrypter[socket] != NULL && clientCrypter[socket]->getCryptVersion() >= CRYPT_3_0_0c )
 		clientCrypter[socket] ->encrypt((unsigned char *) &xoutbuffer[0], (unsigned char *) &xoutbuffer[0], len);
 	else if (pc_currchar != NULL && pc_currchar->getCrypter() != NULL && pc_currchar->getCrypter()->getCryptVersion() >= CRYPT_3_0_0c )
@@ -513,14 +513,13 @@ void cNetwork::LoginMain(int s)
 	unsigned char acctused[2]={0x82, 0x01};
 	unsigned char acctblock[2]={0x82, 0x02};
 	unsigned char nopass[2]={0x82, 0x03};
-	NXWCLIENT ps = getClientFromSocket(s);
-
 
 	SERIAL chrSerial;
 
 	acctno[s]=INVALID;
-	int length=0x3e;
 #ifdef ENCRYPTION
+	NXWCLIENT ps = getClientFromSocket(s);
+	int length=0x3e;
 	int j;
 	unsigned char decryptPacket[MAXBUFFER+1];
 	unsigned char cryptPacket[MAXBUFFER+1];

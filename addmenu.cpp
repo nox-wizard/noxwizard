@@ -90,8 +90,6 @@ void cMakeMenu::loadFromScript( P_CHAR pc )
 
 	oldmenu->style=MENUTYPE_ICONLIST;
 
-    int minskl=0; // To calculate minimum skill required
-
 /* makemenu menu
 SECTION MAKEMENU 1
 {

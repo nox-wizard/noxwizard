@@ -88,7 +88,7 @@ void cScriptCommand::execute( NXWSOCKET s )
 		splitLine( param, itemnum, amount );
 		int am = ( amount != "" )?  str2num( amount ) : INVALID; //ndEndy defined amount
 		
-		P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
+		item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
 		return;
 	} else if ( command == "BATCH" ) {
 		executebatch=str2num(param);

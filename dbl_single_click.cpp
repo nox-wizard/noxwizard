@@ -392,7 +392,6 @@ void doubleclick(NXWCLIENT ps)
 
 		if (pi->type2 == 3)
 		{
-			char id2 = pi->getId() & 0xFF;
 			switch( pi->getId() & 0xFF ) {
 				case 0x84:
 				case 0xD5:

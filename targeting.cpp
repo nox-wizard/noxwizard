@@ -717,8 +717,6 @@ void target_follow( NXWCLIENT ps, P_TARGET t )
 
 void target_axe( NXWCLIENT ps, P_TARGET t )
 {
-    NXWSOCKET  s = ps->toInt();
-
     UI16 id=t->getModel();
     if (itemById::IsTree(id))
 		Skills::target_tree( ps, t );
@@ -731,8 +729,7 @@ void target_axe( NXWCLIENT ps, P_TARGET t )
 
 void target_sword( NXWCLIENT ps, P_TARGET t )
 {
-	NXWSOCKET  s = ps->toInt();
-    P_CHAR pc = ps->currChar();
+	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
 	UI16 id = t->getModel();
@@ -871,8 +868,7 @@ void target_npcMenu( NXWCLIENT ps, P_TARGET t )
 	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 
-    P_CHAR npc = npcs::AddRespawnNPC(pc,t->buffer[0]);
-
+	npcs::AddRespawnNPC(pc,t->buffer[0]);
 }
 
 /*!

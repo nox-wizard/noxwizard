@@ -185,7 +185,7 @@ void bgsound(CHARACTER s)
 		if( pc->npc && !pc->dead && !pc->war )
 		{
 			inrange[y++]=pc;
-			if( y=15 )
+			if( y==15 )
 				return;
 		}
 	}

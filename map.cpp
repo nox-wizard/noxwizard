@@ -94,7 +94,7 @@ Location cLine::getPosAtY( UI32 y )
 SI08 isWalkable( Location pos, UI08 flags, P_CHAR pc )
 {
 	SI08 zRes = 0;
-	UI32 height = 0;
+	SI32 height = 0;
 
 	//
         // DYNAMIC ITEMS -- Check for dynamic items Z elevation and block flag

@@ -107,7 +107,6 @@ void snooping( P_CHAR snooper, P_ITEM cont )
 */
 void Skills::target_stealing( NXWCLIENT ps, P_TARGET t )
 {
-	NXWSOCKET s = ps->toInt();
 	P_CHAR thief = ps->currChar();
 	VALIDATEPC(thief);
 	SERIAL target_serial = t->getClicked();
@@ -304,7 +303,6 @@ void Skills::target_randomSteal( NXWCLIENT ps, P_TARGET t )
 
 	P_CHAR thief=ps->currChar();
 	VALIDATEPC(thief);
-	NXWSOCKET s = ps->toInt();
 	P_CHAR victim = pointers::findCharBySerial( t->getClicked() );
 	VALIDATEPC(victim);
 	
@@ -475,7 +473,6 @@ void Skills::target_randomSteal( NXWCLIENT ps, P_TARGET t )
 void Skills::target_lockpick( NXWCLIENT ps, P_TARGET t )
 {
 
-	NXWSOCKET s = ps->toInt();
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 	P_ITEM chest=pointers::findItemBySerial( t->getClicked() );

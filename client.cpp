@@ -348,7 +348,7 @@ void cNxwClientObj::startCommand(P_COMMAND cmd, char* params) {
 			} else if(strcmp(token, "SELF")==0) {
                 if(warn==NULL) {
 					if(cmd->targetingMask && TARG_SELF) {
-						P_CHAR self = MAKE_CHAR_REF( currchar[toInt()] );
+//						P_CHAR self = MAKE_CHAR_REF( currchar[toInt()] );
 						if(!needtargets) {
 							needtargets= true;
 						}

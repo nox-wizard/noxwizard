@@ -670,8 +670,6 @@ void Skills::target_smeltOre( NXWCLIENT ps, P_TARGET t )
     P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
-	NXWSOCKET s = ps->toInt();
-
     if ( pi->magic!=4) // Ripper
     {
         if( pi->IsForge() )
@@ -749,10 +747,7 @@ void Skills::target_loom( NXWCLIENT ps, P_TARGET t )
 	P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
 
-	NXWSOCKET s = ps->toInt();
-
 	int tailme=0;
-
 
 	if (pi->magic!=4) // Ripper
 	{
@@ -880,8 +875,6 @@ void Skills::target_detectHidden( NXWCLIENT ps, P_TARGET t )
 
 	P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
-
-	NXWSOCKET s = ps->toInt();
 
 	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,DETECTINGHIDDEN,AMX_BEFORE);
 	
@@ -1183,9 +1176,6 @@ void Skills::target_healingSkill( NXWCLIENT ps, P_TARGET t )
     P_ITEM pib=MAKE_ITEM_REF( t->buffer[0] );    // item index of bandage
 	VALIDATEPI(pib);
 
-	NXWSOCKET s = ps->toInt();
-
-
     AMXEXECSVTARGET( ph->getSerial32(),AMXT_SKITARGS,HEALING,AMX_BEFORE);
 
     if (!SrvParms->bandageincombat ) {
@@ -1309,8 +1299,6 @@ void Skills::target_armsLore( NXWCLIENT ps, P_TARGET t )
     P_CHAR pc = ps->currChar();
 	VALIDATEPC(pc);
 
-	NXWSOCKET s = ps->toInt();
-
     char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
     P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
@@ -1429,9 +1417,6 @@ void Skills::target_itemId( NXWCLIENT ps, P_TARGET t )
 
     const P_ITEM pi=pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
-
-	NXWSOCKET s = ps->toInt();
-
 
     char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 
@@ -1751,8 +1736,6 @@ void Skills::target_forensics( NXWCLIENT ps, P_TARGET t )
 	VALIDATEPC(pc);
 	P_ITEM pi = pointers::findItemBySerial( t->getClicked() );
 	VALIDATEPI(pi);
-
-	NXWSOCKET s = ps->toInt();
 
 	AMXEXECSVTARGET( pc->getSerial32(),AMXT_SKITARGS,FORENSICS,AMX_BEFORE);
 

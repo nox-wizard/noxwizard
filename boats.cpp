@@ -1317,8 +1317,8 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 	}
 
 
-#define XBORDER 200
-#define YBORDER 200
+#define XBORDER 200u
+#define YBORDER 200u
 
 	Location boatpos= pBoat->getPosition();
 

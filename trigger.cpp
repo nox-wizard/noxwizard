@@ -126,7 +126,6 @@ void cTriggerContext::parseIAddCommand(char* par)
 	UI32 InBackpack = array[1];
 	UI32 itmamount = (array[2]<=0)? INVALID : array[2];
     
-	NXWSOCKET  ts = m_socket;
 	Location charpos= m_pcCurrChar->getPosition();
 
     switch (m_pcCurrChar->dir)

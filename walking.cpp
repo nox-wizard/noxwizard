@@ -302,7 +302,7 @@ bool WalkHandleBlocking(P_CHAR pc, int sequence, int dir, int oldx, int oldy)
 
 	//UI32 blockers = WalkCollectBlockers(pc);
 
-	SI08 z, dispz=0;
+	SI08 z;
 
 	if ( pc->npc )
 		z = isWalkable( pc->getPosition(), WALKFLAG_MAP + WALKFLAG_STATIC + WALKFLAG_DYNAMIC, pc );
@@ -1194,7 +1194,6 @@ void sendToPlayers( P_CHAR pc, SI08 dir )
                 if ( !pc_curr->canSee( *pc ) )
 			continue;
 
-		NXWSOCKET socket = ps->toInt();
 		UI08 flag, hi_color;
 
 		// If it's an npc, and it's fighting or following something let's show it running

@@ -878,10 +878,6 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 	int member, recruit, war, guild, counter, slot;
 	//int members[MAXGUILDMEMBERS];
 	//int recruits[MAXGUILDRECRUITS];
-	int s1= pc->getSerial().ser1;
-	int s2= pc->getSerial().ser2;
-	int s3= pc->getSerial().ser3;
-	int s4= pc->getSerial().ser4;
 	char text[200];
 	int guildnumber=Guilds->SearchByStone(socket);
 

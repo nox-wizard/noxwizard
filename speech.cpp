@@ -899,9 +899,9 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			pay=6554;
 			give=58981;
 		}
-		if (give) { //Luxor
-			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
-		}
+		if (give) //Luxor
+			item::CreateFromScript( "$item_gold_coin", pc_currchar->getBackpack(), give );
+
 		sprintf(temp, TRANSLATE("Today's purchases total %i gold. I am keeping %i gold for my self. Here is the remaining %i gold. Have a nice day."),pc_vendor->holdg,pay,give);
 		pc_vendor->talk(s,temp,0);
 		pc_vendor->holdg=t;
@@ -1832,38 +1832,6 @@ static LOGICAL requestHelp( P_CHAR pc, NXWSOCKET socket, std::string &speech, Nx
 }
 
 } // namespace Guards
-
-static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCharWrapper &nearbyVendors );
-
-/*!
-\todo this function is not used, should be removed?
-*/
-static LOGICAL speakToVendor( P_CHAR pc, NXWSOCKET socket, string &speech )
-{
-	LOGICAL success = false;
-	NxwCharWrapper nearbyVendors;
-
-	P_CHAR	pc_a_npc;
-	for( nearbyNpcs->rewind(); !nearbyNpcs->isEmpty(); (*nearbyNpcs)++ )
-	{
-		pc_a_npc = nearbyNpcs->getChar();
-		if( pc_a_npc->shopkeeper )
-			if( pc->distFrom( pc_a_npc ) < 4 && abs( pc->getPosition().z - pc_a_npc->getPosition().z ) < 4 )
-				nearbyVendors.insertChar( pc_a_npc );
-	}
-	
-	nearbyVendors.rewind();		// GH!
-
-	if( !nearbyVendors.isEmpty() )
-	{
-		success = buyFromVendor( pc, socket, speech, nearbyVendors );
-		if( !success )
-		{
-		;
-		}
-	}
-	return success;
-}
 
 static LOGICAL buyFromVendor( P_CHAR pc, NXWSOCKET socket, string &speech, NxwCharWrapper &nearbyVendors )
 {

@@ -62,6 +62,7 @@ protected:
 
 public:
 	virtual void receive( NXWCLIENT ps );
+	virtual ~cClientPacket() { };
 } PACK_NEEDED;
 
 /*!
@@ -73,6 +74,7 @@ class cServerPacket : public cPacket {
 public:
 	virtual void send( NXWCLIENT ps );
 	virtual void send( P_CHAR pc );
+	virtual ~cServerPacket() { };
 
 } PACK_NEEDED;
 
