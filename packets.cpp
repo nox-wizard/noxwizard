@@ -83,13 +83,15 @@ void cClientPacket::receive( NXWCLIENT ps ) {
 
 /*!
 \brief Send packet to client
-\author Endymion
+\author Endymion, rewritten by Luxor
 \since 0.83a
 \param ps the client who send to
 */
 void cServerPacket::send( NXWCLIENT ps ) {
-	if( ps != NULL )
-		Xsend( ps->toInt(), getBeginValid(), headerSize );
+	if( ps == NULL )
+		return;
+
+	ps->send( getBeginValid(), headerSize );
 };
 
 

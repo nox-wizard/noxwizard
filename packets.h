@@ -38,7 +38,7 @@ protected:
 	UI08 cmd;		//!< packet id
 	char* getBeginValid();
 
-};
+} PACK_NEEDED;
 
 
 /*!
@@ -54,7 +54,7 @@ protected:
 
 public:
 	void receive( NXWCLIENT ps );
-};
+} PACK_NEEDED;
 
 /*!
 \brief Base class of all packets send to server to client
@@ -66,7 +66,7 @@ public:
 	void send( NXWCLIENT ps );
 	void send( P_CHAR pc );
 
-};
+} PACK_NEEDED;
 
 
 
@@ -137,7 +137,7 @@ public:
 	cPacketCreateCharacter();
 	void receive( NXWCLIENT ps  );
 
-};
+} PACK_NEEDED;
 
 #define PKG_DISCONNECT_NOTIFY 0x01;
 /*!
@@ -156,7 +156,7 @@ public:
 
 	cPacketDisconnectNotification();
 
-};
+} PACK_NEEDED;
 
 #define PKG_TALK_REQUEST 0x03;
 /*!
@@ -214,7 +214,7 @@ public:
 
 	cPacketAttackRequest();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_DB_CLICK 0x06;
 /*!
@@ -231,7 +231,7 @@ public:
 
 	cPacketDoubleClick();	
 
-};
+} PACK_NEEDED;
 
 
 #define PKG_PICK_UP 0x07;
@@ -250,7 +250,7 @@ public:
 
 	cPacketPickUpItem();
 
-};
+} PACK_NEEDED;
 
 
 #define PKG_DROP_ITEM 0x08;
@@ -273,7 +273,7 @@ public:
 
 	cPacketDropItem();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_SINGLE_CLICK 0x09;
 /*!
@@ -290,7 +290,7 @@ public:
 
 	cPacketSingleClick();
 
-};
+} PACK_NEEDED;
 
 #define PKG_STAT_WINDOW 0x11;
 /*!
@@ -338,7 +338,7 @@ public:
 	void sendStat( NXWCLIENT ps );
 	void sendExtended( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 #define PKG_DROP_OR_WEAR_ITEM 0x13;
 /*!
@@ -357,7 +357,7 @@ public:
 
 	cPacketWear();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_CHAR_INFO 0x1B;
 /*!
@@ -389,7 +389,7 @@ public:
 
 	cPacketCharInfo();
 
-};
+} PACK_NEEDED;
 
 #define PKG_SPEECH 0x1C;
 /*!
@@ -414,7 +414,7 @@ public:
 	cPacketSpeech();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 #define PKG_DELETE 0x1D;
 /*!
@@ -430,7 +430,7 @@ public:
 
 	cPacketDelete();
 
-};
+} PACK_NEEDED;
 
 #define PKG_DRAW_PLAYER 0x20;
 /*!
@@ -457,7 +457,7 @@ public:
 
 	cPacketDrawPlayer();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_REJECT_MOVEMENT 0x21;
 /*!
@@ -478,7 +478,7 @@ public:
 
 	cPacketMoveReject();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_MOVE_ACK 0x22;
 /*!
@@ -514,7 +514,7 @@ can be one of this:
 
 	cPacketMoveACK();
 
-};
+} PACK_NEEDED;
 
 #define PKG_DRAGGING 0x23;
 /*!
@@ -541,7 +541,7 @@ public:
 
 	cPacketDragging();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_DRAW_CONTAINER 0x24;
 /*!
@@ -559,7 +559,7 @@ public:
 
 	cPacketDrawContainer();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_ADD_ITEM_INTO_CONTAINER 0x25;
 /*!
@@ -583,7 +583,7 @@ public:
 
 	cPacketAddItemIntoCont();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_KICK 0x26;
 /*!
@@ -600,7 +600,7 @@ public:
 
 	cPacketKick();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_REJECT_MOVE_ITEM 0x27;
 /*!
@@ -617,7 +617,7 @@ public:
 
 	cPacketRejectMoveItem();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_CLEAR_SQUARE 0x28;
 /*!
@@ -635,7 +635,7 @@ public:
 
 	cPacketClearSquare();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_PD_CLOTHING 0x29;
 /*!
@@ -650,7 +650,7 @@ public:
 
 	cPacketPDClothing();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_RESS_MENU 0x2C;
 /*!
@@ -668,7 +668,7 @@ public:
 
 	cPacketRessMenu();
 
-};
+} PACK_NEEDED;
 
 #define PKG_MOBILE_ATTRIBUTES 0x2D;
 /*!
@@ -691,7 +691,7 @@ public:
 
 	cPacketMobileAttributes();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_WORN_ITEM 0x2E;
 /*!
@@ -713,7 +713,7 @@ public:
 
 	cPacketWornItem();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_FIGHT_OCCURING 0x2F;
 /*!
@@ -732,7 +732,7 @@ public:
 
 	cPacketFightOccuring();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_PAUSE_RESUME 0x33;
 /*!
@@ -751,7 +751,7 @@ public:
 
 	cPacketPauseResumeClient();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_PLAYER_STATUS 0x34;
 /*!
@@ -770,7 +770,7 @@ public:
 
 	cPacketPlayerStatus();	
 
-};
+} PACK_NEEDED;
 
 
 typedef struct {
@@ -800,7 +800,7 @@ public:
 	void send( NXWCLIENT ps );
 	cPacketBuy();
 
-};
+} PACK_NEEDED;
 
 /*!
 \brief struct with informations about items in containers
@@ -834,7 +834,7 @@ public:
 	void send( NXWCLIENT ps );
 	cPacketContainer();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_PERSONAL_LIGHT 0x4E;
 /*!
@@ -851,7 +851,7 @@ public:
 
 	cPacketPersonalLight();	
 
-};
+} PACK_NEEDED;
 
 
 #define PKG_OVERALL_LIGHT 0x4F;
@@ -868,7 +868,7 @@ public:
 
 	cPacketOverallLight();
 
-};
+} PACK_NEEDED;
 
 #define PKG_IDLE_WARNING 0x53;
 /*!
@@ -894,7 +894,7 @@ public:
 
 	cPacketIdleWarning();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_SOUND 0x54;
 /*!
@@ -916,7 +916,7 @@ public:
 
 	cPacketSound();
 
-};
+} PACK_NEEDED;
 
 #define PKG_LOGIN_COMPLETE 0x55;
 /*!
@@ -929,7 +929,7 @@ class cPacketLoginComplete : public cServerPacket {
 
 	cPacketLoginComplete();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_PLOT_COURSE 0x56;
 /*!
@@ -956,7 +956,7 @@ class cPacketPlotCourse : public cServerPacket {
 	
 	cPacketPlotCourse();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_TIME 0x5B;
 /*!
@@ -973,7 +973,7 @@ class cPacketTime : public cServerPacket {
 
 	cPacketTime();	
 
-};
+} PACK_NEEDED;
 
 /*!
 \brief Login Character
@@ -994,7 +994,7 @@ class cPacketLogin : public cClientPacket {
 	cPacketLogin();	
 	void receive( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 #define PKG_WEATHER 0x65;
 /*!
@@ -1027,7 +1027,7 @@ class cPacketWeather : public cServerPacket {
 	
 	cPacketWeather();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_TARGETING 0x6C;
 /*!
@@ -1052,7 +1052,7 @@ class cPacketTargetingCursor : public cServerPacket /*CLIENTPACKET ALSO*/ {
 	UI16	model;		//!< model number ( 0=map/landscape tile, else static tile )
 	
 	cPacketTargetingCursor();	
-};
+} PACK_NEEDED;
 
 #define PKG_MIDI 0x6D;
 /*!
@@ -1069,7 +1069,7 @@ public:
 
 	cPacketMidi();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_ANIM 0x6E;
 /*!
@@ -1131,7 +1131,7 @@ public:
 
 	cPacketAnim();	
 
-};
+} PACK_NEEDED;
 
 /*|
 \brief Secure Trading
@@ -1157,7 +1157,7 @@ public:
 
 	cPacketSecureTrading();	
 
-};
+} PACK_NEEDED;
 */
 
 #define PKG_EFFECT 0x70;
@@ -1194,7 +1194,7 @@ public:
 
 	cPacketEffect();	
 
-};
+} PACK_NEEDED;
 
 #define PKG_WAR_MODE 0x72;
 /*!
@@ -1214,7 +1214,7 @@ public:
 
 	cPacketWarMode();
 
-};
+} PACK_NEEDED;
 
 
 /*!
@@ -1233,7 +1233,7 @@ public:
 
 	cPacketPing();	
 
-};*/
+} PACK_NEEDED;*/
 
 /*
 typedef struct {
@@ -1267,7 +1267,7 @@ public:
 	cPacketOpenBuy();	
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 */
 
@@ -1288,7 +1288,7 @@ public:
 	cPacketRename();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 #define PKG_NEW_SUBSERVER 0x76;
 /*!
@@ -1312,7 +1312,7 @@ public:
 
 	cPacketNewSubserver();
 
-};
+} PACK_NEEDED;
 
 #define PKG_UPDATE_PLAYER 0x77;
 /*!
@@ -1337,7 +1337,7 @@ public:
 
 	cPacketUpdatePlayer();
 
-};
+} PACK_NEEDED;
 
 //0x78 not yet
 
@@ -1379,7 +1379,7 @@ public:
 
 	cPacketUpdatePlayer();
 
-};
+} PACK_NEEDED;
 */
 
 #define PKG_RESPONSE_TO_DIALOG 0x7D;
@@ -1401,7 +1401,7 @@ public:
 
 	cPacketResponseToDialog();
 
-};
+} PACK_NEEDED;
 
 #define PKG_LOGIN_DENIED 0x82;
 /*!
@@ -1424,7 +1424,7 @@ public:
 
 	cPacketLoginDenied();
 
-};
+} PACK_NEEDED;
 
 #define PKG_DELETE_CHARACHTER 0x83;
 /*!
@@ -1445,7 +1445,7 @@ public:
 	cPacketDeleteCharacter();
 	void receive( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 /*
 typedef struct resaftdel_st {
@@ -1512,7 +1512,7 @@ public:
 	cPacketUnicodeSpeech();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 
 //@{
@@ -1549,7 +1549,7 @@ public:
 	cPacketMap();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 #define PKG_MAP_MESSAGE 0x90;
 /*!
@@ -1573,7 +1573,7 @@ public:
 	cPacketMapMessage();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 //@}
 
@@ -1598,7 +1598,7 @@ public:
 	cPacketWalk();
 	void send( NXWCLIENT ps );
 
-};
+} PACK_NEEDED;
 
 
 #define PKG_WALK_ACK 0x22;
@@ -1618,7 +1618,7 @@ public:
 	eUI08   notoriety;	//!< notoriety ( see note and NOTORIETY )
 	cPacketWalkAck();
 
-};
+} PACK_NEEDED;
 
 typedef enum {
 	NOT_VALID =0, //!< invalid/across server line
@@ -1648,7 +1648,7 @@ public:
 	eUI08   z;	//!< z location
 	cPacketWalkReject();
 
-};
+} PACK_NEEDED;
 
 
 

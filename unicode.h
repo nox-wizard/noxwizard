@@ -10,7 +10,7 @@
 #ifndef __UNICODE_H__
 #define __UNICODE_H__
 
-typedef UI16 UNI_TEXT;
+typedef UI16 PACK_NEEDED UNI_TEXT;
 
 /*!
 \brief An unicode string
@@ -37,7 +37,7 @@ public:
 	cUnicodeString& operator+=( wchar_t c );
 
 	void clear();
-};
+} PACK_NEEDED;
 
 /*
 \brief endian buster
@@ -48,7 +48,7 @@ class endian {
 public:
 	endian() {}
 	~endian() {}
-};
+} PACK_NEEDED;
 
 typedef UI08 PACK_NEEDED eUI08;
 typedef bool PACK_NEEDED eBool;
@@ -65,9 +65,9 @@ public:
 	eUI16() { a=0; b=0; };
 	~eUI16() { };
 	void operator =( UI32 v );
-};
+} PACK_NEEDED;
 
-typedef eUI16 eCOLOR;
+typedef eUI16 PACK_NEEDED eCOLOR;
 
 /*
 \brief endian buster 32Bit
@@ -80,9 +80,9 @@ public:
 	eUI32() { a=0; b=0; };
 	~eUI32() { };
 	void operator =( UI32 v );
-};
+} PACK_NEEDED;
 
-typedef eUI32 eSERIAL;
+typedef eUI32 PACK_NEEDED eSERIAL;
 
 
 #endif
