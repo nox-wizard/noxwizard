@@ -901,10 +901,10 @@ void signal_handler(int signal)
 		{
 			if( isCharSerial( objs.getSerial() ) )
 			{
-				P_CHAR pc = (P_CHAR) obj;
+				P_CHAR pc = (P_CHAR) objs.getObject();
 				if ( ! pc->npc ) // seems to be a player
 				{
-					Accounts->AddCharToAccount(chr->account, pc);
+					Accounts->AddCharToAccount(pc->account, pc);
 				}
 			}
 		}
