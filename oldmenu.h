@@ -41,7 +41,7 @@ public:
 	virtual ~cOldMenu();
 
 	void setParameters( int numPerPage, int numpages );
-	void addMenuItem( int page, int idx, char *desc );
+	virtual void addMenuItem( int page, int idx, std::wstring& desc );
 	void showMenu( NXWSOCKET s );
 	void setTitle( wstring& str );
 	void setWidth( int width );
@@ -84,7 +84,7 @@ public:
 	cOldMenuIconList();
 	virtual ~cOldMenuIconList();
 
-	void addMenuItem( int page, int idx, char* desc );
+	virtual void addMenuItem( int page, int idx, std::wstring& desc );
 	virtual void buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type );
 	virtual void show( P_CHAR pc );
 

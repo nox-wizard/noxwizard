@@ -71,6 +71,7 @@ class cMenu : public cBasicMenu
 
 	public:
 				
+		cMenu();
 		cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose );
 		virtual ~cMenu();
 

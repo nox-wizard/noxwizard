@@ -76,14 +76,11 @@ void cOldMenu::setParameters( int numPerPage, int numpages )
 \param idx the index number
 \param desc the text
 */
-void cOldMenu::addMenuItem( int page, int idx, char* desc )
+void cOldMenu::addMenuItem( int page, int idx, std::wstring& desc )
 {
 //	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
-	wstring s;
-	string sDesc(desc);
-	string2wstring( sDesc, s );
 	std::map<UI32, wstring >& p= allPages[ page ];
-	p.insert( make_pair( idx, s ) );
+	p.insert( make_pair( idx, desc ) );
 }
 
 /*!
@@ -183,7 +180,13 @@ void cOldMenu::show( P_CHAR pc )
 }
 
 
+cOldMenuClassic::cOldMenuClassic() : cMenu()
+{
+}
 
+cOldMenuClassic::~cOldMenuClassic()
+{
+}
 
 /*!
 \brief Build a classic menu
@@ -306,6 +309,11 @@ void cOldMenuClassic::buildOldMenu()
 	}
 }
 
+void cOldMenuClassic::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
+{
+}
+
+
 
 cOldMenuIconList::cOldMenuIconList()
 {
@@ -315,16 +323,19 @@ cOldMenuIconList::~cOldMenuIconList()
 {
 }
 
-void cOldMenuIconList::addMenuItem( int page, int idx, char* desc )
+void cOldMenuIconList::addMenuItem( int page, int idx, std::wstring& desc )
 {
+	
+	string s;
+	wstring2string( desc, s );
 	
 	pkg_icon_list_menu_st icon;
 
 	icon.color=0x0000;	
 	char num[5] = { 0x00, };
-	memcpy( num, desc, 4 );
+	memcpy( num, s.c_str(), 4 );
 	icon.model=hex2num( num );
-	icon.response += (desc +5);
+	icon.response += (s.c_str() +5);
 	icons.push_back( icon );
 	
 }

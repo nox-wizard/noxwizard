@@ -42,7 +42,7 @@ cMenus::~cMenus()
 */
 SERIAL cMenus::createMenu( P_MENU menu )
 {
-	menu->serial=current_serial++; //++c o c++?
+	menu->serial=++current_serial;
 	menuMap.insert( make_pair( menu->serial, menu ) );
 	return menu->serial;
 }
@@ -218,7 +218,12 @@ void cBasicMenu::show( P_CHAR pc )
 
 
 
-
+cMenu::cMenu( ) : cBasicMenu( )
+{
+	setX(INVALID);
+	setY(INVALID);
+	setOptions( 0 );
+}
 
 cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose ) : cBasicMenu( menu, id )
 {
