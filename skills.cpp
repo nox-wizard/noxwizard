@@ -1302,12 +1302,21 @@ char Skills::AdvanceSkill(CHARACTER s, int sk, char skillused)
     {
 		if ( skillused )
 		{
-			incval = Race::getRace( (UI32) pc->race )->getSkillAdvanceSuccess( (UI32) sk, (UI32) pc->baseskill[sk] );
+			Race* r = Race::getRace( (UI32) pc->race );
+			if( r!=NULL ) 
+				incval = r->getSkillAdvanceSuccess( (UI32) sk, (UI32) pc->baseskill[sk] );
+			else 
+				incval=0;
 			SDbgOut("Race advance success for skill %d with base %d is %d\n", sk, pc->baseskill[sk], incval * 10 );
 		}
 		else
 		{
-			incval = Race::getRace( (UI32) pc->race )->getSkillAdvanceFailure( (UI32) sk, (UI32) pc->baseskill[sk] );
+			Race* r = Race::getRace( (UI32) pc->race );
+			if( r!=NULL )
+				incval = r->getSkillAdvanceFailure( (UI32) sk, (UI32) pc->baseskill[sk] );
+			else 
+				incval =0;
+
 			SDbgOut("Race advance failure for skill %d with base %d is %d\n", sk, pc->baseskill[sk], incval * 10 );
 		}
 		incval *= 10;
