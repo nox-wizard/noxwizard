@@ -112,7 +112,7 @@ inline bool isItemSerial(long ser) {return (/*ser >= 0 && */ser >= 0x40000000);}
 
 inline std::string toString(int value)
 {
-	char s[20];
+	char s[21];
 	snprintf(s, 20, "%d", value);
 	s[19]=0x00;
 
@@ -121,8 +121,11 @@ inline std::string toString(int value)
 
 inline std::string toString(double value)
 {
-	char s[20];
-	return std::string(gcvt(value, sizeof(s), s));
+	char s[21];
+	snprintf(s, 20, "%f", value);
+	s[19]=0x00;
+
+	return std::string(s);
 }
 
 /*
