@@ -274,20 +274,20 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 
 		if( TIMEOUT( checknpcs ) || TIMEOUT( checktamednpcs ) || TIMEOUT( checknpcfollow ) )
 		{
-#ifdef SPAR_NEW_WR_SYSTEM
-			pointers::pCharVector *pcv = pointers::getCharsNearLocation( pc, VISRANGE, pointers::NPC );
-			pointers::pCharVectorIt it( pcv->begin() ), end( pcv->end() );
-			P_CHAR npc = 0;
+#ifdef SPAR_C_LOCATION_MAP
+			PCHAR_VECTOR *pCV = pointers::getNearbyChars( pc, VISRANGE, pointers::NPC );
+			PCHAR_VECTOR it( pCV->begin() ), end( pCV->end() );
+			P_CHAR pNpc = 0;
 			while( it != end )
 			{
-				npc = (*it);
-				if( npc->lastNpcCheck != uiCurrentTime &&
+				pNpc = (*it);
+				if( pNpc->lastNpcCheck != uiCurrentTime &&
 				    (TIMEOUT( checknpcs ) ||
-				    (TIMEOUT( checktamednpcs ) && npc->tamed) ||
-				    (TIMEOUT( checknpcfollow ) && npc->npcWander == 1 ) ) )
+				    (TIMEOUT( checktamednpcs ) && pNpc->tamed) ||
+				    (TIMEOUT( checknpcfollow ) && pNpc->npcWander == 1 ) ) )
 				{
-					npc->heartbeat();
-					npc->lastNpcCheck = uiCurrentTime;
+					pNpc->heartbeat();
+					pNpc->lastNpcCheck = uiCurrentTime;
 				}
 				++it;
 			}

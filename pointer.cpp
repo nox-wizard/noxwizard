@@ -505,6 +505,12 @@ namespace pointers {
 						{
 							continue;
 						}
+
+						if ( (flags & COMBATTARGET) && pSelf->getSerial32() == pc->targserial )
+						{
+							pvCharsInRange->push_back( pc );
+							continue;
+						}
 					}
 
 					if ( pc->npc )

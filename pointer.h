@@ -77,14 +77,15 @@ namespace pointers {
 	//
 	enum
 	{
-		NONE		=  0,
-		ONLINE		=  1,
-		OFFLINE 	=  2,
-		NPC		=  4,
-		EXCLUDESELF	=  8,
-		DEAD		= 16,
-		PARTYMEMBER	= 32,
-		GUILDMEMBER	= 64
+		NONE		=   0,
+		ONLINE		=   1,
+		OFFLINE 	=   2,
+		NPC		=   4,
+		EXCLUDESELF	=   8,
+		DEAD		=  16,
+		PARTYMEMBER	=  32,
+		GUILDMEMBER	=  64,
+		COMBATTARGET	= 128
 	};
 
 	void 		addToLocationMap( const P_OBJECT pObject );
