@@ -41,6 +41,7 @@
 #include "classes.h"
 #include "utils.h"
 #include "nox-wizard.h"
+#include "targeting.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -4589,7 +4590,7 @@ void cChar::pc_heartbeat()
 				target( socket, 0, 1, 0, 194, TRANSLATE("Select your target") );
 			else
 			{
-		    		TargetLocation TL( this );
+		    	TargetLocation TL( this );
 				magic::castSpell( spell, TL, this );
 			}
 			casting   = 0;

@@ -12,9 +12,12 @@
 \brief Magic Related stuff
 */
 
-#include "nxwcommn.h"
 #ifndef __MAGIC_H__
 #define __MAGIC_H__
+
+#include "nxwcommn.h"
+#include "targeting.h"
+
 
 //! dont use up mana
 #define SPELLFLAG_NOUSEMANA 0x1
@@ -196,7 +199,7 @@ namespace magic {
 			
 	bool beginCasting (SpellId num, NXWCLIENT s, CastingType type);
 	SpellId spellNumberFromScrollId(int id);
-	void castSpell(SpellId spellnumber, class TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);
+	void castSpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src = NULL, int flags = 0, int param = 0);
 	void castAreaAttackSpell (int x, int y, SpellId spellnum, P_CHAR pcaster = NULL);
 	void loadSpellsFromScript();
 	bool spellRequiresTarget(SpellId spellnum);
