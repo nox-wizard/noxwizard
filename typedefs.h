@@ -438,10 +438,12 @@ struct tele_locations_st {
 \brief Stat regeneration info
 \author Endymion
 \since 0.83
+\note regeneration rage is in milliseconds
 */
 typedef struct {
 	TIMERVAL timer; //!< the timer
-	UI32 rate; //!< regeneration rate ( milliseconds )
+	UI32 rate_eff; //!< regeneration rate current
+	UI32 rate_real; //!< regeneration rate real
 } regen_st;
 
 #endif //__TYPEDEFS_H__

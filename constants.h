@@ -260,4 +260,10 @@ namespace tempfx {
 	};
 };
 
+/*!
+\brief Types of variaibles
+\author Endymion
+*/
+enum VarType { VAR_EFF =0, VAR_DEC, VAR_REAL, VAR_ACT, };
+
 #endif //__extern extern constANTS_H__
