@@ -1024,6 +1024,15 @@ static bool ItemDroppedOnChar(NXWCLIENT ps, PKGx08 *pp, P_ITEM pi)
 	Location charpos = pc_currchar->getPosition();
 
 	if (!pTC) return true;
+	if (pi->amxevents[EVENT_IDROPONCHAR]!=NULL) 
+	{
+		g_bByPass = false;
+		pi->amxevents[EVENT_IDROPONCHAR]->Call( pi->getSerial32(), pc_currchar->getSerial32(), pTC->getSerial32() );
+		if (g_bByPass) {
+			pi->Refresh();
+			return true;
+		}
+	}
 
 	if (pc_currchar->getSerial32() != pTC->getSerial32() /*DEREF_P_CHAR(pTC)!=cc*/)
 	{
@@ -1244,9 +1253,10 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 	{
 
 
-        if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) {
-	       	g_bByPass = false;
-        	pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
+		if (pi->amxevents[EVENT_IDROPINLAND]!=NULL) 
+		{
+			g_bByPass = false;
+			pi->amxevents[EVENT_IDROPINLAND]->Call( pi->getSerial32(), pc->getSerial32() );
 			if (g_bByPass) {
 				pi->Refresh();
 				return;

@@ -2120,12 +2120,34 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_STATUS_REQUEST:
-                                        if ( pc_currchar != NULL ) {
+					if ( pc_currchar != NULL ) {
+						P_CHAR pc = pointers::findCharBySerPtr(buffer[s] +6);
 						if (buffer[s][5]==4)
-							statwindow(pc_currchar, pointers::findCharBySerPtr(buffer[s] +6));
-
+						{
+							if (pc_currchar->amxevents[EVENT_CHR_ONOPENSTATUS]!=NULL) 
+							{
+								g_bByPass = false;
+								pc_currchar->amxevents[EVENT_CHR_ONOPENSTATUS]->Call( pc_currchar->getSerial32(), pc->getSerial32() );
+								if (g_bByPass) 
+								{
+									break;
+								}
+							}
+							statwindow(pc_currchar, pc);
+						}
 						if (buffer[s][5]==5)
+						{
+							if (pc_currchar->amxevents[EVENT_CHR_ONOPENSKILLS]!=NULL) 
+							{
+								g_bByPass = false;
+								pc_currchar->amxevents[EVENT_CHR_ONOPENSKILLS]->Call( pc_currchar->getSerial32() );
+								if (g_bByPass) 
+								{
+									break;
+								}
+							}
 							skillwindow(s);
+						}
 					}
 					break;
 
