@@ -486,13 +486,13 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 		TPATCH patch;
 		file.read( (char*)&patch, sizeof(patch) );
 		switch( patch.file ) {
-			case VF_MAP:
-			case VF_STAIDX:
-			case VF_STATICS:
+			case MUL_MAP:
+			case MUL_STATIDX:
+			case MUL_STATICS:
 				ErrOut("VERDATA contains statics/map data. Ignoring version record.\n");
 				break;
-			case VF_MULTIIDX:
-			case VF_MULTI:
+			case MUL_MULTIIDX:
+			case MUL_MULTI:
 				file.seekg( patch.info.start );
 				if((patch.info.size % sizeof(TMULTI))==0) {
 					TMULTI m;
@@ -505,7 +505,7 @@ void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 				else 
 					ErrOut("VERDATA contains multi data with wrong lenght. Ignoring version record.\n");
 				break;
-			case VF_TILEDATA:
+			case MUL_TILEDATA:
 				if( patch.id<LANDGROUPCOUNT ) {
 					file.seekg( patch.info.start );
 					if(patch.info.size==sizeof(TLANDGROUP)) {
@@ -599,4 +599,242 @@ SERIAL cStatics::idFromXY( UI16 x, UI16 y ) {
 }
 
 
+
+
+
+namespace data {
+
+#define CHECKMUL( A, B ) if ( !A->isReady() ) { LogError( "ERROR: Mul File %s not found...\n", B ); return; }
+
+void init()
+{
+	//
+	// If MULs loading fails, stop the server!
+	//
+	keeprun = false;
+
+	ConOut("Preparing to open *.mul files...\n(If they don't open, fix your paths in server.cfg)\n");
+
+	maps = new cMap( path_map, width_map, height_map );
+	CHECKMUL( maps, path_map.c_str() );
+
+	//
+	// MULs loaded, let's keep the server running
+	//
+	keeprun = true;
+}
+
+/*!
+\author Luxor
+*/
+void shutdown()
+{
+	if ( maps != NULL )
+		safedelete( maps );
+	if ( statics != NULL )
+		safedelete( statics );
+	if ( multi != NULL )
+		safedelete( multi );
+	if ( tiledata != NULL )
+		safedelete( tiledata );
+	if ( verdata!= NULL )
+		safedelete( verdata );
+}
+
+/*!
+\author Luxor
+*/
+void setPath( MUL_FILES id, std::string path )
+{
+	switch ( id )
+	{
+		case MUL_MAP:
+			path_map = path;
+			break;
+		case MUL_STATIDX:
+			path_staticsIdx = path;
+			break;
+		case MUL_STATICS:
+			path_statics = path;
+			break;
+		case MUL_MULTIIDX:
+			path_multiIdx = path;
+			break;
+		case MUL_MULTI:
+			path_multi = path;
+			break;
+		case MUL_TILEDATA:
+			path_tiledata = path;
+			break;
+		case MUL_VERDATA:
+			path_verdata = path;
+			break;
+		default:
+			break;
+	}
+}
+
+/*!
+\author Luxor
+*/
+std::string getPath( MUL_FILES id )
+{
+	switch ( id )
+	{
+		case MUL_MAP:
+			return path_map;
+		case MUL_STATIDX:
+			return path_staticsIdx;
+		case MUL_STATICS:
+			return path_statics;
+		case MUL_MULTIIDX:
+			return path_multiIdx;
+		case MUL_MULTI:
+			return path_multi;
+		case MUL_TILEDATA:
+			return path_tiledata;
+		case MUL_VERDATA:
+			return path_verdata;
+		default:
+			return std::string("");
+	}
+}
+
+
+/*!
+\author Luxor
+*/
+LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap )
+{
+	
+	return maps->getMap( x, y, m );
+	
+/*	if ( nMap >= maps.size() )
+		return false;
+	if ( !maps[ nMap ]->isReady() )
+		return false;
+
+	UI32 pos;
+	UI16 blockX = x / 8, blockY = y / 8, cellX = x % 8, cellY = y % 8;
+	pos =
+		// Block position - A block contains 8x8 cells. Blocks are registered in file by top to bottom columns from left to right.
+		( blockX * ServerScp::g_nMapHeight * MAP_BLOCK_SIZE ) + ( blockY * MAP_BLOCK_SIZE ) +
+		// Header of the block, it doesn't interest us.
+		MAP_HEADER_SIZE +
+		// Cell position in block - A cell is a map_st. Cells are registered in blocks by left to right rows from top to bottom.
+		( cellY * 8 * map_st_size ) + ( cellX * map_st_size );
+
+	return maps[ nMap ]->getData( pos, m );*/
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekLand( UI16 id, land_st& land )
+{
+	
+	return tiledata->getLand( id, land );
+	
+/*	if ( seekVerLand( id, land ) )
+		return true;
+
+	if ( !tdLand->isReady() )
+		return false;
+
+	UI16 block = id / 32;
+
+	UI32 pos =
+		// Each block contains 32 land_st.
+		( (block + 1) * TILE_HEADER_SIZE ) + ( land_st_size * id );
+
+	return tdLand->getData( pos, land );*/
+}
+
+/*!
+\author Luxor
+*/
+LOGICAL seekTile( UI16 id, tile_st& tile )
+{
+	
+	return tiledata->getStatic( id, tile );
+
+/*
+	if ( seekVerTile( id, tile ) )
+		return true;
+
+	if ( !tdTile->isReady() )
+		return false;
+
+	UI16 block = id / 32;
+
+	UI32 pos =
+		// Go beyond the land_st dedicated space.
+		TILEDATA_LAND_SIZE +
+		// Each block contains 32 tile_st.
+		( (block + 1) * TILE_HEADER_SIZE ) + ( tile_st_size * id );
+
+	return tdTile->getData( pos, tile );*/
+}
+
+/*!
+\author Luxor
+*//*
+LOGICAL collectStatics( UI32 x, UI32 y, NxwMulWrapperStatics& s_vec )
+{
+	if ( !staticIdx->isReady() || !statics->isReady() )
+		return false;
+
+
+	UI16 blockX = x / 8, blockY = y / 8;
+	UI32 pos =
+		// Block position - A block contains (staticIdx_st.length / static_st_size ) statics.
+		// Blocks are registered in file by top to bottom columns from left to right.
+		( blockX * ServerScp::g_nMapHeight * staticIdx_st_size ) + ( blockY * staticIdx_st_size );
+
+	staticIdx_st staidx;
+	if ( !staticIdx->getData( pos, staidx ) || staidx.start == 0xFFFFFFFF || staidx.start < 0 || staidx.length <= 0 )
+		return false;
+
+	UI32 num = staidx.length / static_st_size;
+	static_st s;
+	UI08 xOffset = x % 8, yOffset = y % 8;
+	for ( UI32 i = 0; i < num; i++ ) {
+		pos = staidx.start + ( i * static_st_size );
+		if ( !statics->getData( pos, s ) )
+			continue;
+		if ( s.xoff == xOffset && s.yoff == yOffset )
+			s_vec.push_back( s );
+	}
+	return ( s_vec.size() > 0 );
+}*/
+
+/*!
+\author Luxor
+*//*
+LOGICAL seekMulti( UI16 id, NxwMulWrapper<multi_st>& m_vec )
+{
+	
+	
+
+	if ( !multiIdx->isReady() || !multi->isReady() )
+		return false;
+
+	multiIdx_st idx;
+	UI32 pos = id * multiIdx_st_size;
+	if ( !multiIdx->getData( pos, idx ) || idx.start == (0xFFFFFFFF - 1) || idx.start < 0 || idx.length <= 0 )
+		return false;
+
+	multi_st m;
+	UI32 num = idx.length / multi_st_size;
+	for ( UI32 i = 0; i < num; i++ ) {
+		pos = idx.start + ( i * multi_st_size );
+		if ( !multi->getData( pos, m ) )
+			continue;
+		m_vec.push_back( m );
+	}
+	return ( m_vec.size() > 0 );
+}*/
+
+
+}
 

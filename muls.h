@@ -18,6 +18,13 @@
 #include "nxwcommn.h"
 
 
+
+
+
+
+
+
+
 class cFile {
 
 public:
@@ -28,6 +35,16 @@ public:
 	~cFile();
 
 };
+
+
+
+
+
+
+
+
+
+
 
 template <typename T> class cMULFile {
 
@@ -79,6 +96,17 @@ public:
 
 };
 
+
+
+
+
+
+
+
+
+std::string path_tiledata;
+
+
 const int LENGTHNAMESTRING = 20;
 
 const UI32 LANDGROUPCOUNT = 512;
@@ -106,7 +134,7 @@ struct staticinfo_st {
 	char name[ LENGTHNAMESTRING ];
 } PACK_NEEDED;
 typedef staticinfo_st TSTATICINFO;
-typedef TSTATICINFO* P_STATICINFO;
+typedef staticinfo_st tile_st;
 
 struct staticgroup_st {
 	UI32 header;
@@ -121,7 +149,7 @@ struct landinfo_st {
 	char name[ LENGTHNAMESTRING ];
 } PACK_NEEDED;
 typedef landinfo_st TLANDINFO;
-typedef TLANDINFO* P_LANDINFO;
+typedef landinfo_st land_st;
 
 struct landgroup_st {
    	UI32 header;
@@ -133,7 +161,6 @@ const int BASESTATICINFO = LANDGROUPCOUNT *sizeof( TLANDGROUP );
 
 typedef std::map<SERIAL, TSTATICINFO> STATICINFOMAP;
 typedef std::map<SERIAL, TLANDINFO> LANDINFOMAP;
-
 
 
 /*!
@@ -162,6 +189,18 @@ public:
 
 };
 
+
+
+
+
+
+
+
+
+
+
+std::string path_map;
+UI16	width_map, height_map;
 
 const int DEFAULTHEIGHTMAP = 512;
 const int DEFAULTWIDTHMAP = 768;
@@ -198,19 +237,23 @@ private:
 	UI16 width;	//!< width of the map
     UI16 height;	//!< height of the map
 
-	bool isReady();
 
 public:
 
 	cMap( std::string path, UI16 width, UI16 height, bool cache=false );
 	~cMap();
 
+	bool isReady();
 	bool getMap( UI16 x, UI16 y, TCELLA& cella );
-
 
 };
 
 
+
+
+
+std::string path_multiIdx;
+std::string path_multi;
 
 struct multi_st {
 	UI16 id;
@@ -228,11 +271,21 @@ typedef MULTISVEC* P_MULTISVEC;
 
 typedef cMULFile<multi_st> cMulti;
 
+
+
+
+
+
+
+std::string path_staticsIdx;
+std::string path_statics;
+
+
 struct statics_st {
 	UI16 id;
 	UI08 x;
 	UI08 y;
-	SI08 altitudine;
+	SI08 z;
 	COLOR color;
 } PACK_NEEDED;
 
@@ -262,26 +315,34 @@ public:
 
 
 
-enum VERFILE {
-	VF_MAP = 0x00,
-	VF_STAIDX,
-	VF_STATICS,
-	VF_ARTIDX,
-	VF_ART,
-	VF_ANIMIDX,
-	VF_ANIM,
-	VF_SOUNDIDX,
-	VF_SOUND,
-	VF_TEXIDX,
-	VF_TEXMAPS,
-	VF_GUMPIDX,
-	VF_GUMPART,
-	VF_MULTIIDX,
-	VF_MULTI,
-	VF_SKILLSIDX,
-	VF_SKILLS,
-	VF_TILEDATA = 0x1E,
-	VF_ANIMDATA 
+
+
+
+
+
+std::string path_verdata;
+
+enum MUL_FILES {
+	MUL_MAP = 0x00,
+	MUL_STATIDX,
+	MUL_STATICS,
+	MUL_ARTIDX,
+	MUL_ART,
+	MUL_ANIMIDX,
+	MUL_ANIM,
+	MUL_SOUNDIDX,
+	MUL_SOUND,
+	MUL_TEXIDX,
+	MUL_TEXMAPS,
+	MUL_GUMPIDX,
+	MUL_GUMPART,
+	MUL_MULTIIDX,
+	MUL_MULTI,
+	MUL_SKILLSIDX,
+	MUL_SKILLS,
+	MUL_TILEDATA = 0x1E,
+	MUL_ANIMDATA,
+	MUL_VERDATA
 };
 
 struct index_st {
@@ -319,15 +380,46 @@ public:
 };
 
 
+/*!
+\author Luxor
+*/
+namespace data {
 
-namespace mul {
-	extern class cTiledata* tiledata; //!<the tiledata class istance
-	extern class cMap* mappa; //!<the map class istance
-	extern class cStatics* statics; //!<the statics class istance
-	extern class cVerdata* verdata; //!<the verdata class istance
-	extern cMulti* multi;
-}
+extern cTiledata* tiledata; //!<the tiledata class istance
+extern cMap* maps; //!<the map class istance
+extern cStatics* statics; //!<the statics class istance
+extern cVerdata* verdata; //!<the verdata class istance
+extern cMulti* multi;
 
+void init();
+void shutdown();
+void setPath( MUL_FILES id, std::string path );
+std::string getPath( MUL_FILES id );
+
+LOGICAL seekMap( UI32 x, UI32 y, map_st& m, UI08 nMap = 0 ); //<! Luxor: nMap will be used for future multiple maps support.
+LOGICAL seekLand( UI16 id, land_st& land );
+LOGICAL seekTile( UI16 id, tile_st& tile );
+//LOGICAL seekStatics( UI32 x, UI32 y, class NxwMulWrapperStatics& s_vec );
+//LOGICAL seekMulti( UI16 id, class NxwMulWrapperMulti& m_vec );
+
+} // namespace data
+
+
+
+
+
+
+
+class NxwMulWrapperStatics : public NxwMulWrapper<struct statics_st> {
+public:
+	NxwMulWrapperStatics( UI32 x, UI32 y ) : NxwMulWrapper<struct statics_st>( data::statics, data::statics->idFromXY(x,y) ) { };
+};
+
+class NxwMulWrapperMulti : public NxwMulWrapper< struct multi_st> {
+public:
+	NxwMulWrapperMulti( UI32 id ) : NxwMulWrapper<struct multi_st>( data::multi, id ) { };
+
+};
 
 
 
