@@ -5268,8 +5268,8 @@ NATIVE( _menu_addHtmlGump )
 \param 4 width
 \param 5 height
 \param 6 text id
-\param 7 initial value
-\param 8 color
+\param 7 color
+\param 8 initial value
 \return false if error, true else
 */
 NATIVE( _menu_addInputField )
@@ -5278,11 +5278,17 @@ NATIVE( _menu_addInputField )
 	VALIDATEPMR( menu, 0 );
 
 	cell *cstr;
-	amx_GetAddr(amx,params[7],&cstr);
+	amx_GetAddr(amx,params[8],&cstr);
+	printstring(amx,cstr,params+9,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	std::wstring s;
+	string2wstring( std::string( g_cAmxPrintBuffer ), s );
+/* move to unicode when exist printstring unicode
 	wstring s;
 	amx_GetStringUnicode( s, cstr );
-
-	menu->addInputField( params[2], params[3], params[4], params[5], params[6], s, params[8] );
+*/
+	menu->addInputField( params[2], params[3], params[4], params[5], params[6], s, params[7] );
 
 	return 1;
 }
@@ -5362,8 +5368,8 @@ NATIVE (  _menu_addResizeGump )
 \param 1 the menu serial
 \param 2 x
 \param 3 y
-\param 4 text
-\param 5 color
+\param 4 color
+\param 5 text
 \return false if error, true else
 */
 NATIVE ( _menu_addText )
@@ -5372,11 +5378,17 @@ NATIVE ( _menu_addText )
 	VALIDATEPMR( menu, 0 );
 
 	cell *cstr;
-	amx_GetAddr(amx,params[4],&cstr);
+	amx_GetAddr(amx,params[5],&cstr);
+	printstring(amx,cstr,params+6,(int)(params[0]/sizeof(cell))-1);
+	g_cAmxPrintBuffer[g_nAmxPrintPtr] = '\0';
+	g_nAmxPrintPtr=0;
+	std::wstring s;
+	string2wstring( std::string( g_cAmxPrintBuffer ), s );
+/* move to unicode when possible use printstring unicode version
 	wstring s;
 	amx_GetStringUnicode( s, cstr );
-
-	menu->addText( params[2], params[3], s, params[5] );
+*/
+	menu->addText( params[2], params[3], s, params[4] );
 	return 1;
 }
 

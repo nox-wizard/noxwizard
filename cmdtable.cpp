@@ -48,8 +48,6 @@ static char s_szCmdTableTemp[TEMP_STR_SIZE];
 TARGET_S target_use = { 0, 1, 0, 24, "What object will you use?" };
 TARGET_S target_jail = { 0, 1, 0, 126, "Select player to jail." };
 TARGET_S target_release = { 0, 1, 0, 127, "Select player to release from jail." };
-TARGET_S target_istats = { 0, 1, 0, 12, "Select item to inspect." };
-TARGET_S target_cstats = { 0, 1, 0, 13, "Select char to inspect." };
 TARGET_S target_tele = { 0, 1, 0, 2, "Select teleport target." };
 TARGET_S target_xbank = { 0, 1, 0, 107, "Select target to open bank of." };
 TARGET_S target_xsbank = { 0, 1, 0, 105, "Select target to open specialbank of." };//AntiChrist
@@ -156,8 +154,8 @@ CMDTABLE_S command_table[] = {
 {"GMTRANSFER",	0,	10,	CMD_FUNC,		(CMD_DEFINE)&command_gmtransfer},
 {"JAIL",	0,	11,	CMD_FUNC,		(CMD_DEFINE)&command_jail},
 {"RELEASE",	0,	12,	CMD_TARGET,		(CMD_DEFINE)&target_release},
-{"ISTATS",	0,	13,	CMD_TARGET,		(CMD_DEFINE)&target_istats},
-{"CSTATS",	0,	14,	CMD_TARGET,		(CMD_DEFINE)&target_cstats},
+{"STATS",	0,	13,	CMD_FUNC,		(CMD_DEFINE)&command_stats},
+{"OPTIONS",	0,	14,	CMD_FUNC,		(CMD_DEFINE)&command_options},
 {"GOPLACE",	0,	15,	CMD_FUNC,		(CMD_DEFINE)&command_goplace},
 {"GOCHAR",	0,	16,	CMD_FUNC,		(CMD_DEFINE)&command_gochar},
 {"FIX",		0,	17,	CMD_FUNC,		(CMD_DEFINE)&command_fix},
@@ -451,8 +449,8 @@ cCommandTable::cCommandTable() {
     addGmCommand("GMTRANSFER",      0, 10, CMD_FUNC,        (CMD_DEFINE)&command_gmtransfer);
     addGmCommand("JAIL",            0, 11, CMD_FUNC,        (CMD_DEFINE)&command_jail);
     addGmCommand("RELEASE",         0, 12, CMD_TARGET,      (CMD_DEFINE)&target_release);
-    addGmCommand("ISTATS",          0, 13, CMD_TARGET,      (CMD_DEFINE)&target_istats);
-    addGmCommand("CSTATS",		  0, 14, CMD_TARGET,      (CMD_DEFINE)&target_cstats);
+    addGmCommand("STATS",          0, 13, CMD_FUNC,      (CMD_DEFINE)&command_stats);
+    addGmCommand("OPTIONS",		  0, 14, CMD_FUNC,      (CMD_DEFINE)&command_options);
     addGmCommand("GOPLACE",		  0, 15, CMD_FUNC,        (CMD_DEFINE)&command_goplace);
     addGmCommand("GOCHAR",		  0, 16, CMD_FUNC,        (CMD_DEFINE)&command_gochar);
     addGmCommand("FIX",             0, 17, CMD_FUNC,        (CMD_DEFINE)&command_fix);
@@ -1652,8 +1650,7 @@ void command_tile(NXWSOCKET  s)
 // (h h) Tiles the item specified over a square area.
 // To find the hexidecimal ID code for an item to tile,
 // either create the item with /add or find it in the
-// world, and get /ISTATS on the object to get it's ID
-// code.
+// world.
 {
 	if (tnum==3) {
 		if ( server_data.always_add_hex )
@@ -2876,12 +2873,28 @@ void command_squelch(NXWSOCKET  s)
 void command_spawnkill(NXWSOCKET  s)
 // (d) Kills spawns from the specified spawn region in SPAWN.SCP.
 {
-				if (tnum==2)
-				{
-					Commands::KillSpawn(s, strtonum(1));
-				}
-			return;
+	if (tnum==2)
+	{
+		Commands::KillSpawn(s, strtonum(1));
+	}
+}
 
+void command_stats(NXWSOCKET  s)
+{
+	AmxFunction* cmd=NULL;
+	if( cmd==NULL )
+		cmd = new AmxFunction("command_stats");
+
+	cmd->Call( s );
+}
+
+void command_options(NXWSOCKET  s)
+{
+	AmxFunction* cmd=NULL;
+	if( cmd==NULL )
+		cmd = new AmxFunction("command_options");
+
+	cmd->Call( s );
 }
 
 

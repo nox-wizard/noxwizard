@@ -755,30 +755,6 @@ static void KeyTarget(NXWSOCKET s, P_ITEM pi) // new keytarget by Morollan
     }//if
 }//keytarget()
 
-void cTargets::IstatsTarget(NXWSOCKET s)
-{
-    SERIAL serial=LongFromCharPtr(buffer[s]+7);
-    char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-    if (serial == 0)
-    {
-        tile_st tile;
-        data::seekTile(((buffer[s][0x11]<<8)+buffer[s][0x12]), tile);
-        sprintf(temp, "Item [Static] ID [%x %x]",buffer[s][0x11], buffer[s][0x12]);
-        sysmessage(s, temp);
-        sprintf(temp, "ID2 [%i], Height [%i]",((buffer[s][0x11]<<8)+buffer[s][0x12]), tile.height);
-        sysmessage(s, temp);
-    }
-    else
-    {
-        PC_ITEM pi=pointers::findItemBySerial(serial);
-        if (pi!=NULL)
-        {
-	    P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
-	    VALIDATEPC( pc );
-	    newAmxEvent("gui_itemProps")->Call( pi->getSerial32(), pc->getSerial32(), 0 );
-        }
-    }
-}
 void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
 {
     char temp2[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
@@ -820,16 +796,6 @@ void /*cTargets::*/TargIdTarget(NXWSOCKET s) // Fraz
             sysmessage(s, temp);
         }
     }
-}
-static void CstatsTarget(NXWCLIENT client, P_CHAR pc_stats )
-{
-	if ( client != NULL)
-	{
-		P_CHAR pc_user = MAKE_CHAR_REF( currchar[client->toInt()] );
-		VALIDATEPC( pc_user );
-		VALIDATEPC( pc_stats);
-		newAmxEvent("gui_charProps")->Call( pc_stats->getSerial32(), pc_user->getSerial32(), 0 );
-	}
 }
 
 /*!
@@ -3842,8 +3808,6 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 9: if (Cready) PrivTarget(s,pc); break;
         case 10: ItemTarget(ps,pt); break;//MoreTarget
         case 11: if (Iready) KeyTarget(s,pi); break;
-        case 12: Targ->IstatsTarget(s); break;
-        case 13: if (Cready) CstatsTarget(ps,pc); break;
         case 14: if (Cready) GMTarget(ps,pc); break;
         case 15: if (Cready) CnsTarget(ps,pc); break;
         case 16: if (Cready) KillTarget(pc, 0x0b); break;

@@ -45,7 +45,6 @@ P_MENU cMenus::insertMenu( P_MENU menu )
 {
 	menu->serial=++current_serial;
 	menuMap.insert( make_pair( menu->serial, menu ) );
-	ConOut("insertMenu %i\n", menu->serial );
 	return menu;
 }
 
@@ -143,7 +142,6 @@ LOGICAL cMenus::handleMenu( NXWCLIENT ps )
 		serial = ((cPacketMenuSelection*)p)->serial.get();
 	}
 
-	ConOut("handelMenu %i\n", serial );
 
 	P_MENU menu = Menus.getMenu( serial );
 	VALIDATEPMR( menu, false );

@@ -61,7 +61,6 @@ private:
 	void RemoveTarget(NXWSOCKET s);
 	void NewzTarget(NXWSOCKET s);
 	void TypeTarget(NXWSOCKET s);
-	void IstatsTarget(NXWSOCKET s);
 	void GhostTarget(NXWSOCKET s);
 	void AmountTarget(NXWSOCKET s);
 	void CloseTarget(NXWSOCKET s);

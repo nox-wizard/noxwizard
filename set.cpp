@@ -227,12 +227,10 @@ void addItemsNearXY( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotM
 
 inline void NxwSocketWrapper2NxwCharWrapper( NxwSocketWrapper& sw, NxwCharWrapper* sc )
 {
-	NXWCLIENT	ps;
-	P_CHAR		pc;
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
-		ps = sw.getClient();
+		NXWCLIENT ps = sw.getClient();
 		if( ps != 0 ) {
-			pc=ps->currChar();
+			P_CHAR pc=ps->currChar();
 			if(ISVALIDPC(pc))
 				sc->insert( pc->getSerial32() );
 		}
