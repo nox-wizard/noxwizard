@@ -1604,8 +1604,8 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 */
 void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 {
-
 	LOGICAL sendEmote = true;
+	emotecolor = 0x0026;
 
 	if ( antispam )
 	{

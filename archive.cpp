@@ -118,9 +118,7 @@ void DeleItem( P_ITEM pi )
 	{
 		NXWSOCKET j=sw.getSocket();			
 		if (j!=INVALID)
-		{
 			SendDeleteObjectPkt(j, pi_serial);
-		}
 	}
 
 	// - remove from pointer arrays
@@ -186,9 +184,7 @@ void DeleteChar( P_CHAR pc )
 	{
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
-		{
 			SendDeleteObjectPkt(j, pc_serial);
-		}
 	}
 
 	safedelete(pc);

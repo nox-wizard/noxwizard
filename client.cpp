@@ -41,7 +41,7 @@ void cNxwClientObj::sysmsg(short color, char* txt, ...)
 	LongToCharPtr(0x01010101, talk2 +3); 	// ID
 	ShortToCharPtr(0x0101, talk2 +7);	// Model
 	talk2[9] = 0;				// Type
-	ShortToCharPtr(0x0040, talk2 +10);	// Color
+	ShortToCharPtr(color, talk2 +10);	// Color
 	ShortToCharPtr(0x0003, talk2 +12);	// Font type
 
 	talk2[14] = server_data.Unicodelanguage[0];
@@ -83,8 +83,7 @@ void cNxwClientObj::sysmsg(char* txt, ...)
 	talk2[9] = 6;
 
 	ShortToCharPtr(0x0387, talk2 +10); //Color  - Previous default was 0x0040 - 0x03E9
-	talk2[12]=0;
-	talk2[13]=3;
+	ShortToCharPtr(0x0003, talk2 +12);
 
 	talk2[14] = server_data.Unicodelanguage[0];
 	talk2[15] = server_data.Unicodelanguage[1];

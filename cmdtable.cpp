@@ -987,7 +987,10 @@ void command_showp(NXWSOCKET  s)
     if (err) return;
 
 	for (i=0;i<7;i++)
-		pcc_cs->sysmsg("priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
+	{
+		sprintf(s_szCmdTableTemp, "priv3%c : %X ", ch[i],pcc_cs->priv3[i]);
+		pcc_cs->sysmsg(s_szCmdTableTemp);
+	}
 }
 
 /*!
