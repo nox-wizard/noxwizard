@@ -23,14 +23,14 @@
 
 #ifdef __cplusplus
 
-extern "C" void __CDECL ConOut(char *txt, ...);		//! Unformatted output
-extern "C" void __CDECL ErrOut(char *txt, ...);		//! Formatted as error
-extern "C" void __CDECL WarnOut(char *txt, ...);	//! Formatted as warning
-extern "C" void __CDECL InfoOut(char *txt, ...);	//! Formatted as info
-extern "C" void __CDECL PanicOut(char *txt, ...);	//! Formatted as panic
-extern "C" void __CDECL DmpOut(char *txt, ...);		//! Formatted as internal-development debug info (should not be in releases)
-extern "C" void __CDECL SDbgOut(char *txt, ...);	//! Formatted as amx debug output
-extern "C" void __CDECL SDbgIn(char *s, int n);		//! Formatted as amx debug info
+extern "C" void __CDECL ConOut(char *txt, ...);		//!< Unformatted output
+extern "C" void __CDECL ErrOut(char *txt, ...);		//!< Formatted as error
+extern "C" void __CDECL WarnOut(char *txt, ...);	//!< Formatted as warning
+extern "C" void __CDECL InfoOut(char *txt, ...);	//!< Formatted as info
+extern "C" void __CDECL PanicOut(char *txt, ...);	//!< Formatted as panic
+extern "C" void __CDECL DmpOut(char *txt, ...);		//!< Formatted as internal-development debug info (should not be in releases)
+extern "C" void __CDECL SDbgOut(char *txt, ...);	//!< Formatted as amx debug output
+extern "C" void __CDECL SDbgIn(char *s, int n);		//!< Formatted as amx debug info
 extern "C" void __CDECL STraceOut(char *txt, ...);
 void clearscreen( void );
 void setWinTitle(char *str, ...);

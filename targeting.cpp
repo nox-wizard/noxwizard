@@ -35,12 +35,12 @@ extern void targetParty(NXWSOCKET  s);
 #define INVALID_SERIAL -1
 
 /*!
- \brief base class for all Target classes
+\brief base class for all Target classes
 
- encapsulates the basic functions of target processing
- \note intendet to become a member of the 'transaction' class in the future
- \note the cTargets::multitarget shall become the ctarget::factory (Duke, 07/16/00)
- \note Changed my mind. These classes are now considered 'experimental' (Duke, 07/11/00)
+encapsulates the basic functions of target processing
+\note intendet to become a member of the 'transaction' class in the future
+\note the cTargets::multitarget shall become the ctarget::factory (Duke, 07/16/00)
+\note Changed my mind. These classes are now considered 'experimental' (Duke, 07/11/00)
  */
 class cTarget
 {
