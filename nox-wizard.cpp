@@ -490,11 +490,14 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 #endif
 */
 
+	//	Frodo : This code is already present in newbie.cpp
+	//	I've commented this one to prevent the initial double gold bug 
 	// Give the character some gold
-	if ( goldamount > 0 )
-	{
-		pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
-	}
+	
+	//if ( goldamount > 0 )
+	//{
+	//	pi = item::CreateFromScript( "$item_gold_coin", pc->getBackpack(), goldamount );
+	//}
 
 	//Set command priv level 255 if the player is an admin, 0 otherwise
 	if(acctno[s]==0)
