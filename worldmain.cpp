@@ -11,6 +11,7 @@
 \file
 \brief Implementation of the CWorldMain class
 */
+#include <fstream.h>
 
 #include "nxwcommn.h"
 #include "worldmain.h"
@@ -42,6 +43,9 @@
 #include "utils.h"
 #include "nox-wizard.h"
 
+#ifdef _WIN32
+	using namespace std;
+#endif
 
 void split( std::string& source, std::string& first, std::string& second )
 {
@@ -1259,9 +1263,51 @@ void CWorldMain::loadNewWorld() // Load world from NXW*.WSC
 //|					readable script file "*.wsc". This stores all world items
 //|					and NPC/PC character information for a given shard
 //o---------------------------------------------------------------------------o
+void CWorldMain::binarySaveWorld()
+{
+	std::string fileName;
+	fstream *worldfile;
+	if ( ( cwmWorldState->Saving() ) ) {
+		return;
+	}
+	tempfx::tempeffectsoff();
+
+	if (SrvParms->server_log)
+		ServerLog.Write("Server data save\n");
+	sysbroadcast(TRANSLATE("World data saving..."));
+	InfoOut("World data saving..." );
+////CHARS SAVE
+	std::string oldFileName( SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileBinaryExtension );
+	std::string newFileName( SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileBinaryExtension + "$" );
+	remove( newFileName.c_str() );
+	rename( oldFileName.c_str(), newFileName.c_str() );
+
+	fileName = SrvParms->savePath + SrvParms->characterWorldfile + SrvParms->worldfileBinaryExtension;
+	worldfile = new fstream(fileName.c_str(), ios::binary);
+	if (!worldfile || !worldfile->is_open())
+	{
+		ErrOut("Error, couldn't open %s for writing. Check file permissions.\n", fileName.c_str() );
+		rename( newFileName.c_str(), oldFileName.c_str() );
+		tempfx::tempeffectson();
+		return;
+	}
+
+
+////END
+	
+}
+
+//o---------------------------------------------------------------------------o
+//|	Class		:	CWorldMain::savenewworld(char x)
+//|	Date		:	Unknown
+//|	Programmer	:	Unknown
+//o---------------------------------------------------------------------------o
+//| Purpose		:	Save current world state. Stores all values in an easily
+//|					readable script file "*.wsc". This stores all world items
+//|					and NPC/PC character information for a given shard
+//o---------------------------------------------------------------------------o
 void CWorldMain::saveNewWorld()
 {
-
 	std::string fileName;
 
 	if ( ( cwmWorldState->Saving() ) ) {
@@ -1366,7 +1412,6 @@ bool CWorldMain::Saving()
 	return isSaving;
 }
 
-
 /*
 \brief save on file a wstring
 \author Endymion
@@ -1385,6 +1430,843 @@ void fprintWstring( FILE* f, char* name, wstring c )
 	fprintf( f, "0000\n" );
 }
 
+/*Format of binary file:
+	Header:
+	hex FF FE FD FC 00 01 02 03 FB FA F9 F8 04 05 06 07 // Signature for a binary char file
+	first dword: # of chars saved in file
+	Content:
+	F0 F0 FF FF // Start of char definition
+	<length of char in bytes>: first dword
+	<char number in save>: integer
+	<char serial>: integer
+
+
+*/ 
+const NAME_ID=0xFA00;
+const TITLE_ID=0xFA01;
+const ACCOUNT_ID=0xFA02;
+const CREATIONDAY_ID=0xFA03;
+const GMMOVEEFF_ID=0xFA04;
+const GUILDTYPE=0xFA05;
+const GUILDTRAITOR_ID=0xFA06;
+const POS_X_ID=0xFA07;
+const POS_Y_ID=0xFA08;
+const POS_Z_ID=0xFA09;
+const POS_DISPZ_ID=0xFA0A;
+const POS_M_ID=0xFA0B;
+const POS_OLDX_ID=0xFA0C;
+const POS_OLDY_ID=0xFA0D;
+const POS_OLDZ_ID=0xFA0E;
+const POS_OLDM_ID=0xFA0F;
+const DIR_ID = 0xFA10;
+const DOORUSE_ID = 0xFA11;
+const BODY_ID = 0xFA12;
+const XBODY_ID = 0xFA13;
+const SKIN_ID = 0xFA14;
+const XSKIN_ID = 0xFA15;
+const PRIV_ID = 0xFA16;
+const ALLMOVE_ID = 0xFA17;
+const DAMAGETYPE_ID = 0xFA18;
+const STABLEMASTER_ID = 0xFA19;
+const NPCTYPE_ID = 0xFA1A;
+const TIME_UNUSED_ID = 0xFA1B;
+const FONT_ID = 0xFA1C;
+const SAY_ID = 0xFA1D;
+const EMOTE_ID = 0xFA1E;
+const STRENGTH_ID = 0xFA1F;
+const STRENGTH2_ID = 0xFA20;
+const DEXTERITY_ID = 0xFA21;
+const DEXTERITY2_ID = 0xFA22;
+const INTELLIGENCE_ID = 0xFA23;
+const INTELLIGENCE2_ID = 0xFA24;
+const HITPOINTS_ID = 0xFA25;
+const STAMINA_ID = 0xFA26;
+const MANA_ID = 0xFA27;
+const NPC_ID = 0xFA28;
+const POSSESSEDSERIAL_ID = 0xFA29;
+const HOLDGOLD_ID = 0xFA2A;
+const OWN_ID = 0xFA2B;
+const ROBE_ID = 0xFA2C;
+const KARMA_ID = 0xFA2D;
+const FAME_ID = 0xFA2E;
+const KILLS_ID = 0xFA2F;
+const DEATHS_ID = 0xFA30;
+const FIXEDLIGHT_ID = 0xFA31;
+const SPEECH_ID = 0xFA32;
+const TRIGGER_ID = 0xFA33;
+const TRIGWORD_ID = 0xFA34;
+const DISABLEMSG_ID = 0xFA35;
+const ATT_ID = 0xFA36;
+const DEF_ID = 0xFA37;
+const LODAMAGE_ID = 0xFA38;
+const HIDAMAGE_ID = 0xFA39;
+const WAR_ID = 0xFA3A;
+const NPCWANDER_ID = 0xFA3B;
+const OLDNPCWANDER_ID = 0xFA3C;
+const PC_FTARGSER_ID = 0xFA3D;
+const CARVE_ID = 0xFA3E;
+const FX1_ID = 0xFA3F;
+const FY1_ID = 0xFA40;
+const FZ1_ID = 0xFA41;
+const FX2_ID = 0xFA42;
+const FY2_ID = 0xFA43;
+const HIDDEN_ID = 0xFA44;
+const HUNGER_ID = 0xFA45;
+const NPCAITYPE_ID = 0xFA46;
+const SPATTACK_ID = 0xFA47;
+const SPADELAY_ID = 0xFA48;
+const MAGICSPHERE_ID = 0xFA49;
+const TAMING_ID = 0xFA4A;
+const ADVOBJ_ID = 0xFA4B;
+const POISON_ID = 0xFA4C;
+const POISONED_ID = 0xFA4D;
+const MURDERSAVE_ID = 0xFA4F;
+const FLEEAT_ID = 0xFA50;
+const RACE_ID = 0xFA51;
+const REATTACKAT_ID = 0xFA52;
+const HOLDG_ID = 0xFA53;
+const SPLIT_ID = 0xFA54;
+const SPLITCHANCE_ID = 0xFA55;
+const GUILDTOGGLE_ID = 0xFA56;
+const GUILDNUMBER_ID = 0xFA57;
+const GUILDTITLE_ID = 0xFA58;
+const GUILDFEALTY_ID = 0xFA59;
+const REGEN_HP_ID = 0xFA5A;
+const REGEN_ST_ID = 0xFA5B;
+const REGEN_MN_ID = 0xFA5C;
+const HOMEX_ID = 0xFA5D;
+const HOMEY_ID = 0xFA5E;
+const HOMEZ_ID = 0xFA5F;
+const WORKX_ID = 0xFA60;
+const WORKY_ID = 0xFA61;
+const WORKZ_ID = 0xFA62;
+const FOODX_ID = 0xFA63;
+const FOODY_ID = 0xFA64;
+const FOODZ_ID = 0xFA65;
+const QUESTTYPE_ID = 0xFA66;
+const QUESTDESTREGION_ID = 0xFA67;
+const QUESTORIGREGION_ID = 0xFA68;
+const QUESTBOUNTYPOSTSERIAL_ID = 0xFA69;
+const QUESTBOUNTYREWARD_ID = 0xFA6A;
+const GMRESTRICT_ID = 0xFA6B;
+const COMMANDLEVEL_ID = 0xFA6C;
+const MOVESPEED_ID = 0xFA6D;
+const FOLLOWSPEED_ID = 0xFA6E;
+const NXWFLAG0_ID = 0xFA6F;
+const NXWFLAG1_ID = 0xFA70;
+const NXWFLAG2_ID = 0xFA71;
+const NXWFLAG3_ID = 0xFA72;
+const RESISTS_ID = 0xFA73;
+
+void CWorldMain::SaveBinaryChar( fstream *out, P_CHAR pc)
+{
+	char valid=0;
+	int j;
+	int charNumber = this->chr_curr++;
+	VALIDATEPC( pc );
+
+	static cChar dummy(false);
+
+	Location pcpos= pc->getPosition();
+
+	//Luxor safe stats system
+	if (pc->getStrength() != pc->st3) pc->setStrength(pc->st3);
+	if (pc->dx != pc->dx3) pc->dx = pc->dx3;
+	if (pc->in != pc->in3) pc->in = pc->in3;
+	if (pc->hp > pc->getStrength()) pc->hp = pc->getStrength();
+	if (pc->stm > pc->dx) pc->stm = pc->dx;
+	if (pc->mn > pc->in) pc->mn = pc->in;
+	//End safe stats system
+
+	//Endy for remove pg not without accounts
+/*	if( pc->account==INVALID && !pc->npc )
+		pc->free;
+*/
+	valid=1;
+	if (pc->getSerial32() < 0) valid = 0;
+	if (pc->summontimer ) valid = 0; //xan : we don't save summoned stuff
+	if (pc->spawnregion!=INVALID || pc->spawnserial!=INVALID ) valid=0;
+	if (valid)
+	{
+		out->write( reinterpret_cast<char *>(&charNumber), sizeof(charNumber));
+		out->write( reinterpret_cast<char *>(pc->getSerial32()), sizeof(pc->getSerial32()));
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(pc->morphed!=dummy.morphed)
+		{//save original name
+#ifndef DESTROY_REFERENCES
+			out->write( reinterpret_cast<char *>(NAME_ID), sizeof(NAME_ID));
+			*out << pc->getRealNameC();
+#else
+			if (pc->npc)
+			{
+				out->write( reinterpret_cast<char *>(NAME_ID), sizeof(NAME_ID));
+				*out << pc->name;
+			}
+			else
+			{
+				out->write( reinterpret_cast<char *>(NAME_C_ID), sizeof(NAME_C_ID));
+				*out << pc->serial;
+			}
+#endif
+		} 
+		else
+		{
+#ifndef DESTROY_REFERENCES
+			out->write( reinterpret_cast<char *>(NAME_ID), sizeof(NAME_ID));
+			*out << pc->getCurrentNameC();
+#else
+			if (pc->npc)
+			{
+				out->write( reinterpret_cast<char *>(NAME_ID), sizeof(NAME_ID));
+				*out << pc->name;
+			}
+			else
+			{
+				out->write( reinterpret_cast<char *>(NAME_C_ID), sizeof(NAME_C_ID));
+				*out << pc->serial;
+			}
+#endif
+		}
+#ifndef DESTROY_REFERENCES
+		out->write( reinterpret_cast<char *>(TITLE_ID), sizeof(TITLE_ID));
+		*out << pc->title.c_str();
+#endif
+		if(pc->account!=dummy.account)
+		{
+			out->write( reinterpret_cast<char *>(ACCOUNT_ID), sizeof(ACCOUNT_ID));
+			out->write( reinterpret_cast<char *>(pc->account), sizeof(pc->account));
+		}
+		if (pc->GetCreationDay()!=dummy.GetCreationDay())
+		{
+			out->write( reinterpret_cast<char *>(CREATIONDAY_ID), sizeof(CREATIONDAY_ID));
+			out->write( reinterpret_cast<char *>(pc->GetCreationDay()), sizeof(pc->GetCreationDay()));
+		}
+		if (pc->gmMoveEff!=dummy.gmMoveEff)
+		{
+			out->write( reinterpret_cast<char *>(GMMOVEEFF_ID), sizeof(GMMOVEEFF_ID));
+			out->write( reinterpret_cast<char *>(pc->gmMoveEff), sizeof(pc->gmMoveEff));
+		}
+		if(pc->GetGuildType()!=dummy.GetGuildType())
+		{
+			out->write( reinterpret_cast<char *>(GUILDTYPE), sizeof(GUILDTYPE));
+			out->write( reinterpret_cast<char *>(pc->GetGuildType()), sizeof(pc->GetGuildType()));
+		}
+		if(pc->IsGuildTraitor())
+		{
+			out->write( reinterpret_cast<char *>(GUILDTRAITOR_ID), sizeof(GUILDTRAITOR_ID));
+			out->write( reinterpret_cast<char *>(1), sizeof(1));
+		}
+		out->write( reinterpret_cast<char *>(POS_X_ID), sizeof(POS_X_ID));
+		out->write( reinterpret_cast<char *>(pcpos.x), sizeof(pcpos.x));
+
+		out->write( reinterpret_cast<char *>(POS_Y_ID), sizeof(POS_Y_ID));
+		out->write( reinterpret_cast<char *>(pcpos.y), sizeof(pcpos.y));
+
+		out->write( reinterpret_cast<char *>(POS_Z_ID), sizeof(POS_Z_ID));
+		out->write( reinterpret_cast<char *>(pcpos.z), sizeof(pcpos.z));
+
+		out->write( reinterpret_cast<char *>(POS_DISPZ_ID), sizeof(POS_DISPZ_ID));
+		out->write( reinterpret_cast<char *>(pcpos.dispz), sizeof(pcpos.dispz));
+
+		out->write( reinterpret_cast<char *>(POS_M_ID), sizeof(POS_M_ID));
+		out->write( reinterpret_cast<char *>(0), sizeof(0));
+
+
+		if (pc->getOldPosition("x")!=dummy.getOldPosition("x"))
+		{
+			out->write( reinterpret_cast<char *>(POS_OLDX_ID), sizeof(POS_OLDX_ID));
+			out->write( reinterpret_cast<char *>(pc->getOldPosition("x")), sizeof(pc->getOldPosition("x")));
+		}
+		if (pc->getOldPosition("y")!=dummy.getOldPosition("y"))
+		{
+			out->write( reinterpret_cast<char *>(POS_OLDY_ID), sizeof(POS_OLDY_ID));
+			out->write( reinterpret_cast<char *>(pc->getOldPosition("y")), sizeof(pc->getOldPosition("y")));
+		}
+		if (pc->getOldPosition("z")!=dummy.getOldPosition("z"))
+		{
+			out->write( reinterpret_cast<char *>(POS_OLDZ_ID), sizeof(POS_OLDZ_ID));
+			out->write( reinterpret_cast<char *>(pc->getOldPosition("z")), sizeof(pc->getOldPosition("z")));
+		}
+		if (pc->getOldPosition("m")!=dummy.getOldPosition("m"))
+		{
+			out->write( reinterpret_cast<char *>(POS_OLDM_ID), sizeof(POS_OLDM_ID));
+			out->write( reinterpret_cast<char *>(0), sizeof(0));
+		}
+
+		
+		if (pc->dir!=dummy.dir)
+		{
+			out->write( reinterpret_cast<char *>(DIR_ID), sizeof(DIR_ID));
+			out->write( reinterpret_cast<char *>(pc->dir), sizeof(pc->dir));
+		}				
+		if (pc->doorUse!=dummy.doorUse)
+		{
+			out->write( reinterpret_cast<char *>(DOORUSE_ID), sizeof(DOORUSE_ID));
+			out->write( reinterpret_cast<char *>(1), sizeof(1));
+		}				
+
+
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(pc->morphed) 
+		{
+			if ( pc->getOldId() != dummy.getOldId() )
+			{
+				out->write( reinterpret_cast<char *>(BODY_ID), sizeof(BODY_ID));
+				out->write( reinterpret_cast<char *>(pc->getOldId()), sizeof(pc->getOldId()));
+			}				
+		}
+		else 
+		{
+			if ( pc->getId() != dummy.getId() )
+			{
+				out->write( reinterpret_cast<char *>(BODY_ID), sizeof(BODY_ID));
+				out->write( reinterpret_cast<char *>(pc->getId()), sizeof(pc->getId()));
+			}				
+		}
+		if ( pc->getOldId() != dummy.getOldId() )
+		{
+			out->write( reinterpret_cast<char *>(XBODY_ID), sizeof(XBODY_ID));
+			out->write( reinterpret_cast<char *>(pc->getOldId()), sizeof(pc->getOldId()));
+		}				
+
+		//Luxor: if the char is morphed, we have to save the original values.
+		if(pc->morphed) 
+		{
+			if ( pc->getOldColor() != dummy.getOldColor() )
+			{
+				out->write( reinterpret_cast<char *>(SKIN_ID), sizeof(SKIN_ID));
+				out->write( reinterpret_cast<char *>(pc->getOldColor()), sizeof(pc->getOldColor()));
+			}				
+		} 
+		else 
+		{
+			if ( pc->getColor() != dummy.getColor() )
+			{
+				out->write( reinterpret_cast<char *>(SKIN_ID), sizeof(SKIN_ID));
+				out->write( reinterpret_cast<char *>(pc->getColor()), sizeof(pc->getColor()));
+			}				
+		}
+
+		if ( pc->getOldColor() != dummy.getOldColor() )
+		{
+			out->write( reinterpret_cast<char *>(XSKIN_ID), sizeof(XSKIN_ID));
+			out->write( reinterpret_cast<char *>(pc->getOldColor()), sizeof(pc->getOldColor()));
+		}				
+		if (pc->GetPriv()!=dummy.GetPriv())
+		{
+			out->write( reinterpret_cast<char *>(PRIV_ID), sizeof(PRIV_ID));
+			out->write( reinterpret_cast<char *>(pc->GetPriv()), sizeof(pc->GetPriv()));
+		}				
+		if (pc->GetPriv2()!=dummy.GetPriv2())
+		{
+			out->write( reinterpret_cast<char *>(ALLMOVE_ID), sizeof(ALLMOVE_ID));
+			out->write( reinterpret_cast<char *>(pc->GetPriv2()), sizeof(pc->GetPriv2()));
+		}				
+		if (pc->damagetype!=DAMAGE_PURE) //Luxor
+		{
+			out->write( reinterpret_cast<char *>(DAMAGETYPE_ID), sizeof(DAMAGETYPE_ID));
+			out->write( reinterpret_cast<char *>(pc->damagetype), sizeof(pc->damagetype));
+		}
+		if (pc->getStablemaster()!=dummy.getStablemaster())
+		{
+			out->write( reinterpret_cast<char *>(STABLEMASTER_ID), sizeof(STABLEMASTER_ID));
+			out->write( reinterpret_cast<char *>(pc->getStablemaster()), sizeof(pc->getStablemaster()));
+		}
+		if (pc->npc_type!=dummy.npc_type)
+		{
+			out->write( reinterpret_cast<char *>(NPCTYPE_ID), sizeof(NPCTYPE_ID));
+			out->write( reinterpret_cast<char *>(pc->npc_type), sizeof(pc->npc_type));
+		}
+		if (pc->time_unused!=dummy.time_unused)
+		{
+			out->write( reinterpret_cast<char *>(TIME_UNUSED_ID), sizeof(TIME_UNUSED_ID));
+			out->write( reinterpret_cast<char *>(pc->time_unused), sizeof(pc->time_unused));
+		}
+		
+		if (pc->fonttype!=dummy.fonttype)
+		{
+			out->write( reinterpret_cast<char *>(FONT_ID), sizeof(FONT_ID));
+			out->write( reinterpret_cast<char *>(pc->fonttype), sizeof(pc->fonttype));
+		}
+		if ( pc->saycolor != dummy.saycolor )
+		{
+			out->write( reinterpret_cast<char *>(SAY_ID), sizeof(SAY_ID));
+			out->write( reinterpret_cast<char *>(pc->saycolor), sizeof(pc->saycolor));
+		}
+		if ( pc->emotecolor != dummy.emotecolor )
+		{
+			out->write( reinterpret_cast<char *>(EMOTE_ID), sizeof(EMOTE_ID));
+			out->write( reinterpret_cast<char *>(pc->emotecolor), sizeof(pc->emotecolor));
+		}
+		
+		out->write( reinterpret_cast<char *>(STRENGTH_ID), sizeof(STRENGTH_ID));
+		out->write( reinterpret_cast<char *>(pc->st3), sizeof(pc->st3));
+		out->write( reinterpret_cast<char *>(STRENGTH2_ID), sizeof(STRENGTH2_ID));
+		out->write( reinterpret_cast<char *>(qmax(0, pc->st2) ), sizeof(qmax(0, pc->st2) ));
+		out->write( reinterpret_cast<char *>(DEXTERITY_ID), sizeof(DEXTERITY_ID));
+		out->write( reinterpret_cast<char *>(pc->dx3), sizeof(pc->dx3));
+		out->write( reinterpret_cast<char *>(DEXTERITY2_ID), sizeof(DEXTERITY2_ID));
+		out->write( reinterpret_cast<char *>(qmax(0,pc->dx2)), sizeof(qmax(0,pc->dx2)));
+		out->write( reinterpret_cast<char *>(INTELLIGENCE_ID), sizeof(INTELLIGENCE_ID));
+		out->write( reinterpret_cast<char *>(pc->in3), sizeof(pc->in3));
+		out->write( reinterpret_cast<char *>(INTELLIGENCE2_ID), sizeof(INTELLIGENCE2_ID));
+		out->write( reinterpret_cast<char *>(qmax(0, pc->in2) ), sizeof(qmax(0, pc->in2) ));
+		if (pc->hp!=dummy.hp)
+		{
+			out->write( reinterpret_cast<char *>(HITPOINTS_ID), sizeof(HITPOINTS_ID));
+			out->write( reinterpret_cast<char *>(pc->hp), sizeof(pc->hp));
+		}
+		if (pc->stm!=dummy.stm)
+		{
+			out->write( reinterpret_cast<char *>(STAMINA_ID), sizeof(STAMINA_ID));
+			out->write( reinterpret_cast<char *>(pc->stm), sizeof(pc->stm));
+		}
+		if (pc->mn!=dummy.mn)
+		{
+			out->write( reinterpret_cast<char *>(MANA_ID), sizeof(MANA_ID));
+			out->write( reinterpret_cast<char *>(pc->mn), sizeof(pc->mn));
+		}
+		if (pc->possessorSerial == INVALID) //Luxor
+		{
+			out->write( reinterpret_cast<char *>(NPC_ID), sizeof(NPC_ID));
+			out->write( reinterpret_cast<char *>(pc->npc), sizeof(pc->npc));
+		}
+		else
+		{
+			out->write( reinterpret_cast<char *>(NPC_ID), sizeof(NPC_ID));
+			out->write( reinterpret_cast<char *>(1), sizeof(1));
+		}
+		if (pc->possessedSerial != INVALID) //Luxor
+		{
+			out->write( reinterpret_cast<char *>(POSSESSEDSERIAL_ID), sizeof(POSSESSEDSERIAL_ID));
+			out->write( reinterpret_cast<char *>(pc->possessedSerial), sizeof(pc->possessedSerial));
+		}
+		if (pc->holdg!=dummy.holdg) // bugfix lb, holdgold value never saved !!!
+		{
+			out->write( reinterpret_cast<char *>(HOLDGOLD_ID), sizeof(HOLDGOLD_ID));
+			out->write( reinterpret_cast<char *>(pc->holdg), sizeof(pc->holdg));
+		}
+		if (pc->shopkeeper!=dummy.shopkeeper)
+		fprintf(cWsc, "SHOP\n");
+		if (pc->getOwnerSerial32()!=dummy.getOwnerSerial32())
+		{
+			out->write( reinterpret_cast<char *>(OWN_ID), sizeof(OWN_ID));
+			out->write( reinterpret_cast<char *>(pc->getOwnerSerial32()), sizeof(pc->getOwnerSerial32()));
+		}
+		if (pc->robe != dummy.robe)
+		{
+			out->write( reinterpret_cast<char *>(ROBE_ID), sizeof(ROBE_ID));
+			out->write( reinterpret_cast<char *>(pc->robe), sizeof(pc->robe));
+		}
+		if (pc->GetKarma()!=dummy.GetKarma())
+		{
+			out->write( reinterpret_cast<char *>(KARMA_ID), sizeof(KARMA_ID));
+			out->write( reinterpret_cast<char *>(pc->GetKarma()), sizeof(pc->GetKarma()));
+		}
+		if (pc->GetFame()!=dummy.GetFame())
+		{
+			out->write( reinterpret_cast<char *>(FAME_ID), sizeof(FAME_ID));
+			out->write( reinterpret_cast<char *>(pc->GetFame()), sizeof(pc->GetFame()));
+		}
+		if (pc->kills!=dummy.kills)
+		{
+			out->write( reinterpret_cast<char *>(KILLS_ID), sizeof(KILLS_ID));
+			out->write( reinterpret_cast<char *>(pc->kills), sizeof(pc->kills));
+		}
+		if (pc->deaths!=dummy.deaths)
+		{
+			out->write( reinterpret_cast<char *>(DEATHS_ID), sizeof(DEATHS_ID));
+			out->write( reinterpret_cast<char *>(pc->deaths), sizeof(pc->deaths));
+		}
+		if (pc->dead!=dummy.dead)
+		fprintf(cWsc, "DEAD\n");
+		if (pc->fixedlight!=dummy.fixedlight)
+		{
+			out->write( reinterpret_cast<char *>(FIXEDLIGHT_ID), sizeof(FIXEDLIGHT_ID));
+			out->write( reinterpret_cast<char *>(pc->fixedlight), sizeof(pc->fixedlight));
+		}
+		if (pc->speech!=dummy.speech)
+		{
+			out->write( reinterpret_cast<char *>(SPEECH_ID), sizeof(SPEECH_ID));
+			out->write( reinterpret_cast<char *>(pc->speech), sizeof(pc->speech));
+		}
+		if (pc->trigger!=dummy.trigger)
+		{
+			out->write( reinterpret_cast<char *>(TRIGGER_ID), sizeof(TRIGGER_ID));
+			out->write( reinterpret_cast<char *>(pc->trigger), sizeof(pc->trigger));
+		}
+		if (pc->trigword.length()>0)
+		{
+			out->write( reinterpret_cast<char *>(TRIGWORD_ID), sizeof(TRIGWORD_ID));
+			out->write( reinterpret_cast<const char *>(pc->trigword.c_str()), sizeof(pc->trigword.c_str()));
+		}
+		if (pc->disabledmsg!=NULL)
+		{
+			out->write( reinterpret_cast<char *>(DISABLEMSG_ID), sizeof(DISABLEMSG_ID));
+			out->write( reinterpret_cast<const char *>(pc->disabledmsg->c_str()), sizeof(pc->disabledmsg->c_str()));
+		} // Added by Magius(CHE) §
+		
+		for (j=0;j<TRUESKILLS;j++)
+		{
+			// Don't save the default value given by initchar
+			if ((pc->baseskill[j] != 10)&&(pc->baseskill[j]>1))
+			{
+			fprintf(cWsc, "SKILL%i %i\n", j, pc->baseskill[j]);
+			
+			}
+			if( pc->lockSkill[j] != 0 ) 
+				fprintf(cWsc, "SKL%i %i\n", j, pc->lockSkill[j] );
+		}
+		if (!pc->cantrain)
+			fprintf(cWsc, "NOTRAIN\n");
+		else
+			fprintf(cWsc, "CANTRAIN\n");
+		
+		if (pc->att!=dummy.att)
+		{
+			out->write( reinterpret_cast<char *>(ATT_ID), sizeof(ATT_ID));
+			out->write( reinterpret_cast<char *>(pc->att), sizeof(pc->att));
+		}
+		if (pc->def!=dummy.def)
+		{
+			out->write( reinterpret_cast<char *>(DEF_ID), sizeof(DEF_ID));
+			out->write( reinterpret_cast<char *>(pc->def), sizeof(pc->def));
+		}
+		if (pc->lodamage!=dummy.lodamage)
+		{
+			out->write( reinterpret_cast<char *>(LODAMAGE_ID), sizeof(LODAMAGE_ID));
+			out->write( reinterpret_cast<char *>(pc->lodamage), sizeof(pc->lodamage));
+		}
+		if (pc->hidamage!=dummy.hidamage)
+		{
+			out->write( reinterpret_cast<char *>(HIDAMAGE_ID), sizeof(HIDAMAGE_ID));
+			out->write( reinterpret_cast<char *>(pc->hidamage), sizeof(pc->hidamage));
+		}
+		if (pc->war!=dummy.war)
+		{
+			out->write( reinterpret_cast<char *>(WAR_ID), sizeof(WAR_ID));
+			out->write( reinterpret_cast<char *>(pc->war), sizeof(pc->war));
+		}
+		if (pc->npcWander!=dummy.npcWander)
+		{
+			out->write( reinterpret_cast<char *>(NPCWANDER_ID), sizeof(NPCWANDER_ID));
+			out->write( reinterpret_cast<char *>(pc->npcWander), sizeof(pc->npcWander));
+		}
+		if (pc->oldnpcWander!=dummy.oldnpcWander)
+		{
+			out->write( reinterpret_cast<char *>(OLDNPCWANDER_ID), sizeof(OLDNPCWANDER_ID));
+			out->write( reinterpret_cast<char *>(pc->oldnpcWander), sizeof(pc->oldnpcWander));
+		}
+		
+		if (pc->ftargserial!=dummy.ftargserial)
+		{
+			out->write( reinterpret_cast<char *>(PC_FTARGSER_ID), sizeof(PC_FTARGSER_ID));
+			out->write( reinterpret_cast<char *>(pc->ftargserial), sizeof(pc->ftargserial));
+		}
+		if (pc->carve!=dummy.carve)
+		{
+			out->write( reinterpret_cast<char *>(CARVE_ID), sizeof(CARVE_ID));
+			out->write( reinterpret_cast<char *>(pc->carve), sizeof(pc->carve));
+		}
+		if (pc->fx1!=dummy.fx1)
+		{
+			out->write( reinterpret_cast<char *>(FX1_ID), sizeof(FX1_ID));
+			out->write( reinterpret_cast<char *>(pc->fx1), sizeof(pc->fx1));
+		}
+		if (pc->fy1!=dummy.fy1)
+		{
+			out->write( reinterpret_cast<char *>(FY1_ID), sizeof(FY1_ID));
+			out->write( reinterpret_cast<char *>(pc->fy1), sizeof(pc->fy1));
+		}
+		if (pc->fz1!=dummy.fz1)
+		{
+			out->write( reinterpret_cast<char *>(FZ1_ID), sizeof(FZ1_ID));
+			out->write( reinterpret_cast<char *>(pc->fz1), sizeof(pc->fz1));
+		}
+		if (pc->fx2!=dummy.fx2)
+		{
+			out->write( reinterpret_cast<char *>(FX2_ID), sizeof(FX2_ID));
+			out->write( reinterpret_cast<char *>(pc->fx2), sizeof(pc->fx2));
+		}
+		if (pc->fy2!=dummy.fy2)
+		{
+			out->write( reinterpret_cast<char *>(FY2_ID), sizeof(FY2_ID));
+			out->write( reinterpret_cast<char *>(pc->fy2), sizeof(pc->fy2));
+		}
+		if (pc->IsHidden())
+		{
+			out->write( reinterpret_cast<char *>(HIDDEN_ID), sizeof(HIDDEN_ID));
+			out->write( reinterpret_cast<char *>(pc->hidden), sizeof(pc->hidden));
+		}
+		if (pc->hunger!=dummy.hunger)
+		{
+			out->write( reinterpret_cast<char *>(HUNGER_ID), sizeof(HUNGER_ID));
+			out->write( reinterpret_cast<char *>(pc->hunger), sizeof(pc->hunger));
+		}
+		if (pc->npcaitype!=dummy.npcaitype)
+		{
+			out->write( reinterpret_cast<char *>(NPCAITYPE_ID), sizeof(NPCAITYPE_ID));
+			out->write( reinterpret_cast<char *>(pc->npcaitype), sizeof(pc->npcaitype));
+		}
+		if (pc->spattack!=dummy.spattack)
+		{
+			out->write( reinterpret_cast<char *>(SPATTACK_ID), sizeof(SPATTACK_ID));
+			out->write( reinterpret_cast<char *>(pc->spattack), sizeof(pc->spattack));
+		}
+		if (pc->spadelay!=dummy.spadelay)
+		{
+			out->write( reinterpret_cast<char *>(SPADELAY_ID), sizeof(SPADELAY_ID));
+			out->write( reinterpret_cast<char *>(pc->spadelay), sizeof(pc->spadelay));
+		}
+		if (pc->magicsphere!=dummy.magicsphere)
+		{
+			out->write( reinterpret_cast<char *>(MAGICSPHERE_ID), sizeof(MAGICSPHERE_ID));
+			out->write( reinterpret_cast<char *>(pc->magicsphere), sizeof(pc->magicsphere));
+		}
+		if (pc->mounted!=dummy.mounted)
+			fprintf(cWsc, "MOUNTED\n");
+		if (pc->taming!=dummy.taming)
+		{
+			out->write( reinterpret_cast<char *>(TAMING_ID), sizeof(TAMING_ID));
+			out->write( reinterpret_cast<char *>(pc->taming), sizeof(pc->taming));
+		}
+		if (pc->advobj!=dummy.advobj)
+		{
+			out->write( reinterpret_cast<char *>(ADVOBJ_ID), sizeof(ADVOBJ_ID));
+			out->write( reinterpret_cast<char *>(pc->advobj), sizeof(pc->advobj));
+		}
+		if (pc->poison!=dummy.poison)
+		{
+			out->write( reinterpret_cast<char *>(POISON_ID), sizeof(POISON_ID));
+			out->write( reinterpret_cast<char *>(pc->poison), sizeof(pc->poison));
+		}
+		if (pc->poisoned!=dummy.poisoned)
+		{
+			out->write( reinterpret_cast<char *>(POISONED_ID), sizeof(POISONED_ID));
+			out->write( reinterpret_cast<char *>(pc->poisoned), sizeof(pc->poisoned));
+		}
+		if ( pc->IsMurderer() && ( pc->murderrate>uiCurrentTime ) )
+		{
+			out->write( reinterpret_cast<char *>(MURDERSAVE_ID), sizeof(MURDERSAVE_ID));
+			out->write( reinterpret_cast<char *>(( ( pc->murderrate-uiCurrentTime) / MY_CLOCKS_PER_SEC ) ), sizeof(( ( pc->murderrate-uiCurrentTime) / MY_CLOCKS_PER_SEC ) ));
+		}
+		if (pc->fleeat!=dummy.fleeat)
+		{
+			out->write( reinterpret_cast<char *>(FLEEAT_ID), sizeof(FLEEAT_ID));
+			out->write( reinterpret_cast<char *>(pc->fleeat), sizeof(pc->fleeat));
+		}
+		if (pc->race!=dummy.race)
+		{
+			out->write( reinterpret_cast<char *>(RACE_ID), sizeof(RACE_ID));
+			out->write( reinterpret_cast<char *>(pc->race), sizeof(pc->race));
+		}
+		if (pc->reattackat!=dummy.reattackat)
+		{
+			out->write( reinterpret_cast<char *>(REATTACKAT_ID), sizeof(REATTACKAT_ID));
+			out->write( reinterpret_cast<char *>(pc->reattackat), sizeof(pc->reattackat));
+		}
+		if (pc->holdg!=dummy.holdg) //Luxor: players vendors fix
+		{
+			out->write( reinterpret_cast<char *>(HOLDG_ID), sizeof(HOLDG_ID));
+			out->write( reinterpret_cast<char *>(pc->holdg), sizeof(pc->holdg));
+		}
+		if (pc->split!=dummy.split)
+		{
+			out->write( reinterpret_cast<char *>(SPLIT_ID), sizeof(SPLIT_ID));
+			out->write( reinterpret_cast<char *>(pc->split), sizeof(pc->split));
+		}
+		if (pc->splitchnc!=dummy.splitchnc)
+		{
+			out->write( reinterpret_cast<char *>(SPLITCHANCE_ID), sizeof(SPLITCHANCE_ID));
+			out->write( reinterpret_cast<char *>(pc->splitchnc), sizeof(pc->splitchnc));
+		}
+		// Begin of Guild related things (DasRaetsel)
+		if (pc->HasGuildTitleToggle()!=dummy.HasGuildTitleToggle())
+		{
+			out->write( reinterpret_cast<char *>(GUILDTOGGLE_ID), sizeof(GUILDTOGGLE_ID));
+			out->write( reinterpret_cast<char *>(1), sizeof(1));
+		}
+		if (pc->GetGuildNumber()!=dummy.GetGuildNumber())
+		{
+			out->write( reinterpret_cast<char *>(GUILDNUMBER_ID), sizeof(GUILDNUMBER_ID));
+			out->write( reinterpret_cast<char *>(pc->GetGuildNumber()), sizeof(pc->GetGuildNumber()));
+		}
+		if (strlen( pc->GetGuildTitle() ) )
+		#ifndef DESTROY_REFERENCES
+		{
+			out->write( reinterpret_cast<char *>(GUILDTITLE_ID), sizeof(GUILDTITLE_ID));
+			out->write( reinterpret_cast<char *>(pc->GetGuildTitle()), sizeof(pc->GetGuildTitle()));
+		}
+		#else
+			fprintf(cWsc, "GUILDTITLE CG%x\n", pc->serial);
+		#endif
+		if (pc->GetGuildFealty()!=dummy.GetGuildFealty())
+		{
+			out->write( reinterpret_cast<char *>(GUILDFEALTY_ID), sizeof(GUILDFEALTY_ID));
+			out->write( reinterpret_cast<char *>(pc->GetGuildFealty()), sizeof(pc->GetGuildFealty()));
+		}
+		fprintf(cWsc, "MURDERRATE %i\n",pc->murderrate);
+		if (pc->getRegenRate( STAT_HP, VAR_REAL ) != dummy.getRegenRate( STAT_HP, VAR_REAL ) )
+		{
+			out->write( reinterpret_cast<char *>(REGEN_HP_ID), sizeof(REGEN_HP_ID));
+			out->write( reinterpret_cast<char *>(pc->getRegenRate( STAT_HP, VAR_REAL )), sizeof(pc->getRegenRate( STAT_HP, VAR_REAL )));
+		}
+		if (pc->getRegenRate( STAT_STAMINA, VAR_REAL ) != dummy.getRegenRate( STAT_STAMINA, VAR_REAL ) )
+		{
+			out->write( reinterpret_cast<char *>(REGEN_ST_ID), sizeof(REGEN_ST_ID));
+			out->write( reinterpret_cast<char *>(pc->getRegenRate( STAT_STAMINA, VAR_REAL )), sizeof(pc->getRegenRate( STAT_STAMINA, VAR_REAL )));
+		}
+		if (pc->getRegenRate( STAT_MANA, VAR_REAL ) != dummy.getRegenRate( STAT_MANA, VAR_REAL ) )
+		{
+			out->write( reinterpret_cast<char *>(REGEN_MN_ID), sizeof(REGEN_MN_ID));
+			out->write( reinterpret_cast<char *>(pc->getRegenRate( STAT_MANA, VAR_REAL )), sizeof(pc->getRegenRate( STAT_MANA, VAR_REAL )));
+		}
+		
+		if (pc->homeloc.x!=dummy.homeloc.x)
+		{
+			out->write( reinterpret_cast<char *>(HOMEX_ID), sizeof(HOMEX_ID));
+			out->write( reinterpret_cast<char *>(pc->homeloc.x), sizeof(pc->homeloc.x));
+		}
+		if (pc->homeloc.y!=dummy.homeloc.y)
+		{
+			out->write( reinterpret_cast<char *>(HOMEY_ID), sizeof(HOMEY_ID));
+			out->write( reinterpret_cast<char *>(pc->homeloc.y), sizeof(pc->homeloc.y));
+		}
+		if (pc->homeloc.z!=dummy.homeloc.z)
+		{
+			out->write( reinterpret_cast<char *>(HOMEZ_ID), sizeof(HOMEZ_ID));
+			out->write( reinterpret_cast<char *>(pc->homeloc.z), sizeof(pc->homeloc.z));
+		}
+		if (pc->workloc.x!=dummy.workloc.x)
+		{
+			out->write( reinterpret_cast<char *>(WORKX_ID), sizeof(WORKX_ID));
+			out->write( reinterpret_cast<char *>(pc->workloc.x), sizeof(pc->workloc.x));
+		}
+		if (pc->workloc.y!=dummy.workloc.y)
+		{
+			out->write( reinterpret_cast<char *>(WORKY_ID), sizeof(WORKY_ID));
+			out->write( reinterpret_cast<char *>(pc->workloc.y), sizeof(pc->workloc.y));
+		}
+		if (pc->workloc.z!=dummy.workloc.z)
+		{
+			out->write( reinterpret_cast<char *>(WORKZ_ID), sizeof(WORKZ_ID));
+			out->write( reinterpret_cast<char *>(pc->workloc.z), sizeof(pc->workloc.z));
+		}
+		if (pc->foodloc.x!=dummy.foodloc.x)
+		{
+			out->write( reinterpret_cast<char *>(FOODX_ID), sizeof(FOODX_ID));
+			out->write( reinterpret_cast<char *>(pc->foodloc.x), sizeof(pc->foodloc.x));
+		}
+		if (pc->foodloc.y!=dummy.foodloc.y)
+		{
+			out->write( reinterpret_cast<char *>(FOODY_ID), sizeof(FOODY_ID));
+			out->write( reinterpret_cast<char *>(pc->foodloc.y), sizeof(pc->foodloc.y));
+		}
+		if (pc->foodloc.z!=dummy.foodloc.z)
+		{
+			out->write( reinterpret_cast<char *>(FOODZ_ID), sizeof(FOODZ_ID));
+			out->write( reinterpret_cast<char *>(pc->foodloc.z), sizeof(pc->foodloc.z));
+		}
+		if (pc->questType!=dummy.questType && pc->questType<1000)
+		{
+			out->write( reinterpret_cast<char *>(QUESTTYPE_ID), sizeof(QUESTTYPE_ID));
+			out->write( reinterpret_cast<char *>(pc->questType), sizeof(pc->questType));
+		}
+		if (pc->questDestRegion!=dummy.questDestRegion && pc->questDestRegion<1000)
+		{
+			out->write( reinterpret_cast<char *>(QUESTDESTREGION_ID), sizeof(QUESTDESTREGION_ID));
+			out->write( reinterpret_cast<char *>(pc->questDestRegion), sizeof(pc->questDestRegion));
+		}
+		if (pc->questOrigRegion!=dummy.questOrigRegion && pc->questOrigRegion<1000)
+		{
+			out->write( reinterpret_cast<char *>(QUESTORIGREGION_ID), sizeof(QUESTORIGREGION_ID));
+			out->write( reinterpret_cast<char *>(pc->questOrigRegion), sizeof(pc->questOrigRegion));
+		}
+		if (pc->questBountyPostSerial !=dummy.questBountyPostSerial)
+		{
+			out->write( reinterpret_cast<char *>(QUESTBOUNTYPOSTSERIAL_ID), sizeof(QUESTBOUNTYPOSTSERIAL_ID));
+			out->write( reinterpret_cast<char *>(pc->questBountyPostSerial), sizeof(pc->questBountyPostSerial));
+		}
+		
+		if (pc->questBountyReward !=dummy.questBountyReward)
+		{
+			out->write( reinterpret_cast<char *>(QUESTBOUNTYREWARD_ID), sizeof(QUESTBOUNTYREWARD_ID));
+			out->write( reinterpret_cast<char *>(pc->questBountyReward), sizeof(pc->questBountyReward));
+		}
+		
+		if (pc->gmrestrict!=dummy.gmrestrict)
+		{
+			out->write( reinterpret_cast<char *>(GMRESTRICT_ID), sizeof(GMRESTRICT_ID));
+			out->write( reinterpret_cast<char *>(pc->gmrestrict), sizeof(pc->gmrestrict));
+		}
+		
+		if (pc->commandLevel!=dummy.commandLevel)
+		{
+			out->write( reinterpret_cast<char *>(COMMANDLEVEL_ID), sizeof(COMMANDLEVEL_ID));
+			out->write( reinterpret_cast<char *>(pc->commandLevel), sizeof(pc->commandLevel));
+		}
+		
+					if( pc->npc && pc->npcMoveSpeed != NPCSPEED )
+				fprintf(cWsc, "MOVESPEED %f\n", pc->npcMoveSpeed );
+			if( pc->npc && pc->npcFollowSpeed != NPCFOLLOWSPEED )
+				fprintf(cWsc, "FOLLOWSPEED %f\n", pc->npcFollowSpeed );
+		if( pc->npc && pc->npcMoveSpeed != NPCSPEED )
+		{
+			char temp[50];
+			sprintf(temp, "%f", pc->npcMoveSpeed);
+			out->write( reinterpret_cast<char *>(MOVESPEED_ID), sizeof(MOVESPEED_ID));
+//			out->write( reinterpret_cast<char *>(temp ), sizeof(temp ));
+			*out << temp ;
+		}
+		if( pc->npc && pc->npcFollowSpeed != NPCFOLLOWSPEED )
+		{
+			char temp[50];
+			sprintf(temp, "%f", pc->npcFollowSpeed);
+			out->write( reinterpret_cast<char *>(FOLLOWSPEED_ID), sizeof(FOLLOWSPEED_ID));
+//			out->write( reinterpret_cast<char *>(pc->npcFollowSpeed ), sizeof(pc->npcFollowSpeed ));
+			*out << temp ;
+		}
+		if( pc->profile!=dummy.profile )
+			fprintWstring( cWsc, "PROFILE", pc->profile );
+		if( !pc->lootVector.empty() )
+		{
+			int last = pc->lootVector.size();
+			fprintf(cWsc, "LOOT\n{\n" );
+			for( int index = 0; index < last; ++index )
+			fprintf(cWsc, "%i\n", pc->lootVector[index] );
+			fprintf(cWsc, "}\n");
+		}
+		
+		if (pc->nxwflags[0]!=dummy.nxwflags[0]) 	
+		{
+			out->write( reinterpret_cast<char *>(NXWFLAG0_ID), sizeof(NXWFLAG0_ID));
+			out->write( reinterpret_cast<char *>(pc->nxwflags[0]), sizeof(pc->nxwflags[0]));
+		}
+		if (pc->nxwflags[1]!=dummy.nxwflags[1]) 	
+		{
+			out->write( reinterpret_cast<char *>(NXWFLAG1_ID), sizeof(NXWFLAG1_ID));
+			out->write( reinterpret_cast<char *>(pc->nxwflags[1]), sizeof(pc->nxwflags[1]));
+		}
+		if (pc->nxwflags[2]!=dummy.nxwflags[2]) 	
+		{
+			out->write( reinterpret_cast<char *>(NXWFLAG2_ID), sizeof(NXWFLAG2_ID));
+			out->write( reinterpret_cast<char *>(pc->nxwflags[2]), sizeof(pc->nxwflags[2]));
+		}
+		if (pc->nxwflags[3]!=dummy.nxwflags[3]) 	
+		{
+			out->write( reinterpret_cast<char *>(NXWFLAG3_ID), sizeof(NXWFLAG3_ID));
+			out->write( reinterpret_cast<char *>(pc->nxwflags[3]), sizeof(pc->nxwflags[3]));
+		}
+		
+		for (int JJ = 0; JJ< MAX_RESISTANCE_INDEX; JJ++)
+			if ( pc->resists[JJ] != dummy.resists[JJ] )
+			{
+				out->write( reinterpret_cast<char *>(RESISTS_ID), sizeof(RESISTS_ID));
+				out->write( reinterpret_cast<char *>(JJ), sizeof(JJ));
+				out->write( reinterpret_cast<char *>(pc->resists[JJ]), sizeof(pc->resists[JJ]));
+			}
+	}
+}
 // xan : this is an internal option -> with it enabled, player names etc will not be saved
 //       to ease masking of private data in worldsaves :)
 //#define DESTROY_REFERENCES
@@ -1543,10 +2425,10 @@ void CWorldMain::SaveChar( P_CHAR pc )
 			if (pc->mn!=dummy.mn)
 				fprintf(cWsc, "MANA %i\n", pc->mn);
 
-                        if (pc->possessorSerial == INVALID) //Luxor
-                                fprintf(cWsc, "NPC %i\n", pc->npc);
-                        else
-                                fprintf(cWsc, "NPC %i\n", 1);
+            if (pc->possessorSerial == INVALID) //Luxor
+                    fprintf(cWsc, "NPC %i\n", pc->npc);
+            else
+                    fprintf(cWsc, "NPC %i\n", 1);
 
 			if (pc->possessedSerial != INVALID) //Luxor
                                 fprintf(cWsc, "POSSESSEDSERIAL %i\n", pc->possessedSerial);

@@ -96,6 +96,7 @@ struct server_st
  std::string archivePath;
  std::string savePath;
  std::string worldfileExtension;
+ std::string worldfileBinaryExtension;
  std::string characterWorldfile;
  std::string itemWorldfile;
  std::string guildWorldfile;

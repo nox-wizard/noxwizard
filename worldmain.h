@@ -52,9 +52,12 @@ private:
 	UI32 itm_curr, chr_curr;
 
 	void SaveChar( P_CHAR pc );
+	void SaveBinaryChar( fstream *out, P_CHAR pc);
+
 	void loadChar();
 
 	void SaveItem( P_ITEM pi );
+	void SaveBinaryItem( fstream *out, P_ITEM pi);
 	void loadItem();
 
 	void realworldsave();
@@ -72,7 +75,8 @@ public:
 
 	void loadNewWorld();
 	void saveNewWorld();
-
+	void binarySaveWorld();
+	void binaryLoadWorld();
 	bool Saving();
 };
 
