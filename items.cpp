@@ -136,12 +136,18 @@ cItem& cItem::operator=(cItem& b)
 	ammo = b.ammo;
 	ammoFx = b.ammoFx;
 
-        int i;
-        for (i = 0; i < MAX_RESISTANCE_INDEX; i++)
+        UI32 i;
+        for ( i = 0; i < MAX_RESISTANCE_INDEX; i++ )
                 resists[i] = b.resists[i];
-        //for (i = 0; i < ALLITEMEVENTS; i++)
-        //        amxevents[i] = b.amxevents[i];
-        //strcpy(desc, b.desc);
+
+	AmxEvent *event;
+	for ( i = 0; i < ALLITEMEVENTS; i++ ) {
+		event = b.getAmxEvent( i );
+		if ( event == NULL )
+			continue;
+
+		setAmxEvent( i, event->getFuncName(), !(event->shouldBeSaved()) );
+	}
 	vendorDescription = b.vendorDescription;
 	amxVS.copyVariable(getSerial32(), b.getSerial32());
 	

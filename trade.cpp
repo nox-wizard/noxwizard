@@ -20,6 +20,9 @@
 
 void buyaction(int s)
 {
+	if ( s < 0 || s >= now )
+		return;
+		
 	char clearmsg[8];
 	int i, j;
 	std::vector< buyeditem > allitemsbuyed;
@@ -236,6 +239,9 @@ static bool items_match(P_ITEM pi1,P_ITEM pi2)
 
 void sellaction(NXWSOCKET s)
 {
+	if ( s < 0 || s >= now )
+		return;
+
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 	
