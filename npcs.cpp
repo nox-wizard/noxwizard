@@ -308,52 +308,50 @@ P_ITEM AddRandomLoot(P_ITEM pack, char * lootlist)
 {
 	VALIDATEPIR(pack, NULL);
 
-	char sect[512];
-	char script1[1024];
-	int i,j, loopexit=0;
-	cScpIterator* iter = NULL;
+	std::string 	script1;
+	int		i	= 0,
+			j,
+			loopexit= 0;
+	P_ITEM 		pi	= 0;
 
-	i=0; j=0;
-
-	sprintf(sect, "SECTION LOOTLIST %s", lootlist);
-	iter = Scripts::Npc->getNewIterator(sect);
-	if (iter==NULL) return NULL;
-
-	loopexit=0;
-	do
+	cScpIterator* iter = Scripts::Npc->getNewIterator( "SECTION LOOTLIST %s", lootlist );
+	if ( iter )
 	{
-		strcpy(script1, iter->getEntry()->getFullLine().c_str());
-		if ((script1[0]!='}')&&(script1[0]!='{'))
-		{
-			i++; // Count number of entries on list.
-		}
-	} while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
-
-	iter->rewind();
-
-	P_ITEM pi=NULL;
-	if(i>0)
-	{
-		i=rand()%(i);
 
 		loopexit=0;
 		do
 		{
-			strcpy(script1, iter->getEntry()->getFullLine().c_str());
-			if ((script1[0]!='}')&&(script1[0]!='{'))
+			script1 = iter->getEntry()->getFullLine();
+			if ( script1[0]!='}' && script1[0]!='{' )
 			{
-				if(j==i)
-				{
-					int storeval=str2num(script1);	//script1 = ITEM#
-					pi=item::CreateFromScript( storeval, pack );
-
-					break;
-				}
-				else j++;
+				++i; // Count number of entries on list.
 			}
-		}	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		} while ( script1[0]!='}' && ++loopexit < MAXLOOPS );
+
+		iter->rewind();
+
+		if( i > 0 )
+		{
+			i=rand()%(i);
+
+			loopexit=0;
+			do
+			{
+				script1 = iter->getEntry()->getFullLine();
+				if ( script1[0]!='}' && script1[0]!='{' )
+				{
+					if(j==i)
+					{
+						pi=item::CreateFromScript( (SCRIPTID) str2num( script1 ), pack );
+						break;
+					}
+					else
+						++j;
+				}
+			}	while ( (script1[0]!='}') && (++loopexit < MAXLOOPS) );
+		}
+		safedelete(iter);
 	}
-	safedelete(iter);
 	return pi;
 
 }
