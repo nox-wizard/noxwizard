@@ -667,7 +667,7 @@ NATIVE(_nprintf)
 {
   cell *cstr;
 
-  if ( params[1] < 0 || params[2] >= now ) // Luxor
+  if ( params[1] < 0 || params[1] >= now ) // Luxor
 	  return 0;
   
   NXWCLIENT s = getClientFromSocket(params[1]);
