@@ -4187,25 +4187,31 @@ void TargetLocation::extendItemTarget()
 TargetLocation::TargetLocation(PKGx6C* pp)
 {
 	if( pp->type==0 ) {
-		P_CHAR pc= pointers::findCharBySerial(pp->Tserial);
-		P_ITEM pi= pointers::findItemBySerial(pp->Tserial);
 
-		if(ISVALIDPC(pc)) 
+		P_CHAR pc= pointers::findCharBySerial(pp->Tserial);
+		if(ISVALIDPC(pc)) {
 			init(pc);
-		else if (ISVALIDPI(pi)) 
+			return;
+		}
+
+		P_ITEM pi= pointers::findItemBySerial(pp->Tserial);
+		if (ISVALIDPI(pi))  {
 			init(pi);
+			return;
+		}
 	}
-	else if( pp->type==1 )
+	else if( pp->type==1 ) {
 		init(pp->TxLoc,pp->TyLoc,pp->TzLoc);
-	else {
-		this->m_pc=NULL;
-		this->m_pcSerial=INVALID;
-		this->m_pi=NULL;
-		this->m_piSerial=INVALID;
-		this->m_x=0;
-		this->m_y=0;
-		this->m_z=0;
+		return;
 	}
+
+	this->m_pc=NULL;
+	this->m_pcSerial=INVALID;
+	this->m_pi=NULL;
+	this->m_piSerial=INVALID;
+	this->m_x=0;
+	this->m_y=0;
+	this->m_z=0;
 }
 
 
