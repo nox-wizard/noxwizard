@@ -19,7 +19,7 @@ warnings/errors/issues.
 #ifndef __COMMON_LIBS_H__
 #define __COMMON_LIBS_H__
 
-#if __GNUC__ == 3
+#if (__GNUC__ == 3) && ( (__GNUC_MINOR__ == 1) || ( __GNUC_MINOR__ == 2 && __GNUC_PATCHLEVEL__ < 2 ) )
 	#warning The use of GCC 3 with NoX-Wizard is very very dangerous. \
 	GCC3.2.2+ of Debian GNU/Linux seems to be ok.
 #endif
