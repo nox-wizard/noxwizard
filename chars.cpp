@@ -253,10 +253,10 @@ cChar::cChar( SERIAL ser ) : cObject()
 	trainer=INVALID; // Serial of the NPC training the char, -1 if none.
 	trainingplayerin=0; // Index in skillname of the skill the NPC is training the player in
 	cantrain=true;
-//	ResetGuildTitleToggle();		// Toggle for Guildtitle								(DasRaetsel)
-//	SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
-//	SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
-//	SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
+	ResetGuildTitleToggle();		// Toggle for Guildtitle								(DasRaetsel)
+	SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
+	SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
+	SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
 
 	flag=0x02; //1=red 2=grey 4=Blue 8=green 10=Orange // grey as default - AntiChrist
 	tempflagtime=0;
@@ -304,8 +304,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetNxwFlags();
 	resetAmxEvents();
 	prevX = prevY = prevZ = 0;
-//	ResetGuildTraitor();
-//	SetGuildType( INVALID );
+	ResetGuildTraitor();
+	SetGuildType( INVALID );
 	magicsphere = 0;
 	resetResists();
 	lightdamaged = false;
@@ -553,10 +553,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return short type of guild. INVALID = no guild 0 = standard guild 1 = order guild 2 = chaos guild
 */
-/*short cChar::GetGuildType()
+short cChar::GetGuildType()
 {
 	return guildType;
-}*/
+}
 
 /*!
 \brief set the guild type
@@ -565,11 +565,11 @@ void cChar::checkSafeStats()
 \since 0.82
 \param newGuildType value must be between INVALID and MAX_GUILDTYPE
 */
-/*void cChar::SetGuildType(short newGuildType)
+void cChar::SetGuildType(short newGuildType)
 {
 	if ( newGuildType >= INVALID && newGuildType <= MAX_GUILDTYPE )
 		guildType = newGuildType;
-}*/
+}
 
 /*!
 \brief return guild traitor status
@@ -578,10 +578,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return bool: true is traitor
 */
-/*LOGICAL cChar::IsGuildTraitor()
+LOGICAL cChar::IsGuildTraitor()
 {
 	return guildTraitor;
-}*/
+}
 
 /*!
 \brief set guild traitor status
@@ -589,10 +589,10 @@ void cChar::checkSafeStats()
 \date 31/08/2002
 \since 0.82
 */
-/*void cChar::SetGuildTraitor()
+void cChar::SetGuildTraitor()
 {
 	guildTraitor = true;
-}*/
+}
 
 /*!
 \brief reset guild traitor status
@@ -600,10 +600,10 @@ void cChar::checkSafeStats()
 \date 31/08/2002
 \since 0.82
 */
-/*void cChar::ResetGuildTraitor()
+void cChar::ResetGuildTraitor()
 {
 	guildTraitor = false;
-}*/
+}
 
 /*!
 \brief return guild title toggle status
@@ -612,10 +612,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return true is show title
 */
-/*LOGICAL	cChar::HasGuildTitleToggle()
+LOGICAL	cChar::HasGuildTitleToggle()
 {
 	return guildToggle;
-}*/
+}
 
 /*!
 \brief set guild title toggle
@@ -623,10 +623,10 @@ void cChar::checkSafeStats()
 \date 31/08/2002
 \since 0.82
 */
-/*void cChar::SetGuildTitleToggle()
+void cChar::SetGuildTitleToggle()
 {
 	guildToggle = true;
-}*/
+}
 
 /*!
 \brief reset guild title toggle
@@ -634,10 +634,10 @@ void cChar::checkSafeStats()
 \date 31/08/2002
 \since 0.82
 */
-/*void cChar::ResetGuildTitleToggle()
+void cChar::ResetGuildTitleToggle()
 {
 	guildToggle = false;
-}*/
+}
 
 /*!
 \brief return the guild fealty
@@ -646,10 +646,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return serial of guild fealty
 */
-/*SERIAL cChar::GetGuildFealty()
+SERIAL cChar::GetGuildFealty()
 {
 	return guildFealty;
-}*/
+}
 
 /*!
 \brief set the guild fealty
@@ -658,10 +658,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \param newGuildFealty serial of char to set the guild fealty
 */
-/*void cChar::SetGuildFealty(SERIAL newGuildFealty)
+void cChar::SetGuildFealty(SERIAL newGuildFealty)
 {
 	guildFealty = newGuildFealty;
-}*/
+}
 
 /*!
 \brief return the guild number
@@ -670,10 +670,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return guild number
 */
-/*SI32 cChar::GetGuildNumber()
+SI32 cChar::GetGuildNumber()
 {
 	return guildNumber;
-}*/
+}
 
 /*!
 \brief set the guild number
@@ -682,10 +682,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \param newGuildNumber guild number to set to the char
 */
-/*void cChar::SetGuildNumber(SI32 newGuildNumber)
+void cChar::SetGuildNumber(SI32 newGuildNumber)
 {
 	guildNumber = newGuildNumber;
-}*/
+}
 
 /*!
 \brief return the guild title
@@ -694,10 +694,10 @@ void cChar::checkSafeStats()
 \since 0.82
 \return guild title
 */
-/*TEXT* cChar::GetGuildTitle()
+TEXT* cChar::GetGuildTitle()
 {
 	return guildTitle;
-}*/
+}
 
 /*!
 \brief set the guild title
@@ -706,7 +706,7 @@ void cChar::checkSafeStats()
 \since 0.82
 \param newGuildTitle guild title
 */
-/*void cChar::SetGuildTitle(TEXT* newGuildTitle)
+void cChar::SetGuildTitle(TEXT* newGuildTitle)
 {
 	if ( strlen( newGuildTitle ) < sizeof( guildTitle ) )
 		strcpy( guildTitle, newGuildTitle );
@@ -715,7 +715,7 @@ void cChar::checkSafeStats()
 		strncpy( guildTitle, newGuildTitle, ( sizeof( guildTitle ) - 1 ) );
 		guildTitle[ sizeof( guildTitle ) - 1 ] = '\0';
 	}
-}*/
+}
 
 void cChar::setStrength(UI32 val, bool check/*= true*/)
 {

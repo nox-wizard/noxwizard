@@ -2498,7 +2498,7 @@ NATIVE (_send_boltfx)
 {
 	P_CHAR pc = pointers::findCharBySerial(params[1]);
 	VALIDATEPCR(pc, INVALID);
-	pc->boltFX(true); //Frodo : missing param fixed.. check later
+	pc->boltFX();
 	return 0;
 }
 
@@ -3343,7 +3343,7 @@ NATIVE( _chr_getGuildType )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-//	return pc->GetGuildType();
+	return pc->GetGuildType();
 }
 /*
 \brief set the guild type
@@ -3357,7 +3357,7 @@ NATIVE( _chr_setGuildType )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-//	pc->SetGuildType( static_cast<short>(params[2]) );
+	pc->SetGuildType( static_cast<short>(params[2]) );
 	return 0;
 }
 
@@ -3372,7 +3372,7 @@ NATIVE( _chr_isGuildTraitor )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-//	return pc->IsGuildTraitor();
+	return pc->IsGuildTraitor();
 }
 /*
 \brief set the guild traitor status
@@ -3386,7 +3386,7 @@ NATIVE( _chr_setGuildTraitor )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-//	params[2] ? pc->SetGuildTraitor() :pc->ResetGuildTraitor();
+	params[2] ? pc->SetGuildTraitor() :pc->ResetGuildTraitor();
 	return 0;
 }
 
@@ -3401,7 +3401,7 @@ NATIVE( _chr_hasGuildToggle )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-//	return pc->HasGuildTitleToggle();
+	return pc->HasGuildTitleToggle();
 }
 /*
 \brief set the guild title toggle status
@@ -3414,12 +3414,11 @@ NATIVE( _chr_setGuildToggle )
 {
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
-/*	if (params[2])
+	if (params[2])
 		pc->SetGuildTitleToggle();
 	else
 		pc->ResetGuildTitleToggle();
 	return 0;
-*/
 }
 
 /*
@@ -3434,7 +3433,7 @@ NATIVE( _chr_getGuildFealty )
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
 
-//	return pc->GetGuildFealty();
+	return pc->GetGuildFealty();
 }
 /*
 \brief set the guild fealty
@@ -3448,7 +3447,7 @@ NATIVE( _chr_setGuildFealty )
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
 
-//	pc->SetGuildFealty( static_cast<SERIAL>(params[2]) );
+	pc->SetGuildFealty( static_cast<SERIAL>(params[2]) );
 	return 0;
 }
 
@@ -3464,7 +3463,7 @@ NATIVE( _chr_getGuildNumber )
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
 
-//	return pc->GetGuildNumber();
+	return pc->GetGuildNumber();
 }
 /*
 \brief set the guild number
@@ -3478,7 +3477,7 @@ NATIVE( _chr_setGuildNumber )
     P_CHAR pc = pointers::findCharBySerial(params[1]);
     VALIDATEPCR(pc, INVALID);
 
-//	pc->SetGuildNumber( static_cast<SI32>(params[2]) );
+	pc->SetGuildNumber( static_cast<SI32>(params[2]) );
 	return 0;
 }
 
@@ -3497,7 +3496,7 @@ NATIVE( _chr_getGuildTitle )
 
 	char str[100];
   	cell *cptr;
-//  	strcpy(str, pc->GetGuildTitle() );
+  	strcpy(str, pc->GetGuildTitle() );
 
   	amx_GetAddr(amx,params[2],&cptr);
   	amx_SetString(cptr,str, g_nStringMode);
@@ -3522,7 +3521,7 @@ NATIVE( _chr_setGuildTitle )
   	amx_GetAddr(amx,params[2],&cstr);
   	printstring(amx,cstr,params+5,(int)(params[0]/sizeof(cell))-1);
   	g_cAmxPrintBuffer[qmin(g_nAmxPrintPtr,48)] = '\0';
-//  	pc->SetGuildTitle( g_cAmxPrintBuffer );
+  	pc->SetGuildTitle( g_cAmxPrintBuffer );
   	g_nAmxPrintPtr=0;
   	return 0;
 }
