@@ -926,6 +926,8 @@ void checkAmxSpeech(int s, char *speech)
 }
 
 
+std::string InvalidFunction( "InvalidFunction" );
+
 AmxProgram AmxFunction::amxProg;
 
 /*
@@ -947,9 +949,7 @@ AmxFunction::AmxFunction( char* funName )
 */
 char* AmxFunction::getFuncName()
 {
-        char *str;
-        ( function != INVALID ) ? str = (char*)funcName.c_str() : str = "";
-	return str;
+    return ( function != INVALID ) ? (char*)funcName.c_str() : (char*)InvalidFunction.c_str();
 }
 
 /*
