@@ -871,7 +871,7 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pBoat->more2=nid2+3;//set MAX id
 	pBoat->type=ITYPE_BOATS;//Boat type
 	
-	Location lb ( pBoat->getPosition() );
+	Location lb = pBoat->getPosition();
 	lb.z = -5;
 	pBoat->setPosition(lb);//Z in water
 
@@ -880,7 +880,7 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 
 	P_ITEM pTiller=item::CreateFromScript( "$item_tillerman" );
 	VALIDATEPIR( pTiller, false );
-	Location lt ( pTiller->getPosition() );
+	Location lt = pTiller->getPosition();
 	lt.z=-5;
 	pTiller->priv=0;
 
@@ -892,7 +892,7 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pPlankR->more2= pBoat->getSerial().ser2;
 	pPlankR->more3= pBoat->getSerial().ser3;
 	pPlankR->more4= pBoat->getSerial().ser4;
-	Location lpr( pPlankR->getPosition() );
+	Location lpr = pPlankR->getPosition();
 	lpr.z=-5;
 	pPlankR->priv=0;//Nodecay
 
@@ -904,7 +904,7 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pPlankL->more2= pBoat->getSerial().ser2;//Lock this
 	pPlankL->more3= pBoat->getSerial().ser3;
 	pPlankL->more4= pBoat->getSerial().ser4;
-	Location lpl( pPlankL->getPosition() );
+	Location lpl= pPlankL->getPosition();
 	lpl.z =-5;
 	pPlankL->priv=0;
 
@@ -916,7 +916,7 @@ LOGICAL boats::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pHold->more4= pBoat->getSerial().ser4;
 
 	pHold->type=ITYPE_CONTAINER;//Container
-	Location lh( pHold->getPosition() );
+	Location lh = pHold->getPosition();
 	lh.z=-5;
 	pHold->priv=0;
 
