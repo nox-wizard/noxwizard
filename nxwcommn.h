@@ -27,7 +27,8 @@
 #include "worldmain.h"
 #include "srvparms.h" 
 
-#include "data.h"
+//#include "data.h"
+#include "muls.h"
 #include "accounts.h"
 #include "scp_parser.h"
 #include "basics.h"

@@ -18,12 +18,6 @@
 #include "nxwcommn.h"
 
 
-extern class cTiledata* tiledata; //!<the tiledata class istance
-extern class cMap* mappa; //!<the map class istance
-extern class cStatics* statics; //!<the statics class istance
-extern class cVerdata* verdata; //!<the verdata class istance
-
-
 class cFile {
 
 public:
@@ -72,8 +66,8 @@ private:
 
 public:
 
-	NxwMulWrapper( cMULFile<T>* mul, UI32 i );
-	NxwMulWrapper( cStatics* statics, UI32 x, UI32 y );
+	NxwMulWrapper( cMULFile<T>* mul, UI32 id );
+	NxwMulWrapper( class cStatics* statics, UI32 x, UI32 y );
 	~NxwMulWrapper();
 
 	void rewind();
@@ -232,7 +226,7 @@ typedef multi_st TMULTI;
 typedef MULTISVEC* P_MULTISVEC;
 
 
-
+typedef cMULFile<multi_st> cMulti;
 
 struct statics_st {
 	UI16 id;
@@ -324,8 +318,15 @@ public:
 	void load( cTiledata* tiledata, cMULFile<multi_st>* multi );
 };
 
-extern cMULFile<multi_st>* multi;
 
+
+namespace mul {
+	extern class cTiledata* tiledata; //!<the tiledata class istance
+	extern class cMap* mappa; //!<the map class istance
+	extern class cStatics* statics; //!<the statics class istance
+	extern class cVerdata* verdata; //!<the verdata class istance
+	extern cMulti* multi;
+}
 
 
 

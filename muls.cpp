@@ -10,12 +10,13 @@
 #include "nxwcommn.h"
 #include "muls.h"
 
-
+namespace mul {
 cTiledata* tiledata=NULL;
 cMap* mappa=NULL;
 cStatics* statics=NULL;
 cVerdata* verdata=NULL;
-cMULFile<multi_st>* multi=NULL;
+cMulti* multi=NULL;
+}
 
 
 
