@@ -2710,7 +2710,7 @@ void command_pdump(NXWSOCKET  s)
 {
 			sysmessage(s, "Performace Dump:");
 
-			sprintf((char*)s_szCmdTableTemp, "Network code: %fmsec [%i]", (float)((float)networkTime/(float)networkTimeCount), networkTimeCount);
+			sprintf((char*)s_szCmdTableTemp, "Network code: %fmsec [%i]" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
 			sysmessage(s,(char*) s_szCmdTableTemp);
 
 			sprintf((char*)s_szCmdTableTemp, "Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);

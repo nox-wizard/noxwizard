@@ -112,12 +112,12 @@ public:
 \name Appearence
 */
 protected:
-	char			secondary_name[150];
+	string			secondary_name;
 /*!<
 Real name of the char, 30 chars max + '\\0'<br>
 Also used to store the secondary name of items.
 */
-	char			current_name[150];	//!< Name displayed everywhere for this object, 30 char max + '\\0'
+	string			current_name;	//!< Name displayed everywhere for this object, 30 char max + '\\0'
 
 public:
 	string 			getRealName() const;

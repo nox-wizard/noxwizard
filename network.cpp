@@ -592,19 +592,16 @@ void cNetwork::Relay(int s) // Relay player to a certain IP
 
 void cNetwork::ActivateFeatures(int s)
 {
-UI08 feat[3] = {0xB9, 0x00, 0x00};
-UI16 features = 0;  //<-- BitMask ?
-// 0x0001 => Button Chat ( T2A ??? )
-// 0x0003 => LBR (+ T2A)
-// 0x801F => AoS and previous .... (AoS + LBR + T2A)
-// 0xFFFF => ... (*ALL* <grin>)
-enum {
-	T2A = 0x0001;
-	LBR = 0x0002;
-};
+	UI08 feat[3] = {0xB9, 0x00, 0x00};
+	UI16 features = 0;  //<-- BitMask ?
+	// 0x0001 => Button Chat ( T2A ??? )
+	// 0x0003 => LBR (+ T2A)
+	// 0x801F => AoS and previous .... (AoS + LBR + T2A)
+	// 0xFFFF => ... (*ALL* <grin>)
 
-	switch(server_data.feature) {
-		case 1:	// T2A Features, button chat, popup help .. 
+	switch(server_data.feature)
+	{
+		case 1:	// T2A Features, button chat, popup help ..
 			features |= T2A;
 			break;
 		case 2: // LBR plus previous vers.
@@ -613,7 +610,7 @@ enum {
 		default:  // I don't know, what you want :P
 			return;
 			break;
-	};
+	}
 
 	ShortToCharPtr(features, feat+1);
 	Xsend(s, feat, 3);

@@ -536,155 +536,159 @@ void cObject::setOldPosition(Location where)
 	old_position= where;
 }
 
+
+
 /*!
 \brief return the real name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C++ string object
 */
 string cObject::getRealName() const
 {
-	return string(secondary_name);
+	return secondary_name;
 }
 
 
 /*!
 \brief return the real name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C char pointer
 \attention the pointer you get is not the pointer to the real data, don't use it to set the name !!
 */
 const char* cObject::getRealNameC() const
 {
-	return secondary_name;
+	return secondary_name.c_str();
 }
 
 /*!
 \brief Set the real name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param s C++ string
 */
 void cObject::setRealName(string s)
 {
-	strcpy(secondary_name, s.c_str());
+	secondary_name = s;
 }
 
 
 /*!
 \brief Set the real name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param str C char pointer
 */
 void cObject::setRealName( const char *str )
 {
-	strncpy(secondary_name, str, sizeof(secondary_name));
-	secondary_name[sizeof(secondary_name)-1]= '\0';
+	secondary_name = string(str);
 }
 
 /*!
 \brief return the current name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C++ string
 */
 string cObject::getCurrentName() const
 {
-	return string(current_name);
+	return current_name;
 }
 
 
 /*!
 \brief return the current name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C char pointer
 \attention the pointer you get is not the pointer to the real data, don't use it to set the name !!
 */
 const char* cObject::getCurrentNameC() const
 {
-	return current_name;
+	return current_name.c_str();
 }
 
 /*!
 \brief Set the current name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param s C++ string, the new name
 */
 void cObject::setCurrentName( string s )
 {
-	strcpy(current_name, s.c_str());
+	current_name = s;
 }
 
 /*!
 \brief Set the current name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param format,... formatted C string
 */
 void cObject::setCurrentName( char *format, ... )
 {
+	char tmp[150];
         va_list vargs;
         va_start(vargs, format);
-        vsnprintf(current_name, sizeof(current_name)-1, format, vargs);
+        vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
         va_end(vargs);
 
-        current_name[sizeof(current_name)-1] = '\0';
+        tmp[sizeof(tmp)-1] = '\0';
+	current_name = string(tmp);
 }
 
 /*!
 \brief Set the current name of object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param str C char pointer, the new name
 */
 void cObject::setCurrentName( const char *str )
 {
-	strncpy(current_name, str, sizeof(current_name));
-	current_name[sizeof(current_name)-1]= '\0';
+	current_name = string(str);
 }
 
 /*!
 \brief Set the secondary name of the object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \param format C char pointer - see printf
 \warning This function must only be used by items because it use same var than real name
 */
 void cObject::setSecondaryName(const char *format, ...)
 {
+	char tmp[150];
         va_list vargs;
         va_start(vargs, format);
-        vsnprintf(secondary_name, sizeof(secondary_name)-1, format, vargs);
+        vsnprintf(tmp, sizeof(tmp)-1, format, vargs);
         va_end(vargs);
 
-        secondary_name[sizeof(secondary_name)-1] = '\0';
+        tmp[sizeof(tmp)-1] = '\0';
+	secondary_name = string(tmp);
 }
 
 /*!
 \brief Get the secondary name of the object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C char pointer
 \warning This function must only be used by items because it use same var than real name of chars
 */
 const char *cObject::getSecondaryNameC() const
 {
-	return secondary_name;
+	return secondary_name.c_str();
 }
 
 /*!
 \brief Get the secondary name of the object
-\author Anthalir
+\author Anthalir, rewritten by Luxor
 \since 0.82a
 \return C char pointer
 \warning This function must only be used by items because it use same var than real name of chars
 */
 string cObject::getSecondaryName() const
 {
-	return string(secondary_name);
+	return secondary_name;
 }
 

@@ -725,12 +725,12 @@ void checkkey ()
 			case 'p':				// Display profiling information
 				ConOut("----------------------------------------------------------------\n");
 				ConOut("Performace Dump:\n");
-				ConOut("Network code: %fmsec [%i samples]\n" _ (float)((float)networkTime/(float)networkTimeCount) _ networkTimeCount);
-				ConOut("Timer code: %fmsec [%i samples]\n" _ (float)((float)timerTime/(float)timerTimeCount) _ timerTimeCount);
-				ConOut("Auto code: %fmsec [%i samples]\n" _ (float)((float)autoTime/(float)autoTimeCount) _ autoTimeCount);
-				ConOut("Loop Time: %fmsec [%i samples]\n" _ (float)((float)loopTime/(float)loopTimeCount) _ loopTimeCount);
+				ConOut("Network code: %fmsec [%i samples]\n" , (float)((float)networkTime/(float)networkTimeCount) , networkTimeCount);
+				ConOut("Timer code: %fmsec [%i samples]\n" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
+				ConOut("Auto code: %fmsec [%i samples]\n" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
+				ConOut("Loop Time: %fmsec [%i samples]\n" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
 				//ConOut("Characters: %i (Dynamic)		Items: %i (Dynamic)\n" _ charcount _ char_mem::cmem _ itemcount _ item_mem::imem);
-				ConOut("Simulation Cycles: %f per sec\n" _ (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+				ConOut("Simulation Cycles: %f per sec\n" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 				break;
 			case 'W':
 			case 'w':				// Display logged in chars

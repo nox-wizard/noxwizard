@@ -79,6 +79,11 @@ class NetThread
 		void set(int s);
 };
 
+enum {
+	T2A = 0x0001,
+	LBR = 0x0002
+};
+
 class cNetwork
 {
 	public:
@@ -115,6 +120,7 @@ class cNetwork
 		char LogOut(NXWSOCKET s);
 		void pSplit(char *pass0);
 		void sockInit();
+		void ActivateFeatures(NXWSOCKET s);
 };
 
 extern class cNetwork	*Network;

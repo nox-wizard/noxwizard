@@ -21,7 +21,7 @@
 
 //@{
 /*!
-\name Telnet Protocolo
+\name Telnet Protocol
 \brief Telnet protocol flags for define telnet works.
 */
 #define IAC		0xFF	//!< all command start by this
@@ -473,10 +473,10 @@ void RemoteAdmin::ProcessInput(int s)
 		Printf(s, "Performace Dump:\r\n");
 
 		Printf(s, "Network code: %fmsec [%i]", (float)((float)networkTime/(float)networkTimeCount), networkTimeCount);
-		Printf(s,"Timer code: %fmsec [%i]" _ (float)((float)timerTime/(float)timerTimeCount) _ timerTimeCount);
-		Printf(s,"Auto code: %fmsec [%i]" _ (float)((float)autoTime/(float)autoTimeCount) _ autoTimeCount);
-		Printf(s,"Loop Time: %fmsec [%i]" _ (float)((float)loopTime/(float)loopTimeCount) _ loopTimeCount);
-		Printf(s,"Simulation Cycles/Sec: %f" _ (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
+		Printf(s,"Timer code: %fmsec [%i]" , (float)((float)timerTime/(float)timerTimeCount) , timerTimeCount);
+		Printf(s,"Auto code: %fmsec [%i]" , (float)((float)autoTime/(float)autoTimeCount) , autoTimeCount);
+		Printf(s,"Loop Time: %fmsec [%i]" , (float)((float)loopTime/(float)loopTimeCount) , loopTimeCount);
+		Printf(s,"Simulation Cycles/Sec: %f" , (1000.0*(1.0/(float)((float)loopTime/(float)loopTimeCount))));
 		return;
 	}
 
