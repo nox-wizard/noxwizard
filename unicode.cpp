@@ -77,7 +77,7 @@ void eUI16::operator =( UI32 v )
 }
 
 
-void eUI32::operator =( UI32& v )
+void eUI32::operator =( UI32 v )
 {
 	this->a= v >>  16;
 	this->b= v & 0xFFFF;

@@ -72,7 +72,7 @@ class eUI32 : endian<eUI16> {
 public:
 	eUI32() : endian<eUI16>() { };
 	virtual ~eUI32() { };
-	void operator =( UI32& v );
+	void operator =( UI32 v );
 };
 
 typedef eUI32 eSERIAL;
