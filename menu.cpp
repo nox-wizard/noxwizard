@@ -489,7 +489,8 @@ void cOldMenu::addMenuItem( int page, int idx, char* desc )
 //	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
 	wstring s;
 	string2wstring( string( desc ), s );
-	allPages[ page ][ idx ] = s;
+	std::map<UI32, wstring >& p= allPages[ page ];
+	p.insert( make_pair( idx, s ) );
 }
 
 /*void cOldMenu::setCallback( int cback ) 
@@ -521,8 +522,11 @@ void cOldMenu::buildMenu ()
 
 }
 
-void cOldMenu::showMenu(NXWSOCKET  s)
+void cOldMenu::showMenu( NXWSOCKET s )
 {
+    NXWCLIENT ps= getClientFromSocket( s );
+	if( ps==NULL ) return;
+	this->show( ps->currChar() );
 }
 
 void cOldMenu::setTitle( char* str )
@@ -614,11 +618,11 @@ void cOldMenu::buildClassicMenu()
 	int buttonnum=10; //button number
 	int position = 80, linenum = 1;
 
-	std::vector< std::vector< std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
+	std::map< UI32, std::map< UI32, std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
 
 	for( int k=0; curr_page!=last_page; ++curr_page, ++k ) {
 
-		std::vector< std::wstring >::iterator iter( curr_page->begin() ), end( curr_page->end() );
+		std::map< UI32, std::wstring >::iterator iter( curr_page->second.begin() ), end( curr_page->second.end() );
 	
 		for( int i=0; iter!=end; ++iter, ++i )
 		{
@@ -630,7 +634,7 @@ void cOldMenu::buildClassicMenu()
 					oldk = k;
 				}
 
-				addText( 80, position, (*iter), color );
+				addText( 80, position, iter->second, color );
 
 				addButton( 50, position+3, 4005, 4005+1, buttonnum, pagenum );
 
@@ -642,6 +646,10 @@ void cOldMenu::buildClassicMenu()
 
 
 	curr_page = allPages.begin();
+
+	if( allPages.size()==1 )
+		return; //not need back and forward buttons with only a page
+
 	//now add back and forward buttons
 	for( int p=1; curr_page!=last_page; ++curr_page, ++p )
 	{

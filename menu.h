@@ -104,21 +104,21 @@ private:
 	UI32 color;
 	UI32 width;
 	wstring title;
-	std::vector< std::vector< std::wstring >  > allPages;
+	std::map< UI32, std::map< UI32, std::wstring >  > allPages;
 
 public:
 	cOldMenu();
-	virtual ~cOldMenu();
+	~cOldMenu();
 
-	void setParameters(int numPerPage, int numpages);
-	void addMenuItem(int page, int idx, char *desc);
+	void setParameters( int numPerPage, int numpages );
+	void addMenuItem( int page, int idx, char *desc );
 	//void setCallback( int cback );
-	void buildMenu ();
-	void showMenu (NXWSOCKET  s);
-	void setTitle (char *str);
-	void setWidth (int width);
-	void setStyle(int style, int color = 0);
-	void setColor(int color);
+	void buildMenu();
+	void showMenu( NXWSOCKET s );
+	void setTitle( char *str );
+	void setWidth( int width );
+	void setStyle( int style, int color = 0 );
+	void setColor( int color );
 	virtual void buttonSelected(NXWSOCKET s, unsigned short int buttonPressed, int type );
 
 };
