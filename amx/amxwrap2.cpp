@@ -67,7 +67,7 @@ static char emptyString[1] = { '\0' };
 static cUnicodeString emptyUnicodeString;
 
 static bool  	getCharBoolProperty(P_CHAR pc, int property, int prop2);
-static int   	getCharIntProperty(P_CHAR pc, int property, int prop2);
+static int   	getCharIntProperty(P_CHAR pc, int property, int prop2, int prop3=INVALID );
 static short 	getCharShortProperty(P_CHAR pc, int property, int prop2);
 static char	getCharCharProperty(P_CHAR pc, int property, int prop2);
 static char*	getCharStrProperty(P_CHAR pc, int property, int prop2);
@@ -159,7 +159,7 @@ NATIVE2(_getCharProperty)
 		int tp = getPropertyType(params[2]);
 		if (tp==T_INT)
 		{
-			int p = getCharIntProperty( pc, params[2], params[3]);
+			int p = getCharIntProperty( pc, params[2], params[3], params[4]);
 			cell i = p;
 			return i;
 		}
@@ -530,6 +530,9 @@ NATIVE2(_setCharProperty)
 				break;
 			case NXW_CP_I_REATTACKAT :				  		//dec value: 270;
 				pc->reattackat = p;
+				break;
+			case NXW_CP_I_REGENRATE :				  		//dec value: 271;
+				pc->setRegenRate( static_cast<StatType>(params[3]), params[4], static_cast<VarType>(params[5]) );
 				break;
 			case NXW_CP_I_ROBE :			  				//dec value: 274;
 				pc->robe = p;
@@ -1678,7 +1681,7 @@ static bool getCharBoolProperty( P_CHAR pc, int property, int prop2 )
 	return false;
 }
 
-static int getCharIntProperty( P_CHAR pc, int property, int prop2 )
+static int getCharIntProperty( P_CHAR pc, int property, int prop2, int prop3 )
 {
 	switch( property )
 	{
@@ -1808,6 +1811,7 @@ static int getCharIntProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_I_QUESTDESTREGION , pc->questDestRegion )  	//dec value: 268;
 		CHECK(  NXW_CP_I_QUESTORIGREGION , pc->questOrigRegion )  	//dec value: 269;
 		CHECK(  NXW_CP_I_REATTACKAT , pc->reattackat )  		//dec value: 270;
+		CHECK(  NXW_CP_I_REGENRATE, pc->getRegenRate( static_cast<StatType>(prop2), static_cast<VarType>(prop3) ); )
 		CHECK(  NXW_CP_I_ROBE , pc->robe )  				//dec value: 274;
 		CHECK(  NXW_CP_I_RUNNING , pc->running )  			//dec value: 275;
 		CHECK(  NXW_CP_I_SERIAL , pc->getSerial32() )  			//dec value: 276;
