@@ -23,35 +23,23 @@
   -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 
-namespace nxwset {
+namespace amxSet {
 
 AMX_WRAPPER_DB g_oSet;
 static SERIAL currentIndex=INVALID;
 
-AmxWrapper::AmxWrapper() {
-	this->obsolete=uiCurrentTime;
-	this->p_set=NULL;
-}
-
-AmxWrapper::~AmxWrapper() {
-	if( this->p_set!=NULL )
-		safedelete(p_set);
-}
-
-SERIAL open ()
+SERIAL create( )
 {
-	currentIndex++;
+	++currentIndex;
 
 	SERIAL iSet=currentIndex;
-	g_oSet[iSet].obsolete=uiCurrentTime+15*60*MY_CLOCKS_PER_SEC; //obsolete after 15min
-
+	g_oSet.insert( make_pair( iSet, new NxwWrapper() ) );
 	return iSet;
 }
 
 
-void close( SERIAL iSet )
+void deleteSet( SERIAL iSet )
 {
-
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
 		g_oSet.erase( iter );
@@ -61,8 +49,8 @@ bool end( SERIAL iSet )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL ) {
-			return iter->second.p_set->isEmpty();
+		if( iter->second!=NULL ) {
+			return iter->second->isEmpty();
 		}
 	return true;
 }
@@ -71,8 +59,8 @@ void rewind( SERIAL iSet )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL ) {
-			iter->second.p_set->rewind();
+		if( iter->second!=NULL ) {
+			iter->second->rewind();
 		}
 }
 
@@ -80,8 +68,8 @@ void next( SERIAL iSet )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL ) {
-			(*iter->second.p_set)++;
+		if( iter->second!=NULL ) {
+			(*iter->second)++;
 		}
 }
 
@@ -91,9 +79,9 @@ SERIAL get( SERIAL iSet)
 	SERIAL ser = INVALID;
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL ) {
-			ser = iter->second.p_set->get();
-			(*iter->second.p_set)++;
+		if( iter->second!=NULL ) {
+			ser = iter->second->get();
+			(*iter->second)++;
 		}
 	return ser;
 }
@@ -103,18 +91,18 @@ void insert( SERIAL iSet, SERIAL nVal )
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL )
-			iter->second.p_set->insert(nVal);
+		if( iter->second!=NULL )
+			iter->second->insert(nVal);
 }
 
 bool isEmpty( SERIAL iSet )
 {
-	bool empty = true;
+
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL )
-			empty = iter->second.p_set->isEmpty();
-	return empty;
+		if( iter->second!=NULL )
+			return iter->second->isEmpty();
+	return true;
 }
 
 
@@ -122,97 +110,164 @@ UI32 size( SERIAL iSet)
 {
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter!=g_oSet.end() )
-		if( iter->second.p_set!=NULL )
-			return iter->second.p_set->size();
+		if( iter->second!=NULL )
+			return iter->second->size();
 	return 0;
 }
 
 
-void fillItemsInContainer ( SERIAL iSet, P_ITEM pi, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont)
-{
-	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	iter->second.p_set = new NxwItemWrapper;
-	((NxwItemWrapper*)(iter->second.p_set))->fillItemsInContainer( pi, bIncludeSubContained, bIncludeOnlyFirstSubcont );
-	((NxwItemWrapper*)(iter->second.p_set))->rewind();
-
-}
-
-void fillOwnedNpcs ( SERIAL iSet, P_CHAR pc, bool bIncludeStabled, bool bOnlyFollowing)
-{
-
-	VALIDATEPC(pc);
-	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
-	if( iter==g_oSet.end() )
-		return;
-
-	iter->second.p_set = new NxwCharWrapper;
-	((NxwCharWrapper*)(iter->second.p_set))->fillOwnedNpcs( pc, bIncludeStabled, bOnlyFollowing );
-	((NxwCharWrapper*)(iter->second.p_set))->rewind();
-
-}
-
-
-void fillCharsNearXYZ (SERIAL iSet, UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers)
+void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter==g_oSet.end() )
 		return;
 
-	iter->second.p_set = new NxwCharWrapper;
-	((NxwCharWrapper*)(iter->second.p_set))->fillCharsNearXYZ( x, y, nDistance, bExcludeOfflinePlayers );
-	((NxwCharWrapper*)(iter->second.p_set))->rewind();
-
+	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillOwnedNpcs( pc, includeStabled, onlyFollowing );
+	sc->rewind();
 }
 
-
-void fillItemsAtXY( SERIAL iSet, UI16 x, UI16 y, int type, int id)
+void addCharsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter==g_oSet.end() )
 		return;
 
-	iter->second.p_set = new NxwItemWrapper;
-	((NxwItemWrapper*)(iter->second.p_set))->fillItemsAtXY( x, y, type, id );
-	((NxwItemWrapper*)(iter->second.p_set))->rewind();
-
+	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillCharsNearXYZ( x, y, distance, excludeOffline, onlyPlayer );
+	sc->rewind();
 }
 
-void fillItemsNearXYZ ( SERIAL iSet, UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems)
+void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter==g_oSet.end() )
 		return;
 
-	iter->second.p_set = new NxwItemWrapper;
-	((NxwItemWrapper*)(iter->second.p_set))->fillItemsAtXY( x, y, bExcludeNotMovableItems );
-	((NxwItemWrapper*)(iter->second.p_set))->rewind();
-
+	NxwCharWrapper* sc=static_cast<NxwCharWrapper*>(iter->second);
+	sc->fillPartyFriend( pc, distance, excludeThis );
+	sc->rewind();
 }
 
-void fillOnlineSockets( SERIAL iSet, SERIAL onlyNearThis, UI32 range )
+void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont )
 {
 
 	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
 	if( iter==g_oSet.end() )
 		return;
 
-	P_CHAR pc = pointers::findCharBySerial( onlyNearThis );
-	iter->second.p_set = new NxwSocketWrapper;
-	if( ISVALIDPC( pc ) )
-		((NxwSocketWrapper*)(iter->second.p_set))->fillOnline( pc, range );
-	else
-		((NxwSocketWrapper*)(iter->second.p_set))->fillOnline( );
-	
-	((NxwSocketWrapper*)(iter->second.p_set))->rewind();
-
+	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+	si->fillItemsInContainer( pi, includeSubCont, includeOnlyFirstSubCont );
+	si->rewind();
 }
 
+void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+	si->fillItemWeared( pc, includeLikeHair, includeProtectedLayer, excludeIllegalLayer );
+	si->rewind();
+}
+
+void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+	si->fillItemsAtXY( x, y, type );
+	si->rewind();
+}
+
+void addItemsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwItemWrapper* si=static_cast<NxwItemWrapper*>(iter->second);
+	si->fillItemsNearXYZ( x, y, distance, excludeNotMovable );
+	si->rewind();
+}
+
+inline void NxwSocketWrapper2NxwCharWrapper( NxwSocketWrapper& sw, NxwCharWrapper* sc )
+{
+	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
+		NXWCLIENT ps=sw.getClient();
+		if( ps!=NULL ) {
+			P_CHAR pc=ps->currChar();
+			if(ISVALIDPC(pc))
+				sc->insert( pc->getSerial32() );
+		}
+	}
+}
+
+void addAllOnlinePlayers( SERIAL iSet )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwSocketWrapper sw;
+	sw.fillOnline();
+
+	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+	iter->second->rewind();
+}
+
+void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pc, excludeThis, distance );
+
+	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+	iter->second->rewind();
+}
+
+void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance )
+{
+
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwSocketWrapper sw;
+	sw.fillOnline( pi, distance );
+
+	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+	iter->second->rewind();
+}
+
+void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
+{
+ 
+	AMX_WRAPPER_DB::iterator iter( g_oSet.find( iSet ) );
+	if( iter==g_oSet.end() )
+		return;
+
+	NxwSocketWrapper sw;
+	Location loc; loc.x=x; loc.y=y;
+	sw.fillOnline( loc, distance );
+
+	NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
+	iter->second->rewind();
+}
 
 } //namespace
 

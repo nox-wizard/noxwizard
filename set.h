@@ -116,41 +116,33 @@ public:
 
 };
 
-namespace nxwset {
+namespace amxSet {
 
-
-	class AmxWrapper{
-		public:
-
-			AmxWrapper();
-			~AmxWrapper();
-
-			TIMERVAL obsolete;
-			NxwWrapper* p_set; 
-
-	};
-
-	typedef std::map< SERIAL, AmxWrapper > AMX_WRAPPER_DB;
+	typedef std::map< SERIAL, NxwWrapper* > AMX_WRAPPER_DB;
 
 	
-	SERIAL open ();
-	void close( SERIAL iSet );
+	SERIAL create(  );
+	void deleteSet( SERIAL iSet );
 	bool end( SERIAL iSet );
 	void rewind( SERIAL iSet );
 	void next( SERIAL iSet );
 	UI32 size( SERIAL iSet);
 
 	SERIAL get( SERIAL iSet);
-	void insert( SERIAL iSet, SERIAL nVal );
+	void add( SERIAL iSet, SERIAL nVal );
 
+	void addOwnedNpcs( SERIAL iSet, P_CHAR pc, bool includeStabled, bool onlyFollowing );
+ 	void addCharsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeOffline, bool onlyPlayer );
+ 	void addPartyFriend( SERIAL iSet, P_CHAR pc, int distance, bool excludeThis );
+ 	void addItemsInContainer( SERIAL iSet, P_ITEM pi, bool includeSubCont, bool includeOnlyFirstSubCont );
+ 	void addItemWeared( SERIAL iSet, P_CHAR pc, bool includeLikeHair, bool includeProtectedLayer, bool excludeIllegalLayer );
+ 	void addItemsAtXY( SERIAL iSet, UI16 x, UI16 y, UI32 type );
+ 	void addItemsNearXYZ( SERIAL iSet, UI16 x, UI16 y, int distance, bool excludeNotMovable );
+ 	void addAllOnlinePlayers( SERIAL iSet );
+	void addOnlinePlayersNearChar( SERIAL iSet, P_CHAR pc, bool excludeThis, int distance );
+	void addOnlinePlayersNearItem( SERIAL iSet, P_ITEM pi, int distance );
+	void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance );
 
-
-	void fillItemsInContainer ( SERIAL iSet, P_ITEM pi, bool bIncludeSubContained, bool bIncludeOnlyFirstSubcont);
-	void fillOwnedNpcs ( SERIAL iSet, P_CHAR pc, bool bIncludeStabled, bool bOnlyFollowing);
-	void fillCharsNearXYZ (SERIAL iSet, UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers);
-	void fillItemsAtXY( SERIAL iSet, UI16 x, UI16 y, int type, int id);
-	void fillItemsNearXYZ ( SERIAL iSet, UI16 x, UI16 y, int nDistance, bool bExcludeNotMovableItems);
-	void fillOnlineSockets( SERIAL iSet, SERIAL onlyNearThis, UI32 range );
 
 }
 
