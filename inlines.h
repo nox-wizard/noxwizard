@@ -131,7 +131,7 @@ inline std::string toString(double value)
 \param from the source string
 \param to the dest wstring
 */
-inline string2wstring( string& from, wstring& to )
+inline void string2wstring( string& from, wstring& to )
 {
 	to.erase();
 	string::iterator iter( from.begin() ), end( from.end() );
@@ -146,7 +146,7 @@ inline string2wstring( string& from, wstring& to )
 \param from the source wstring
 \param to the dest string
 */
-inline wstring2string( wstring& from, string& to )
+inline void wstring2string( wstring& from, string& to )
 {
 	to.erase();
 	wstring::iterator iter( from.begin() ), end( from.end() );
