@@ -634,6 +634,9 @@ void cGuilds::ToggleAbbreviation(int s)
 
 void cGuilds::Recruit(int s)
 {
+	if( LongFromCharPtr(buffer[s] +11) == INVALID ) // check if user canceled operation - Morrolan
+		return;
+
 	P_CHAR Me=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(Me);
 
@@ -646,9 +649,6 @@ void cGuilds::Recruit(int s)
 		return;
 	}
 
-	if( LongFromCharPtr(buffer[s] +11) == INVALID ) return; // check if user canceled operation - Morrolan
-//	int serial = calcserial(buffer[s][7],buffer[s][8],buffer[s][9],buffer[s][10]);
-//	P_CHAR pc = pointers::findCharBySerial( serial );
 	P_CHAR pc = pointers::findCharBySerPtr(buffer[s]+7);
 
 	if(pc != NULL)
