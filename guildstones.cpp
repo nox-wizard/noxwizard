@@ -1766,7 +1766,7 @@ int cGuilds::CheckValidPlace(int s)
 
 void cGuilds::CheckConsistancy(void )
 {
-	int guildnumber,members,serial,ok=1,error=0;
+	int guildnumber,members,ok=1,error=0;
 
 	P_ITEM stone;
 	P_CHAR pc;
@@ -1805,7 +1805,7 @@ void cGuilds::CheckConsistancy(void )
 				for (members=1; members<MAXGUILDMEMBERS; members++)
 				{
 					pc = pointers::findCharBySerial(guilds[guildnumber].member[members]);
-					if (!pc && serial !=0)
+					if (!ISVALIDPC( pc ) )
 					{
 						ok=0;
 						LogWarning("guild: %s had an member that didnt exist anymore, removed\n",guilds[guildnumber].name);
