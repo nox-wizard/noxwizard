@@ -1361,7 +1361,7 @@ static void applySpell(SpellId spellnumber, TargetLocation& dest, P_CHAR src, in
 			if ( pd != 0 ) {
 				CHECKDISTANCE(src, pd);
 				spellFX(spellnumber, src, pd);
-				param = ( (src->in + 10) - pd->in ) / 4;
+				param = ( (src->in + 10) - pd->in ) / 2;
 				damage(pd, src, spellnumber, flags|SPELLFLAG_PARAMISDAMAGE, param);
 			}
 			break;
