@@ -32,7 +32,7 @@ void setptr(lookuptr_st *ptr, int item) //set item in pointer array
 
 	//resize(ptr->pointer, ptr->max, ptr->max+ALLOCATING_UNIT);
 	// Must be out of slots, so reallocate some and set item
-	if ((ptr->pointer = (int *)realloc(ptr->pointer, (ptr->max+ALLOCATING_UNIT)*sizeof(int)))==0)
+	if ((ptr->pointer = (int *)realloc(ptr->pointer, (ptr->max+ALLOCATING_UNIT)*sizeof(int)))==NULL)
 	{
 		PanicOut("Can't reallocate memory!\n");
 		error=1;
@@ -58,7 +58,7 @@ int findbyserial(lookuptr_st *ptr, int nSerial, int nType)
 	if (nSerial < 0) 
 		return INVALID;  //prevent errors from some clients being slower than the server clicking on nolonger valid items
 
-	if (ptr == 0 || ptr->pointer == 0) // Blackwind / Crashfix
+	if (ptr == NULL || ptr->pointer == NULL) // Blackwind / Crashfix
 		return INVALID;
 
 	for (int i=0;i<(ptr->max);i++)
@@ -240,8 +240,8 @@ void getWorldCoordsFromSerial (int sr, int& px, int& py, int& pz, int& ch, int& 
     int loop = 0;
     it = ch = INVALID;
 
-	P_CHAR pc=0;
-	P_ITEM pi=0;
+	P_CHAR pc=NULL;
+	P_ITEM pi=NULL;
 
     while ((++loop) < 500)
     {
@@ -538,7 +538,7 @@ namespace pointers {
 		pCharWorldMap.clear();
 		pItemWorldMap.clear();
 		//Chars and Stablers
-		P_CHAR pc = 0;
+		P_CHAR pc = NULL;
 
 		cAllObjectsIter objs;
 
@@ -574,38 +574,6 @@ namespace pointers {
 			pc = pointers::findCharBySerial(iter->first);
 			if(ISVALIDPC(pc)) 
 				pc->setOnHorse();
-		}
-	}
-
-	/*!
-	\brief updates containers map
-	\author Luxor
-	\param pi the item which the function will update in the containers map
-	*/
-	void updContMap(P_ITEM pi)
-	{
-		VALIDATEPI(pi);
-		vector<P_ITEM>::iterator contIter;
-		SI32 ser;
-
-		ser= pi->getContSerial(true);
-		if( ser > INVALID ) 
-		{
-			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
-
-			if ( !pContMap[ser].empty() && (contIter!=pContMap[ser].end()) )
-				pContMap[ser].erase(contIter);
-		}
-
-		ser= pi->getContSerial();
-		if( ser > INVALID) 
-		{
-			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
-
-			if (!pContMap[ser].empty() && contIter != pContMap[ser].end())
-				pContMap[ser].erase(contIter);
-
-			pContMap[ser].push_back(pi);
 		}
 	}
 
@@ -799,7 +767,36 @@ namespace pointers {
 
 	}
 
+	/*!
+	\brief updates containers map
+	\author Luxor
+	\param pi the item which the function will update in the containers map
+	*/
+	void updContMap(P_ITEM pi)
+	{
+		VALIDATEPI(pi);
+		vector<P_ITEM>::iterator contIter;
+		SI32 ser = pi->getContSerial(true);
 
+		if( ser > INVALID )
+		{
+			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
+
+			if ( !pContMap[ser].empty() && (contIter!=pContMap[ser].end()) )
+				pContMap[ser].erase(contIter);
+		}
+
+		ser = pi->getContSerial();
+		if( ser > INVALID)
+		{
+			contIter = find(pContMap[ser].begin(), pContMap[ser].end(), pi);
+
+			if (!pContMap[ser].empty() && contIter != pContMap[ser].end())
+				pContMap[ser].erase(contIter);
+
+			pContMap[ser].push_back(pi);
+		}
+	}
 
 
 
@@ -882,7 +879,7 @@ namespace pointers {
 	*/
 	P_CHAR findCharBySerial(int serial)
 	{
-		if (serial < 0 || !isCharSerial(serial)) return 0;
+		if (serial < 0 || !isCharSerial(serial)) return NULL;
 
 		return static_cast<P_CHAR>( objects.findObject(serial) );
 
@@ -896,7 +893,7 @@ namespace pointers {
 	*/
 	P_ITEM findItemBySerial(SERIAL serial)
 	{
-		if (serial < 0 || !isItemSerial(serial)) return 0;
+		if (serial < 0 || !isItemSerial(serial)) return NULL;
 
 		return static_cast<P_ITEM>( objects.findObject(serial) );
 	}
@@ -910,7 +907,7 @@ namespace pointers {
 	P_CHAR findCharBySerPtr(UI08 *p)
 	{
 		int serial=LongFromCharPtr(p);
-		if (serial < 0) return 0;
+		if (serial < 0) return NULL;
 		return findCharBySerial(serial);
 	}
 
@@ -924,7 +921,7 @@ namespace pointers {
 	P_ITEM findItemBySerPtr(unsigned char *p)
 	{
 		int serial=LongFromCharPtr(p);
-		if(serial < 0) return 0;
+		if(serial < 0) return NULL;
 		return findItemBySerial(serial);
 	}
 
@@ -938,34 +935,55 @@ namespace pointers {
 	*/
 	P_ITEM containerSearch(int serial, int *index)
 	{
-		if (serial < 0 || (*index) < 0)
-			return 0;
+	if (serial < 0 || (*index) < 0)
+				return NULL;
 
-		P_ITEM pi = 0;
+	P_ITEM pi = NULL;
+	//extern std::map<int, vector <P_ITEM> > pContMap
 
-		vector<P_ITEM> &pcm = pContMap[serial];
+			vector<P_ITEM> &pcm = pContMap[serial];
 
-		for (pi = 0; pi == 0; (*index)++)
-		{
-			if ( pcm.empty())
-				return 0;
-
-			if ((UI32)(*index) >= pcm.size())
-				return 0;
-
-			pi = pcm[*index];
-
-			if (!(ISVALIDPI(pi)))
+	for (pi = 0; pi == 0; (*index)++)
 			{
-				if ((UI32)(*index)+1 < pcm.size() && !pcm.empty())
-					pcm[*index] = pcm[pcm.size()-1];
-			}
-			pi = 0;
-			pcm.pop_back();
-		}
+		if ( pcm.empty())
+					return NULL;
 
-		if ( !ISVALIDPI(pi) )
-			return 0;
+		if ((UI32)(*index) >= pcm.size()) { return NULL; }
+
+		pi = pcm[*index];
+
+		if (!(ISVALIDPI(pi)))
+				{
+		if ((UI32)(*index)+1 < pcm.size() && !pcm.empty())
+						{
+			pcm[*index] = pcm[pcm.size()-1];
+		}
+		pi = NULL;
+		pcm.pop_back();
+		}
+	}
+	/* not gcc 3.2 compileable, replaced by above code
+	for (pi = NULL; pi==NULL; (*index)++)
+			{
+		if (pContMap[serial].empty())
+					return NULL;
+
+		if ((*index) >= pContMap[serial].size()) { return NULL; }
+
+		pi = pContMap[serial][*index];
+
+		if (!(ISVALIDPI(pi)))
+				{
+		if ((*index)+1 < pContMap[serial].size() && !pContMap[serial].empty())
+						{
+			pContMap[serial][*index] = pContMap[serial][pContMap[serial].size()-1];
+		}
+		pi = NULL;
+		pContMap[serial].pop_back();
+		}
+	}
+	*/
+		if (!(ISVALIDPI(pi))) return NULL;
 
 		return pi;
 	}
@@ -973,14 +991,13 @@ namespace pointers {
 
 	P_CHAR stableSearch(int serial, int *index)
 	{
-		if (serial < 0 || (*index) < 0)
-			return 0;
-		if (pStableMap[serial].empty()) return 0;
-		if ((UI32)*index >= pStableMap[serial].size()) return 0;
-		P_CHAR pet = 0;
+		if (serial < 0 || (*index) < 0) return NULL;
+		if (pStableMap[serial].empty()) return NULL;
+		if ((UI32)*index >= pStableMap[serial].size()) return NULL;
+		P_CHAR pet = NULL;
 		pet = pStableMap[serial][*index];
 		(*index)++;
-		VALIDATEPCR(pet, 0);
+		VALIDATEPCR(pet, NULL);
 		return pet;
 	}
 
@@ -998,13 +1015,13 @@ namespace pointers {
 	{
 		P_ITEM pi;
 		int loopexit=0;
-		while ( ((pi = containerSearch(serial,index)) != 0) && (++loopexit < MAXLOOPS) )
+		while ( ((pi = containerSearch(serial,index)) != NULL) && (++loopexit < MAXLOOPS) )
 		{
 			if (pi->id()==id  &&
 				(color==-1 || pi->color()==color) && ISVALIDPI(pi))
 			return pi;
 		}
-		return 0;
+		return NULL;
 	}
 
 	/*!
