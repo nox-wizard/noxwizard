@@ -2092,7 +2092,6 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 		}
 		*/
 		a_pc->runAmxEvent( EVENT_CHR_ONHEARPLAYER, a_pc->getSerial32(), pc->getSerial32(), ghost );
-
 		talk.msg=pc->getSpeechCurrent();
 		talk.send( a_pc->getClient() );
 
@@ -2100,8 +2099,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 			pc->deleteSpeechCurrent();
 	}
 
-
-	//safedelete(speechUni);
+	safedelete(speechUni);
 	pc->resetSpeechCurrent();
 	if( speechGhostUni!=NULL )
 		safedelete(speechGhostUni);

@@ -18,7 +18,7 @@
 #include <set>
 
 #if (__GNUC__ == 2)
-typedef basic_string <wchar_t> wstring;
+typedef basic_string <unsigned int> wstring;
 #endif
 
 typedef double				R64;	//< 64 bits floating point

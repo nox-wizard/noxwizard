@@ -4860,7 +4860,7 @@ void cChar::setSpeechCurrent( wstring* speech )
 
 void cChar::resetSpeechCurrent()
 {
-	setSpeechCurrent( NULL );
+	speechCurrent = NULL;
 }
 
 void cChar::deleteSpeechCurrent()
