@@ -617,6 +617,34 @@ NATIVE(_chr_jail)
 	return 1;
 }
 
+/*
+\brief Show the status gump of the target char to the calling char or the gump of the caller itself
+\author Wintermute
+\since 0.82
+\param 1 the caller 
+\param 2 the target ( can be INVALID )
+\return true or false ( false also if not valid character )
+*/
+NATIVE (_chr_showStatus )
+{
+	P_CHAR pc=pointers::findCharBySerial(params[1]);
+	P_CHAR target=pointers::findCharBySerial(params[2]);
+	if ( !ISVALIDPC(pc))
+		return 0;
+	if ( !ISVALIDPC(target))
+		target=pc;
+	if (target->amxevents[EVENT_CHR_ONOPENSTATUS]!=NULL) 
+	{
+		g_bByPass = false;
+		target->amxevents[EVENT_CHR_ONOPENSTATUS]->Call( target->getSerial32(), pc->getSerial32() );
+		if (g_bByPass) 
+		{
+			return 1;
+		}
+	}
+	statwindow(target, pc);
+	return 1;
+}
 
 /*
 \brief get the total gold in character bank box
@@ -7589,6 +7617,7 @@ NATIVE (_isItem )
 		return 1;
 }
 
+
 /*!
 \file
 
@@ -7746,6 +7775,7 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "chr_possess", _chr_possess },
  { "chr_equip", _chr_equip},
  { "chr_kill", _chr_kill},
+ { "chr_showStatus", _chr_showStatus},
 //
 // Local property functions
 //
