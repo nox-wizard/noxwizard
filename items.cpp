@@ -277,10 +277,6 @@ cItem::~cItem()
 */
 void cItem::setContSerial(SI32 serial, LOGICAL old, LOGICAL update )
 {
-/*
-	if ( serial == INVALID )
-		return;
-*/
 	if( old ) {
 		oldcontserial.serial32= serial;
 	} else { //Luxor bug fix
@@ -290,8 +286,8 @@ void cItem::setContSerial(SI32 serial, LOGICAL old, LOGICAL update )
 			setDecayTime();
 	}
 
-	// if( update )
-	pointers::updContMap(this);
+	if( update )
+		pointers::updContMap(this);
 }
 
 void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)
