@@ -881,7 +881,7 @@ UI32 Race::getDexStart( void )
 
 UI32 Race::getIntCap( void )
 {
-	return this->strCap;
+	return this->intCap;
 }
 
 int Race::getIntModifier( UI32 baseInt )
@@ -891,7 +891,7 @@ int Race::getIntModifier( UI32 baseInt )
 
 UI32 Race::getIntStart( void )
 {
-	return this->strCap;
+	return this->intStart;
 }
 
 bool Race::getCanUseSkill( UI32 skillId )
