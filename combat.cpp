@@ -87,7 +87,7 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 
 	if((dist > 1 && fightskill != ARCHERY) || !los) return;
 	
-	if ( pc_def->npc ) {
+	if ( pc_def->npc && !npc ) {
 		if ( pc_def->IsInvul() )
 			return;
 		P_CHAR pc_target = pointers::findCharBySerial( pc_def->targserial );
