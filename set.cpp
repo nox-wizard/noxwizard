@@ -238,7 +238,7 @@ NxwWrapper::~NxwWrapper() {
 */
 bool NxwWrapper::isEmpty()
 {
-	return ( ( this->vect.size()==0 ) || ( current==end ) );	
+	return ( ( this->vect.size()==0 ) || ( current==vect.end() ) );	
 };
 
 /*!
@@ -287,8 +287,7 @@ void NxwWrapper::next()
 */
 void NxwWrapper::rewind()
 {
-	this->current=vect.begin();
-	this->end=vect.end();
+	current=vect.begin();
 }
 
 /*!
@@ -323,8 +322,9 @@ void NxwWrapper::copyQ( const NxwWrapper& from )
 */
 void NxwWrapper::insert( SERIAL s )
 {
-	vect.push_back( s );
-
+	SERIAL_VECTOR::const_iterator i = std::find( vect.begin(), vect.end(), s);
+	if( i==vect.end() ) //unique
+		vect.push_back( s );
 };
 
 

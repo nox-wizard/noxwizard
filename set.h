@@ -21,7 +21,7 @@ class NxwWrapper {
 
 private:
 	SERIAL_VECTOR vect;
-	SERIAL_VECTOR::iterator current, end;
+	SERIAL_VECTOR::iterator current;
 
 protected:
 	void next();
