@@ -2067,8 +2067,7 @@ void talking( NXWSOCKET socket, string speech) // PC speech
 
 		if( a_pc->unicode )			// language
 		{
-			talk.language = (DBYTE2WORD( buffer[socket][8], buffer[socket][ 9] ) << 16 ) +
-							 DBYTE2WORD( buffer[socket][10], buffer[socket][11] );
+			talk.language = LongFromCharPtr( buffer[socket]+8 );
 		}
 		else
 		{
