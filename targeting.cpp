@@ -339,8 +339,10 @@ static void AddTarget(NXWSOCKET s, PKGx6C *pp)
     Map->SeekTile(id, &tile);
     if (tile.flag2&0x08) pileable=1;
 
-    P_ITEM pi=item::SpawnItem(currchar[s], 1, "#", pileable, id, 0,0);
+    P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
     VALIDATEPI(pi);
+    pi->setId( id );        
+    pi->pileable = pileable;
     pi->setDecay( false );
     pi->MoveTo(pp->TxLoc,pp->TyLoc,pp->TzLoc+Map->TileHeight(pp->model));
     pi->Refresh();
@@ -1440,8 +1442,10 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
     for (x=x1;x<=x2;x++)
         for (y=y1;y<=y2;y++)
         {
-            P_ITEM pi=item::SpawnItem(s, 1, "#", pileable, (addid1[s]<<8)+addid2[s], 0, 0,0);
+            P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
             VALIDATEPI(pi);
+            pi->setId( (addid1[s]<<8) | addid2[s] );
+            pi->pileable = pileable;
             pi->setDecay( false );
 		pi->setPosition( x, y, pp->TzLoc+Map->TileHeight(pp->model));
             pi->Refresh();
@@ -1637,12 +1641,14 @@ static void TeleStuff(NXWSOCKET s, PKGx6C *pp)
 
 void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, int bird)
 {
-
+        if ( s < 0 || s >= now )
+		return;
 	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc );
 
-	P_ITEM pi1=item::SpawnItem(s,1,"#",0,0x122A,0,0,0);    //add the blood puddle
+	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
+	pi1->setId( 0x122A );
 	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
 	VALIDATEPI(pi2);
 
@@ -1699,8 +1705,10 @@ void CarveTarget(NXWSOCKET s, int feat, int ribs, int hides, int fur, int wool, 
 	}
 	if(bird>0)
 	{
-		P_ITEM pi=item::SpawnItem(s,bird,"raw bird",1,0x09B9,0,1,1);
+		P_ITEM pi = item::CreateFromScript( "$item_hardcoded", pc->getBackpack() );
 		VALIDATEPI(pi);
+		pi->setId( 0x09B9 );
+		pi->setCurrentName( "raw bird" );
 		pc->sysmsg(TRANSLATE("You carve away some raw bird."));
 	}
 
@@ -1724,8 +1732,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	P_ITEM pi1=item::SpawnItem(s,1,"#",0,0x122A,0,0,0);    //add the blood puddle
+	P_ITEM pi1 = item::CreateFromScript( "$item_blood_puddle" );
 	VALIDATEPI(pi1);
+	pi1->setId( 0x122A );
 	P_ITEM pi2=MAKE_ITEMREF_LR(npcshape[0]);
 	VALIDATEPI(pi2);
 	P_ITEM pi3=MAKE_ITEMREF_LR(i);
@@ -1749,8 +1758,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Head
 		sprintf(temp,"the head of %s",pi3->getSecondaryNameC());
-		P_ITEM pi=item::SpawnItem(s,1,temp,0,0x1DA0,0,0,0);
-		VALIDATEPI(pi);
+               	P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DA0 );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1775,8 +1785,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Body
 		sprintf(temp,"the body of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1DAD,0,0,0);
-		VALIDATEPI(pi);
+               	pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DAD );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1786,8 +1797,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Left Arm
 		sprintf(temp,"the left arm of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1DA1,0,0,0);
-		VALIDATEPI(pi);
+               	pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DA1 );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1797,8 +1809,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Right Arm
 		sprintf(temp,"the right arm of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1DA2,0,0,0);
-		VALIDATEPI(pi);
+               	pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DA2 );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1808,8 +1821,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Left Leg
 		sprintf(temp,"the left leg of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1DA3,0,0,0);
-		VALIDATEPI(pi);
+               	pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DAE );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;
@@ -1819,8 +1833,9 @@ static void newCarveTarget(NXWSOCKET  s, ITEM i)
 
 		//create the Rigth Leg
 		sprintf(temp,"the right leg of %s",pi3->getSecondaryNameC());
-		pi=item::SpawnItem(s,1,temp,0,0x1DA4,0,0,0);
-		VALIDATEPI(pi);
+               	pi = item::CreateFromScript( "$item_hardcoded" );
+                VALIDATEPI(pi);
+                pi->setId( 0x1DA4 );
 		pi->setContSerial(INVALID);
 		pi->MoveTo(pi3->getPosition());
 		pi->layer=0x01;

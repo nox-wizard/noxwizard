@@ -529,7 +529,7 @@ namespace item
 	what fur said about the assert only partially applies to this version. Duke
 
 	*/
-	P_ITEM SpawnItem(NXWSOCKET  nSocket, int nAmount, char* cName, LOGICAL nStackable,
+	/*P_ITEM SpawnItem(NXWSOCKET  nSocket, int nAmount, char* cName, LOGICAL nStackable,
 						SI16 cItemId, SI16 cColorId,
 						LOGICAL nPack, LOGICAL nSend)
 	{
@@ -542,7 +542,7 @@ namespace item
 		{
 			return item::SpawnItem(nSocket, currchar[nSocket], nAmount, cName, nStackable, cItemId, cColorId, nPack, nSend);
 		}
-	}
+	}*/
 
 /*!
 	\param nSocket the socket to add the item for
@@ -555,7 +555,7 @@ namespace item
 	\param nPack if true the item is spawned in socket's backpack
 	\param nSend if true the item is sent to all clients
 */
-	P_ITEM SpawnItem(NXWSOCKET  nSocket, CHARACTER ch,
+	/*P_ITEM SpawnItem(NXWSOCKET  nSocket, CHARACTER ch,
 						SI32 nAmount, char* cName, LOGICAL nStackable,
 						SI16 cItemId, SI16 cColorId,
 						LOGICAL nPack, LOGICAL nSend)
@@ -568,7 +568,7 @@ namespace item
 			statwindow(pc,MAKE_CHAR_REF(ch));
 		}
 		return pi;
-	}
+	}*/
 
 	P_ITEM SpawnItemBank(CHARACTER ch, int nItem)
 	{
@@ -635,7 +635,7 @@ namespace item
 
 	}
 
-	P_ITEM SpawnItem(CHARACTER ch, SI32 nAmount, char* cName, LOGICAL pileable, SI16 id, SI16 color, LOGICAL nPack)
+	/*P_ITEM SpawnItem(CHARACTER ch, SI32 nAmount, char* cName, LOGICAL pileable, SI16 id, SI16 color, LOGICAL nPack)
 	{
 		P_CHAR pc=MAKE_CHAR_REF(ch);
 		VALIDATEPCR(pc,NULL);
@@ -694,7 +694,7 @@ namespace item
 		pi->Refresh();
 		return pi;
 
-	}
+	}*/
 
 	/*!
 	\author Magius(CHE), bugfixed by AntiChrist

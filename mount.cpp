@@ -90,7 +90,6 @@ void cChar::mounthorse( P_CHAR mount )
 	*/
 
 	//Unavowed
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
 	if ( (mount->getOwnerSerial32() == getSerial32()) || IsGM())
 	{
 		if (onhorse)
@@ -105,13 +104,14 @@ void cChar::mounthorse( P_CHAR mount )
 			return;
 		}
 
-		strcpy(temp, mount->getCurrentNameC());
 		onhorse = true;
 
-		P_ITEM pi = item::SpawnItem( DEREF_P_CHAR(this), 1, temp, 0, 0x0915, mount->getSkinColor(), 0 );
+		P_ITEM pi = item::CreateFromScript( "$item_mount", this );
 		VALIDATEPI(pi);
 
 		pi->setId( iter->second );
+		pi->setColor( mount->getSkinColor() );
+		pi->setCurrentName( mount->getCurrentName() );
 
 		/*pi->id1 = 0x3E;
 

@@ -2835,11 +2835,11 @@ void command_tilew(NXWSOCKET  s)
 		{
 			for (int y=strtonum(5);y<=strtonum(6);y++)
 			{
-				P_ITEM pa=item::SpawnItem(-1,s, 1, "#", pile, (addid1[s]<<8) | addid2[s], 0, 0,0);
-
+				P_ITEM pa = item::CreateFromScript( "$item_hardcoded" );
 
 				if(ISVALIDPI(pa)) //AntiChrist - to preview crashes
 				{
+					pa->setId( (addid1[s]<<8) | addid2[s] );
 					pa->priv=0; //Make them not decay
 					pa->MoveTo( x, y, strtonum(7) );
 					pa->Refresh();//AntiChrist

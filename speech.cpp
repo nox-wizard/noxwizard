@@ -841,6 +841,8 @@ int response(NXWSOCKET  s)
 
 void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 {
+	if ( s < 0 || s >= now ) //Luxor
+		return;
 	P_CHAR pc_currchar = MAKE_CHAR_REF( currchar[s] );
 	VALIDATEPC( pc_currchar );
 	P_CHAR pc_vendor = MAKE_CHAR_REF(v);
@@ -879,8 +881,11 @@ void PlVGetgold(NXWSOCKET s, CHARACTER v)//PlayerVendors
 			pay=6554;
 			give=58981;
 		}
-		if (give)
-			item::SpawnItem(s,currchar[s],give,"#",1,0x0EED,0,1,1);
+		if (give) { //Luxor
+			P_ITEM pGold = item::CreateFromScript( "$item_gold_coin_1", pc_currchar );
+			if ( ISVALIDPI( pGold ) )
+				pGold->setAmount( give );
+		}
 		sprintf(temp, TRANSLATE("Today's purchases total %i gold. I am keeping %i gold for my self. Here is the remaining %i gold. Have a nice day."),pc_vendor->holdg,pay,give);
 		pc_vendor->talk(s,temp,0);
 		pc_vendor->holdg=t;

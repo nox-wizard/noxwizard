@@ -322,7 +322,7 @@ namespace Skills {
 	int GetSubIngotAmt(int p, char id1, char id2, char color1, char color2);
 	int DeleSubIngot(int p, int id1, int id2, int color1, int color2, int amount);
 	void RepairTarget(NXWSOCKET s); // Ripper
-	void SmeltItemTarget(NXWSOCKET s); // Ripper
+//	void SmeltItemTarget(NXWSOCKET s); // Ripper
 	void Smith(NXWSOCKET s);
 	//@}
 

@@ -50,12 +50,14 @@ void cGuilds::StonePlacement(int s)
 				return;
 			}
 			pc->SetGuildNumber( guildnumber );
-			pStone=item::SpawnItem(-1,s,1,"Guildstone for an unnamed guild",0,0x0ED5,0,0,0);
+			pStone = item::CreateFromScript( "$item_hardcoded" );
 			if (!ISVALIDPI(pStone))
-			{//AntiChrist - to prevent crashes
+			{//AntiChrist - to prevent crashes				
 				pc->sysmsg(TRANSLATE("Cannot create guildstone"));
 				return;
 			}
+			pStone->setId( 0x0ED5 );
+			pStone->setCurrentName( "Guildstone for a unnamed guild" );
 			if ( pc->GetBodyType() == BODY_FEMALE )
 				pc->SetGuildTitle("Guildmistress");
 			else
@@ -89,12 +91,14 @@ void cGuilds::StonePlacement(int s)
 				pc->IsGM() )
 			{
 				sprintf(stonename, TRANSLATE("Guildstone for %s"), guilds[guildnumber].name);
-				pStone = item::SpawnItem(-1, s, 1, stonename, 0, 0x0ED5, 0, 0, 0);
-				if (ISVALIDPI(pStone))
+				pStone = item::CreateFromScript( "$item_hardcoded" );
+				if ( !ISVALIDPI(pStone) )
 				{//AntiChrist - to preview crashes
 					pc->sysmsg(TRANSLATE("Cannot create guildstone"));
 					return;
 				}
+                                pStone->setId( 0xED5 );
+				pStone->setCurrentName( stonename );
 				pStone->setPosition( charpos );
 				pStone->type= ITYPE_GUILDSTONE;
 				pStone->priv= 0;
@@ -739,6 +743,8 @@ void cGuilds::TargetWar(int s)
 
 void cGuilds::StoneMove(int s)
 {
+	if ( s < 0 || s >= now )
+		return;
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
@@ -755,9 +761,11 @@ void cGuilds::StoneMove(int s)
 	sprintf(stonename,"a guildstone teleporter for %s",guilds[guildnumber].name);
 
 	// Spawn the stone in the masters backpack
-	pNewstone = item::SpawnItem(s, DEREF_P_CHAR(pc), 1, stonename, 0, 0x1869, 0, 1, 1);
+	pNewstone = item::CreateFromScript( "$item_hardcoded", pc->getBackpack() );
 
 	if (!ISVALIDPI(pNewstone)) return; //AntiChrist
+	pNewstone->setCurrentName( stonename );
+	pNewstone->setId( 0x1869 );
 
 	pNewstone->type = ITYPE_GUILDSTONE;			// Set Guildstone to Type 'Guild Related'
 	guilds[guildnumber].stone=pNewstone->getSerial32();	// Remember its serial number

@@ -240,7 +240,7 @@ namespace Commands
 		P_ITEM pi;	
 		if (pc->GetItemOnLayer(LAYER_TRADE_RESTOCK) == NULL)
 		{
-			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::CreateFromScript( "$item_restock", pc );
 			if( ISVALIDPI( pi ) )//AntiChrist - to preview crashes
 			{
 				pi->setContSerial(pc->getSerial32());
@@ -252,7 +252,7 @@ namespace Commands
 
 		if (pc->GetItemOnLayer(LAYER_TRADE_NORESTOCK) == NULL)
 		{
-			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::CreateFromScript( "$item_restock", pc );
 			if( ISVALIDPI( pi ) )
 			{
 				pi->setContSerial(pc->getSerial32());
@@ -264,7 +264,7 @@ namespace Commands
 
 		if (pc->GetItemOnLayer(LAYER_TRADE_BOUGHT) == NULL)
 		{
-			pi = item::SpawnItem(INVALID,c,1,"#",0,0x2AF8,0,0,0);
+			pi = item::CreateFromScript( "$item_restock", pc );
 			if( ISVALIDPI( pi ) )
 			{
 				pi->setContSerial(pc->getSerial32());
@@ -718,13 +718,18 @@ namespace Commands
 
 	void AddHere(NXWSOCKET s, char z)
 	{
+		if ( s < 0 || s >= now )
+			return;
 		LOGICAL pileable=false;
 		tile_st tile;
 
 		Map->SeekTile((addid1[s]<<8)|addid2[s], &tile);
 		if (tile.flag2&0x08) pileable=true;
 
-		P_ITEM pi=item::SpawnItem(-1,s, 1, "#", pileable, (addid1[s]<<8)|addid2[s], 0, 0, 0);
+		P_ITEM pi = item::CreateFromScript( "$item_hardcoded" );
+		VALIDATEPI( pi );
+		pi->setId( (addid1[s]<<8) | addid2[s] );
+		pi->pileable = pileable;
 
 		if(ISVALIDPI(pi))//AntiChrist - to preview crashes
 		{

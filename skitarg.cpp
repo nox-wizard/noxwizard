@@ -732,6 +732,7 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
         break;
     default:
         nRandnum=rand()%2;
+        P_ITEM pBone = NULL;
         switch(nRandnum)
         {
             case 1:
@@ -751,7 +752,8 @@ void Skills::GraveDig(NXWSOCKET s) // added by Genesis 11-4-98
                     case 10: iID=0x1B; break;
                     case 11: iID=0x1C; break;
                 }
-                item::SpawnItem(s,DEREF_P_CHAR(pc),1,NULL,0,0x1B00+iID,0,1,1);
+                pBone = item::CreateFromScript( "$item_bone", pc->getBackpack() );
+                pBone->setId( 0x1B00 + iID );
                 pc->sysmsg(TRANSLATE("You have unearthed some old bones and placed them in your pack."));
                 break;
             default: // found an empty grave
@@ -1015,9 +1017,12 @@ void Skills::CookOnFire(NXWSOCKET s, short id, char* matname)
                     }
                     else
                     {
-                        P_ITEM pi=item::SpawnItem(s,currchar[s],piRaw->amount,"#",1,id,0,1,1);
+                        P_ITEM pi=item::CreateFromScript( "$item_raw_fish" );
                         VALIDATEPI(pi);
-
+                        
+                        pi->setAmount( piRaw->amount );
+                        pi->setCurrentName( "#" );
+                        pi->setId( id );
                         pi->type=ITYPE_FOOD;
                         pi->Refresh();
                         piRaw->deleteItem();
@@ -1470,8 +1475,9 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
             amt=pi->amount;
             pc->playSFX(0x0248);
 
-            P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"leather piece",0,0x1067, color,1,1);
+            P_ITEM pcc=item::CreateFromScript( "$item_leather_piece", pc->getBackpack() );
             VALIDATEPI(pcc);
+            pi->setColor( color );
 
             pcc->weight=100;
             pcc->pileable=1;
@@ -2533,13 +2539,17 @@ public:
     }
     virtual void createIt(NXWSOCKET s)
     {
+	            if ( s < 0 || s >= now )
+		return;
+	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
+	VALIDATEPC( pc );
+        
+        
          char sztemp[15] ;
         if (id2 == 0x4F)
-          strcpy(sztemp,"clock parts") ;
+          item::CreateFromScript( "$item_clock_parts", pc->getBackpack() );
         else
-          strcpy(sztemp,"sextant parts") ;
-        char *pn = sztemp ;
-        item::SpawnItem(s,currchar[s],1,pn,1,0x1000+id2,0,1,1);
+          item::CreateFromScript( "$item_sextant_parts", pc->getBackpack() );
     }
 };
 
@@ -2555,7 +2565,11 @@ public:
     virtual bool decide()   {minskill=600; return cTinkerCombine::decide();}
     virtual void createIt(NXWSOCKET s)
     {
-        item::SpawnItem(s,currchar[s],1,"clock",0,0x104B,0,1,1);
+        if ( s < 0 || s >= now )
+		return;
+	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
+	VALIDATEPC( pc );	
+        item::CreateFromScript( "$item_clock", pc->getBackpack() );
     }
 };
 
@@ -2649,6 +2663,7 @@ void Skills::RepairTarget(NXWSOCKET  s)
     }
 }
 
+/*
 void Skills::SmeltItemTarget(NXWSOCKET  s)
 { // Ripper..Smelting items.
 
@@ -2758,3 +2773,4 @@ void Skills::SmeltItemTarget(NXWSOCKET  s)
 		}
 	}
 }
+*/

@@ -2433,8 +2433,9 @@ void cChar::resurrect( NXWCLIENT healer )
 		if( ISVALIDPI(pj))
 			pj->deleteItem();
 
-		P_ITEM pi=item::SpawnItem(ps->toInt(),1,"a resurrect robe",0,0x1F03,0,0,0);
+		P_ITEM pi = item::CreateFromScript( "$item_robe", this );
 		if(ISVALIDPI(pi)) {
+			pi->setCurrentName( "a resurrect robe" );
 			pi->layer = LAYER_OUTER_TORSO;
 			pi->setContSerial(getSerial32());
 			pi->dye=1;

@@ -373,8 +373,10 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	if (validhair(buffer[s][0x52],buffer[s][0x53]))
 	{
-		P_ITEM pi=item::SpawnItem(s,1, "#", 0, ShortFromCharPtr(buffer[s] +0x52), ShortFromCharPtr(buffer[s] +0x54),0,0);
+		P_ITEM pi = item::CreateFromScript( "$item_short_hair" );
 		VALIDATEPI(pi);
+		pi->setId( ShortFromCharPtr(buffer[s] + 0x52) );
+		pi->setColor( ShortFromCharPtr(buffer[s] + 0x54) );
 		if ((pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
 			pi->setColor(0x044E);
@@ -385,8 +387,10 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 
 	if ( (validbeard(buffer[s][0x56],buffer[s][0x57])) && (pc->GetBodyType() == BODY_MALE) )
 	{
-		P_ITEM pi=item::SpawnItem(s,1, "#", 0, ShortFromCharPtr(buffer[s] +0x56), ShortFromCharPtr(buffer[s] +0x58), 0, 0);
+		P_ITEM pi = item::CreateFromScript( "$item_short_beard" );
 		VALIDATEPI(pi);
+		pi->setId( ShortFromCharPtr(buffer[s] + 0x56) );
+		pi->setColor( ShortFromCharPtr(buffer[s] + 0x58) );
 		if ( (pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
 			pi->setColor(0x044E);
@@ -1774,14 +1778,20 @@ int GetPackOwner(int p)
 */
 
 /*!
-\brief add gold... but where ?
+\author Unknown, rewritten by Luxor
+\brief add gold to char handled by socket
 \param s socket
 \param totgold amount of gold to add
-\deprecated remove this !!
 */
 void addgold(int s, int totgold)
 {
-	item::SpawnItem(s,totgold,"#",1,0x0EED,0,1,1);
+	if ( s < 0 || s >= now )
+		return;
+
+	P_CHAR pc = pointers::findCharBySerial( currchar[s] );
+	P_ITEM pi = item::CreateFromScript( "$item_gold_coin_1", pc->getBackpack() );
+	if ( ISVALIDPI( pi ) )
+		pi->setAmount( totgold );
 }
 
 void usepotion(P_CHAR pc, P_ITEM pi)

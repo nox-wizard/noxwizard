@@ -253,8 +253,10 @@ void buildhouse(int s, int i)
 		if (id == INVALID)
 			return;
 
-		P_ITEM pHouse=item::SpawnItem(s,currchar[s], 1,temp,0,id,0,0,0);
+		P_ITEM pHouse = item::CreateFromScript( "$item_hardcoded" );
 		VALIDATEPI(pHouse);
+		pHouse->setId( id );
+		pHouse->setCurrentName( temp );
 
 		pc->making=0;
 
@@ -682,9 +684,10 @@ void addthere(int s, int xx, int yy, int zz, int t)
 	//ConOut("addthere!x=%d y=%d z=%d\n",xx,yy,zz);
 	tile_st tile;
 
-	P_ITEM pi=item::SpawnItem(-1,s,1,"#",0,(addid1[s]<<8)|addid2[s],0,0,0);
+	P_ITEM pi=item::CreateFromScript( "$item_hardcoded" );
 	VALIDATEPI(pi);
 
+        pi->setId( (addid1[s]<<8) | addid2[s] );
 	pi->setPosition(xx, yy, zz);
 	pi->amount=1;
 	pi->doordir=0;

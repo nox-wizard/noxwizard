@@ -139,12 +139,12 @@ void cChar::combatHit( P_CHAR pc_def, SI32 nTimeOut )
 		}
 		if (fightskill == ARCHERY) {
 			if (chance(33)) {
-				short aid1=0x1B, aid2=0xFB;	// bolts
+                                P_ITEM pi = NULL;
 				if (pWeapon->IsBow()) {
-					aid1=0x0F;				// arrows
-					aid2=0x3F;
+					pi = item::CreateFromScript( "$item_arrow" );
+				} else {
+					pi = item::CreateFromScript( "$item_crossbow_bolt" );
 				}
-				P_ITEM pi=item::SpawnItem(-1,DEREF_P_CHAR(pc_def),1,"#",1,(aid1<<8) + aid2,0,0,0);
 				if(ISVALIDPI(pi)) {
 
 					pi->MoveTo( pc_def->getPosition() );

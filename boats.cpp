@@ -836,6 +836,8 @@ LOGICAL cBoat::good_position(P_ITEM pBoat, Location where, int dir)
 // Called form	     : buildhouse()
 LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 {
+	if ( s < 0 || s >= now )
+		return false;
 	P_CHAR pc_cs=MAKE_CHARREF_LRV(currchar[s],false);
 
 	int nid2=id2;
@@ -870,12 +872,12 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 //	strcpy(pBoat->name,"a mast");//Name is something other than "%s's house"
 	pBoat->setCurrentName("a mast");
 
-	P_ITEM pTiller=item::SpawnItem(DEREF_P_CHAR(pc_cs),1,"a tiller man",0,0x3E4E,0,0);
+	P_ITEM pTiller=item::CreateFromScript( "$item_tillerman" );
 	if( !pTiller ) return false;
 	pTiller->setPosition("z", -5);
 	pTiller->priv=0;
 
-	P_ITEM pPlankR=item::SpawnItem(DEREF_P_CHAR(pc_cs),1,"#",0,0x3EB2,0,0);//Plank2 is on the RIGHT side of the boat
+	P_ITEM pPlankR=item::CreateFromScript( "$item_plank2" );//Plank2 is on the RIGHT side of the boat
 	if( !pPlankR ) return false;
 	pPlankR->type=ITYPE_BOATS;
 	pPlankR->type2=3;
@@ -886,7 +888,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pPlankR->setPosition("z", -5);
 	pPlankR->priv=0;//Nodecay
 
-	P_ITEM pPlankL=item::SpawnItem(DEREF_P_CHAR(pc_cs),1,"#",0,0x3EB1,0,0);//Plank1 is on the LEFT side of the boat
+	P_ITEM pPlankL=item::CreateFromScript( "$item_plank1" );//Plank1 is on the LEFT side of the boat
 	if( !pPlankL ) return false;
 	pPlankL->type=ITYPE_BOATS;//Boat type
 	pPlankL->type2=3;//Plank sub type
@@ -897,7 +899,7 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 	pPlankL->setPosition("z", -5);
 	pPlankL->priv=0;
 
-	P_ITEM pHold=item::SpawnItem(DEREF_P_CHAR(pc_cs),1,"#",0,0x3EAE,0,0);
+	P_ITEM pHold=item::CreateFromScript( "$item_hold1" );
 	if( !pHold ) return false;
 	pHold->more1= pBoat->getSerial().ser1;//Lock this too :-)
 	pHold->more2= pBoat->getSerial().ser2;

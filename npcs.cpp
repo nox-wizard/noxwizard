@@ -741,7 +741,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if (ISVALIDPI(mypack))
 					{
-						P_ITEM pi_sp=item::SpawnItem(-1,DEREF_P_CHAR(pc),1,"#",1,0x0EED,0,1,0);
+						P_ITEM pi_sp = item::CreateFromScript( "$item_gold_coin_1" );
 						if( ISVALIDPI( pi_sp ) )
 						{
 							pi_sp->priv|=0x01;

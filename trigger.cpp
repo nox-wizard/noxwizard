@@ -735,7 +735,8 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if ((r < 0)||(r > 65535)) r = 1;
 				if (r == 0) return;
 
-				P_ITEM pc = item::SpawnItem(m_socket, r, "#", 1, (array[0]<<8)|array[1], 0, 1, 1);
+				P_ITEM pc = item::CreateFromScript( "$item_hardcoded" );
+				pc->setId( (array[0]<<8) | array[1] );
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
 				// Added colormem token here! by Magius(CHE) §

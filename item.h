@@ -35,7 +35,7 @@ namespace item
 	SI32		getname(SI32 i, char* itemname);
 
 	P_ITEM		CreateScriptItem(NXWSOCKET s, SI32 itemnum, LOGICAL nSpawned, cObject* cont=NULL );
-	P_ITEM		SpawnItem(NXWSOCKET  nSocket,
+/*	P_ITEM		SpawnItem(NXWSOCKET  nSocket,
 						SI32 nAmount, char* cName, LOGICAL nStackable,
 						SI16 cItemId, SI16 cColorId,
 						LOGICAL nPack, LOGICAL nSend);
@@ -47,7 +47,7 @@ namespace item
 
 	P_ITEM		SpawnItem(CHARACTER ch,
 						SI32 nAmount, char* cName, LOGICAL pileable,
-						SI16 id, SI16 color, LOGICAL nPack);
+						SI16 id, SI16 color, LOGICAL nPack);*/
 
 	P_ITEM		SpawnItemBank(CHARACTER ch, int nItem);
 	P_ITEM		SpawnItemBackpack2(NXWSOCKET  s, int nItem, int nDigging);

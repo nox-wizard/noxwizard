@@ -933,7 +933,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
   					//</Luxor>
 			if (pc->checkSkill(  CAMPING, 0, 500)) // Morrolan TODO: insert logout code for campfires here
 			{
-				P_ITEM pFire = item::SpawnItem( DEREF_P_CHAR( pc ), 1, "#", 0, 0x0DE3, 0, 0);
+				P_ITEM pFire = item::CreateFromScript( "$item_a_campfire" );
 				if (pFire)
 				{
 					pFire->type = 45;
@@ -1092,7 +1092,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 				else
 					pc->playAction(0x1D);
 				pc->playSFX(0x013E);
-				P_ITEM itm = item::SpawnItem(INVALID, DEREF_P_CHAR( pc ), 1, "#", 1, 0x0DF9, 0, 1, 1);
+				P_ITEM itm = item::CreateFromScript( "$item_bales_of_cotton", pc->getBackpack() );
 				if (ISVALIDPI(itm)) {
 					itm->setCont(pc->getBackpack());	//Luxor
 					pc->sysmsg(TRANSLATE("You reach down and pick some cotton."));
@@ -1138,7 +1138,7 @@ static void doubleclick_itemid( NXWSOCKET s, P_CHAR pc, P_ITEM pi, P_ITEM pack )
 			if (pc->checkSkill(  TINKERING, 500, 1000))
 			{
 				pc->sysmsg(TRANSLATE("You create the sextant."));
-				P_ITEM pi_c = item::SpawnItem(s, DEREF_P_CHAR( pc ), 1, "a sextant", 0, 0x1057, 0, 1, 1);
+				P_ITEM pi_c = item::CreateFromScript( "$item_sextant", pc->getBackpack() );
 				if (ISVALIDPI(pi_c))
 					pi_c->setDecay();
 				pi->ReduceAmount(1);
