@@ -63,6 +63,7 @@ public:
 	P_GMPAGE findPage(SERIAL serial);
 	P_GMPAGE findPage(SERIAL serial, UI08 page_num);
 	bool deletePage(SERIAL serial, UI08 page_num);
+	SERIAL_VECTOR getAllPagers();
 	void optimize_page_indexes(SERIAL serial);
 	
 

@@ -14,6 +14,7 @@
 
 #include "gmpages.h"
 #include "basics.h"
+#include "typedefs.h"
 
 
 std::map< SERIAL, P_GMPAGE > cGmpagesMap::gmpages_map;
@@ -184,6 +185,26 @@ P_GMPAGE cGmpagesMap::findPage(SERIAL serial){
 }
 
 
+
+SERIAL_VECTOR cGmpagesMap::getAllPagers(){
+	
+	SERIAL_VECTOR vect;
+
+	
+	std::map< SERIAL, P_GMPAGE >::iterator iter;
+	
+
+	iter = gmpages_map.begin();
+	int i = 0;
+	
+	while(iter != gmpages_map.end())
+		{
+			vect.push_back(iter->first);
+			iter++;
+		}
+	
+	return vect;
+}
 
 void cGmpagesMap::optimize_page_indexes(SERIAL serial){ //rearranges pages indexes (page_number) not used for the moment
 	
