@@ -639,7 +639,10 @@ void sendbpitem(NXWSOCKET s, P_ITEM pi)
 	weights::NewCalc(pc);	// Ison 2-20-99
 }
 
-void MakeGraphicalEffectPkt_PDPDPD(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
+/*!
+ \author GHisha
+ */
+void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode )
 {
 	pkt[1]=type;
 	LongToCharPtr(src_serial, pkt +2);
@@ -666,7 +669,7 @@ void tileeffect(int x, int y, int z, char eff1, char eff2, char speed, char loop
 
 Location pos1={ x, y, z, 0}, pos2={ 0, 0, 0, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos1, pos2, speed, loop, 1, 0); 
 
 pos1.z=0;
 	
@@ -1451,7 +1454,7 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 	 {
 Location pos2;
 pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
+MakeGraphicalEffectPkt(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0); 
 	 }
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1515,72 +1518,6 @@ MakeGraphicalEffectPkt_PDPDPD(effect, 0x03, pc->getSerial32(), 0, eff, charpos, 
 	// I think it's too infrequnet to consider this as optimization.
 }
 
-
-void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt, ParticleFx *str, bool skip_old )
-{
-
-	P_CHAR src=MAKE_CHAR_REF(source);
-	VALIDATEPC(src);
-	P_CHAR dst=MAKE_CHAR_REF(dest);
-	VALIDATEPC(dst);
-
-	UI16 eff = (eff1<<8)|(eff2%256);
-	UI08 effect[28]={ 0x70, 0x00, };
-
- 	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	Location srcpos= src->getPosition();
-	Location destpos= dst->getPosition();
-
-	if (!skip_old)
-	{
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, 0, explode); 
-	}
-
-	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
-	 {
-	   
-		 NxwSocketWrapper sw;
-		 sw.fillOnline( );
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
-			 {
-				Xsend(j, effect, 28);
-//AoS/				Network->FlushBuffer(j);
-			 } 
-		 }
-	   return;
-	}
-	else
-	{
-		// UO3D effect -> let's check which client can see it
-	   
-		NxwSocketWrapper sw;
-		sw.fillOnline();
-		 for( sw.rewind(); !sw.isEmpty(); sw++ )
-		 {
-			 NXWSOCKET j=sw.getSocket();
-			 if ( (char_inVisRange(src,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
-			 {
-				 if (clientDimension[j]==2 && !skip_old) // 2D client, send old style'd
-				 {
-					 Xsend(j, effect, 28);
-//AoS/					Network->FlushBuffer(j);
-				 } else if (clientDimension[j]==3) // 3d client, send 3d-Particles
-				 {
-
-					movingeffectUO3D(source, dest, str);
-					unsigned char particleSystem[49];
-					Xsend(j, particleSystem, 49);
-//AoS/					Network->FlushBuffer(j);
-				}
-				else if (clientDimension[j] != 2 && clientDimension[j] !=3 ) { sprintf(temp, "Invalid Client Dimension: %i\n",clientDimension[j]); LogError(temp); }
-			}
-		}
-	}
-}
-
 void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 {
 
@@ -1596,7 +1533,7 @@ void bolteffect(CHARACTER player, bool UO3DonlyEffekt, bool skip_old )
 	{
 Location pos2;
 pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0); 
+MakeGraphicalEffectPkt(effect, 0x01, pc->getSerial32(), 0, 0, charpos, pos2, 0, 0, 1, 0); 
 	}
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1656,7 +1593,7 @@ void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned c
 
 	if (!skip_old)
 	{
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt(effect, 0x02, pi->getSerial32(), pi->getSerial32(), eff, pos, pos, speed, loop, 1, explode); 
 	}
 
 	if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
@@ -1727,7 +1664,7 @@ void bolteffect2(P_CHAR pc, UI08 a1, UI08 a2)	// experimenatal, lb
 	if (pos2.y > max_y) pos2.y = max_y;
 
 	charpos.z = 0; pos2.z = 127;
-	MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
+	MakeGraphicalEffectPkt(effect, 0x00, pc->getSerial32(), 0, eff, charpos, pos2, 0, 0, 1, 0); 
 
 	// ConOut("bolt: %i %i %i %i %i %i\n",x2,y2,chars[player].x,chars[player].y,x,y);
 
@@ -1757,7 +1694,7 @@ void movingeffect3(CHARACTER source, unsigned short x, unsigned short y, signed 
 
 	Location srcpos= src->getPosition(), pos2 = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt(effect, 0x00, src->getSerial32(), 0, eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( src );
@@ -1781,7 +1718,7 @@ void staticeffect3(UI16 x, UI16 y, SI08 z, unsigned char eff1, unsigned char eff
 
 Location pos = { x, y, z, 0};
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
+MakeGraphicalEffectPkt(effect, 0x02, 0, 0, eff, pos, pos, speed, loop, 1, explode); 
 
 pos.z = 0;
 
@@ -1813,7 +1750,7 @@ void movingeffect3(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 	Location srcpos= src->getPosition();
 	Location destpos= dst->getPosition();
 
-MakeGraphicalEffectPkt_PDPDPD(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
+MakeGraphicalEffectPkt(effect, type, src->getSerial32(), dst->getSerial32(), eff, srcpos, destpos, speed, loop, ajust, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -1845,7 +1782,7 @@ void movingeffect2(CHARACTER source, int dest, unsigned char eff1, unsigned char
 
 	Location srcpos= pc_source->getPosition(), pos2 = pi->getPosition();
 
-MakeGraphicalEffectPkt_PDPDPD(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
+MakeGraphicalEffectPkt(effect, 0x00, pc_source->getSerial32(), pi->getSerial32(), eff, srcpos, pos2, speed, loop, 0, explode); 
 
 	 NxwSocketWrapper sw;
 	 sw.fillOnline( );
@@ -2605,84 +2542,71 @@ void staticeffectUO3D(CHARACTER player, ParticleFx *sta)
 // effect 15 -> adjust
 // effect 16 -> explode on impact
 
-void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta)
+/*!
+ \brief Forge the particle system packet
+ \author Unknown - pseudo-totally rewritten by Akron
+ \param pc_cs source player
+ \param pc_cd destination player
+ \param eff effect
+ \param particleSystem the package to write
+ */
+void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem)
 {
+	VALIDATEPC(pc_cs);
+	VALIDATEPC(pc_cs);
 
+	particleSystem[0]=0xc7;
+	particleSystem[1]=0x0;
 
-   PC_CHAR pc_cs=MAKE_CHARREF_LOGGED(source,err);
-   if (err) return;
-   PC_CHAR pc_cd=MAKE_CHARREF_LOGGED(dest, err);
-   if (err) return;
+	LongToCharPtr(pc_cs->getSerial32(), particleSystem+2);
+	LongToCharPtr(pc_cd->getSerial32(), particleSystem+6);
 
-   Location srcpos= pc_cs->getPosition();
-   Location destpos= pc_cd->getPosition();
+	particleSystem[10]=eff->effect[5]; // tileid1
+	particleSystem[11]=eff->effect[6]; // tileid2
 
-   unsigned char particleSystem[49];
-   particleSystem[0]=0xc7;
-   particleSystem[1]=0x0;
+	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+12);
+	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+14);
+	particleSystem[16] = (UI08)pc_cs->getPosition().z;
+	
+	ShortToCharPtr(pc_cs->getPosition().x, particleSystem+17);
+	ShortToCharPtr(pc_cs->getPosition().y, particleSystem+19);
+	particleSystem[21] = (UI08)pc_cs->getPosition().z;
 
-   particleSystem[2]=pc_cs->getSerial().ser1;
-   particleSystem[3]=pc_cs->getSerial().ser2;
-   particleSystem[4]=pc_cs->getSerial().ser3;
-   particleSystem[5]=pc_cs->getSerial().ser4;
+	particleSystem[22]= eff->effect[7]; // speed1
+	particleSystem[23]= eff->effect[8]; // speed2
 
-   particleSystem[6]=pc_cd->getSerial().ser1;
-   particleSystem[7]=pc_cd->getSerial().ser2;
-   particleSystem[8]=pc_cd->getSerial().ser3;
-   particleSystem[9]=pc_cd->getSerial().ser4;
+	particleSystem[24]=0x0;
+	particleSystem[25]=0x0;
 
-   particleSystem[10]=sta->effect[5]; // tileid1
-   particleSystem[11]=sta->effect[6]; // tileid2
+	particleSystem[26]=eff->effect[15]; // adjust
+	particleSystem[27]=eff->effect[16]; // explode
 
-   particleSystem[12]= (srcpos.x)>>8;
-   particleSystem[13]= (srcpos.x)%256;
-   particleSystem[14]= (srcpos.y)>>8;
-   particleSystem[15]= (srcpos.y)%256;
-   particleSystem[16]= (srcpos.z);
+	particleSystem[28]=0x0;
+	particleSystem[29]=0x0;
+	particleSystem[30]=0x0;
+	particleSystem[31]=0x0;
+	particleSystem[32]=0x0;
+	particleSystem[33]=0x0;
+	particleSystem[34]=0x0;
+	particleSystem[35]=0x0;
 
-   particleSystem[17]= (destpos.x)>>8;
-   particleSystem[18]= (destpos.x)%256;
-   particleSystem[19]= (destpos.y)>>8;
-   particleSystem[20]= (destpos.y)%256;
-   particleSystem[21]= (destpos.z);
+	particleSystem[36]=eff->effect[9]; //  moving effekt
+	particleSystem[37]=eff->effect[10];
+	particleSystem[38]=eff->effect[11]; // effect on explode
+	particleSystem[39]=eff->effect[12];
 
-   particleSystem[22]= sta->effect[7]; // speed1
-   particleSystem[23]= sta->effect[8]; // speed2
+	particleSystem[40]=eff->effect[13]; // ??
+	particleSystem[41]=eff->effect[14];
 
-   particleSystem[24]=0x0;
-   particleSystem[25]=0x0;
+	particleSystem[42]=0x00;
+	particleSystem[43]=0x00;
+	particleSystem[44]=0x00;
+	particleSystem[45]=0x00;
 
-   particleSystem[26]=sta->effect[15]; // adjust
-   particleSystem[27]=sta->effect[16]; // explode
+	particleSystem[46]=0xff; // layer, has to be 0xff in that modus
 
-   particleSystem[28]=0x0;
-   particleSystem[29]=0x0;
-   particleSystem[30]=0x0;
-   particleSystem[31]=0x0;
-   particleSystem[32]=0x0;
-   particleSystem[33]=0x0;
-   particleSystem[34]=0x0;
-   particleSystem[35]=0x0;
-
-   particleSystem[36]=sta->effect[9]; //  moving effekt
-   particleSystem[37]=sta->effect[10];
-   particleSystem[38]=sta->effect[11]; // effect on explode
-   particleSystem[39]=sta->effect[12];
-
-   particleSystem[40]=sta->effect[13]; // ??
-   particleSystem[41]=sta->effect[14];
-
-   particleSystem[42]=0x00;
-   particleSystem[43]=0x00;
-   particleSystem[44]=0x00;
-   particleSystem[45]=0x00;
-
-   particleSystem[46]=0xff; // layer, has to be 0xff in that modus
-
-   particleSystem[47]=sta->effect[17];
-   particleSystem[48]=0x0;
-
-
+	particleSystem[47]=eff->effect[17];
+	particleSystem[48]=0x0;
 }
 
 //! same sta-layout as staticeffectuo3d

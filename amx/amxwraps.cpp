@@ -2435,14 +2435,12 @@ NATIVE(_itm_delEventHandler)
 */
 NATIVE (_send_movingfx)
 {
-    P_CHAR pc1 = pointers::findCharBySerial(params[1]);
-    VALIDATEPCR(pc1, INVALID);
-    P_CHAR pc2 = pointers::findCharBySerial(params[2]);
-    VALIDATEPCR(pc2, INVALID);
+	P_CHAR pc1 = pointers::findCharBySerial(params[1]);
+	VALIDATEPCR(pc1, INVALID);
+	P_CHAR pc2 = pointers::findCharBySerial(params[2]);
+	VALIDATEPCR(pc2, INVALID);
 
-    movingeffect(DEREF_P_CHAR(pc1), DEREF_P_CHAR(pc2), (params[3]>>8)&0xFF, params[3]&0xFF, params[4], params[5],
-		params[6]);
-
+	pc1->movingFX(pc2, params[3]&0xFFFF, params[4], params[5], params[6]);
 	return 0;
 }
 

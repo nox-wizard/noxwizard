@@ -74,9 +74,9 @@ void broadcast(int s);
 void itemtalk( P_ITEM pi, char *txt);
 	//!< Item "speech"
 
+void MakeGraphicalEffectPkt(UI08 pkt[28], UI08 type, UI32 src_serial, UI32 dst_serial, UI16 model_id, Location src_pos, Location dst_pos, UI08 speed, UI08 duration, UI08 adjust, UI08 explode );
 
 void staticeffect (CHARACTER player, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false );
-void movingeffect(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
 void bolteffect(CHARACTER player, bool UO3DonlyEffekt=false, bool skip_old=false);
 void staticeffect2(P_ITEM pi, unsigned char eff1, unsigned char eff2, unsigned char speed, unsigned char loop, unsigned char explode, bool UO3DonlyEffekt=false, ParticleFx *str=NULL, bool skip_old=false);
 
@@ -87,7 +87,7 @@ void movingeffect2(CHARACTER source, CHARACTER dest, unsigned char eff1, unsigne
 void bolteffect2(P_CHAR pc, UI08 a1, UI08 a2);	// experimenatal, lb
 
 void staticeffectUO3D(CHARACTER player, ParticleFx *sta);
-void movingeffectUO3D(CHARACTER source, CHARACTER dest, ParticleFx *sta);
+void movingeffectUO3D(P_CHAR pc_cs, P_CHAR pc_cd, ParticleFx *eff, UI08 *particleSystem);
 void bolteffectUO3D(CHARACTER player);
 void itemeffectUO3D(P_ITEM pi, ParticleFx *sta);
 

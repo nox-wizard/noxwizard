@@ -2188,7 +2188,7 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 
 
 /*!
-\author Xanathar
+\author Xanathar & Akron
 \brief Plays a moving effect from this to target char
 \param destination the target char
 \param id id of the effect
@@ -2197,10 +2197,54 @@ LOGICAL cChar::seeForLastTime( P_OBJECT po )
 \param explode true if should do a final explosion
 \param part particle effects structure
 */
-void cChar::movingFX(P_CHAR destination, short id, SI32 speed, SI32 loop, LOGICAL explode, ParticleFx* part)
+void cChar::movingFX(P_CHAR dst, UI16 eff, UI08 speed, UI08 loop, LOGICAL explode, ParticleFx* part)
 {
-	movingeffect(DEREF_P_CHAR(this), DEREF_P_CHAR(destination), id >> 8, id & 0xFF,
-		speed & 0xFF, loop & 0xFF, explode ? '\1' : '\0', part!=NULL, part);
+	VALIDATEPC(dst);
+
+	UI08 effect[28]={ 0x70, 0x00, };
+
+	bool skip_old = true;
+	
+	if (!skip_old)
+		MakeGraphicalEffectPkt(effect, 0x00, getSerial32(), dst->getSerial32(), eff, getPosition(), dst->getPosition(), speed, loop, 0, explode); 
+
+	if (!part) // no UO3D effect ? lets send old effect to all clients
+	{
+		NxwSocketWrapper sw;
+		sw.fillOnline( );
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET j=sw.getSocket();
+			if ( (char_inVisRange(this,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			{
+				Xsend(j, effect, 28);
+			}
+		}
+		return;
+	}
+	else
+	{
+		// UO3D effect -> let's check which client can see it
+		NxwSocketWrapper sw;
+		for( sw.rewind(); !sw.isEmpty(); sw++ )
+		{
+			NXWSOCKET j=sw.getSocket();
+			if ( (char_inVisRange(this,MAKE_CHAR_REF(currchar[j])))&&(char_inVisRange(MAKE_CHAR_REF(currchar[j]),dst))&&(perm[j]))
+			{
+				if (clientDimension[j]==2 ) // 2D client, send old style'd
+				{
+					if ( !skip_old ) Xsend(j, effect, 28);
+				} else if (clientDimension[j]==3) // 3d client, send 3d-Particles
+				{
+					static UI08 particleSystem[49];
+					movingeffectUO3D(this, dst, part, particleSystem);
+					Xsend(j, particleSystem, 49);
+				}
+				else
+					LogError("Invalid Client Dimension: %i\n", clientDimension[j]);
+			}
+		}
+	}
 }
 
 /*!
