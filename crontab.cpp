@@ -731,7 +731,7 @@ static void exec_backup (char *dummy)
 	Guildz.archive();
 	prison::archive();
 	Books::archive();
-	exec_isave( NULL );
+	// exec_isave( NULL );
 }
 
 

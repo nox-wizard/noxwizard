@@ -61,44 +61,34 @@ void split( std::string& source, std::string& first, std::string& second )
 	for( ; i<size; ++i ) {
 		if( source[i]!=' ' )
 			first+=source[i];
+		else
+			break;
 	}
-
-	for( ; i<size; ++i ) {
-		if( source[i]!=' ' )
-			second+=source[i];
-	}
+	if ( i < size )
+		second=source.substr(i+1, source.length()-i);
 }
 
 
 cStringFile::cStringFile( std::string& path, const char* mode )
 {
-	f = fopen( path.c_str(), mode );
+	inStream = new ifstream(path.c_str());
 }
 
 cStringFile::~cStringFile()
 {
-	if( f!=NULL )
-		fclose( f );
+	if ( inStream != NULL )
+		delete inStream;
 }
 
 
 void cStringFile::read( std::string& line )
 {
+	char linebuffer[255];
 	line="";
 
-	while( !feof(f) )
-	{
-		char c=(char)fgetc(f);
-
-		if( c==10 )
-			continue;
-
-		if( c==13 )
-			break; //after eol
-
-		line += c;
-	}
-
+	if ( ! inStream->eof() )
+		inStream->getline(linebuffer, 255);
+	line=linebuffer;
 	if( ( line.size()>1 ) && ( line[0]=='/' && line[1]=='/' ) ) //commented
 		line="";
 }
@@ -125,7 +115,7 @@ void cStringFile::read( std::string& first, std::string& second, std::string& th
 
 bool cStringFile::eof()
 {
-	return (f!=NULL)? feof(f) : true;
+	return (inStream!=NULL )? inStream->eof() : true;
 }
 
 

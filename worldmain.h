@@ -22,7 +22,7 @@ class cStringFile {
 
 public:
 
-	FILE* f;
+	std::ifstream *inStream;
 
 public:
 
