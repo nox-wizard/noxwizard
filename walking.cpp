@@ -1483,22 +1483,22 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
         LOGICAL bOk = true;
 	Location loc = pos;
 	if ( isWalkable( pos ) == illegal_z ) { // If it isn't walkable, we can only reach the nearest tile
-                //ConOut( "CIAO");
 		bOk = false;
 		for ( UI32 i = 1; i < 4; i++ ) {
-			// East
+                        // East
 			loc = Loc( pos.x + i, pos.y, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
 				bOk = true;
 				break;
 			}
+			
 			// West
 			loc = Loc( pos.x - i, pos.y, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
 				bOk = true;
 				break;
 			}
-
+                        
 			// South
 			loc = Loc( pos.x, pos.y + i, pos.z );
 			if ( isWalkable( loc ) != illegal_z ) {
@@ -1557,13 +1557,15 @@ void cChar::walkNextStep()
 	if ( !hasPath() )
 		return;
 	Location pos = path->getNextPos();
+
 	if ( pos == getPosition() )
 		return;
 
-	if ( path->targetReached() || isWalkable( pos ) == illegal_z ) {
+	if ( /*path->targetReached() ||*/ isWalkable( pos ) == illegal_z ) {
                 safedelete( path );
 		return;
 	}
+
 
         // <LB> Flying creatures stuff
 	SI32 b = GetBodyType();
@@ -1590,19 +1592,19 @@ void cChar::walkNextStep()
 */
 void cChar::follow( P_CHAR pc )
 {
+	if ( IsFrozen() ) {
+		if ( hasPath() )
+			safedelete( path );
+		return;
+	}
 	if ( UI32(dist( getPosition(), pc->getPosition() )) <= 1 ) { // Target reached
 		if ( hasPath() )
 			safedelete( path );
 		facexy( pc->getPosition().x, pc->getPosition().y );
 		return;
 	}
-	if ( !hasPath() ) { // We haven't got a path, call the pathfinding.
-		pathFind( pc->getPosition() );
-		walkNextStep();
-		return;
-	}
-
-	if ( path->getFinalPos() == pc->getPosition() ) { // We are following the precise path
+	if ( !hasPath() || path->targetReached() ) { // We haven't got a right path, call the pathfinding.
+		pathFind( pc->getPosition(), true );
 		walkNextStep();
 		return;
 	}

@@ -138,7 +138,7 @@ SI08 isWalkable( Location pos )
 		pc = sc.getChar();
 		if ( !ISVALIDPC( pc ) )
 			continue;
-		ConOut( "\n%s", pc->getCurrentNameC() );
+
 		if ( abs( pc->getPosition().z - zRes ) < MaxZstep )
 			return illegal_z;
 	}
@@ -267,7 +267,7 @@ cPath::cPath( Location startPos, Location finalPos )
 		currNode = nextNode;
 		loops++;
 	}
-
+	
 	while( currNode->pos != startPos && currNode->cost != 0 && loops >= 0 ) {
 		path_list.push_front( currNode->pos );
 		currNode = currNode->parentNode;

@@ -637,7 +637,7 @@ void NxwCharWrapper::fillCharsAtXY( UI16 x, UI16 y, bool bExcludeOfflinePlayers,
 */
 void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
-	fillCharsAtXY( location.x, location.y );
+	fillCharsAtXY( location.x, location.y, bExcludeOfflinePlayers, bOnlyPlayer );
 }
 
 
