@@ -7361,6 +7361,7 @@ NATIVE ( _setSecondsPerUoMinute )
 	else
 		secondsperuominute=5; // standard value
 	InfoOut("Real seconds per UO minute are now set to %d.\n",secondsperuominute);
+	return true;
 
 }
 
