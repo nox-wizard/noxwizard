@@ -1785,7 +1785,7 @@ void command_addx(NXWSOCKET  s)
 	{
 		addid1[s] = (unsigned char) strtonum(1);
 		addid2[s] = (unsigned char) strtonum(2);
-		Commands::AddHere(s, pc->getPosition("z"));
+		Commands::AddHere(s, pc->getPosition().z);
 	}
 	if (tnum==4)
 	{

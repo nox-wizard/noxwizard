@@ -1784,8 +1784,8 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
 		//ndEndy using setPosition we lose old position
-		setPosition( "z", boatpos.z+3 ); 
-		setPosition( "dispz", boatpos.z+3 );
+		setPosition( 'z', boatpos.z+3 ); 
+		setPosition( 'd', boatpos.z+3 );
 
 	} else
 		setMultiSerial(-1);
@@ -2935,8 +2935,8 @@ void cChar::Kill()
 		if(!ISVALIDPI(pi_j))
 			continue;
 
-		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition("x")==26) && (pi_j->getPosition("y")==0) &&
-			(pi_j->getPosition("z")==0) && (pi_j->id()==0x1E5E) )
+		if ((pi_j->type==ITYPE_CONTAINER) && (pi_j->getPosition().x==26) && (pi_j->getPosition().y==0) &&
+			(pi_j->getPosition().z==0) && (pi_j->id()==0x1E5E) )
 		{
 			endtrade(pi_j->getSerial32());
 		}

@@ -438,15 +438,15 @@ void buildhouse(int s, int i)
 						}
 						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("x", x+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition('x', x+str2num(script2));
 						}
 						if (!(strcmp(script1,"Y")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("y", y+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition('y', y+str2num(script2));
 						}
 						if (!(strcmp(script1,"Z")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition("z", z+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition('z', z+str2num(script2));
 						}
 					}
 				}
@@ -562,8 +562,8 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
 		pc->setPosition( charpos );
 		*/
-		pc->setPosition("z", Map->MapElevation(charpos.x, charpos.y));
-		pc->setPosition("dz", Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition('z', Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition('d', Map->MapElevation(charpos.x, charpos.y));
 		pc->teleport();
 		return;
 	}

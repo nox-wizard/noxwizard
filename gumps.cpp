@@ -379,9 +379,9 @@ void gumps::Input(int s)
 		case 2:		pj->setCurrentName(text);	break;
 		case 3:		pj->setId( hex2num(text) );	break;	 // ID
 		case 4:		pj->setColor( hex2num(text) );	break;	// Hue
-		case 5:		pj->setPosition("x", str2num(text) );	break;	// X
-		case 6:		pj->setPosition("y", str2num(text) );	break;	// Y
-		case 7:		pj->setPosition("z", str2num(text) );	break;	// Z
+		case 5:		pj->setPosition('x', str2num(text) );	break;	// X
+		case 6:		pj->setPosition('y', str2num(text) );	break;	// Y
+		case 7:		pj->setPosition('z', str2num(text) );	break;	// Z
 		case 8:		pj->type = str2num(text);	break;	 // Type
 		case 9:		pj->itmhand = str2num(text);	break;	// Itemhand - added by Xuri
 		case 10:	pj->layer = str2num(text);	break;	// Layer
@@ -435,10 +435,10 @@ void gumps::Input(int s)
 		{
 		case 2:		pc_j->setCurrentName( text );			break;  // Name
 		case 3:		pc_j->title = text;				break;	// Title
-		case 4:		pc_j->setPosition("x", str2num(text) );		break;	// X
-		case 5:		pc_j->setPosition("y", str2num(text) );		break;	// Y
-		case 6:	 	pc_j->setPosition("z", str2num(text) );
-				pc_j->setPosition("dz", str2num(text) );	break;	// Z
+		case 4:		pc_j->setPosition('x', str2num(text) );		break;	// X
+		case 5:		pc_j->setPosition('y', str2num(text) );		break;	// Y
+		case 6:	 	pc_j->setPosition('z', str2num(text) );
+					pc_j->setPosition('d', str2num(text) );	break;	// Z
 		case 7:		pc_j->dir = str2num(text) & 0x0F;		break;  // make sure the high-bits are clear // Dir
 		case 8: // Body
 			k = hex2num( text );
@@ -1226,11 +1226,11 @@ void ttext(int line, SERIAL serial)
 		if( --line == 0 ) strcpy( script1, "Hue");
 		if( --line == 0 ) sprintf( script1,"0x%x (%i)", pi->color(), pi->color());
 		if( --line == 0 ) strcpy( script1, "X");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("x"), pi->getPosition("x"));
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().x, pi->getPosition().x);
 		if( --line == 0 ) strcpy( script1, "Y");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("y"), pi->getPosition("y"));
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().y, pi->getPosition().y);
 		if( --line == 0 ) strcpy( script1, "Z");
-		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition("z"), pi->getPosition("z"));
+		if( --line == 0 ) sprintf( script1,"%i (0x%x)", pi->getPosition().z, pi->getPosition().z);
 		if( --line == 0 ) strcpy( script1, "Type");
 		if( --line == 0 ) sprintf( script1,"%i", pi->type);
 		if( --line == 0 ) strcpy( script1,  "ItemHand" );

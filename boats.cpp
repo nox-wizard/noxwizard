@@ -181,11 +181,15 @@ void boats::PlankStuff(P_CHAR pc , P_ITEM pi)//If the plank is opened, double cl
 void boats::LeaveBoat(P_CHAR pc, P_ITEM pi)//Get off a boat (dbl clicked an open plank while on the boat.
 {
 	VALIDATEPC(pc);
+	VALIDATEPI(pi);
+
+	Location lipos = pi->getPosition();
 
 	//long int pos, pos2, length;
-	UI32 x,x2= pi->getPosition("x");
-	UI32 y,y2= pi->getPosition("y");
-	SI08 z= pi->getPosition("z");
+
+	UI32 x,x2= lipos.x;
+	UI32 y,y2= lipos.y;
+	SI08 z= lipos.z;
 	SI08 mz,sz,typ;
 	P_ITEM pBoat=GetBoat(pc->getPosition());
 
@@ -415,16 +419,16 @@ void boats::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	//set it's Z to 0,0 inside the boat
 	Location bpos= pi->getPosition();
 
-	p1->MoveTo( bpos.x, bpos.y, p1->getPosition("z"));
+	p1->MoveTo( bpos.x, bpos.y, p1->getPosition().z);
 	p1->id2= cShipItems[dir][PORT_P_C];//change the ID
 
-	p2->MoveTo( bpos.x, bpos.y, p2->getPosition("z"));
+	p2->MoveTo( bpos.x, bpos.y, p2->getPosition().z);
 	p2->id2=cShipItems[dir][STAR_P_C];
 
-	tiller->MoveTo( bpos.x, bpos.y, tiller->getPosition("z"));
+	tiller->MoveTo( bpos.x, bpos.y, tiller->getPosition().z);
 	tiller->id2=cShipItems[dir][TILLERID];
 
-	hold->MoveTo(bpos.x, bpos.y, hold->getPosition("z"));
+	hold->MoveTo(bpos.x, bpos.y, hold->getPosition().z);
 	hold->id2=cShipItems[dir][HOLDID];
 
 	Location itmpos;
@@ -1008,8 +1012,8 @@ LOGICAL boats::collision(P_ITEM pi,Location where,int dir)
 		boat_db coll=iter_boat->second;
 		if(coll.serial != pi->getSerial32())
 		{
-			int xx=abs(x - (int)coll.p_serial->getPosition("x"));
-			int yy=abs(y - (int)coll.p_serial->getPosition("y"));
+			int xx=abs(x - (int)coll.p_serial->getPosition().x);
+			int yy=abs(y - (int)coll.p_serial->getPosition().y);
 			double dist=hypot(xx, yy);
 			if(dist<10)
 			{
@@ -1092,7 +1096,7 @@ LOGICAL boats::boat_collision(P_ITEM pBoat1,int x1, int y1,int dir,P_ITEM pBoat2
 
 			if (multi1.visible&&multi2.visible)
 			{
-				if ( (x==multi2.x+pBoat2->getPosition("x")) && (y==multi2.y+pBoat2->getPosition("y")) )
+				if ( (x==multi2.x+pBoat2->getPosition().x) && (y==multi2.y+pBoat2->getPosition().y) )
 				{
 					return true;
 				}
@@ -1146,8 +1150,8 @@ P_ITEM boats::GetBoat(Location pos)
 		P_ITEM pBoat=boat.p_serial;
 		if(!ISVALIDPI(pBoat))
 			continue;
-		int xx= abs((int)pos.x - boat.p_serial->getPosition("x"));
-		int yy= abs((int)pos.y - boat.p_serial->getPosition("y"));
+		int xx= abs((int)pos.x - boat.p_serial->getPosition().x);
+		int yy= abs((int)pos.y - boat.p_serial->getPosition().y);
 		double dist=hypot(xx, yy);
 		if(dist<10)
 		{
@@ -1166,7 +1170,7 @@ P_ITEM boats::GetBoat(Location pos)
 			for(i=0;i<length;i++)
 			{
 				mfile->get_st_multi(&multi);
-				if (   ((UI32)(multi.x + pBoat->getPosition("x")) == pos.x) && ((UI32)(multi.y + pBoat->getPosition("y")) == pos.y) )
+				if (   ((UI32)(multi.x + pBoat->getPosition().x) == pos.x) && ((UI32)(multi.y + pBoat->getPosition().y) == pos.y) )
 				{
 					return  pBoat;
 				}

@@ -2570,15 +2570,17 @@ void Skills::AButte(NXWSOCKET s1, P_ITEM pButte)
 	int v1;
     if(pButte->id()==0x100A)
     { // East Facing Butte
-        if ((pButte->getPosition("x") > pc->getPosition("x"))||(pButte->getPosition("y") != pc->getPosition("y")))
+        if ((pButte->getPosition().x > pc->getPosition().x)||(pButte->getPosition().y != pc->getPosition().y))
             v1= INVALID;
-        else v1= pc->getPosition("x") - pButte->getPosition("x");
+        else 
+			v1= pc->getPosition().x - pButte->getPosition().x;
     }
     else
     { // South Facing Butte
-        if ((pButte->getPosition("y") > pc->getPosition("y"))||(pButte->getPosition("x") != pc->getPosition("x")))
+        if ((pButte->getPosition().y > pc->getPosition().y)||(pButte->getPosition().x != pc->getPosition().x))
             v1= INVALID;
-        else v1= pc->getPosition("y") - pButte->getPosition("y");
+        else 
+			v1= pc->getPosition().y - pButte->getPosition().y;
     }
 
     int arrowsquant=0;

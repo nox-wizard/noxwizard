@@ -334,7 +334,7 @@ signed char cMapStuff::MultiHeight(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 		mfile->get_st_multi(&multi);
 		if (/*(multi.visible) &&*/ (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y))
 		{
-			int tmpTop = pi->getPosition("z") + multi.z;
+			int tmpTop = pi->getPosition().z + multi.z;
 			if ((tmpTop<=oldz+MaxZstep)&& (tmpTop>=oldz-1))
 			{
 				//ConOut("At or above=%i\n",multi.z);
@@ -380,14 +380,14 @@ signed char cMapStuff::DynamicElevation( UI32 x, UI32 y, signed char oldz)
 				z = MultiHeight(pi, x ,y, oldz);
 				// this used to do a z++, but that doesn't take into account the fact that
 				// the itemp[] the multi was based on has its own elevation
-				tempVal = z + pi->getPosition("z") + 1;
+				tempVal = z + pi->getPosition().z + 1;
 	//			z = z + pi->z + 1;
 				z = tempVal;
 				//z += pi->z + 1;
 			}
 			else if ((pi->getPosition().x == x) && (pi->getPosition().y == y))
 			{
-				signed char ztemp = pi->getPosition("z") + TileHeight( pi->id() );
+				signed char ztemp = pi->getPosition().z + TileHeight( pi->id() );
 				if ((ztemp <= oldz + MaxZstep) && (ztemp > z))
 				{
 					z=ztemp;
@@ -418,7 +418,7 @@ int cMapStuff::MultiTile(P_ITEM pi, UI32 x, UI32 y, signed char oldz)
 	{
 		mfile->get_st_multi(&multi);
 		if ((multi.visible && (pi->getPosition().x + multi.x == x) && (pi->getPosition().y + multi.y == y)
-			&& (abs(pi->getPosition("z")+multi.z-oldz)<=1)))
+			&& (abs(pi->getPosition().z+multi.z-oldz)<=1)))
 		{
 			int mt=multi.tile;
 			/*if (DoesTileBlock(mt)) return mt;

@@ -1091,8 +1091,8 @@ void dump_item(NXWCLIENT ps, PKGx08 *pp) // Item is dropped on ground or a chara
 
 				P_ITEM pi_onground = si.getItem();
 				if(ISVALIDPI(pi_onground)) {
-                        if ( pi_onground->getPosition("x") == pp->TxLoc &&
-                             pi_onground->getPosition("y") == pp->TyLoc )
+                        if ( pi_onground->getPosition().x == pp->TxLoc &&
+                             pi_onground->getPosition().y == pp->TyLoc )
 							{
                                 itcount++;
                                 if (itcount >= 2) { //Only 2 items permitted

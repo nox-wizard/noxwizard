@@ -920,7 +920,7 @@ void NxwItemWrapper::fillItemsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExc
 						P_ITEM pi=pointers::findItemBySerial( *iter );
 						if(ISVALIDPI(pi) && pi->isInWorld() ) {
 
-							int iDist=(int)dist(x,y,0, pi->getPosition("x"), pi->getPosition("y"), 0 );
+							int iDist=(int)dist(x,y,0, pi->getPosition().x, pi->getPosition().y, 0 );
 							if (iDist <= nDistance) {
 								if ((!bExcludeNotMovableItems) || (pi->magic != 2 && pi->magic != 3))
 								{
