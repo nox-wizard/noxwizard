@@ -23,7 +23,7 @@ cCommand::cCommand(std::string name, SI32 priv, AmxFunction* callback()) {
 
 	cmd_name=name;
 	cmd_priv=priv; //stonedz: should be a std::bitset (?)
-	callback()=command();
+	callback();
 }
 
 

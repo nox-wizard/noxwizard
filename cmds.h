@@ -15,8 +15,9 @@
 
 //#include <bitset>
 //#include "common_libs.h"
-//#include "nxwcommn.h"
+#include "nxwcommn.h"		//for std Class
 
+class cCommand;
 
 typedef cCommand* P_COMMAND;
 
