@@ -14,22 +14,82 @@
 #include "set.h"
 #include "srvparms.h"
 
-#include <queue>
 
 namespace tempfx {
 
+SERIAL_VECTOR tempfxCheck;
 
-class cTempfxCompare
+void tempeffectson()
 {
-public:
-        bool operator()(const cTempfx& Left, const cTempfx& Right) {
-                return (static_cast<cTempfx>(Left).getExpireTime() > static_cast<cTempfx>(Right).getExpireTime());
-        }
-};
+	P_OBJECT po = NULL;
+	
+	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
+        for ( ; it != tempfxCheck.end(); it++ ) {
+                po = objects.findObject( (*it) );
 
+                if ( po == NULL ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
 
-priority_queue<cTempfx, vector<cTempfx>, cTempfxCompare> tempfxQueue;
-vector<cTempfx> tempfxVector;
+	        if ( !po->hasTempfx() ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
+	        
+	        po->tempfxOn();
+	}	
+}
+
+void tempeffectsoff()
+{
+	P_OBJECT po = NULL;
+
+	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
+        for ( ; it != tempfxCheck.end(); it++ ) {
+                po = objects.findObject( (*it) );
+
+                if ( po == NULL ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
+
+	        if ( !po->hasTempfx() ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
+
+	        po->tempfxOff();
+	}
+}
+
+void checktempeffects()
+{
+	P_OBJECT po = NULL;
+
+	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
+        for ( ; it != tempfxCheck.end(); it++ ) {
+                po = objects.findObject( (*it) );
+
+                if ( po == NULL ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
+
+	        if ( !po->hasTempfx() ) {
+			tempfxCheck.erase( it );
+			it--;
+			continue;
+	        }
+	        
+	        po->checkTempfx();
+	}
+}
 
 ///////////////////////////////////////////////////////////////////
 // Function name     : callCustomTempFx
@@ -50,7 +110,7 @@ static void callCustomTempFx(P_OBJECT poSrc, P_OBJECT poDest, int mode, int amxc
 // Function name     : isSrcRepeteable
 // Return type       : bool
 // Author            : Luxor
-static bool isSrcRepeatable(int num)
+LOGICAL isSrcRepeatable(int num)
 {
 	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return false;
@@ -70,11 +130,10 @@ static bool isSrcRepeatable(int num)
 	return false;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : isDestRepeteable
-// Return type       : bool
-// Author            : Luxor
-static bool isDestRepeatable(int num)
+/*!
+\author Luxor
+*/
+LOGICAL isDestRepeatable(int num)
 {
 	if ( num < 0 || num >= MAX_TEMPFX_INDEX )
 		return false;
@@ -108,7 +167,7 @@ static bool isDestRepeatable(int num)
 // Function name     : getTempFxTime
 // Return type       : int
 // Author            : Luxor
-static int getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
+SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 {
 	int dur = 0;
 
@@ -252,12 +311,6 @@ void cTempfx::start()
 {
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
-
-	if ( !m_bSrcRepeatable && ISVALIDPC(src) )
-		src->setTempfx(m_nNum);
-
-	if ( !m_bDestRepeatable && ISVALIDPC(dest) )
-		dest->setTempfx(m_nNum);
 
 	if ( !ISVALIDPC(dest) )
 		return;
@@ -529,64 +582,62 @@ void cTempfx::start()
 	//if (ISVALIDPC(dest)) item::CheckEquipment(DEREF_P_CHAR(dest));
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::checkForExpire
-// Return type       : bool
-// Author            : Luxor
-bool cTempfx::checkForExpire()
+LOGICAL cTempfx::checkForExpire()
 {
 	if ( !TIMEOUT(m_nExpireTime) )
 		return false;
 
+	executeExpireCode();
+	return true;
+}
+
+/*!
+\author Luxor
+*/
+void cTempfx::executeExpireCode()
+{
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	P_ITEM pi_dest = pointers::findItemBySerial(m_nDest);
 
-        P_OBJECT po = NULL;
-	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(src)) ) )
-		po->resetTempfx(m_nNum);
-                                 
-	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(dest)) ) )
-		po->resetTempfx(m_nNum);
-	
 	switch(m_nNum)
 	{
 		case SPELL_PARALYZE:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			if (dest->IsFrozen())
 				dest->unfreeze();
 			break;
 			
 		case SPELL_LIGHT:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->fixedlight = 0xFF;
 			if (dest->getClient())
 				dolight(dest->getClient()->toInt(), worldbrightlevel);
 			break;
 		
 		case SPELL_CLUMSY:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->dx += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
 			
 		case SPELL_FEEBLEMIND:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->in += m_nMore1;
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
 
 		case SPELL_WEAKEN:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->modifyStrength(m_nMore1);
 			if (dest->getClient())
 				statwindow(dest, dest);
 			break;
 
 		case SPELL_AGILITY:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->dx -= m_nMore1;
 			dest->stm = min(dest->stm, dest->dx);
 			if (dest->getClient())
@@ -594,7 +645,7 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_STRENGHT:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->modifyStrength(-m_nMore1);
 			dest->hp = min(dest->hp, (SI32)dest->getStrength());
 			if (dest->getClient())
@@ -602,7 +653,7 @@ bool cTempfx::checkForExpire()
 			break;
 
 		case SPELL_CUNNING:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->in -= m_nMore1;
 			dest->mn = min(dest->mn, dest->in);
 			if (dest->getClient())
@@ -610,7 +661,7 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_BLESS:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->modifyStrength(-m_nMore1);
 			dest->dx -= m_nMore2;
 			dest->in -= m_nMore3;
@@ -622,7 +673,7 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_CURSE:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->modifyStrength(m_nMore1);
 			dest->dx += m_nMore2;
 			dest->in += m_nMore3;
@@ -631,7 +682,7 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_INVISIBILITY:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			if (dest->IsHiddenBySpell()) {
 				dest->hidden = UNHIDDEN;
 				dest->morph();
@@ -641,7 +692,7 @@ bool cTempfx::checkForExpire()
 
 		
 		case ALCHEMY_GRIND:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			if (m_nMore1 == 0)
 			{
 				if (m_nMore2 != 0)
@@ -653,13 +704,13 @@ bool cTempfx::checkForExpire()
 		
 		
 		case ALCHEMY_END:
-			VALIDATEPCR(src, true);
-			VALIDATEPIR(pi_dest, true);
+			VALIDATEPC(src);
+			VALIDATEPI(pi_dest);
 			Skills::CreatePotion(DEREF_P_CHAR(src), m_nMore1, m_nMore2, DEREF_P_ITEM(pi_dest));
 			break;
 		
 		case AUTODOOR:
-			VALIDATEPIR(pi_dest, true);
+			VALIDATEPI(pi_dest);
 			if (pi_dest->dooropen == 0)
 				break;
 			pi_dest->dooropen = 0;
@@ -667,7 +718,7 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case TRAINDUMMY:
-			VALIDATEPIR(pi_dest, true);
+			VALIDATEPI(pi_dest);
 			if (pi_dest->id() == 0x1071)
 			{
 				pi_dest->setId(0x1070);
@@ -683,30 +734,30 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_REACTARMOR:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->ra = 0;
 			break;
 		
 		case EXPLOTIONMSG:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->sysmsg("%i", m_nMore3);
 			break;
 		
 		case EXPLOTIONEXP:
-			VALIDATEPCR(src, true);
-			VALIDATEPIR(pi_dest, true);
+			VALIDATEPC(src);
+			VALIDATEPI(pi_dest);
 			if (src->getClient())
 				pi_dest->explode(src->getClient()->toInt());
 			break;
 		
 		case SPELL_POLYMORPH:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->morph();
 			dest->polymorph = false;
 			break;
 		
 		case SPELL_INCOGNITO:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->morph();
 			dest->incognito = false;
 			break;
@@ -730,23 +781,23 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case SPELL_PROTECTION:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->baseskill[PARRYING] = max(0, dest->baseskill[PARRYING] - m_nMore1);
 			break;
 		
 		case DRINK_EMOTE:
-			VALIDATEPCR(src, true);
+			VALIDATEPC(src);
 			src->emote(calcSocketFromChar(DEREF_P_CHAR(src)),"*glu*",1);
 			break;
 		
 		case DRINK_FINISHED:
-			VALIDATEPCR(src, true);
-			VALIDATEPIR(pi_dest, true);
+			VALIDATEPC(src);
+			VALIDATEPI(pi_dest);
 			usepotion(DEREF_P_CHAR(src), pi_dest);
 			break;
 		
 		case GM_HIDING:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->sysmsg(TRANSLATE("You have hidden yourself well."));
 			//dest->hideBySkill();
 			dest->hidden = HIDDEN_BYSKILL;
@@ -754,17 +805,17 @@ bool cTempfx::checkForExpire()
 			break;
 
 		case GM_UNHIDING:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->unHide();
 			dest->sysmsg(TRANSLATE("You are now visible."));
 			break;
 		
 		case HEALING_DELAYHEAL:
-			VALIDATEPCR(src, true);
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(src);
+			VALIDATEPC(dest);
 			if (src->war) {
 				src->sysmsg("You cannot heal while you are in a fight.");
-				return true;
+				return;
 			}
 			dest->hp = min(dest->hp + m_nMore1, (SI32)dest->getStrength());
 			dest->sysmsg(TRANSLATE("After receiving some healing, you feel better."));
@@ -774,13 +825,13 @@ bool cTempfx::checkForExpire()
 			break;
 		
 		case AMXCUSTOM:
-			VALIDATEPCR(src, true);
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(src);
+			VALIDATEPC(dest);
 			callCustomTempFx(src, dest, MODE_END, m_nAmxcback, m_nMore1, m_nMore2, m_nMore3);
 			break;
 		
 		case GREY:
-			VALIDATEPCR(dest, true);
+			VALIDATEPC(dest);
 			dest->nxwflags[0] &= ~NCF0_GREY;
 			break;
 		
@@ -797,8 +848,6 @@ bool cTempfx::checkForExpire()
 	
 	if (ISVALIDPC(dest))
 		dest->checkEquipement();
-	
-	return true;
 }
 
 
@@ -811,15 +860,7 @@ void cTempfx::activate()
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	
-	
-	if ( !m_bSrcRepeatable && ISVALIDPC(src) )
-		src->setTempfx(m_nNum);
-
-	if ( !m_bDestRepeatable && ISVALIDPC(dest) )
-		dest->setTempfx(m_nNum);
-		
-		
-	if (!ISVALIDPC(dest)/* || !ISVALIDPC(src) */) return;
+	if ( !ISVALIDPC(dest) ) return;
 
 	switch(m_nNum)
 	{
@@ -898,15 +939,7 @@ void cTempfx::deactivate()
 	P_CHAR src = pointers::findCharBySerial(m_nSrc);
 	P_CHAR dest = pointers::findCharBySerial(m_nDest);
 	
-        P_OBJECT po = NULL;
-	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(src)) ) )
-		po->resetTempfx(m_nNum);
-
-	if ( ISVALIDPO( (po=static_cast<P_OBJECT>(dest)) ) )
-		po->resetTempfx(m_nNum);
-
-
-	if (!ISVALIDPC(dest)/* || !ISVALIDPC(src)*/)
+	if ( !ISVALIDPC(dest) )
 		return;
 
 	switch(m_nNum)
@@ -979,10 +1012,10 @@ void cTempfx::deactivate()
 }
 
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::isValid
-// Return type       : bool
-// Author            : Luxor
+/*!
+\author Luxor
+\brief Tells if a tempfx is valid
+*/
 bool cTempfx::isValid()
 {
 	if ( m_nNum < 0 || m_nNum >= MAX_TEMPFX_INDEX )
@@ -994,25 +1027,16 @@ bool cTempfx::isValid()
 	P_OBJECT src = objects.findObject(m_nSrc);
 	P_OBJECT dest = objects.findObject(m_nDest);
 
-	if (!ISVALIDPO(src)) {
-		if (ISVALIDPO(dest) && !m_bDestRepeatable)
-			dest->resetTempfx(m_nNum);
+	if ( !ISVALIDPO(src) || !ISVALIDPO(dest) )
 		return false;
-	}
-	
-	if (!ISVALIDPO(dest)) {
-		if (ISVALIDPO(src) && !m_bSrcRepeatable)
-			src->resetTempfx(m_nNum);
-		
-		return false;
-	}
 	
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : cTempfx::cTempfx
-// Author            : Luxor
+/*!
+\author Luxor
+\brief cTempfx constructor
+*/
 cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI32 more2, SI32 more3, SI32 amxcback )
 {
 	m_nSrc = INVALID;
@@ -1062,12 +1086,12 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	//
 	//	If a duration is given, use it. Otherwise, use the standard value.
 	//
-	if (dur > 0)
+	if ( dur > 0 )
 		m_nExpireTime = uiCurrentTime + (dur*MY_CLOCKS_PER_SEC);
 	else
 		m_nExpireTime = uiCurrentTime + (getTempFxTime(pointers::findCharBySerial(m_nSrc), num, more1, more2, more3)*MY_CLOCKS_PER_SEC);
 
-	if (m_nNum == AMXCUSTOM && amxcback <= -2)
+	if ( m_nNum == AMXCUSTOM && amxcback <= -2 )
 		return;
 
 	m_nMore1 = more1;
@@ -1076,118 +1100,187 @@ cTempfx::cTempfx( SERIAL nSrc, SERIAL nDest, SI32 num, SI32 dur, SI32 more1, SI3
 	m_nAmxcback = amxcback;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : bool add
-// Description       : adds a temp effect
-// Return type       : bool
-// Author            : Luxor
+/*!
+\author Luxor
+\brief	Adds a temp effect
+*/
 bool add(P_OBJECT src, P_OBJECT dest, int num, unsigned char more1, unsigned char more2, unsigned char more3, short dur, int amxcback)
 {
 	VALIDATEPOR(src, false);
 	VALIDATEPOR(dest, false);
 
-	P_OBJECT po = NULL;
+	return dest->addTempfx( *src, num, (int)more1, (int)more2, (int)more3, (int)dur, amxcback );
+}
+
+
+void addTempfxCheck( SERIAL serial )
+{
+	P_OBJECT po = objects.findObject( serial );
+	VALIDATEPO( po );
+
+	if ( find( tempfxCheck.begin(), tempfxCheck.end(), serial ) != tempfxCheck.end() )
+		return;
+
+	tempfxCheck.push_back( serial );
+}
+
+} //namespace
+
+
+
+
+
+/*!
+\author Luxor
+\brief Adds a temp effect to the object
+*/
+bool cObject::addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback )
+{
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
+		return false;
 
 	//
 	//	Repeatable check
 	//
-	if ( !isDestRepeatable(num) && dest->getTempfx(num) )
+	if ( !tempfx::isDestRepeatable(num) && getTempfx( num ) )
 			return false;
 
-	if ( !isSrcRepeatable(num) && src->getTempfx(num) )
+	if ( !tempfx::isSrcRepeatable(num) && src.getTempfx( num ) )
 			return false;
-
 
 	//
 	//	Create the tempfx
 	//
-	cTempfx addTempfx(src->getSerial32(), dest->getSerial32(), num, (int)dur, (int)more1, (int)more2, (int)more3, amxcback);
+	tempfx::cTempfx tmpeff( src.getSerial32(), getSerial32(), num, dur, more1, more2, more3, amxcback );
 
-	if (!addTempfx.isValid())
+	if ( !tmpeff.isValid() )
 		return false;
 
-    	addTempfx.start();
+        //
+        //	Put the object in the global check vector if necessary
+        //
+        tempfx::addTempfxCheck( getSerial32() );
 
 	//
-	//	Put it in the priority queue
+	//	Start the tempfx
 	//
-	tempfxQueue.push(addTempfx);
+	tmpeff.start();
+
+	//
+	//	Put it in the class vector
+	//
+	if ( tempfx == NULL )
+		tempfx = new TempfxVector;
+
+	tempfx->push_back( tmpeff );
 
 	return true;
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : tempeffectson
-// Description       : activates the temp effects
-// Return type       : void
-// Author            : Luxor
-void tempeffectson()
+/*!
+\author Luxor
+\brief Deletes every tempfx of the specified number
+*/
+void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode )
 {
-	/*if ( tempfxQueue.empty() )
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
 		return;
 
-	tempfxVector = const_cast<cTempfx*>(&(tempfxQueue.top()));
-	//tempfxVector = static_cast< vector<cTempfx>* >( &tempfxQueue );
-	for ( UI32 i = 0; i < tempfxVector.size(); i++ )
-		tempfxVector[i].deactivate();*/
+	if ( !hasTempfx() )
+		return;
 
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                if ( (*it).getNum() != num )
+			continue;
 
-    if (!tempfxQueue.empty())
-        while (!tempfxQueue.empty())
-            tempfxQueue.pop();
+		if ( executeExpireCode )
+			(*it).executeExpireCode();
 
-    if (tempfxVector.empty())
-	    return;
+		tempfx->erase( it );
+		it--;
+	}
 
-    for (UI32 i = 0; i < tempfxVector.size(); i++) {
-        tempfxVector[i].activate();
-        tempfxQueue.push(tempfxVector[i]);
-    }
+	if ( tempfx->empty() )
+		safedelete( tempfx );
+}
 
-    tempfxVector.clear();
+/*!
+\author Luxor
+\brief Activates the temp effects
+*/
+void cObject::tempfxOn()
+{
+	if ( !hasTempfx() )
+		return;
+
+	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
+		(*tempfx)[i].activate();
+	}
 }
 
 /*!
 \brief Deactivates the temp effects
 \author Luxor
 */
-void tempeffectsoff()
+void cObject::tempfxOff()
 {
-	if ( tempfxQueue.empty() )
+	if ( !hasTempfx() )
 		return;
 
-	/*tempfxVector = static_cast< vector<cTempfx>* >( &tempfxQueue );
-	for ( UI32 i = 0; i < tempfxVector.size(); i++ )
-		tempfxVector[i].deactivate();*/
-
-    if (!tempfxVector.empty())
-        tempfxVector.clear();
-
-    if (tempfxQueue.empty())
-	    return;
-
-    while (!tempfxQueue.empty())
-    {
-        tempfxVector.push_back(tempfxQueue.top());
-        static_cast<cTempfx>(tempfxQueue.top()).deactivate();
-        tempfxQueue.pop();
-    }
+	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
+		(*tempfx)[i].deactivate();
+	}
 }
 
-///////////////////////////////////////////////////////////////////
-// Function name     : checktempeffects
-// Return type       : void
-// Author            : Luxor
-void checktempeffects()
+/*!
+\author Luxor
+*/
+void cObject::checkTempfx()
 {
-    if (tempfxQueue.empty())
-	    return;
+	if ( !hasTempfx() )
+		return;
 
-    if(static_cast<cTempfx>(tempfxQueue.top()).checkForExpire()) {
-        tempfxQueue.pop();
-        checktempeffects();
-    }
+
+	TempfxVector::iterator it( tempfx->begin() );
+        for ( ; it != tempfx->end(); it++ ) {
+                if ( !(*it).checkForExpire() )
+			continue;
+
+		tempfx->erase( it );
+		it--;
+	}
 }
 
-} //namespace
+/*!
+\author Luxor
+\brief Tells if the object has tempfx in queue
+*/
+LOGICAL cObject::hasTempfx()
+{
+	if ( tempfx == NULL )
+		return false;
 
+	if ( tempfx->empty() ) {
+		safedelete( tempfx );
+		return false;
+	}
+
+	return true;
+}
+
+tempfx::cTempfx* cObject::getTempfx( SI32 num )
+{
+	if ( num < 0 || num >= tempfx::MAX_TEMPFX_INDEX )
+		return NULL;
+
+	if ( !hasTempfx() )
+		return NULL;
+
+	for ( UI32 i = 0; i < tempfx->size(); i++ ) {
+		if ( (*tempfx)[i].getNum() == num )
+			return &((*tempfx)[i]);
+	}
+
+	return NULL;
+}

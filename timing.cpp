@@ -99,6 +99,7 @@ void checktimers() // Check shutdown timers
 void checkauto() // Check automatic/timer controlled stuff (Like fighting and regeneration)
 {
 //	static TIMERVAL checkspawnregions=0;
+       	static TIMERVAL checktempfx=0;
 	static TIMERVAL checknpcs=0;
 	static TIMERVAL checktamednpcs=0;
 	static TIMERVAL checknpcfollow=0;
@@ -284,7 +285,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 	//
 	// Temporary effects
 	//
-	tempfx::checktempeffects();
+        if( TIMEOUT( checktempfx ) )
+		tempfx::checktempeffects();
 	
 	//
 	// Characters & items
@@ -425,6 +427,7 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 
 	}//for i<now
 	
+
 	if( TIMEOUT( checkitemstime ) )
 		checkitemstime = (TIMERVAL)((R64) uiCurrentTime+(speed.itemtime*MY_CLOCKS_PER_SEC));
 	if( TIMEOUT( checknpcs ) )
@@ -453,6 +456,8 @@ void checkauto() // Check automatic/timer controlled stuff (Like fighting and re
 		nextfieldeffecttime = (TIMERVAL)((R64) uiCurrentTime + (0.5*MY_CLOCKS_PER_SEC));
 	if ( TIMEOUT( nextdecaytime ) )
 		nextdecaytime = uiCurrentTime + (15*MY_CLOCKS_PER_SEC);
+        if( TIMEOUT( checktempfx ) )
+		checktempfx = (TIMERVAL)((R64) uiCurrentTime+(0.5*MY_CLOCKS_PER_SEC));
 }
 
 static SI32 linInterpolation (SI32 ix1, SI32 iy1, SI32 ix2, SI32 iy2, SI32 ix)

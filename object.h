@@ -20,6 +20,8 @@
 #include "constants.h"
 #include "typedefs.h"
 #include "amx/amxcback.h"
+#include "tmpeff.h"
+
 
 #define ISVALIDPO(po) ( ( po!=NULL && ( sizeof(*po) == sizeof(cObject) || sizeof(*po) == sizeof(cChar) || sizeof(*po) == sizeof(cItem) ) ) ? (po->getSerial32() >= 0) : false )
 #define VALIDATEPO(po) if (!ISVALIDPO(po)) { LogWarning("a non-valid P_OBJECT pointer was used in %s:%d", basename(__FILE__), __LINE__); return; }
@@ -28,6 +30,7 @@
 Location Loc(SI32 x, SI32 y, signed char z, signed char dispz=0);
 
 typedef map< UI32, AmxEvent* > AmxEventMap;
+typedef vector< tempfx::cTempfx > TempfxVector;
 
 //! == operator redefinition for Location
 int operator ==(Location a, Location b);
@@ -146,12 +149,16 @@ public:
 */
 private:
 	UI32			ScriptID;
-	LOGICAL			tempfx[tempfx::MAX_TEMPFX_INDEX];            //!< Luxor - customizable non-repeteable temp effects system
+	TempfxVector		*tempfx;
 
 public:
-	void			setTempfx( SI32 arg );
-	void			resetTempfx( SI32 arg );
-	LOGICAL			getTempfx( SI32 arg );
+	LOGICAL			addTempfx( cObject& src, SI32 num, SI32 more1, SI32 more2, SI32 more3, SI32 dur, SI32 amxcback );
+	void			delTempfx( SI32 num, LOGICAL executeExpireCode = true );
+	void			checkTempfx();
+	void			tempfxOn();
+	void			tempfxOff();
+	LOGICAL			hasTempfx();
+	tempfx::cTempfx*	getTempfx( SI32 num );
 	UI32			getScriptID();
 	void			setScriptID(UI32 sid);
 

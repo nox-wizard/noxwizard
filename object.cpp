@@ -22,10 +22,8 @@ cObject::cObject()
 	position = Loc(0,0,0);
 	ScriptID = 0;
 
-	for (UI32 i = 0; i < tempfx::MAX_TEMPFX_INDEX; i++)
-		tempfx[i] = false;
-	
 	amxEvents = 0;
+	tempfx = NULL;
 }
 
 cObject::~cObject()
@@ -38,6 +36,10 @@ cObject::~cObject()
 		//	delete it->second;
 		//}
 		safedelete( amxEvents );
+	}
+	if ( tempfx ) {
+		tempfx->clear();
+		safedelete( tempfx );
 	}
 }
 /*
@@ -64,29 +66,7 @@ bool cObject::operator==(cObject &obj){ return(getSerial32() == obj.getSerial32(
 bool cObject::operator!=(cObject &obj){ return(getSerial32() != obj.getSerial32()); }
 
 
-LOGICAL cObject::getTempfx( SI32 arg )
-{
-	if (arg < 0 || arg > tempfx::MAX_TEMPFX_INDEX)
-		return false;
-	
-	return tempfx[arg];
-}
 
-void cObject::setTempfx( SI32 arg )
-{
-	if (arg < 0 || arg > tempfx::MAX_TEMPFX_INDEX)
-		return;
-
-	tempfx[arg] = true;
-}
-
-void cObject::resetTempfx( SI32 arg )
-{
-	if (arg < 0 || arg > tempfx::MAX_TEMPFX_INDEX)
-		return;
-		
-	tempfx[arg] = false;
-}
 
 
 /*!

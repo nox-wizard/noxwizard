@@ -1345,6 +1345,7 @@ void cChar::applyPoison(PoisonType poisontype, SI32 secs )
 */
 void cChar::unfreeze()
 {
+	delTempfx( tempfx::SPELL_PARALYZE );
 	if (priv2 & CHRPRIV2_FROZEN)
 	{
 		priv2 &= ~CHRPRIV2_FROZEN;
