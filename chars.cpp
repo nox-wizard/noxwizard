@@ -315,6 +315,8 @@ cChar::cChar( SERIAL ser ) : cObject()
 	
 	SetInnocent(); //Luxor
 	targetcallback = INVALID;
+
+	statGainedToday = 0;	//Luxor
 }
 
 /*!

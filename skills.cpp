@@ -1588,7 +1588,7 @@ void Skills::AdvanceStats(CHARACTER s, int sk)
 //  int	*pi; // ptr to stat to be decreased
 	bool 	update 	= false;
 
-	if ( pc->statGainedToday < ServerScp::g_nStatDailyLimit )
+	if ( pc->statGainedToday <= ServerScp::g_nStatDailyLimit )
     {
 		bool strCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceStrength( sk ) : skillinfo[sk].st ) > (UI32)(rand() % mod);
     	bool dexCheck = ( Race::isRaceSystemActive() ? Race::getRace( pc->race )->getSkillAdvanceDexterity( sk ) : skillinfo[sk].dx ) > (UI32)(rand() % mod);

@@ -723,16 +723,23 @@ static void exec_amxrun(char *params)
 	safedelete(prg);
 }
 
+/*!
+\author Luxor
+*/
 static void exec_resetdailylimit(char *params)
 {
-        return;
-        /*ConOut("Resetting daily limits (if any)...");
-	for (int i=0; i<charcount; i++) {
-		P_CHAR pc=MAKE_CHAR_REF(i);
+        ConOut("Resetting daily limits (if any)...");
+
+	cAllObjectsIter objs;
+	for( objs.rewind(); !objs.IsEmpty(); objs++ ) {
+		if ( !isCharSerial(objs.getSerial()) )
+			continue;
+
+		P_CHAR pc = static_cast<P_CHAR>(objs.getObject());
 		if(ISVALIDPC(pc))
 			pc->statGainedToday = 0;
 	}
-	ConOut("[ OK ]\n");*/
+	ConOut("[ OK ]\n");
 }
 
 static void exec_backup (char *dummy)
