@@ -915,28 +915,57 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 									//
 									// Sparhawk	:	Just In Time Loot handling
 									//
-									// Syntax	:	LOOT <itemid> [<amount range> [<chance>]]
+									// Syntax	:	LOOT <lootlistid>
 									//
+									// Todo		:	get item from lootlist now
 									//
-									// Params	:	itemid
-									//		:	amount range
-									//		:	chance
-									//			optional (100%) or values > 0 and <= 100
+									pc->lootVector.push_back( str2num( script2 ) );
+								}
+								else if ( "LOOTITEM" == script1 )
+								{
+									//
+									// Sparhawk	:	Just In Time Loot handling
+									//
+									// Syntax	:	LOOTITEM <itemid>
+									//			{
+									//				AMOUNT <amount range>
+									//				CHANCE <chance>
+									//			}
 									//
 									/*
-									std::string 	str_lootItem,
-											str_lootChance;
+									std::string strLootItem = script2;
+									do
+									{
+										iter->parseLine(script1, script2);
+										if ( script1[0]!='{' && script1[0]!='}' )
+										{
+											if ( "AMOUNT" == script1 )
+											{
+												amount = getRangedValue( script2 );
+												if( amount < 1 )
+													amount = 1;
+											}
+											else if ( "CHANCE" == script1 )
+											{
+												chance = str2num( script2 );
+												if( chance < 1 )
+													chance = 1;
+												else if ( chance > 100 )
+													chance = 100;
+											}
+											else
+											{
+												unknown tag;
+											}
+										}
+									} while ( script1[0] !='}' && ++loopexit < MAXLOOPS );
 
-									splitLine( script2, str_lootItem, str_lootChance );
+									if ( chance( chance ) )
+										pc->lootVector.push_back( makepair( str2num( strLootItem ), chance ) );
 
-									SI32		num_lootItem	= str2num( str_lootItem ),
-											num_lootChance	= str2num( str_lootChance );
-
-									if( num_lootChance < 0 || num_lootChance > 100 )
-										num_lootChance = 100;
-									if( chance( num_lootChance ) )
+									script1 = "DUMMY";
 									*/
-										pc->lootVector.push_back( str2num( script2 ) );
+
 								}
 								else if ( "LUMBERJACKING" == script1 )
 									pc->baseskill[LUMBERJACKING] = getRangedValue(script2);
