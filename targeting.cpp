@@ -3939,7 +3939,6 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
 
         case 126: Targ->JailTarget(s,-1); break;
         case 127: Targ->ReleaseTarget(s,-1); break;
-        case 128: Skills::CreateBandageTarget(s); break;
         case 129: ItemTarget(ps,pt); break;//SetAmount2Target
         case 130: Skills::HealingSkillTarget(s); break;
         case 131: VALIDATEPC(curr); if (curr->IsGM()) Targ->permHideTarget(s); break; /* not used */

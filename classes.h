@@ -404,7 +404,6 @@ namespace Skills {
 	/*!
 	\name Healing stuff
 	*/
-	void CreateBandageTarget(NXWSOCKET s);
 	void HealingSkillTarget(NXWSOCKET s);
 	//@}
 
