@@ -326,9 +326,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	resetProfile();
 	staticProfile=NULL;
 
-	vendorItemsSell = NULL;
-	vendorItemsBuy = NULL;
-
 	oldmenu=INVALID;
 
 }
