@@ -265,6 +265,7 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 	int status ;
 	if ( boutlength[ socket ] > 0 )
 	{
+		/*
 		FILE *debugout=fopen("d:\\packets.log", "a");
 		for ( int i = 0; i < boutlength[socket];++i)
 		{
@@ -276,6 +277,7 @@ void cNetwork::FlushBuffer( NXWSOCKET socket ) // Sends buffered data at once
 		}
 		fprintf(debugout, "\n%d------------------------------------------", client[socket]);
 		fclose(debugout);
+		*/
 		if ( clientInfo[ socket ]->compressOut )
 		{
 			DoStreamCode( socket );
@@ -1230,9 +1232,10 @@ char cNetwork::LogOut(NXWSOCKET s)//Instalog
 int cNetwork::Receive(int s, int x, int a )
 {
 	if ( (x+a) >= MAXBUFFER) return 0;
+	/*
 	FILE *debugout=fopen("d:\\packetsin.log", "a");
 	fprintf(debugout, "\nStart------------------------------------------\n");
-
+	*/
 	int count,loopexit=0;
 	do
 	{
@@ -1241,6 +1244,7 @@ int cNetwork::Receive(int s, int x, int a )
 
 	}
 	while ( (count!=x) && (count>0) && (++loopexit < MAXBUFFER ));
+	/*
 	for ( int i=0; i< count;++i)
 	{
 		if ( i % 32 == 0 )
@@ -1251,6 +1255,7 @@ int cNetwork::Receive(int s, int x, int a )
 	}
 	fprintf(debugout, "\nStop------------------------------------------\n");
 	fclose(debugout);
+	*/
 
 	return count;
 }
