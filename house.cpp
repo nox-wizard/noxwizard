@@ -174,7 +174,7 @@ void buildhouse(int s, int i)
 		looptimes=0;
 		if(!pc->IsGM() && SrvParms->houseintown==0)
 		{
-			if ((region[pc->region].priv & RGNPRIV_GUARDED) && itemById::IsHouse(tmp) ) // popy
+			if ((region[pc->region].priv & RGNPRIV_GUARDED) && itemById::IsHouse(id) ) // popy
 			{
 			    sysmessage(s,TRANSLATE(" You cannot build houses in town!"));
 			    return;
