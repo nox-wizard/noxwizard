@@ -38,6 +38,7 @@
 #include <signal.h>
 #include <string.h>     /* for memset() (on some compilers) */
 #include <time.h>
+#include <assert.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -220,7 +221,15 @@ void AmxProgram::Load(const char *filename)
       fclose( fp );
 	  m_nSize = hdr.stp;
 	  m_ptrCode = program;
+
+//#define FIND_NATIVE_NOT_FOUND
+#ifdef FIND_NATIVE_NOT_FOUND
+	  if( !findNativeNotFound(program) ) { //native not found
+		  ConOut("[FAIL]\n");
+	  }
+#else
 	  _init(program);
+#endif
 	  core_Init();
 	  ConOut("[ OK ]\n");
 	  return;
@@ -261,6 +270,78 @@ bool AmxProgram::_init (void *program)
   amx_Register(amx, console_Natives, -1);
   amx_Register(amx, nxw_API, -1);
   amx_Register(amx, core_Natives, -1);
+  return true;
+}
+
+/*!
+\brief Check natives and find what function is not present
+\author Endymion
+*/
+bool AmxProgram::findNativeNotFound( void* program )
+{
+
+	
+  AMX *amx = m_AMX;
+
+  CHECKAMX;
+
+  memset(amx, 0, sizeof *amx);
+
+  if (ServerScp::g_nDeamonMode!=0) ServerScp::g_nLoadDebugger = 0;
+
+  if (ServerScp::g_nLoadDebugger==0) {
+	amx_SetDebugHook(amx, amx_AbortProc);
+  } else {
+	amx_SetDebugHook(amx, amx_InternalDebugProc);
+  }
+
+  if ( amx_Init( amx, program ) != AMX_ERR_NONE )
+  {
+     ConOut ("AMX Init FAILED!\n"); return false;
+  }
+
+  AMX_FUNCSTUB *func;
+  AMX_HEADER *hdr;
+  int i,numnatives,err;
+  AMX_NATIVE funcptr;
+  AMX_NATIVE_INFO *list;
+
+  hdr=(AMX_HEADER *)amx->base;
+  assert(hdr!=NULL);
+  assert(hdr->natives<=hdr->libraries);
+  
+  numnatives=(int)(((*hdr).libraries - (*hdr).natives)/sizeof(AMX_FUNCSTUB));
+
+  err=AMX_ERR_NONE;
+  func=(AMX_FUNCSTUB *)(amx->base+(int)hdr->natives);
+  for (i=0; i<numnatives; i++) {
+    if (func->address==0) {
+      /* this function is not yet located */
+		bool found=false;
+		for( int l=0; (l<=3) && !found; ++l ) {
+			
+			switch( l ) {
+				case 0 : list = console_Natives; break;
+				case 1 : list = nxw_API; break;
+				case 2 : list = core_Natives; break;
+				case 3 :
+					ConOut( "\n[ERROR] native function not found [ %s ]   [ERROR]\n", func->name );
+					return false;
+			}						
+
+			funcptr= NULL;
+			for (int n=0; list[n].name!=NULL; n++)
+				if (strcmp(func->name,list[n].name)==0)
+					funcptr= list[n].func;
+			found = (funcptr!=NULL);
+			if (funcptr!=NULL)
+				func->address=(cell)funcptr;
+			else
+				err=AMX_ERR_NOTFOUND;
+		}
+    } /* if */
+    func++;
+  } /* for */
   return true;
 }
 

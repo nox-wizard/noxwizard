@@ -66,6 +66,8 @@ NATIVE2(_setGuildProperty);
 NATIVE2(_getGuildProperty);
 NATIVE2(_setMenuProperty);
 NATIVE2(_getMenuProperty);
+NATIVE2(_getRaceProperty);
+NATIVE2(_getRaceGlobalProp);
 
 int g_nCurrentSocket;
 int g_nTriggeredItem;
@@ -2855,6 +2857,18 @@ NATIVE( _set_delete )
 }
 
 /*
+\brief Clear a set
+\author Endymion
+\since 0.82
+\param 1 the set
+\return 0
+*/
+NATIVE( _set_clear )
+{
+	return 0;
+}
+
+/*
 \brief Rewind a set
 \author Endymion
 \since 0.82
@@ -3203,6 +3217,51 @@ NATIVE( _set_addGuilds )
 	amxSet::addGuilds( params[1], params[2], static_cast<GUILD_POLITICAL>(params[3]) );
 	return 0;
 }
+
+
+
+/*!
+\brief Add to given set all race
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 onlyActive if true are added only active races
+\return 0
+*/
+NATIVE( _set_addAllRaces )
+{
+	return 0;
+}
+
+/*!
+\brief Add to given set all race
+\author Endymion
+\since 0.82
+\param 1 the set
+\param 2 race the race
+\param 3 prop the property
+\param 4 subProp the sub property
+\return 0
+*/
+NATIVE( _set_getRaceStuff )
+{
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -5107,14 +5166,6 @@ NATIVE( _chr_unStable )
 
 
 
-
-
-
-
-
-
-
-
 //
 // New Menu API -- still highly experimental
 //
@@ -6043,6 +6094,7 @@ AMX_NATIVE_INFO nxw_API[] = {
 // Set functions :
  { "set_create", _set_create },
  { "set_delete", _set_delete },
+ { "set_clear", _set_clear },
  
  { "set_rewind", _set_rewind },
  { "set_next", _set_next },
@@ -6068,6 +6120,8 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "set_addGuildMembers", _set_addGuildMembers },
  { "set_addGuildRecruit", _set_addGuildRecruit },
  { "set_addGuilds", _set_addGuilds },
+ { "set_addAllRaces", _set_addAllRaces },
+ { "set_getRaceStuff", _set_getRaceStuff },
 // calendar properties - [Sparhawk] 2001-09-15
  { "cal_getProperty"		,	_getCalProperty			},
 // Map functions - for experimental small npc ai Sparhawk
@@ -6099,6 +6153,9 @@ AMX_NATIVE_INFO nxw_API[] = {
  { "file_read", _file_read },
  { "file_write", _file_write },
  { "file_eof", _file_eof },
+// race functions - Endymion
+ { "race_getProperty",	_getRaceProperty },
+ { "race_getGlobalProp",	_getRaceGlobalProp },
 // Terminator :
  { NULL, NULL }
 };

@@ -48,6 +48,7 @@ private:
 	void *m_ptrCode;
 	int  m_nSize;
 	bool _init(void *program);
+	bool findNativeNotFound( void* program );
 	struct __amx *m_AMX;
 public:
 	void Load (const char *filename);

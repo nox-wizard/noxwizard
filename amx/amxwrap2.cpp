@@ -33,6 +33,8 @@
 #include "inlines.h"
 #include "items.h"
 #include "chars.h"
+#include "race.h"
+#include "layer.h"
 
 static void *getCalPropertyPtr(int i, int property, int prop2); //Sparhawk
 
@@ -2647,3 +2649,249 @@ NATIVE2(_getMenuProperty)
 		return INVALID;
 	}
 }
+
+
+
+NATIVE2(_getRaceProperty)
+{
+
+	Race* race = Race::getRace( params[1] );
+	if( race==NULL )
+	{
+		LogError( "race_getProperty called with invalid race %d", params[1] );
+		return INVALID;
+	}
+
+	VAR_TYPE tp = getPropertyType(params[2]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[2]) {
+			case INVALID:
+			default:
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p;
+		switch(params[2]) {
+		case INVALID:
+			default:
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				return false;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[2]) {
+			case RP_S_SKIN:
+				p = ( !race->skinColor.empty() )? race->skinColor[ rand()%race->skinColor.size() ] : 0;
+				break;
+			default:
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[2]) {
+			case RP_C_TYPE:
+				p = race->raceType.getValue();
+				break;
+			case RP_C_LAYER_PERMITTED:
+				if( params[2]==LAYER_BEARD )
+					p = race->beardPerm;
+				else if( params[2]==LAYER_HAIR )
+					p = race->hairPerm;
+				else 
+			default:
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[2]) {
+			case RP_STR_NAME:
+				strcpy( str, race->name.c_str() );
+				break;
+			case RP_STR_WEBLINK :
+				strcpy( str, race->webLink.c_str() );
+				break;
+			case RP_STR_DESCRIPTION :
+				if( params[2] == RP2_DESCRIPTION_COUNT )
+					race->description.size();
+				else
+					race->description[ params[3] ];
+			default:
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				return INVALID;
+		}
+
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[2] )
+		{
+			case INVALID :		
+			default :
+				ErrOut("race_getProperty called with invalid property %d!\n", params[2] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+
+NATIVE2(_getRaceGlobalProp)
+{
+
+	VAR_TYPE tp = getPropertyType(params[1]);
+
+	switch( tp ) {
+	
+	case T_INT: {
+	
+		int p;
+		switch(params[1]) {
+			case INVALID:
+			default:
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	} 
+	break;
+	
+	case T_BOOL: {
+
+		bool p;
+		switch(params[1]) {
+
+			case RP_B_TELEPORT_ON_ENLIST:
+				p = Race::teleportOnEnlist;
+			break;
+			case RP_B_WITH_WEB_INTERFACE:
+				p = Race::withWebInterface;
+			break;
+			default:
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				return false;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_SHORT: {
+
+		short p;
+		switch(params[1]) {
+			case INVALID:
+			default:
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_CHAR: {
+
+		char p; 
+		switch(params[1]) {
+			case INVALID:
+			default:
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				return INVALID;
+		}
+		return static_cast<cell>(p);
+	}
+	break;
+
+	case T_STRING: {
+
+		//we're here so we should pass a string, params[4] is a str ptr
+
+	  	char str[100];
+		cell *cptr;
+		switch(params[1]) {
+			case RP_STR_WEBROOT:
+				strcpy( str, Race::globalWebRoot.c_str() );
+				break;
+			default:
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				return INVALID;
+		}
+
+		amx_GetAddr(amx,params[4],&cptr);
+  		amx_SetString(cptr,str, g_nStringMode);
+
+		return strlen(str);
+	}
+	break;
+
+	case T_UNICODE: {
+
+		wstring* w=NULL;
+		switch( params[1] )
+		{
+			case INVALID :		
+			default :
+				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
+				break;
+  		}
+
+		if( w==NULL ) w=&emptyUnicodeString;
+		cell *cptr;
+	  	amx_GetAddr(amx,params[4],&cptr);
+		amx_SetStringUnicode(cptr, *w );
+		return w->length();
+		
+	}
+	break;
+
+	default:
+		return INVALID;
+	}
+}
+

@@ -468,4 +468,25 @@ const int NXW_MP_STR_BUFFER = 451;
 const int NXW_MP_UNI_TEXT = 500;
 
 
+///
+/// Race constants
+///
+
+#define RP2_DESCRIPTION_COUNT 1
+
+const int RP_B_TELEPORT_ON_ENLIST = 0;
+const int RP_B_WITH_WEB_INTERFACE = 1;
+
+const int RP_C_TYPE = 100;
+const int RP_C_LAYER_PERMITTED = 101;
+
+const int RP_S_SKIN = 400;
+
+const int RP_STR_NAME = 450;
+const int RP_STR_DESCRIPTION = 451;
+const int RP_STR_WEBLINK = 452;
+const int RP_STR_WEBROOT = 453;
+
+
+
 #endif //__AMXWRAPS_H__
