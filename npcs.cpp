@@ -922,6 +922,9 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 			case 'R':
 				if	( !strcmp( "RACE", script1 ) )			pc->race=str2num(script2);
 				else if ( !strcmp( "REATTACKAT", script1 ) )		pc->reattackat=str2num(script2);
+				else if ( !strcmp( "REGEN_HP", script1 ) )	{ UI32 v=str2num(script2);	pc->setRegenRate( STAT_HP, v, VAR_REAL );	pc->setRegenRate( STAT_HP, v, VAR_EFF ); }
+				else if ( !strcmp( "REGEN_ST", script1 ) )	{ UI32 v=str2num(script2);	pc->setRegenRate( STAT_STAMINA, v, VAR_REAL );	pc->setRegenRate( STAT_STAMINA, v, VAR_EFF ); }
+				else if ( !strcmp( "REGEN_MN", script1 ) )	{ UI32 v=str2num(script2);	pc->setRegenRate( STAT_MANA, v, VAR_REAL );	pc->setRegenRate( STAT_MANA, v, VAR_EFF ); }
 				else if ( !strcmp( "REMOVETRAPS", script1 ) )		pc->baseskill[REMOVETRAPS] = getRangedValue(script2);
 				else if ( !strcmp( "RESISTS", script1 ) )
 				{
