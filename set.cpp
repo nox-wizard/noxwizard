@@ -285,7 +285,7 @@ void addOnlinePlayersNearXY( SERIAL iSet, UI16 x, UI16 y, int distance )
 	if( iter != g_oSet.end() )
 	{
 		NxwSocketWrapper sw;
-		Location loc; loc.x=x; loc.y=y;
+		Location loc; loc.x=x; loc.y=y, loc.z=0, loc.dispz=0;
 		sw.fillOnline( loc, distance );
 
 		NxwSocketWrapper2NxwCharWrapper( sw, static_cast<NxwCharWrapper*>(iter->second) );
@@ -660,7 +660,7 @@ void NxwCharWrapper::fillCharsAtXY( Location location, bool bExcludeOfflinePlaye
 */
 void NxwCharWrapper::fillCharsNearXYZ ( UI16 x, UI16 y, int nDistance, bool bExcludeOfflinePlayers, bool bOnlyPlayer )
 {
-	Location pos = Loc( x, y, 0 );
+	Location pos = Loc( x, y, 0,0 );
 	if( mapRegions->isValidCoord( x, y ) )
 		for( SI32 ix=x-REGION_GRIDSIZE; ix<=x+REGION_GRIDSIZE; ix+=REGION_GRIDSIZE ) {
 			if( ix>=0 ) {

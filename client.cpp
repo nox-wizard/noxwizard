@@ -28,10 +28,10 @@ cNxwClientObj::cNxwClientObj( NXWSOCKET s ) {
 void cNxwClientObj::sysmsg(short color, char* txt, ...)
 {
 	UI08 talk2[18]={ 0xAE, 0x00, };
-	char unicodetext[512];
+	char unicodetext[4096];
 
 	va_list argptr;
-	char msg[512];
+	char msg[2048];
 	va_start( argptr, txt );
 	vsnprintf( msg, sizeof(msg)-1, txt, argptr );
 	va_end( argptr );

@@ -2021,7 +2021,7 @@ void usepotion(P_CHAR pc, P_ITEM pi)
 			pc->sysmsg(TRANSLATE("no,no,no,cant you get enough ?"));
 			return;
 		}
-		tempfx::add(pc, pc, tempfx::LSD, (char) (60+RandomNum(1,120)), 0, 0); // trigger effect
+		tempfx::add(pc, pc, tempfx::HALLUCINATE, (char) (60+RandomNum(1,120)), 0, 0); // trigger effect
 		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x00F8, true); // lsd sound :)
 		break;

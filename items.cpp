@@ -286,8 +286,8 @@ void cItem::setContSerial(SI32 serial, LOGICAL old, LOGICAL update )
 			setDecayTime();
 	}
 
-	if( update )
-		pointers::updContMap(this);
+	// if( update )
+	pointers::updContMap(this);
 }
 
 void cItem::setContSerialByte(UI32 nByte, BYTE value, LOGICAL old/*= false*/)

@@ -259,7 +259,7 @@ SI32 getTempFxTime(P_CHAR src, int num, int more1, int more2, int more3)
 			dur = 4;
 			break;
 
-		case LSD:
+		case HALLUCINATE:
 			dur = 90;
 			break;
 
@@ -550,10 +550,12 @@ void cTempfx::start()
 			dest->morph(body, skincolor, hairstyle, haircolor, beardstyle, beardcolor, newname->c_str(), true);
 			break;
 
-		case LSD:
-			/*if (dest->getClient() == NULL) return;
+		case HALLUCINATE:
+			/*
+			if (dest->getClient() == NULL) return;
 			index = dest->getClient()->toInt();
-			dest->sysmsg(TRANSLATE("Hmmm, tasty, LSD"));
+			dest->sysmsg(TRANSLATE("Did you see the size of that chicken ?"));
+			dest->
 			clientInfo[index]->lsd = true;
 			dest->hp = dest->st;
 			dest->mn = dest->in;
@@ -804,22 +806,13 @@ void cTempfx::executeExpireCode()
 			dest->incognito = false;
 			break;
 
-		case LSD:
-			/*if (dest->getClient() == NULL) return;
-			index = dest->getClient()->toInt();
-			clientInfo[index]->lsd = false;
-			dest->sysmsg(TRANSLATE("LSD has worn off"));
+		case HALLUCINATE:
+			if (dest->getClient() == NULL) return;
+			dest->sysmsg(TRANSLATE("The effect wears off."));
 			dest->stm = 3;
 			dest->mn = 3;
 			dest->hp /= 7;
-			impowncreate(index, dest, 0);
-			all_items(index);
-			P_CHAR p_nearchar;
-			forEachCharNearby(dest->x, dest->y, 15, p_nearchar) {
-				if ((p_nearchar!=NULL)) {
-					p_chearchar->teleport();
-				}
-			} nextIndex(p_nearchar);*/
+			dest->teleport();
 			break;
 
 		case SPELL_PROTECTION:

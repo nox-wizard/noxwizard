@@ -70,7 +70,7 @@ void cSpawnScripted::safeCreate( P_CHAR npc, cSpawnArea& single  )
 {
 	VALIDATEPC(npc);
 
-	Location location;
+	Location location = { 0,0,0,0};
 	if( single.findValidLocation( location ) ) {
 		npc->npcWander = WANDER_FREELY_BOX;
 		npc->fx1 = single.where->second.x1;
@@ -95,7 +95,7 @@ void cSpawnScripted::safeCreate( P_ITEM pi, cSpawnArea& single  )
 {
 	VALIDATEPI(pi);
 	
-	Location location;
+	Location location= { 0,0,0,0};
 	if( single.findValidLocation( location ) ) {
 		pi->MoveTo(location);
 		single.current++;
@@ -125,7 +125,7 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 	{
 		UI32 counter = rand()%npclists.size();
 		{
-			Location location;
+			Location location= { 0,0,0,0};
 			if( c.findValidLocation( location ) )
 			{
 				P_CHAR npc = npcs::AddNPCxyz( INVALID, npclists[counter], location );
@@ -143,7 +143,7 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 
 		UI32 counter = rand()%itemlists.size();
 		{
-			Location location;
+			Location location= { 0,0,0,0};
 			if( c.findValidLocation( location) )
 			{
 				char list[512];
@@ -162,7 +162,7 @@ void cSpawnScripted::doSpawn( cSpawnArea& c ) {
 	{
 		UI32 counter = rand()%npcs.size();
 		{
-			Location location;
+			Location location= { 0,0,0,0};
 			location.x=location.y=location.z=location.dispz=0;
 			if( c.findValidLocation( location ) )
 			{

@@ -1401,9 +1401,9 @@ void staticeffect(CHARACTER player, unsigned char eff1, unsigned char eff2, unsi
 
 	 if (!skip_old)
 	 {
-Location pos2;
-pos2.x = 0; pos2.y = 0; pos2.z = 0;
-MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0);
+		Location pos2;
+		pos2.x = 0; pos2.y = 0; pos2.z = 0;
+		MakeGraphicalEffectPkt_(effect, 0x03, pc->getSerial32(), 0, eff, charpos, pos2, speed, loop, 1, 0);
 	 }
 
 	 if (!UO3DonlyEffekt) // no UO3D effect ? lets send old effect to all clients
