@@ -231,35 +231,35 @@ void cFishing::Fish(CHARACTER i)
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "5" ); // random boots
 				pc->sysmsg(  TRANSLATE("You fished up an old pair of boots!") ); 
 			} 
-            return;
+            break;
 		case 1:
             if(skill>=970) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "1" ); // random paintings 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient painting!") ); 
 			} 
-            return;
+            break;
 		case 2:
             if(skill>=950) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "2" ); // random weapons 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient weapon!") ); 
 			} 
-            return;
+            break;
 		case 3:
             if(skill>=950) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "3" ); // random armor 
 				pc->sysmsg(  TRANSLATE("You fished up an ancient armor!") ); 
 			} 
-            return;
+            break;
 		case 4:
             if(skill>=700) 
 			{ 
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "4" ); // random treasure
 				pc->sysmsg(  TRANSLATE("You fished up some treasure!") ); 
 			} 
-            return;
+            break;
 		case 5:
             if(skill>=400) 
 			{ 
@@ -268,98 +268,109 @@ void cFishing::Fish(CHARACTER i)
 				else
 					pc->sysmsg(  TRANSLATE("You wait for a while, but nothing happens"));
 			} 
-            return;
+            break;
 		case 6:
             if(skill>=800) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "6" ); // random chests
 				pc->sysmsg(  TRANSLATE("You fished up an old chest!") );
 			} 
-            return;
+            break;
 		case 7:
             if(skill>=700) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "8" ); // random seashells
 				pc->sysmsg(  TRANSLATE("You fished up a seashell!") );
 			} 
-            return;
+            break;
 		case 8:
             if(skill>=700) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "9" ); // random skulls
 				pc->sysmsg(  TRANSLATE("You fished up a skull!") );
 			} 
-            return;
+            break;
 		case 9:
             if(skill>=900) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "10" ); // random nets
 				pc->sysmsg(  TRANSLATE("You fished up a net!") );
 			} 
-            return;
+            break;
 		case 10:
             if(skill>=900) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "11" ); // random gold
 				pc->sysmsg(  TRANSLATE("You fished up some gold!") );
 			} 
-            return;
+            break;
 		case 11:
             if(skill>=400) 
 			{
 				SpawnFishingItem( s, 1, "fishing.scp", "FISHLIST", "12" ); // random bones
 				pc->sysmsg(  TRANSLATE("You fished up some bones!") );
 			} 
-            return;
-		default:
-			break;
+            break;
+		default: {
+
+			ii=rand()%3;
+			idnum=0xCC+ii;
+	
+			///**** exotic fish stuff *****//
+			double mv=-0.087087087*(float)pc->skill[FISHING]+100.087087087086; // gm fish -> 1/13 % probability on new spawn(!) to have exotic color, neophyte: 1/92 % probability, linear interpolation in between
+			int no_idea_for_variable_name = (int) mv;
+			if (no_idea_for_variable_name<=0) no_idea_for_variable_name=1; // prevent modulo crashes	
+			if (rand()%no_idea_for_variable_name==0) 
+			{ 		
+				color=(charpos.x + charpos.y);
+				color+= rand()%10;
+				color= color%0x03E9; 
+				c1= color >> 8;
+				c2= color % 256;		
+				if ((DBYTE2WORD(c1,c2)<0x0002) || (DBYTE2WORD(c1,c2)>0x03E9) )
+				{
+					c1=0x03;
+					c2=0xE9;
+				}
+				b=((DBYTE2WORD(c1,c2)&0x4000)>>14)+((DBYTE2WORD(c1,c2)&0x8000)>>15);
+				if (b)
+				{
+					c1=0x1;
+					c2=rand()%255;
+				}
+			} else c1=c2=0;
+		
+			/**** end of exotic fish stuff stuff */
+		
+			//fishes_around_player=item::Find_items_around_player(i, 0x09, idnum, 2, 2, max_fish_piles, fish_sers); // lets search for fish in a 2*2 rectangle around the player
+			
+			//P_ITEM pFish;
+			//if (fishes_around_player<=0) // no fish around -> spawn a new one
+		
+				//Luxor - Now fishes are spawned into backpack
+			//{
+				//Luxor: fishes should be read from items.xss
+				//pFish=item::SpawnItem(i,1,"#",1,0x0900+idnum,(c1<<8)+c2,0);
+			P_ITEM fish = item::CreateFromScript(-1, 8108);
+			VALIDATEPI(fish);
+		
+			fish->color1= c1;
+			fish->color2= c2;
+			fish->id2= idnum;
+		
+			
+			if (ISVALIDPI(pc_bp))
+				pc_bp->putInto( fish );
+			else {
+				fish->MoveTo( charpos ); //Luxor bug fix
+				fish->Refresh();
+			}
+
+		}
+			
 	}
 
 
-	ii=rand()%3;
-	idnum=0xCC+ii;
-
-	///**** exotic fish stuff *****//
-	double mv=-0.087087087*(float)pc->skill[FISHING]+100.087087087086; // gm fish -> 1/13 % probability on new spawn(!) to have exotic color, neophyte: 1/92 % probability, linear interpolation in between
-	int no_idea_for_variable_name = (int) mv;
-	if (no_idea_for_variable_name<=0) no_idea_for_variable_name=1; // prevent modulo crashes	
-	if (rand()%no_idea_for_variable_name==0) 
-	{ 		
-		color=(charpos.x + charpos.y);
-		color+= rand()%10;
-		color= color%0x03E9; 
-		c1= color >> 8;
-		c2= color % 256;		
-		if ((((c1<<8)+c2)<0x0002) || (((c1<<8)+c2)>0x03E9) )
-		{
-			c1=0x03;
-			c2=0xE9;
-		}
-		b=((((c1<<8)+c2)&0x4000)>>14)+((((c1<<8)+c2)&0x8000)>>15);
-		if (b)
-		{
-			c1=0x1;
-			c2=rand()%255;
-		}
-	} else c1=c2=0;
-
-	/**** end of exotic fish stuff stuff */
-
-	//fishes_around_player=item::Find_items_around_player(i, 0x09, idnum, 2, 2, max_fish_piles, fish_sers); // lets search for fish in a 2*2 rectangle around the player
-	
-	//P_ITEM pFish;
-	//if (fishes_around_player<=0) // no fish around -> spawn a new one
-
-        //Luxor - Now fishes are spawned into backpack
-	//{
-		//Luxor: fishes should be read from items.xss
-		//pFish=item::SpawnItem(i,1,"#",1,0x0900+idnum,(c1<<8)+c2,0);
-		P_ITEM fish = item::CreateFromScript(-1, 8108);
-		VALIDATEPI(fish);
-
-		fish->color1= c1;
-		fish->color2= c2;
-		fish->id2= idnum;
 
 	if(c2>0)
 	{
@@ -369,65 +380,6 @@ void cFishing::Fish(CHARACTER i)
 	{
 	    sysmessage(s,TRANSLATE("You pull out a fish!"));
 	}
-		
-		//<Luxor>
-		if (ISVALIDPI(pc_bp)) {
-			fish->setCont(pc_bp);
-			if (pc_bp->ContainerPileItem(fish)==INVALID)// try to pile
-				fish->SetRandPosInCont(pc_bp);
-			else 
-				return;				
-		} else
-			fish->MoveTo( charpos ); //Luxor bug fix
-		//</Luxor>
-                
-		fish->Refresh();
-/*	} else // fishes around ?
-	{
-		int c = -1;
-		min=1234567;
-		mc=0; // crash prevention if for some strange reason no min is found
-		for (d=0;d<fishes_around_player;d++) // lets pick the smallest pile form the return list
-		{
-			c = calcItemFromSer( fish_sers[d] );
-			if (c>-1)
-			{
-				ss=items[c].amount;
-				if (ss<min) { min=ss; mc=c; }
-			}
-		}
 
-		if (items[mc].amount>max_fish_stacksize) // if smaleest fish-stack > max_stacksize spawn a new fish anyway
-		{
-			if (fishes_around_player>=max_fish_piles)
-			{
-				sysmessage(s,TRANSLATE("you catch a fish, but no place for it left"));
-				return;
-			}
-			
-			//d=item::SpawnItem(-1,i,1,"#",1,0x09,idnum,c1,c2,0,0);
-			//Luxor: Fishes should be created from items.xss
-			P_ITEM fish = item::CreateFromScript(-1, 8108);
-			VALIDATEPI(fish);
-
-			//items[d].type=14;
-			fish->color1= c1;
-			fish->color2= c2;
-			fish->id2= idnum;
-			fish->setPosition( charpos );
-			mapRegions->RemoveItem(d);
-			mapRegions->AddItem(d); // lord Binary
-			fish->Refresh();
-		} else // if fish stack <=max_ -> just increase stack !!
-		{
-			P_ITEM pi= MAKE_ITEM_REF(c);
-			VALIDATEPI(pi);
-
-			pi->amount++;
-			pi->Refresh();
-		}
-	} // end else fishes around
-        */
-        
 }
 

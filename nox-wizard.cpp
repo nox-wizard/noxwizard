@@ -2025,18 +2025,13 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 
 		P_ITEM pack=pc->getBackpack();
 		if (ISVALIDPI(pack)) {
-			pi->setCont(pack);
-			if (pack->ContainerPileItem(pi)==INVALID)// try to pile
-				pi->SetRandPosInCont(pack);
-			else return;
-
+			pack->putInto( pi );
 		} 
-		else
+		else {
 			pi->MoveTo( pc->getPosition() );
-
-		pi->setDecay();
-
-		pi->Refresh();
+			pi->setDecay();
+			pi->Refresh();
+		}
 	}
 }
 
