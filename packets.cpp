@@ -309,24 +309,24 @@ CREATE( LoginDenied, PKG_LOGIN_DENIED, 0x02 )
 
 CREATE( DeleteCharacter, PKG_DELETE_CHARACHTER, 0x01 )
 RECEIVE( DeleteCharacter ) {
-	if( ps == NULL ) return; //after error here
+	if( ps == NULL ) return; 
 	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 ); // nothing.. remove?
 	getStringFromSocket( ps->toInt(), this->passwd, 30 ); 	
 	getFromSocket( ps->toInt(), (char*)(&this->idx), 8 );
 }
 
+
+/// v----- only working packets
+
+
 CREATE( UnicodeSpeech, PKG_UNICODE_SPEECH, 0x12 )
 SEND( UnicodeSpeech ) {
-	if( ps == NULL ) return; //after error here
+	if( ps == NULL ) return; 
 	this->size=this->headerSize +30 + (msg->length() +1)*2; 
-	//std::ofstream f( "d:/logs.log", std::ios::out|std::ios::trunc );
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
-	//f.write( this->getBeginValid(), this->headerSize );
 	this->name.resize( 30 );
 	Xsend( ps->toInt(), this->name.c_str(), 30 );
-	//f.write( this->name.c_str(), 30 );
 	Xsend( ps->toInt(), this->msg->s.begin(), this->msg->s.end() );
-	//f.close();
 };
 
 CREATE( Map, PKG_MAP, 0x0B )
@@ -335,3 +335,22 @@ CREATE( MapMessage, PKG_MAP_MESSAGE, 0x13 )
 CREATE( Walk, PKG_WALK, 0x02 )
 CREATE( WalkAck, PKG_WALK_ACK, 0x03 )
 CREATE( WalkReject, PKG_WALK_REJECT, 0x08 )
+
+CREATE( CharProfileReq, PKG_CHAR_PROFILE, 0x08 )
+CREATE( CharProfileUpdate, PKG_CHAR_PROFILE, 0x0A )
+RECEIVE( CharProfileUpdate ) {
+	if( ps == NULL ) return; 
+	getFromSocket( ps->toInt(), this->getBeginValidForReceive(), this->headerSize -1 );
+	//dsdsds
+}
+
+CREATE( CharProfile, PKG_CHAR_PROFILE, 0x09 )
+SEND( CharProfile ) {
+	if( ps == NULL ) return; 
+	this->size=this->headerSize +(title->size()+1) + (profile->length() +1)*2 + (staticProfile->length() +1)*2 ;
+	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
+	Xsend( ps->toInt(), this->title->c_str(), title->size()+1 );
+	Xsend( ps->toInt(), this->staticProfile->s.begin(), this->staticProfile->s.end() );
+	Xsend( ps->toInt(), this->profile->s.begin(), this->profile->s.end() );
+}
+

@@ -1644,9 +1644,76 @@ public:
 
 //@}
 
+//@{
+/*!
+\name char profile packets
+\brief char profile related packets
+*/
 
+#define PKG_CHAR_PROFILE 0xB8;
+/*!
+\brief Char Profile Request
+\author Endymion
+\since 0.83
+\note 0xB8
+*/
+class cPacketCharProfileReq : public cClientPacket {
+private:
+	eUI16	size; //!< size
+public:
+	eUI08	mode; //!< mode
+	eSERIAL chr; //!< character
 
+	cPacketCharProfileReq();
 
+};
 
+/*!
+\brief Char Profile Request
+\author Endymion
+\since 0.83
+\note 0xB8
+*/
+class cPacketCharProfileUpdate : public cClientPacket {
+private:
+	eUI16	size;	//!< size
+public:
+	eUI08	mode;	//!< mode
+	eSERIAL	chr;	//!< character
+    eUI16	type;	//!< type (0x0001 – Update)
+private:
+	eUI16	len;	//!< # of unicode characters
+public:
+	std::vector<wchar_t> msg;	//!< new profile, in unicode, not null terminated.
+
+	cPacketCharProfileUpdate();
+	void receive( NXWCLIENT PS );
+
+};
+
+/*!
+\brief Char Profile
+\author Endymion
+\since 0.83
+\note 0xB8
+*/
+class cPacketCharProfile : public cServerPacket {
+private:
+	eUI16 size;	//!< size
+public:
+	eSERIAL chr;	//!< character
+    eUI16	type;	//!< type (0x0001 – Update)
+
+	std::string* title;	//!< title
+
+	cUnicodeString* staticProfile;	//!< static profile, cant be edited 
+	cUnicodeString* profile;	//!< profile, can be edited
+
+	cPacketCharProfile();
+	void send( NXWCLIENT ps );
+
+};
+
+//@}
 
 #endif
