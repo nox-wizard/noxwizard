@@ -1990,12 +1990,10 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						P_CHAR pc_i=pointers::findCharBySerPtr(buffer[s]+4);
 						if (ISVALIDPC(pc_i) && !pc_i->npc)
 						{
-							unsigned char PACKET0xB8[100] = {'\xB8','\x00',};
-							unsigned int tlen = 7;
-							PACKET0xB8[4]= pc_i->getSerial().ser1;
-							PACKET0xB8[5]= pc_i->getSerial().ser2;
-							PACKET0xB8[6]= pc_i->getSerial().ser3;
-							PACKET0xB8[7]= pc_i->getSerial().ser4;
+							UI08 PACKET0xB8[100] = {'\xB8','\x00',};
+							UI16 tlen = 7;
+							
+							LongToCharPtr(pc_i->getSerial32(), PACKET0xB8 +4);
 							strcpy((char*)&PACKET0xB8[8], complete_title(pc_i));
 							tlen += strlen(complete_title(pc_i))+1;
 							PACKET0xB8[tlen] = 0;
@@ -2003,7 +2001,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 							//strcpy((char*)&PACKET0xB8[tlen], "Can not determine this account's age.");
 							//tlen += strlen((char*)&PACKET0xB8[tlen]);*/
 							tlen += 4;
-							PACKET0xB8[2] = (unsigned char) tlen;
+							ShortToCharPtr(tlen, PACKET0xB8 +1);
 							Xsend(s, PACKET0xB8, tlen);
 						}
 					}
@@ -2011,7 +2009,7 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					{
 					}
 					else
-						LogWarning("unkown packet 0xB8 request");
+						LogWarning("Unknown packet 0xB8 request [%X]", buffer[s][3]);
 					break;
 
 				case PACKET_MSGBOARD:
