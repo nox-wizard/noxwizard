@@ -355,7 +355,7 @@ void loadserverdefaults()
 	server_data.commandPrefix = '\''; //Ripper
 
 	server_data.CheckBank = 2000; // Ripper..2000 default
-	server_data.defaultSelledItem = 30;
+	server_data.defaultSelledItem = 10;
 
 	server_data.housedecay_secs=604800*2; // LB, one week //xan, 2 weeks default
 
