@@ -575,18 +575,6 @@ class cChar : public cObject
 		SERIAL			getGuild();
 //@}
 
-//@{
-/*!
-\name Target
-*/
-	private:
-		P_TARGET		current_target; //!< target
-
-	public:
-		bool			isTargeting();
-		void			setTarget( P_TARGET newtarget );
-		void			doTarget();
-//@}
 
 //@{
 /*!
@@ -622,29 +610,14 @@ public:
 
 	/********************************/
 
-	/// INDEX -> SERIAL
-		//SI32 			keynumb;  // for renaming keys
 		SERIAL			keyserial;  //!< for renaming keys
-		//SI32			packitem; // Only used during character creation
 		SERIAL			packitemserial; //!< Only used during character creation
-		//SI32			targ; // Current combat target
 		SERIAL			targserial; //!< Current combat target
-		//SI32			runenumb; // Used for naming runes
 		SERIAL			runeserial; //!< Used for naming runes
-		//SI32			attacker; // Character who attacked this character
 		SERIAL			attackerserial; //!< Character who attacked this character
-		//SI32			ftarg; // NPC Follow Target
 		SERIAL			ftargserial; //!< NPC Follow Target
-		//SI32			smeltitem;
-		SERIAL			smeltserial;
-		//SI32			tailitem;
-		SERIAL			tailserial;
-		//SI32			swingtarg; //Tagret they are going to hit after they swing
 		SERIAL			swingtargserial; //!< Target they are going to hit after they swing
-		//SI32			namedeed;
 		SI32			namedeedserial;
-
-	// END
 
 		SI32 			account; // changed to signed, lb
 
@@ -789,7 +762,6 @@ public:
 		magic::CastingType	spelltype;
 		TIMERVAL		nextact; //time to next spell action....
 		TargetLocation*		spellTL; //Luxor: npc spell targetlocation
-		SI32			poisonserial; //AntiChrist -- poisoning skill
 
 		SI32			squelched; // zippy  - squelching
 		TIMERVAL		mutetime; //Time till they are UN-Squelched.
@@ -807,7 +779,6 @@ public:
 		UI32			holdg; // Gold a player vendor is holding for Owner
 		//SI32			weather;	//!< Weather!
 		char			fly_steps; // number of step the creatures flies if it can fly
-		SI32			menupriv; // needed fro LB's menu priv system
 		//taken from 6904t2(5/10/99) - AntiChrist
 		LOGICAL			tamed;
 		//taken from 6904t2(5/10/99) - AntiChrist

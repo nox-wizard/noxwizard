@@ -107,6 +107,7 @@ SOURCES =	\
 		speech.cpp \
 		sregions.cpp \
 		srvparms.cpp \
+		target.cpp \
 		targeting.cpp \
 		telport.cpp \
 		timers.cpp \
@@ -121,9 +122,6 @@ SOURCES =	\
 		walking.cpp \
 		weight.cpp \
 		worldmain.cpp \
-		commands/addremove.cpp \
-		commands/privlevels.cpp \
-		commands/tweaking.cpp \
 		abstraction/endian.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
@@ -213,6 +211,3 @@ HEADERS =	\
 		typedefs.h \
 		version.h \
 		worldmain.h \
-		commands/addremove.h \
-		commands/privlevels.h \
-		commands/tweaking.h

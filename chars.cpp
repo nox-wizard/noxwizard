@@ -11,7 +11,7 @@
 #include "nxwcommn.h"
 #include "itemid.h"
 #include "sregions.h"
-#include "sndpkg.h"
+#include "sndpkg.h" 
 #include "magic.h"
 #include "debug.h"
 #include "amx/amxcback.h"
@@ -217,8 +217,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	onhorse=false; // On a horse?
 	hunger=6;  // Level of hungerness, 6 = full, 0 = "empty"
 	hungertime=0; // Timer used for hunger, one point is dropped every 20 min
-	smeltserial=INVALID;
-	tailserial=INVALID;
 	npcaitype=NPCAI_GOOD; // NPC ai
 	callnum=-1; //GM Paging
 	playercallnum=-1; //GM Paging
@@ -274,7 +272,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	spell=magic::SPELL_INVALID; //current spell they are casting....
 	spellaction=0; //Action of the current spell....
 	nextact=0; //time to next spell action....
-	poisonserial=INVALID; //AntiChrist -- poisoning skill
 	squelched=0; // zippy  - squelching
 	mutetime=0; //Time till they are UN-Squelched.
 	med=0; // 0=not meditating, 1=meditating //Morrolan - Meditation
@@ -284,7 +281,6 @@ cChar::cChar( SERIAL ser ) : cObject()
 	swingtargserial=INVALID; //Tagret they are going to hit after they swing
 	holdg=0; // Gold a player vendor is holding for Owner
 	fly_steps=0; //LB -> used for flyging creatures
-	menupriv=0; // Lb -> menu priv
 	guarded=false; // True if CHAR is guarded by some NPC
 	smoketimer=0;
 	smokedisplaytimer=0;
@@ -1226,7 +1222,6 @@ void cChar::MoveTo(Location newloc)
 		spelltime = 0;
 	}
 	// </Luxor>
-
 #ifdef SPAR_C_LOCATION_MAP
 	setPosition( newloc );
 	pointers::updateLocationMap( this );
@@ -1638,7 +1633,7 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 			saycolor=0x005B;
 		}
 
-		SendSpeechMessagePkt(s, getSerial32(), id, 0, saycolor, fonttype, name, (UI08 *)txt);
+		SendSpeechMessagePkt(s, getSerial32(), id, 0, saycolor, fonttype, name, txt);
 	}
 }
 
@@ -1674,7 +1669,7 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(socket, getSerial32(), id, 2, emotecolor, fonttype, name, (UI08 *)msg);
+		SendSpeechMessagePkt(socket, getSerial32(), id, 2, emotecolor, fonttype, name, msg);
 	}
 }
 
@@ -1747,7 +1742,7 @@ void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 		UI08 name[30]={ 0x00, };
 		strcpy((char *)name, getCurrentNameC());
 
-		SendSpeechMessagePkt(s, getSerial32(), id, 0, 0x0001, 0x0008, name, (UI08 *)txt);
+		SendSpeechMessagePkt(s, getSerial32(), id, 0, 0x0001, 0x0008, name, txt);
 	}
 }
 
@@ -2133,6 +2128,8 @@ LOGICAL const cChar::CanDoGestures() const
 {
 	if (!IsGM())
 	{
+		if (hidden == HIDDEN_BYSPELL) return false;	//Luxor: cannot do magic gestures if under invisible spell
+
 		NxwItemWrapper si;
 		si.fillItemWeared( (P_CHAR)this, false, false, true );
 		for( si.rewind(); !si.isEmpty(); si++ ) {
@@ -4136,7 +4133,7 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 		}
 	}
 
-	SendSpeechMessagePkt(socket, getSerial32(), 0x0101, 6, color, 0x0003, sysname, (UI08 *)temp1);
+	SendSpeechMessagePkt(socket, getSerial32(), 0x0101, 6, color, 0x0003, sysname, temp1);
 }
 
 /*!
@@ -4411,6 +4408,14 @@ void cChar::generic_heartbeat()
 
 void checkFieldEffects(UI32 currenttime, P_CHAR pc, char timecheck );
 
+
+void target_castSpell( NXWCLIENT ps, P_TARGET t )
+{
+	TargetLocation TL( t );
+	magic::castSpell( static_cast<magic::SpellId>(t->buffer[0]), TL, ps->currChar() );
+}
+
+
 void cChar::pc_heartbeat()
 {
 	if ( Accounts->GetInWorld( account ) == getSerial32() && logout > 0 && ( logout <= (SI32)uiCurrentTime  ) )
@@ -4496,7 +4501,7 @@ void cChar::pc_heartbeat()
 
 	int timer;
 
-//	NXWCLIENT ps = getClient();
+	NXWCLIENT ps = getClient();
 	NXWSOCKET socket = getSocket();
 
 	if     ( swingtargserial == INVALID )
@@ -4560,8 +4565,13 @@ void cChar::pc_heartbeat()
 	{
 		if ( TIMEOUT( spelltime ) )//Spell is complete target it.
 		{
-			if ( magic::spellRequiresTarget( spell ) )
-				target( socket, 0, 1, 0, 194, TRANSLATE("Select your target") );
+			if ( magic::spellRequiresTarget( spell ) ) {
+				P_TARGET targ = clientInfo[socket]->newTarget( new cTarget() );
+				targ->code_callback = target_castSpell;
+				targ->buffer[0]=spell;
+				targ->send( ps );
+				ps->sysmsg( TRANSLATE("Select your target") );
+			}
 			else
 			{
 		    		TargetLocation TL( this );
@@ -4772,6 +4782,7 @@ void cChar::npc_heartbeat()
 			combatHit( pointers::findCharBySerial( swingtargserial ) );
 
 	setcharflag2( this );
+
 
 	//
 	//	Handle spell casting (Luxor)
@@ -5003,25 +5014,6 @@ void cChar::do_lsd()
 
 }
 
-bool cChar::isTargeting()
-{
-	return (this->current_target!=NULL);
-}
-
-void cChar::setTarget( P_TARGET newtarget )
-{
-	if( current_target!=NULL )
-		safedelete(current_target);
-	current_target=newtarget;
-}
-
-void cChar::doTarget()
-{
-	if( current_target!=NULL ) {
-		current_target->Do( getClient() );
-		safedelete(current_target);
-	}
-}
 
 
 /*
