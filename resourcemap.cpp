@@ -92,10 +92,23 @@ void cResourceMap::load()
 					cResourceStringMap *newmap = new cResourceStringMap(mapName, 1);
 					map=newmap;
 				}
-				map->setType(tempType);
-				map->setInMemory(inMemory);
-				map->deserialize(&datafile);
-				addMap(map);
+				else if ( tempType == RESOURCEMAP_LOCATIONSTRING )
+				{
+					cResourceLocationStringMap *newmap = new cResourceLocationStringMap(mapName, 1);
+					map=newmap;
+				}
+				else if ( tempType == RESOURCEMAP_STRINGSTRING )
+				{
+					cResourceStringStringMap *newmap = new cResourceStringStringMap(mapName, 1);
+					map=newmap;
+				}
+				if ( map != NULL )
+				{
+					map->setType(tempType);
+					map->setInMemory(inMemory);
+					map->deserialize(&datafile);
+					addMap(map);
+				}
 			}
 		}
 		while( _findnext( hFile, &c_file ) == 0 );
@@ -132,6 +145,16 @@ void cResourceMap::load()
 				else if ( tempType == RESOURCEMAP_STRING )
 				{
 					cResourceStringMap *newmap = new cResourceStringMap(mapName, 1);
+					map=newmap;
+				}
+				else if ( tempType == RESOURCEMAP_LOCATIONSTRING )
+				{
+					cResourceLocationStringMap *newmap = new cResourceLocationStringMap(mapName, 1);
+					map=newmap;
+				}
+				else if ( tempType == RESOURCEMAP_STRINGSTRING )
+				{
+					cResourceStringStringMap *newmap = new cResourceStringStringMap(mapName, 1);
 					map=newmap;
 				}
 				if ( map != NULL )
@@ -610,6 +633,10 @@ void cResourceLocationMap::setValue(cCoord key, SI32 value)
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
+			datafile.write((char *)&tempType, sizeof(tempType)) ;
+			datafile.write((char *)&tempInMemory, sizeof(tempInMemory));
 			datafile.write((char *)&key.x, sizeof(key.x)) ;
 			datafile.write((char *)&key.y, sizeof(key.y)) ;
 			datafile.write((char *)&key.z, sizeof(key.z)) ;
@@ -870,6 +897,10 @@ void cResourceLocationStringMap::setValue(cCoord key, std::string value)
 		if (!datafile.is_open()) 
 		{ 
 			// file didn't exist until now
+			ResourceMapType tempType=getType();
+			LOGICAL tempInMemory=isInMemory();
+			datafile.write((char *)&tempType, sizeof(tempType)) ;
+			datafile.write((char *)&tempInMemory, sizeof(tempInMemory));
 			datafile.write((char *)&key.x, sizeof(key.x)) ;
 			datafile.write((char *)&key.y, sizeof(key.y)) ;
 			datafile.write((char *)&key.z, sizeof(key.z)) ;
