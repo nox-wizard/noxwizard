@@ -172,7 +172,8 @@ void buyaction(int s)
 							{
 			
 								P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
-								pi->setAmount( iter->amount );
+                                                                if ( ISVALIDPI(pi) ) //Luxor
+									pi->setAmount( iter->amount );
 								
 							}
 							else
