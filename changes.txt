@@ -1,3 +1,216 @@
+2004-05-23	ai_wintermute
+	* NoxWizard.dsp 1.21:
+	* makefile.inc 1.21:
+	* vc7/NoxWizard.vcproj 1.5:
+		added coord.cpp and coord.h to project
+
+	* amx/amxwraps.cpp 1.147:
+	* chars.cpp 1.196:
+	* chars.h 1.115:
+	* dbl_single_click.cpp 1.62:
+	* items.cpp 1.61:
+	* speech.cpp 1.79:
+		added
+		native chr_showPaperdoll(const chr, const target);
+
+	* walking.cpp 1.71:
+		bugfix for items appearing on screen, although they should have 
+		been displayed much earlier
+
+	* coord.cpp 1.1:
+	* coord.h 1.1:
+	* map.cpp 1.24:
+		new line of sight checking thanks to varan
+
+2004-05-22	stonedz
+	* amx/amxwraps.cpp 1.146:
+		added setLightLevel( int level ) api as requested on mantis bug #
+		91
+
+2004-05-21	ai_wintermute
+	* amx/amxwraps.cpp 1.145:
+	* house.cpp 1.52:
+	* house.h 1.12:
+	* set.cpp 1.53:
+		changed set_getCoowners and the other house sets to set_add to be conform to the other set fill functions
+		
+		fixed a bug in the get functions for the set contents which returned a wrong value
+
+	* items.cpp 1.60:
+		fixed a rare bug occuring with backpacks
+
+2004-05-20	ai_wintermute
+	* item.cpp 1.51:
+	* items.cpp 1.59:
+		small bugfix for house pointer may be NULL when decaying objects
+		initialize itemSoundEffect to -1
+
+	* amx/amxwraps.cpp 1.144:
+	* house.cpp 1.51:
+	* house.h 1.11:
+	* set.cpp 1.52:
+	* set.h 1.26:
+		extended set api with set_getOwnedHouses
+
+	* amx/amxwrap2.cpp 1.91:
+	* amx/amxwraps.cpp 1.142:
+	* house.cpp 1.50:
+	* house.h 1.10:
+	* set.cpp 1.51:
+	* set.h 1.25:
+		extend set api to contain house coowner, friends banned list, 
+		chnaged house_setProperty to correct value
+
+	* amx/amxcback.cpp 1.15:
+	* amx/amxcback.h 1.7:
+	* chars.cpp 1.194:
+		ON_CHR_WOUNDED callback now
+		(char serial, amount, serial_att, typeofdamage, stattobedamaged)
+		
+		char serial is the char who gets the damage, amount is the amount of damage taken, serial_att is the attacker serial, typeofdamage may be one of
+		enum DamageType {
+		DAMAGE_PURE = 0, DAMAGE_SLASH, DAMAGE_PIERCE, DAMAGE_BLUDGEON, DAMAGE_BACKSTAB,
+		DAMAGE_FIRE, DAMAGE_ELECTRICITY, DAMAGE_MENTAL, DAMAGE_POISON, DAMAGE_COLD,
+		DAMAGE_FORCE, DAMAGE_HOLY, DAMAGE_MAGIC, MAX_RESISTANCE_INDEX
+		};
+		, stattype may be one of
+		enum StatType { STAT_HP = 0, STAT_MANA, STAT_STAMINA, ALL_STATS };
+
+	* chars.cpp 1.195:
+	* magic.cpp 1.48:
+	* nox-wizard.cpp 1.96:
+		enabled lsd pots and temp fx
+
+	* amx/amxwraps.cpp 1.143:
+	* tmpeff.cpp 1.34:
+		tempfx for all object combinations enabled
+		
+		char, item
+		item, char
+		char, char
+		item, item
+		should all be possible now
+
+2004-05-19	frodosf
+	* amx/amxscript.cpp 1.36:
+	* cmds.cpp 1.60:
+		Override Case Sensitive Bug Fix
+
+	* amx/amxwrap2.cpp 1.90:
+		BaseSkill setting Bug Fix
+
+2004-05-19	stonedz
+	* amx/amxwraps.cpp 1.141:
+		Added some needed APIs ( requested on bug #0000091 )
+
+2004-05-16	ai_wintermute
+	* dbl_single_click.cpp 1.60:
+	* dbl_single_click.cpp 1.61:
+	* srvparms.cpp 1.28:
+	* srvparms.h 1.16:
+	* titles.cpp 1.9:
+		mantis bug 07
+
+	* network.cpp 1.85:
+		removed debug methods for packet in/out logging
+
+	* chars.cpp 1.193:
+	* chars.h 1.114:
+	* dragdrop.cpp 1.65:
+	* items.cpp 1.58:
+	* items.h 1.38:
+	* network.cpp 1.86:
+	* worldmain.cpp 1.95:
+		added ONOPENSTATUS, ONOPENSKILLS, ONDROPONCHAR
+		mantis bugs 70, 115,117
+
+	* addmenu.cpp 1.36:
+	* amx/amxcback.cpp 1.14:
+	* amx/amxwraps.cpp 1.140:
+	* boats.cpp 1.47:
+	* chars.cpp 1.192:
+	* constants.h 1.26:
+	* dbl_single_click.cpp 1.59:
+	* dragdrop.cpp 1.64:
+	* dragdrop.h 1.2:
+	* encryption.cpp 1.3:
+	* fishing.cpp 1.26:
+	* item.cpp 1.50:
+	* items.h 1.37:
+	* telport.cpp 1.26:
+	* trigger.cpp 1.44:
+	* typedefs.h 1.46:
+	* worldmain.cpp 1.94:
+		bugfixes for warnings occuring on high warning levels,
+		mantis bugs 19,43,45
+
+2004-05-15	ai_wintermute
+	* amx/amxcback.cpp 1.13:
+	* amx/amxwrap2.cpp 1.89:
+	* archive.cpp 1.24:
+	* calendar.cpp 1.8:
+	* chars.cpp 1.191:
+	* chars.h 1.112:
+	* chars.h 1.113:
+	* client.cpp 1.27:
+	* containers.cpp 1.18:
+	* dbl_single_click.cpp 1.58:
+	* house.cpp 1.49:
+	* item.cpp 1.49:
+	* itemid.cpp 1.18:
+	* items.cpp 1.57:
+	* network.cpp 1.84:
+	* npcs.cpp 1.75:
+	* object.cpp 1.58:
+	* object.h 1.37:
+	* set.cpp 1.50:
+	* set.h 1.24:
+	* skills.cpp 1.52:
+	* speech.cpp 1.78:
+	* targeting.cpp 1.82:
+	* timing.cpp 1.32:
+	* worldmain.cpp 1.93:
+		bugfixes for warnings occuring on high warning levels,
+		added AMX Event Interpretation to HOUSE ITEMS
+
+2004-05-14	stonedz
+	* amx/amxwraps.cpp 1.139:
+	* msgboard.cpp 1.14:
+		Added some needed APIs ( requested on bug #0000091 )
+
+	* commands.cpp 1.37:
+		bugfix #0000130
+
+2004-05-13	ai_wintermute
+	* accounts.cpp 1.23:
+	* accounts.h 1.13:
+	* addmenu.cpp 1.35:
+	* ai.cpp 1.12:
+	* amx/amx.c 1.17:
+	* amx/amxwrap2.cpp 1.88:
+	* archive.cpp 1.23:
+	* area.cpp 1.11:
+	* boats.cpp 1.46:
+	* boats.h 1.21:
+	* books.cpp 1.14:
+	* chars.cpp 1.190:
+	* house.cpp 1.48:
+	* items.cpp 1.56:
+	* items.h 1.36:
+	* network.cpp 1.83:
+	* object.cpp 1.57:
+	* object.h 1.36:
+	* spawn.cpp 1.24:
+	* spawn.h 1.11:
+	* utils.cpp 1.44:
+	* version.h 1.3:
+	* weight.cpp 1.12:
+	* worldmain.cpp 1.92:
+		bugfixes for warnings occuring on high warning levels, fixed 
+		crashbug in houses, fixed error for item on worldsave, changed 
+		spawns and spawned objects to be saved with the others in the 
+		worldsave
+
 2004-05-09	ai_wintermute
 	* addmenu.cpp 1.34:
 	* amx/amxscript.cpp 1.35:
