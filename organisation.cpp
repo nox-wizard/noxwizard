@@ -56,10 +56,9 @@ LOGICAL Guild::parse()
 			iter = wsc->getNewIterator( section );
 			if ( iter )
 			{
-				/*
 				pGuild = new Guild();
 
-				pGuild->id = str2num( *sectionParms );
+				//pGuild->id = str2num( *sectionParms );
 
 				do
 				{
@@ -74,7 +73,7 @@ LOGICAL Guild::parse()
 						case 'A':
 							if ( lha == "ABBR" )
 							{
-								pGuild->abbreviation = rha;
+								//pGuild->abbreviation = rha;
 							}
 							break;
 						case 'D':
@@ -85,7 +84,7 @@ LOGICAL Guild::parse()
 						case 'N':
 							if ( lha == "NAME" )
 							{
-								pGuild->name = rha;
+								//pGuild->name = rha;
 							}
 							break;
 						case 'T':
@@ -93,13 +92,14 @@ LOGICAL Guild::parse()
 							{
 							}
 							break;
+						default:
+							break;
 					}
 				}
 				while ( lha[0] != '}' );
-				//guilds[ pGuild->getid ] = pGuild;
-				iter = NULL;
+				//guilds[ pGuild->getId() ] = pGuild;
+				iter = 0;
 				sectionParms = wsc->getNextSectionParmsInStr( sectionName );
-				*/
 			}
 			else
 			{
@@ -119,7 +119,15 @@ LOGICAL Guild::parse()
 	return success;
 }
 
-Guild::GUILDID	Guild::getId()
+Guild::Guild()
+{
+}
+
+Guild::~Guild()
+{
+}
+
+GUILDID	Guild::getId()
 {
 	return id;
 }
