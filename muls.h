@@ -39,18 +39,19 @@ template <typename T> class cMULFile {
 
 private:
 
+	friend class cVerdata;
+
 	cFile* idx;	//!< index file
 	cFile* data;	//!< data file
 
 	std::map< UI32, std::vector< T > > cache;
 	void loadCache();
-	void loadVerdata();
 
 public:
 
 	bool isCached;	//!< true if cached on memory
 
-	cMULFile( std::string idx, std::string data, bool cache, class cVerdata* verdata );
+	cMULFile( std::string idx, std::string data, bool cache  );
 	~cMULFile();
 
 	virtual bool is_open() { return idx->is_open() && data->is_open(); }
@@ -148,15 +149,16 @@ class cTiledata : private cFile {
 
 private:
 
+	friend class cVerdata;
+
 	bool isCached;	//!< true if cached on memory
 
 	STATICINFOMAP staticsCached;	//!< all static info cached
 	LANDINFOMAP landsCached;	//!< all land info cached
-	void addVerdata( class cVerdata* verdata );
 
 public:
 
-	cTiledata( std::string path, bool cache=false, class cVerdata* verdata=NULL );
+	cTiledata( std::string path, bool cache=false );
 	~cTiledata();
 	bool isReady();
 	
@@ -200,11 +202,12 @@ private:
 	UI16 width;	//!< width of the map
     UI16 height;	//!< height of the map
 
+	bool isReady();
+
 public:
 
 	cMap( std::string path, UI16 width, UI16 height, bool cache=false );
 	~cMap();
-	bool isReady();
 
 	bool getMap( UI16 x, UI16 y, TCELLA& cella );
 
@@ -253,7 +256,7 @@ private:
 
 public:
 
-	cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache, class cVerdata* verdata );
+	cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache );
 	~cStatics();
 
 	SERIAL idFromXY( UI16 x, UI16 y ); 
@@ -309,19 +312,14 @@ class cVerdata : private cFile {
 private:
 
 	bool isCached;	//!< true if cached on memory
+	bool isReady();
 
 public:
 
-	STATICINFOMAP staticsCached;	//!< all static info cached
-	LANDINFOMAP landsCached;	//!< all land info cached
-	MULTISMAP multisCached;
-
-
 	cVerdata( std::string path, bool cache=true );
 	~cVerdata();
-	bool isReady();
 
-	void loadForCaching();
+	void load( cTiledata* tiledata, cMULFile<multi_st>* multi );
 };
 
 extern cMULFile<multi_st>* multi;

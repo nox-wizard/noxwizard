@@ -19,11 +19,19 @@ cMULFile<multi_st>* multi=NULL;
 
 
 
+/*!
+\brief Constructor
+\author Endymion
+*/
 cFile::cFile( std::string path ) {
 	this->path=path;
 	file.open( path.c_str(),ios::in|ios::binary );
 }
 
+/*!
+\brief Destructor
+\author Endymion
+*/
 cFile::~cFile() {
 	file.close();
 }
@@ -40,24 +48,33 @@ cFile::~cFile() {
 \param verdata if valid pointer add verdata patches
 */
 template <typename T>
-cMULFile<T>::cMULFile( std::string idx, std::string data, bool cache, class cVerdata* verdata ) {
+cMULFile<T>::cMULFile( std::string idx, std::string data, bool cache ) {
 	this->idx = new cFile( idx );
 	this->data = new cFile( data );
 	isCached = false;
 	if( cache ) 
 		loadCache();
-	if( verdata!=NULL )
-		loadVerdata( verdata );
 }
 
+/*!
+\brief Destructor
+\author Endymion
+*/
 template <typename T>
 cMULFile<T>::~cMULFile() {
 	delete idx;
 	delete data;
 }
 
+/*!
+\brief Get data from given id
+\author Endymion
+\param id the id
+\param data the data
+\return true if need delete of vector
+*/
 template <typename T>
-bool cMULFile<T>::getData( UI32 i, std::vector< T >* data ) {
+bool cMULFile<T>::getData( UI32 id, std::vector< T >* data ) {
 	
 	//ndEndy need because can be into verdata
 	std::map< SERIAL, std::vector<T>>::iterator iter( cache.find( i ) );
@@ -137,13 +154,11 @@ void cMULFile<T>::loadCache() {
 }
 
 /*!
-\brief Cache data
+\brief Constructor
 \author Endymion
+\param mul the mul file
+\param id the id
 */
-template <typename T> 
-void cMULFile<T>::loadVerdata() {
-}
-
 template <typename T>
 NxwMulWrapper<T>::NxwMulWrapper( cMULFile<T>* mul, UI32 i ) {
 	idx=i;
@@ -152,6 +167,13 @@ NxwMulWrapper<T>::NxwMulWrapper( cMULFile<T>* mul, UI32 i ) {
 	data=NULL;
 }
 
+/*!
+\brief Constructor
+\author Endymion
+\param statics the statics mul file
+\param x the x location
+\param y the y location
+*/
 template <typename T>
 NxwMulWrapper<T>::NxwMulWrapper( cStatics* statics, UI32 x, UI32 y ) {
 	idx=statics->idFromXY(x,y);
@@ -161,50 +183,70 @@ NxwMulWrapper<T>::NxwMulWrapper( cStatics* statics, UI32 x, UI32 y ) {
 }
 
 
+/*
+\brief Destructor
+\author Endymion
+*/
 template <typename T>
 NxwMulWrapper<T>::~NxwMulWrapper() {
 	if( needFree )
 		delete data;
 }
 
+/*
+\brief Rewind the set
+\author Endymion
+*/
 template <typename T>
 void NxwMulWrapper<T>::rewind() {
 	needFree = mul->getData( i, data );
 }
 
+/*
+\brief Get the size
+\author Endymion
+\return the size
+*/
 template <typename T>
 UI32 NxwMulWrapper<T>::size() {
 	return (data!=NULL)? data->size() : 0;
 }
 
+/*
+\brief Check if set is at end
+\author Endymion
+*/
 template <typename T>
 bool NxwMulWrapper<T>::end() {
 	return (data==NULL) || (current==data->end());
 }
 
+/*
+\brief Check if set is empty
+\author Endymion
+*/
 template <typename T>
 bool NxwMulWrapper<T>::isEmpty() {
 	return size()<=0;
 }
 
+/*
+\brief Advance set
+\author Endymion
+*/
 template <typename T>
 NxwMulWrapper<T>& NxwMulWrapper<T>::operator++(int) {
 	current++;
 }
 
+/*
+\brief Get the value
+\author Endymion
+*/
 template <typename T>
 T NxwMulWrapper<T>::get() {
 	return *current;
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -219,13 +261,11 @@ T NxwMulWrapper<T>::get() {
 \param cache true cache the tiledata
 \param verdata if valid pointer are added verdata infos to tiledata
 */
-cTiledata::cTiledata( std::string path, bool cache, class cVerdata* verdata ) : cFile( path )
+cTiledata::cTiledata( std::string path, bool cache ) : cFile( path )
 {
 	isCached=false;
 	if( cache )
 		loadForCaching();
-	if( verdata!=NULL )
-		addVerdata(verdata);
 };
 
 /*!
@@ -339,29 +379,6 @@ void cTiledata::loadForCaching() {
 
 };
 
-/*!
-\brief Add all tiledata records contained in verdata
-\author Endymion
-*/
-void cTiledata::addVerdata( cVerdata* verdata ) {
-	
-	if(verdata==NULL)
-		return;
-
-	LANDINFOMAP::iterator land( verdata->landsCached.begin() ), landend( verdata->landsCached.end() );
-	for( ; land!=landend; land++ ) {
-		landsCached[land->first]=land->second;
-	}
-	verdata->landsCached.clear(); //why cache it two times?
-
-
-	STATICINFOMAP::iterator stat( verdata->staticsCached.begin() ), statend( verdata->staticsCached.end() );
-	for( ; stat!=statend; stat++ ) {
-		staticsCached[stat->first]=stat->second;
-	}
-	verdata->staticsCached.clear(); //why cache it two times?
-};
-
 
 
 /*!
@@ -430,8 +447,6 @@ cVerdata::cVerdata( std::string path, bool cache ) : cFile( path )
 {
 	this->path=path;
 	isCached=false;
-	if( cache )
-		loadForCaching();
 }
 
 /*!
@@ -456,9 +471,9 @@ bool cVerdata::isReady()
 \brief Cache verdata
 \author Endymion
 */
-void cVerdata::loadForCaching() {
+void cVerdata::load( cTiledata* tiledata, cMULFile<multi_st>* multi ) {
 
-	if(!isReady() || isCached )
+	if(!isReady() )
 		return;
 
 	SI32 nblocchi=INVALID;
@@ -479,10 +494,11 @@ void cVerdata::loadForCaching() {
 			case VF_MULTI:
 				file.seekg( patch.info.start );
 				if((patch.info.size % sizeof(TMULTI))==0) {
-					TMULTI multi;
+					TMULTI m;
+					multi->cache.erase( patch.id );
 					for( UI32 j=0; j<(patch.info.size % sizeof(TMULTI)); j++ ) {
-						file.read( (char*)&multi, sizeof(TMULTI) );
-						multisCached[patch.id+j].push_back(multi);
+						file.read( (char*)&m, sizeof(TMULTI) );
+						multi->cache[patch.id+j].push_back(m);
 					}
 				}
 				else 
@@ -493,9 +509,10 @@ void cVerdata::loadForCaching() {
 					file.seekg( patch.info.start );
 					if(patch.info.size==sizeof(TLANDGROUP)) {
 						TLANDGROUP landg;
+						tiledata->landsCached.erase( patch.id );
 						file.read( (char*)&landg, sizeof(TLANDGROUP) );
 						for( int j=0; j<LANDINGROUP; j++ )
-							landsCached[(patch.id*LANDINGROUP)+j]=landg.lands[j];
+							tiledata->landsCached[(patch.id*LANDINGROUP)+j]=landg.lands[j];
 					}
 					else 
 						ErrOut("VERDATA contains tiledata.land data with wrong lenght. Ignoring version record.\n");
@@ -504,9 +521,10 @@ void cVerdata::loadForCaching() {
 					file.seekg( patch.info.start );
 					if(patch.info.size==sizeof(TSTATICGROUP)) {
 						TSTATICGROUP staticg;
+						tiledata->staticsCached.erase( patch.id );
 						file.read( (char*)&staticg, sizeof(TSTATICGROUP) );
 						for( int j=0; j<STATICINGROUP; j++ )
-							staticsCached[(patch.id*STATICINGROUP)+j]=staticg.statics[j];
+							tiledata->staticsCached[(patch.id*STATICINGROUP)+j]=staticg.statics[j];
 					}
 					else 
 						ErrOut("VERDATA contains tiledata.statics data with wrong lenght. Ignoring version record.\n");
@@ -533,7 +551,7 @@ void cVerdata::loadForCaching() {
 \param height the height of the map
 \param cache if true are cached
 */
-cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache, cVerdata* verdata ) : cMULFile<statics_st>( pathidx, pathdata, cache, verdata )
+cStatics::cStatics( std::string pathidx, std::string pathdata, UI16 width, UI16 height, bool cache ) : cMULFile<statics_st>( pathidx, pathdata, cache )
 {
 	width=width;
 	height=height;
