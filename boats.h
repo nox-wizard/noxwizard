@@ -50,6 +50,7 @@ extern char cShipItems[4][6];
 
 class cBoat : public cMulti
 {
+private:
 	SERIAL tiller_serial;
 	SERIAL l_plank_serial;
 	SERIAL r_plank_serial;
@@ -83,11 +84,27 @@ class cBoat : public cMulti
 		void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
 		void Turn(P_ITEM, int);
 		void remove();
+		void setTiller(SERIAL tillerSerial);
+		void setTiller(P_ITEM tiller);
+		void setLeftPlank(SERIAL plankSerial);
+		void setLeftPlank(P_ITEM plank);
+		void setRightPlank(SERIAL plankSerial);
+		void setRightPlank(P_ITEM plank);
+		void setHold(SERIAL holdSerial);
+		void setHold(P_ITEM hold);
+		void setShipLink(P_ITEM ship);
+		P_ITEM getTiller();
+		P_ITEM getLeftPlank();
+		P_ITEM getRightPlank();
+		P_ITEM getHold();
+		P_ITEM getShipLink();
+		static LOGICAL makeBoatItems(P_ITEM pBoat);
 		static void buildShip( P_CHAR builder, P_ITEM shipdeed);
 		static void target_buildShip( NXWCLIENT ps, P_TARGET t);
 		static P_ITEM findmulti(Location where);
 		static bool inmulti(Location where,P_ITEM pi);
 		static void cBoat::insert_boat(P_ITEM pi, cBoat* boat);
+		static void cBoat::remove_boat(P_ITEM pi);
 		static cBoat* search_boat(SI32 ser);
 		static P_ITEM search_boat_by_plank(P_ITEM pl);
 

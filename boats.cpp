@@ -68,42 +68,6 @@ char cShipItems[4][6]=
 };
 //============================================================================================
 
-/*!
-\brief A sort of getboart() only more general
-\todo delete or write it
-*/
-P_ITEM findmulti(Location where)
-{
-/*	int lastdist=30;
-	P_ITEM pmulti=NULL;
-	
-	NxwItemWrapper si;
-	si.fillItemsNearXYZ( where );
-	for( ; !si.isEmpty(); si++ ) {
-		P_ITEM pi=si.getItem();
-		if(!ISVALIDPI(pi))
-			continue;
-
-		if (pi->id1>=0x40)
-		{
-			Location itmpos= pi->getPosition();
-
-			int dx=abs((int)where.x - (int)itmpos.x);
-			int dy=abs((int)where.y - (int)itmpos.y);
-			int ret=(int)(hypot(dx, dy));
-
-			if (ret<=lastdist)
-			{
-				lastdist=ret;
-				if (inmulti(where,pi))
-					pmulti=pi;
-			}
-		}
-	}
-
-	return pmulti;*/
-	return NULL;
-}
 
 bool inmulti(Location where, P_ITEM pi)//see if they are in the multi at these chords (Z is NOT checked right now)
 // PARAM WARNING: z is unreferenced
@@ -405,16 +369,20 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	Location bpos= pi->getPosition();
 
 	p1->MoveTo( bpos.x, bpos.y, p1->getPosition().z );
-	p1->setId( p1->getId() | pShipItems[PORT_P_C] );//change the ID
+	SI16 tempID=(p1->getId()/256)*256+pShipItems[PORT_P_C];
+	p1->setId( tempID  );//change the ID
 
+	tempID=(p2->getId()/256)*256+pShipItems[STAR_P_C];
 	p2->MoveTo( bpos.x, bpos.y, p2->getPosition().z );
-	p2->setId( p2->getId() | pShipItems[STAR_P_C] );
+	p2->setId( tempID );
 
+	tempID=(tiller->getId()/256)*256+pShipItems[TILLERID];
 	tiller->MoveTo( bpos.x, bpos.y, tiller->getPosition().z );
-	tiller->setId( tiller->getId() | pShipItems[TILLERID] );
+	tiller->setId( tempID );
 
+	tempID=(hold->getId()/256)*256+pShipItems[HOLDID];
 	hold->MoveTo(bpos.x, bpos.y, hold->getPosition().z );
-	hold->setId( hold->getId() | pShipItems[HOLDID] );
+	hold->setId( tempID );
 
 	TurnShip( pi->more1, dir, p1, p2, tiller, hold );
 
@@ -422,7 +390,7 @@ void cBoat::Turn(P_ITEM pi, int turn)//Turn the boat item, and send all the peop
 	p2->Refresh();
 	hold->Refresh();
 	tiller->Refresh();
-
+	pi->Refresh();
 	for ( int a=0; a<d; ++a)
 	{
 		/////////FOR ELCABESA VERY IMPORTAT BY ENDY
@@ -688,7 +656,7 @@ LOGICAL cBoat::Speech(P_CHAR pc, NXWSOCKET socket, std::string &talk)//See if th
 	if(boat==NULL)
 		return  false;
 
-	P_ITEM tiller=boat->p_tiller;
+	P_ITEM tiller=boat->getTiller();
 	VALIDATEPIR(tiller,false); // get the tiller man
 	//
 	// Sparhawk: talk has allready been capitalized in talking
@@ -979,120 +947,135 @@ LOGICAL cBoat::Build(NXWSOCKET  s, P_ITEM pBoat, char id2)
 //	strcpy(pBoat->name,"a mast");//Name is something other than "%s's house"
 	pBoat->setCurrentName("a mast");
 
-	P_ITEM pTiller=item::CreateFromScript( "$item_tillerman" );
-	if( !pTiller ) return false;
-	pTiller->setPosition("z", -5);
-	pTiller->priv=0;
 
-	P_ITEM pPlankR=item::CreateFromScript( "$item_plank2" );//Plank2 is on the RIGHT side of the boat
-	if( !pPlankR ) return false;
-	pPlankR->type=ITYPE_BOATS;
-	pPlankR->type2=3;
-	pPlankR->more1= pBoat->getSerial().ser1;//Lock this item!
-	pPlankR->more2= pBoat->getSerial().ser2;
-	pPlankR->more3= pBoat->getSerial().ser3;
-	pPlankR->more4= pBoat->getSerial().ser4;
-	pPlankR->setPosition("z", -5);
-	pPlankR->priv=0;//Nodecay
-
-	P_ITEM pPlankL=item::CreateFromScript( "$item_plank1" );//Plank1 is on the LEFT side of the boat
-	if( !pPlankL ) return false;
-	pPlankL->type=ITYPE_BOATS;//Boat type
-	pPlankL->type2=3;//Plank sub type
-	pPlankL->more1= pBoat->getSerial().ser1;
-	pPlankL->more2= pBoat->getSerial().ser2;//Lock this
-	pPlankL->more3= pBoat->getSerial().ser3;
-	pPlankL->more4= pBoat->getSerial().ser4;
-	pPlankL->setPosition("z", -5);
-	pPlankL->priv=0;
-
-	P_ITEM pHold=item::CreateFromScript( "$item_hold1" );
-	if( !pHold ) return false;
-	pHold->more1= pBoat->getSerial().ser1;//Lock this too :-)
-	pHold->more2= pBoat->getSerial().ser2;
-	pHold->more3= pBoat->getSerial().ser3;
-	pHold->more4= pBoat->getSerial().ser4;
-
-	pHold->type=ITYPE_CONTAINER;//Container
-	pHold->setPosition("z", -5);
-	pHold->priv=0;
-	pHold->setContSerial(INVALID);
-
-
-
-
-	pBoat->moreb1= pTiller->getSerial().ser1;//Tiller ser stored in boat's Moreb
-	pBoat->moreb2= pTiller->getSerial().ser2;
-	pBoat->moreb3= pTiller->getSerial().ser3;
-	pBoat->moreb4= pTiller->getSerial().ser4;
-	pBoat->morex= pPlankL->getSerial32();//Store the other stuff anywhere it will fit :-)
-	pBoat->morey= pPlankR->getSerial32();
-	pBoat->morez= pHold->getSerial32();
-
-	Location boatpos= pBoat->getPosition();
-
-
-
-	switch(id2)//Give everything the right Z for it size boat
-	{
-	case 0x00:
-	case 0x04:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 4);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 4);
-		break;
-	case 0x08:
-	case 0x0C:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 5);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 4);
-		break;
-	case 0x10:
-	case 0x14:
-		pTiller->setPosition("x", boatpos.x + 1);
-		pTiller->setPosition("y", boatpos.y + 5);
-		pPlankR->setPosition("x", boatpos.x + 2);
-		pPlankR->setPosition("y", boatpos.y - 1);
-		pPlankL->setPosition("x", boatpos.x - 2);
-		pPlankL->setPosition("y", boatpos.y - 1);
-		pHold->setPosition("x", boatpos.x);
-		pHold->setPosition("y", boatpos.y - 5);
-		break;
-	}
-
-#ifdef SPAR_I_LOCATION_MAP
-	pointers::addToLocationMap( pTiller );
-	pointers::addToLocationMap( pPlankL );
-	pointers::addToLocationMap( pPlankR );
-	pointers::addToLocationMap( pHold );
-	pointers::addToLocationMap( pBoat );
-#else
-	mapRegions->add(pTiller);//Make sure everything is in da regions!
-	mapRegions->add(pPlankL);
-	mapRegions->add(pPlankR);
-	mapRegions->add(pHold);
-	mapRegions->add(pBoat);
-#endif
-	//their x pos is set by BuildHouse(), so just fix their Z...
-	boatpos.z+=3;
-	boatpos.dispz=boatpos.z;
-
-	pc_cs->MoveTo(boatpos);
 	//setserial(DEREF_P_CHAR(pc_cs),DEREF_P_ITEM(pBoat),8);
 	pc_cs->setMultiSerial( pBoat->getSerial32() );
 	insert_boat(pBoat, this); // insert the boat in the boat_database
 	return true;
 }
+
+P_ITEM cBoat::getTiller()
+{
+	if ( this->tiller_serial != 0 )
+	{
+		if ( !ISVALIDPI(this->p_tiller ))
+			p_tiller=pointers::findItemBySerial (tiller_serial);
+	}
+	else
+		return NULL;
+	return p_tiller;
+}
+
+P_ITEM cBoat::getLeftPlank()
+{
+	if ( this->l_plank_serial != 0 )
+	{
+		if ( !ISVALIDPI(this->p_l_plank ))
+			p_l_plank=pointers::findItemBySerial (l_plank_serial);
+	}
+	else
+		return NULL;
+	return p_l_plank;
+}
+
+P_ITEM cBoat::getRightPlank()
+{
+	if ( this->r_plank_serial != 0 )
+	{
+		if ( !ISVALIDPI(this->p_r_plank ))
+			p_r_plank=pointers::findItemBySerial (r_plank_serial);
+	}
+	else
+		return NULL;
+	return p_r_plank;
+}
+
+P_ITEM cBoat::getHold()
+{
+	if ( this->container != 0 )
+	{
+		if ( !ISVALIDPI(this->p_container ))
+			p_container=pointers::findItemBySerial (container);
+	}
+	else
+		return NULL;
+	return p_container;
+}
+
+
+void cBoat::setTiller(SERIAL tillerSerial)
+{
+	this->tiller_serial=tillerSerial;
+}
+
+void cBoat::setTiller(P_ITEM tiller)
+{
+	if ( ISVALIDPI(tiller))
+	{
+		this->tiller_serial=tiller->getSerial32();
+		this->p_tiller=tiller;
+	}
+}
+
+void cBoat::setLeftPlank(SERIAL plankSerial)
+{
+	this->l_plank_serial=plankSerial;
+}
+void cBoat::setLeftPlank(P_ITEM plank)
+{
+	if ( ISVALIDPI(plank))
+	{
+		this->l_plank_serial=plank->getSerial32();
+		this->p_l_plank=plank;
+	}
+}
+
+void cBoat::setRightPlank(SERIAL plankSerial)
+{
+	this->r_plank_serial=plankSerial;
+}
+
+void cBoat::setRightPlank(P_ITEM plank)
+{
+	if ( ISVALIDPI(plank))
+	{
+		this->r_plank_serial=plank->getSerial32();
+		this->p_r_plank=plank;
+	}
+}
+
+void cBoat::setHold(SERIAL holdSerial)
+{
+	this->container=holdSerial;
+}
+
+void cBoat::setHold(P_ITEM hold)
+{
+	if ( ISVALIDPI(hold))
+	{
+		this->container=hold->getSerial32();
+		this->p_container=hold;
+	}
+}
+
+void cBoat::setShipLink(P_ITEM ship)
+{
+	if ( ISVALIDPI(ship))
+	{
+		this->setSerial(ship->getSerial32());
+		this->p_serial=ship;
+	}
+}
+
+P_ITEM cBoat::getShipLink()
+{
+	if ( !ISVALIDPI(p_serial))
+	{
+		this->p_serial=pointers::findItemBySerial (this->getSerial());
+	}
+	return this->p_serial;
+}
+
 
 ///////////////////////////////////////////////////////////////////
 // Function name     : collision
@@ -1106,14 +1089,14 @@ LOGICAL cBoat::collision(P_ITEM pi,Location where,int dir)
 	for(iter_boat=s_boat.begin();iter_boat!=s_boat.end();iter_boat++)
 	{
 		P_BOAT coll=iter_boat->second;
-		if(coll->serial != pi->getSerial32())
+		if(coll->getSerial() != pi->getSerial32())
 		{
-			int xx=abs(x - (int)coll->p_serial->getPosition("x"));
-			int yy=abs(y - (int)coll->p_serial->getPosition("y"));
+			int xx=abs(x - (int)coll->getShipLink()->getPosition("x"));
+			int yy=abs(y - (int)coll->getShipLink()->getPosition("y"));
 			double dist=hypot(xx, yy);
 			if(dist<10)
 			{
-				if(boat_collision(pi,x,y,dir,coll->p_serial)==true)
+				if(boat_collision(pi,x,y,dir,coll->getShipLink())==true)
 
 				return true;
 
@@ -1196,16 +1179,16 @@ void cBoat::OpenPlank(P_ITEM pi)
 	switch(pi->getId()&0xFF)
 	{
 		//Open plank->
-		case 0xE9: pi->setId( 0xE984 ); break;
-		case 0xB1: pi->setId( 0xB1D5 ); break;
-		case 0xB2: pi->setId( 0xB2D4 ); break;
-		case 0x8A: pi->setId( 0x8A89 ); break;
-		case 0x85: pi->setId( 0x8584 ); break;
+		case 0xE9: pi->setId( 0x3E89 ); break;
+		case 0xB1: pi->setId( 0x3ED5 ); break;
+		case 0xB2: pi->setId( 0x3ED3 ); break;
+		case 0x8A: pi->setId( 0x3E86 ); break;
+		case 0x85: pi->setId( 0x3E89 ); break;
 		//Close Plank->
-		case 0x84: pi->setId( 0x84E9 ); break;
-		case 0xD5: pi->setId( 0xD5B1 ); break;
-		case 0xD4: pi->setId( 0xD4B2 ); break;
-		case 0x89: pi->setId( 0x898A ); break;
+		case 0xD3: pi->setId( 0x3EB2 ); break;
+		case 0x86: pi->setId( 0x3E8A ); break;
+		case 0xD5: pi->setId( 0x3EB1 ); break;
+		case 0x89: pi->setId( 0x3E85 ); break;
 		default: LogWarning("WARNING: Invalid plank ID called! Plank %i '%s' [ %04x ]\n",DEREF_P_ITEM(pi),pi->getCurrentNameC(),pi->getId()); break;
 	}
 }
@@ -1272,10 +1255,10 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 	if(boat==NULL)
 		return;
-	P_ITEM tiller=boat->p_tiller;
-	P_ITEM p1=boat->p_l_plank;
-	P_ITEM p2=boat->p_r_plank;
-	P_ITEM hold=boat->p_container;
+	P_ITEM tiller=boat->getTiller();
+	P_ITEM p1=boat->getLeftPlank();
+	P_ITEM p2=boat->getRightPlank();
+	P_ITEM hold=boat->getHold();
 
 	//////////////FOR ELCABESA VERY WARNING BY ENDYMION
 	//////THIS PACKET PAUSE THE CLIENT
@@ -1428,6 +1411,12 @@ void cBoat::iMove(NXWSOCKET  s, int dir, P_ITEM pBoat, LOGICAL forced)
 
 cBoat::cBoat() : cMulti () //Consturctor
 {
+	p_serial = NULL;
+	p_tiller = NULL;
+	p_l_plank = NULL;
+	p_r_plank = NULL;
+	p_container = NULL;
+
 	return;
 }
 
@@ -1448,6 +1437,8 @@ void cBoat::buildShip( P_CHAR builder, P_ITEM shipdeed)
 	newBoat->createMulti(shipdeed->morex, piShip);
 	id = piShip->getId();
 	newBoat->Build(builder->getSocket(), piShip, id%256);
+	newBoat->p_serial=piShip;
+	newBoat->setSerial(piShip->getSerial32());
 	if (ps->isDragging()) 
 	{
 		ps->resetDragging();
@@ -1489,7 +1480,16 @@ void cBoat::insert_boat(P_ITEM pi, P_BOAT boat)
 	s_boat.insert(std::make_pair(pi->getSerial32(), boat)); // insert a boat in the boat search tree
 }
 
-
+void cBoat::remove_boat(P_ITEM pi)
+{
+	std::map<int,P_BOAT>::iterator iter_boat;
+	iter_boat= s_boat.find(pi->getSerial32());
+	if (iter_boat == s_boat.end()) 
+		return;
+	else
+		s_boat.erase(iter_boat);
+	return;
+}
 
 P_BOAT cBoat::search_boat(SI32 ser)
 {
@@ -1510,7 +1510,14 @@ P_ITEM cBoat::search_boat_by_plank(P_ITEM pl)
 	ser.ser3=pl->more3;
 	ser.ser4=pl->more4;
 	P_BOAT boat=search_boat(ser.serial32);
-	return boat->p_serial;
+	if ( boat != NULL )
+		if ( !ISVALIDPI(boat->p_serial))
+		{
+			boat->p_serial=pointers::findItemBySerial (ser.serial32);
+			boat->setSerial (ser.serial32);
+		}
+		return boat->p_serial;
+	return NULL;
 }
 
 void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
@@ -1519,6 +1526,7 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	SERIAL shipserial=t->buffer[0];
 	P_ITEM iShip=pointers::findItemBySerial(shipserial);
 	P_BOAT pShip =cBoat::search_boat(shipserial);
+	
 	int shipnumber;
 	UI32 x, y;
 	SI32 k, icount=0;
@@ -1543,6 +1551,10 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	if ( (( x<XBORDER || y <YBORDER ) || ( x>(UI32)((map_width*8)-XBORDER) || y >(UI32)((map_height*8)-YBORDER) ))  )
 	{
 		sysmessage(s, TRANSLATE("You cannot build your structure there!"));
+		cBoat::remove_boat(iShip);
+		pShip->remove();
+		iShip->Delete();
+		delete pShip;
 		return;
 	}
 
@@ -1568,19 +1580,32 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 			loc.z=z;
 
 			Location newpos = Loc( x+k, y+l, z );
-			if ( (isWalkable( newpos ) == illegal_z ) &&
+			if ( (isWalkable( newpos, WALKFLAG_CHARS|WALKFLAG_DYNAMIC) == illegal_z ) &&
 				((charpos.x != x+k)&&(charpos.y != y+l)) )
 				/*This will take the char making the house out of the space check, be careful
 				you don't build a house on top of your self..... this had to be done So you
 				could extra space around houses, (12+) and they would still be buildable.*/
 			{
 				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
+				cBoat::remove_boat(iShip);
 				pShip->remove();
 				iShip->Delete();
 				delete pShip;
 				return;
 				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
 			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
+			if ( isWalkable( newpos, WALKFLAG_STATIC) != illegal_z  )
+				/*This will test if the ship is placed on the ground*/
+			{
+				sysmessage(s, TRANSLATE("You cannot build your stucture there."));
+				cBoat::remove_boat(iShip);
+				pShip->remove();
+				iShip->Delete();
+				delete pShip;
+				return;
+				//ConOut("Invalid %i,%i [%i,%i]\n",k,l,x+k,y+l);
+			} //else ConOut("DEBUG: Valid at %i,%i [%i,%i]\n",k,l,x+k,y+l);
+
 
 			P_HOUSE house2=cHouses::findHouse(loc);
 			if ( house2 == NULL )
@@ -1589,6 +1614,7 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 			if (ISVALIDPI(pi_ii) )
 			{
 				sysmessage(s,TRANSLATE("You cant build structures inside structures"));
+				cBoat::remove_boat(iShip);
 				pShip->remove();
 				iShip->Delete();
 				delete pShip;
@@ -1614,9 +1640,13 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	pc->fx1=-1; //reset fx1 so it does not interfere
 	// bugfix LB ... was too early reseted
 
-//	cBoat::makeKeys(pShip, pc);
+	cMulti::makeKeys(pShip, pc);
 	cHouses::makeHouseItems(shipnumber, pc, iShip);
-		
+	cBoat::makeBoatItems(iShip);		
+	pShip->setTiller(pointers::findItemBySerial(calcserial(iShip->moreb1, iShip->moreb2,iShip->moreb3, iShip->moreb4)));
+	pShip->setLeftPlank(pointers::findItemBySerial(iShip->morex));
+	pShip->setRightPlank(pointers::findItemBySerial(iShip->morey));
+	pShip->setHold(pointers::findItemBySerial(iShip->morez));
     NxwSocketWrapper sw;
 	sw.fillOnline( pc, false );
     for( sw.rewind(); !sw.isEmpty(); sw++ ) {
@@ -1629,3 +1659,113 @@ void cBoat::target_buildShip (NXWCLIENT ps, P_TARGET t)
 	}
             //</Luxor>
 }
+
+LOGICAL cBoat::makeBoatItems(P_ITEM pBoat)
+{
+	P_ITEM pTiller=item::CreateFromScript( "$item_tillerman" );
+	if( !pTiller ) return false;
+	pTiller->setPosition("z", -5);
+	pTiller->priv=0;
+
+	P_ITEM pPlankR=item::CreateFromScript( "$item_plank2" );//Plank2 is on the RIGHT side of the boat
+	if( !pPlankR ) return false;
+	pPlankR->type=ITYPE_BOATS;
+	pPlankR->type2=3;
+	pPlankR->more1= pBoat->getSerial().ser1;//Lock this item!
+	pPlankR->more2= pBoat->getSerial().ser2;
+	pPlankR->more3= pBoat->getSerial().ser3;
+	pPlankR->more4= pBoat->getSerial().ser4;
+	pPlankR->setPosition("z", -5);
+	pPlankR->priv=0;//Nodecay
+
+	P_ITEM pPlankL=item::CreateFromScript( "$item_plank1" );//Plank1 is on the LEFT side of the boat
+	if( !pPlankL ) return false;
+	pPlankL->type=ITYPE_BOATS;//Boat type
+	pPlankL->type2=3;//Plank sub type
+	pPlankL->more1= pBoat->getSerial().ser1;
+	pPlankL->more2= pBoat->getSerial().ser2;//Lock this
+	pPlankL->more3= pBoat->getSerial().ser3;
+	pPlankL->more4= pBoat->getSerial().ser4;
+	pPlankL->setPosition("z", -5);
+	pPlankL->priv=0;
+
+	P_ITEM pHold=item::CreateFromScript( "$item_hold1" );
+	if( !pHold ) return false;
+	pHold->more1= pBoat->getSerial().ser1;//Lock this too :-)
+	pHold->more2= pBoat->getSerial().ser2;
+	pHold->more3= pBoat->getSerial().ser3;
+	pHold->more4= pBoat->getSerial().ser4;
+
+	pHold->type=ITYPE_CONTAINER;//Container
+	pHold->setPosition("z", -5);
+	pHold->priv=0;
+	pHold->setContSerial(INVALID);
+
+
+
+
+	pBoat->moreb1= pTiller->getSerial().ser1;//Tiller ser stored in boat's Moreb
+	pBoat->moreb2= pTiller->getSerial().ser2;
+	pBoat->moreb3= pTiller->getSerial().ser3;
+	pBoat->moreb4= pTiller->getSerial().ser4;
+	pBoat->morex= pPlankL->getSerial32();//Store the other stuff anywhere it will fit :-)
+	pBoat->morey= pPlankR->getSerial32();
+	pBoat->morez= pHold->getSerial32();
+
+	Location boatpos= pBoat->getPosition();
+
+
+
+	switch(pBoat->getId()%256)//Give everything the right Z for it size boat
+	{
+	case 0x00:
+	case 0x04:
+		pTiller->setPosition("x", boatpos.x + 1);
+		pTiller->setPosition("y", boatpos.y + 4);
+		pPlankR->setPosition("x", boatpos.x + 2);
+		pPlankR->setPosition("y", boatpos.y);
+		pPlankL->setPosition("x", boatpos.x - 2);
+		pPlankL->setPosition("y", boatpos.y);
+		pHold->setPosition("x", boatpos.x);
+		pHold->setPosition("y", boatpos.y - 4);
+		break;
+	case 0x08:
+	case 0x0C:
+		pTiller->setPosition("x", boatpos.x + 1);
+		pTiller->setPosition("y", boatpos.y + 5);
+		pPlankR->setPosition("x", boatpos.x + 2);
+		pPlankR->setPosition("y", boatpos.y);
+		pPlankL->setPosition("x", boatpos.x - 2);
+		pPlankL->setPosition("y", boatpos.y);
+		pHold->setPosition("x", boatpos.x);
+		pHold->setPosition("y", boatpos.y - 4);
+		break;
+	case 0x10:
+	case 0x14:
+		pTiller->setPosition("x", boatpos.x + 1);
+		pTiller->setPosition("y", boatpos.y + 5);
+		pPlankR->setPosition("x", boatpos.x + 2);
+		pPlankR->setPosition("y", boatpos.y - 1);
+		pPlankL->setPosition("x", boatpos.x - 2);
+		pPlankL->setPosition("y", boatpos.y - 1);
+		pHold->setPosition("x", boatpos.x);
+		pHold->setPosition("y", boatpos.y - 5);
+		break;
+	}
+
+#ifdef SPAR_I_LOCATION_MAP
+	pointers::addToLocationMap( pTiller );
+	pointers::addToLocationMap( pPlankL );
+	pointers::addToLocationMap( pPlankR );
+	pointers::addToLocationMap( pHold );
+	pointers::addToLocationMap( pBoat );
+#else
+	mapRegions->add(pTiller);//Make sure everything is in da regions!
+	mapRegions->add(pPlankL);
+	mapRegions->add(pPlankR);
+	mapRegions->add(pHold);
+	mapRegions->add(pBoat);
+#endif
+	return true;
+}
+

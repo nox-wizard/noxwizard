@@ -1166,7 +1166,13 @@ void loaditem()
 
 		if( (pi->type==ITYPE_BOATS) && (pi->type2==0) ) //it's a boat!!
 		{
-			// cBoat::insert_boat(pi);
+			cBoat *boat=new cBoat();
+			boat->setHold(pi->morez);
+			boat->setLeftPlank(pi->morex);
+			boat->setRightPlank (pi->morey);
+			boat->setTiller (((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4);
+			boat->setSerial(pi->getSerial32());
+			cBoat::insert_boat(pi, boat);
 		}
 
 		if ((pi->getPosition("x")<0) || (pi->getPosition("y")<0) || (pi->getPosition("x")>max_x) || (pi->getPosition("y")>max_y))	// lord bianry
@@ -2845,10 +2851,10 @@ void CWorldMain::SaveItem( P_ITEM pi )
 		}
 		if (pi->offspell!=dummy.offspell)
 			fprintf(iWsc, "OFFSPELL %i\n", pi->offspell);
-		if ((pi->more1<<24)+(pi->more2<<16)+(pi->more3<<8)+pi->more4) //;
-			fprintf(iWsc, "MORE %i\n", (pi->more1<<24)+(pi->more2<<16)+(pi->more3<<8)+pi->more4);
-		if ((pi->moreb1<<24)+(pi->moreb2<<16)+(pi->moreb3<<8)+pi->moreb4)
-			fprintf(iWsc, "MORE2 %i\n", (pi->moreb1<<24)+(pi->moreb2<<16)+(pi->moreb3<<8)+pi->moreb4);
+		if (((unsigned char)pi->more1<<24)+((unsigned char)pi->more2<<16)+((unsigned char)pi->more3<<8)+(unsigned char)pi->more4) //;
+			fprintf(iWsc, "MORE %i\n", ((unsigned char)pi->more1<<24)+((unsigned char)pi->more2<<16)+((unsigned char)pi->more3<<8)+(unsigned char)pi->more4);
+		if (((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4)
+			fprintf(iWsc, "MORE2 %i\n", ((unsigned char)pi->moreb1<<24)+((unsigned char)pi->moreb2<<16)+((unsigned char)pi->moreb3<<8)+(unsigned char)pi->moreb4);
 		if (pi->morex!=dummy.morex)
 			fprintf(iWsc, "MOREX %i\n", pi->morex);
 		if (pi->morey!=dummy.morey)

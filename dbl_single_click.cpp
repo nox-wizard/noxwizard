@@ -395,6 +395,13 @@ void doubleclick(NXWCLIENT ps)
 				case 0xD5:
 				case 0xD4:
 				case 0x89:
+				case 0xE9: 
+				case 0xB1: 
+				case 0xB2: 
+				case 0xD3:
+				case 0x8A: 
+				case 0x85:
+				case 0x86:
 					Boats->PlankStuff(pc, pi);
 					break;
 				default:
@@ -649,8 +656,7 @@ void doubleclick(NXWCLIENT ps)
 			cHouses::buildhouse(pc, pi);
 			return;
 	case ITYPE_BOATDEED:
-
-
+			cBoat::buildShip(pc, pi);
 			return;
 	case ITYPE_RENAME_DEED:
 			pc->namedeedserial = pi->getSerial32();

@@ -61,6 +61,7 @@ cMulti::cMulti()
 	owner=INVALID;
 	norealmulti=0;
 	keycode=0;
+	boat=false;
 }
 
 SERIAL cMulti::getSerial()
@@ -168,8 +169,7 @@ void cMulti::createMulti(UI32 multiNumber, P_ITEM multiItem)
 				}
 				else if (!(strcmp(script1, "BOAT"))) 
 				{
-					ErrOut("Bad house script # %i!\n",multiNumber);
-					return;
+					boat=true;
 				}
 				else if (!(strcmp(script1, "NOREALMULTI"))) norealmulti=1; // LB bugfix for pentas crashing client
 				else if (!(strcmp(script1, "NOKEY"))) nokey=1;
@@ -230,14 +230,14 @@ bool cMulti::isRealMulti()
 	return norealmulti==0;
 }
 
-void cHouses::makeKeys(P_HOUSE pHouse, P_CHAR pc)
+void cMulti::makeKeys(cMulti * pMulti, P_CHAR pc)
 {
 	P_ITEM pKey=NULL;
 	P_ITEM pKey2=NULL;
-	P_ITEM house = pointers::findItemBySerial(pHouse->getSerial());
+	P_ITEM multi = pointers::findItemBySerial(pMulti->getSerial());
 
 	P_ITEM pBackPack = pc->getBackpack();
-	SI16 id=house->getId();
+	SI16 id=multi->getId();
 	char temp[100];
 	//Key...
 	//Altered key naming to include pc's name. Integrated backpack and bankbox handling (Sparhawk)
@@ -267,29 +267,29 @@ void cHouses::makeKeys(P_HOUSE pHouse, P_CHAR pc)
 	pKey->Refresh();
 	pKey2->Refresh();
 
-	house->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
-	house->st2= pKey2->getSerial32();	// house, housesign and housekeys without having to loop trough
+	multi->st = pKey->getSerial32();		// Create link from house to housekeys to allow easy renaming of
+	multi->st2= pKey2->getSerial32();	// house, housesign and housekeys without having to loop trough
 													// all world items (Sparhawk)
 
 
-	pKey->more1=(pHouse->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
-	pKey->more2=(pHouse->getSerial()>>16)&0xFF;
-	pKey->more3=(pHouse->getSerial()>>8)&0xFF;
-	pKey->more4=(pHouse->getSerial())&0xFF;
-	pKey->moreb1=(pHouse->getKeycode()>>24)&0xFF;
-	pKey->moreb2=(pHouse->getKeycode()>>16)&0xFF;
-	pKey->moreb3=(pHouse->getKeycode()>>8)&0xFF;
-	pKey->moreb4=(pHouse->getKeycode())&0xFF;
+	pKey->more1=(pMulti->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
+	pKey->more2=(pMulti->getSerial()>>16)&0xFF;
+	pKey->more3=(pMulti->getSerial()>>8)&0xFF;
+	pKey->more4=(pMulti->getSerial())&0xFF;
+	pKey->moreb1=(pMulti->getKeycode()>>24)&0xFF;
+	pKey->moreb2=(pMulti->getKeycode()>>16)&0xFF;
+	pKey->moreb3=(pMulti->getKeycode()>>8)&0xFF;
+	pKey->moreb4=(pMulti->getKeycode())&0xFF;
 	pKey->type=ITYPE_KEY;
 	pKey->setNewbie();
-	pKey2->more1=(pHouse->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
-	pKey2->more2=(pHouse->getSerial()>>16)&0xFF;
-	pKey2->more3=(pHouse->getSerial()>>8)&0xFF;
-	pKey2->more4=(pHouse->getSerial())&0xFF;
-	pKey2->moreb1=(pHouse->getKeycode()>>24)&0xFF;
-	pKey2->moreb2=(pHouse->getKeycode()>>16)&0xFF;
-	pKey2->moreb3=(pHouse->getKeycode()>>8)&0xFF;
-	pKey2->moreb4=(pHouse->getKeycode())&0xFF;
+	pKey2->more1=(pMulti->getSerial()>>24)&0xFF;//use the house's serial for the more on the key to keep it unique
+	pKey2->more2=(pMulti->getSerial()>>16)&0xFF;
+	pKey2->more3=(pMulti->getSerial()>>8)&0xFF;
+	pKey2->more4=(pMulti->getSerial())&0xFF;
+	pKey2->moreb1=(pMulti->getKeycode()>>24)&0xFF;
+	pKey2->moreb2=(pMulti->getKeycode()>>16)&0xFF;
+	pKey2->moreb3=(pMulti->getKeycode()>>8)&0xFF;
+	pKey2->moreb4=(pMulti->getKeycode())&0xFF;
 	pKey2->type=ITYPE_KEY;
 	pKey2->setNewbie();
 
@@ -300,14 +300,14 @@ void cHouses::makeKeys(P_HOUSE pHouse, P_CHAR pc)
 		P_ITEM p_key3=item::CreateFromScript( "$item_gold_key" );
 		VALIDATEPI(p_key3);
 		p_key3->setCurrentName( "a house key" );
-		p_key3->more1=(pHouse->getSerial()>>24)&0xFF;
-		p_key3->more2=(pHouse->getSerial()>>16)&0xFF;
-		p_key3->more3=(pHouse->getSerial()>>8)&0xFF;
-		p_key3->more4=(pHouse->getSerial())&0xFF;
-		p_key3->moreb1=(pHouse->getKeycode()>>24)&0xFF;
-		p_key3->moreb2=(pHouse->getKeycode()>>16)&0xFF;
-		p_key3->moreb3=(pHouse->getKeycode()>>8)&0xFF;
-		p_key3->moreb4=(pHouse->getKeycode())&0xFF;
+		p_key3->more1=(pMulti->getSerial()>>24)&0xFF;
+		p_key3->more2=(pMulti->getSerial()>>16)&0xFF;
+		p_key3->more3=(pMulti->getSerial()>>8)&0xFF;
+		p_key3->more4=(pMulti->getSerial())&0xFF;
+		p_key3->moreb1=(pMulti->getKeycode()>>24)&0xFF;
+		p_key3->moreb2=(pMulti->getKeycode()>>16)&0xFF;
+		p_key3->moreb3=(pMulti->getKeycode()>>8)&0xFF;
+		p_key3->moreb4=(pMulti->getKeycode())&0xFF;
 		p_key3->type=ITYPE_KEY;
 		p_key3->setNewbie();
 		bankbox->AddItem(p_key3);
@@ -477,7 +477,7 @@ void cHouses::target_buildhouse( NXWCLIENT ps, P_TARGET t )
 	pc->fx1=-1; //reset fx1 so it does not interfere
 	// bugfix LB ... was too early reseted
 
-	cHouses::makeKeys(pHouse, pc);
+	cMulti::makeKeys(pHouse, pc);
 	cHouses::makeHouseItems(housenumber, pc, iHouse);
 		
     NxwSocketWrapper sw;

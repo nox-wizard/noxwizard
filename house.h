@@ -30,7 +30,7 @@ protected:
 	SERIAL serial;
 	SERIAL owner;
 	SI32	keycode;
-	LOGICAL norealmulti, nokey;
+	LOGICAL norealmulti, nokey, boat;
 	SI08 spacex1, spacey1,spacex2, spacey2; // how many tiles are used for the house zone, x1 north elongation, y1 west
 	SI32 char_x, char_y, char_z;
 	SI32 deed;
@@ -56,6 +56,7 @@ public:
 	void setDeed(SI32 newID);
 	void createMulti(UI32 multinumber, P_ITEM multiItem);
 	bool isRealMulti();
+	static void makeKeys(cMulti* pMulti, P_CHAR pc);
 
 };
 
