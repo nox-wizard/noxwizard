@@ -856,6 +856,43 @@ void preloadSections(char *fn)
 	fclose(wscfile);
 }
 
+void loadshardlist()
+{
+	FILE *F = fopen("custom/shards.cfg", "rt");
+	
+	ConOut("Loading Shards list...");
+	if(!F) {
+		ConOut(" [ KO ]\n");
+		return;
+	}
+	do
+	{
+		if(servcount >= MAXSERV) {
+			ConOut(" [FULL]\n");
+			fclose(F);
+			return;
+		}
+		
+		do
+		{
+			readSplitted(F, script1, script2);
+			if (!strcmp(script1, "NAME")) {
+				strncpy(serv[servcount][0], script2, 30);
+			} else if (!strcmp(script1, "IP")){
+				strncpy(serv[servcount][1], script2, 30);
+			} else if (!strcmp(script1, "PORT")) {
+				strncpy(serv[servcount][2], script2, 30);
+			}
+		}
+		while ( (!feof(F)) &&
+			(strcmp(script1, "}")) &&
+			(strcmp(script1, "EOF")) );
+		if (!strcmp(script1, "}"))
+			servcount++;
+	}while (!feof(F));
+	fclose(F);
+	ConOut(" [ OK ]\n");
+}
 
 void loadserverscript(char *fn) // Load a server script
 {
@@ -886,12 +923,15 @@ void loadserverscript() // Load server script
 {
 	loadserverscript("config/server.cfg");
 	loadserverscript("custom/server.cfg");
+	servcount=1;		//In NoX-Wizard you can have ONLY one server running :)
+				// ^-- Are you sure !? ;) default shard is the first =)
+
+	loadshardlist();	// and now .. the others ... =)
 }
 
 void commitserverscript() // second phase setup
 {
  	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	servcount=1;  //In NoX-Wizard you can have ONLY one server running :)
 
 	if (startcount<9)
 	{

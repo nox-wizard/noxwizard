@@ -26,7 +26,7 @@ enum
 	MAXIMUM = 1024,		//!< Maximum open connections to server
 	MAXCLIENT = MAXIMUM +1,
 				//!< Maximum clients allowed
-	MAXSERV = 5,		//!< Maximum servers in login listing
+	MAXSERV = 15,		//!< Maximum servers in login listing
 	MAXBUFFER = 2560,	//!< Buffer Size (For socket operations)
 	MAXSTART = 15,		//!< Maximum starting locations
 	MAXPAGES = 75,		//!< Maximum number of pages in the GM queue
