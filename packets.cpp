@@ -431,7 +431,7 @@ SEND( Menu ) {
 
 	std::vector< wstring >::iterator itu( texts->begin() ), endu( texts->end() );
 	for( ; itu!=endu; itu++ ) {
-		temp += itu->size() +sizeof( len );
+		temp += itu->size()*2 +sizeof( len );
 	}
 	
 	this->size=temp;
