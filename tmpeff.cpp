@@ -17,7 +17,7 @@
 
 namespace tempfx {
 
-SERIAL_VECTOR tempfxCheck;
+SERIAL_SLIST tempfxCheck;
 
 /*!
 \author Luxor
@@ -29,23 +29,23 @@ void tempeffectson()
 		
 	P_OBJECT po = NULL;
 	
-	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
-	for ( ; it != tempfxCheck.end(); it++ ) {
+	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
+	for ( ; it != tempfxCheck.end(); ) {
 		po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 	        
 	        po->tempfxOn();
+	        
+	        it++;
 	}	
 }
 
@@ -59,23 +59,22 @@ void tempeffectsoff()
 	
 	P_OBJECT po = NULL;
 
-	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
-        for ( ; it != tempfxCheck.end(); it++ ) {
+	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
+        for ( ; it != tempfxCheck.end(); ) {
                 po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 
 	        po->tempfxOff();
+	        it++;
 	}
 }
 
@@ -89,23 +88,22 @@ void checktempeffects()
 		
 	P_OBJECT po = NULL;
 
-	SERIAL_VECTOR::iterator it( tempfxCheck.begin() );
-        for ( ; it != tempfxCheck.end(); it++ ) {
+	SERIAL_SLIST::iterator it( tempfxCheck.begin() );
+        for ( ; it != tempfxCheck.end(); ) {
                 po = objects.findObject( (*it) );
 
                 if ( po == NULL ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 
 	        if ( !po->hasTempfx() ) {
 			tempfxCheck.erase( it );
-			it--;
 			continue;
 	        }
 	        
 	        po->checkTempfx();
+	        it++;
 	}
 }
 
@@ -1144,7 +1142,7 @@ void addTempfxCheck( SERIAL serial )
 	if ( find( tempfxCheck.begin(), tempfxCheck.end(), serial ) != tempfxCheck.end() )
 		return;
 
-	tempfxCheck.push_back( serial );
+	tempfxCheck.push_front( serial );
 }
 
 } //namespace

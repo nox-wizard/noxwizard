@@ -71,6 +71,7 @@ typedef UI32				TIMERVAL;
 typedef SI32				ACCOUNT;
 typedef std::vector<UI32>		UI32VECTOR;	//!< vector of unsigned 32 bits integers
 typedef std::vector<SERIAL>		SERIAL_VECTOR;	//!< vector of serials
+typedef slist<SERIAL>                   SERIAL_SLIST;	//!< slist of serials
 
 typedef std::set<SERIAL>		SERIAL_SET;	//!< set of serials
 
