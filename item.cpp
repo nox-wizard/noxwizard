@@ -32,8 +32,7 @@ namespace item
 
 		pi->setId(id);
 		pi->animSetId(0);
-		pi->color1=color>>8;
-		pi->color2=color&0x00FF;
+		pi->setColor(color);
 		pi->amount=nAmount;
 		pi->pileable=(pile) ? '\1' : '\0';
 		pi->att=5;
@@ -144,16 +143,14 @@ namespace item
 						if (!strcmp("COLOR", script1))
 						{
 							tmp = hex2num(script2);
-							pi->color1 = tmp >> 8;
-							pi->color2 = tmp%256;
+							pi->setColor(tmp);
 						}
 						else if (!strcmp("CREATOR", script1))		pi->creator = script2;
 						else if (!strcmp("COLORLIST", script1))
 						{
 							tmp = addrandomcolor(pi, script2);
 							{
-								pi->color1 = tmp >> 8;
-								pi->color2 = tmp%256;
+								pi->setColor(tmp);
 							}
 						}
 						else WarnOut("Unrecognised attribute : \"%s\", in item number %i\n", script1, itemnum);
@@ -657,8 +654,7 @@ namespace item
 		pi->animSetId(0);
 		pi->useAnimId = false;
 		pi->setScriptID(0);
-		pi->color1=color>>8;
-		pi->color2=color&0x00FF;
+		pi->setColor(color);
 		pi->amount=nAmount;
 		pi->pileable=pile;
 		pi->att=5;
@@ -746,8 +742,7 @@ namespace item
 						else if (!(strcmp("COLOR",script1)))
 						{
 							tmp=hex2num(script2);
-							pi->color1=tmp>>8;
-							pi->color2=tmp%256;
+							pi->setColor(tmp);
 						}
 					break;
 

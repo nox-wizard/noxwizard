@@ -39,7 +39,7 @@ unsigned long CheckMilliTimer(unsigned long &Seconds, unsigned long &Millisecond
 void criminal(P_CHAR pc);
 void callguards( int p );
 void charcreate(NXWSOCKET  s);			//!< All the character creation stuff
-void usepotion(int p, P_ITEM pi);
+void usepotion(P_CHAR pc, P_ITEM pi);
 
 void setcharflag(P_CHAR pc);
 LOGICAL setcharflag2(P_CHAR pc);

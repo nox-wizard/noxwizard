@@ -346,8 +346,7 @@ void cFishing::Fish(CHARACTER i)
 			P_ITEM fish = item::CreateFromScript(-1, 8108);
 			VALIDATEPI(fish);
 		
-			fish->color1= color >> 8;
-			fish->color2= color % 256;
+			fish->setColor(color);
 			fish->id2= idnum;
 		
 			if (ISVALIDPI(pc_bp))

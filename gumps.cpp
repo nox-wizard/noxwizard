@@ -392,8 +392,7 @@ void gumps::Input(int s)
 					pj->setId(k);
 					break;	 // ID
 		case 4:		k = hex2num( text );
-					pj->color1 = (unsigned char)(k>>8);
-					pj->color2 = (unsigned char)(k%256);
+					pj->setColor(k);
 					break;	// Hue
 		case 5:		k = str2num( text );	pj->setPosition("x", k);	break;	// X
 		case 6:		k = str2num( text );	pj->setPosition("y", k);	break;	// Y

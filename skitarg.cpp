@@ -119,10 +119,10 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
                     pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
                     return;
                 }
-                itemmake[s].Mat1id=pi->id();
+                itemmake[s].Mat1id = pi->id();
 		itemmake[s].Mat1color = pi->color();
-                itemmake[s].newcolor1=pi->color1;
-                itemmake[s].newcolor2=pi->color2;
+                itemmake[s].newcolor1 = pi->color() >>8;
+                itemmake[s].newcolor2 = pi->color() %256;
                 if ( pi->IsCutLeather() || pi->IsHide() )
 					g_prgOverride->CallFn(g_prgOverride->getFnOrdinal(AMXTAILORING), s, pi->getSerial32()); //Luxor
                 else
@@ -1421,13 +1421,14 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
 
     if (pi->magic!=4) // Ripper
     {
-        UI16 color = (pi->color1<<8)|(pi->color2%256); //-Frazurbluu- added color retention for bandage cutting from cloth
+        UI16 color = pi->color(); //-Frazurbluu- added color retention for bandage cutting from cloth
 
         if (pi->IsCloth() && pi->IsCutCloth())
         {
             amt=pi->amount;  //-Frazurbluu- changed to reflect current OSI
             pc->playSFX(0x0248);
             pc->sysmsg(TRANSLATE("You cut some cloth into bandages, and put it in your backpack"));
+
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"clean bandage",0,0x0E21, color,1,1);
             VALIDATEPI(pcc);
             // need to set amount and weight and pileable, note: cannot set pilable while spawning item -Fraz-
@@ -1449,6 +1450,7 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
             else
                 amt=40; //Fixed by Luxor
             pc->playSFX(0x0248);
+
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"cut cloth",0,0x1766, color,1,1);
             VALIDATEPI(pcc);
 
@@ -1465,6 +1467,7 @@ void Skills::CreateBandageTarget(NXWSOCKET s)//-Frazurbluu- rewrite of tailoring
         {
             amt=pi->amount;
             pc->playSFX(0x0248);
+
             P_ITEM pcc=item::SpawnItem(s,DEREF_P_CHAR(pc),1,"leather piece",0,0x1067, color,1,1);
             VALIDATEPI(pcc);
 
@@ -1502,14 +1505,14 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 		//P_CHAR pc_att=pointers::findCharBySerial(ph->attackerserial);
 		if( ph->war/* || pp->war || ( ISVALIDPC(pc_att) && pc_att->war)*/)
 		{
-            sysmessage(s, TRANSLATE("You can't heal while in a fight!"));
+			ph->sysmsg(TRANSLATE("You can't heal while in a fight!"));
 			return;
 		}
 	}
 
-	if(!(char_inRange(ph,pp,1)))
+	if(!char_inRange(ph,pp,1))
 	{
-		sysmessage(s,TRANSLATE("You are not close enough to apply the bandages."));
+		ph->sysmsg(TRANSLATE("You are not close enough to apply the bandages."));
 		return;
 	}
         
@@ -1520,19 +1523,18 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 			ph->helpStuff(pp);
         }
 
-
 	if (pp->dead)
 	{
 		if (ph->baseskill[HEALING] < 800 || ph->baseskill[ANATOMY]<800)
-			sysmessage(s,TRANSLATE("You are not skilled enough to resurrect"));
+			ph->sysmsg(TRANSLATE("You are not skilled enough to resurrect"));
 		else
 		{
 			if(ph->checkSkill(HEALING,800,1000) && ph->checkSkill(ANATOMY,800,1000) ) {
 				pp->resurrect();
-				sysmessage(s,TRANSLATE("Because of your skill, you were able to resurrect the ghost."));
+				ph->sysmsg(TRANSLATE("Because of your skill, you were able to resurrect the ghost."));
 			}
             else
-				sysmessage(s,TRANSLATE("You failed to resurrect the ghost"));
+				ph->sysmsg(TRANSLATE("You failed to resurrect the ghost"));
 
 			SetTimerSec(&ph->objectdelay,SrvParms->objectdelay+SrvParms->bandagedelay);
 			pib->ReduceAmount(1);
@@ -1545,18 +1547,18 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 	{
 		if (ph->baseskill[HEALING]<=600 || ph->baseskill[ANATOMY]<=600)
 		{
-			sysmessage(s,TRANSLATE("You are not skilled enough to cure poison."));
-			sysmessage(s,TRANSLATE("The poison in your target's system counters the bandage's effect."));
+			ph->sysmsg(TRANSLATE("You are not skilled enough to cure poison."));
+			ph->sysmsg(TRANSLATE("The poison in your target's system counters the bandage's effect."));
 		}
 		else
 		{
 			if (ph->checkSkill( HEALING,600,1000) && ph->checkSkill(ANATOMY,600,1000))
 			{
 				pp->poisoned=POISON_NONE;
-				sysmessage(s,TRANSLATE("Because of your skill, you were able to counter the poison."));
+				ph->sysmsg(TRANSLATE("Because of your skill, you were able to counter the poison."));
 			}
 			else
-				sysmessage(s,TRANSLATE("You fail to counter the poison"));
+				ph->sysmsg(TRANSLATE("You fail to counter the poison"));
          
 		}
 		
@@ -1567,7 +1569,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 
 	if(pp->hp >= pp->getStrength())
 	{
-		sysmessage(s,TRANSLATE("That being is not damaged"));
+		ph->sysmsg(TRANSLATE("That being is not damaged"));
 		return;
 	}
 
@@ -1575,7 +1577,7 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
 	{
 		if (!ph->checkSkill(HEALING,0,1000))
 		{
-			sysmessage(s,TRANSLATE("You apply the bandages, but they barely help!"));
+			ph->sysmsg(TRANSLATE("You apply the bandages, but they barely help!"));
 			pp->hp++;
 		}
 		else
@@ -1598,13 +1600,13 @@ void Skills::HealingSkillTarget(NXWSOCKET s)
     else //Bandages used on a non-human
 	{
 		if (!ph->checkSkill(VETERINARY,0,1000))
-			sysmessage(s,TRANSLATE("You are not skilled enough to heal that creature."));
+			ph->sysmsg(TRANSLATE("You are not skilled enough to heal that creature."));
 		else
 		{
 			j=((3*ph->skill[VETERINARY])/100) + rand()%6;
 			pp->hp=qmin(pp->getStrength(), j+pp->hp);
 			pp->updateStats(0);
-			sysmessage(s,TRANSLATE("You apply the bandages and the creature looks a bit healthier."));
+			ph->sysmsg(TRANSLATE("You apply the bandages and the creature looks a bit healthier."));
 		}
 	}
         

@@ -807,13 +807,13 @@ void cTempfx::executeExpireCode()
 
 		case DRINK_EMOTE:
 			VALIDATEPC(src);
-			src->emote(calcSocketFromChar(DEREF_P_CHAR(src)),"*glu*",1);
+			src->emote(src->getSocket(),"*glu*",1);
 			break;
 
 		case DRINK_FINISHED:
 			VALIDATEPC(src);
 			VALIDATEPI(pi_dest);
-			usepotion(DEREF_P_CHAR(src), pi_dest);
+			usepotion(src, pi_dest);
 			break;
 
 		case GM_HIDING:

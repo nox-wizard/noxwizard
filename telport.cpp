@@ -15,6 +15,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "debug.h"
+#include "layer.h"
 
 void teleporters(P_CHAR pc)
 {
@@ -243,7 +244,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 							{
 								P_ITEM pii_i=pointers::pContMap[serial][ci];
 								if (ISVALIDPI(pii_i))
-									if ((pii_i->layer==0x0B) && (pii_i->getContSerial()==serial))
+									if ((pii_i->layer==LAYER_HAIR) && (pii_i->getContSerial()==serial))
 									{
 										hairobject=pii_i;
 										break;
@@ -252,8 +253,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						P_ITEM phair= hairobject;
 						if(ISVALIDPI(phair)) {
 
-							x=hex2num(script2);
-							WORD2DBYTE(x, phair->color1, phair->color2 );
+							phair->setColor( hex2num(script2) );
 							phair->Refresh();
 							pc->teleport();
 						}
@@ -269,7 +269,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pii_i=pointers::pContMap[serial][ci];
 							if (ISVALIDPI(pii_i))
-								if ((pii_i->layer==0x10) && (pii_i->getContSerial()==serial))
+								if ((pii_i->layer==LAYER_BEARD) && (pii_i->getContSerial()==serial))
 								{
 									beardobject=pii_i;
 									break;
@@ -279,8 +279,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pbeard= beardobject;
 							if(ISVALIDPI(pbeard)) {
-								x=hex2num(script2);
-								WORD2DBYTE(x, pbeard->color1, pbeard->color2);
+								pbeard->setColor( hex2num(script2) );
 								pbeard->Refresh();
 								pc->teleport();
 							}
@@ -297,7 +296,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pii_i=pointers::pContMap[serial][ci];
 							if (ISVALIDPI(pii_i))
-								if ((pii_i->layer==0x0B) && (pii_i->getContSerial()==serial))
+								if ((pii_i->layer==LAYER_HAIR) && (pii_i->getContSerial()==serial))
 								{
 									pii_i->deleteItem();
 									break;
@@ -315,7 +314,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pii_i=pointers::pContMap[serial][ci];
 							if (ISVALIDPI(pii_i))
-								if ((pii_i->layer==0x10) && (pii_i->getContSerial()==serial))
+								if ((pii_i->layer==LAYER_BEARD) && (pii_i->getContSerial()==serial))
 								{
 									pii_i->deleteItem();
 									break;
@@ -333,7 +332,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						{
 							P_ITEM pii_i=pointers::pContMap[serial][ci];
 							if (ISVALIDPI(pii_i))
-								if ((pii_i->layer==0x15) && (pii_i->getContSerial()==serial))
+								if ((pii_i->layer==LAYER_BACKPACK) && (pii_i->getContSerial()==serial))
 								{
 									pii_i->deleteItem();
 									break;
@@ -349,7 +348,7 @@ void advancementobjects(CHARACTER s, int x, int allways)
 						if (ISVALIDPI(pi))
 						{
 							pi->setPosition( 50+(rand()%80), 50+(rand()%80), 9);
-							if(pi->layer==0x0b || pi->layer==0x10)
+							if(pi->layer==LAYER_HAIR || pi->layer==LAYER_BEARD)
 							{
 								//setserial(DEREF_P_ITEM(pi),s,4);
 								pi->setContSerial(pc->getSerial32());

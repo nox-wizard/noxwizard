@@ -343,11 +343,7 @@ void soundeffect5(NXWSOCKET  s, UI16 sound) // Play sound effect for player only
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	Location charpos= pc->getPosition();
-
-	charpos.z = 0;
-
-	SendPlaySoundEffectPkt(s, 0x01, sound, 0x0000, charpos);
+	pc->playSFX(sound, true);
 }
 
 
@@ -2079,7 +2075,7 @@ void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 				ShortToCharPtr(pj->id(), oc+k+4);
 				oc[k+6]=pj->layer;
 				k += 7;
-				if (pj->color1!=0 || pj->color2!=0)
+				if (pj->color() != 0)
 				{
 					oc[k-3]|=0x80;
 					ShortToCharPtr(pj->color(), oc+k);

@@ -657,8 +657,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if( ISVALIDPI(pi_n) )
 					{
-						pi_n->color1=(hex2num(script2))>>8;
-						pi_n->color2=(hex2num(script2))%256;
+						pi_n->setColor( hex2num(script2) );
 					}
 				}
 				else if ( !strcmp( "CAMPING", script1 ) )		pc->baseskill[CAMPING] = getRangedValue(script2);
@@ -670,8 +669,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 				{
 					if (ISVALIDPI(pi_n) && haircolor!=-1)
 					{
-						pi_n->color1=(haircolor)>>8;
-						pi_n->color2=(haircolor)%256;
+						pi_n->setColor( haircolor );
 					}
 				}
 				else if ( !strcmp( "COLORLIST", script1 ) )
@@ -679,8 +677,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 					storeval=addrandomcolor(pc,script2);
 					if (ISVALIDPI(pi_n))
 					{
-						pi_n->color1=(storeval)>>8;
-						pi_n->color2=(storeval)%256;
+						pi_n->setColor( storeval );
 					}
 					strcpy(script1, "DUMMY");
 				}
@@ -787,8 +784,7 @@ P_CHAR AddNPC(NXWSOCKET s, P_ITEM pi, int npcNum, UI16 x1, UI16 y1, SI08 z1)
 						haircolor=addrandomhaircolor(pc,script2);
 						if (haircolor!=-1)
 						{
-							pi_n->color1=(haircolor)>>8;
-							pi_n->color2=(haircolor)%256;
+							pi_n->setColor( haircolor );
 						}
 					}
 					strcpy(script1, "DUMMY");

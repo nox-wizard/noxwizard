@@ -918,10 +918,8 @@ void Race::handleButton( const NXWSOCKET socket, const UI32 gump, const UI32 but
 									if( pi->layer && !pc->GetItemOnLayer( pi->layer ) )
 									{
 										if( iter->skinColor )
-										{
-											pi->color1 = pc->getSkinColor() >> 8;
-											pi->color2 = pc->getSkinColor() % 256;
-										}
+											pi->setColor( pc->getSkinColor() );
+
 										pi->setContSerial( pc->getSerial32() );
 									}
 									else

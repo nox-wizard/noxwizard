@@ -2000,13 +2000,17 @@ LOGICAL cChar::losFrom(P_CHAR pc)
 \brief plays a sound effect on a char
 \param sound as default
 */
-void cChar::playSFX(SI16 sound)
+void cChar::playSFX(SI16 sound, LOGICAL onlyToMe)
 {
-
 	Location charpos = getPosition();
 
 	charpos.z = 0;
 
+	if(onlyToMe) {
+		SendPlaySoundEffectPkt(getSocket(), 0x01, sound, 0x0000, charpos);
+		return;
+	}
+		
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
 	
@@ -2560,13 +2564,13 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 		setRealName( getCurrentNameC() );
 		if(ISVALIDPI(pbeard))
 		{
-			oldbeardstyle = DBYTE2WORD(pbeard->id1, pbeard->id2);
-			oldbeardcolor = DBYTE2WORD(pbeard->color1, pbeard->color2);
+			oldbeardstyle = pbeard->id();
+			oldbeardcolor = pbeard->color();
 		}
 		if(ISVALIDPI(phair))
 		{
-			oldhairstyle = DBYTE2WORD(phair->id1, phair->id2);
-			oldhaircolor = DBYTE2WORD(phair->color1, phair->color2);
+			oldhairstyle = phair->id();
+			oldhaircolor = phair->color();
 		}
 	}
 
@@ -2582,17 +2586,17 @@ void cChar::morph ( short bodyid, short skincolor, short hairstyle, short hairco
 	if(ISVALIDPI(pbeard))
 	{
 		if (beardstyle!=INVALID)
-			WORD2DBYTE(beardstyle, pbeard->id1, pbeard->id2);
+			pbeard->setId(beardstyle);
 		if (beardcolor!=INVALID)
-			WORD2DBYTE(beardcolor, pbeard->color1, pbeard->color2);
+			pbeard->setColor(beardcolor);
 	}
 
 	if(ISVALIDPI(phair))
 	{
 		if (hairstyle!=INVALID)
-			WORD2DBYTE(hairstyle, phair->id1, phair->id2);
+			phair->setId(hairstyle);
 		if (haircolor!=INVALID)
-			WORD2DBYTE(haircolor, phair->color1, phair->color2);
+			phair->setColor(haircolor);
 	}
 
 	morphed = bBackup;

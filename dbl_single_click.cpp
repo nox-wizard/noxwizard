@@ -575,7 +575,7 @@ void doubleclick(NXWCLIENT ps)
 			if (pi->morey != 3)
 				pc->drink(pi);   //Luxor: delayed potions drinking
 			else    //explosion potion
-				usepotion( DEREF_P_CHAR( pc ), pi);
+				usepotion(pc, pi);
 			return;
 	case ITYPE_RUNE:
 			if (pi->morex==0 && pi->morey==0 && pi->morez==0)
@@ -768,8 +768,8 @@ void doubleclick(NXWCLIENT ps)
 			target(s, 0, 1, 0, 31, TRANSLATE("Which dye vat will you use this on?"));
 			return;// dye
 		case 0x0FAB:// dye vat
-			addid1[s] = pi->color1;
-			addid2[s] = pi->color2;
+			addid1[s] = pi->color()>>8;
+			addid2[s] = pi->color()%256;
 			target(s, 0, 1, 0, 32, TRANSLATE("Select the clothing to use this on."));
 			return;// dye vat
 		case 0x14F0:// houses

@@ -55,8 +55,7 @@ cItem& cItem::operator=(cItem& b)
         setId(b.id());
         //setPosition(b.getPosition());
         //setOldPosition(b.getOldPosition());
-        color1 = b.color1;
-        color2 = b.color2;
+        setColor(b.color());
         setContSerial(INVALID);
         //setContSerial(b.getContSerial(true), true);
         layer = b.layer;
@@ -788,6 +787,12 @@ void cItem::setId(SI16 id)
 	id2=id&0x00FF;
 }
 
+void cItem::setColor(UI16 color)
+{
+	color1 = color >>8;
+	color2 = color %256;
+}
+
 /*!
 \author Elcabesa
 */
@@ -871,8 +876,7 @@ cItem::cItem( SERIAL ser )
 	setId(0x0001); // Item visuals as stored in the client
 	setPosition(100, 100, 0);
 	setOldPosition( getPosition() );
-	color1=0x00; // Hue
-	color2=0x00;
+	setColor(0x0000); // Hue
 	contserial.serial32= INVALID; // Container that this item is found in
 	oldcontserial.serial32= INVALID;
 	layer=oldlayer=0; // Layer if equipped on paperdoll

@@ -173,8 +173,7 @@ void cTriggerContext::parseIAddCommand(char* par)
     // Added colormem token here! by Magius(CHE) §
     if (ISVALIDPI(boh) && m_nColor1!=0xFF)
     {
-        boh->color1 = m_nColor1;
-        boh->color2 = m_nColor2;
+        boh->setColor( (m_nColor1<<8)|(m_nColor2%256) );
         boh->Refresh();
     }
     // end addons
@@ -725,14 +724,13 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				if ((r < 0)||(r > 65535)) r = 1;
 				if (r == 0) return;
 
-				P_ITEM pc = item::SpawnItem(m_socket, r, "#", 1, (array[0]<<8)+array[1], 0, 1, 1);
+				P_ITEM pc = item::SpawnItem(m_socket, r, "#", 1, (array[0]<<8)|array[1], 0, 1, 1);
 				if (!ISVALIDPI(pc)) STOPTRIGGER;
 
 				// Added colormem token here! by Magius(CHE) §
 				if (m_nColor1 != 0xFF)
 				{
-					pc->color1 = m_nColor1;
-					pc->color2 = m_nColor2;
+					pc->setColor( (m_nColor1<<8)|(m_nColor2%256) );
 					pc->Refresh();
 				}
 

@@ -738,8 +738,7 @@ void loaditem()
 				}
 				else
 				{
-					pi->color1=0; // bugged color found, leave it undyed
-					pi->color2=0;
+					pi->setColor(0); // bugged color found, leave it undyed
 					WarnOut("item# %i with problematic hue corrected\n", pi->getSerial32());
 				}
 			}

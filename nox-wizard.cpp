@@ -377,8 +377,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		VALIDATEPI(pi);
 		if ((pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
-			pi->color1=0x04;
-			pi->color2=0x4E;
+			pi->setColor(0x044E);
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_HAIR;
@@ -390,8 +389,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		VALIDATEPI(pi);
 		if ( (pi->color()<0x044E) || (pi->color()>0x04AD) )
 		{
-			pi->color1=0x04;
-			pi->color2=0x4E;
+			pi->setColor(0x044E);
 		}
 		pi->setContSerial(pc->getSerial32());
 		pi->layer=LAYER_BEARD;
@@ -424,8 +422,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 	VALIDATEPI(pi);
 
 	// pant/skirt color -> old client code, random color
-	pi->color1=buffer[s][102];
-	pi->color2=buffer[s][103];
+	pi->setColor( ShortFromCharPtr(buffer[s] +102) );
 	pi->setCont(pc);
 
 	if( !(rand()%2) )
@@ -434,8 +431,7 @@ void charcreate( NXWSOCKET  s ) // All the character creation stuff
 		pi= item::CreateFromScript(s, "$item_shirt");
 
 	VALIDATEPI(pi);
-	pi->color1=buffer[s][100];
-	pi->color2=buffer[s][101];
+	pi->setColor( ShortFromCharPtr(buffer[s] +100) );
 	pi->setCont(pc);
 
 // what is this ??? (Anthalir)
@@ -1774,30 +1770,30 @@ void addgold(int s, int totgold)
 	item::SpawnItem(s,totgold,"#",1,0x0EED,0,1,1);
 }
 
-void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
+void usepotion(P_CHAR pc, P_ITEM pi)
 {
-	int s, x;
+	int x;
 
-	P_CHAR pc=MAKE_CHAR_REF(p);
 	VALIDATEPC(pc);
 
-	s=calcSocketFromChar(p);
+	NXWSOCKET s = pc->getSocket();
+
 	switch(pi->morey)
 	{
 	case 1: // Agility Potion
-		staticeffect(p, 0x37, 0x3a, 0, 15);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3a, 0, 15);
 		switch(pi->morez)
 		{
 		case 1:
 			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, 5+RandomNum(1,10), 0, 0, 120);
-			sysmessage(s, TRANSLATE("You feel more agile!"));
+			pc->sysmsg(TRANSLATE("You feel more agile!"));
 			break;
 		case 2:
 			tempfx::add(pc, pc, tempfx::SPELL_AGILITY, 10+RandomNum(1,20), 0, 0, 120);
-			sysmessage(s, TRANSLATE("You feel much more agile!"));
+			pc->sysmsg(TRANSLATE("You feel much more agile!"));
 			break;
 		default:
-			ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n"); //Morrolan
+			ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n");
 			return;
 		}
 		pc->playSFX(0x01E7);
@@ -1807,7 +1803,7 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 
 	case 2: // Cure Potion
 		if (pc->poisoned<1)
-			sysmessage(s,TRANSLATE("The potion had no effect."));
+			pc->sysmsg(TRANSLATE("The potion had no effect."));
 		else
 		{
 			switch(pi->morez)
@@ -1838,12 +1834,12 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 				return;
 			}
 			if (pc->poisoned) 
-				sysmessage(s,TRANSLATE("The potion was not able to cure this poison.")); 
+				pc->sysmsg(TRANSLATE("The potion was not able to cure this poison.")); 
 			else
 			{
-				staticeffect(p, 0x37, 0x3A, 0, 15);
+				staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3A, 0, 15);
 				pc->playSFX( 0x01E0); //cure sound - SpaceDog
-				sysmessage(s,TRANSLATE("The poison was cured."));
+				pc->sysmsg(TRANSLATE("The poison was cured."));
 			}
 		}
 		impowncreate(s,pc,1); //Lb, makes the green bar blue or the blue bar blue !
@@ -1852,14 +1848,14 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 	case 3: // Explosion Potion
 		if (region[pc->region].priv&0x01) // Ripper 11-14-99
 		{
-			sysmessage(s,TRANSLATE(" You cant use that in town!"));
+			pc->sysmsg(TRANSLATE(" You cant use that in town!"));
 			return;
 		}
 		addid1[s]= pi->getSerial().ser1;
 		addid2[s]= pi->getSerial().ser2;
 		addid3[s]= pi->getSerial().ser3;
 		addid4[s]= pi->getSerial().ser4;
-		sysmessage(s, TRANSLATE("Now would be a good time to throw it!"));
+		pc->sysmsg(TRANSLATE("Now would be a good time to throw it!"));
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 1, 3);
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 2, 2);
 		tempfx::add(pc, pc, tempfx::EXPLOTIONMSG, 0, 3, 1);
@@ -1872,15 +1868,15 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		{
 		case 1:
 			pc->hp=qmin(pc->hp+5+RandomNum(1,5)+pc->skill[17]/100,pc->getStrength());
-			sysmessage(s, TRANSLATE("You feel better!"));
+			pc->sysmsg(TRANSLATE("You feel better!"));
 			break;
 		case 2:
 			pc->hp=qmin(pc->hp+15+RandomNum(1,10)+pc->skill[17]/50,pc->getStrength());
-			sysmessage(s, TRANSLATE("You feel more healty!"));
+			pc->sysmsg(TRANSLATE("You feel more healty!"));
 			break;
 		case 3:
 			pc->hp=qmin(pc->hp+20+RandomNum(1,20)+pc->skill[17]/40, pc->getStrength());
-			sysmessage(s, TRANSLATE("You feel much more healty!"));
+			pc->sysmsg(TRANSLATE("You feel much more healty!"));
 			break;
 
 		default:
@@ -1891,12 +1887,12 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		if (s!=INVALID) 
 			pc->updateStats(0);
 		
-		staticeffect(p, 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01F2); //Healing Sound - SpaceDog
 		break;
 
 	case 5: // Night Sight Potion
-		staticeffect(p, 0x37, 0x6A, 0x09, 0x06);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06);
 		tempfx::add(pc, pc, tempfx::SPELL_LIGHT, 0, 0, 0,(720*secondsperuominute*MY_CLOCKS_PER_SEC));
 		pc->playSFX(0x01E3);
 		break;
@@ -1909,7 +1905,7 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		pc->poisonwearofftime=uiCurrentTime+(MY_CLOCKS_PER_SEC*SrvParms->poisontimer); // lb, poison wear off timer setting
 		impowncreate(s,pc,1); //Lb, sends the green bar !
 		pc->playSFX(0x0246); //poison sound - SpaceDog
-		sysmessage(s, TRANSLATE("You poisoned yourself! *sigh*")); //message -SpaceDog
+		pc->sysmsg(TRANSLATE("You poisoned yourself! *sigh*")); //message -SpaceDog
 		break;
 
 	case 7: // Refresh Potion
@@ -1917,12 +1913,12 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		{
 			case 1:
 				pc->stm=qmin(pc->stm+20+RandomNum(1,10), pc->dx);
-				sysmessage(s, TRANSLATE("You feel more energetic!"));
+				pc->sysmsg(TRANSLATE("You feel more energetic!"));
 				break;
 		
 			case 2:
 				pc->stm=qmin(pc->stm+40+RandomNum(1,30), pc->dx);
-				sysmessage(s, TRANSLATE("You feel much more energetic!"));
+				pc->sysmsg(TRANSLATE("You feel much more energetic!"));
 				break;
 		
 			default:
@@ -1931,21 +1927,21 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		}
 		if (s!=INVALID)
 			pc->updateStats(2);
-		staticeffect(p, 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
-		pc->playSFX(  0x01F2); //Healing Sound
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
+		pc->playSFX(0x01F2); //Healing Sound
 		break;
 
 	case 8: // Strength Potion
-		staticeffect(p, 0x37, 0x3a, 0, 15);
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x3a, 0, 15);
 		switch(pi->morez)
 		{
 		case 1:
 			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, 5+RandomNum(1,10), 0, 0, 120);
-			sysmessage(s, TRANSLATE("You feel more strong!"));
+			pc->sysmsg(TRANSLATE("You feel more strong!"));
 			break;
 		case 2:
 			tempfx::add(pc, pc, tempfx::SPELL_STRENGHT, 10+RandomNum(1,20), 0, 0, 120);
-			sysmessage(s, TRANSLATE("You feel much more strong!"));
+			pc->sysmsg(TRANSLATE("You feel much more strong!"));
 			break;
 		default:
 			ErrOut("Switch fallout. NoX-Wizard.cpp, usepotion()\n");
@@ -1971,7 +1967,7 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		}
 		if (s!=INVALID) 
 			pc->updateStats(1);
-		staticeffect(p, 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
 		pc->playSFX(0x01E7); //agility sound - SpaceDog
 		break;
 
@@ -1980,12 +1976,12 @@ void usepotion(int p, P_ITEM pi)//Reprogrammed by AntiChrist
 		if (s==INVALID) return;
 		if (LSD[s]==1)
 		{
-			sysmessage(s,TRANSLATE("no,no,no,cant you get enough ?"));
+			pc->sysmsg(TRANSLATE("no,no,no,cant you get enough ?"));
 			return;
 		}
 		tempfx::add(pc, pc, tempfx::LSD, 60+RandomNum(1,120), 0, 0); // trigger effect
-		staticeffect(p, 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
-		soundeffect5(s, 0x00F8); // lsd sound :)
+		staticeffect(DEREF_P_CHAR(pc), 0x37, 0x6A, 0x09, 0x06); // Sparkle effect
+		pc->playSFX(0x00F8, true); // lsd sound :)
 		break;
 
 	default:

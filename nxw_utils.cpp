@@ -16,6 +16,7 @@
 #include "sregions.h"
 #include "srvparms.h"
 #include "nxw_utils.h"
+#include "layer.h"
 #ifdef WIN32
 #include <process.h>
 #endif
@@ -149,17 +150,6 @@ char *splitPath (char *p)
 #endif
 
 
-
-
-
-
-
-/*******************************************************************************************
- THIS PORTION IS ABOUT ATOMIC INTEGERS AND MULTITHREADING
- SUPPORTS WIN32 NATIVE THREADS AND POSIX THREADS
- *******************************************************************************************/
-
-
 void usehairdye(NXWSOCKET  s, P_ITEM piDye)	// x is the hair dye bottle object number
 {
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
@@ -173,10 +163,9 @@ void usehairdye(NXWSOCKET  s, P_ITEM piDye)	// x is the hair dye bottle object n
 	{
 		P_ITEM pi=si.getItem();
 		if(ISVALIDPI(pi))
-			if(pi->layer==0x10 || pi->layer==0x0B)//beard(0x10) and hair
+			if(pi->layer==LAYER_BEARD || pi->layer==LAYER_HAIR)
 			{
-				pi->color1=piDye->color1;	//Now change the color to the hair dye bottle color!
-				pi->color2=piDye->color2;
+				pi->setColor( piDye->color() ); //Now change the color to the hair dye bottle color!
 				pi->Refresh();
 			}
 	}

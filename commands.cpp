@@ -639,14 +639,12 @@ namespace Commands
 
 			if (! ((color & 0x4000) || (color & 0x8000)) )
 			{
-				pi->color1 = color >> 8;
-				pi->color2 = color % 256;
+				pi->setColor(color);
 			}
 
 			if (color == 0x4631)
 			{
-				pi->color1 = color >> 8;
-				pi->color2 = color % 256;
+				pi->setColor(color);
 			}
 
 			pi->Refresh();

@@ -918,12 +918,8 @@ public:
 /*!
 \name Talk and Emote stuff
 */
-//		UI08			emotecolor1;		//!< Color for emote messages
-//		UI08			emotecolor2;		//!< Color for emote messages
 		UI16			emotecolor;		//!< Color for emote messages
 		UI08			fonttype;		//!< Speech font to use
-//		UI08			saycolor1;		//!< Color for say messages
-//		UI08			saycolor1;		//!< Color for say messages
 		UI16			saycolor;		//!< Color for say messages
 		LOGICAL			unicode;		//!< This is set to 1 if the player uses unicode speech, 0 if not
 
@@ -940,7 +936,7 @@ public:
 		void			teleport( UI08 flags = TELEFLAG_SENDALL, NXWCLIENT cli = NULL );
 		void			facexy(SI32 facex, SI32 facey);
 		LOGICAL			losFrom(P_CHAR pc);
-		void			playSFX(SI16 sound);
+		void			playSFX(SI16 sound, LOGICAL onlyToMe = false);
 		void			playMonsterSound(MonsterSound sfx);
 
 		void			freeze();

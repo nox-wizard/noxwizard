@@ -1171,8 +1171,7 @@ void cTargets::DvatTarget(NXWSOCKET s)
 
 		if( pc == Me  || pi->isInWorld())
 		{
-			pi->color1=addid1[s];
-			pi->color2=addid2[s];
+			pi->setColor( (addid1[s]<<8)|(addid2[s]%256) );
 			pi->Refresh();
 			Me->playSFX(0x023E); // plays the dye sound, LB
 		} else {

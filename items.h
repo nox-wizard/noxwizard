@@ -95,10 +95,10 @@ public:
 \name Look
 */
 	inline SI16 id()
-	{ return (SI16)((id1<<8)+id2); }
+	{ return (SI16)((id1<<8)|id2); }
 
 	inline SI16 animid()
-	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)+animid2) : id(); }
+	{ return ( animid1 && animid2 ) ? (SI16)((animid1<<8)|animid2) : id(); }
 
 	UI08	id1;			//!< Item visuals as stored in the client
 	UI08	id2;
@@ -170,7 +170,8 @@ public:
 	UI08		color2;		//!< Hue
 
 	inline SI16 color()
-	{ return (SI16)((color1<<8)+color2); }
+	{ return (SI16)((color1<<8)|color2); }
+	void	setColor(UI16 color);
 
 	SI08		layer;		//!< Layer if equipped on paperdoll
 	SI08		oldlayer;	//!< Old layer - used for bouncing bugfix - AntiChrist
