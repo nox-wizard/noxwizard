@@ -1991,15 +1991,19 @@ void cNetwork::GetMsg(int s) // Receive message from client
 						
 					}
 					else { //only send
-						cPacketCharProfile resp;
-						resp.title= new std::string;
-						(*resp.title)+= pc_currchar->getCurrentName();
-						resp.staticProfile = new cUnicodeString();
-						resp.profile = pc_currchar->getProfile();
-						resp.send( ps );
+						P_CHAR who=pointers::findCharBySerial( p.chr.get() );
+						if( ISVALIDPC( who ) ) {
+							cPacketCharProfile resp;
+							resp.title= new std::string;
+							resp.chr=p.chr;
+							(*resp.title)+= who->getCurrentName();
+							resp.staticProfile = new cUnicodeString();
+							resp.profile = who->getProfile();
+							resp.send( ps );
 
-						delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
-						delete resp.staticProfile;
+							delete resp.title; //ndEndy not good, because profile and name are in cChar, so use it!!
+							delete resp.staticProfile;
+						}
 					}
 					
 					}
