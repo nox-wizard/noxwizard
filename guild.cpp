@@ -38,10 +38,6 @@ cGuild::cGuild( SERIAL guildstone )
 */
 cGuild::~cGuild()
 {
-	std::vector< P_GUILD_RANK >::iterator rank( ranks.begin() ), rank_end( ranks.end() );
-	for( ; rank!=rank_end; ++rank )
-		delete (*rank);
-
 	std::map< SERIAL, P_GUILD_MEMBER >::iterator member( members.begin() ), member_end( members.end() );
 	for( ; member!=member_end; ++member )
 		delete member->second;
@@ -141,12 +137,6 @@ void cGuild::save( FILE* file )
 	fprintWstring(  file, "CHARTER", charter );
 	fprintf( file, "WEBPAGE %s\n", webpage.c_str());
 
-	std::vector< P_GUILD_RANK >::iterator rank( ranks.begin() ), rank_end( ranks.end() );
-	for( ; rank!=rank_end; ++rank )
-	{
-		(*rank)->save( file );
-	}
-
 	std::map< SERIAL, P_GUILD_MEMBER >::iterator member( members.begin() ), member_end( members.end() );
 	for( ; member!=member_end; ++member )
 	{
@@ -217,7 +207,7 @@ P_GUILD_MEMBER cGuild::addMember( P_CHAR pc )
 
 	P_GUILD_MEMBER member = new cGuildMember( pc->getSerial32() );
 	members.insert( make_pair( member->serial, member ) );
-	pc->setGuild( serial );
+	pc->setGuild( this, member );
 	return member;
 
 }
@@ -229,7 +219,7 @@ P_GUILD_MEMBER cGuild::addMember( P_CHAR pc )
 */
 void cGuild::resignMember( P_CHAR pc )
 {
-	pc->setGuild( INVALID );
+	pc->setGuild( NULL, NULL );
 	members.erase( pc->getSerial32() );
 }
 
@@ -371,25 +361,6 @@ cGuildPolitics::~cGuildPolitics()
 
 
 
-cGuildRank::cGuildRank()
-{
-}
-
-cGuildRank::~cGuildRank()
-{
-}
-
-void cGuildRank::load( cStringFile* file )
-{
-}
-
-void cGuildRank::save( FILE* file )
-{
-}
-
-
-
-
 
 
 
@@ -514,9 +485,9 @@ bool cGuildz::load()
 
 }
 
-P_GUILD cGuildz::addGuild( P_ITEM stone ) {
+P_GUILD cGuildz::addGuild( SERIAL stone ) {
 
-	P_GUILD guild = new cGuild( stone->getSerial32() );
+	P_GUILD guild = new cGuild( stone );
 	guilds.insert( make_pair( guild->serial, guild ) );
 	return guild;
 

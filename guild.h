@@ -19,23 +19,6 @@
 #include "worldmain.h"
 
 /*!
-\brief Guild rank privileges
-\author Endymion
-*/
-class cGuildRank
-{
-	public:
-		cGuildRank();
-		~cGuildRank();
-
-		UI32 privileges; //!< the rank privileges
-		
-		void load( cStringFile* file );
-		void save( FILE* file );
-
-};
-
-/*!
 \brief A candidate for membership of a guild
 \author Endymion
 */
@@ -70,7 +53,7 @@ class cGuildMember
 		SERIAL serial;	//!< the member
 		std::string	title;	//!< title
 		GUILD_TITLE_TOGGLE toggle; //!< title toggle
-		P_GUILD_RANK rank; //!< the rank
+		UI32 rank; //!< the rank
 
 		cGuildMember( SERIAL serial );
 		~cGuildMember();
@@ -116,7 +99,12 @@ class cGuildPolitics {
 };
 
 
-
+typedef enum {
+	GUILD_TYPE_NORMAL,
+	GUILD_TYPE_ORDER,
+	GUILD_TYPE_CHAOS,
+	GUILD_TYPE_CITY
+} GUILD_TYPE;
 
 
 /*!
@@ -134,6 +122,8 @@ class cGuild
 	public:
 
 		SERIAL serial;	//!< guild serial, is equal to the guildstone serial
+		GUILD_TYPE type;	//!< guild type
+
 
 	private:
 		std::string	name;	//!< guild name ( es Keeper of the Crimson Soul )
@@ -173,8 +163,6 @@ class cGuild
 
 		std::map< SERIAL, cGuildPolitics > political_to_guild;	//!< all guild politics related to other guild
 
-		std::vector< P_GUILD_RANK > ranks; //!< all members ranks
-
 };
 
 
@@ -203,7 +191,7 @@ class cGuildz
 		~cGuildz();
 
 		P_GUILD getGuild( SERIAL guild );
-		P_GUILD addGuild( P_ITEM stone );
+		P_GUILD addGuild( SERIAL stone );
 
 };
 

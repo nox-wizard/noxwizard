@@ -256,7 +256,7 @@ cChar::cChar( SERIAL ser ) : cObject()
 	SetGuildTitle( "" );	// Title Guildmaster granted player 					(DasRaetsel)
 	SetGuildFealty( INVALID ); 	// Serial of player you are loyal to (default=yourself) (DasRaetsel)
 	SetGuildNumber( 0 );		// Number of guild player is in (0=no guild)			(DasRaetsel)
-	setGuild( 0 );
+	
 	flag=0x02; //1=red 2=grey 4=Blue 8=green 10=Orange // grey as default - AntiChrist
 	tempflagtime=0;
 	
@@ -311,7 +311,9 @@ cChar::cChar( SERIAL ser ) : cObject()
 	holydamaged = false;
 	damagetype = DAMAGE_BLUDGEON;
 	fstm=0.0f;
-	setGuild(INVALID);
+	
+	setGuild( NULL, NULL );
+
 	jailed=false;
 	morphed=0;
 	resetLockSkills();
@@ -4189,28 +4191,40 @@ void cChar::drink(P_ITEM pi)
 */
 bool cChar::isGuilded()
 {
-	return getGuild()!=INVALID;
+	return guild!=NULL;
 }
 
 /*!
 \brief set Guild
 \author Endymion
-\param newGuild the guild serial
+\param guild the guild
 */
-void cChar::setGuild( SERIAL newGuild )
+void cChar::setGuild( P_GUILD guild, P_GUILD_MEMBER member )
 {
-	guild = newGuild;
+	this->guild = guild;
+	this->member = member;
 }
 
 /*!
 \brief get Guild
 \author Endymion
-\return guild serial
+\return the guild
 */
-SERIAL cChar::getGuild()
+P_GUILD cChar::getGuild()
 {
 	return guild;
 }
+
+/*!
+\brief get Guild member
+\author Endymion
+\return the guild member
+*/
+P_GUILD_MEMBER cChar::getGuildMember()
+{
+	return member;
+}
+
 
 /*!
 \brief open a bankbox

@@ -546,12 +546,14 @@ class cChar : public cObject
 \name Guilds
 */
 	private:
-		SERIAL			guild; //!< Serial of guild
+		P_GUILD guild; //!< the guild
+		P_GUILD_MEMBER member; //!< the guild member info
 
 	public:
-		bool			isGuilded();
-		void			setGuild(SERIAL newGuild);
-		SERIAL			getGuild();
+		bool	isGuilded();
+		void	setGuild( P_GUILD guild, P_GUILD_MEMBER member );
+		P_GUILD	getGuild();
+		P_GUILD_MEMBER getGuildMember();
 //@}
 
 
