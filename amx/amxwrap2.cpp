@@ -3410,23 +3410,21 @@ NATIVE2(_getRaceGlobalProp)
 		int p;
 		switch(params[1]) {
 			
-		case RP_I_STARTLOCATION:
+		case RP_I_STARTLOCATION: {
 
 			switch(params[2]) {
 
-			case RSP_I_LOCATION_X :
-				p = Race::startLocation[1];
+			case RSP_I_LOCATION_X : p = Race::startLocation[1];
 
-			case RSP_I_LOCATION_Y :
-				p = Race::startLocation[2];
+			case RSP_I_LOCATION_Y :	p = Race::startLocation[2];
 
-			case RSP_I_LOCATION_Z :
-				p = Race::startLocation[3];
+			case RSP_I_LOCATION_Z : p = Race::startLocation[3];
 			}
+		}
 
-			case INVALID:
+		case INVALID:
 			
-			default:
+		default:
 				ErrOut("race_getGlobalProp called with invalid property %d!\n", params[1] );
 				return INVALID;
 		}
