@@ -209,11 +209,21 @@ public:
 
 	//! Set the real name of object
 	inline void		setRealName(string s)
-	{ secondary_name = s; }
+	{ 
+		if ( s != NULL )
+			secondary_name = s; 
+		else
+			secondary_name = "";
+	}
 
 	//! Set the real name of object
 	inline void		setRealName(const char *str)
-	{ secondary_name = string(str); }
+	{ 
+		if ( str != NULL )
+			secondary_name = string(str); 
+		else
+			secondary_name = "";
+	}
 
 	//! return the current name of object
 	inline const string	getCurrentName() const
