@@ -866,7 +866,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 			len = 20;
 		}
 
-		ShortToCharPtr(len, itmput +2);
+		ShortToCharPtr(len, itmput +1);
 		Xsend(s, itmput, len);
 //AoS/		Network->FlushBuffer(s);
 		//pc->sysmsg( "sent item %s %i", pi->getCurrentNameC(), pi->magic );
