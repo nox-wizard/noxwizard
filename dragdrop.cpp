@@ -1277,7 +1277,7 @@ void pack_item(NXWCLIENT ps, PKGx08 *pp) // Item is put into container
 
 	if( ISVALIDPC(contOwner) ) {
 		//if ((contOwner->npcaitype==NPCAI_PLAYERVENDOR) && (contOwner->npc) && (contOwner->getOwnerSerial32()!=pc->getSerial32()) )
-		if ( contOwner->getSerial32() != pc->getSerial32() && !pc->IsGM() ) { // Luxor
+		if ( contOwner->getSerial32() != pc->getSerial32() && contOwner->getOwnerSerial32() != pc->getSerial32() && !pc->IsGM() ) { // Luxor
 			ps->sysmsg(TRANSLATE("This aint your backpack!"));
 			Sndbounce5(s);
 			if (ps->isDragging()) {
