@@ -1588,7 +1588,6 @@ void cGuilds::Title(int s,int player2)
 	char title[150];
 	char abbreviation[5];
 	char guildtype[10];
-	int tl;
 
 	P_CHAR pc2= pointers::findCharBySerial( player2 );
 	VALIDATEPC(pc2);
@@ -1615,20 +1614,10 @@ void cGuilds::Title(int s,int player2)
 			else sprintf(title,"[%s]",abbreviation);
 		}
 
-		tl=44+strlen(title)+1;
+		UI08 sysname[30]={ 0x00, };
+		strcpy((char *)sysname, "System");
 
-		UI08 talk[14]={ 0x1C, 0x00, };
-		ShortToCharPtr(tl, talk +1);
-		LongToCharPtr(pc2->getSerial32(), talk +3);
-		ShortToCharPtr(0x0101, talk +7);
-		talk[9]= 0;
-		ShortToCharPtr(DBYTE2WORD(pc2->emotecolor1, pc2->emotecolor2), talk +10);
-		ShortToCharPtr(0x0003, talk +12);
-		UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-		Xsend(s, talk, 14);
-		Xsend(s, sysname, 30);
-		Xsend(s, title, strlen(title)+1);
-//AoS/		Network->FlushBuffer(s);
+		SendSpeechMessagePkt(s, pc2->getSerial32(), 0x0101, 0, (pc2->emotecolor1<<8)|(pc2->emotecolor2%256), 0x0003, sysname, (UI08 *)title);
 	}
 }
 

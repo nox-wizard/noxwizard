@@ -626,29 +626,21 @@ static void exec_respawn (char *dummy)
 
 static void exec_broadcast(char *txt)
 {
-	int tl;
-
-	tl=44+strlen(txt)+1;
-	UI08 talk[14]={ 0x1C, 0x00, };
-
-	ShortToCharPtr(tl, talk +1);
-	LongToCharPtr(0x01010101, talk +3); // ???? why 1's ???
-	ShortToCharPtr(0x0101, talk +7);
-	talk[9]=1; // Type
-	ShortToCharPtr(0x0040, talk +10);  // Color
-	ShortToCharPtr(0x0003, talk +12);  // Font ...
-
-	UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
+/*
+        ID: 0x01010101 // ???? why 1's ???
+        Model: 0x0101
+        Type: 1
+        Color: 0x0040
+        FontType: 0x0003
+*/
 	NxwSocketWrapper sw;
 	sw.fillOnline();
 	for( sw.rewind(); !sw.isEmpty(); sw++ ) {
 		NXWSOCKET s=sw.getSocket();
 		if( s!=INVALID ) {
-			Xsend(s, talk, 14);
-			Xsend(s, sysname, 30);
-			Xsend(s, txt, strlen(txt)+1);
-//AoS/			Network->FlushBuffer(s);
+			SendSpeechMessagePkt(s, 0x01010101, 0x0101, 1, 0x0040, 0x0003, sysname, (UI08 *)txt);
 		}
 	}
 	Network->ClearBuffers(); // uhm ..... 
@@ -656,18 +648,8 @@ static void exec_broadcast(char *txt)
 
 static void exec_gy(char *txt)
 {
-
-	int tl;
-
-	tl=44+strlen(txt)+1;
-	UI08 talk[14]={ 0x1C, 0x00, };
-
-	ShortToCharPtr(tl, talk +1);
-	LongToCharPtr(0x01010101, talk +3); // .... see above -_-;
-	ShortToCharPtr(0x0101, talk +7);
-	talk[9]=1; // Type
-	ShortToCharPtr(0x0040, talk +10);  // Color
-	ShortToCharPtr(0x0003, talk +12);  // Font ...
+	UI08 name[30]={ 0x00, };
+	strcpy((char *)name, "[CronTab Service - GM Only]");
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -678,10 +660,7 @@ static void exec_gy(char *txt)
 		P_CHAR pj=ps->currChar();
 		if (ISVALIDPC(pj) && pj->IsGM())
 		{
-			Xsend(ps->toInt(), talk, 14);
-			Xsend(ps->toInt(), const_cast<char*>("[CronTab Service - GM Only]"), 30);
-			Xsend(ps->toInt(), txt, strlen(txt)+1);   
-//AoS/			Network->FlushBuffer(ps->toInt());
+			SendSpeechMessagePkt(ps->toInt(), 0x01010101, 0x0101, 1, 0x0040, 0x0003, name, (UI08 *)txt);
 		}
 	}
 

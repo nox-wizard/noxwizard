@@ -1468,10 +1468,7 @@ void MsgBoardRemovePost( int s )
 	// If, however, this is a problem, then simply remove this portion of code and the
 	// messages will not be removed on the client but will still be marked for removal
 	// in the message board files.
-	UI08 removeitem[5]={ 0x1D, 0x00, };
-	LongToCharPtr(msgSN, removeitem +1);
-	Xsend( s, removeitem, 5);
-//AoS/	Network->FlushBuffer(s);
+	SendDeleteObjectPkt(s, msgSN);
 	// Remove code above to prevent problems with client if necessary
 
 	return;

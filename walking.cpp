@@ -991,45 +991,32 @@ bool WalkSendToPlayers(P_CHAR pc, int dir, int oldx, int oldy, int newx, int new
 
 				if (sendit)
 				{
-					unsigned char extmove[18]="\x77\x01\x02\x03\x04\x01\x90\x01\x02\x01\x02\x0A\x00\xED\x00\x00\x00";
-					extmove[1] = pc->getSerial().ser1;
-					extmove[2] = pc->getSerial().ser2;
-					extmove[3] = pc->getSerial().ser3;
-					extmove[4] = pc->getSerial().ser4;
-					extmove[5] = pc->id1;
-					extmove[6] = pc->id2;
-					extmove[7] = pcpos.x >> 8;
-					extmove[8] = pcpos.x % 256;
-					extmove[9] = pcpos.y >> 8;
-					extmove[10] = pcpos.y % 256;
-					extmove[11] = pcpos.dispz;
-					extmove[12] = dir;
+					NXWSOCKET s = ps_i->toInt();
+					UI08 flag, hi_color;	
 
 					// running stuff
 					if (pc->npc && pc->war) // Skyfire
 					{
-						extmove[12] = dir | 0x80;
+						dir |= 0x80;
 					}
 					if (pc->npc && pc->ftargserial!=INVALID)
 					{
-						extmove[12] = dir | 0x80;
+						dir |= 0x80;
 					}
 
 					//** Lb's flying creatures stuff ***/
 
 					if (pc->npc)
 					{
-						int b, cr, d;
-						b = (pc->id1 << 8) + pc->id2;
-						short skid = b;
-						if ((skid < 0)||(skid>2047)) skid = 0;
-						cr = (creatures[skid].who_am_i)&0x1; // can it fly ?
-						if (cr == 1)
+						int d;
+						UI16 skid = pc->GetBodyType();
+						if (skid>2047) skid = 0;
+						if ((creatures[skid].who_am_i)&0x1) // can it fly ?
 						{
 							if (pc->fly_steps>0)
 							{
 								pc->fly_steps--;
-								extmove[12] |= 0x80; // run mode = fly for that ones that can fly
+								dir |= 0x80; // run mode = fly for that ones that can fly
 							}
 							else
 							{
@@ -1048,42 +1035,38 @@ bool WalkSendToPlayers(P_CHAR pc, int dir, int oldx, int oldy, int newx, int new
 						}
 					}
 
-
-					extmove[13] = pc->skin1; // ripper, skin problems bugfix
-					extmove[14] = pc->skin2;
-
 					if (pc->war)
-						extmove[15] = 0x40;
+						flag = 0x40;
 					else
-						extmove[15] = 0x00;
+						flag = 0x00;
 					if (pc->IsHidden())
-						extmove[15] = extmove[15] | 0x80;
+						flag |= 0x80;
 					if (pc->dead && !pc->war)
-						extmove[15] = extmove[15] | 0x80; // Ripper
+						flag |= 0x80; // Ripper
 					if (pc->poisoned)
-						extmove[15] = extmove[15] | 0x04; // AntiChrist -- thnx to SpaceDog
-					int guild;
-					guild = Guilds->Compare(pc, pc_i);
-					if (guild == 1)// Same guild (Green)
-						extmove[16] = 2;
-					else if (guild == 2) // Enemy guild.. set to orange
-						extmove[16] = 5;
-					else if (pc->IsGrey()) extmove[16] = 3;
+						flag |= 0x04; // AntiChrist -- thnx to SpaceDog
+
+
+					int guild = Guilds->Compare(pc, pc_i);
+
+					if (guild == 1)					// Same guild (Green)
+						hi_color = 2;
+					else if (guild == 2) 				// Enemy guild.. set to orange
+						hi_color = 5;
+					else if (pc->IsGrey())
+						hi_color = 3;
+					else if (pc->IsMurderer())
+						hi_color = 6;				// If a bad, show as red.
+					else if (pc->IsInnocent())
+						hi_color = 1;				// If a good, show as blue.
+					else if (pc->flag == 0x08)
+						hi_color = 2;				// green (guilds)
+					else if (pc->flag == 0x10) 
+						hi_color = 5;				// orange (guilds)
 					else
-					{
-						if (pc->IsMurderer())
-							extmove[16] = 6;		// If a bad, show as red.
-						else if (pc->IsInnocent())
-							extmove[16] = 1;		// If a good, show as blue.
-						else if (pc->flag == 0x08)
-							extmove[16] = 2;		// green (guilds)
-						else if (pc->flag == 0x10)
-							extmove[16] = 5;		// orange (guilds)
-						else
-							extmove[16] = 3;		// grey
-					}
-					//if (currchar[i] != c)
-					Xsend(ps_i->toInt(), extmove, 17);
+						hi_color = 3;				// grey
+
+					SendUpdatePlayerPkt(s, pc->getSerial32(), pc->GetBodyType(), pcpos, dir, pc->getSkinColor(), flag, hi_color);
 				} // end of it sendit
 			}
 		}
@@ -1360,7 +1343,6 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 	sw.fillOnline( pc_s, false );
 	for( sw.rewind(); !sw.isEmpty(); sw++ )
 	{
-		
 		NXWCLIENT ps_i=sw.getClient();
 		if( ps_i==NULL ) continue;
 
@@ -1383,61 +1365,50 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 
 				if (sendit)
 				{
-					unsigned char extmove[18]="\x77\x01\x02\x03\x04\x01\x90\x01\x02\x01\x02\x0A\x00\xED\x00\x00\x00";
-					LongToCharPtr(pc_s->getSerial32(), extmove+1);
-					ShortToCharPtr(pc_s->GetBodyType(), extmove +5);
-					ShortToCharPtr(charpos.x, extmove+7);
-					ShortToCharPtr(charpos.y, extmove+9);
-					extmove[11] = charpos.dispz;
-					extmove[12] = pc_s->dir & 0x7F;
+					NXWSOCKET s = ps_i->toInt();
+					UI08 dir = pc_s->dir & 0x7F, flag, hi_color;
 
 					// running stuff
-					int dir = pc_s->dir;
+
 					if (pc_s->npc && pc_s->war) // Skyfire
 					{
-						extmove[12] = dir | 0x80;
-//						Xsend(ps_i->toInt(), extmove, 17);
-//AoS/						Network->FlushBuffer(ps_i->toInt());
+						dir |= 0x80;
 					}
 					if (pc_s->npc && pc_s->ftargserial!=INVALID)
 					{
-						extmove[12] = dir | 0x80;
-//						Xsend(ps_i->toInt(), extmove, 17);
-//AoS/						Network->FlushBuffer(ps_i->toInt());
+						dir |= 0x80;
 					}
-
-            				ShortToCharPtr(pc_s->getSkinColor(), extmove +13);
+					
 
 					if (pc_s->war)
-						extmove[15] = 0x40;
+						flag = 0x40;
 					else
-						extmove[15] = 0x00;
+						flag = 0x00;
 					if (pc_s->IsHidden())
-						extmove[15] |= 0x80;
+						flag |= 0x80;
 					if (pc_s->poisoned)
-						extmove[15] |= 0x04; // AntiChrist -- thnx to SpaceDog
+						flag |= 0x04; // AntiChrist -- thnx to SpaceDog
+
 					if (pc_s->kills >= 4)
-						extmove[16] = 6; // ripper
+						hi_color = 6; // ripper
 
 					int guild;
 					guild = Guilds->Compare(pc_s, pc_i);
 					if (guild == 1)// Same guild (Green)
-						extmove[16] = 2;
+						hi_color = 2;
 					else if (guild == 2) // Enemy guild.. set to orange
-						extmove[16] = 5;
+						hi_color = 5;
+					else if (pc_s->IsMurderer())      // show red
+						hi_color = 6;
+					else if (pc_s->IsInnocent()) // show blue
+						hi_color = 1;
+					else if (pc_s->flag == 0x08) // show green
+						hi_color = 2;
+					else if (pc_s->flag == 0x10) // show orange
+						hi_color = 5;
 					else
-					{
-						if (pc_s->IsMurderer())      // show red
-							extmove[16] = 6;
-						else if (pc_s->IsInnocent()) // show blue
-							extmove[16] = 1;
-						else if (pc_s->flag == 0x08) // show green
-							extmove[16] = 2;
-						else if (pc_s->flag == 0x10) // show orange
-							extmove[16] = 5;
-						else
-							extmove[16] = 3;            // show grey
-					}
+						hi_color = 3;            // show grey
+
 					// end of if sendit
 
 					if (!pc_s->war) // we have to execute this no matter if invisble or not LB
@@ -1446,11 +1417,7 @@ void walking2(P_CHAR pc_s) // Only for switching to combat mode
 						pc_s->targserial=INVALID;
 					}
 
-//					if (sendit)
-//					{
-					Xsend(ps_i->toInt(), extmove, 17);
-//AoS/					Network->FlushBuffer(ps_i->toInt());
-//					}
+					SendUpdatePlayerPkt(s, pc_s->getSerial32(), pc_s->GetBodyType(), charpos, dir, pc_s->getSkinColor(), flag, hi_color);
 				}
 			}
 		}
@@ -1641,7 +1608,7 @@ void npcwalk( P_CHAR pc_i, int newDirection, int type)   //type is npcwalk mode 
 
 	/////////// LB's flying creatures stuff, flying animation if they stand still ///////
 
-	int b = ( pc_i->id1 << 8 ) + pc_i->id2;
+	int b = pc_i->GetBodyType();
 	if ( b < 0 || b > 2047 )
 		b = 0;
 	if ( ( creatures[b].who_am_i ) & 0x1 ) // can it fly ?

@@ -226,16 +226,14 @@ void cChar::mounthorse( P_CHAR mount )
 		sw.clear();
 		sw.fillOnline( this, false );
 
-		UI08 removeitem[5] ={ 0x1D, 0x00, };
-		LongToCharPtr(mount->getSerial32(), removeitem +1);
+		SERIAL mount_serial = mount->getSerial32();
 
 		for( sw.rewind(); !sw.isEmpty(); sw++ )		
 		{
 			NXWSOCKET si=sw.getSocket();
 			if(si!=INVALID)
 			{
- 				Xsend(si, removeitem, 5);
-//AoS/				Network->FlushBuffer(si);
+				SendDeleteObjectPkt(si, mount_serial);
 			}
 		}
 

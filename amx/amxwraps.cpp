@@ -3146,28 +3146,12 @@ NATIVE( _chr_showMessage )
 		amx_GetAddr(amx, params[3], &cstr);
 		amx_GetString(g_cAmxPrintBuffer, cstr);
 
-		int length = 44 + strlen(g_cAmxPrintBuffer) + 1;
-		UI08 talk[14] = { 0x1C, 0x00, };
+		NXWSOCKET s = pc1->getClient()->toInt();
 
-		// Block size
-		ShortToCharPtr(length, talk +1);
-		// char serial
-		LongToCharPtr(pc2->getSerial32(), talk +3);
-		// Model ID
-		ShortToCharPtr(pc2->GetBodyType(), talk +7);
-		// Speech Type
-		talk[9]= 6;
-		// Speech color
-		ShortToCharPtr(params[4], talk +10);
-		// Speech font
-		ShortToCharPtr((UI16)pc1->fonttype, talk +12);
+		UI08 sysname[30]={ 0x00, };
+		strcpy((char *)sysname, "System");
 
-		UI08 sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-
-		Xsend(pc1->getClient()->toInt(), talk, 14);
-		Xsend(pc1->getClient()->toInt(), sysname, 30);
-		Xsend(pc1->getClient()->toInt(), g_cAmxPrintBuffer, length-44);
-//AoS/		Network->FlushBuffer(pc1->getClient()->toInt());
+		SendSpeechMessagePkt(s, pc2->getSerial32(), pc2->GetBodyType(), 6, params[4], (UI16)pc1->fonttype, sysname, (UI08 *)g_cAmxPrintBuffer);
 		return 0;
 	}
 	return INVALID;
@@ -3712,8 +3696,6 @@ NATIVE(_itm_speech)
 	P_ITEM cur = pointers::findItemBySerial(params[2]);
 	VALIDATEPIR(cur,INVALID);
 
-	int tl;
-
 	cell *cstr;
 	amx_GetAddr(amx,params[3],&cstr);
 	printstring(amx,cstr,params+4,(int)(params[0]/sizeof(cell))-1);
@@ -3725,33 +3707,13 @@ NATIVE(_itm_speech)
 		itemtalk(cur,g_cAmxPrintBuffer);	//Numbersix: if socket = -1
 		return 0;							// =>item speaks to all in range
 	}
-	tl=44+strlen( g_cAmxPrintBuffer )+1;
 
-	UI08 talk[15] = { 0x1C, 0x00, };
+	NXWSOCKET s = params[1];
 
-	// Block size
-	ShortToCharPtr(tl, talk +1);
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
 
-	// Item ID
-	LongToCharPtr(cur->getSerial32(), talk +3);
-
-	// Model ID
-	ShortToCharPtr(0x0101, talk +7);
-
-	// Speech Type
-	talk[9]= 6;
-
-	// Speech color
-	ShortToCharPtr(0x0481, talk +10);
-
-	// Speech font
-	ShortToCharPtr(0x0003, talk +12); //cur->fonttype;
-
-	Xsend(params[1], talk, 14);
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
-	Xsend(params[1], sysname, 30);
-	Xsend(params[1], g_cAmxPrintBuffer, strlen( g_cAmxPrintBuffer ) + 1 );
-//AoS/	Network->FlushBuffer(params[1]);
+	SendSpeechMessagePkt(s, cur->getSerial32(), 0x0101, 6, 0x0481, 0x0003, sysname, (UI08 *)g_cAmxPrintBuffer);
 
 	return 0;
 }

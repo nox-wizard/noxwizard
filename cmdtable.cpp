@@ -2728,19 +2728,19 @@ void command_gy(NXWSOCKET  s)
 		return;
 	}
 
-	int tl;
-	sprintf(xtext[s], "(GM ONLY): %s", &tbuffer[Commands::cmd_offset+3]);//AntiChrist bugfix - cms_offset+4, not +7
-	tl=44+strlen(&xtext[s][0])+1;
+	sprintf(xtext[s], "(GM ONLY): %s", &tbuffer[Commands::cmd_offset+3]);
 
-	UI08 talk[14]={ 0x1C, 0x00, };
-	ShortToCharPtr(tl, talk +1);
-	LongToCharPtr(pc->getSerial32(), talk +3);
-	ShortToCharPtr(pc->GetBodyType(), talk +7);
-	talk[9]= 1;
-	talk[10]= buffer[s][4];
-	talk[11]= buffer[s][5];
-	talk[12]= buffer[s][6];
-	talk[13]= pc->fonttype;
+	UI32 id;
+	UI16 model, color, font;
+
+	id = pc->getSerial32();
+	model = pc->GetBodyType();
+	color = ShortFromCharPtr(buffer[s] +4);
+	font = (buffer[s][6]<<8)|(pc->fonttype%256);
+
+	UI08 name[30]={ 0x00, };
+	strcpy((char *)name, pc->getCurrentNameC());
+
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -2752,11 +2752,8 @@ void command_gy(NXWSOCKET  s)
 		P_CHAR pc_i = ps_i->currChar();
 		if (ISVALIDPC(pc_i) && pc_i->IsGM())
 		{
-			NXWSOCKET s = ps_i->toInt();
-			Xsend(s, talk, 14);
-			Xsend(s, pc->getCurrentNameC(), 30);
-			Xsend(s, &xtext[s][0], strlen(&xtext[s][0])+1);
-//AoS/			Network->FlushBuffer(s);
+			NXWSOCKET allz = ps_i->toInt();
+			SendSpeechMessagePkt(allz, id, model, 1, color, font, name, (UI08 *)xtext[s]);
 		}
 	}
 }
@@ -2772,19 +2769,18 @@ void command_yell(NXWSOCKET  s)
 		return;
 	}
 
-	int tl;
 	sprintf(xtext[s], "(GM MSG): %s", &tbuffer[Commands::cmd_offset+3]);
-	tl=44+strlen(&xtext[s][0])+1;
 
-	UI08 talk[14]={ 0x1C, 0x00, };
-	ShortToCharPtr(tl, talk +1);
-	LongToCharPtr(pc->getSerial32(), talk +3);
-	ShortToCharPtr(pc->GetBodyType(), talk +7);
-	talk[9]= 1;
-	talk[10]= buffer[s][4];
-	talk[11]= buffer[s][5];
-	talk[12]= buffer[s][6];
-	talk[13]= pc->fonttype;
+	UI32 id;
+	UI16 model, color, font;
+
+	id = pc->getSerial32();
+	model = pc->GetBodyType();
+	color = ShortFromCharPtr(buffer[s] +4);
+	font = (buffer[s][6]<<8)|(pc->fonttype%256);
+
+	UI08 name[30]={ 0x00, };
+	strcpy((char *)name, pc->getCurrentNameC());
 
 	NxwSocketWrapper sw;
 	sw.fillOnline();
@@ -2796,11 +2792,8 @@ void command_yell(NXWSOCKET  s)
 		P_CHAR pc_i = ps_i->currChar();
 		if (ISVALIDPC(pc_i) )
 		{
-			NXWSOCKET s = ps_i->toInt();
-			Xsend(s, talk, 14);
-			Xsend(s, pc->getCurrentNameC(), 30);
-			Xsend(s, &xtext[s][0], strlen(&xtext[s][0])+1);
-//AoS/			Network->FlushBuffer(s);
+			NXWSOCKET allz = ps_i->toInt();
+			SendSpeechMessagePkt(allz, id, model, 1, color, font, name, (UI08 *)xtext[s]);
 		}
 	}
 }
@@ -3057,11 +3050,9 @@ void command_wipenpcs(NXWSOCKET  s)
 {
         return;
        /* int k,j,deleted=0;
-	unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
-
 
 	k=charcount;
 	for(j=0;j<charcount;j++)
@@ -3070,15 +3061,10 @@ void command_wipenpcs(NXWSOCKET  s)
 
         if( ISVALIDPC(pNpc) && pNpc->npc && (pNpc->npcaitype!=17) && !pNpc->tamed )// Ripper
 		{
-			removeitem[1]= pNpc->getSerial().ser1;
-			removeitem[2]= pNpc->getSerial().ser2;
-			removeitem[3]= pNpc->getSerial().ser3;
-			removeitem[4]= pNpc->getSerial().ser4;
-
 			NxwSocketWrapper sw;
 			sw.fillOnline();
 			for( sw.rewind(); !sw.isEmpty(); sw++ )
-				Xsend(sw.getSocket(), removeitem, 5);
+				SendDeleteObjectPkt(sw.getSocket(), pNpc->getSerial32());
 
 			pNpc->deleteChar();
 			deleted++;

@@ -807,7 +807,7 @@ void senditem(NXWSOCKET  s, P_ITEM pi) // Send items (on ground)
 
 		ShortToCharPtr(pi->amount, itmput +9);
 		ShortToCharPtr(pos.x, itmput +11);
-		ShortToCharPtr(pos.y +0xC000, itmput +13);
+		ShortToCharPtr(pos.y | 0xC000, itmput +13);
 		itmput[15]= pos.z;
 
 		if(pc->IsGM() && pi->id()==0x1647)
@@ -1391,32 +1391,29 @@ void weblaunch(int s, const char *txt) // Direct client to a web page
 void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 //Modified by N6 to use UNICODE packets
 {
-
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC(pc);
 
-	int i,tl;
+	int i;
 	TEXT nonuni[512];
 
 	if(pc->unicode)
-		for (i=13;i<(buffer[s][1]<<8)+buffer[s][2];i=i+2)
+		for (i=13;i<ShortFromCharPtr(buffer[s] +1);i=i+2)
 		{
 			nonuni[(i-13)/2]=buffer[s][i];
 		}
 		if(!(pc->unicode))
 		{
-			tl=44+strlen((char*)&buffer[s][8])+1;
+			UI32 id;
+			UI16 model,font, color;
+			
+			id = pc->getSerial32();
+			model = pc->GetBodyType();
+			color = ShortFromCharPtr(buffer[s] +4);		// use color from client 
+			font = (buffer[s][6]<<8)|(pc->fonttype%256);	// use font ("not only") from  client
 
-			UI08 talk[14]={ 0x1C, 0x00, };
-
-			ShortToCharPtr(tl, talk +1);
-			LongToCharPtr(pc->getSerial32(), talk +3);
-			ShortToCharPtr(pc->GetBodyType(), talk +7);
-			talk[9]=1;
-			talk[10]=buffer[s][4];
-			talk[11]=buffer[s][5];
-			talk[12]=buffer[s][6];
-			talk[13]=pc->fonttype;
+			UI08 name[30]={ 0x00, };
+			strcpy((char *)name, pc->getCurrentNameC());
 			
 			NxwSocketWrapper sw;
 			sw.fillOnline();
@@ -1424,10 +1421,7 @@ void broadcast(int s) // GM Broadcast (Done if a GM yells something)
 			{
 				NXWSOCKET i=sw.getSocket();
 
-				Xsend(i, talk, 14);
-				Xsend(i, pc->getCurrentNameC(), 30);
-				Xsend(i, (void *)&buffer[s][8], strlen((const char*)&buffer[s][8])+1);
-//AoS/				Network->FlushBuffer(i);
+				SendSpeechMessagePkt(i, id, model, 1, color, font, name, &buffer[s][8]);
 			}
 		} // end unicode IF
 		else
@@ -2032,6 +2026,24 @@ void SendDeleteObjectPkt(NXWSOCKET s, SERIAL serial)
 //AoS/	Network->FlushBuffer(s);
 }
 
+void SendUpdatePlayerPkt(NXWSOCKET s, UI32 player_id, UI16 model, Location pos, UI08 dir, UI16 color, UI08 flag, UI08 hi_color)
+{
+	UI08 extmove[17]={ 0x77, 0x00 }; 
+
+	LongToCharPtr(player_id, extmove +1);
+	ShortToCharPtr(model, extmove +5);
+	ShortToCharPtr(pos.x, extmove +7);
+	ShortToCharPtr(pos.y, extmove +9);
+	extmove[11]=pos.dispz;			// ??!?!?!?!? .z ?! 
+	extmove[12]=dir;
+	ShortToCharPtr(color, extmove +13);
+	extmove[15]=flag;
+	extmove[16]=hi_color;
+
+	Xsend(s, extmove, 17);
+//AoS/	Network->FlushBuffer(s);
+}
+
 void SendDrawObjectPkt(NXWSOCKET s, P_CHAR pc, int z)
 {
 	P_CHAR pc_currchar=MAKE_CHAR_REF(currchar[s]);
@@ -2125,8 +2137,29 @@ void SendSecureTradingPkt(NXWSOCKET s, UI08 action, UI32 id1, UI32 id2, UI32 id3
 
 	ShortToCharPtr(len, msg +1);
 	Xsend(s, msg, len);
-	Network->FlushBuffer(s);
+//AoS/	Network->FlushBuffer(s);
 }
+
+void SendSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI08 sysname[30], UI08 *text)
+{
+        UI16 tl, len = strlen((char *)text) + 1;
+        UI08 talk[14]={ 0x1C, 0x00, };
+
+        tl = 14 + 30  + len;  // 44(header) + len + null term.
+
+	ShortToCharPtr(tl, talk +1);
+	LongToCharPtr(id, talk +3);
+	ShortToCharPtr(model, talk +7);
+	talk[9]=type;
+	ShortToCharPtr(color, talk +10);
+	ShortToCharPtr(fonttype, talk +12);
+
+	Xsend(s, talk, 14);
+	Xsend(s, sysname, 30);
+	Xsend(s, text, len);
+//AoS/	Network->FlushBuffer(s);
+}
+
 
 void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI16 color, UI16 fonttype, UI32 lang, UI08 sysname[30], UI08 *unicodetext, UI16 unicodelen)
 {
@@ -2146,7 +2179,6 @@ void SendUnicodeSpeechMessagePkt(NXWSOCKET s, UI32 id, UI16 model, UI08 type, UI
 	Xsend(s, talk2, 18);
 	Xsend(s, sysname, 30);
 	Xsend(s, unicodetext, unicodelen);
-
 //AoS/	Network->FlushBuffer(s);
 }
 

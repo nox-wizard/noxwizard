@@ -916,7 +916,6 @@ void cChar::unHide()
 
 		// unhidesendchar port by Akron
 		setcharflag2(this);//AntiChrist - bugfix for highlight color not being updated
-		UI08 removeitem[5]={ 0x1D, 0x00, };
 		UI08 goxyz[20]="\x20\x00\x05\xA8\x90\x01\x90\x00\x83\xFF\x00\x06\x08\x06\x49\x00\x00\x02\x00";
 
 		NxwSocketWrapper sw;
@@ -931,9 +930,7 @@ void cChar::unHide()
 			if (ISVALIDPC(pj))
 			{
 				if (pj->getSerial32() != getSerial32()) { //to other players : recreate player object
-					LongToCharPtr(getSerial32(), removeitem+1);
-					Xsend(i, removeitem, 5);
-//AoS/					Network->FlushBuffer(i);
+					SendDeleteObjectPkt(i, getSerial32());
 					impowncreate(i, this, 0);
 				} else {
 					LongToCharPtr(getSerial32(), goxyz +1);
@@ -1555,7 +1552,6 @@ LOGICAL const cChar::IsFrozen() const
 */
 void cChar::talkAll(TEXT *txt, LOGICAL antispam)
 {
-
 	NxwSocketWrapper sw;
 	sw.fillOnline( this, false );
 	
@@ -1576,12 +1572,10 @@ void cChar::talkAll(TEXT *txt, LOGICAL antispam)
 */
 void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 {
-	SI32 tl;
-	LOGICAL machwas= true;
-	UI08 talk[15] = { 0x1C, 0x00, };
-
 	if( s < 0 || s >= now ) 
 		return;
+
+	LOGICAL machwas= true;
 
 	if( antispam )
 	{
@@ -1593,34 +1587,24 @@ void cChar::talk(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 
 	if( machwas )
 	{
-		tl= 44+strlen(txt)+1;	// packet size
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, getCurrentNameC());
 
-		ShortToCharPtr(tl, talk +1);
-		LongToCharPtr(getSerial32(), talk +3);
-		ShortToCharPtr(GetBodyType(), talk +7);
-		talk[9]= 0; // Type
-		talk[10]= saycolor1=0x04;
-		talk[11]= saycolor2=0x81;
-
-		talk[12]=0;
-		//talk[13]=chars[currchar[s]].fonttype;
-		talk[13]= fonttype;
+		saycolor1=0x04;
+		saycolor2=0x81;
 
 		if( npcaitype==NPCAI_EVIL )
 		{
-			talk[10]=saycolor1=0x00;
-			talk[11]=saycolor2=0x26;
+			saycolor1=0x00;
+			saycolor2=0x26;
 		}
 		else if( npc && !tamed && !guarded && !war )
 		{
-			talk[10]=saycolor1=0x00;
-			talk[11]=saycolor2=0x5b;
+			saycolor1=0x00;
+			saycolor2=0x5B;
 		}
 
-		Xsend(s, talk, 14);
-		Xsend(s, getCurrentNameC(), 30);
-		Xsend(s, txt, strlen(txt)+1);
-//AoS/		Network->FlushBuffer(s);
+		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, (saycolor1<<8)|(saycolor2%256), fonttype, name, &buffer[s][8]);
 	}
 }
 
@@ -1653,22 +1637,10 @@ void cChar::emote( NXWSOCKET socket, TEXT *txt, LOGICAL antispam, ... )
 		vsnprintf( msg, sizeof( msg ) - 1, txt, argptr );
 		va_end( argptr );
 
-		UI08 talk[15] ={ 0x1C, 0x00, };
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, getCurrentNameC());
 
-		SI32 tl=44+strlen(txt)+1;
-
-		ShortToCharPtr(tl, talk +1);
-		LongToCharPtr(getSerial32(), talk +3);
-		ShortToCharPtr(GetBodyType(), talk +7);
-		talk[9]= 2; // Type
-		talk[10]= emotecolor1=0x00;
-		talk[11]= emotecolor2=0x26;
-		talk[12]= 0;
-		talk[13]= fonttype;
-		Xsend(socket,talk, 14);
-		Xsend(socket,getCurrentNameC(), 30);
-		Xsend(socket, msg, strlen( msg ) + 1 );
-//AoS/		Network->FlushBuffer(socket);
+		SendSpeechMessagePkt(socket, getSerial32(), GetBodyType(), 2, (emotecolor1<<8)|(emotecolor2%256), fonttype, name, (UI08 *)msg);
 	}
 }
 
@@ -1719,7 +1691,6 @@ void cChar::emoteall( char *txt, LOGICAL antispam, ... )
 */
 void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 {
-	SI32 tl;
 	LOGICAL machwas;
 
 	if (s<0) return;
@@ -1737,23 +1708,12 @@ void cChar::talkRunic(NXWSOCKET s, TEXT *txt, LOGICAL antispam)
 	else
 		machwas = true;
 
-	UI08 talk[14]={ 0x1C, 0x00, };
-
 	if (machwas)
 	{
-		tl=44+strlen(txt)+1;
+		UI08 name[30]={ 0x00, };
+		strcpy((char *)name, getCurrentNameC());
 
-		ShortToCharPtr(tl, talk +1);
-		LongToCharPtr(getSerial32(), talk +3);
-		ShortToCharPtr(GetBodyType(), talk +7);
-		talk[9]= 0; // Type
-		ShortToCharPtr(0x0001, talk +10); // color: black
-		ShortToCharPtr(0x0008, talk +12); // Font type
-
-		Xsend(s, talk, 14);
-		Xsend(s, getCurrentNameC(), 30);
-		Xsend(s, txt, strlen(txt)+1);
-//AoS/		Network->FlushBuffer(s);
+		SendSpeechMessagePkt(s, getSerial32(), GetBodyType(), 0, 0x0001, 0x0008, name, (UI08 *)txt);
 	}
 }
 
@@ -3778,8 +3738,6 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	char temp[TEMP_STR_SIZE];
  	char temp1[TEMP_STR_SIZE];
 //        extern title_st title[ALLSKILLS +1]; // unused variable
-	unsigned char talk[14]={ 0x1C, 0x00, };
-	unsigned char sysname[31]="System\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
 
 	*(temp1)='\0';
 
@@ -3903,49 +3861,42 @@ void cChar::showLongName( P_CHAR showToWho, LOGICAL showSerials )
 	}
 
 	Guilds->Title( socket, DEREF_P_CHAR(this) );
-////"\x1C\x00\x00\x01\x02\x03\x04\x01\x90\x00\x00\x38\x00\x03";
 
-	SI32 tl,guild;
-	tl=44+strlen(temp1)+1;
+	UI16 color;
+	SI32 guild = Guilds->Compare(showToWho,this);
 
-	ShortToCharPtr(tl, talk +1);
-	LongToCharPtr(getSerial32(), talk +3);
-	ShortToCharPtr(0x0101, talk +7);
-	talk[9]= 6; // Mode: "You see"
-	guild=Guilds->Compare(showToWho,this);
+	UI08 sysname[30]={ 0x00, };
+	strcpy((char *)sysname, "System");
+
 	if (guild==1) //Same guild (Green)
 	{
-		ShortToCharPtr(0x0043, talk +10);
+		color = 0x0043;
 	}
 	else if (guild==2) //enemy (Orange)
 	{
-		ShortToCharPtr(0x0030, talk +10);
+		color = 0x0030;
 	}
 	else if( IsGM() && account==0 ) //Admin & GM get yellow names
 	{
-		ShortToCharPtr(0x0481, talk +10);
+		color = 0x0481;
 	}
 	else if (IsGrey())
 	{
-		ShortToCharPtr(0x03B2, talk +10);
+		color = 0x03B2;
 	}
 	else
 	{
 		switch(flag)
 		{
-		case 0x01:	ShortToCharPtr(0x0026, talk +10); break;//red
-		case 0x04:	ShortToCharPtr(0x005A, talk +10); break;//blue
-		case 0x08:	ShortToCharPtr(0x0049, talk +10); break;//green
-		case 0x10:	ShortToCharPtr(0x0030, talk +10); break;//orange
-		default:	ShortToCharPtr(0x03B2, talk +10);	//grey
+		case 0x01:	color = 0x0026; break;//red
+		case 0x04:	color = 0x005A; break;//blue
+		case 0x08:	color = 0x0049; break;//green
+		case 0x10:	color = 0x0030; break;//orange
+		default:	color = 0x03B2;	//grey
 		}
 	}
-	ShortToCharPtr(0x0003, talk +12);
-	
-	Xsend(socket, talk, 14);
-	Xsend(socket, sysname, 30);
-	Xsend(socket, temp1, tl - 44);
-//AoS/	Network->FlushBuffer(socket);
+
+	SendSpeechMessagePkt(socket, getSerial32(), 0x0101, 6, color, 0x0003, sysname, (UI08 *)temp1);
 }
 
 /*!

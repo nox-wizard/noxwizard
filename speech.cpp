@@ -1446,7 +1446,9 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 				for( petsToStable.rewind(); !petsToStable.isEmpty(); petsToStable++ )
 				{
 					pc_pet = petsToStable.getChar();
-							 
+					
+					SERIAL pc_pet_serial = pc_pet->getSerial32();
+		 
 					NxwSocketWrapper sw;
 					sw.fillOnline( pc_pet, false );
 					for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
@@ -1454,12 +1456,7 @@ static LOGICAL stablePet( P_CHAR pc, NXWSOCKET socket, std::string &speech, NxwC
 						if( ps==NULL )
 							continue;
 						
-						unsigned char removeitem[6]="\x1D\x00\x00\x00\x00";
-						removeitem[1]=pc_pet->getSerial().ser1;
-						removeitem[2]=pc_pet->getSerial().ser2;
-						removeitem[3]=pc_pet->getSerial().ser3;
-						removeitem[4]=pc_pet->getSerial().ser4;
-						ps->send( removeitem, 5);
+						SendDeleteObjectPkt(ps->toInt(), pc_pet_serial);
 					}
 
 					pc_pet->war=0;

@@ -100,8 +100,7 @@ void DeleItem( P_ITEM pi )
 
 	amxVS.deleteVariable( pi->getSerial32() );
 
-	UI08 removeitem[5]={ 0x1D, 0x00, };
-	LongToCharPtr(pi->getSerial32(), removeitem +1);
+	UI32 pi_serial = pi->getSerial32();
 
 	if (pi->spawnregion!=INVALID )
 	{
@@ -120,8 +119,7 @@ void DeleItem( P_ITEM pi )
 		NXWSOCKET j=sw.getSocket();			
 		if (j!=INVALID)
 		{
-			Xsend(j, removeitem, 5);
-//AoS/			Network->FlushBuffer(j);
+			SendDeleteObjectPkt(j, pi_serial);
 		}
 	}
 
@@ -168,8 +166,7 @@ void DeleteChar( P_CHAR pc )
 
 	amxVS.deleteVariable( pc->getSerial32() );
 
-	UI08 removeitem[5]={ 0x1D, 0x00, };
-	LongToCharPtr(pc->getSerial32(), removeitem +1);
+	UI32 pc_serial = pc->getSerial32();
 
 	if( pc->spawnregion!=INVALID )
 	{
@@ -190,8 +187,7 @@ void DeleteChar( P_CHAR pc )
 		NXWSOCKET j=sw.getSocket();
 		if( j!=INVALID )
 		{
-			Xsend(j, removeitem, 5);
-//AoS/			Network->FlushBuffer(j);
+			SendDeleteObjectPkt(j, pc_serial);
 		}
 	}
 

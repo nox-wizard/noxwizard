@@ -340,9 +340,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		{
 			LogOut( socket );
 
-			UI08 removeitem[5]={ 0x1D, 0x00, };
-
-			LongToCharPtr(pc->getSerial32(), removeitem +1);
+			SERIAL pc_serial = pc->getSerial32();
 
 			for ( i = 0; i < now; ++i )
 			{
@@ -350,8 +348,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 				if (ISVALIDPC(pi))
 					if( pc != pi && char_inVisRange( pc, pi ) && perm[ i ] )
 					{
-						Xsend(i, removeitem, 5);
-//AoS/						Network->FlushBuffer(i);
+						SendDeleteObjectPkt(i, pc_serial);
 					}
 			}
 		}
@@ -831,7 +828,7 @@ void cNetwork::enterchar(int s)
 	VALIDATEPC(pc);
 
 	UI08 startup[38]="\x1B\x00\x05\xA8\x90\x00\x00\x00\x00\x01\x90\x06\x08\x06\x49\x00\x0A\x04\x00\x00\x00\x7F\x00\x00\x00\x00\x00\x07\x80\x09\x60\x00\x00\x00\x00\x00\x00";
-//	UI08 techstuff[16]="\x69\x00\x05\x01\x00\x69\x00\x05\x02\x00\x69\x00\x05\x03\x00";
+	UI08 techstuff[5]={ 0x69, 0x00, 0x05, 0x01, 0x00 };
 	UI08 world[6]={0xBF, 0x00, 0x06, 0x00, 0x08, 0x00};
 	UI08 modeset[5]={0x72, 0x00, 0x00, 0x32, 0x00};
 	UI08 LoginOK[1] = {0x55}, TimeZ[4]={0x5B, 0x0C, 0x13, 0x03};
@@ -867,7 +864,14 @@ void cNetwork::enterchar(int s)
 	Xsend(s, modeset, 5);
 //AoS/	Network->FlushBuffer(s);
 
-//	Xsend(s, techstuff, 16);
+	techstuff[3]=0x01;
+	Xsend(s, techstuff, 5);
+//AoS/	Network->FlushBuffer(s);
+	techstuff[3]=0x02;
+	Xsend(s, techstuff, 5);
+//AoS/	Network->FlushBuffer(s);
+	techstuff[3]=0x03;
+	Xsend(s, techstuff, 5);
 //AoS/	Network->FlushBuffer(s);
 
 	Xsend(s, LoginOK, 1);
