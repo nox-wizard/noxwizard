@@ -382,7 +382,7 @@ RECEIVE( CharProfileReq ) {
 	getFromSocket( s, this->getBeginValidForReceive(), this->headerSize-1, offset );
 	if( update ) { //complete packet so
 		getFromSocket( s, (char*)&this->type, sizeof(type)+sizeof(len), offset );
-		getUnicodeStringFromSocket( s, &this->profile, offset, len.get()*2 );
+		getUnicodeStringFromSocket( s, &this->profile, offset, len.get() );
 	}
 }
 
@@ -391,7 +391,7 @@ SEND( CharProfile ) {
 	if( ps == NULL ) return; 
 	if( profile==NULL ) profile=&emptyUnicodeString;
 	if( staticProfile==NULL ) staticProfile=&emptyUnicodeString;
-	this->size=this->headerSize +(title.size()+1) + profile->size() + staticProfile->size();
+	this->size=this->headerSize +(title.size()+1) + profile->size()*2+2 + staticProfile->size()*2+2;
 	Xsend( ps->toInt(), this->getBeginValid(), this->headerSize );
 	Xsend( ps->toInt(), this->title.c_str(), title.size()+1 );
 	Xsend( ps->toInt(), *staticProfile, true );
