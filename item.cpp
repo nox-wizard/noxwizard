@@ -16,7 +16,7 @@ namespace item
 	/*!
 	\author Anthalir
 	*/
-	P_ITEM CreateFromScript( char *itemname, cObject* cont)
+	P_ITEM CreateFromScript( char *itemname, cObject* cont, int amount )
 	{
 		int scid= xss::getIntFromDefine(itemname);
 		if( scid==0 )
@@ -24,7 +24,7 @@ namespace item
 			LogError("item '%s' is not defined in scripts", itemname);
 			return NULL;
 		}
-		return item::CreateFromScript( scid, cont);
+		return item::CreateFromScript( scid, cont, amount );
 	}
 
 	/*!
@@ -34,7 +34,7 @@ namespace item
 	\param itemnum scriptid of the item
 	\param cont container to add the item to
 	*/
-	P_ITEM CreateFromScript( SCRIPTID itemnum, cObject* cont )
+	P_ITEM CreateFromScript( SCRIPTID itemnum, cObject* cont, int amount )
 	{
 		char 		sect[512];
 		std::string 	lha;
@@ -346,9 +346,16 @@ namespace item
 		safedelete(iter);
 		pi->setScriptID(itemnum);
 
+		if( amount!=INVALID )
+			pi->amount=amount;
+
 		//Luxor: put it in the container
-                if ( ISVALIDPO( cont ) )
-			pi->setCont( cont );
+        if ( ISVALIDPO( cont ) )
+			if( isItemSerial( cont->getSerial32() ) ) {
+				((P_ITEM)cont)->AddItem(pi);
+			}
+			else
+				pi->setCont( cont );
 		
 		return pi;
 

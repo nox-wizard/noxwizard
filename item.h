@@ -26,8 +26,8 @@
 namespace item
 {
 
-	P_ITEM		CreateFromScript( char* itemname, cObject* cont=NULL );
-	P_ITEM		CreateFromScript( SCRIPTID itemnum, cObject* cont=NULL );
+	P_ITEM		CreateFromScript( char* itemname, cObject* cont=NULL, int amount = INVALID );
+	P_ITEM		CreateFromScript( SCRIPTID itemnum, cObject* cont=NULL, int amount = INVALID );
 	P_ITEM		CreateScriptRandomItem( char* sItemList, cObject* cont=NULL );
 	SI32		CreateRandomItem( char *sItemList );
 
