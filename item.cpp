@@ -392,12 +392,7 @@ namespace item
 	P_ITEM CreateScriptRandomItem( char * sItemList, cObject* cont )
 	{
 		int k=CreateRandomItem(sItemList);   // -- Get random Item #
-
-		if (k>0) {
-			return CreateScriptItem( -1, k, 1, cont );  // -- Create Item
-			// This stuff smells buggy >:[, Xan
-		}
-		else return NULL;
+		return (k>0)? item::CreateFromScript( k, cont ) : NULL;
 	}
 
 
@@ -569,10 +564,9 @@ namespace item
 		}
 
 		NXWSOCKET  s = pc->getSocket();
-		P_ITEM pi = item::CreateScriptItem(s, nItem, 1);
+		P_ITEM pi = item::CreateFromScript( nItem, backbox );
 		VALIDATEPIR(pi,NULL);
 		item::GetScriptItemSetting(pi);
-		bankbox->AddItem(pi);
 		statwindow(pc,pc);
 		return pi;
 	}
@@ -876,7 +870,7 @@ namespace item
 		if (backpack == NULL)
 			return NULL;
 
-		P_ITEM pi= item::CreateScriptItem(s, nItem, 1);
+		P_ITEM pi= item::CreateFromScript( nItem );
 		VALIDATEPIR(pi, NULL);
 
 		if(nDigging)

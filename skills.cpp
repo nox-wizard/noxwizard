@@ -487,7 +487,7 @@ P_ITEM Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount)
             pi->more2 = pi->getSerial().ser2;       // Needed as unique lock-ID
             pi->more3 = pi->getSerial().ser3;
             pi->more4 = pi->getSerial().ser4;
-            P_ITEM key=item::CreateScriptItem( INVALID, 339, 1);
+            P_ITEM key=item::CreateFromScript( 339, pi);
 			if(!ISVALIDPI(key))
 			{
 				//delete targ;
@@ -500,8 +500,6 @@ P_ITEM Skills::MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount)
             key->more3 = pi->more3;
             key->more4 = pi->more4;
             key->creator = pc->getCurrentName();    // Store the creator
-            key->setContSerial( pi->getSerial32() );// Set the container
-            key->SetRandPosInCont(pi);              // Put the damn thing in the container
             key->Refresh();                         // Refresh it
             pc->sysmsg( TRANSLATE("You create a corresponding key and put it in the chest"));
         }

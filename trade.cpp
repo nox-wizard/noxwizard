@@ -149,14 +149,12 @@ void buyaction(int s)
 				{
 					if ((iter->item)->pileable)
 					{
-						P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
-						if ( ISVALIDPI(pi) ) //Luxor
-							pi->setAmount( iter->amount );
+						P_ITEM pi = item::CreateFromScript(  iter->item->getScriptID(), pack, iter->amount );
 					}
 					else
 					{
 						for (j=0;j<iter->amount;j++)
-							item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+							item::CreateFromScript( iter->item->getScriptID(), pack );
 					}
 					(iter->item)->amount-=iter->amount;
 					(iter->item)->restock+=iter->amount;
@@ -169,15 +167,13 @@ void buyaction(int s)
 							if ((iter->item)->pileable)
 							{
 
-								P_ITEM pi = item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
-                                                                if ( ISVALIDPI(pi) ) //Luxor
-									pi->setAmount( iter->amount );
+								P_ITEM pi = item::CreateFromScript( iter->item->getScriptID(), pack, iter->amount );
 
 							}
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+									item::CreateFromScript( iter->item->getScriptID(), pack );
 
 							}
 							(iter->item)->amount-=iter->amount;
@@ -189,7 +185,7 @@ void buyaction(int s)
 							else
 							{
 								for (j=0;j<iter->amount;j++)
-									item::CreateScriptItem( s, iter->item->getScriptID(), 1, pack );
+									item::CreateFromScript( iter->item->getScriptID(), pack );
 
 								(iter->item)->setContSerial( pack->getSerial32() );
 								(iter->item)->amount=1;
