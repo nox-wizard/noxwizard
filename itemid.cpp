@@ -60,7 +60,7 @@ void loadweaponsinfo()
 
 }
 
-inline bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2, WEAPONTYPE type3 )
+bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2, WEAPONTYPE type3 )
 {
 	WEAPONINFOMAP::iterator iter( weaponinfo.find( id ) );
 	if( iter==weaponinfo.end() )

@@ -44,6 +44,6 @@ typedef std::map<SI32,WEAPONTYPE> WEAPONINFOMAP;
 
 void loadweaponsinfo();
 
-inline bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2=WEAPON_INVALID, WEAPONTYPE type3=WEAPON_INVALID );
+bool isWeaponLike( SI32 id, WEAPONTYPE type1, WEAPONTYPE type2=WEAPON_INVALID, WEAPONTYPE type3=WEAPON_INVALID );
 
 #endif
