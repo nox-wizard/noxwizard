@@ -1285,7 +1285,7 @@ void angelMode();
 	checkGarbageCollect();
 
 	if( ServerScp::g_nCheckBySmall ) {
-		InfoOut("Check of all object started\n");
+		InfoOut("Check of all object started...");
 
 		AmxFunction checkItems( "__check_Item" );
 		AmxFunction checkNpcs( "__check_Npc" );
@@ -1305,6 +1305,19 @@ void angelMode();
 				checkItems.Call( pi->getSerial32() );
 			}
 		}
+
+		ConOut("[DONE]\n");
+
+		cwmWorldState->saveNewWorld();
+
+		ConOut("Closing sockets...");
+		Network->SockClose();
+		ConOut("Saving server.cfg...\n");
+		saveserverscript();
+		ConOut("[DONE]\n");
+		ConOut("Deleting Classes...");
+		DeleteClasses();
+		ConOut("[DONE]\n");
 		return 0;
 	}
 
