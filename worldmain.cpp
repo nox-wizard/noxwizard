@@ -503,7 +503,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'X':
 		case 'x':
-			if (!strcmp(script1, "X"))					{ pc->setPosition(Z, str2num(script2)); }
+			if (!strcmp(script1, "X"))					{ pc->setPosition(X, str2num(script2)); }
 			else if (!strcmp(script1, "XBODY"))
 			{
 				pc->SetOldBodyType( str2num(script2) );
