@@ -414,7 +414,7 @@ namespace item
 		int k=CreateRandomItem(sItemList);   // -- Get random Item #
 
 		if (k>0) {
-			return CreateScriptItem( k, 1, cont);  // -- Create Item
+			return CreateScriptItem( -1, k, 1, cont );  // -- Create Item
 			// This stuff smells buggy >:[, Xan
 		}
 		else return NULL;
