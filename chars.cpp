@@ -1820,23 +1820,25 @@ LOGICAL cChar::canSee( cObject &obj )
 */
 void cChar::teleport( UI08 flags, NXWCLIENT cli )
 {
-	P_ITEM p_boat = Boats->GetBoat(getPosition());
 
+
+	P_ITEM p_boat = Boats->GetBoat(getPosition());
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
-		Location boatpos= p_boat->getPosition();
-		setPosition("z",boatpos.z+3 );
-		setPosition("dz",boatpos.z+3 );
+		Location boatpos = getPosition();
+		boatpos.z = p_boat->getPosition().z +3;
+		boatpos.dispz = p_boat->getPosition().dispz +3;
+		setPosition( boatpos );
 	} else
-		setMultiSerial(-1);
+		setMultiSerial(INVALID);
 
 	setcharflag2( this ); //AntiChrist - Update highlight color
 
 	NXWSOCKET socket = getSocket();
 
-        //
-        // Send the draw player packet
-        //
+    //
+    // Send the draw player packet
+    //
 	if ( socket != INVALID ) {
 		UI08 flag = 0x00;
 		Location pos = getPosition();
@@ -1854,24 +1856,22 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 		walksequence[socket] = INVALID;
 	}
 
-	NxwSocketWrapper sw;
 
-        //
-        // Send the object remove packet
-        //
-	if ( cli == NULL ) {
+    //
+    // Send the object remove packet
+    //
+	if ( cli == NULL ) { //ndEndy, this send also to current char?
+		NxwSocketWrapper sw;
 		sw.fillOnline( getOldPosition() );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_w = sw.getClient();
 			if ( ps_w == NULL )
 				continue;
 			P_CHAR pc = ps_w->currChar();
-                        if ( !ISVALIDPC( pc ) )
-				continue;
-                        if ( distFrom( pc ) > VISRANGE || !canSee( *pc ) )
-				ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
+            if ( ISVALIDPC( pc ) )
+	            if ( distFrom( pc ) > VISRANGE || !canSee( *pc ) )
+					ps_w->sendRemoveObject(static_cast<P_OBJECT>(this));
 		}
-		sw.clear();
 	} else
 		cli->sendRemoveObject(static_cast<P_OBJECT>(this));
 
@@ -1879,6 +1879,7 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
         // Send worn items and the char itself to the char (if online) and other players
         //
 	if ( cli == NULL ) {
+		NxwSocketWrapper sw;
 		sw.fillOnline( this, false );
 		for ( sw.rewind(); !sw.isEmpty(); sw++ ) {
 			NXWCLIENT ps_i = sw.getClient();
@@ -1897,37 +1898,23 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 	}
 
 
-        //
-        // Send other players and items to char (if online)
-        //
-        if ( cli == NULL || cli == getClient() )
-		if ( socket != INVALID )
+    //
+    // Send other players and items to char (if online)
+    //
+    if ( cli == NULL || cli == getClient() )
+	if ( socket != INVALID )
+	{
+		if ( flags&TELEFLAG_SENDNEARCHARS )
 		{
-			if ( flags&TELEFLAG_SENDNEARCHARS )
-			{
-#ifdef SPAR_C_LOCATION_MAP
-				UI32 flags = pointers::ONLINE | pointers::EXCLUDESELF;
-				if( IsGM() )
-					flags |= pointers::OFFLINE;
-
-				PCHAR_VECTOR *pCV = pointers::getNearbyChars( this, VISRANGE, flags );
-				PCHAR_VECTOR it( pCV->begin() ), end( pCV->end() );
-				while( it != end )
-				{
-					impowncreate( socket, (*it), 1 );
-					++it;
+			NxwCharWrapper sc;
+			sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
+			for( sc.rewind(); !sc.isEmpty(); sc++ ) {
+				P_CHAR pc=sc.getChar();
+				if( ISVALIDPC( pc ) )
+					if( getSerial32() != pc->getSerial32() ) {
+						impowncreate( socket, pc, 1 );
+					}
 				}
-#else
-				NxwCharWrapper sc;
-				sc.fillCharsNearXYZ( getPosition(), VISRANGE, IsGM() ? false : true );
-				for( sc.rewind(); !sc.isEmpty(); sc++ ) {
-					P_CHAR pc=sc.getChar();
-					if( ISVALIDPC( pc ) )
-						if( getSerial32() != pc->getSerial32() ) {
-							impowncreate( socket, pc, 1 );
-						}
-				}
-#endif
 			}
 
 			if ( flags&TELEFLAG_SENDNEARITEMS ) {
@@ -1937,9 +1924,9 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 					P_ITEM pi = si.getItem();
 					if( ISVALIDPI( pi ) )
 						senditem( socket, pi );
-				}
 			}
 		}
+	}
 
 	//
 	// Send the light level
@@ -1947,9 +1934,9 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 	if ( socket != INVALID && (flags&TELEFLAG_SENDLIGHT) )
 		dolight( socket, worldcurlevel );
 
-        //
-        // Check if the region changed
-        //
+    //
+    // Check if the region changed
+    //
 	checkregion( this );
 
 	//
