@@ -977,7 +977,10 @@ static char lastcommand[10] = "";
         } else {
           i=0;
         } /* if */
-        if ((sym=find_symbol(&vartab,params,calllevel))!=NULL) {
+        if ((sym=find_symbol(&vartab,params,calllevel))==NULL &&
+	    (sym=find_symbol(&vartab,params,-1))==NULL) {
+          dprintf("\tSymbol not found, or not a variable\n");
+        } else {
           if (sym->dims>0 && indexptr==NULL) {
             if (sym->disptype==DISP_STRING)
               dprintf("%s\t%s\t\"%s\"\n",sym->vclass>0 ? "loc" : "glb",strpatch(sym->name),
@@ -992,9 +995,7 @@ static char lastcommand[10] = "";
             dprintf("%s\t%s\t%ld\n",sym->vclass>0 ? "loc" : "glb",strpatch(sym->name),
                     get_symbolvalue(amx,sym,i));
           } /* if */
-        } else {
-          dprintf("\tSymbol not found, or not a variable\n");
-        } /* if */
+	}
       } /* if */
     } else if (stricmp(command,"file")==0) {
       if (*params=='\0') {
