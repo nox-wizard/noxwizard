@@ -68,9 +68,6 @@ cCommand::cCommand(std::string name, SI08 number ,AmxFunction* callback) {
 
 cCallCommand::cCallCommand (std::string par1=NULL, std::string par2=NULL, std::string par3=NULL, std::string par4=NULL, std::string par5=NULL, std::string par6=NULL, std::string par7=NULL, std::string par8=NULL){
 
-	if (callCommand_map[0]=NULL)
-		CmdNextSerial=0;
-	
 	param1=par1;
 	param2=par2;
 	param3=par3;
@@ -124,7 +121,20 @@ cCommandMap* commands = new cCommandMap();
 
 
 
+//Implementation of cCallCommandMap Class
 
+P_COMMAND cCallCommandMap::addCallCommand(SERIAL cmdserial, std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8) {
+
+	P_CALLCOMMAND cllcmd= new cCallCommand(std::string param1, std::string param2, std::string param3, std::string param4, std::string param5, std::string param6, std::string param7, std::string param8);
+    
+	if (callCommand_map[1]=NULL)
+		CmdNextSerial=0;
+
+	cmdserial=++CmdNextSerial;	
+	
+	callCommand_map[cmdserial]= cllcmd;
+ 	return cllcmd;
+}
 
 
 /*///////////////////////////////////////////////////////////////////////////////////
