@@ -49,7 +49,6 @@ SOURCES =	\
 		dbl_single_click.cpp \
 		debug.cpp \
 		dragdrop.cpp \
-		endian.cpp \
 		extractionskills.cpp \
 		encryption.cpp \
 		fishing.cpp \
@@ -130,7 +129,8 @@ SOURCES =	\
 		worldmain.cpp \
 		commands/addremove.cpp \
 		commands/privlevels.cpp \
-		commands/tweaking.cpp
+		commands/tweaking.cpp \
+		abstraction/endian.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
 SOURCES += $(AMXSRCS)

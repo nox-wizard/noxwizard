@@ -56,6 +56,10 @@ warnings/errors/issues.
 	#define strcasecmp strcmpi
 #endif
 
+#if defined(__BEOS__) && !defined(__unix__)
+	#define __unix__
+#endif
+
 #ifdef __GNUC__
 	#define PACK_NEEDED __attribute__ ((packed))
 #else

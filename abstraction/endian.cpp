@@ -8,7 +8,7 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "nxwcommn.h"
-#include "endian.h"
+#include "abstraction/endian.h"
 
 eUI16& eUI16::operator =( UI16 v )
 {

@@ -78,6 +78,5 @@
 #include "addmenu.h"
 #include "rcvpkg.h"
 #include "network.h"
-#include "endian.h"
 
 #endif // __NXWCOMMON_H

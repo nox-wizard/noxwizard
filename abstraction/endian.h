@@ -17,6 +17,8 @@
 #ifndef __ENDIAN_H__
 #define __ENDIAN_H__
 
+#include "nxwcommn.h"
+
 /*
 \brief endian-independent unsigned int 16 bits
 \author Endymion
@@ -44,9 +46,9 @@ class eUI32 {
 		eUI32& operator =( UI32 v );
 } PACK_NEEDED;
 
-typedef UI08 PACK_NEEDED eUI08;		//!< fake endian-independent UI08
-typedef bool PACK_NEEDED ebool;		//!< fake endian-independent bool
-typedef eUI16 PACK_NEEDED eCOLOR;	//!< endian-independent color
-typedef eUI32 PACK_NEEDED eSERIAL;	//!< endian-independent serial
+typedef UI08 eUI08;		//!< fake endian-independent UI08
+typedef bool ebool;		//!< fake endian-independent bool
+typedef eUI16 eCOLOR;	//!< endian-independent color
+typedef eUI32 eSERIAL;	//!< endian-independent serial
 
 #endif
