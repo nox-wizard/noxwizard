@@ -249,13 +249,11 @@ char firstpacket[MAXCLIENT+1];
 int newclient[MAXCLIENT];
 char unsigned buffer[MAXCLIENT][MAXBUFFER];
 char  outbuffer[MAXCLIENT][MAXBUFFER];
-int whomenudata [(MAXCLIENT)*10]; //!< LB, for improved whomenu, ( is important !!!
 int client[MAXCLIENT];
 short int walksequence[MAXCLIENT];
 signed char addid5[MAXCLIENT];
 int acctno[MAXCLIENT];
 unsigned char clientip[MAXCLIENT][4];
-make_st itemmake[MAXCLIENT];
 int tempint[MAXCLIENT];
 unsigned char addid1[MAXCLIENT];
 unsigned char addid2[MAXCLIENT];

@@ -19,6 +19,7 @@
 #include "amx/amxvarserver.h"
 #include "regions.h"
 #include "scp_parser.h"
+#include "client.h"
 
 
 // GOOD GLOBALZ (Those which are just fine)
@@ -106,6 +107,9 @@ extern int escortRegions;
 /////////////////////////////////////////////
 // maximum too cause maxclient = maximum +1
 
+
+
+extern P_CLIENT clientInfo[MAXCLIENT];
 extern char firstpacket[MAXCLIENT+1];
 extern char noweather[MAXCLIENT+1]; //LB
 extern unsigned char LSD[MAXCLIENT];
@@ -115,13 +119,11 @@ extern unsigned char EVILDRAGG[MAXCLIENT];
 extern int newclient[MAXCLIENT];
 extern unsigned char  buffer[MAXCLIENT][MAXBUFFER];
 extern char  outbuffer[MAXCLIENT][MAXBUFFER];
-extern int whomenudata [(MAXCLIENT)*10]; // LB, for improved whomenu, ( is important !!!
 extern int client[MAXCLIENT];
 extern short int walksequence[MAXCLIENT];
 extern signed char addid5[MAXCLIENT];
 extern int acctno[MAXCLIENT];
 extern unsigned char clientip[MAXCLIENT][4];
-extern make_st itemmake[MAXCLIENT];
 extern int tempint[MAXCLIENT];
 extern unsigned char addid1[MAXCLIENT];
 extern unsigned char addid2[MAXCLIENT];
@@ -141,13 +143,14 @@ extern unsigned char usedfree[MAXCLIENT];
 extern int binlength[MAXIMUM+1];
 extern int boutlength[MAXIMUM+1];
 extern unsigned char clientDimension[MAXCLIENT]; // stores if the client is the new 3d or old 2d one
-extern SERIAL spyTo[MAXCLIENT];
-
 //extern int spattackValue[MAXCLIENT];
 extern int clickx[MAXCLIENT];
 extern int clicky[MAXCLIENT];
 extern int currentSpellType[MAXCLIENT]; // 0=spellcast, 1=scrollcast, 2=wand cast
 extern unsigned char targetok[MAXCLIENT];
+
+
+
 
 //////////////////////////////////////////////
 //              MAxBuffer                  //

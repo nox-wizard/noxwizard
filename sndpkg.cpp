@@ -404,17 +404,18 @@ void sysmessage(NXWSOCKET  s, const char *txt, ...) // System message (In lower 
     vsprintf( msg, txt, argptr );
 	va_end( argptr );
 
-	if( spyTo[s]!=INVALID ) { //spy client
-		P_CHAR pc=pointers::findCharBySerial( spyTo[s] );
+	SERIAL spyTo = clientInfo[s]->spyTo;
+	if( spyTo!=INVALID ) { //spy client
+		P_CHAR pc=pointers::findCharBySerial( spyTo );
 		if( ISVALIDPC( pc ) ) {
 			NXWCLIENT gm = pc->getClient();
 			if( gm!=NULL )
 				gm->sysmsg( "spy %s : %s", pc->getCurrentNameC(), msg );
 			else 
-				spyTo[s]=INVALID;
+				clientInfo[s]->spyTo=INVALID;
 		}
 		else
-			spyTo[s]=INVALID;
+			clientInfo[s]->spyTo=INVALID;
 	}
 
 	int ucl = ( strlen ( msg ) * 2 ) + 2 ;

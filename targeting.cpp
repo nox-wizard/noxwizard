@@ -4061,11 +4061,16 @@ void cTargets::MultiTarget(NXWCLIENT ps) // If player clicks on something with t
         case 245: buildhouse(s,addid3[s]);   break;
 
         case 247: {
-			if( Cready ) {
+			if( Cready && ( pc->getSerial32()!=curr->getSerial32() ) ) {
 				NXWCLIENT victim = pc->getClient();
 				if( victim!=NULL ) {
-					spyTo[victim->toInt()]=curr->getSerial32();
+					clientInfo[victim->toInt()]->spyTo=curr->getSerial32();
 				}
+			}
+			else {
+				for( int s=0; s<now; s++ )
+					if( clientInfo[s]->spyTo=curr->getSerial32() )
+						clientInfo[s]->spyTo=INVALID;
 			}
 			}
 			break; //showskill target

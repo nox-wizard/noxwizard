@@ -426,3 +426,16 @@ void cNxwClientObj::sendRemoveObject(P_OBJECT po)
 }
 
 SERIAL currchar[MAXCLIENT];
+
+
+cClient::cClient()
+{
+	spyTo=INVALID;
+}
+
+cClient::~cClient()
+{
+}
+
+P_CLIENT clientInfo[MAXCLIENT];
+

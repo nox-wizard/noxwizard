@@ -264,28 +264,6 @@ struct advance_st
  SI32 failure;
 };
 
-/*!
-\brief class for manage made items
-*/
-struct make_st
-{
- SI32 has;
- SI32 has2;
- SI32 needs;
- SI32 minskill;
- SI32 maxskill;
- UI08 newcolor1;	//!< This color is setted if coloring>-1 - Magius(CHE) §
- UI08 newcolor2;	//!< This color is setted if coloring>-1 - Magius(CHE) §
- SI32 coloring;		//!< Color modification activated by trigger token! - Magius(CHE) §
- SI16 Mat1id;		//!< id of material 1 used to make item
- SI16 Mat1color;	//!< color of material 1 used to make item
- SI16 Mat2id;		//!< id of material 2 used to make item
- SI16 Mat2color;	//!< color of material 2 used to make item
- SI32 minrank;		//!< value of minum rank level of the item to create! - Magius(CHE)
- SI32 maxrank;		//!< value of maximum rank level of the item to create! - Magius(CHE)
- SI32 number;		//!< Store Script Number used to Rank System - Magius(CHE)
-};
-
 #ifndef DOXYGEN	// this definitions are used when compiling
 
 	struct Serial{

@@ -108,6 +108,7 @@ class cMenu : public cBasicMenu
 		std::map< SERIAL, SI32 > rc_button;	//!< return code for for button
 		std::map< SERIAL, SI32 > rc_radio;	//!< return code for for radio
 		std::map< SERIAL, SI32 > rc_checkbox;	//!< return code for for checkbox
+		std::map< SERIAL, SI32 > rc_edit;	//!< return code for for edit
 
 		std::map< SERIAL, FUNCIDX > buttonCallbacks;	//!< all callback for button
 		std::map< SERIAL, SI32 > editProps;	//!< all edit property
@@ -181,7 +182,7 @@ class cMenu : public cBasicMenu
 
 		bool getCheckBox( SERIAL checkbox, bool raw=false );
 		bool getRadio( SERIAL radio, bool raw=false );
-		std::wstring* getText( SERIAL text );
+		std::wstring* getText( SERIAL text, bool raw=false );
 };
 
 

@@ -140,7 +140,7 @@ namespace Skills {
 	void Carpentry(NXWSOCKET s);
 
 	P_ITEM MakeMenuTarget(NXWSOCKET s, int x, int skill, int amount = INVALID);
-	void MakeMenu(NXWSOCKET s, int m, int skill);
+	void MakeMenu( P_CHAR pc, int m, int skill, P_ITEM first, P_ITEM second = NULL );
 
 	//@{
 	/*!

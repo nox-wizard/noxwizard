@@ -758,7 +758,8 @@ void doubleclick(NXWCLIENT ps)
 		return;
 	}
 	CASEOR(IsFeather, IsShaft) {
-		itemmake[s].Mat1id = pi->id();
+		//ndEndy PDFARE
+		//itemmake[s].Mat1id = pi->id();
 		target(s, 0, 1, 0, 172, TRANSLATE("What would you like to use this with?"));
 		return;
 	}

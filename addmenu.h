@@ -33,9 +33,11 @@ public:
     UI32 number;
 
 	cRawItem( std::string& s );
+	cRawItem( SI32 id, COLOR color, UI32 number );
 	~cRawItem();
 
 };
+
 
 /*!
 \brief Class MakeItem
@@ -60,18 +62,39 @@ public:
 
 cMakeItem* getcMakeItem( SERIAL n );
 
-class cAddMenu : public cBasicMenu 
+class cMakeMenu : public cBasicMenu 
 {
 
 	private:
+		int skill;
+		std::vector<cMakeItem>*	makeItems;
+
+	protected:
 
 		SERIAL section;
-		std::vector< cScriptCommand > commands;
 		P_OLDMENU oldmenu;
+		std::vector< cScriptCommand > commands;
 
-		void loadFromScript( P_CHAR pc = NULL );
-		bool checkShouldAdd ( class cScpEntry* entry, P_CHAR pc);
+		virtual void loadFromScript( P_CHAR pc, P_ITEM first, P_ITEM second );
+		bool checkShouldAdd( class cScpEntry* entry, P_CHAR pc);
 		std::string cleanString( std::string s );
+
+	protected:
+		virtual cServerPacket* build();
+
+	public:
+		cMakeMenu( SERIAL section, P_CHAR pc, int skill, P_ITEM first, P_ITEM second=NULL );
+		~cMakeMenu();
+
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+
+};
+
+class cAddMenu : public cMakeMenu 
+{
+
+	private:
+		virtual void loadFromScript( P_CHAR pc = NULL );
 
 	protected:
 		virtual cServerPacket* build();
@@ -83,7 +106,6 @@ class cAddMenu : public cBasicMenu
 		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
 
 };
-
 
 void execMake( P_CHAR pc, int n );
 void showAddMenu( P_CHAR pc, int menu );
@@ -112,40 +134,4 @@ inline void gmmenu( NXWSOCKET s, SI32 m )
 
 
 
-/*
-
-
-
-struct RawItem {
-    int id;
-    int color;
-    UI32 number;
-    void parse(char *sz);
-};
-
-/*!
-\brief Class MakeItem
-*//*
-class MakeItem {
-public:
-	//static const int MAXREQITEM =8;
-	enum { MAXREQITEM = 8 };
-    string cmd1, cmd2;
-    int skillToCheck;
-    int minskill;
-    int maxskill;
-    int reqspell;
-    RawItem reqitem[8]; //no more than 8 items
-    int mana, stam, hit;
-
-    
-	MakeItem();
-    bool checkReq(P_CHAR pc, bool inMenu = false);
-};
-
-
-MakeItem* getMakeItem(int n);*/
-/*void execMake(P_CHAR pc, int n);
-void showAddMenu (P_CHAR pc, int menu);
-*/
 #endif

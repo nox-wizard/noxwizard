@@ -61,7 +61,8 @@ void cScriptCommand::execute( NXWSOCKET s )
 		return;
 	//Luxor: Makemenu MUST be before Menu, or a serious bug occurs!
 	} else if ( command == "MAKEMENU" ) {
-		Skills::MakeMenu(s, str2num(param), pc->making);
+		//ndEndy PDFARE
+		//Skills::MakeMenu(s, str2num(param), pc->making );
 		return;
 	} else if ( (SI32)command.find("MENU") != -1 ) {
 		itemmenu( s, str2num(param) );
@@ -87,17 +88,7 @@ void cScriptCommand::execute( NXWSOCKET s )
 		splitLine( param, itemnum, amount );
 		int am = ( amount != "" )?  str2num( amount ) : INVALID; //ndEndy defined amount
 		
-
-		#ifndef __NEWMAKESYS
-		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
-		#endif
-			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
-		#ifndef __NEWMAKESYS
-		}
-		else {
-			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(param),pc->making,am);
-		}
-		#endif
+		P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
 		return;
 	} else if ( command == "BATCH" ) {
 		executebatch=str2num(param);

@@ -354,7 +354,8 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 
 void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI16 textId, wstring data, UI32 hue )
 {
-	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
+	rc_edit.insert( make_pair( rc_serialCurrent, textId ) );
+	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, rc_serialCurrent++, addString(data) );
 }
 
 void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue, UI32 subProperty2 )
@@ -366,14 +367,12 @@ void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 prop
 	if( t==T_BOOL ) 
 	{
 		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty, subProperty2 ), props );
-		editProps.insert( make_pair( props, rc_serialCurrent-1 ) );
 	}
 	else
 	{
-		addInputField( x, y, width, height, (props>>16)&0xFFFF, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
-		editProps.insert( make_pair( props, (props>>16)&0xFFFF ) );
+		addInputField( x, y, width, height, props, getPropertyField( buffer[0], buffer[1], property, subProperty, subProperty2 ), hue );
 	}
-	
+	editProps.insert( make_pair( props, rc_serialCurrent-1 ) );
 	
 }
 
@@ -428,6 +427,7 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	UI32 button = p->buttonId.get();
 
 	this->switchs = &p->switchs;
+	this->textResp = &p->text_entries;
 	
 	UI32 buttonReturnCode;
 	if( button!=MENU_CLOSE ) { 
@@ -448,17 +448,17 @@ void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 	}
 
 	//set property if there are
-	textResp = &p->text_entries;
 
 	if( ( buttonReturnCode!=MENU_CLOSE ) && ( buttonReturnCode==buffer[3] ) ) { 
 		std::map< SERIAL, SI32 >::iterator propIter( editProps.begin() ), lastProp( editProps.end() );
 		for( ; propIter!=lastProp; ++propIter ) {
 
+			SI32 props = propIter->first;
 			int prop, prop2, prop3;
-			getPropsFromInt( propIter->first, prop, prop2, prop3 );  
+			getPropsFromInt( props, prop, prop2, prop3 );  
 
 			if( getPropertyType( prop )!=T_BOOL ) {
-				std::wstring* data = getText( propIter->second );
+				std::wstring* data = getText( propIter->second, true );
 				if( data!=NULL )
 					setPropertyField( buffer[0], buffer[1], prop, prop2, prop3, *data );
 			}
@@ -748,9 +748,13 @@ bool cMenu::getRadio( SERIAL radio, bool raw )
 		return find( switchs->begin(), switchs->end(), rc_radio[radio] )!=switchs->end();
 }
 
-std::wstring* cMenu::getText( SERIAL text )
+std::wstring* cMenu::getText( SERIAL text, bool raw )
 {
-	std::map< SERIAL, std::wstring >::iterator iter( textResp->find( text ) );
+	std::map< SERIAL, std::wstring >::iterator iter;
+	if( raw )
+		iter= textResp->find( text );
+	else
+		iter= textResp->find( rc_edit[text] );
 	return ( iter!=textResp->end() )? &iter->second : NULL;
 }
 

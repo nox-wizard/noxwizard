@@ -398,10 +398,11 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 
 	currchar[ socket ] = INVALID;
 
-	int jj;
+	safedelete( clientInfo[socket] );
+
 	for ( j = socket; j < now - 1; ++j )
 	{
-		jj = j+1;
+		int jj = j+1;
 		client[j]=client[jj];
 		currchar[j]=currchar[jj];
 		newclient[j]=newclient[jj];
@@ -415,8 +416,7 @@ void cNetwork::Disconnect ( NXWSOCKET socket ) // Force disconnection of player 
 		binlength[j]=binlength[jj];
 		boutlength[j]=boutlength[jj];
 		usedfree[j]=usedfree[jj];
-		spyTo[j]=spyTo[jj];
-		itemmake[j]=itemmake[jj];
+		clientInfo[j]=clientInfo[jj];
 		walksequence[j]=walksequence[jj];
 		DRAGGED[j]=DRAGGED[jj];
 		EVILDRAGG[j]=EVILDRAGG[jj];
@@ -1319,7 +1319,7 @@ void cNetwork::CheckConn() // Check for connection requests
 				boutlength[now]=0;
 				cryptclient[now]=0;
 				usedfree[now]=0;
-				spyTo[now]=INVALID;
+				clientInfo[now]= new cClient();
 				walksequence[now]=-1;
 
 				noweather[now]=1;

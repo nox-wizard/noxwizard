@@ -111,15 +111,24 @@ typedef std::vector< SERIAL > SOCKETS_VECT;
 //extern SOCKETS_VECT currchar;
 extern SERIAL currchar[MAXCLIENT];
 
-// the best very stupid class
-/*class cCurrCharWrapper {
+
+
+
+
+
+
+class cClient {
+
 public:
-	SERIAL operator[]( NXWSOCKET s ) {
-		return allsockets[s];
-	}
+
+	SERIAL spyTo;
+
+	cClient();
+	~cClient();
+
 };
 
-extern cCurrCharWrapper currchar;*/
+typedef cClient* P_CLIENT;
 
 
 

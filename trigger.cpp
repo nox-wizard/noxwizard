@@ -831,11 +831,12 @@ void cTriggerContext::parseLine(char* cmd, char* par)
 				P_CHAR pc_make=MAKE_CHAR_REF(currchar[m_socket]);
 				VALIDATEPC(pc_make);
 
-				itemmake[m_socket].Mat1id = (array[2] << 8) + array[3];
-				itemmake[m_socket].has = pc_make->getAmount( itemmake[m_socket].Mat1id);
-				itemmake[m_socket].has2 = pc_make->getAmount( itemmake[m_socket].Mat2id);
-				itemmake[m_socket].coloring = -1; //coloring; // Magius(CHE) §
-				Skills::MakeMenu(m_socket, array[0], array[1]);
+				//ndEndy PDFARE
+				//itemmake[m_socket].Mat1id = (array[2] << 8) + array[3];
+				//itemmake[m_socket].has = pc_make->getAmount( itemmake[m_socket].Mat1id);
+				//itemmake[m_socket].has2 = pc_make->getAmount( itemmake[m_socket].Mat2id);
+				//itemmake[m_socket].coloring = -1; //coloring; // Magius(CHE) §
+				//Skills::MakeMenu(m_socket, array[0], array[1]);
 			} else if (!(strcmp("MAXDUR", cmd))) {
 				parseMaxDurCommand(m_pi, par);
 				return;

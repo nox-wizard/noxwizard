@@ -4030,18 +4030,21 @@ NATIVE(_itm_getCombatSkill)
 \brief Opens a skill makemenu
 \author Luxor
 \since 0.82
-\param 1: the character
-\param 2: the number of the make menu to be opened
-\param 3: the skill that's using the makemenu
+\param 1 the character
+\param 2 the number of the make menu to be opened
+\param 3 the skill that's using the makemenu
+\param 4 the first material
+\param 5 the second material
 \return 1 if the makemenu was opened, -1 if not.
 */
 NATIVE(_chr_skillMakeMenu)
 {
-        P_CHAR pc = pointers::findCharBySerial(params[1]);
-        VALIDATEPCR(pc, INVALID);
-        if (pc->getClient() == NULL) return INVALID;
-        Skills::MakeMenu(pc->getClient()->toInt(),params[2],params[3]);
-        return 1;
+	P_CHAR pc = pointers::findCharBySerial(params[1]);
+    VALIDATEPCR(pc, INVALID);
+    if (pc->getClient() == NULL) return INVALID;
+    
+	Skills::MakeMenu( pc, params[2], params[3], MAKE_ITEM_REF(params[4]), MAKE_ITEM_REF(params[5]) );
+    return 1;
 }
 
 /*

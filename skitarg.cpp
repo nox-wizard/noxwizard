@@ -123,18 +123,12 @@ void Skills::Tailoring(NXWSOCKET s)// -Frazurbluu- rewrite of tailoring 7/2001
     {
 		if (CheckInPack(s,pi))
         {
-			int amt=itemmake[s].has=pc->getAmount(pi->id());
-			if(amt<1)
+			if(pc->getAmount(pi->id())<1)
 			{
 				pc->sysmsg(TRANSLATE("You don't have enough material to make anything."));
 				return;
 			}
                 
-			itemmake[s].Mat1id = pi->id();
-			itemmake[s].Mat1color = pi->color();
-            itemmake[s].newcolor1 = pi->color() >>8;
-            itemmake[s].newcolor2 = pi->color() %256;
-
             if(	pi->IsCutLeather()  ) {
 				if( tannering == NULL )
 					tannering = new AmxFunction( AMXTANNERING );
@@ -165,20 +159,17 @@ void Skills::Fletching(NXWSOCKET s)
     AMXEXECSV(s,AMXT_SKITARGS,BOWCRAFT,AMX_BEFORE);
     if ( pi->magic!=4) // Ripper
     {
-        if (( itemById::IsShaft(itemmake[s].Mat1id) && pi->IsFeather() ) ||   // first clicked shaft and now feather
-            ( itemById::IsFeather(itemmake[s].Mat1id) && pi->IsShaft() ))     // or vice versa
+        if (CheckInPack(s,pi))
         {
-            if (CheckInPack(s,pi))
-            {
-                itemmake[s].Mat2id=pi->id();    // 2nd material
-                itemmake[s].has=pc->getAmount(itemmake[s].Mat1id);     // count both materials
-                itemmake[s].has2=pc->getAmount(itemmake[s].Mat2id);
-                MakeMenu(s,60,BOWCRAFT);
-            }
-            return;
+			//ndEndy PDFARE
+			//itemmake[s].Mat2id=pi->id();    // 2nd material
+            //itemmake[s].has=pc->getAmount(itemmake[s].Mat1id);     // count both materials
+            //itemmake[s].has2=pc->getAmount(itemmake[s].Mat2id);
+            MakeMenu(pc,60,BOWCRAFT, pi);
         }
     }
-    pc->sysmsg(TRANSLATE("You cannot use that for fletching."));
+	else
+		pc->sysmsg(TRANSLATE("You cannot use that for fletching."));
 
     AMXEXECSV(s,AMXT_SKITARGS,BOWCRAFT,AMX_AFTER);
 }
@@ -203,13 +194,7 @@ void Skills::BowCraft(NXWSOCKET s)
 		{
 			if (CheckInPack(s,pi))
 			{
-				if((itemmake[s].has=pc_currchar->getAmount(pi->id())) < 2)
-					pc_currchar->sysmsg(TRANSLATE("You don't have enough material to make anything."));
-				else
-				{
-					itemmake[s].Mat1id=pi->id();
-					MakeMenu(s,65,BOWCRAFT);
-				}
+				MakeMenu(pc_currchar,65,BOWCRAFT,pi);
 			}
 		}
 	}
@@ -242,10 +227,8 @@ void Skills::Carpentry(NXWSOCKET s)
         {
            if (CheckInPack(s,pi))
            {
-              itemmake[s].Mat1id = pi->id();
-              itemmake[s].has=pc->getAmount(pi->id());
               short mm = pi->IsLog() ? 19 : 20; // 19 = Makemenu to create boards from logs
-              MakeMenu(s,mm,CARPENTRY);
+              MakeMenu(pc,mm,CARPENTRY,pi);
            }
         }
     }
@@ -312,21 +295,11 @@ static void AnvilTarget( NXWSOCKET s, P_ITEM pi, int ma, int mm, char* matname)
         sysmessage(s,TRANSLATE("The anvil is too far away."));
     else
     {
-        P_ITEM pack= pc->getBackpack();
-        VALIDATEPI(pack);
-
-        int amt=pack->CountItems( pi->id(), pi->color());
-
-	itemmake[s].Mat1id = pi->id();
-	itemmake[s].Mat1color = pi->color();
-        if ((itemmake[s].has=amt) < ma)
+        if (CheckInPack(s,pi))
         {
-            char msg[100];
-            sprintf(msg,TRANSLATE("You don't have enough ingots to make anything."));
-            sysmessage(s,msg);
-        }
-        else
-			Skills::MakeMenu(s,mm,BLACKSMITHING);
+			Skills::MakeMenu(pc,mm,BLACKSMITHING,pi);
+		}
+	
     }
 }
 
@@ -348,9 +321,6 @@ void Skills::Smith(NXWSOCKET s)
 
     if (pi->magic!=4) // Ripper
     {
-        itemmake[s].Mat1id = pi->id();
-		itemmake[s].Mat1color = pi->color();
-
         if (!CheckInPack(s,pi)) return;
 
         if (pi->id()==0x1BEF || pi->id()==0x1BF2)   // is it an ingot ?
@@ -359,7 +329,6 @@ void Skills::Smith(NXWSOCKET s)
 			AnvilTarget(s, pi, 1, AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXINGOTMAKEMENU), pi->color()), NULL);
 			return;
         }
-        itemmake[s].Mat1id = 0;
     }
     sysmessage(s,TRANSLATE("You cannot use that material for blacksmithing"));
 }
@@ -2336,13 +2305,12 @@ void Skills::Tinkering(NXWSOCKET s)
             if (CheckInPack(s,pi))
             {
                 int amt;
-                itemmake[s].has=amt=pc_currchar->CountItems(pi->id(), pi->color());
+                amt=pc_currchar->CountItems(pi->id(), pi->color());
                 if(amt<2)
                 {
                     sysmessage(s,TRANSLATE("You don't have enough ingots to make anything."));
                     return;
                 }
-                itemmake[s].Mat1id=pi->id();
                 if ( pi->IsLog() )
                 {
                     if (amt<4)
@@ -2350,12 +2318,11 @@ void Skills::Tinkering(NXWSOCKET s)
                         sysmessage(s,TRANSLATE("You don't have enough log's to make anything."));
                         return;
                     }
-                    else Skills::MakeMenu(s,70,TINKERING);
+                    else Skills::MakeMenu(pc_currchar,70,TINKERING,pi);
                 }
                 else
                 {
-                    itemmake[s].Mat1color=pi->color();  // only if ingots are used
-                    Skills::MakeMenu(s,80,TINKERING);
+                    Skills::MakeMenu(pc_currchar,80,TINKERING,pi);
                 }
             }
             return;
