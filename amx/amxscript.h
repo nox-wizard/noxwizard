@@ -75,7 +75,7 @@ private:
 	
 	static AmxProgram amxProg;
 	
-	std::string* funcName;
+	std::string funcName;
 	int function;
 
 public:
@@ -86,7 +86,8 @@ public:
 
 	char* getFuncName();
 
-	cell Call( int param);
+	cell Call( );
+	cell Call( int param );
 	cell Call( int param1, int param2 );
 	cell Call( int param1, int param2, int param3 );
 	cell Call( int param1, int param2, int param3, int param4 );

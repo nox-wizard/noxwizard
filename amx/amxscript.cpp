@@ -931,15 +931,20 @@ AmxProgram AmxFunction::amxProg;
 AmxFunction::AmxFunction( char* funName )
 {
 	function = amxProg.getFnOrdinal( funName );
-	funcName->copy( funName, strlen(funName) );
+	funcName.copy( funName, strlen(funName) );
 }
 
 char* AmxFunction::getFuncName()
 {
-	return (function!=INVALID)? (char*)funcName->c_str(): "";
+	return (function!=INVALID)? (char*)funcName.c_str(): "";
 }
 
-cell AmxFunction::Call( int param)
+cell AmxFunction::Call( )
+{
+	return amxProg.CallFn( function );
+}
+
+cell AmxFunction::Call( int param )
 {
 	return amxProg.CallFn( function, param );
 }
