@@ -36,6 +36,7 @@
 #include "set.h"
 #include "layer.h"
 #include "npcai.h"
+#include "nxw_utils.h"
 
 typedef struct _PKGx08
 {

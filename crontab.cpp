@@ -50,6 +50,7 @@
 #include "debug.h"
 #include "amx/amxcback.h"
 #include "srvparms.h"
+#include "jail.h"
 
 
 //@{

@@ -14,6 +14,7 @@
 #include "sndpkg.h"
 #include "crontab.h"
 #include "remadmin.h"
+#include "accounts.h"
 
 #ifdef ECHO
 	#undef ECHO

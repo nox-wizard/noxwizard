@@ -17,6 +17,7 @@
 
 #include "amx/amxvarserver.h"
 #include "regions.h"
+#include "accounts.h"
 
 // GOOD GLOBALZ (Those which are just fine)
 
@@ -60,7 +61,6 @@ namespace Scripts {
 	extern class cScpScript* CronTab;
 	extern class cScpScript* Envoke;
 	extern class cScpScript* Fishing;
-	extern class cScpScript* Gumps;
 	extern class cScpScript* HardItems;
 	extern class cScpScript* House;
 

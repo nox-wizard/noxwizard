@@ -77,7 +77,8 @@ void cGuilds::StonePlacement(int s)
 			pc->fx1 = 0;
 			guilds[guildnumber].stone= pStone->getSerial32();
 			guilds[guildnumber].master= pc->getSerial32();
-			entrygump(s, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4,100,1,40,TRANSLATE("Enter a name for the guild."));
+//guild will be rewrited tomorrow so np
+//			entrygump(s, pc->getSerial().ser1, pc->getSerial().ser2, pc->getSerial().ser3, pc->getSerial().ser4,100,1,40,TRANSLATE("Enter a name for the guild."));
 		}
 		else
 		{
@@ -906,10 +907,10 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 		switch(sub)
 		{
 		case 1: 
-			entrygump(socket,s1,s2,s3,s4,100,1,40,TRANSLATE("Enter a new guildname."));
+			//entrygump(socket,s1,s2,s3,s4,100,1,40,TRANSLATE("Enter a new guildname."));
 			break;
 		case 2: 
-			entrygump(socket,s1,s2,s3,s4,100,2,3,TRANSLATE("Enter a new guild abbreviation."));
+			//entrygump(socket,s1,s2,s3,s4,100,2,3,TRANSLATE("Enter a new guild abbreviation."));
 			break;
 		case 3: 
 			Guilds->Menu(socket,3);
@@ -936,7 +937,7 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 			Guilds->Menu(socket,9);
 			break;
 		case 11:
-			entrygump(socket, s1, s2, s3, s4, 100, 3, 20, TRANSLATE("Enter new guildmastertitle."));
+			//entrygump(socket, s1, s2, s3, s4, 100, 3, 20, TRANSLATE("Enter new guildmastertitle."));
 			break;
 		case 12: 
 			Guilds->Menu(socket,12);
@@ -960,9 +961,9 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 		{
 		case 1: Menu( socket, 2 );
 			break;
-		case 2: entrygump( socket, s1, s2, s3, s4, 100, 5, 50, TRANSLATE("Enter a new charter.") );
+		case 2: //entrygump( socket, s1, s2, s3, s4, 100, 5, 50, TRANSLATE("Enter a new charter.") );
 			break;
-		case 3:	entrygump( socket, s1, s2, s3, s4, 100, 6, 50, TRANSLATE("Enter a new URL.") );
+		case 3:	//entrygump( socket, s1, s2, s3, s4, 100, 6, 50, TRANSLATE("Enter a new URL.") );
 			break;
 		}
 		return;
@@ -1099,7 +1100,7 @@ void cGuilds::GumpChoice(NXWSOCKET socket, int main, int sub)
 				if (sub==counter)
 				{
 					guilds[guildnumber].priv = calcCharFromSer( guilds[guildnumber].member[member] );
-					entrygump(socket, s1, s2, s3, s4, 100, 3, 20, "Enter new guildtitle.");
+					//entrygump(socket, s1, s2, s3, s4, 100, 3, 20, "Enter new guildtitle.");
 					return;
 				}
 			}

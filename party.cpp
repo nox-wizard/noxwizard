@@ -12,8 +12,9 @@
 #include "sndpkg.h"
 #include "custmenu.h"
 #include "speech.h" //for unicode conversions
-#include "collector.h"
 #include "party.h"
+#include "menu.h"
+#include "oldmenu.h"
 
 namespace PartySystem {
 
@@ -29,21 +30,22 @@ void askPartyPermission( NXWCLIENT ps )
 	if( ps==NULL ) 
 		return;
 
-	P_CHAR p = ps->currChar();;
-	VALIDATEPC(p);
+	P_CHAR pc = ps->currChar();;
+	VALIDATEPC(pc);
 
-	if (p->customMenu != NULL) {
-		safedelete(p->customMenu);
-	}
+	if( pc->custmenu!=INVALID )
+		Menus.removeMenu( pc->custmenu, pc );
 
-	p->customMenu = new cPartyMenu();
-	p->customMenu->setParameters(2,1);
-	p->customMenu->setStyle(MENUSTYLE_TRASPARENCY, 0x481);
-	p->customMenu->setTitle("Party invitation");
-	p->customMenu->addMenuItem(0,0,"Accept invitation");
-	p->customMenu->addMenuItem(0,1,"Deny invitation");
-	p->customMenu->buildMenu();
-	p->customMenu->showMenu(ps->toInt());
+	cPartyMenu* m = static_cast<cPartyMenu*>( Menus.insertMenu( new cPartyMenu() ) );
+	pc->custmenu = m->serial;
+
+	m->setParameters( 2, 1 );
+	m->style = MENUSTYLE_TRASPARENCY;
+	m->color = 0x481;
+	m->title = L"Party invitation";
+	m->addMenuItem( 0, 0, std::wstring( L"Accept invitation" ) );
+	m->addMenuItem( 0, 1, std::wstring( L"Deny invitation" ) );
+	m->show( pc );
 
 }
 
@@ -188,42 +190,36 @@ void processInputPacket( NXWCLIENT ps )
 
 
 
-cPartyMenu::cPartyMenu() { }
+cPartyMenu::cPartyMenu() 
+{
 
-///////////////////////////////////////////////////////////////////
-// Function name :buttonSelected
-// Description   : Menu handler for the join permission menu -- contains join code
-// Return type	 : void
-// Author	     : Xanathar
-// Argument	     : NXWSOCKET  s -> socket of menu pressed
-// Argument	     : unsigned short int btn -> button pressed
-// Argument	     : int seed -> menu seed (see cCustomMenu for all details)
-// Changes	     : none yet
-void cPartyMenu::buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed )
+}
+
+cPartyMenu::~cPartyMenu() 
+{
+
+}
+
+void cPartyMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg )
 {
 		
-	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
+	P_CHAR pc=ps->currChar();
 	VALIDATEPC(pc);
 		
+	SERIAL button;
+	
+	if( button = 1 ) {
 		
-	int page = (btn-10)/m_nNumPerPage;
-	int item = (btn-10)%m_nNumPerPage;
-	if (btn < 10) page = item = -1;
-
-	if (seed!=m_nSeed) {
-		pc->sysmsg( TRANSLATE("You should be faster when choosing an option in your life.."));
-		return;
-	}
-
-	if (item != 0) {
 		P_CHAR req=pointers::findCharBySerial( pc->reqPartySerial );
+
 		if( ISVALIDPC( req ) ) {
-			std::string str= pc->getCurrentName();
-			str+=" refuse the party";
-			Partys->talkToOthers( req, str  );
+			std::string str( " refuse the party" );
+			Partys->talkToOthers( req, pc->getCurrentName()+str  );
+			
 			if( Partys->membersNumber( req ) == 1 ) // one player party is not valid
 				Partys->kickMember( req );
 		}
+
 		pc->requestedParty = INVALID;
 		pc->reqPartySerial = INVALID;
 		pc->party = INVALID;
@@ -234,16 +230,14 @@ void cPartyMenu::buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed )
 		if ( !Partys->addMember( pc->requestedParty, pc ) )
 		{
 			pc->party = pc->reqPartySerial = pc->requestedParty = INVALID;
-			pc->sysmsg( TRANSLATE("This party is no more valid. Sorry."));
+			pc->sysmsg( TRANSLATE("This party is no more valid. Sorry.") );
 			return;
 		}
 
 		
 		pc->reqPartySerial = pc->requestedParty = INVALID;
 
-//		std::string str = ( " %s entered the party ", pc->getCurrentNameC() );
-		std::string str(" ");
-		str += pc->getCurrentNameC();
+		std::string str( pc->getCurrentNameC() );
 		str += " entered the party.";
 
 		Partys->talkToOthers( pc, str );
@@ -268,7 +262,9 @@ cParty::cParty( SERIAL ser )
 }
 
 
-cParty::~cParty() { }
+cParty::~cParty() 
+{
+}
 
 
 

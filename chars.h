@@ -23,6 +23,7 @@
 #include "msgboard.h"
 #include "target.h"
 #include "constants.h"
+#include "menu.h"
 
 //@{
 /*!
@@ -515,9 +516,7 @@ class cChar : public cObject
 \name Others
 */
 	public:
-		SI32			targetcallback;     //!< xan:this is used for targetting callbacks
-		class cCustomMenu *customMenu;      //!< xan : this is for custom menus
-
+		FUNCIDX		targetcallback;
 		UI08			gmrestrict;			//!< for restricting GMs to certain regions
 
 		void			doGmEffect();
@@ -525,6 +524,15 @@ class cChar : public cObject
 
 	public:
 		bool jailed;
+
+//@{
+/*!
+\name Menu
+*/
+	public:
+		SERIAL custmenu;	//!< legacy code, used for old mnu_ and hard coded menu
+
+//@}
 
 
 //@{

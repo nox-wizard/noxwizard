@@ -17,10 +17,8 @@
 
 void whomenu(int s, int type);
 void playermenu(int s, int type);
-void gmmenu(int s, int m);
 void choice(int s);
 void who(int s);
-void itemmenu(int s, int m);
 
 void entrygump(int s, unsigned char tser1, unsigned char tser2, unsigned char tser3, unsigned char tser4, unsigned char type, char index, short int maxlength, char *text1);
 

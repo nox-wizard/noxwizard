@@ -15,6 +15,8 @@
 #ifndef __CLIENT_DEF__
 #define __CLIENT_DEF__
 
+#include "cmdtable.h"
+
 
 typedef std::vector< std::string > td_cmdparams;
 typedef std::vector< TargetLocation > td_targets;

@@ -19,6 +19,8 @@
 #include "house.h"
 #include "npcai.h"
 #include "layer.h"
+#include "mount.h"
+#include "nxw_utils.h"
 
 /*!
 \brief apply wear out to item, delete if necessary
@@ -640,18 +642,6 @@ void doubleclick(NXWCLIENT ps)
 			}
 			else
 				WarnOut("Unhandled guild item type named: %s with ID of: %X\n", pi->getCurrentNameC(), pi->id());
-			return;
-	case ITYPE_GUMPMENU: //Crackerjack 8/9/99
-			if (!(pc->isOwnerOf(pi) || pc->IsGM())) 
-			{
-				pc->sysmsg( TRANSLATE("You can not use that."));
-				return;
-			}
-			addid1[s] = pi->getSerial().ser1;
-			addid2[s] = pi->getSerial().ser2;
-			addid3[s] = pi->getSerial().ser3;
-			addid4[s] = pi->getSerial().ser4;
-			gumps::Menu(s, pi->morex, pi);
 			return;
 	case ITYPE_PLAYER_VENDOR_DEED:			// PlayerVendors deed
 			{

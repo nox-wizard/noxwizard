@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "sndpkg.h"
 #include "npcai.h"
+#include "nxw_utils.h"
 
 /*!
 \brief Snoop into container

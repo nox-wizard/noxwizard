@@ -9,7 +9,9 @@
 
 #ifndef __PARTY_H__
 #define __PARTY_H__
+
 #include "nxwcommn.h"
+#include "oldmenu.h"
 
 namespace PartySystem
 {
@@ -39,10 +41,15 @@ namespace PartySystem
 }
 
 
-	class cPartyMenu : public cCustomMenu {
+	class cPartyMenu : public cOldMenu {
+	
 	public:
+		
 		cPartyMenu();
-		void buttonSelected(NXWSOCKET  s, unsigned short int btn, int seed );
+		~cPartyMenu();
+
+		virtual void handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+		
 	};
 
 

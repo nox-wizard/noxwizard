@@ -796,14 +796,15 @@ static int loadinioptions (char *script1, char *script2)
 	else if(!(strcmp(script1,"AUTODETECTIP"))) ServerScp::g_nAutoDetectIP=str2num(script2);
 	else if(!(strcmp(script1,"BEHINDNAT"))) ServerScp::g_nBehindNat=str2num(script2);
 	else if(!(strcmp(script1,"MAP"))) strcpy(temp_map, script2);
-	else if(!(strcmp(script1,"MAP_CACHE"))) map_cache = str2num( script2 );
 	else if(!(strcmp(script1,"STATICS"))) strcpy(temp_statics, script2);
 	else if(!(strcmp(script1,"STAIDX"))) strcpy(temp_staidx, script2);
 	else if(!(strcmp(script1,"STATICS_CACHE"))) statics_cache = str2num( script2 );
 	else if(!(strcmp(script1,"VERDATA"))) strcpy(temp_verdata, script2);
 	else if(!(strcmp(script1,"TILEDATA"))) strcpy(temp_tiledata, script2);
+	else if(!(strcmp(script1,"TILEDATA_CACHE"))) tiledata_cache = str2num( script2 );
 	else if(!(strcmp(script1,"MULTIMUL"))) strcpy(temp_multimul, script2);
 	else if(!(strcmp(script1,"MULTIIDX"))) strcpy(temp_multiidx, script2);
+	else if(!(strcmp(script1,"MULTI_CACHE"))) multi_cache = str2num( script2 );
 	else return INVALID;
 	return 0;
 }
@@ -986,13 +987,13 @@ void commitserverscript() // second phase setup
 		}
 	}
 
-	data::setPath( Map_File, std::string( temp_map ) );
-	data::setPath( StaIdx_File, std::string( temp_staidx ) );
-	data::setPath( Statics_File, std::string( temp_statics ) );
-	data::setPath( VerData_File, std::string( temp_verdata ) );
-	data::setPath( TileData_File, std::string( temp_tiledata ) );
-	data::setPath( Multi_File, std::string( temp_multimul ) );
-	data::setPath( MultiIdx_File, std::string( temp_multiidx ) );
+	data::setPath( MUL_MAP, std::string( temp_map ) );
+	data::setPath( MUL_STATIDX, std::string( temp_staidx ) );
+	data::setPath( MUL_STATICS, std::string( temp_statics ) );
+	data::setPath( MUL_VERDATA, std::string( temp_verdata ) );
+	data::setPath( MUL_TILEDATA, std::string( temp_tiledata ) );
+	data::setPath( MUL_MULTI, std::string( temp_multimul ) );
+	data::setPath( MUL_MULTIIDX, std::string( temp_multiidx ) );
 
 		// name resovling of server-address, LB 7-JULY 2000
 
@@ -1084,22 +1085,24 @@ void saveserverscript()
 	fprintf(file, "// \n");
 	fprintf(file, "// The file containing the map, usually map0.mul for T2A client and Britannia on UO3D,\n");
 	fprintf(file, "// map2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "MAP %s\n", data::getPath( Map_File ).c_str());
-	fprintf(file, "//  Setting to 1 loads the map's info into RAM. Warning: requires A LOT of memory!\n");
-	fprintf(file, "MAP_CACHE %i\n", map_cache );
+	fprintf(file, "MAP %s\n", data::getPath( MUL_MAP ).c_str());
 	fprintf(file, "// The files containing the statics, usually statics0.mul and staidx0.mul for T2A client\n");
 	fprintf(file, "// and Britannia on UO3D, statics2.mul and staidx2.mul for Ilshenar map on UO Third Dawn.\n");
-	fprintf(file, "STATICS %s\n", data::getPath( Statics_File ).c_str());
-	fprintf(file, "STAIDX %s\n", data::getPath( StaIdx_File ).c_str());
-	fprintf(file, "//  Setting to 1 loads the statics's info into RAM, significant speed boost\n");
+	fprintf(file, "STATICS %s\n", data::getPath( MUL_STATICS ).c_str());
+	fprintf(file, "STAIDX %s\n", data::getPath( MUL_STATIDX ).c_str());
+	fprintf(file, "//  Setting to 1 loads the statics's ifo into RAM, significant speed boost\n");
 	fprintf(file, "STATICS_CACHE %i\n", statics_cache );
 	fprintf(file, "// The version data you'll use (verdata.mul, usually)\n");
-	fprintf(file, "VERDATA %s\n", data::getPath( VerData_File ).c_str());
+	fprintf(file, "VERDATA %s\n", data::getPath( MUL_VERDATA ).c_str());
 	fprintf(file, "// The tile data you'll use (tiledata.mul, usually)\n");
-	fprintf(file, "TILEDATA %s\n", data::getPath( TileData_File ).c_str());
+	fprintf(file, "TILEDATA %s\n", data::getPath( MUL_TILEDATA ).c_str());
+	fprintf(file, "//  Setting to 1 loads the tiledata's info into RAM, significant speed boost\n");
+	fprintf(file, "TILEDATA_CACHE %i\n", tiledata_cache );
 	fprintf(file, "// The files containing multi data (multi.mul and multi.idx usually)\n");
-	fprintf(file, "MULTIMUL %s\n", data::getPath( Multi_File ).c_str());
-	fprintf(file, "MULTIIDX %s\n", data::getPath( MultiIdx_File ).c_str());
+	fprintf(file, "MULTIMUL %s\n", data::getPath( MUL_MULTI ).c_str()); 
+	fprintf(file, "MULTIIDX %s\n", data::getPath( MUL_MULTIIDX ).c_str()); 
+	fprintf(file, "//  Setting to 1 loads the multi's info into RAM, significant speed boost\n");
+	fprintf(file, "MULTI_CACHE %i\n", multi_cache );
 	fprintf(file, "}\n\n");
 
 	fprintf(file, "SECTION SKILLS\n");

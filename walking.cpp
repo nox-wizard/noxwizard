@@ -21,6 +21,7 @@
 #include "house.h"
 #include "tmpeff.h"
 #include "packets.h"
+#include "telport.h"
 
 /*!
 \brief Calculates the adjacent direction (counterclockwise)

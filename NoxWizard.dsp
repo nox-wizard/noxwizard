@@ -222,10 +222,6 @@ SOURCE=.\crontab.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\custmenu.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\dbl_single_click.cpp
 # End Source File
 # Begin Source File
@@ -271,10 +267,6 @@ SOURCE=.\guild.cpp
 # Begin Source File
 
 SOURCE=.\guildstones.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\gumps.cpp
 # End Source File
 # Begin Source File
 
@@ -363,18 +355,6 @@ SOURCE=.\nxw_utils.cpp
 # Begin Source File
 
 SOURCE=.\nxwgui.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwGump.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwString.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwStringList.cpp
 # End Source File
 # Begin Source File
 
@@ -702,10 +682,6 @@ SOURCE=.\crontab.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\custmenu.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\dbl_single_click.h
 # End Source File
 # Begin Source File
@@ -743,10 +719,6 @@ SOURCE=.\globals.h
 # Begin Source File
 
 SOURCE=.\guild.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\gumps.h
 # End Source File
 # Begin Source File
 
@@ -847,18 +819,6 @@ SOURCE=.\nxwcommn.h
 # Begin Source File
 
 SOURCE=.\nxwgui.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwGump.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwString.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\nxwStringList.h
 # End Source File
 # Begin Source File
 

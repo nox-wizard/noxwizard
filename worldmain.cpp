@@ -22,6 +22,7 @@
 #include "tmpeff.h"
 #include "amx/amxvarserver.h"
 #include "layer.h"
+#include "jail.h"
 
 
 //////////////////////////////////////////////////////////////////////
@@ -826,9 +827,8 @@ void loaditem()
 
 				if (i>=0x4000)
 				{
-					multiVector m_vec;
-					data::seekMulti( i-0x4000, m_vec );
-					if( m_vec.empty() )
+					NxwMulWrapperMulti sm( i-0x4000 );
+					if( sm.isEmpty() )
 					{
 						LogWarning("bad item, serial: %i name: %s\n",pi->getSerial32(), pi->getCurrentNameC());
 						bad=1;

@@ -74,8 +74,13 @@
 #include "network.h"
 #include "tmpeff.h"
 #include "layer.h"
-
+#include "menu.h"
+#include "telport.h"
+#include "mount.h"
+#include "accounts.h"
+#include "jail.h"
 #include "ai.h"
+#include "itemid.h"
 
 #ifdef _WINDOWS
 	#include "nxwgui.h"
@@ -2960,7 +2965,6 @@ namespace Scripts {
 	cScpScript* CronTab = NULL; //cScpScript("crontab.scp");
 	cScpScript* Envoke = NULL; //cScpScript("envoke.scp");
 	cScpScript* Fishing = NULL; //cScpScript("fishing.scp");
-	cScpScript* Gumps = NULL; //cScpScript("gumps.scp");
 	cScpScript* HardItems = NULL; //cScpScript("harditems.scp");
 	cScpScript* House = NULL; //cScpScript("house.scp");
 
@@ -3009,7 +3013,6 @@ void newScriptsInit()
 //	Scripts::CronTab = new cScpScript("crontab.scp");
 	Scripts::Envoke = new cScpScript("scripts/envoke.xss");
 	Scripts::Fishing = new cScpScript("scripts/fishing.xss");
-	Scripts::Gumps = new cScpScript("scripts/gumps.xss");
 	Scripts::HardItems = new cScpScript("scripts/harditems.xss");
 	Scripts::House = new cScpScript("scripts/house.xss");
 
@@ -3059,7 +3062,6 @@ void deleteNewScripts()
 //	Scripts::CronTab = new cScpScript("crontab.scp");
 	safedelete(Scripts::Envoke );//= new cScpScript("envoke.scp");
 	safedelete(Scripts::Fishing );//= new cScpScript("fishing.scp");
-	safedelete(Scripts::Gumps );//= new cScpScript("gumps.scp");
 	safedelete(Scripts::HardItems );//= new cScpScript("harditems.scp");
 	safedelete(Scripts::House );//= new cScpScript("house.scp");
 

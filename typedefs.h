@@ -85,6 +85,7 @@ typedef       class cObject*		P_OBJECT;	//!< pointer to cObject
 typedef SI32				SERIAL;		//!< 32-bit serial number
 typedef UI32				TIMERVAL;
 typedef SI32				ACCOUNT;
+typedef SI32				FUNCIDX;				
 typedef std::vector<UI32>		UI32VECTOR;	//!< vector of unsigned 32 bits integers
 typedef std::vector<SERIAL>		SERIAL_VECTOR;	//!< vector of serials
 typedef slist<SERIAL>                   SERIAL_SLIST;	//!< slist of serials

@@ -33,10 +33,15 @@ using namespace std;
 */
 class cPacket
 {
+
 protected:
+
 	UI16 headerSize;	//!< size of the header, not all the packet if size are variable ( NOT SENDED OR RECEIVED. USE INTERNAL )
-	UI08 cmd;		//!< packet id
 	char* getBeginValid();
+
+public:
+	UI08 cmd;		//!< packet id
+
 
 } PACK_NEEDED;
 
@@ -54,7 +59,7 @@ protected:
 	void getUnicodeStringFromSocket( NXWSOCKET s, wstring* c, int& from, int size=INVALID ); 
 
 public:
-	void receive( NXWCLIENT ps );
+	virtual void receive( NXWCLIENT ps );
 } PACK_NEEDED;
 
 /*!
@@ -64,8 +69,8 @@ public:
 */
 class cServerPacket : public cPacket {
 public:
-	void send( NXWCLIENT ps );
-	void send( P_CHAR pc );
+	virtual void send( NXWCLIENT ps );
+	virtual void send( P_CHAR pc );
 
 } PACK_NEEDED;
 
@@ -1342,46 +1347,7 @@ public:
 
 //0x78 not yet
 
-/*
-class cSubPkg_DialogRisp {
-public:
-	UI16 model;
-	Color color;
 
-
-} ;
-*//*!
-\brief Open dialog box
-\author Endymion
-\since 0.83
-\note 0x7C
-*//*
-#define PKG_OPEN_DIALOG_BOX 0x7C;
-class cPacketOpenDialogBox : public cServerPacket {
-
-private:
-	UI16	size;
-
-public:
-
-	Serial	dialog;		//!< the serial of dialog ( echo'd back to the server in 7D )
-	UI16	menu;		//!< the menu ( echo'd back to the server in 7D )
-	UI16	x;			//!< x location
-private:
-	UI08	lenght;		//!< lenght of question
-public:
-	string	question;	//!< the question
-private:
-	UI08	n;			//!< number of responses
-public:
-	Color	color;		//!< color
-	UI08	flag;		//!< flag ( bitset )
-	UI08	highcolor;	//!< highlight color
-
-	cPacketUpdatePlayer();
-
-} PACK_NEEDED;
-*/
 
 #define PKG_RESPONSE_TO_DIALOG 0x7D;
 /*!
@@ -1394,11 +1360,11 @@ class cPacketResponseToDialog : public cClientPacket {
 
 public:
 
-	Serial	dialog;		//!< the dialog serial ( echoed back from 7C packet )
-	UI16	menu;		//!< the model id ( echoed back from 7C packet )
-	UI16	index;		//!< index of choice ( 1 based )
-	UI16	model;		//!< model of choice
-	Color	color;		//!< color
+	eSERIAL	serial;		//!< the dialog serial ( echoed back from 7C packet )
+	eUI16	id;		//!< the model id ( echoed back from 7C packet )
+	eUI16	index;		//!< index of choice ( 1 based )
+	eUI16	model;		//!< model of choice
+	eCOLOR	color;		//!< color
 
 	cPacketResponseToDialog();
 
@@ -1548,7 +1514,6 @@ public:
 	eUI16	y;		//!< y location (relative to upper left corner of the map, in pixels)
 
 	cPacketMap();
-	void send( NXWCLIENT ps );
 
 } PACK_NEEDED;
 
@@ -1572,7 +1537,6 @@ public:
 	eUI16   height;	//!< gump height in pixels
 
 	cPacketMapMessage();
-	void send( NXWCLIENT ps );
 
 } PACK_NEEDED;
 
@@ -1597,7 +1561,6 @@ class cPacketWalk : public cServerPacket {
 public:
 	eUI08   direction;	//!< direction
 	cPacketWalk();
-	void send( NXWCLIENT ps );
 
 } PACK_NEEDED;
 
@@ -1820,8 +1783,8 @@ private:
 	eUI16 size; //<! size
 public:
 
-	eSERIAL id; //!< the serial
-	eSERIAL gump; //!< gump serial
+	eSERIAL serial; //!< the serial
+	eSERIAL id; //!< gump serial
 	eUI32	x; //!< x location
 	eUI32	y; //!< x location
 
@@ -1867,8 +1830,8 @@ private:
 	eUI16	size;	//!< size
 public:
 
-	eSERIAL id; //!< the serial ( first Id in PKG_MENU )
-	eSERIAL gump; //!< gump serial (second Id in PKG_MENU )
+	eSERIAL serial; //!< the serial ( first Id in PKG_MENU )
+	eSERIAL id; //!< gump serial (second Id in PKG_MENU )
 	eUI32	buttonId; //!< which button pressed or 0 if closed
 
 private:
@@ -1886,11 +1849,13 @@ public:
 };
 
 
-typedef struct {
+typedef struct  {
+
 	eUI16	model; //!< model id number of shown icon ( if grey menu then always 0x00 as msb )
 	eCOLOR	color; //!< icon color
 //	eUI08 resp_length, //needed but managed into send, so not need var
 	std::string response;	
+
 } pkg_icon_list_menu_st;
 
 #define PKG_ICON_LIST_MENU 0x7C;
@@ -1906,8 +1871,8 @@ private:
 	eUI16 size; //<! size
 public:
 
-	eSERIAL id; //!< the serial
-	eUI16 gump; //!< gump serial
+	eSERIAL serial; //!< the serial
+	eUI16 id; //!< the gump
 private:
 	eUI08 question_length; //!< question length
 public:

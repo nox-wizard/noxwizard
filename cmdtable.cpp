@@ -19,6 +19,9 @@
 #include "race.h"
 #include "scp_parser.h"
 #include "commands.h"
+#include "addmenu.h"
+#include "telport.h"
+#include "accounts.h"
 
 // Includes command definitions
 #include "commands/tweaking.h"
@@ -494,8 +497,8 @@ cCommandTable::cCommandTable() {
     addGmCommand("SETFONT",         1, 31, CMD_TARGETHID1,  (CMD_DEFINE)&target_setfont);
     addGmCommand("APPETITE",        1, 6,  CMD_FUNC,        (CMD_DEFINE)&command_appetite);
 //BYTE-2
-    addGmCommand("WHOLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
-    addGmCommand("OFFLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
+//    addGmCommand("WHOLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
+//    addGmCommand("OFFLIST",         2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_wholist);
     addGmCommand("PLAYERLIST",      2, 0,  CMD_FUNC,        (CMD_DEFINE)&command_playerlist); // other dupes
     addGmCommand("PL",              2, 0,	 CMD_FUNC,        (CMD_DEFINE)&command_playerlist);
     addGmCommand("KILL",            2, 1,	 CMD_TARGET,	  (CMD_DEFINE)&target_kill);
@@ -541,7 +544,7 @@ cCommandTable::cCommandTable() {
     addGmCommand("FREEZE",          3, 1,  CMD_TARGET,      (CMD_DEFINE)&target_freeze);
     addGmCommand("UNFREEZE",        3, 2,  CMD_TARGET,      (CMD_DEFINE)&target_unfreeze);
 // 3.3 free!!
-    addGmCommand("GUMPMENU",        3, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpmenu);
+//    addGmCommand("GUMPMENU",        3, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpmenu);
     addGmCommand("TILEDATA",        3, 5,  CMD_TARGET,      (CMD_DEFINE)&target_tiledata);
     addGmCommand("RECALL",          3, 6,  CMD_TARGET,      (CMD_DEFINE)&target_recall);
     addGmCommand("MARK",            3, 7,  CMD_TARGET,      (CMD_DEFINE)&target_mark);
@@ -553,9 +556,9 @@ cCommandTable::cCommandTable() {
     addGmCommand("NPCCIRCLE",       3, 13, CMD_FUNC,        (CMD_DEFINE)&command_npccircle);
     addGmCommand("NPCWANDER",       3, 14, CMD_FUNC,        (CMD_DEFINE)&command_npcwander);
     addGmCommand("NPCRECTCODED",    3, 12, CMD_FUNC,        (CMD_DEFINE)&command_npcrectcoded);
-//    addGmCommand("TWEAK",           3, 15, CMD_TARGET,      (CMD_DEFINE)&target_tweak);
+    addGmCommand("TWEAK",			3, 15, CMD_FUNC,		(CMD_DEFINE)&command_tweak);
     addGmCommand("SBOPEN",          3, 16, CMD_TARGET,      (CMD_DEFINE)&target_sbopen);
- addGmCommand("SECONDSPERUOMINUTE", 3, 17, CMD_FUNC,        (CMD_DEFINE)&command_secondsperuominute);
+	addGmCommand("SECONDSPERUOMINUTE", 3, 17, CMD_FUNC,        (CMD_DEFINE)&command_secondsperuominute);
     addGmCommand("BRIGHTLIGHT",     3, 18, CMD_FUNC,        (CMD_DEFINE)&command_brightlight);
     addGmCommand("DARKLIGHT",       3, 19, CMD_FUNC,        (CMD_DEFINE)&command_darklight);
     addGmCommand("DUNGEONLIGHT",    3, 20, CMD_FUNC,        (CMD_DEFINE)&command_dungeonlight);
@@ -575,7 +578,7 @@ cCommandTable::cCommandTable() {
     addGmCommand("GMS",             4, 1,  CMD_FUNC,        (CMD_DEFINE)&command_gms);
     addGmCommand("SELL",            4, 2,  CMD_TARGET,      (CMD_DEFINE)&target_sell);
     addGmCommand("MIDI",            4, 3,  CMD_FUNC,        (CMD_DEFINE)&command_midi);
-    addGmCommand("GUMPOPEN",        4, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpopen);
+//    addGmCommand("GUMPOPEN",        4, 4,  CMD_FUNC,        (CMD_DEFINE)&command_gumpopen);
     addGmCommand("RESPAWN",         4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_respawn);
     addGmCommand("REGSPAWNALL",     4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_regspawnall);
     addGmCommand("REGSPAWNMAX",     4, 5,  CMD_FUNC,        (CMD_DEFINE)&command_regspawnmax);
@@ -1769,7 +1772,7 @@ void command_add(NXWSOCKET  s)
 		}
 	} else if (tnum==1)
 	{
-		itemmenu(s, 1);
+		itemmenu( s, 1 );
 	}
 	return;
 }
@@ -1968,17 +1971,14 @@ void command_shutdown(NXWSOCKET  s)
 			return;
 }
 
-void command_wholist(NXWSOCKET  s)
-// Brings up an interactive listing of online users.
-{
-	whomenu(s, 4);
-	return;
-}
-
+// List of all online player
 void command_playerlist(NXWSOCKET  s)
-{ // Same as wholist but has offline players...Ripper
-	playermenu(s, 4);
-	return;
+{ 
+	static AmxFunction* cmd = NULL;
+	if( cmd==NULL )
+		cmd= new AmxFunction( "command_playerlist" );
+	
+	cmd->Call( s );
 }
 
 void command_blt2(NXWSOCKET  s)
@@ -2324,15 +2324,6 @@ void command_readini(NXWSOCKET  s)
 	sysmessage(s, "noxwizard.ini is no more used. Please change and reload server.scp instead.");
 }
 
-void command_gumpmenu(NXWSOCKET  s)
-// (d) Opens the specified GUMP menu.
-{
-	if (tnum==2)
-	{
-		gumps::Menu(s, strtonum(1),NULL);
-	}
-}
-
 void command_cachestats(NXWSOCKET  s)
 // Display some information about the cache.
 {
@@ -2395,6 +2386,17 @@ void command_npcrectcoded(NXWSOCKET  s)
 	clicky[s]=-1;
 	target(s,0,1,0,73,"Select first corner of bounding box.");
 }
+
+
+void command_tweak( NXWSOCKET s )
+{
+	static AmxFunction* cmd = NULL;
+	if( cmd==NULL ) 
+		cmd = new AmxFunction( "command_tweak" );
+
+	cmd->Call( s );
+}
+
 
 void command_secondsperuominute(NXWSOCKET  s)
 // (d) Sets the number of real-world seconds that pass for each UO minute.
@@ -2484,13 +2486,6 @@ void command_midi(NXWSOCKET  s)
 			if (tnum==3) playmidi(s, strtonum(1), strtonum(2));
 			return;
 
-}
-
-void command_gumpopen(NXWSOCKET  s)
-// (h h) Opens the specified GUMP menu.
-{
-	if (tnum==3) 
-		gumps::Open(s, currchar[s], strtonum(1), strtonum(2));
 }
 
 // Forces a respawn.

@@ -15,6 +15,7 @@
 #ifndef __ACCOUNTS_H__
 #define __ACCOUNTS_H__
 
+#include "nxwcommn.h"
 #include "set.h"
 
 #define ADMIN_ACCOUNT 0

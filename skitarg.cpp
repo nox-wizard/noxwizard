@@ -15,6 +15,9 @@
 #include "tmpeff.h"
 #include "constants.h"
 #include "npcai.h"
+#include "debug.h"
+#include "srvparms.h"
+#include "addmenu.h"
 
 //Luxor: for AMX skills implementation
 #undef AMXINGOTMAKEMENU
@@ -28,8 +31,6 @@
 #undef AMXTANNERING
 #define AMXTANNERING "__nxw_sk_tannering"
 
-#include "debug.h"
-#include "srvparms.h"
 
 P_ITEM Check4Pack(NXWSOCKET  s)
 {
@@ -1406,14 +1407,14 @@ void Skills::AlchemyTarget(NXWSOCKET s)
 
     switch (pi->id())
     {
-		case 0x0F7B: itemmenu(s, 7021);break;   // Agility,
-		case 0x0F84: itemmenu(s, 7022);break;   // Cure, Garlic
-		case 0x0F8C: itemmenu(s, 7023);break;   // Explosion, Sulfurous Ash
-		case 0x0F85: itemmenu(s, 7024);break;   // Heal, Ginseng
-		case 0x0F8D: itemmenu(s, 7025);break;   // Night sight
-		case 0x0F88: itemmenu(s, 7026);break;   // Poison, Nightshade
-		case 0x0F7A: itemmenu(s, 7027);break;   // Refresh,
-		case 0x0F86: itemmenu(s, 7028);break;   // Strength,
+		case 0x0F7B: itemmenu( s, 7021 ); break;   // Agility,
+		case 0x0F84: itemmenu( s, 7022 ); break;   // Cure, Garlic
+		case 0x0F8C: itemmenu( s, 7023 ); break;   // Explosion, Sulfurous Ash
+		case 0x0F85: itemmenu( s, 7024 ); break;   // Heal, Ginseng
+		case 0x0F8D: itemmenu( s, 7025 ); break;   // Night sight
+		case 0x0F88: itemmenu( s, 7026 ); break;   // Poison, Nightshade
+		case 0x0F7A: itemmenu( s, 7027 ); break;   // Refresh,
+		case 0x0F86: itemmenu( s, 7028 ); break;   // Strength,
 		case 0x0E9B: break; // Mortar
 		default:
             sysmessage(s,TRANSLATE("That is not a valid reagent."));

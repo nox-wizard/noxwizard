@@ -13,6 +13,7 @@
 #define __BOATS_H__
 
 #include "nxwcommn.h"
+#include "muls.h"
 
 /*!
 \file

@@ -21,6 +21,9 @@
 #include "layer.h"
 #include "network.h"
 #include "set.h"
+#include "accounts.h"
+#include "jail.h"
+#include "nxw_utils.h"
 
 
 void cChar::setClient(NXWCLIENT client)
@@ -109,9 +112,9 @@ cChar::cChar( SERIAL ser ) : cObject()
 	reqPartySerial=INVALID;
 
 	race=INVALID;
-	customMenu = NULL;
+	custmenu=INVALID;
 	unicode = false; // This is set to 1 if the player uses unicode speech, 0 if not
-	account=-1;
+	account=INVALID;
 	setPosition( 100, 100, 0 );
 	setOldPosition( 0, 0, 0, 0 );
 	dir=0; //&0F=Direction

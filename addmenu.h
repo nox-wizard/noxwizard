@@ -16,6 +16,102 @@
 #define __ADDMENU_H
 
 
+#include "menu.h"
+#include "oldmenu.h"
+
+
+class cRawItem {
+
+public:
+
+    SI32 id;
+    COLOR color;
+    UI32 number;
+
+	cRawItem( std::string& s );
+	~cRawItem();
+
+};
+
+/*!
+\brief Class MakeItem
+*/
+class cMakeItem {
+
+public:
+
+    class cScriptCommand command;
+    SI32 skillToCheck;
+    SI32 minskill;
+    SI32 maxskill;
+    SI32 reqspell;
+	std::vector<cRawItem> reqitems;
+    SI32 mana, stam, hit;
+
+    
+	cMakeItem();
+	~cMakeItem();
+    bool checkReq( P_CHAR pc, bool inMenu = false );
+};
+
+cMakeItem* getcMakeItem( SERIAL n );
+
+class cNewAddMenu : public cBasicMenu 
+{
+
+	private:
+
+		SERIAL section;
+		std::vector< cScriptCommand > commands;
+		P_OLDMENU oldmenu;
+
+		void loadFromScript( P_CHAR pc = NULL );
+		bool checkShouldAdd (cScpEntry* entry, P_CHAR pc);
+		std::string cleanString( std::string s );
+
+	protected:
+		virtual cServerPacket* build();
+
+	public:
+		cNewAddMenu( SERIAL section, P_CHAR pc );
+		~cNewAddMenu();
+
+		virtual void cNewAddMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  );
+
+};
+
+
+void execMake( P_CHAR pc, int n );
+void showAddMenu( P_CHAR pc, int menu );
+
+/*!
+\brief Open a scripted menu
+\author Endymion
+*/
+inline void itemmenu( NXWSOCKET s, SI32 m )
+{
+	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
+	if( ISVALIDPC( pc ) )
+	{
+		showAddMenu( pc, m ); 
+	}
+}
+
+/*!
+\brief Open one of the gray GM Call menus
+\author Endymion
+*/
+inline void gmmenu( NXWSOCKET s, SI32 m )
+{
+	itemmenu( s, 7009+m );
+}
+
+
+
+/*
+
+
+
 struct RawItem {
     int id;
     int color;
@@ -25,7 +121,7 @@ struct RawItem {
 
 /*!
 \brief Class MakeItem
-*/
+*//*
 class MakeItem {
 public:
 	//static const int MAXREQITEM =8;
@@ -37,13 +133,15 @@ public:
     int reqspell;
     RawItem reqitem[8]; //no more than 8 items
     int mana, stam, hit;
-    MakeItem();
+
+    
+	MakeItem();
     bool checkReq(P_CHAR pc, bool inMenu = false);
 };
 
 
-MakeItem* getMakeItem(int n);
-void execMake(P_CHAR pc, int n);
+MakeItem* getMakeItem(int n);*/
+/*void execMake(P_CHAR pc, int n);
 void showAddMenu (P_CHAR pc, int menu);
-
+*/
 #endif

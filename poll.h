@@ -10,6 +10,8 @@
 #ifndef __CPOLL_
 #define __CPOLL_
 
+#include "gamedate.h"
+
 class cPoll
 {
 	public:

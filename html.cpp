@@ -10,6 +10,7 @@
 #include "nxwcommn.h"
 #include "version.h"
 #include "debug.h"
+#include "accounts.h"
 
 
 void offlinehtml()//HTML

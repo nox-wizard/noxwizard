@@ -21,13 +21,13 @@
 #include "set.h"
 #include "trigger.h"
 #include "magic.h"
-#include "nxwGump.h"
 #include "house.h"
 #include "targeting.h"
 #include "npcai.h"
 #include "layer.h"
 #include "commands.h"
 #include "tmpeff.h"
+#include "jail.h"
 
 //extern void tweakmenu(NXWSOCKET  s, SERIAL serial);
 extern void targetParty(NXWSOCKET  s);
@@ -1304,10 +1304,10 @@ static void InfoTarget(NXWSOCKET s, PKGx6C *pp) // rewritten to work also with m
         ConOut("Flags:%x\n", tile.flags);
         ConOut("Weight:%x\n", tile.weight);
         ConOut("Layer:%x\n", tile.quality);
-        ConOut("Anim:%lx\n", tile.animid);
-        ConOut("Unknown1:%lx\n", tile.unknown);
-        ConOut("Unknown2:%x\n", tile.unknown2);
-        ConOut("Unknown3:%x\n", tile.unknown3);
+        ConOut("Anim:%lx\n", tile.animation);
+        ConOut("Unknown1:%lx\n", tile.unk);
+        ConOut("Unknown2:%x\n", tile.unk2);
+        ConOut("Unknown3:%x\n", tile.unk3);
         ConOut("Height:%x\n", tile.height);
         ConOut("Name:%s\n", tile.name);
     }

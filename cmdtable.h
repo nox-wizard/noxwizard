@@ -207,7 +207,7 @@ CMD_HANDLER(command_send);
 CMD_HANDLER(command_showtime);
 CMD_HANDLER(command_settime);
 CMD_HANDLER(command_shutdown);
-CMD_HANDLER(command_wholist);
+//CMD_HANDLER(command_wholist);
 CMD_HANDLER(command_playerlist);
 CMD_HANDLER(command_blt2);
 CMD_HANDLER(command_sfx);
@@ -240,7 +240,6 @@ CMD_HANDLER(command_set);
 CMD_HANDLER(command_temp);
 CMD_HANDLER(command_addnpc);
 CMD_HANDLER(command_readini);
-CMD_HANDLER(command_gumpmenu);
 CMD_HANDLER(command_cachestats);
 CMD_HANDLER(command_npcrect);
 CMD_HANDLER(command_npccircle);
@@ -257,7 +256,6 @@ CMD_HANDLER(command_setshoprestockrate);
 /* CMD_HANDLER(command_who);
 CMD_HANDLER(command_gms); */
 CMD_HANDLER(command_midi);
-CMD_HANDLER(command_gumpopen);
 CMD_HANDLER(command_respawn);
 CMD_HANDLER(command_regspawnall);
 CMD_HANDLER(command_regspawnmax);
@@ -318,6 +316,7 @@ CMD_HANDLER(command_sysm);
 CMD_HANDLER(command_reloadracescript);
 // SPARHAWK npcrect for small controlled npc's, stores bound info compressed into FX1 & FX2
 CMD_HANDLER(command_npcrectcoded);
+CMD_HANDLER(command_tweak);
 
 /* all defined target commands */
 TAR_HANDLER(target_use);

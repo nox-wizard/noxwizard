@@ -21,6 +21,191 @@
 #include "commands.h"
 #include "tmpeff.h"
 
+
+
+cScriptCommand::cScriptCommand( )
+{
+}
+
+cScriptCommand::cScriptCommand( std::string command, std::string param )
+{
+	this->command=command;
+	this->param=param;
+}
+
+cScriptCommand::~cScriptCommand( )
+{
+	
+}
+
+void cScriptCommand::execute( NXWSOCKET s )
+{
+	if( s<0 )
+		return;
+	
+	P_CHAR pc= pointers::findCharBySerial( currchar[s] );
+	VALIDATEPC( pc );
+
+	strupr(command);
+	strupr(param);
+
+	if ( command == "GMMENU" ) {
+		gmmenu(s, str2num(param));
+		return;
+	//Luxor: Makemenu MUST be before Menu, or a serious bug occurs!
+	} else if ( command == "MAKEMENU" ) {
+		Skills::MakeMenu(s, str2num(param), pc->making);
+		return;
+	} else if ( (SI32)command.find("MENU") != -1 ) {
+		ConOut("execute command itemmenu\n");
+		itemmenu( s, str2num(param) );
+		return;
+	} else if ( command == "WEBLINK" ) {
+		weblaunch(s, param.c_str());
+		return;
+	} else if ( command == "SYSMESSAGE" ) {
+		sysmessage(s, param.c_str());
+		return;
+	} else if ( command == "GMPAGE" ) {
+		Commands::GMPage(s, param);
+		return;
+	} else if ( command == "CPAGE" ) {
+		Commands::CPage(s, param);
+		return;
+	} else if ( command == "VERSION" ) {
+		sysmessage(s, idname);
+		return;
+	} else if ( command == "ADDITEM" ) {
+
+		std::string itemnum, amount;
+		splitLine( param, itemnum, amount );
+		int am = ( amount != "" )?  str2num( amount ) : INVALID; //ndEndy defined amount
+		
+
+		#ifndef __NEWMAKESYS
+		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
+		#endif
+			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
+		#ifndef __NEWMAKESYS
+		}
+		else {
+			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(param),pc->making,am);
+		}
+		#endif
+		return;
+	} else if ( command == "BATCH" ) {
+		executebatch=str2num(param);
+		return;
+	} else if ( command == "INFORMATION" ) {
+		sysmessage(s, TRANSLATE("Connected players [%i out of %i accounts] Items [] Characters []"),
+			now,Accounts->Count());
+		return;
+	} else if ( command == "NPC" ) {
+		addmitem[s]=str2num(param);
+		char tstring[1024];
+		sprintf(tstring, "Select location for NPC. [Number: %i]", addmitem[s]);
+		target(s, 0, 1, 0, 27, tstring);
+		return;
+	} else if ( command == "NOP" ) {
+	    return;
+	} else if ( command == "POLY" ) {
+		int tmp=hex2num(param);
+		pc->SetBodyType(tmp);
+		pc->SetOldBodyType(tmp);
+		pc->teleport();
+		return;
+	} else if ( command == "SKIN" ) {
+		int tmp=hex2num(param);
+		pc->setSkinColor(tmp);
+		pc->setOldSkinColor(tmp);
+		pc->teleport();
+		return;
+	} else if ( command == "LIGHT" ) {
+		worldfixedlevel=hex2num(param);
+		if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
+		else setabovelight(worldcurlevel);
+
+		return;
+
+	} else if ( command == "GCOLLECT" ) {
+		gcollect();
+		return;
+	} else if ( command == "GOPLACE" ) {
+		int tmp=str2num(param);
+		Commands::MakePlace (s, tmp);
+		if (addx[s]!=0) {
+			pc->MoveTo( addx[s],addy[s],addz[s] );
+			pc->teleport();
+		}
+		return;
+	} else if ( command == "CREATETRACKINGMENU" ) {
+		Skills::CreateTrackingMenu(s, str2num(param));
+		return;
+	} else if ( command == "TRACKINGMENU" ) {
+		Skills::TrackingMenu(s, str2num(param));
+		return;
+	} else if ( command == "GRINDPOTION" ) {
+		int type = str2num(param);
+		int sub = type % 10;
+		type /= 10 ;
+		Skills::DoPotion(s, type, sub, pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s])));
+	} else if ( command == "WRITESCROLL" ) {
+		TellScroll( "new xan inscription,sorry :P", s, str2num(param) );
+	} else if ( command == "ADDBYID" ) {
+		if (s<=INVALID) return;
+		P_ITEM pb = pc->getBackpack();
+		if (!pb) return;
+
+		UI32 i = param.find(' ');
+		if ( i == (UI32)-1 )
+			return;
+
+		std::string p(param.begin()+i+1, param.end());
+		param.erase(param.begin()+i, param.end());
+
+		P_ITEM pi = item::addByID (str2num(param), 1, p.c_str(), 0, 100, 100, 100);
+		if (pi==NULL) return;
+		pi->setContSerial( pb->getSerial32() );
+		pi->SetRandPosInCont(pb);
+		pi->Refresh();
+	} else if ( command == "@CALL" ) {
+		AmxFunction::g_prgOverride->CallFn(param.c_str());
+	} else if ( command == "@RUN" ) {
+		AmxProgram *prg = new AmxProgram(param.c_str());
+		prg->CallFn(INVALID);
+		safedelete(prg);
+	} else if ( command == "MAKE" ) {
+		execMake(pc, atoi(param.c_str()));
+	} else {
+	    ErrOut("script command syntax error : unknown command %s", command.c_str());
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void location2xyz(int loc, int& x, int& y, int& z)
 {
 	int  loopexit=0;
@@ -408,147 +593,8 @@ void endmessage(int x) // If shutdown is initialized
 */
 void scriptcommand (NXWSOCKET s, std::string script1, std::string script2) // Execute command from script
 {
-        if (s < 0) return; //Luxor
-        int cc=currchar[s];
-	P_CHAR pc=MAKE_CHAR_REF(cc);
-	VALIDATEPC( pc );
-	char tstring[1024];
-	int tmp ;
-	strupr(script1);
-	strupr(script2);
-
-
-	if ( script1 == "GMMENU" ) {
-		gmmenu(s, str2num(script2));
-		return;
-	//Luxor: Makemenu MUST be before Menu, or a serious bug occurs!
-	} else if ( script1 == "MAKEMENU" ) {
-		Skills::MakeMenu(s, str2num(script2), pc->making);
-		return;
-	} else if ( (SI32)script1.find("MENU") != -1 ) {
-		itemmenu(s, str2num(script2));
-		return;
-	} else if ( script1 == "WEBLINK" ) {
-		weblaunch(s, script2.c_str());
-		return;
-	} else if ( script1 == "SYSMESSAGE" ) {
-		sysmessage(s, script2.c_str());
-		return;
-	} else if ( script1 == "GMPAGE" ) {
-		Commands::GMPage(s, script2);
-		return;
-	} else if ( script1 == "CPAGE" ) {
-		Commands::CPage(s, script2);
-		return;
-	} else if ( script1 == "VERSION" ) {
-		sysmessage(s, idname);
-		return;
-	} else if ( script1 == "ADDITEM" ) {
-
-		std::string itemnum, amount;
-		splitLine( script2, itemnum, amount );
-		int am = ( amount != "" )?  str2num( amount ) : INVALID; //ndEndy defined amount
-		
-
-		#ifndef __NEWMAKESYS
-		if (pc->IsGMorCounselor()) { //Luxor bug fix for 'add command
-		#endif
-			P_ITEM pi = item::CreateFromScript( (char*)itemnum.c_str(), pc->getBackpack(), am );
-		#ifndef __NEWMAKESYS
-		}
-		else {
-			P_ITEM pi = Skills::MakeMenuTarget(s,str2num(script2),pc->making,am);
-		}
-		#endif
-		return;
-	} else if ( script1 == "BATCH" ) {
-		executebatch=str2num(script2);
-		return;
-	} else if ( script1 == "INFORMATION" ) {
-		sprintf(tstring, TRANSLATE("Connected players [%i out of %i accounts] Items [] Characters []"),
-			now,Accounts->Count());
-
-		sysmessage(s, tstring);
-		return;
-	} else if ( script1 == "NPC" ) {
-		addmitem[s]=str2num(script2);
-		sprintf(tstring, "Select location for NPC. [Number: %i]", addmitem[s]);
-		target(s, 0, 1, 0, 27, tstring);
-		return;
-	} else if ( script1 == "NOP" ) {
-	    return;
-	} else if ( script1 == "POLY" ) {
-		tmp=hex2num(script2);
-		pc->SetBodyType(tmp);
-		pc->SetOldBodyType(tmp);
-		pc->teleport();
-		return;
-	} else if ( script1 == "SKIN" ) {
-		tmp=hex2num(script2);
-		pc->setSkinColor(tmp);
-		pc->setOldSkinColor(tmp);
-		pc->teleport();
-		return;
-	} else if ( script1 == "LIGHT" ) {
-		worldfixedlevel=hex2num(script2);
-		if (worldfixedlevel!=255) setabovelight(worldfixedlevel);
-		else setabovelight(worldcurlevel);
-
-		return;
-
-	} else if ( script1 == "GCOLLECT" ) {
-		gcollect();
-		return;
-	} else if ( script1 == "GOPLACE" ) {
-		tmp=str2num(script2);
-		Commands::MakePlace (s, tmp);
-		if (addx[s]!=0) {
-			pc->MoveTo( addx[s],addy[s],addz[s] );
-			pc->teleport();
-		}
-		return;
-	} else if ( script1 == "CREATETRACKINGMENU" ) {
-		Skills::CreateTrackingMenu(s, str2num(script2));
-		return;
-	} else if ( script1 == "TRACKINGMENU" ) {
-		Skills::TrackingMenu(s, str2num(script2));
-		return;
-	} else if ( script1 == "GRINDPOTION" ) {
-		int type = str2num(script2);
-		int sub = type % 10;
-		type /= 10 ;
-		Skills::DoPotion(s, type, sub, pointers::findItemBySerial(calcserial(addid1[s], addid2[s], addid3[s], addid4[s])));
-	} else if ( script1 == "WRITESCROLL" ) {
-		TellScroll( "new xan inscription,sorry :P", s, str2num(script2) );
-	} else if ( script1 == "ADDBYID" ) {
-		if (s<=INVALID) return;
-		P_ITEM pb = pc->getBackpack();
-		if (!pb) return;
-
-		UI32 i = script2.find(' ');
-		if ( i == (UI32)-1 )
-			return;
-
-		std::string p(script2.begin()+i+1, script2.end());
-		script2.erase(script2.begin()+i, script2.end());
-
-		P_ITEM pi = item::addByID (str2num(script2), 1, p.c_str(), 0, 100, 100, 100);
-		if (pi==NULL) return;
-		pi->setContSerial( pb->getSerial32() );
-		pi->SetRandPosInCont(pb);
-		pi->Refresh();
-	} else if ( script1 == "@CALL" ) {
-		AmxFunction::g_prgOverride->CallFn(script2.c_str());
-	} else if ( script1 == "@RUN" ) {
-		AmxProgram *prg = new AmxProgram(script2.c_str());
-		prg->CallFn(INVALID);
-		safedelete(prg);
-	} else if ( script1 == "MAKE" ) {
-		if (s<=INVALID) return;
-		execMake(pc, atoi(script2.c_str()));
-	} else {
-	    ErrOut("script command syntax error : unknown command %s", script1.c_str());
-	}
+	cScriptCommand command( script1, script2 );
+	command.execute( s );
 }
 
 void batchcheck(int s) // Do we have to run a batch file

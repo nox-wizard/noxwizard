@@ -14,6 +14,13 @@
 #include "commands.h"
 #include "packets.h"
 #include "basics.h"
+#include "menu.h"
+#include "addmenu.h"
+#include "accounts.h"
+#include "party.h"
+#include "calendar.h"
+#include "dragdrop.h"
+#include "speech.h"
 
 //#define USE_MTHREAD_SEND
 
@@ -1828,7 +1835,8 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_DIALOG_RESPONSE:
-					choice(s);
+					//choice(s);
+					Menus.handleMenu( ps ); 
 					break;
 
 				case PACKET_DYEITEM:
@@ -1928,7 +1936,9 @@ void cNetwork::GetMsg(int s) // Receive message from client
 					break;
 
 				case PACKET_GUMPMENU_SELECT:
-					gumps::Button(	s,
+					Menus.handleMenu( ps ); 
+					
+					/*gumps::Button(	s,
 							LongFromCharPtr(buffer[s] +11),
 							buffer[s][3],
 							buffer[s][4],
@@ -1936,10 +1946,11 @@ void cNetwork::GetMsg(int s) // Receive message from client
 							buffer[s][6],
 							LongFromCharPtr(buffer[s] +7),
 							buffer[s][22]);
+					*/
 					break;
 
 				case PACKET_GUMP_TEXTENTRY_INPUT:
-					gumps::Input(s);
+					//gumps::Input(s);
 					break;
 
 				case PACKET_RESURRECT_CHOICE:

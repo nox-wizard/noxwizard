@@ -15,6 +15,7 @@
 #include "sndpkg.h"
 #include "commands.h"
 #include "layer.h"
+#include "addmenu.h"
 
 static inline void _do_target(NXWSOCKET s, TARGET_S *ts) {
 	target(s, ts->a1, ts->a2, ts->a3, ts->a4, ts->txt);
@@ -67,7 +68,7 @@ namespace Commands
 				(*((CMD_EXEC)cmd->cmd_extra)) (s);
 				break;
 			case CMD_ITEMMENU:
-				itemmenu(s, (int)(reinterpret_cast<long>(cmd->cmd_extra)));
+				itemmenu( s, (SI32)(reinterpret_cast<long>(cmd->cmd_extra)));
 				break;
 			case CMD_TARGET:
 				_do_target(s, (TARGET_S *)cmd->cmd_extra);

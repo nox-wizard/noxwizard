@@ -12,6 +12,7 @@
 
 #include "nxwcommn.h"
 #include "scp_parser.h"
+#include "gamedate.h"
 
 namespace Organisation
 {
@@ -113,7 +114,7 @@ namespace Organisation
 			GUILDID			id			;
 			std::string		name			;
 			std::string		abbreviation		;
-			cGameDate		dateCreated		;
+			class cGameDate		dateCreated		;
 	};
 
 }

@@ -15,6 +15,24 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+
+
+class cScriptCommand {
+
+	public:
+
+		std::string command;
+		std::string param;
+
+		cScriptCommand( );
+		cScriptCommand( std::string command, std::string param );
+		~cScriptCommand();
+
+		void execute( NXWSOCKET s );
+
+};
+
+
 void npcact(int s);
 int calcSerFromChar(int ser);
 int checkBoundingBox(int xPos, int yPos, int fx1, int fy1, int fz1, int fx2, int fy2);

@@ -12,9 +12,9 @@
 #include "sndpkg.h"
 #include "debug.h"
 #include "race.h"
-#include "nxwGump.h"
 #include "house.h"
 #include "commands.h"
+#include "addmenu.h"
 
 #define AMXGUMPFUNC "__nxwGumps"
 
@@ -27,43 +27,39 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	P_CHAR pc=MAKE_CHAR_REF(currchar[s]);
 	VALIDATEPC( pc );
 	
-	P_CHAR pc_c;
 
-	char temp[TEMP_STR_SIZE]; //xan -> this overrides the global temp var
-	int /*j=-1,*/i,serhash;
+/*ndEndy REMOVED LIST
 
-	/*
-	ConOut("Button: datasize %i\n", ShortFromCharPtr(buffer[s] +1) );
-	for (i = 0; i < ShortFromCharPtr(buffer[s] +1); ++i)
-	{
-		if ( ( buffer[s][i] >= 'a' && buffer[s][i] <= 'z' ) ||
-				 ( buffer[s][i] >= 'A' && buffer[s][i] <= 'Z' ) )
-			ConOut("%c ", buffer[s][i]);
-		else
-			ConOut("%X ", buffer[s][i]);
-	}
-	*/
+  RACE
+  CUSTMENU
+  HOUSE
+  COMMANDs
+  COMMANDs UNUSED i think
 
-	P_ITEM pHouseSign, pHouse, pHouseKey;
-	SERIAL	serial, housesign_serial, house_serial;
+*/
 
+  
+	
+	
+	/* ndEndy RACE - REMOVED NOW
 	// Sparhawk: 	race gumps, all race gumps are currently hardcoded
 	//
 	if ( type >= 100 && type <= 129 )
 	{
 		Race::handleButton( s, type, button );
 		return;
-	}
+	}*/
 
+	/*ndEndy REMOVED NOW
 	//<XAN> : CustmMenus
 	if (type==130) {
 		int seed = tser1+(tser2<<8)+(tser3<<16)+(tser4<<24);
 		if (pc->customMenu != NULL)
-			pc->customMenu->buttonSelected(s, button, seed /*legacy?*/ );
+			pc->customMenu->buttonSelected(s, button, seed  );
 		return;
-	}
-	//</XAN>
+	}*/
 
+	/*ndEndy Spar gumps tweak, cstat and user
 	if(button>10000) {
 		i=button-10000;
 		gumps::Menu(s, i,NULL);
@@ -90,14 +86,15 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 				return;
 			default		:
 				break;
-		}*/
+		}*//*
 		//
 		// Luxor: new gump API activated also for users
 		//
 		if ( nxwGump::handleGump( pc, buffer[s] ) )
 			return;
 	}
-
+*/
+	/* ndEndy COMMANDs - HOUSE
 	switch (type)
 	{
 	case 1: //Tweaking an Item
@@ -140,6 +137,8 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 	/*if (type==3) //Townstones
 		j = calcItemFromSer( serial );*/ // townstones taken out by LB
 
+		
+/*ndEndy COMMAND UNUSED
 	switch (type)
 	{
 	case 1: // Item
@@ -354,6 +353,8 @@ void gumps::Button(int s, UI32 button, char tser1, char tser2, char tser3, char 
 			AmxFunction::g_prgOverride->CallFn( AmxFunction::g_prgOverride->getFnOrdinal(AMXGUMPFUNC),s, type-200, button, radio);
 		break;
 	}
+
+  */
 }
 
 void gumps::Input(int s)
@@ -1497,7 +1498,7 @@ void choice(int s) // Choice from GMMenu, Itemmenu or Makemenu received
 	{
 		if (im_choice(s, main, sub)==0) return;
 	}
-*/
+*//*
 	else if (main<ITEMMENUOFFSET) // GM Menus
 	{
 	}
@@ -1508,8 +1509,7 @@ void choice(int s) // Choice from GMMenu, Itemmenu or Makemenu received
 	}// PolyMorph spell menu (scriptable) by AntiChrist (9/99)
 	else if(main>=POLYMORPHMENUOFFSET && main<POLYMORPHMENUOFFSET+50)
 	{
-/*		Magic->Polymorph(s,main,sub);
-*/		WarnOut("--Polymorph disabled due to magic rewrite--\n");
+		WarnOut("--Polymorph disabled due to magic rewrite--\n");
 		return;
 	}
 	else if(main==CUSTOMICONLISTVALUE)
@@ -1604,25 +1604,7 @@ void choice(int s) // Choice from GMMenu, Itemmenu or Makemenu received
 	}
 	while ((script1[0]!='}')&&(i!=sub) && (++loopexit < MAXLOOPS));
 
-	safedelete(iter);
-}
-
-void gmmenu(int s, int m) // Open one of the gray GM Call menus
-{
-	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
-	if ( ISVALIDPC( pc ) )
-	{
-		showAddMenu ( pc, 7009+m);
-	}
-}
-
-void itemmenu(int s, int m) // Menus for item creation
-{
-	P_CHAR pc = MAKE_CHAR_REF( currchar[s] );
-	if ( ISVALIDPC( pc ) )
-	{
-		showAddMenu( pc, m);
-	}
+	safedelete(iter);*/
 }
 
 void gumps::Open(int s, int i, int num1, int num2)

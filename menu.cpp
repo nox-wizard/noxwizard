@@ -8,8 +8,9 @@
     -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 #include "menu.h"
+#include "amx/amxwraps.h"
 
-cMenus menus;
+cMenus Menus;
 
 #define OPTIONS2BITSET( MOVE, CLOSE, DISPOSE ) \
 	( MOVE*MOVEABLE | CLOSE*CLOSEABLE | DISPOSE*DISPOSEABLE  ) \
@@ -21,7 +22,7 @@ cMenus menus;
 */
 cMenus::cMenus()
 {
-	current_serial=INVALID;
+	current_serial=0;
 }
 
 
@@ -40,26 +41,16 @@ cMenus::~cMenus()
 \param menu the menu
 \return the serial of new menu
 */
-SERIAL cMenus::createMenu( P_MENU menu )
+P_MENU cMenus::insertMenu( P_MENU menu )
 {
 	menu->serial=++current_serial;
 	menuMap.insert( make_pair( menu->serial, menu ) );
-	return menu->serial;
+	ConOut("insertMenu %i\n", menu->serial );
+	return menu;
 }
 
 
-LOGICAL	cMenus::deleteMenu( SERIAL menu )
-{
-	MENU_MAP::iterator iter( menuMap.find( menu ) );
-	if( iter != menuMap.end() )
-	{
-		menuMap.erase( iter );
-		return true;
-	}
-	return false;
-}
-
-P_MENU cMenus::selectMenu( SERIAL menu )
+P_MENU cMenus::getMenu( SERIAL menu )
 {
 	MENU_MAP::iterator iter( menuMap.find( menu ) );
 	if( iter != menuMap.end() )
@@ -67,7 +58,7 @@ P_MENU cMenus::selectMenu( SERIAL menu )
 	return NULL;	
 }
 
-LOGICAL cMenus::showMenu( SERIAL menu, P_CHAR pc )
+bool cMenus::showMenu( SERIAL menu, P_CHAR pc )
 {
 	MENU_MAP::iterator iter( menuMap.find( menu ) );
 	if( iter != menuMap.end() )
@@ -76,6 +67,56 @@ LOGICAL cMenus::showMenu( SERIAL menu, P_CHAR pc )
 		return true;
 	}
 	return false;	
+}
+
+inline bool isIconList( NXWSOCKET s ) 
+{
+	return isIconList( buffer[s][0] );
+}
+
+inline bool isIconList( UI08 cmd )
+{
+	return cmd==PKG_RESPONSE_TO_DIALOG;
+}
+
+/*!
+\brief 
+\author Endymion
+\return true if menu need delete
+*/
+bool cMenus::removeFromView( P_MENU menu, SERIAL chr )
+{
+	
+	menu->whoSeeThis.erase( chr );
+
+	std::map<SERIAL, std::set<SERIAL> >::iterator i( whoSeeWhat.find( menu->serial ) );
+	if( i!=whoSeeWhat.end() ) {
+		i->second.erase( chr );
+
+		if( i->second.empty() )
+			whoSeeWhat.erase( i );
+	}
+
+	return menu->whoSeeThis.empty();
+}
+
+SERIAL cMenus::removeMenu( SERIAL menu, P_CHAR pc )
+{
+
+	MENU_MAP::iterator iter( menuMap.find( menu ) );
+	if( iter != menuMap.end() )
+	{		
+		bool needDelete = removeFromView( iter->second, pc->getSerial32() );
+
+		if( needDelete ) {
+			delete iter->second;
+			menuMap.erase( iter );
+			return INVALID;
+		}
+		else
+			return menu;
+	}
+	return INVALID;
 }
 
 LOGICAL cMenus::handleMenu( NXWCLIENT ps )
@@ -87,191 +128,144 @@ LOGICAL cMenus::handleMenu( NXWCLIENT ps )
 	P_CHAR pc=ps->currChar();
 	VALIDATEPCR( pc, false );
 
-	cPacketMenuSelection p;
-	p.receive( ps );
+	
+	cClientPacket* p =  NULL;
 
-	newAmxEvent("gui_handleResponse")->Call( p.id.get(), p.gump.get(), p.buttonId.get(), pc->getSerial32() );
+	SERIAL serial;
+	if( isIconList( ps->toInt() ) ) {
+		p = new cPacketResponseToDialog();
+		p->receive( ps );
+		serial = ((cPacketResponseToDialog*)p)->serial.get();
+	}
+	else {
+		p = new cPacketMenuSelection();
+		p->receive( ps );
+		serial = ((cPacketMenuSelection*)p)->serial.get();
+	}
+
+	ConOut("handelMenu %i\n", serial );
+
+	P_MENU menu = Menus.getMenu( serial );
+	VALIDATEPMR( menu, false );
+
+	SERIAL menu_serial = menu->serial;
+
+	menu->handleButton( ps, p );
+
+	removeMenu( menu_serial, pc );		
+	
 	return true;
-/*	if( data[0] == 0xB1 )
-	{
-		char		text[256];
-		UI32		textIndex;
-//		UI32		dataSize		= static_cast<int>(data[1]<<8)|static_cast<int>(data[2]);
-		UI32 		gumpSerial	= static_cast<int>(data[3]<<24)|static_cast<int>(data[4]<<16)|static_cast<int>(data[5]<<8)|static_cast<int>(data[6]);
-		UI32		gump				= static_cast<int>(data[7]<<24)|static_cast<int>(data[8]<<16)|static_cast<int>(data[9]<<8)|static_cast<int>(data[10]);
-		UI32 		button			= static_cast<int>(data[13]<<8)|static_cast<int>(data[14]);
-		LOGICAL	hasRadio		= data[18] == 1 ? true : false;
-		SI32		radioButton;
-		UI32		fieldCount;
-		UI32		fieldOffset;
-		UI32		fieldLength;
-		UI32		fieldId;
-		if( hasRadio )
-		{
-			radioButton = static_cast<int>(data[22]); // probably data[19]...data[22]
-			fieldCount	= static_cast<int>(data[26]); // probably data[23]...data[26]
-			fieldOffset	= 27;
-		}
-		else
-		{
-			radioButton	= INVALID;
-			fieldCount	= static_cast<int>(data[22]);
-			fieldOffset	= 23;
-		}
-		responseMap.clear();
-		while( fieldCount )
-		{
-			fieldId	  = static_cast<int>(data[fieldOffset]<<8) | static_cast<int>(data[++fieldOffset]);
-			//fieldLength = static_cast<int>(data[++fieldOffset]<<8) | static_cast<int>(data[++fieldOffset]);
-			//FIX by Riekr
-			fieldLength = static_cast<int>(data[++fieldOffset])<<8; 
-			fieldLength |= static_cast<int>(data[++fieldOffset]); 
 
-			//
-			// Transform unicode text to text
-			//
-			for (textIndex = 0; textIndex < fieldLength; ++textIndex)
-			{
-				fieldOffset += 2;
-				text[textIndex] = data[fieldOffset];
-			}
-			text[textIndex] = 0;
-			addResponse( fieldId, text );
-			++fieldOffset;
-			--fieldCount;
-		}
-	newAmxEvent("gui_handleResponse")->Call( gump, gumpSerial, button, pc->getSerial32() );
-	return true;
-	}
-	else*/
-}
-
-/*LOGICAL cMenu::selectResponse( UI32 fieldId, std::string &value )
-{
-	map<UI32, std::string >::iterator iter( responseMap.find( fieldId ) );
-	if( iter != responseMap.end() )
-	{
-		value = iter->second;
-		return true;
-	}
-	else
-		return false;
-}*/
-
-/*LOGICAL	cMenu::addResponse( UI32 fieldId, std::string value )
-{
-	if( responseMap.find( fieldId ) != responseMap.end() )
-		return false;
-	else
-	{
-		responseMap.insert( make_pair( fieldId, value ) );
-		return true;
-	}
-}*/
-
-
-
-
-
-
-cBasicMenu::cBasicMenu( )
-{
-	serial=UINVALID;
-	id=UINVALID;
 }
 
 
-cBasicMenu::cBasicMenu( SERIAL menu, UI32 id )
+
+
+
+
+
+cBasicMenu::cBasicMenu( MENU_TYPE id )
 {
-	serial=menu;
-	id=id;
+	serial=INVALID;
+	this->id=id;
+	callback=NULL;
 }
 
 cBasicMenu::~cBasicMenu()
 {
+	if( callback!=NULL )
+		delete callback;
 }
 
 
-void cBasicMenu::setCallBack( const std::string& arg )
+void cBasicMenu::setCallBack( std::string& arg )
 {
+	if( callback!=NULL )
+		safedelete( callback );
+
 	callback = new AmxFunction( const_cast< char* >( arg.c_str() ) );
 }
 
 void cBasicMenu::setCallBack( int fn )
 {
+	if( callback!=NULL )
+		safedelete( callback );
+
 	callback = new AmxFunction( fn );
 }
 
-void cBasicMenu::setId( const UI32 arg )
-{
-	id = arg ;
-}
-
-void cBasicMenu::handleButton( const NXWSOCKET socket, const UI32 button )
+void cBasicMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
 }
 
 void cBasicMenu::show( P_CHAR pc )
 {
+	VALIDATEPC( pc );
+
+	NXWCLIENT ps=pc->getClient();
+	if( ps==NULL ) return;
+
+	cServerPacket* packet = build();
+	packet->send( ps );
+	delete packet;
+
+	Menus.whoSeeWhat[ pc->getSerial32() ].insert( serial );
+	whoSeeThis.insert( pc->getSerial32() );
+}
+
+cServerPacket* cBasicMenu::createPacket()
+{
+	return NULL;
+}
+
+cServerPacket* cBasicMenu::build()
+{
+	return createPacket();
 }
 
 
 
 
-cMenu::cMenu( ) : cBasicMenu( )
-{
-	setX(UINVALID);
-	setY(UINVALID);
-	setOptions( 0 );
-}
 
-cMenu::cMenu( SERIAL menu, UI32 id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose ) : cBasicMenu( menu, id )
+
+
+
+
+cMenu::cMenu( MENU_TYPE id, UI32 x, UI32 y, bool canMove, bool canClose, bool canDispose ) : cBasicMenu( id )
 {
-	setX( x );
-	setY( y );
-	setOptions( OPTIONS2BITSET(canMove, canClose, canDispose) );
+	this->x = x;
+	this->y = y;
+
+	moveable=closeable=disposeable=true;
+
+	setMoveable( canMove );
+	setCloseable( canClose );
+	setDisposeable( canDispose );
+
+	buttonCurrent = 1;
+	pageCount=1;
+	pageCurrent=1;
+
+	for( int i=0; i<4; ++i ) {
+		buffer[i] = INVALID;
+		buffer_str[i] = NULL;
+	}
+
 }
 
 cMenu::~cMenu()
 {
-	
+	for( int i=0; i<4; ++i )	
+		if( buffer_str[i]!=NULL )
+			delete buffer_str[i];
 }
 
-void cMenu::setX( const UI32 arg )
-{
-	x = arg;
-}
-
-void cMenu::setY( const UI32 arg )
-{
-	y = arg;
-}
-
-void cMenu::setOptions( const UI08 options )
-{
-	this->options=options;
-}
-
-void cMenu::setOptions( const UI08 options, const bool value )
-{
-	if( value )
-		this->options|=options;
-	else 
-		this->options&=~options;
-}
-
-
-
-
-
-
-
-void cMenu::addCommand( const std::string& command )
+void cMenu::addCommand( std::string& command )
 {
 	commands.push_back( command );
 }
 
-void cMenu::addCommand( char const *formatStr, ... )
+void cMenu::addCommand( char* formatStr, ... )
 {
 	char temp[TEMP_STR_SIZE];
 	
@@ -283,6 +277,17 @@ void cMenu::addCommand( char const *formatStr, ... )
 	addCommand( std::string( temp ) );
 }
 
+void cMenu::removeCommand( std::string& command )
+{
+	std::vector< std::string >::iterator iter( commands.begin() ), end( commands.end() );
+	for( ; iter!=end; iter++ ) {
+		if( (*iter)==command ) {
+			commands.erase( iter );
+			return;
+		}
+	}
+}
+
 
 UI32 cMenu::addString( wstring& u )
 {
@@ -290,19 +295,51 @@ UI32 cMenu::addString( wstring& u )
 	return texts.size()-1;
 }
 
-
-
-void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 returnCode, UI32 page )
+void cMenu::clear()
 {
-	addCommand( "{button %d %d %d %d %d 0 %d}", x, y, up, down, page, returnCode );
+	setCloseable( true );
+	setMoveable( true );
+	setDisposeable( true );
+
+	responseMap.clear();
+
+	buttonCurrent = 1;
+	buttonCallbacks.clear();
+
+	switchs.clear();
+	textEditSubProps.clear();
+	checkboxSubProps.clear();
+	commands.clear();
+	texts.clear();
+
+	x = y = 0;
+
+	pageCount=1;
+	pageCurrent=1;
+
+	for( int i=0; i<4; ++i ) {
+		buffer[i] = INVALID;
+		if( buffer_str[i]!=NULL )
+			safedelete( buffer_str[i] );
+	}
+
 }
 
-
-void cMenu::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
+void cMenu::addButton( UI32 x, UI32 y, UI32 up, UI32 down, SERIAL returnCode )
 {
-	addCommand( "{button %d %d %d %d 0 %d 0}", x, y, up, down, page );
+	addCommand( "{button %d %d %d %d %d 0 %d}", x, y, up, down, pageCurrent, returnCode );
+	buttonCurrent++;
 }
-/*
+
+ //needed for remove possibility of two return code equal
+#define AUTO_BUTTONID_OFFSET 0xFFFFF000
+
+void cMenu::addButtonFn( UI32 x, UI32 y, UI32 up, UI32 down, FUNCIDX fn )
+{
+	buttonCallbacks.insert( make_pair(  AUTO_BUTTONID_OFFSET + buttonCurrent, fn ) );
+	addButton( x, y, up, down, AUTO_BUTTONID_OFFSET + buttonCurrent );
+}
+
 void cMenu::addGump( UI32 x, UI32 y, UI32 gump, UI32 hue )
 {
 	addCommand( "{gumppic %d %d %d hue=%d}", x, y, gump, hue );
@@ -332,35 +369,22 @@ void cMenu::addCroppedText( UI32 x, UI32 y, UI32 width, UI32 height, wstring& te
 {
 	addCommand( "{croppedtext %d %d %d %d %d %d}", x, y, width, height, hue, addString(text) );
 }
-*/
-void cMenu::addPage( UI32 page )
-{
-	if ( page < 256 )
-	{
-		addCommand( "{page %d}", page );
-	}
-}
-/*
-void cMenu::addGroup( UI32 group )
-{
-	addCommand( "{group %d}", group );
-}
-*/
+
 void cMenu::addText( UI32 x, UI32 y, wstring& data, UI32 hue )
 {
 	addCommand( "{text %d %d %d %d}", x, y, hue, addString(data) ); //text <Spaces from Left> <Space from top> <Length, Color?> <# in order>
 }
-/*
+
 void cMenu::addBackground( UI32 gump, UI32 width, UI32 height )
 {
 	addResizeGump( 0, 0, gump, width, height );
 }
-*/
+
 void cMenu::addResizeGump( UI32 x, UI32 y, UI32 gump, UI32 width, UI32 height )
 {
 	addCommand( "{resizepic %d %d %d %d %d}", x, y, gump, width, height );
 }
-/*
+
 void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 {
 	addCommand( "{tilepic %d %d %d %d}", x, y, tile, hue );
@@ -369,6 +393,23 @@ void cMenu::addTilePic( UI32 x, UI32 y, UI32 tile, UI32 hue )
 void cMenu::addInputField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 textId, wstring& data, UI32 hue )
 {
 	addCommand( "{textentry %d %d %d %d %d %d %d}", x, y, width, height, hue, textId, addString(data) );
+}
+
+void cMenu::addPropertyField( UI32 x, UI32 y, UI32 width, UI32 height, UI32 property, UI32 subProperty, UI32 hue )
+{
+	
+	VAR_TYPE t = getPropertyType( property );
+	if( t==T_BOOL ) 
+	{
+		addCheckbox( x, y, 0x00D2, 0x00D3, getPropertyFieldBool( buffer[0], buffer[1], property, subProperty ), 1 );
+		checkboxSubProps.insert( make_pair( property, subProperty ) );
+	}
+	else
+	{
+		addInputField( x, y, width, height, property, getPropertyField( buffer[0], buffer[1], property, subProperty ), hue );
+		textEditSubProps.insert( make_pair( property, subProperty ) );
+	}
+	
 }
 
 void cMenu::addCheckbox( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI32 result )
@@ -381,67 +422,210 @@ void cMenu::addRadioButton( UI32 x, UI32 y, UI32 off, UI32 on, UI32 checked, UI3
 	addCommand( "{radio %d %d %d %d %d %d}", x, y, off, on, checked, result );
 }
 
+
+void cMenu::addPageButton( UI32 x, UI32 y, UI32 up, UI32 down, UI32 page )
+{
+	addCommand( "{button %d %d %d %d 0 %d 0}", x, y, up, down, page );
+}
+
+/*!
+\brief Add a new page
+\author Endymion
+\param page the page num, if INVALID is used automatic page count
+*/
+void cMenu::addPage( UI32 page )
+{
+	pageCurrent=page;
+	pageCount=page+1;
+
+	if ( page < 256 )
+	{
+		addCommand( "{page %d}", page );
+	}
+}
+
+/*
+void cMenu::addGroup( UI32 group )
+{
+	addCommand( "{group %d}", group );
+}
 */
 
-void cMenu::handleButton( const NXWSOCKET socket, const UI32 button )
+
+void cMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
-	callback->Call( socket, button );
-}
-
-void cMenu::setMoveAble( const bool arg )
-{
-	setOptions( MOVEABLE, arg );
-}
-
-void cMenu::setCloseAble( const bool arg )
-{
-	setOptions( CLOSEABLE, arg );
-}
-
-void cMenu::setDisposeAble( const bool arg )
-{
-	setOptions( DISPOSEABLE, arg );
-}
-
-
-
-
-
-
-
-
-
-void cMenu::show( P_CHAR pc )
-{
-	VALIDATEPC( pc );
-
-	NXWCLIENT ps=pc->getClient();
-	if( ps==NULL ) return;
-
-	if( !(options&MOVEABLE) )
-		addCommand("{nomove}");
-
-	if( !(options&CLOSEABLE) )
-		addCommand("{noclose}");
-
-	if( !(options&DISPOSEABLE) )
-		addCommand("{nodispose}");
-
-
-	cPacketMenu	packet; //!< menu packet with new packet system
-
-
-	packet.id=serial;
-	packet.gump=id;
-	packet.x = x;
-	packet.y = y;
-
-	packet.commands = &commands;
-	packet.texts = &texts;
 	
-	packet.send( ps );
+	cPacketMenuSelection* p = (cPacketMenuSelection*)pkg;
+
+	SERIAL button = p->buttonId.get();
+	switchs = p->switchs;
+	
+	if( button!=MENU_CLOSE ) { 
+
+		std::map< SERIAL, FUNCIDX >::iterator iter( buttonCallbacks.find( button ) );
+		if( iter!=buttonCallbacks.end() ) {
+
+			AmxFunction func( iter->second );
+			func.Call( ps->toInt(), serial, button );
+			return;
+
+		}
+	}
+
+	//set property if there are
+	std::vector<text_entry_st>::iterator textIter( p->text_entries.begin() ), lastText( p->text_entries.end() );
+	for( ; textIter!=lastText; ++textIter ) {
+		textResp.insert( make_pair( textIter->id.get(), textIter->text ) );
+	}
+
+	std::map< SERIAL, SERIAL >::iterator propIter( textEditSubProps.begin() ), lastProp( textEditSubProps.end() );
+	for( ; propIter!=lastProp; ++propIter ) {
+
+	}
+	
+	callback->Call( ps->toInt(), serial, button );
+}
+
+
+void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, bool data )
+{
+}
+
+bool cMenu::getPropertyFieldBool( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp )
+{
+	return false;
+}
+
+void cMenu::setPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp, std::wstring& data )
+{
+}
+
+std::wstring cMenu::getPropertyField( SERIAL type, SERIAL obj, SERIAL prop, SERIAL subProp )
+{
+	return std::wstring( L"ciao" );
+}
+
+void cMenu::setMoveable( bool canMove )
+{
+	if( !canMove )
+		addCommand("{nomove}");
+	else 
+		if( !moveable )
+			removeCommand( std::string("{nomove}") );
+	moveable=canMove;
+}
+
+bool cMenu::getMoveable()
+{
+	return moveable;
+}
+
+void cMenu::setCloseable( bool canClose )
+{
+	if( !canClose )
+		addCommand("{noclose}");
+	else
+		if( !closeable )
+			removeCommand( std::string("{noclose}") );
+	closeable=canClose;
+}
+
+bool cMenu::getCloseable()
+{
+	return closeable;
+}
+
+void cMenu::setDisposeable( bool canDispose )
+{
+	if( !canDispose )
+		addCommand("{nodispose}");
+	else
+		if( !disposeable )
+			removeCommand( std::string("{nodispose}") );
+	disposeable=canDispose;
+}
+
+bool cMenu::getDisposeable()
+{
+	return disposeable;
+}
+
+bool cMenu::getCheckBox( SERIAL checkbox )
+{
+	return find( switchs.begin(), switchs.end(), checkbox )!=switchs.end();
+}
+
+bool cMenu::getRadio( SERIAL radio )
+{
+	return find( switchs.begin(), switchs.end(), radio )!=switchs.end();
+}
+
+std::wstring* cMenu::getText( SERIAL text )
+{
+	std::map< SERIAL, std::wstring >::iterator iter( textResp.find( text ) );
+	if( iter!=textResp.end() )
+		return &iter->second;
+	else
+		return NULL;
 }
 
 
 
+cServerPacket* cMenu::createPacket()
+{
+	cPacketMenu* packet = new cPacketMenu; //!< menu packet with new packet system
+
+	packet->serial =serial;
+	packet->id=id;
+	packet->x = x;
+	packet->y = y;
+
+	packet->commands = &commands;
+	packet->texts = &texts;
+
+	return packet;
+}
+
+
+
+
+
+cIconListMenu::cIconListMenu() : cBasicMenu( MENUTYPE_ICONLIST )
+{
+}
+
+cIconListMenu::~cIconListMenu()
+{
+}
+
+cServerPacket* cIconListMenu::createPacket() 
+{
+	cPacketIconListMenu* p = new cPacketIconListMenu;
+	
+	p->serial = serial;
+	p->id = id;
+
+	p->question = question;
+	p->icons = &icons;
+
+	return p;
+}
+
+void cIconListMenu::addIcon( UI16 model, COLOR color, std::string response )
+{
+	pkg_icon_list_menu_st icon;
+	icon.color=color;
+	icon.model=model;
+	icon.response=response;
+
+	icons.push_back( icon );
+}
+
+void cIconListMenu::handleButton( NXWCLIENT ps,  cClientPacket* pkg  )
+{
+	cPacketResponseToDialog* p = (cPacketResponseToDialog*)pkg;
+
+	callback->Call( ps->toInt(), serial, p->index.get(), p->model.get(), p->color.get() );
+
+}
 

@@ -25,6 +25,8 @@
 #include "tmpeff.h"
 #include "debug.h"
 #include "house.h"
+#include "jail.h"
+#include "timers.h"
 
 extern bool g_bMustExecAICode;
 

@@ -13,6 +13,7 @@
 #include "sndpkg.h"
 #include "set.h"
 #include "srvparms.h"
+#include "nxw_utils.h"
 
 
 namespace tempfx {

@@ -11,27 +11,27 @@
 
 
 /* Classic menu
-  mnu_prepare(s, 1, 3);
-  mnu_setStyle(s, MENUSTYLE_SCROLL, 0x481);
-  mnu_setTitle(s, "Almanacco dei Ricercati");
-  mnu_addItem(s, 0, 0, "Condanna");
-  mnu_addItem(s, 0, 1, "Assolvi");
-  mnu_addItem(s, 0, 2, "Concedi la grazia divina");
-  mnu_setCallback(s, funcidx("alm_chosen"));
-  mnu_show(s);
+	mnu_prepare(s, 1, 3);
+	mnu_setStyle(s, MENUSTYLE_SCROLL, 0x481);
+	mnu_setTitle(s, "Almanacco dei Ricercati");
+	mnu_addItem(s, 0, 0, "Condanna");
+	mnu_addItem(s, 0, 1, "Assolvi");
+	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
+	mnu_setCallback(s, funcidx("alm_chosen"));
+	mnu_show(s);
 */
 /* INCON LIST
- mnu_prepare(s, 1, lev);
- mnu_setStyle(s, 16, 0x481);
- mnu_setTitle(s, "Dragon Scales Tailoring");
- mnu_setCallback(s, funcidx("sewingdragon"));
+	mnu_prepare(s, 1, lev);
+	mnu_setStyle(s, 16, 0x481);
+	mnu_setTitle(s, "Dragon Scales Tailoring");
+	mnu_setCallback(s, funcidx("sewingdragon"));
 
- if (lev>=1)  mnu_addItem(s, 0, 0, "13d6 Dragon Scales Gorget"); 
- if (lev>=2)  mnu_addItem(s, 0, 1, "13dd Dragon Scales Gloves");		  
- if (lev>=3)  mnu_addItem(s, 0, 2, "13d4 Dragon Scales Sleeves");
- if (lev>=4)  mnu_addItem(s, 0, 3, "13e1 Dragon Scales Leggings");
- if (lev>=5)  mnu_addItem(s, 0, 4, "13e2 Dragon Scales Tunic");	
- mnu_show(s);
+	if (lev>=1)  mnu_addItem(s, 0, 0, "13d6 Dragon Scales Gorget"); 
+	if (lev>=2)  mnu_addItem(s, 0, 1, "13dd Dragon Scales Gloves");		  
+	if (lev>=3)  mnu_addItem(s, 0, 2, "13d4 Dragon Scales Sleeves");
+	if (lev>=4)  mnu_addItem(s, 0, 3, "13e1 Dragon Scales Leggings");
+	if (lev>=5)  mnu_addItem(s, 0, 4, "13e2 Dragon Scales Tunic");	
+	mnu_show(s);
 */
 
 
@@ -42,9 +42,14 @@
 \author Endymion
 \since 0.82
 */
-cOldMenu::cOldMenu()
+cOldMenu::cOldMenu() : cBasicMenu( MENUTYPE_TRASPARENCY )
 {
-	setWidth( 320 );
+	width = 320;
+	color=0;
+	style=MENUTYPE_TRASPARENCY;
+	title.clear();
+	allPages.clear();
+	type=NULL;
 }
 
 /*
@@ -54,6 +59,8 @@ cOldMenu::cOldMenu()
 */
 cOldMenu::~cOldMenu()
 {
+	if( type!=NULL )
+		delete type;
 }
 
 /*
@@ -83,74 +90,40 @@ void cOldMenu::addMenuItem( int page, int idx, std::wstring& desc )
 	p.insert( make_pair( idx, desc ) );
 }
 
-/*!
-\brief Set title
-\author Endymion
-\since 0.82
-\param str the title
-*/
-void cOldMenu::setTitle( wstring& str )
-{
-	title = str;
-}
 
-/*!
-\brief Set width
-\author Endymion
-\since 0.82
-\param width the width
-*/
-void cOldMenu::setWidth( int width )
+void cOldMenu::handleButton( NXWCLIENT ps, cClientPacket* pkg  )
 {
-	this->width=width;
-}
+	
+	UI32 button;
+	if( isIconList( pkg->cmd ) )
+		button = ((cPacketResponseToDialog*)pkg)->index.get()-1;
+	else
+		button = ((cPacketMenuSelection*)pkg)->buttonId.get();
 
-/*!
-\brief Set style
-\author Endymion
-\since 0.82
-\param style the style
-\param color the color
-*/
-void cOldMenu::setStyle( int style, int color )
-{
-	this->style=style;
-	setColor( color );
-}
+	callback->Call( ps->toInt(), ps->currChar()->getSerial32(), button );
 
-/*!
-\brief Set color
-\author Endymion
-\since 0.82
-\param color the color
-*/
-void cOldMenu::setColor( int color )
-{
-	this->color=color;
-}
-
-/*!
-\brief Handle selection of a button
-\author Endymion
-\since 0.82
-\attention this function is pure virtual.
-*/
-void cOldMenu::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
-{
-	//do nothing
-}
-
-void cOldMenu::show( P_CHAR pc )
-{
 }
 
 
-cOldMenuClassic::cOldMenuClassic() : cMenu()
+cServerPacket* cOldMenu::build()
 {
-}
+	if( type==NULL ) { //need build
+		if( style==MENUTYPE_ICONLIST ) {
+			type = new cIconListMenu();
+			buildIconList();
+		}
+		else {
+			type = new cMenu( MENUTYPE_TRASPARENCY, 110, 70, true, true, true );
+			buildClassic();
+		}
 
-cOldMenuClassic::~cOldMenuClassic()
-{
+		type->serial = serial;
+		type->id= id;
+		type->setCallBack( (callback!=NULL)? callback->getFuncIdx() : INVALID );
+	}
+
+	return type->createPacket();
+
 }
 
 /*!
@@ -158,75 +131,75 @@ cOldMenuClassic::~cOldMenuClassic()
 \author Endymion
 \since 0.82
 */
-void cOldMenuClassic::buildOldMenu()
+void cOldMenu::buildClassic()
 {
 
+	cMenu* menu = (cMenu*)this->type;
+	
+	
 	int pagebtny = 307;
 
 	if( style&MENUSTYLE_LARGE ) 
-		setWidth( 512 );
+		width = 512;
 
-	UI32 curr_style = style & ~MENUSTYLE_LARGE;
+	MENU_TYPE curr_style = static_cast<MENU_TYPE>( style & ~MENUSTYLE_LARGE );
 
-	setId( curr_style );
-	setX( 0x6E );
-	setY( 0x46 );
+	id = curr_style;
 
-	//--static pages
-	if( curr_style==MENUSTYLE_STONE ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 2600, width, 340 );
-		addButton( 250, 17, 4017, 4017+1, 1 );
-		addText( 30, 40, title, color );
+	switch( curr_style ) {
+
+	case MENUTYPE_STONE:
+		menu->setCloseable( false );
+		menu->addBackground( 2600, width, 340 );
+		menu->addButton( 250, 17, 4017, 4017+1, INVALID );
+		menu->addText( 30, 40, title, color );
 		pagebtny = 300;
-	}
-	else if( curr_style==MENUSTYLE_BLACKBOARD ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 2620, 320, 340 );
-		addButton( 250, 17, 4017, 4017+1, 1 );
-		addText( 45, 17, title, color );
+		break;
+	
+	case MENUTYPE_BLACKBOARD:
+		menu->setCloseable( false );
+		menu->addBackground( 2620, 320, 340 );
+		menu->addButton( 250, 17, 4017, 4017+1, INVALID );
+		menu->addText( 45, 17, title, color );
 		pagebtny = 307;
-	}
-	else if( curr_style==MENUSTYLE_PAPER ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 0x0DAC, 320, 340 );
-		addButton( 250, 7, 4017, 4017+1, 1 );
-		addText( 45, 7, title, color );
+		break;
+
+	case MENUTYPE_PAPER:
+		menu->setCloseable( false );
+		menu->addBackground( 0x0DAC, 320, 340 );
+		menu->addButton( 250, 7, 4017, 4017+1, INVALID );
+		menu->addText( 45, 7, title, color );
 		pagebtny = 307;
-	}
-	else if( curr_style==MENUSTYLE_SCROLL ) {
-		setCloseAble( false );
-		addPage( 0 );
-		addResizeGump( 0, 0, 0x1432, 320, 340 );
-		addButton( 250, 27, 4017, 4017+1, 1 );
-		addText( 45, 27, title, color );
+		break;
+
+	case MENUTYPE_SCROLL:
+		menu->setCloseable( false );
+		menu->addBackground( 0x1432, 320, 340 );
+		menu->addButton( 250, 27, 4017, 4017+1, INVALID );
+		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
-	}
-	else if (curr_style==MENUSTYLE_TRASPARENCY) {
-		setCloseAble( true );
-		addButton( 250, 27, 4017, 4017+1, 1 );
-		addText( 45, 27, title, color );
+		break;
+
+	case MENUTYPE_TRASPARENCY:
+	default:
+		menu->setCloseable( true );
+		menu->addButton( 250, 27, 4017, 4017+1, INVALID );
+		menu->addText( 45, 27, title, color );
 		pagebtny = 290;
+		break;
 	}
 
+	menu->addPage( 1 );
 
-
-	int pagenum = 1;
-	addPage( pagenum );
-
-	//this i don't think what are
-	//sprintf( temp, m_strTitle );
-	//m_lstLabels.push_back( new string( temp ) );
-	//
-
-	int oldk = 0;
-	int buttonnum=10; //button number
-	int position = 80, linenum = 1;
+	int buttonnum=0; //button number
+	int position = 80;
 
 	std::map< UI32, std::map< UI32, std::wstring >  >::iterator curr_page( allPages.begin() ), last_page( allPages.end() );
+	int page_count = allPages.size();
+
+/*	int oldk = 0;
+
+
 
 	for( int k=0; curr_page!=last_page; ++curr_page, ++k ) {
 
@@ -237,17 +210,15 @@ void cOldMenuClassic::buildOldMenu()
 				if ( k > oldk )
 				{
 					position = 80;
-					pagenum++;
-					addPage( pagenum );
+					menu->addPage( menu->pageCurrent+1 );
 					oldk = k;
 				}
 
-				addText( 80, position, iter->second, color );
+				menu->addText( 80, position, iter->second, color );
 
-				addButton( 50, position+3, 4005, 4005+1, buttonnum, pagenum );
+				menu->addButton( 50, position+3, 4005, 4005+1, buttonnum );
 
 				position += 20;
-				++linenum;
 				++buttonnum;
 		}
 	}
@@ -255,42 +226,60 @@ void cOldMenuClassic::buildOldMenu()
 
 	curr_page = allPages.begin();
 
-	//there is not this check in old code
-	//if( allPages.size()==1 )
-	//	return; //not need back and forward buttons with only a page
-
-	//now add back and forward buttons
 	for( int p=1; curr_page!=last_page; ++curr_page, ++p )
 	{
-		addPage( p );
+		menu->addPage( p );
 		if( p > 1 )
 		{
-			addPageButton( 50, pagebtny, 4014, 4014+1, p-1 ); //back button
+			menu->addPageButton( 50, pagebtny, 4014, 4014+1, p-1 ); //back button
 		}
 		if( p < allPages.size() )
 		{
-			addPageButton( 254, pagebtny, 4005, 4005+1, p+1 ); //next button
+			menu->addPageButton( 254, pagebtny, 4005, 4005+1, p+1 ); //next button
 		}
 	}
-}
+*/	
 
-void cOldMenuClassic::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
-{
-}
+	for( ; curr_page!=last_page; ++curr_page ) {
 
-void cOldMenuClassic::show( P_CHAR pc )
-{
-	buildOldMenu();
-	cMenu::show( pc );
-}
+		std::map< UI32, std::wstring >::iterator iter( curr_page->second.begin() ), end( curr_page->second.end() );
+	
+		if( menu->pageCurrent>1 )
+			menu->addPage( menu->pageCurrent+1 );
+
+		for( int b=1; iter!=end; ++iter, ++b )
+		{
+			if( b==10 ) {
+				position = 80;
+				b=1;
+
+				menu->addPageButton( 254, pagebtny, 4005, 4005+1, menu->pageCurrent+1 ); //next button
+
+				menu->addPage( menu->pageCurrent+1 );
+
+				menu->addPageButton(  50, pagebtny, 4014, 4014+1, menu->pageCurrent-1 ); //back button
+			}
+
+			menu->addText( 80, position, iter->second, color );
+
+			menu->addButton( 50, position+3, 4005, 4005+1, buttonnum );
+
+			position += 20;
+			++buttonnum;
+		}
+
+		if( page_count>1 ) {
+
+			if( menu->pageCurrent>1 )
+				menu->addPageButton(  50, pagebtny, 4014, 4014+1, menu->pageCurrent-1 ); //back button
+
+			if( menu->pageCurrent< page_count )
+				menu->addPageButton( 254, pagebtny, 4005, 4005+1, menu->pageCurrent+1 ); //next button
+		}
+
+	}
 
 
-cOldMenuIconList::cOldMenuIconList()
-{
-}
-
-cOldMenuIconList::~cOldMenuIconList()
-{
 }
 
 /*!
@@ -298,46 +287,30 @@ cOldMenuIconList::~cOldMenuIconList()
 \author Endymion
 \since 0.82
 */
-void cOldMenuIconList::show( P_CHAR pc )
+void cOldMenu::buildIconList()
 {
 	
-	VALIDATEPC(pc);
-
-	cPacketIconListMenu p;
+	cIconListMenu* menu = (cIconListMenu*)this->type;
 	
-	p.gump = serial;
-	p.id= id;
-	wstring2string( title, p.question );
+	wstring2string( title, menu->question );
 
-	std::vector< pkg_icon_list_menu_st > icons;
-	std::map< UI32, std::map< UI32, std::wstring >  >::iterator iter( allPages.begin() ), end( allPages.end() );
-	if( iter!=end ) { //not support multiple pages
+	std::map< UI32, std::map< UI32, std::wstring >  >::iterator page( allPages.begin() ), last_page( allPages.end() );
+	if( page!=last_page ) { //not support multiple pages
 		
-		std::map< UI32, std::wstring >& pagina = iter->second;
-
-		std::map< UI32, std::wstring >::iterator itp( pagina.begin() ), endp( pagina.end() );
-		for( ; itp!=endp; ++itp ) {
+		std::map< UI32, std::wstring >::iterator iter( page->second.begin() ), end( page->second.end() );
+		for( ; iter!=end; ++iter ) {
 
 			string s;
-			wstring2string( itp->second, s );
+			wstring2string( iter->second, s );
 	
-			pkg_icon_list_menu_st icon;
-
-			icon.color=0x0000;	
 			char num[5] = { 0x00, };
 			memcpy( num, s.c_str(), 4 );
-			icon.model=hex2num( num );
-			icon.response += (s.c_str() +5);
-			icons.push_back( icon );
+			menu->addIcon( hex2num( num ), 0x0000, std::string( s.c_str() +5 ) );
 
 		}
 	}
-	p.icons = &icons;
 	
-	p.send( pc->getClient() );
 }
 
-void cOldMenuIconList::buttonSelected( NXWSOCKET s, unsigned short int buttonPressed, int type )
-{
-	ConOut( "chiamata" );
-}
+
+
