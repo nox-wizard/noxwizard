@@ -3,7 +3,7 @@
  *  Copyright (c) ITB CompuPhase, 1997-2002
  *  This file may be freely used. No warranties of any kind.
  *
- *  Version: $Id: amx.c,v 1.6 2003/07/13 19:16:32 dgp85 Exp $
+ *  Version: $Id: amx.c,v 1.7 2003/07/13 19:21:46 dgp85 Exp $
  */
 
 //XAN
@@ -1225,7 +1225,7 @@ int AMXAPI amx_Register(AMX *amx, AMX_NATIVE_INFO *list, int number)
       /* this function is not yet located */
       funcptr=(list!=NULL) ? findfunction(func->name,list,number) : NULL;
       if (funcptr!=NULL)
-        func->address=(void *)funcptr;
+        func->address=funcptr;
       else
         err=AMX_ERR_NOTFOUND;
     } /* if */

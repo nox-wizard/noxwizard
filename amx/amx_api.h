@@ -91,9 +91,14 @@ int AMXAPI amx_SetStringUnicode(cell *dest, wstring* source );
 int AMXAPI amx_GetStringUnicode( wstring* dest, cell* source );
 
 #if defined BIT16
-  #define swapcell  swap16
+  #define swapcell	swap16
+  #define Align_Address	amx_Align16
+#elif defined(__alpha__)
+  #define swapcell  	swap64
+  #define Align_Address	amx_Align64
 #else
-  #define swapcell  swap32
+  #define swapcell  	swap32
+  #define Align_Address	amx_Align32
 #endif
 
 #endif //__AMX_API_H__
