@@ -531,15 +531,6 @@ NATIVE2(_setCharProperty)
 			case NXW_CP_I_REATTACKAT :				  		//dec value: 270;
 				pc->reattackat = p;
 				break;
-			case NXW_CP_I_REGEN :			  				//dec value: 271;
-				pc->regen = p;
-				break;
-			case NXW_CP_I_REGEN2 :				  			//dec value: 272;
-				pc->regen2 = p;
-				break;
-			case NXW_CP_I_REGEN3 :				  			//dec value: 273;
-				pc->regen3 = p;
-				break;
 			case NXW_CP_I_ROBE :			  				//dec value: 274;
 				pc->robe = p;
 				break;
@@ -1817,9 +1808,6 @@ static int getCharIntProperty( P_CHAR pc, int property, int prop2 )
 		CHECK(  NXW_CP_I_QUESTDESTREGION , pc->questDestRegion )  	//dec value: 268;
 		CHECK(  NXW_CP_I_QUESTORIGREGION , pc->questOrigRegion )  	//dec value: 269;
 		CHECK(  NXW_CP_I_REATTACKAT , pc->reattackat )  		//dec value: 270;
-		CHECK(  NXW_CP_I_REGEN , pc->regen )  				//dec value: 271;
-		CHECK(  NXW_CP_I_REGEN2 , pc->regen2 )  			//dec value: 272;
-		CHECK(  NXW_CP_I_REGEN3 , pc->regen3 )  			//dec value: 273;
 		CHECK(  NXW_CP_I_ROBE , pc->robe )  				//dec value: 274;
 		CHECK(  NXW_CP_I_RUNNING , pc->running )  			//dec value: 275;
 		CHECK(  NXW_CP_I_SERIAL , pc->getSerial32() )  			//dec value: 276;

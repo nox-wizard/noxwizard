@@ -434,7 +434,7 @@ bool WalkHandleRunning(P_CHAR pc, int dir)
 		if( pc->IsHidden() && !pc->IsHiddenBySpell() )
 			pc->unHide();
 		//Running stamina - AntiChrist
-		pc->regen2=uiCurrentTime+(SrvParms->staminarate*MY_CLOCKS_PER_SEC); //Don't regenerate stamina while running
+		pc->updateRegenTimer( STAT_STAMINA );  //Don't regenerate stamina while running
 		pc->running++;
 
 		// Horse Stamina loss bug Fixed by blackwind.
