@@ -31,8 +31,7 @@ namespace item
 	\author Xanathar
 	\brief adds an item read from items.xss/scp
 	\return the created item
-	\param so socket (if any)
-	\param itemnum item number to be created
+	\param itemnum scriptid of the item
 	\param cont container to add the item to
 	*/
 	P_ITEM CreateFromScript( SCRIPTID itemnum, cObject* cont )
@@ -474,7 +473,7 @@ namespace item
 
 	}
 
-	/*!
+	/*
 	\author Duke
 	\brief Create an item for a socket
 	\note I took the idea (to overload) from the 'official' source. So thanks to fur!
@@ -518,7 +517,7 @@ namespace item
 		}
 	}*/
 
-/*!
+/*
 	\param nSocket the socket to add the item for
 	\param ch the character to add the item for
 	\param nAmount amount of item to spawn

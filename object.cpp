@@ -613,7 +613,7 @@ void cObject::setCurrentName( const char *str )
 \brief Set the secondary name of object
 \author Sparhawk
 \since 0.82a
-\param string s, the new name
+\param s the new name
 */
 void cObject::setSecondaryName( string s )
 {

@@ -38,8 +38,8 @@ char* cClientPacket::getBeginValidForReceive() {
 \brief get From Client
 \author Endymion
 \since 0.83a
-\param s the socket
-\param buffer the data
+\param socket the socket
+\param b the data
 \param size the number of byte to read
 \param from offset
 */
@@ -60,8 +60,8 @@ void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size, int& fro
 \brief read a string from socket buffer
 \author Endymion
 \since 0.83a
-\param s the socket
-\param i the string
+\param socket the socket
+\param s the string
 \param lenght the length of need to read
 \param from offset
 */
