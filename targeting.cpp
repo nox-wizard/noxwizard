@@ -517,8 +517,8 @@ public:
     void CharSpecific()
     {
 		VALIDATEPC( pc ); //Luxor
-		pc->setPosition('z', addx[s]);
-        pc->setPosition('d', addx[s]);
+		pc->setPosition(Z, addx[s]);
+        pc->setPosition(DISPZ, addx[s]);
 		P_CHAR pc_s=MAKE_CHAR_REF(inx);
 		VALIDATEPC( pc_s ) //Luxor
         pc_s->teleport();
@@ -526,7 +526,7 @@ public:
     void ItemSpecific()
     {
 		VALIDATEPI( pi ) //Luxor
-        pi->setPosition('z', addx[s]);
+        pi->setPosition(Z, addx[s]);
 		P_ITEM pi_c= MAKE_ITEM_REF(inx);
 		VALIDATEPI( pi_c ) //Luxor
         pi_c->Refresh();
@@ -1435,7 +1435,7 @@ static void Tiling(NXWSOCKET s, PKGx6C *pp) // Clicking the corners of tiling ca
     addid2[s]=0;
 }
 
-/*
+#if 0
 void targets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this function - Crwth 01/11/1999
 {
     if (buffer[s][11]==0xFF && buffer[s][12]==0xFF && buffer[s][13]==0xFF && buffer[s][14]==0xFF) return;
@@ -1486,7 +1486,7 @@ void targets::Wiping(NXWSOCKET s) // Clicking the corners of wiping calls this f
         }
     }
 }
-*/
+#endif
 
 static void ExpPotionTarget(NXWSOCKET s, PKGx6C *pp) //Throws the potion and places it (unmovable) at that spot
 {

@@ -438,15 +438,15 @@ void buildhouse(int s, int i)
 						}
 						if (!(strcmp(script1,"X")))//offset + or - from the center of the house:
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition('x', x+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(X, x+str2num(script2));
 						}
 						if (!(strcmp(script1,"Y")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition('y', y+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Y, y+str2num(script2));
 						}
 						if (!(strcmp(script1,"Z")))
 						{
-							if (ISVALIDPI(pi_l)) pi_l->setPosition('z', z+str2num(script2));
+							if (ISVALIDPI(pi_l)) pi_l->setPosition(Z, z+str2num(script2));
 						}
 					}
 				}
@@ -562,8 +562,8 @@ void deedhouse(NXWSOCKET s, P_ITEM pi)
 		charpos.z= charpos.dispz= Map->MapElevation(charpos.x, charpos.y);
 		pc->setPosition( charpos );
 		*/
-		pc->setPosition('z', Map->MapElevation(charpos.x, charpos.y));
-		pc->setPosition('d', Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition(Z, Map->MapElevation(charpos.x, charpos.y));
+		pc->setPosition(DISPZ, Map->MapElevation(charpos.x, charpos.y));
 		pc->teleport();
 		return;
 	}
@@ -605,10 +605,10 @@ void killhouse(ITEM i)
 	for (a = 0; a < itemcount; a++) // deleting itmes inside house
 	{
 		pi = MAKE_ITEM_REF(a);
-		if ((pi->getPosition("x") >= x1) && 
-			(pi->getPosition("y") >= y1) && 
-			(pi->getPosition("x") <= x2) && 
-			(pi->getPosition("y") <= y2) && 
+		if ((pi->getPosition().x >= x1) && 
+			(pi->getPosition().y >= y1) && 
+			(pi->getPosition().x <= x2) && 
+			(pi->getPosition().y <= y2) && 
 			(!pi->free))
 		{
 			if (pi->type != ITYPE_GUILDSTONE) // dont delete guild stones !

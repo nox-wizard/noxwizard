@@ -335,44 +335,6 @@ Location cObject::getPosition() const
 }
 
 /*!
-\brief return one coord of the object position
-\author Anthalir
-\since 0.82a
-\param what what to return ?	\li "x" = return the x position
-								\li "y" = return the y position
-								\li "z" = return the z position
-								\li "dz"= return the dispz position (used in cChar)
-\return signed int
-*/
-SI32 cObject::getPosition( const char what ) const
-{
-
-	switch( what )
-	{
-	case 'x':
-	case 'X':
-		return position.x;
-
-	case 'y':
-	case 'Y':
-		return position.y;
-
-	case 'z':
-	case 'Z':
-		return position.z;
-
-	case 'd':
-	case 'D':
-		return position.dispz;
-	}
-
-	WarnOut("getPosition called with wrong parameter: '%s' !!", what);
-	return INVALID;
-
-
-}
-
-/*!
 \brief Set the position of the object
 \author Anthalir
 \since 0.82a
@@ -413,27 +375,23 @@ void cObject::setPosition(UI16 x, UI16 y, SI08 z)
 \param value the value to set
 \todo change from string to a simpler enum
 */
-void cObject::setPosition( const char what, SI32 value)
+void cObject::setPosition(Coords what, SI32 value)
 {
 	switch( what )
 	{
-	case 'x':
-	case 'X':
+	case X:
 		position.x= value;
 		break;
 
-	case 'y':
-	case 'Y':
+	case Y:
 		position.y= value;
 		break;
 
-	case 'z':
-	case 'Z':
+	case Z:
 		position.z= value;
 		break;
 
-	case 'd':
-	case 'D':
+	case DISPZ:
 		position.dispz= value;
 		break;
 	}

@@ -1724,7 +1724,7 @@ int validNPCMove(int x, int y, signed char z, P_CHAR pc_s )
 			tile_st tile;
 			Map->SeekTile( pi->id(), &tile);
 			/*
-			if ( (pi->getPosition("x")==x) && (pi->getPosition("y") == y) && (pi->getPosition("z") + tile.height > z + 1) && (pi->getPosition("z") < z + MaxZstep) )
+			if ( (pi->getPosition().x==x) && (pi->getPosition().y == y) && (pi->getPosition().z + tile.height > z + 1) && (pi->getPosition().z < z + MaxZstep) )
 			{
 	        	if ( pi->type == 12 && pc_s->doorUse )
         		{

@@ -102,8 +102,7 @@ private:
 
 public:
 	Location		getPosition() const;
-	SI32			getPosition(const char what) const;
-	void			setPosition(const char what, SI32 value);
+	void			setPosition(Coords what, SI32 value);
 	void			setPosition(UI16 x, UI16 y, SI08 z);
 	void			setPosition(Location where);
 

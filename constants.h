@@ -106,6 +106,9 @@ enum {
 //! Directions
 enum Direction { NORTH = 0, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST };
 
+//! Coordinates
+enum Coords { X, Y, Z, DISPZ };
+
 //! for spinning wheel -vagrant
 enum { YARN, THREAD };
 

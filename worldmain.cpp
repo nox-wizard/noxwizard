@@ -237,7 +237,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'D':
 		case 'd':
-			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition('d', str2num(script2));}
+			if (!strcmp(script1, "DISPZ"))				{  pc->setPosition(DISPZ, str2num(script2));}
 			else if (!strcmp(script1, "DAMAGETYPE"))	{ pc->damagetype= static_cast<DamageType>(str2num(script2));}	//Luxor
 			else if (!strcmp(script1, "DIR"))			{ pc->dir=str2num(script2);}
 			else if (!strcmp(script1, "DEXTERITY"))		{ pc->dx=str2num(script2); pc->dx3=pc->dx;}
@@ -502,7 +502,7 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'X':
 		case 'x':
-			if (!strcmp(script1, "X"))					{ pc->setPosition('x', str2num(script2)); }
+			if (!strcmp(script1, "X")) pc->setPosition(X, str2num(script2));
 			else if (!strcmp(script1, "XBODY"))
 			{
 				pc->SetOldBodyType( str2num(script2) );
@@ -523,15 +523,15 @@ void CWorldMain::loadChar() // Load a character from WSC
 
 		case 'Y':
 		case 'y':
-			if (!strcmp(script1, "Y"))					{ pc->setPosition('y', str2num(script2)); }
+			if (!strcmp(script1, "Y"))					{ pc->setPosition(Y, str2num(script2)); }
 		break;
 
 		case 'Z':
 		case 'z':
 			if (!strcmp(script1, "Z"))
 			{
-				pc->setPosition('z', str2num(script2));
-				pc->setPosition('d', str2num(script2));
+				pc->setPosition(Z, str2num(script2));
+				pc->setPosition(DISPZ, str2num(script2));
 
 			}
 		break;
@@ -973,14 +973,14 @@ void loaditem()
 		case 'x':
 		case 'X':
 			if (!(strcmp(script1, "X")))
-				pi->setPosition('x', str2num(script2));
+				pi->setPosition(X, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
 		case 'y':
 		case 'Y':
 			if (!(strcmp(script1, "Y")))
-				pi->setPosition('y', str2num(script2));
+				pi->setPosition(Y, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 
@@ -996,7 +996,7 @@ void loaditem()
 		case 'z':
 		case 'Z':
 			if (!(strcmp(script1, "Z")))
-				pi->setPosition('z', str2num(script2));
+				pi->setPosition(Z, str2num(script2));
 			else WarnOut("Unrecognised attribute : \"%s\", while loading items\n", script1);
 			break;
 		}
