@@ -488,7 +488,8 @@ void cOldMenu::addMenuItem( int page, int idx, char* desc )
 {
 //	mnu_addItem(s, 0, 2, "Concedi la grazia divina");
 	wstring s;
-	string2wstring( string( desc ), s );
+	string sDesc(desc);
+	string2wstring( sDesc, s );
 	std::map<UI32, wstring >& p= allPages[ page ];
 	p.insert( make_pair( idx, s ) );
 }
@@ -531,7 +532,8 @@ void cOldMenu::showMenu( NXWSOCKET s )
 
 void cOldMenu::setTitle( char* str )
 {
-	string2wstring( string( str ), title );
+	string sDesc(str);
+	string2wstring( sDesc, title );
 }
 
 void cOldMenu::setWidth( int width )

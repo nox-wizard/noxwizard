@@ -69,6 +69,7 @@ SOURCES =	\
 		los.cpp \
 		magic.cpp \
 		mapstuff.cpp \
+		menu.cpp \
 		mount.cpp \
 		msgboard.cpp \
 		muls.cpp \
@@ -177,6 +178,7 @@ HEADERS =	\
 		jail.h \
 		logsystem.h \
 		los.h \
+		menu.h \
 		mount.h \
 		msgboard.h \
 		muls.h \
