@@ -13,8 +13,6 @@
 #define X 0
 #define Y 1
 
-static std::map<int,boat_db> s_boat;
-
 //============================================================================================
 //UooS Item translations - You guys are the men! :o)
 
@@ -1216,30 +1214,24 @@ void cBoat::OpenPlank(P_ITEM pi)
 P_ITEM cBoat::GetBoat(Location pos)
 {
 
-	std::map<int,boat_db>::iterator iter_boat;
-	if( s_boat.size()==0 )
-		return NULL;
-	for(iter_boat=s_boat.begin();iter_boat!=s_boat.end();iter_boat++)
-	{
-		boat_db boat=iter_boat->second;
+	BOATS::iterator iter( s_boat.begin() ), end( s_boat.end() );
+	for( ; iter!=end; iter++) {
+
+		boat_db boat=iter->second;
 		P_ITEM pBoat=boat.p_serial;
 		if(!ISVALIDPI(pBoat))
 			continue;
-		int xx= abs((int)pos.x - boat.p_serial->getPosition("x"));
-		int yy= abs((int)pos.y - boat.p_serial->getPosition("y"));
-		double dist=hypot(xx, yy);
-		if(dist<10)
+		if( dist( pos, pBoat->getPosition() ) < 10.0 )
 		{
-			int i;
 			multi_st multi;
 			multiVector m;
 
 			data::seekMulti(pBoat->id()-0x4000, m);
 
-			for(i=0;i<m.size();i++)
+			for(int i=0;i<m.size();i++)
 			{
 				multi = m[i];
-				if (   ((UI32)(multi.x + pBoat->getPosition("x")) == pos.x) && ((UI32)(multi.y + pBoat->getPosition("y")) == pos.y) )
+				if( ((multi.x + pBoat->getPosition().x) == pos.x) && ((multi.y + pBoat->getPosition().y) == pos.y) )
 				{
 					return  pBoat;
 				}

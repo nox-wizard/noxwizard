@@ -46,11 +46,11 @@ extern char cShipItems[4][6];
 
 struct boat_db
 {
-	int serial;
-	int tiller_serial;
-	int l_plank_serial;
-	int r_plank_serial;
-	int container;
+	SERIAL serial;
+	SERIAL tiller_serial;
+	SERIAL l_plank_serial;
+	SERIAL r_plank_serial;
+	SERIAL container;
 	P_ITEM p_serial;
 	P_ITEM p_tiller;
 	P_ITEM p_l_plank;
@@ -92,6 +92,9 @@ class cBoat
 		void Move(NXWSOCKET  s, int dir, P_ITEM pBoat);
 		void Turn(P_ITEM, int);
 };
+
+typedef std::map<int,boat_db> BOATS;
+BOATS	s_boat;
 
 
 #endif
