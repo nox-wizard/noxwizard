@@ -1096,8 +1096,10 @@ void cChar::showContainer(P_ITEM pCont)
 			continue;
 
 		//fix location of items if they mess up. (needs tweaked for container types)
-		if (pi->getPosition("x") > 150) pi->setPosition("x", 150);
-		if (pi->getPosition("y") > 140) pi->setPosition("y", 140);
+		Location li = pi->getPosition();
+		if( li.x > 150) li.x = 150;
+		if( li.y > 140) li.y = 140;
+		pi->setPosition( li );
 		//end fix
 		LongToCharPtr(pi->getSerial32(), bpitem);
 		ShortToCharPtr(pi->animid(), bpitem +4);
@@ -1781,8 +1783,10 @@ void cChar::teleport( UI08 flags, NXWCLIENT cli )
 	if( ISVALIDPI(p_boat) ) {
 		setMultiSerial(p_boat->getSerial32());
 		Location boatpos= p_boat->getPosition();
-		setPosition("z",boatpos.z+3 );
-		setPosition("dz",boatpos.z+3 );
+		//ndEndy using setPosition we lose old position
+		setPosition( "z", boatpos.z+3 ); 
+		setPosition( "dispz", boatpos.z+3 );
+
 	} else
 		setMultiSerial(-1);
 
@@ -3062,8 +3066,10 @@ void cChar::Kill()
 		
 		pi_j->setContSerial( pCorpse->getSerial32() );	
 		//General Lee
-		pi_j->setPosition("y", RandomNum(85,160));
-		pi_j->setPosition("x", RandomNum(20,70));
+		Location lj = pi_j->getPosition();
+		lj.y = RandomNum(85,160);
+		lj.x = RandomNum(20,70);
+		pi_j->setPosition( lj );
 		pi_j->Refresh();
 		//General Lee
 		
