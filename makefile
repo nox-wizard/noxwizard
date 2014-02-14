@@ -54,8 +54,15 @@ INTERFACE_DECL_PATH = .
 
 ####### Build rules
 
+## old all:
+# all: $(TARGET)
 
-all: $(TARGET)
+all:
+	@echo "/-----------------------------------------------"
+	@echo "| Using make is deprecated! Use \`scons\` instead!"
+	@echo "| The makefile will be removed in the future!"
+	@echo "\-----------------------------------------------"
+	@scons
 	@echo "/-----------------------------------------------"
 	@echo "| Using make is deprecated! Use \`scons\` instead!"
 	@echo "| The makefile will be removed in the future!"
