@@ -56,6 +56,10 @@ INTERFACE_DECL_PATH = .
 
 
 all: $(TARGET)
+	@echo "/-----------------------------------------------"
+	@echo "| Using make is deprecated! Use \`scons\` instead!"
+	@echo "| The makefile will be removed in the future!"
+	@echo "\-----------------------------------------------"
 
 $(TARGET): $(UICDECLS) $(OBJECTS) $(OBJMOC)
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJMOC) $(LIBS)

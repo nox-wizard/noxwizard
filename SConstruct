@@ -5,7 +5,7 @@ count = 0
 def progress_function(node):
   global count
   count += 1
-  print '%4d: %s\r' % (count, node)
+  print '%4d: building %s\r' % (count, node)
 
 Progress(progress_function)
 
