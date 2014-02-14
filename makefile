@@ -11,10 +11,10 @@ CC	=	gcc
 CXX	=	g++
 
 CFLAGS	=	-pipe -D_REENTRANT -O2
-CXXFLAGS=	-pipe -funsigned-char -D_REENTRANT -O2
+CXXFLAGS	= -pipe -funsigned-char -D_REENTRANT -O2 -fpermissive
 INCPATH =	-I ./
 LINK	=	g++
-LFLAGS	=	-lc -lstdc++ -static
+LFLAGS	=	-lc -lstdc++
 LIBS	=	$(SUBLIBS) -lpthread
 MOC	=	$(QTDIR)/bin/moc
 UIC	=	$(QTDIR)/bin/uic
@@ -80,3 +80,4 @@ clean:
 
 
 ####### Compile
+
