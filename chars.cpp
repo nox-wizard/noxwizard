@@ -49,7 +49,8 @@
 
 void cChar::setClient(NXWCLIENT client)
 {
-	if (m_client != NULL) safedelete(m_client);
+        // TODO: FIXME!
+	// if (m_client != NULL) safedelete(m_client);
 	m_client = client;
 }
 
@@ -377,12 +378,23 @@ cChar::cChar( SERIAL ser ) : cObject()
 */
 cChar::~cChar()
 {
-	if( staticProfile!=NULL )
-		safedelete( staticProfile );
-	if( speechCurrent!=NULL )
-		safedelete( speechCurrent );
-	if ( path != NULL )
-		safedelete( path );
+  // TODO: FIXME:
+  // error: cannot bind packed field ‘((cChar*)this)->cChar::staticProfile’ to ‘std::basic_string<wchar_t>*&’
+  //   safedelete( staticProfile );
+  //	if( staticProfile!=NULL )
+  //		Safedelete( staticProfile );
+
+  // TODO: FIXME:
+  // error: cannot bind packed field ‘((cChar*)this)->cChar::speechCurrent’ to ‘std::basic_string<wchar_t>*&’
+  //   safedelete( speechCurrent );
+  //	if( speechCurrent!=NULL )
+  //		safedelete( speechCurrent );
+
+  // TODO: FIXME!
+  // error: cannot bind packed field ‘((cChar*)this)->cChar::path’ to ‘cPath*&’
+  //   safedelete( path );
+  //	if ( path != NULL )
+  //		safedelete( path );
 }
 
 
@@ -4778,7 +4790,10 @@ void cChar::npc_heartbeat()
 	    			magic::castSpell( spell, *spellTL, this, NPCMAGIC_FLAGS );
 				casting   = 0;
 				spelltime = 0;
-				safedelete( spellTL );
+				// TODO: FIXME!
+				// error: cannot bind packed field ‘((cChar*)this)->cChar::spellTL’ to ‘TargetLocation*&’
+				//     safedelete( spellTL );
+				// safedelete( spellTL );
 			}
 		} else if ( TIMEOUT( nextact ) ) {
 			nextact = uiCurrentTime + UI32(MY_CLOCKS_PER_SEC*1.5);
@@ -5031,8 +5046,11 @@ void cChar::do_lsd()
 */
 void cChar::deleteSpeechCurrent()
 {
-	if( speechCurrent!=NULL )
-		safedelete(speechCurrent);
+  // TODO: FIXME!
+  // error: cannot bind packed field ‘((cChar*)this)->cChar::speechCurrent’ to ‘std::basic_string<wchar_t>*&’
+  //   safedelete(speechCurrent);
+  //	if( speechCurrent!=NULL )
+  //		safedelete(speechCurrent);
 }
 
 void cChar::setRegenRate( StatType stat, UI32 rate, VarType type )
@@ -5817,7 +5835,7 @@ void cChar::serialize( ofstream *out)
 		{
 			out->write( (char *) &DISABLEMSG_ID, sizeof(DISABLEMSG_ID));
 			out->write( (char *) disabledmsg->c_str(), sizeof(disabledmsg->c_str()));
-		} // Added by Magius(CHE) �
+		} // Added by Magius(CHE) §
 		
 		for (j=0;j<TRUESKILLS;j++)
 		{

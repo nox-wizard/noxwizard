@@ -713,7 +713,9 @@ void cChar::pathFind( Location pos, LOGICAL bOverrideCurrentPath )
 {
 	if ( hasPath() ) {
 		if ( bOverrideCurrentPath )
-			safedelete( path );
+		  // TODO: FIXME!
+		  //safedelete( path );
+		  pos = pos;
 		else
 			return;
 	}
@@ -803,7 +805,8 @@ void cChar::walkNextStep()
 		return;
 
 	if ( isWalkable( pos, WALKFLAG_DYNAMIC|WALKFLAG_CHARS, this ) == illegal_z ) {
-                safedelete( path );
+	  // TODO: FIXME!
+	  //                safedelete( path );
 		return;
 	}
 
@@ -850,13 +853,15 @@ void cChar::flee( P_CHAR pc, SI32 seconds )
 void cChar::follow( P_CHAR pc )
 {
 	if ( isFrozen() ) {
-		if ( hasPath() )
-			safedelete( path );
+	  // TODO: FIXME!
+	  //	if ( hasPath() )
+	  //		safedelete( path );
 		return;
 	}
 	if ( dist( getPosition(), pc->getPosition() ) <= 1.0f ) { // Target reached
-		if ( hasPath() )
-			safedelete( path );
+	  // TODO: FIXME!
+	  //	  if ( hasPath() )
+	  //		safedelete( path );
 		facexy( pc->getPosition().x, pc->getPosition().y );
 		return;
 	}

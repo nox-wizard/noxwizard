@@ -116,10 +116,10 @@ private:
     BYTE m_enc_subData3[256];
     DWORD dwIndex;
 
-	int NewGameCrypt::ParseHexDword(int bits,CONST char *srcTxt,DWORD *d,char *dstTxt);
-	DWORD NewGameCrypt::RS_MDS_Encode(DWORD k0,DWORD k1);
-	void NewGameCrypt::BuildMDS(void);
-	void NewGameCrypt::ReverseRoundSubkeys(keyInstance *key,BYTE newDir);
+	int ParseHexDword(int bits,CONST char *srcTxt,DWORD *d,char *dstTxt);
+	DWORD RS_MDS_Encode(DWORD k0,DWORD k1);
+	void BuildMDS(void);
+	void ReverseRoundSubkeys(keyInstance *key,BYTE newDir);
 #if defined(__BORLANDC__)   /* do it inline */
 	NewGameCrypt::Xor32(void *dst,void *src,BYTE i) { register DWORD tmpX=0x01010101u * i; ((DWORD *)dst)[i] = ((DWORD *)src)[i] ^ tmpX; };
 	NewGameCrypt::Xor256(void *dst,void *src,BYTE b)               \
@@ -129,15 +129,15 @@ private:
         { Xor32(dst,src,i  ); Xor32(dst,src,i+1); Xor32(dst,src,i+2); Xor32(dst,src,i+3); } \
     };
 #else                       /* do it as a function call */
-	void NewGameCrypt::Xor256(void *dst,void *src,BYTE b);
+	void Xor256(void *dst,void *src,BYTE b);
 #endif
-	int NewGameCrypt::reKey(keyInstance *key);
-	int NewGameCrypt::makeKey(keyInstance *key, BYTE direction, int keyLen,CONST char *keyMaterial);
-	int NewGameCrypt::blockEncrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
+	int reKey(keyInstance *key);
+	int makeKey(keyInstance *key, BYTE direction, int keyLen,CONST char *keyMaterial);
+	int blockEncrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
                 int inputLen, BYTE *outBuffer);
-	int NewGameCrypt::blockDecrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
+	int blockDecrypt(cipherInstance *cipher, keyInstance *key,CONST BYTE *input,
 		                int inputLen, BYTE *outBuffer);
-	int NewGameCrypt::cipherInit(cipherInstance *cipher, BYTE mode,CONST char *IV);
+	int cipherInit(cipherInstance *cipher, BYTE mode,CONST char *IV);
 
 
 

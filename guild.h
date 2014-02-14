@@ -177,11 +177,11 @@ private:
 		{ if ( newGuildType >= GUILD_TYPE_NORMAL && newGuildType <=  GUILD_TYPE_ORDER) type = newGuildType; };
 
 		// Helper functions for 
-		inline const	SERIAL	cGuild::getGuildMaster() const { return guildMaster; };
-		inline void		cGuild::setGuildMaster(SERIAL newGuildMaster)  
+		inline const	SERIAL	getGuildMaster() const { return guildMaster; };
+		inline void		setGuildMaster(SERIAL newGuildMaster)  
 		{ guildMaster=newGuildMaster; getMember(guildMaster)->setRank(RANK_GUILDMASTER); };
-		void cGuild::calculateFealty();
-		void cGuild::showTitle(P_CHAR pc, P_CHAR pc2);
+		void calculateFealty();
+		void showTitle(P_CHAR pc, P_CHAR pc2);
 	public:
 		inline std::map< SERIAL, P_GUILD_MEMBER >getMembers()
 		{ return members; }
@@ -203,7 +203,7 @@ private:
 		bool hasWarWith(SERIAL guild);
 		bool hasPeaceWith(SERIAL guild);
 		bool hasAllianceWith(SERIAL guild);
-		void cGuild::makePeace(SERIAL guild);
+		void makePeace(SERIAL guild);
 	public:
 
 		std::map< SERIAL, P_GUILD_RECRUIT > recruits;	//!< all who want become member of this guild
@@ -243,8 +243,8 @@ class cGuildz
 		P_GUILD getGuild( SERIAL guild );
 		P_GUILD addGuild( SERIAL stone );
 		void removeGuild( SERIAL guild );
-		int cGuildz::compareGuilds(P_GUILD guild1,P_GUILD guild2);
-		void cGuildz::checkConsistancy(void );
+		int compareGuilds(P_GUILD guild1,P_GUILD guild2);
+		void checkConsistancy(void );
 };
 
 extern cGuildz Guildz;

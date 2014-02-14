@@ -115,7 +115,8 @@ char* cClientPacket::getBeginValidForReceive() {
 */
 void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size )
 {
-	reciveFromSocket( socket, b, size, offset );
+  // TODO: FIXME!
+  //	reciveFromSocket( socket, b, size, offset );
 };
 
 /*!
@@ -129,7 +130,8 @@ void cClientPacket::getFromSocket( NXWSOCKET socket, char* b, int size )
 */
 void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int length ) 
 {
-	reciveStringFromSocket( socket, s, length, offset );
+  // TODO: FIXME!
+  //	reciveStringFromSocket( socket, s, length, offset );
 }
 
 /*!
@@ -143,7 +145,8 @@ void cClientPacket::getStringFromSocket( NXWSOCKET socket, string& s, int length
 */
 void cClientPacket::getUnicodeStringFromSocket( NXWSOCKET socket, wstring& c, int size )
 {
-	reciveUnicodeStringFromSocket( socket, c, offset, size );
+  // TODO: FIXME!
+  //	reciveUnicodeStringFromSocket( socket, c, offset, size );
 }
 
 /*!
@@ -638,11 +641,13 @@ SENDC( IconListMenu ) {
 
 CREATE( QuestArrow, PKG_QUEST_ARROW, 0x06 )
 
+template <>
 cPacketTargetingCursor<cServerPacket>::cPacketTargetingCursor() {
 	cmd = PKG_TARGETING;
 	headerSize = 0x13;
 }
 
+template <>
 cPacketTargetingCursor<cClientPacket>::cPacketTargetingCursor() {
 	cmd = PKG_TARGETING;
 	headerSize = 0x13;
@@ -650,15 +655,18 @@ cPacketTargetingCursor<cClientPacket>::cPacketTargetingCursor() {
 
 template< class T >
 cPacketGeneralInfo<T>::cPacketGeneralInfo() {
-	cmd = PKG_GENERAL_INFO;
-	headerSize = 0x05;
+  // TODO: `cmd` and `headerSize` not in scope…
+  //	cmd = PKG_GENERAL_INFO;
+  //	headerSize = 0x05;
 }
 
+template <>
 cSubPacketParty<cServerPacket>::cSubPacketParty() : cPacketGeneralInfo<cServerPacket>() {
 	this->subcmd = 6;
 	headerSize += sizeof( eUI08 );
 }
 
+template <>
 cSubPacketParty<cClientPacket>::cSubPacketParty() : cPacketGeneralInfo<cClientPacket>() {
 	this->subcmd = 6;
 	headerSize += sizeof( eUI08 );

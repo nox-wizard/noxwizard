@@ -30,8 +30,11 @@ static void npcBeginCasting( P_CHAR pc, P_CHAR target, magic::SpellId spell )
 {
 	VALIDATEPC( pc );
 	VALIDATEPC( target );
-	if ( pc->spellTL != NULL )
-		safedelete( pc->spellTL );
+	// TODO: FIXME!
+	// error: cannot bind packed field ‘pc->cChar::spellTL’ to ‘TargetLocation*&’
+	//   safedelete( pc->spellTL );
+	// if ( pc->spellTL != NULL )
+	// 	safedelete( pc->spellTL );
 	pc->spellTL = new TargetLocation( target );
 	pc->spelltype = magic::CASTINGTYPE_NPC;
 	pc->spell = spell;

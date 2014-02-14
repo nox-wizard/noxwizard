@@ -95,7 +95,7 @@ public:
 	virtual ~ClientCrypt();
 	ClientCrypt();
 	void init (unsigned char seed[4]);
-	void ClientCrypt::init(UI32 pseed);
+	void init (UI32 pseed);
 	void setCryptSeed(UI08 pseed[4]);
 	void setCryptSeed(UI32 pseed);
 	inline UI32 getCryptSeed()

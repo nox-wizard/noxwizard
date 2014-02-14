@@ -59,8 +59,8 @@ public:
 	void createMulti(UI32 multinumber, P_ITEM multiItem);
 	bool isRealMulti();
 	static void makeKeys(cMulti* pMulti, P_CHAR pc);
-	static void cMulti::target_buildmulti( NXWCLIENT ps, P_TARGET t );
-	static void cMulti::buildmulti( P_CHAR builder, P_ITEM deed);
+	static void target_buildmulti( NXWCLIENT ps, P_TARGET t );
+	static void buildmulti( P_CHAR builder, P_ITEM deed);
 	static cMulti* findMulti(Location position);
 	bool increaseLockedItems(unsigned int amount=1);
 	bool decreaseLockedItems(unsigned int amount=1);
@@ -138,7 +138,7 @@ class cHouses
 public:
 	static cHouse *findHouse(Location loc);
 	static cHouse *findHouse(int x, int y);
-	static cHouse *cHouses::findHouse(SERIAL houseSerial);
+	static cHouse *findHouse(SERIAL houseSerial);
 	static std::map< SERIAL, P_HOUSE >::iterator findHouses(SERIAL owner);
 	static void killkeys(SERIAL serial);
 	static void buildhouse( P_CHAR builder, P_ITEM housedeed );
@@ -153,17 +153,17 @@ public:
 	static void target_houseSecureDown( NXWCLIENT ps, P_TARGET t );
 	static LOGICAL house_speech( P_CHAR pc, NXWSOCKET socket, std::string &talk);
 	static int 	check_house_decay();
-	static void cHouses::Delete(SERIAL houseserial);
-	static void cHouses::makeKeys(P_HOUSE phouse, P_CHAR pc);
-	static void cHouses::safeoldsave();
-	static bool cHouses::save( );
-	static bool cHouses::load();
-	static void cHouses::addHouseItem(int housenumber, int itemnumber);
+	static void Delete(SERIAL houseserial);
+	static void makeKeys(P_HOUSE phouse, P_CHAR pc);
+	static void safeoldsave();
+	static bool save( );
+	static bool load();
+	static void addHouseItem(int housenumber, int itemnumber);
 	static UI32VECTOR  getHouseItems(int housenumber);
-	static void cHouses::addHouse(P_HOUSE newHouse );
-	static void cHouses::makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi, LOGICAL key);
-	static std::map< SERIAL, P_HOUSE > cHouses::findOwnedHouses(SERIAL owner);
-	static void cHouses::archive();
+	static void addHouse(P_HOUSE newHouse );
+	static void makeHouseItems(int housenumber, P_CHAR owner, P_ITEM multi, LOGICAL key);
+	static std::map< SERIAL, P_HOUSE > findOwnedHouses(SERIAL owner);
+	static void archive();
 
 };
 

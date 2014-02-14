@@ -104,8 +104,8 @@ private:
 		static void target_buildShip( NXWCLIENT ps, P_TARGET t);
 		static P_ITEM findmulti(Location where);
 		static bool inmulti(Location where,P_ITEM pi);
-		static void cBoat::insert_boat(P_ITEM pi, cBoat* boat);
-		static void cBoat::remove_boat(P_ITEM pi);
+		static void insert_boat(P_ITEM pi, cBoat* boat);
+		static void remove_boat(P_ITEM pi);
 		static cBoat* findBoat(Location position);
 		static cBoat* search_boat(SI32 ser);
 		static P_ITEM search_boat_by_plank(P_ITEM pl);

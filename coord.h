@@ -52,7 +52,7 @@ public:
 	bool operator!=(const cCoord&) const;
 	cCoord operator+(const cCoord& src) const;
 	cCoord operator-(const cCoord& src) const;
-	bool cCoord::operator< (const cCoord& src) const;
+	bool operator< (const cCoord& src) const;
 	unsigned int distance( const cCoord &src) const;
 	unsigned char direction( const cCoord &dest ) const;
 	bool lineOfSight( const cCoord &target, bool touch = false );

@@ -3978,7 +3978,8 @@ NATIVE(_chr_morph)
 
 	pc->polymorph=true;
     // pc->morph( params[2], params[3], params[4], params[5], params[6], params[7], (g_cAmxPrintBuffer[0]!=0)? g_cAmxPrintBuffer : NULL, (params[8] > 0));
-	pc->morph( params[2], params[3]);
+	// TODO: FIXME!
+	//pc->morph( params[2], params[3]);
     return 0;
 }
 

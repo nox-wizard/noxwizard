@@ -132,12 +132,15 @@ cObject::~cObject()
 		//}
 		safedelete( amxEvents );
 	}*/
+  // TODO: FIXME!
+  // error: cannot bind packed field ‘((cObject*)this)->cObject::tempfx’ to ‘__gnu_cxx::slist<tempfx::cTempfx>*&’
+  //   safedelete( tempfx );
 	if ( tempfx ) {
 		tempfx->clear();
-		safedelete( tempfx );
+		//	safedelete( tempfx );
 	}
-	if( disabledmsg!=NULL )
-		safedelete( disabledmsg );
+	// if( disabledmsg!=NULL )
+	//	safedelete( disabledmsg );
 }
 
 /*!
@@ -622,8 +625,10 @@ void cObject::delTempfx( SI32 num, LOGICAL executeExpireCode, SERIAL funcidx )
 		it = tempfx->erase( it );
 	}
 
-	if ( tempfx->empty() )
-		safedelete( tempfx );
+	// error: cannot bind packed field ‘((cObject*)this)->cObject::tempfx’ to ‘__gnu_cxx::slist<tempfx::cTempfx>*&’
+	//   safedelete( tempfx );
+	// if ( tempfx->empty() )
+	//	safedelete( tempfx );
 }
 
 /*!
@@ -687,7 +692,9 @@ LOGICAL cObject::hasTempfx()
 		return false;
 
 	if ( tempfx->empty() ) {
-		safedelete( tempfx );
+	  // // error: cannot bind packed field ‘((cObject*)this)->cObject::tempfx’ to ‘__gnu_cxx::slist<tempfx::cTempfx>*&’
+	  // //   safedelete( tempfx );
+	  // safedelete( tempfx );
 		return false;
 	}
 
