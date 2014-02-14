@@ -1,2 +1,5 @@
 # Compiled executable
 noxwizard
+
+# Buildsystem artifacts
+.sconsign.dblite
