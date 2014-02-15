@@ -3,4 +3,4 @@ env = Environment(CCFLAGS=['-w',
                            '-fpermissive'],
                   LIBS='pthread')
 
-SConscript('src/SConstruct', variant_dir='bin/release', exports='env')
+SConscript('src/SConstruct', exports='env')
