@@ -30,7 +30,7 @@
 
 #define VER "**Oxygene**"
 //Note : vernumb MUST always be 5 char lenght and WSCREQVER also must.
-#define VERNUMB "0.82s"
+#define VERNUMB "0.7.0"
 //This is the requested version for the WSC to be read correctly
 #define WSCREQVER "0.60s"
 //This is the requested version for the server.cfg to be read correctly
