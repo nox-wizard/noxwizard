@@ -6,18 +6,22 @@ if not (mode_requested in ['debug', 'release']):
 
 print '**** Compiling in ' + mode_requested + 'mode...'
 
-debugflags   = ['-g', '-D_DEBUG'] # ['-W1', '-GX', '-EHsc', '-D_DEBUG']
-releaseflags = ['-O2', '-DNDEBUG']
+debugflags     = '-g' # ['-g', '-D_DEBUG'] # ['-W1', '-GX', '-EHsc', '-D_DEBUG']
+debugdefines   = 'DEBUG'
+releaseflags   = '-O2' #['-O2', '-DNDEBUG']
+releasedefines = 'NDEBUG'
 
 env = Environment(CCFLAGS=['-w',
                            '-I./src',
                            '-fpermissive'],
-                  LIBS='pthread')
+                  LIBS='pthread',)
 
 if mode_requested == 'debug':
   env.Append(CCFLAGS=debugflags)
+  env.Append(CPPDEFINES=debugdefines)
 else:
   env.Append(CCFLAGS=releaseflags)
+  env.Append(CPPDEFINES=releasedefines)
 
 SConscript('src/SConstruct',          # Load SConstruct from src-directory
            variant_dir='bin/' + mode_requested, # compile to bin/release
