@@ -1,4 +1,6 @@
-# Compiled executable
+# Compiled stuff
+dist/*
+bin/*
 noxwizard
 noxwizard.exe
 

@@ -14,7 +14,7 @@ releasedefines = 'NDEBUG'
 env = Environment(CCFLAGS=['-w',
                            '-I./src',
                            '-fpermissive'],
-                  LIBS='pthread',)
+                  LIBS='pthread')
 
 if mode_requested == 'debug':
   env.Append(CCFLAGS=debugflags)
