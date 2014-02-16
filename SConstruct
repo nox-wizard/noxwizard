@@ -1,3 +1,5 @@
+from subprocess import call
+
 mode_requested = ARGUMENTS.get('mode', 'debug')
 
 if (mode_requested in ['debug', 'release']):
@@ -29,4 +31,14 @@ else:
   if not (mode_requested == 'test'):
     print "Error: expected 'debug', 'release' or 'test', found: '" + mode_requested + "'"
     Exit(1)
+  
+  env = Environment(CCFLAGS=['-w',
+                             '-I./tests',
+                             '-fpermissive'],
+                    LIBS='pthread',
+                    CPPPATH='#../unittest-cpp/UnitTest++/src/')
+  env.Program(target='test',
+              source=['tests/test.cpp',
+                      'libUnitTest++.a'])
+  #call('./test')
 
