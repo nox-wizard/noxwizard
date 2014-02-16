@@ -2102,12 +2102,6 @@ void MsgBoardQuestEscortCreate( int npcIndex )
 		//deletechar( npcIndex );
 		return;
 	}
-
-	// Debugging messages
-#ifdef DEBUG
-	ErrOut("MsgBoardQuestEscortCreate() Escort quest for:\n       %s to be escorted to %s\n", npc->name, region[npc->questDestRegion].name );
-#endif
-
 }
 
 
