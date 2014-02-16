@@ -26,6 +26,7 @@ if (mode_requested in ['debug', 'release']):
                duplicate=0,               # don't copy sources
                exports='env')             # export env-var
 else:
-  print "Error: expected 'debug' or 'release', found: " + mode_requested
-  Exit(1)
+  if not (mode_requested == 'test'):
+    print "Error: expected 'debug', 'release' or 'test', found: '" + mode_requested + "'"
+    Exit(1)
 
