@@ -37,8 +37,10 @@ else:
                              '-fpermissive'],
                     LIBS='pthread',
                     CPPPATH='#../unittest-cpp/UnitTest++/src/')
-  env.Program(target='test',
-              source=['tests/test.cpp',
-                      'libUnitTest++.a'])
-  #call('./test')
-
+  testProg = env.Program(target='test',
+                         source=['tests/test.cpp',
+                                 'libUnitTest++.a'])
+  test = env.Command(target='test.log',
+                     source='./test',
+                     action="./test > $TARGET")
+  AlwaysBuild(test)
